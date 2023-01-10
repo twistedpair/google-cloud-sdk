@@ -71,17 +71,45 @@ def CheckStatusMessage(release_track, integration_name):
 
   Args:
     release_track: Release track of the command being run.
-    integration_name: str, name of the integration
+    integration_name: str, name of the integration.
 
   Returns:
     A formatted string of the message.
   """
+  return (
+      'You can check the status with `gcloud {}run integrations describe {}`'
+      .format(_ReleaseCommandPrefix(release_track), integration_name))
+
+
+def RetryDeploymentMessage(release_track, integration_name):
+  """Message about retry deployment using update command.
+
+  Args:
+    release_track: Release track of the command being run.
+    integration_name: str, name of the integration.
+
+  Returns:
+    A formatted string of the message.
+  """
+  return (
+      'To retry the deployment, use update command ' +
+            '`gcloud {}run integrations update {}`'
+      .format(_ReleaseCommandPrefix(release_track), integration_name))
+
+
+def _ReleaseCommandPrefix(release_track):
+  """Prefix for release track for printing commands.
+
+  Args:
+    release_track: Release track of the command being run.
+
+  Returns:
+    A formatted string of the release track prefix
+  """
   track = release_track.prefix
   if track:
     track += ' '
-  return (
-      'You can check the status with `gcloud {}run integrations describe {}`'
-      .format(track, integration_name))
+  return track
 
 
 def GetDeployMessage(resource_type, create=False):

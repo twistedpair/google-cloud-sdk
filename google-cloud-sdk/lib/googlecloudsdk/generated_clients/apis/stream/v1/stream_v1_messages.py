@@ -712,8 +712,8 @@ class StreamProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class StreamProjectsLocationsListLocationsRequest(_messages.Message):
-  r"""A StreamProjectsLocationsListLocationsRequest object.
+class StreamProjectsLocationsListRequest(_messages.Message):
+  r"""A StreamProjectsLocationsListRequest object.
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
@@ -765,8 +765,8 @@ class StreamProjectsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class StreamProjectsLocationsOperationsListOperationsRequest(_messages.Message):
-  r"""A StreamProjectsLocationsOperationsListOperationsRequest object.
+class StreamProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A StreamProjectsLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.

@@ -518,7 +518,7 @@
           "$ref": "PipelineReadyCondition"
         },
         "targetsPresentCondition": {
-          "description": "Detalis around targets enumerated in the pipeline.",
+          "description": "Details around targets enumerated in the pipeline.",
           "$ref": "TargetsPresentCondition"
         }
       }
@@ -549,7 +549,7 @@
           "type": "boolean"
         },
         "missingTargets": {
-          "description": "The list of Target names that are missing. For example, projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
+          "description": "The list of Target names that do not exist. For example, projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1110,6 +1110,346 @@
       "properties": {
       }
     },
+    "DeployPolicy": {
+      "id": "DeployPolicy",
+      "description": "A `DeployPolicy` resource in the Google Cloud Deploy API. A `DeployPolicy` defines a policy to apply for a project\/location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the `DeployPolicy`. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Unique identifier of the `DeployPolicy`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the `DeployPolicy`. Max length is 255 characters.",
+          "type": "string"
+        },
+        "annotations": {
+          "description": "User annotations. These attributes can only be set and used by the user, and not by Google Cloud Deploy.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Labels are attributes that can be set and used by both the user and by Google Cloud Deploy. Labels must meet the following constraints: * Keys and values can contain only lowercase letters, numeric characters, underscores, and dashes. * All characters must use UTF-8 encoding, and international characters are allowed. * Keys must start with a lowercase letter or international character. * Each resource is limited to a maximum of 64 labels. Both keys and values are additionally constrained to be <= 128 bytes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time at which the deploy policy was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Most recent time at which the deploy policy was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "suspended": {
+          "description": "When suspended, the policy will not prevent actions from occurring, even if the action violates the policy.",
+          "type": "boolean"
+        },
+        "selects": {
+          "description": "Resources to apply the policy to.",
+          "$ref": "Resource"
+        },
+        "rules": {
+          "description": "Rules to apply.",
+          "type": "array",
+          "items": {
+            "$ref": "PolicyRule"
+          }
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields. If this is provided on update, it must match the server's etag.",
+          "type": "string"
+        }
+      }
+    },
+    "Resource": {
+      "id": "Resource",
+      "description": "Contains information on the resources to select for a deploy policy.",
+      "type": "object",
+      "properties": {
+        "deliveryPipelines": {
+          "description": "Contains attributes about a delivery pipeline.",
+          "type": "array",
+          "items": {
+            "$ref": "DeliveryPipelineAttribute"
+          }
+        },
+        "targets": {
+          "description": "Contains attributes about a target.",
+          "type": "array",
+          "items": {
+            "$ref": "TargetAttribute"
+          }
+        }
+      }
+    },
+    "DeliveryPipelineAttribute": {
+      "id": "DeliveryPipelineAttribute",
+      "description": "Contains criteria for selecting DeliveryPipelines. Attributes provided must match the delivery pipeline resource in order for policy restrictions to apply. E.g. if id \"prod\" and labels \"foo: bar\" are given the delivery pipeline resource must match both that id and have that label in order to be selected for a deploy policy.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "ID of the `DeliveryPipeline`. Not using the resource name as only the id is needed to determine which pipeline is being referred to.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "DeliveryPipeline labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TargetAttribute": {
+      "id": "TargetAttribute",
+      "description": "Contains criteria for selecting Targets. Attributes provided must match the target resource in order for policy restrictions to apply. E.g. if id \"prod\" and labels \"foo: bar\" are given the target resource must match both that id and have that label in order to be selected for a deploy policy.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "ID of the `Target`. Not using the resource name as only the id is needed to determine which target is being referred to.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Target labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PolicyRule": {
+      "id": "PolicyRule",
+      "description": "Rule to apply.",
+      "type": "object",
+      "properties": {
+        "restrictRollouts": {
+          "description": "Rollout restrictions.",
+          "$ref": "RestrictRollout"
+        }
+      }
+    },
+    "RestrictRollout": {
+      "id": "RestrictRollout",
+      "description": "Rollout restrictions.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Restriction name.",
+          "type": "string"
+        },
+        "invoker": {
+          "description": "What invoked the action. If left empty, all invoker types will be restricted.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified.",
+              "The action is user-driven (e.g. creating a rollout manually via a gcloud create command).",
+              "Automated action by Cloud Deploy."
+            ],
+            "enum": [
+              "INVOKER_UNSPECIFIED",
+              "USER",
+              "DEPLOY_AUTOMATION"
+            ]
+          }
+        },
+        "actions": {
+          "description": "Rollout actions to be restricted as part of the policy. If left empty, all actions will be restricted.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified.",
+              "Advance the rollout to the next phase.",
+              "Approve the rollout.",
+              "Cancel the rollout.",
+              "Create a rollout.",
+              "Delete a rollout.",
+              "Ignore a job result on the rollout.",
+              "Reject a rollout.",
+              "Retry a job for a rollout.",
+              "Rollback a rollout.",
+              "Terminate a jobrun."
+            ],
+            "enum": [
+              "ACTIONS_UNSPECIFIED",
+              "ADVANCE",
+              "APPROVE",
+              "CANCEL",
+              "CREATE",
+              "DELETE",
+              "IGNORE_JOB",
+              "REJECT",
+              "RETRY_JOB",
+              "ROLLBACK",
+              "TERMINATE_JOBRUN"
+            ]
+          }
+        },
+        "timeWindows": {
+          "description": "Time Windows within which actions are restricted.",
+          "$ref": "TimeWindow"
+        }
+      }
+    },
+    "TimeWindow": {
+      "id": "TimeWindow",
+      "description": "Time Window within which actions are restricted.",
+      "type": "object",
+      "properties": {
+        "timeZone": {
+          "description": "The time zone in IANA format [IANA Time Zone Database](https:\/\/www.iana.org\/time-zones) (e.g. America\/New_York).",
+          "type": "string"
+        },
+        "ranges": {
+          "description": "Range within which actions are restricted.",
+          "type": "array",
+          "items": {
+            "$ref": "Range"
+          }
+        }
+      }
+    },
+    "Range": {
+      "id": "Range",
+      "description": "Range within which actions are restricted.",
+      "type": "object",
+      "properties": {
+        "startDate": {
+          "description": "Start date.",
+          "$ref": "Date"
+        },
+        "endDate": {
+          "description": "End date.",
+          "$ref": "Date"
+        },
+        "startTimeOfDay": {
+          "description": "Start time of day.",
+          "$ref": "TimeOfDay"
+        },
+        "endTimeOfDay": {
+          "description": "End time of day.",
+          "$ref": "TimeOfDay"
+        },
+        "dayOfWeek": {
+          "description": "Days of week.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "The day of the week is unspecified.",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "enum": [
+              "DAY_OF_WEEK_UNSPECIFIED",
+              "MONDAY",
+              "TUESDAY",
+              "WEDNESDAY",
+              "THURSDAY",
+              "FRIDAY",
+              "SATURDAY",
+              "SUNDAY"
+            ]
+          }
+        }
+      }
+    },
+    "Date": {
+      "id": "Date",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values. * A month and day, with a zero year (for example, an anniversary). * A year on its own, with a zero month and a zero day. * A year and month, with a zero day (for example, a credit card expiration date). Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Year of the date. Must be from 1 to 9999, or 0 to specify a date without a year.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "description": "Month of a year. Must be from 1 to 12, or 0 to specify a year without a month and day.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "description": "Day of a month. Must be from 1 to 31 and valid for the year and month, or 0 to specify a year by itself or a year and month where the day isn't significant.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TimeOfDay": {
+      "id": "TimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListDeployPoliciesResponse": {
+      "id": "ListDeployPoliciesResponse",
+      "description": "The response object from `ListDeployPolicies`.",
+      "type": "object",
+      "properties": {
+        "deployPolicies": {
+          "description": "The `DeployPolicy` objects.",
+          "type": "array",
+          "items": {
+            "$ref": "DeployPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ApproveRolloutRequest": {
       "id": "ApproveRolloutRequest",
       "description": "The request object used by `ApproveRollout`.",
@@ -1118,6 +1458,13 @@
         "approved": {
           "description": "Required. True = approve; false = reject",
           "type": "boolean"
+        },
+        "overrideDeployPolicy": {
+          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1136,6 +1483,13 @@
         "phaseId": {
           "description": "Required. The phase ID to advance the `Rollout` to.",
           "type": "string"
+        },
+        "overrideDeployPolicy": {
+          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1572,6 +1926,13 @@
         "jobId": {
           "description": "Required. The job ID for the Job to retry.",
           "type": "string"
+        },
+        "overrideDeployPolicy": {
+          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1862,28 +2223,6 @@
         "supportEndDate": {
           "description": "Date when this version is expected to no longer be supported.",
           "$ref": "Date"
-        }
-      }
-    },
-    "Date": {
-      "id": "Date",
-      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values. * A month and day, with a zero year (for example, an anniversary). * A year on its own, with a zero month and a zero day. * A year and month, with a zero day (for example, a credit card expiration date). Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
-      "type": "object",
-      "properties": {
-        "year": {
-          "description": "Year of the date. Must be from 1 to 9999, or 0 to specify a date without a year.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "month": {
-          "description": "Month of a year. Must be from 1 to 12, or 0 to specify a year without a month and day.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "day": {
-          "description": "Day of a month. Must be from 1 to 31 and valid for the year and month, or 0 to specify a year by itself or a year and month where the day isn't significant.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -2967,6 +3306,12 @@
                           "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "overrideDeployPolicy": {
+                          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+                          "location": "query",
+                          "repeated": true,
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -3170,6 +3515,12 @@
                               "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                               "location": "query",
                               "type": "boolean"
+                            },
+                            "overrideDeployPolicy": {
+                              "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "string"
                             }
                           },
                           "parameterOrder": [
@@ -3594,6 +3945,218 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "deployPolicies": {
+              "methods": {
+                "create": {
+                  "id": "clouddeploy.projects.locations.deployPolicies.create",
+                  "path": "v1/{+parent}/deployPolicies",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deployPolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent collection in which the `DeployPolicy` should be created. Format should be projects\/{project_id}\/locations\/{location_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "deployPolicyId": {
+                      "description": "Required. ID of the `DeployPolicy`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "DeployPolicy"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new DeployPolicy in a given project and location."
+                },
+                "patch": {
+                  "id": "clouddeploy.projects.locations.deployPolicies.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deployPolicies/{deployPoliciesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the `DeployPolicy`. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `DeployPolicy` resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "Optional. If set to true, updating a `DeployPolicy` that does not exist will result in the creation of a new `DeployPolicy`.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DeployPolicy"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single DeployPolicy."
+                },
+                "delete": {
+                  "id": "clouddeploy.projects.locations.deployPolicies.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deployPolicies/{deployPoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `DeployPolicy` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/deployPolicies\/{deploy_policy_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "Optional. If set to true, then deleting an already deleted or non-existing `DeployPolicy` will succeed.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single DeployPolicy."
+                },
+                "list": {
+                  "id": "clouddeploy.projects.locations.deployPolicies.list",
+                  "path": "v1/{+parent}/deployPolicies",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deployPolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent, which owns this collection of deploy policies. Format must be projects\/{project_id}\/locations\/{location_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of deploy policies to return. The service may return fewer than this value. If unspecified, at most 50 deploy policies will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListDeployPolicies` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filter deploy policies to be returned. See https:\/\/google.aip.dev\/160 for more details. All fields can be used in the filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListDeployPoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists DeployPolicies in a given project and location."
+                },
+                "get": {
+                  "id": "clouddeploy.projects.locations.deployPolicies.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deployPolicies/{deployPoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the `DeployPolicy`. Format must be projects\/{project_id}\/locations\/{location_name}\/deployPolicies\/{deploy_policy_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "DeployPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single DeployPolicy."
                 }
               }
             }

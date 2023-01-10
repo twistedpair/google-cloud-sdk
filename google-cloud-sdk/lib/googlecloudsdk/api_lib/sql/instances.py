@@ -211,14 +211,6 @@ def StartCloudSqlProxy(instance, port, seconds_to_timeout=10):
   return _WaitForProxyToStart(proxy_process, port, seconds_to_timeout)
 
 
-def IsInstanceV1(sql_messages, instance):
-  """Returns a boolean indicating if the database instance is first gen."""
-  return (instance.backendType ==
-          sql_messages.DatabaseInstance.BackendTypeValueValuesEnum.FIRST_GEN or
-          (instance.settings and instance.settings.tier and
-           instance.settings.tier.startswith('D')))
-
-
 def IsInstanceV2(sql_messages, instance):
   """Returns a boolean indicating if the database instance is second gen."""
   return instance.backendType == sql_messages.DatabaseInstance.BackendTypeValueValuesEnum.SECOND_GEN

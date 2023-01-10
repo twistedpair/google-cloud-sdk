@@ -346,6 +346,20 @@ def AddSerialConsoleSshKeyArgToParser(parser, positional=False, name=None):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddSshKeyArgToParser(parser, positional=False, name=None):
+  """Sets up an argument for the ssh-key resource."""
+  name = 'ssh_key' if positional else '--ssh-key'
+  ssh_key_data = yaml_data.ResourceYAMLData.FromPath('bms.ssh_key')
+  resource_spec = concepts.ResourceSpec.FromYaml(ssh_key_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      flag_name_overrides={'region': ''},
+      group_help='ssh_key.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddInstanceOsImageToParser(parser, hidden):
   parser.add_argument(
       '--os-image',

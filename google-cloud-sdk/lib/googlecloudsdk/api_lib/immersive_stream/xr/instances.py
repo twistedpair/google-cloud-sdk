@@ -28,11 +28,13 @@ def ProjectLocation(project, location):
   return 'projects/{}/locations/{}'.format(project, location)
 
 
-def GenerateTargetLocationConfigs(add_region_configs, update_region_configs,
-                                  remove_regions, current_instance):
+def GenerateTargetLocationConfigs(release_track, add_region_configs,
+                                  update_region_configs, remove_regions,
+                                  current_instance):
   """Generates the target location configs.
 
   Args:
+    release_track: ALPHA or GA release track
     add_region_configs: List of region config dicts of the form: [{'region':
       region1, 'capacity': capacity1}] that specifies the regions to add to the
       service instance
@@ -81,7 +83,7 @@ def GenerateTargetLocationConfigs(add_region_configs, update_region_configs,
     # unchanged.
     region_configs_diff = update_region_configs
 
-  messages = api_util.GetMessages()
+  messages = api_util.GetMessages(release_track)
   location_configs_diff = messages.StreamInstance.LocationConfigsValue()
   for region_config in region_configs_diff:
     region = region_config['region']
@@ -113,17 +115,18 @@ def GenerateTargetLocationConfigs(add_region_configs, update_region_configs,
   return target_location_configs
 
 
-def Get(instance_relative_name):
+def Get(release_track, instance_relative_name):
   """Get resource details of an Immersive Stream for XR service instance.
 
   Args:
+    release_track: ALPHA or GA release track
     instance_relative_name: string - canonical resource name of the instance
 
   Returns:
     A service instance resource object.
   """
-  client = api_util.GetClient()
-  messages = api_util.GetMessages()
+  client = api_util.GetClient(release_track)
+  messages = api_util.GetMessages(release_track)
   service = client.ProjectsLocationsStreamInstancesService(client)
 
   return service.Get(
@@ -131,7 +134,7 @@ def Get(instance_relative_name):
           name=instance_relative_name))
 
 
-def Create(instance_name,
+def Create(release_track, instance_name,
            content,
            location,
            version,
@@ -140,6 +143,7 @@ def Create(instance_name,
   """Create a new Immersive Stream for XR service instance.
 
   Args:
+    release_track: ALPHA or GA release track
     instance_name: string - name of the service instance
     content: string - resource path of the content resource that is served by
       the instance
@@ -154,8 +158,8 @@ def Create(instance_name,
     An Operation object which can be used to check on the progress of the
     service instance creation.
   """
-  client = api_util.GetClient()
-  messages = api_util.GetMessages()
+  client = api_util.GetClient(release_track)
+  messages = api_util.GetMessages(release_track)
   build_version = messages.BuildVersion(contentVersionTag=version)
 
   instance = messages.StreamInstance(
@@ -176,10 +180,11 @@ def Create(instance_name,
           streamInstanceId=instance_name))
 
 
-def UpdateLocationConfigs(instance_ref, target_location_configs):
+def UpdateLocationConfigs(release_track, instance_ref, target_location_configs):
   """Updates the location configs for a service instance.
 
   Args:
+    release_track: ALPHA or GA release track
     instance_ref: resource object - service instance to be updated
     target_location_configs: A LocationConfigsValue proto message represents the
       target location configs to achieve
@@ -192,8 +197,8 @@ def UpdateLocationConfigs(instance_ref, target_location_configs):
       not target_location_configs.additionalProperties):
     raise exceptions.Error('Target location configs must be provided')
 
-  client = api_util.GetClient()
-  messages = api_util.GetMessages()
+  client = api_util.GetClient(release_track)
+  messages = api_util.GetMessages(release_track)
   # Puts merged location_configs into a StreamInstance
   instance = messages.StreamInstance(locationConfigs=target_location_configs)
   service = client.ProjectsLocationsStreamInstancesService(client)
@@ -205,10 +210,11 @@ def UpdateLocationConfigs(instance_ref, target_location_configs):
           updateMask='location_configs'))
 
 
-def UpdateContentBuildVersion(instance_ref, version):
+def UpdateContentBuildVersion(release_track, instance_ref, version):
   """Update content build version of an Immersive Stream for XR service instance.
 
   Args:
+    release_track: ALPHA or GA release track
     instance_ref: resource object - service instance to be updated
     version: content build version tag
 
@@ -216,8 +222,8 @@ def UpdateContentBuildVersion(instance_ref, version):
     An Operation object which can be used to check on the progress of the
     service instance update.
   """
-  client = api_util.GetClient()
-  messages = api_util.GetMessages()
+  client = api_util.GetClient(release_track)
+  messages = api_util.GetMessages(release_track)
   build_version = messages.BuildVersion(contentVersionTag=version)
   instance = messages.StreamInstance(contentBuildVersion=build_version)
   service = client.ProjectsLocationsStreamInstancesService(client)
@@ -229,10 +235,11 @@ def UpdateContentBuildVersion(instance_ref, version):
           updateMask='content_build_version'))
 
 
-def UpdateFallbackUrl(instance_ref, fallback_url):
+def UpdateFallbackUrl(release_track, instance_ref, fallback_url):
   """Update fallback url of an Immersive Stream for XR service instance.
 
   Args:
+    release_track: ALPHA or GA release track
     instance_ref: resource object - service instance to be updated
     fallback_url: string - fallback url to redirect users to when the instance
       is not available
@@ -241,8 +248,8 @@ def UpdateFallbackUrl(instance_ref, fallback_url):
     An Operation object which can be used to check on the progress of the
     service instance update.
   """
-  client = api_util.GetClient()
-  messages = api_util.GetMessages()
+  client = api_util.GetClient(release_track)
+  messages = api_util.GetMessages(release_track)
   service = client.ProjectsLocationsStreamInstancesService(client)
 
   stream_config = messages.StreamConfig(fallbackUri=fallback_url)

@@ -472,10 +472,12 @@ class Hcx(_messages.Message):
         value.
       ACTIVE: The appliance is operational and can be used.
       CREATING: The appliance is being deployed.
+      ACTIVATING: The appliance is being activated.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
+    ACTIVATING = 3
 
   fqdn = _messages.StringField(1)
   internalIp = _messages.StringField(2)
@@ -738,6 +740,19 @@ class ListPrivateCloudsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   privateClouds = _messages.MessageField('PrivateCloud', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListPrivateConnectionPeeringRoutesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListPrivateConnectionPeeringRoutes
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    peeringRoutes: A list of peering routes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  peeringRoutes = _messages.MessageField('PeeringRoute', 2, repeated=True)
 
 
 class ListPrivateConnectionsResponse(_messages.Message):
@@ -1636,11 +1651,11 @@ class PrivateCloud(_messages.Message):
     expireTime: Output only. Time when the resource will be irreversibly
       deleted.
     hcx: Output only. HCX appliance.
-    managementCluster: Input only. The management cluster for this private
-      cloud. This field is required during creation of the private cloud to
-      provide details for the default cluster. The following fields can't be
-      changed after private cloud creation: `ManagementCluster.clusterId`,
-      `ManagementCluster.nodeTypeId`.
+    managementCluster: Required. Input only. The management cluster for this
+      private cloud. This field is required during creation of the private
+      cloud to provide details for the default cluster. The following fields
+      can't be changed after private cloud creation:
+      `ManagementCluster.clusterId`, `ManagementCluster.nodeTypeId`.
     name: Output only. The resource name of this private cloud. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1697,7 +1712,11 @@ class PrivateConnection(_messages.Message):
   private clouds.
 
   Enums:
-    RoutingModeValueValuesEnum: Required. Routing Mode.
+    PeeringStateValueValuesEnum: Output only. Peering state between service
+      network and VMware Engine network.
+    RoutingModeValueValuesEnum: Optional. Routing Mode. Default value is set
+      to GLOBAL. For type = PRIVATE_SERVICE_ACCESS, this field can be set to
+      GLOBAL or REGIONAL, for other types only GLOBAL is supported.
     StateValueValuesEnum: Output only. State of the private connection.
     TypeValueValuesEnum: Required. Private connection type.
 
@@ -1705,28 +1724,30 @@ class PrivateConnection(_messages.Message):
     createTime: Output only. Creation time of this resource.
     description: Optional. User-provided description for this private
       connection.
-    exportedRoutes: Output only. Exported routes of the private connection.
-    importedRoutes: Output only. Imported routes of the private connection.
     name: Output only. The resource name of the private connection. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1/privateConnections/my-
       connection`
-    network: Required. Network to create private connection. Specify the name
-      in the following form: `projects/{project}/global/networks/{network_id}`
-      For type = PRIVATE_SERVICE_ACCESS, this field represents
-      servicenetworking VPC, e.g. projects/project-
-      tp/global/networks/servicenetworking. For type = NETAPP_CLOUD_VOLUME,
-      this field represents NetApp service VPC, e.g. projects/project-
-      tp/global/networks/netapp-tenant-vpc. For type = DELL_POWERSCALE, this
-      field represent Dell service VPC, e.g. projects/project-
-      tp/global/networks/dell-tenant-vpc. For type= THIRD_PARTY_SERVICE, this
-      field could represent a consumer VPC or any other producer VPC to which
-      the VMware Engine Network needs to be connected, e.g.
-      projects/project/global/networks/vpc.
     peeringId: Output only. VPC network peering id between given network VPC
       and VMwareEngineNetwork.
-    routingMode: Required. Routing Mode.
+    peeringState: Output only. Peering state between service network and
+      VMware Engine network.
+    routingMode: Optional. Routing Mode. Default value is set to GLOBAL. For
+      type = PRIVATE_SERVICE_ACCESS, this field can be set to GLOBAL or
+      REGIONAL, for other types only GLOBAL is supported.
+    serviceNetwork: Required. Service network to create private connection.
+      Specify the name in the following form:
+      `projects/{project}/global/networks/{network_id}` For type =
+      PRIVATE_SERVICE_ACCESS, this field represents servicenetworking VPC,
+      e.g. projects/project-tp/global/networks/servicenetworking. For type =
+      NETAPP_CLOUD_VOLUME, this field represents NetApp service VPC, e.g.
+      projects/project-tp/global/networks/netapp-tenant-vpc. For type =
+      DELL_POWERSCALE, this field represent Dell service VPC, e.g.
+      projects/project-tp/global/networks/dell-tenant-vpc. For type=
+      THIRD_PARTY_SERVICE, this field could represent a consumer VPC or any
+      other producer VPC to which the VMware Engine Network needs to be
+      connected, e.g. projects/project/global/networks/vpc.
     state: Output only. State of the private connection.
     type: Required. Private connection type.
     uid: Output only. System-generated unique identifier for the resource.
@@ -1740,8 +1761,24 @@ class PrivateConnection(_messages.Message):
       west1/vmwareEngineNetworks/us-west1-default.
   """
 
+  class PeeringStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Peering state between service network and VMware Engine
+    network.
+
+    Values:
+      PEERING_STATE_UNSPECIFIED: The default value. This value is used if the
+        peering state is omitted or unknown.
+      PEERING_ACTIVE: The peering is in active state.
+      PEERING_INACTIVE: The peering is in inactive state.
+    """
+    PEERING_STATE_UNSPECIFIED = 0
+    PEERING_ACTIVE = 1
+    PEERING_INACTIVE = 2
+
   class RoutingModeValueValuesEnum(_messages.Enum):
-    r"""Required. Routing Mode.
+    r"""Optional. Routing Mode. Default value is set to GLOBAL. For type =
+    PRIVATE_SERVICE_ACCESS, this field can be set to GLOBAL or REGIONAL, for
+    other types only GLOBAL is supported.
 
     Values:
       ROUTING_MODE_UNSPECIFIED: The default value. This value should never be
@@ -1763,12 +1800,17 @@ class PrivateConnection(_messages.Message):
       ACTIVE: The private connection is ready.
       UPDATING: The private connection is being updated.
       DELETING: The private connection is being deleted.
+      UNPROVISIONED: The private connection is not provisioned, since no
+        private cloud is present for which this private connection is needed.
+      FAILED: The private connection is in failed state.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     UPDATING = 3
     DELETING = 4
+    UNPROVISIONED = 5
+    FAILED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Private connection type.
@@ -1792,17 +1834,16 @@ class PrivateConnection(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  exportedRoutes = _messages.MessageField('PeeringRoute', 3, repeated=True)
-  importedRoutes = _messages.MessageField('PeeringRoute', 4, repeated=True)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  peeringId = _messages.StringField(7)
-  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  vmwareEngineNetwork = _messages.StringField(13)
+  name = _messages.StringField(3)
+  peeringId = _messages.StringField(4)
+  peeringState = _messages.EnumField('PeeringStateValueValuesEnum', 5)
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 6)
+  serviceNetwork = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  vmwareEngineNetwork = _messages.StringField(12)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -2031,12 +2072,18 @@ class Subnet(_messages.Message):
       CREATING: The subnet is being created.
       UPDATING: The subnet is being updated.
       DELETING: The subnet is being deleted.
+      RECONCILING: Changes requested in the last operation are being
+        propagated.
+      FAILED: Last operation on the subnet did not succeed. Subnet's payload
+        is reverted back to its most recent working state.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     UPDATING = 3
     DELETING = 4
+    RECONCILING = 5
+    FAILED = 6
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -3760,6 +3807,20 @@ class VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(_m
   privateCloud = _messages.StringField(1, required=True)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the subnet to retrieve. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/subnets/my-subnet`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest object.
 
@@ -3799,6 +3860,41 @@ class VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest(_messages.Mes
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of this subnet. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/subnets/my-subnet`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    subnet: A Subnet resource to be passed as the request body.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `Subnet` resource by the update. The fields specified
+      in the `update_mask` are relative to the resource, not the full request.
+      A field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  subnet = _messages.MessageField('Subnet', 3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsTestIamPermissionsRequest(_messages.Message):
@@ -3990,6 +4086,32 @@ class VmwareengineProjectsLocationsPrivateConnectionsPatchRequest(_messages.Mess
   privateConnection = _messages.MessageField('PrivateConnection', 2)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateConnectionsPeeringRoutesListRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateConnectionsPeeringRoutesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of peering routes to return in one page. The
+      service may return fewer than this value. The maximum value is coerced
+      to 1000. The default value of this field is 500.
+    pageToken: A page token, received from a previous
+      `ListPrivateConnectionPeeringRoutes` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListPrivateConnectionPeeringRoutes` must match the call that provided
+      the page token.
+    parent: Required. The resource name of the private connection to retrieve
+      peering routes from. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-west1/privateConnections/my-
+      connection`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest(_messages.Message):

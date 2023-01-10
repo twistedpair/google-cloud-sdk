@@ -339,6 +339,46 @@ def GetProjectSettings(project_id):
   return client.projects.GetProjectSettings(get_settings_req)
 
 
+def GetVPCSCConfig(project_id, location_id):
+  """Gets VPC SC Config on the project and location."""
+  client = GetClient()
+  messages = GetMessages()
+  get_vpcsc_req = messages.ArtifactregistryProjectsLocationsGetVpcscConfigRequest(
+      name="projects/" + project_id + "/locations/" + location_id +
+      "/vpcscConfig")
+  return client.projects_locations.GetVpcscConfig(get_vpcsc_req)
+
+
+def AllowVPCSCConfig(project_id, location_id):
+  """Allows requests in Remote Repository inside VPC SC perimeter."""
+  client = GetClient()
+  messages = GetMessages()
+  vc = messages.VPCSCConfig(
+      name="projects/" + project_id + "/locations/" + location_id +
+      "/vpcscConfig",
+      vpcscPolicy=messages.VPCSCConfig.VpcscPolicyValueValuesEnum.ALLOW)
+  update_vpcsc_req = messages.ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest(
+      name="projects/" + project_id + "/locations/" + location_id +
+      "/vpcscConfig",
+      vPCSCConfig=vc)
+  return client.projects_locations.UpdateVpcscConfig(update_vpcsc_req)
+
+
+def DenyVPCSCConfig(project_id, location_id):
+  """Denies requests in Remote Repository inside VPC SC perimeter."""
+  client = GetClient()
+  messages = GetMessages()
+  vc = messages.VPCSCConfig(
+      name="projects/" + project_id + "/locations/" + location_id +
+      "/vpcscConfig",
+      vpcscPolicy=messages.VPCSCConfig.VpcscPolicyValueValuesEnum.DENY)
+  get_vpcsc_req = messages.ArtifactregistryProjectsLocationsUpdateVpcscConfigRequest(
+      name="projects/" + project_id + "/locations/" + location_id +
+      "/vpcscConfig",
+      vPCSCConfig=vc)
+  return client.projects_locations.UpdateVpcscConfig(get_vpcsc_req)
+
+
 def EnableUpgradeRedirection(project_id):
   messages = GetMessages()
   return SetUpgradeRedirectionState(

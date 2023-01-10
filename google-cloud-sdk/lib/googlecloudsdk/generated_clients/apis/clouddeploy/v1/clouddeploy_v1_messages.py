@@ -45,10 +45,13 @@ class AdvanceRolloutRequest(_messages.Message):
   r"""The request object used by `AdvanceRollout`.
 
   Fields:
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
     phaseId: Required. The phase ID to advance the `Rollout` to.
   """
 
-  phaseId = _messages.StringField(1)
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+  phaseId = _messages.StringField(2)
 
 
 class AdvanceRolloutResponse(_messages.Message):
@@ -72,9 +75,12 @@ class ApproveRolloutRequest(_messages.Message):
 
   Fields:
     approved: Required. True = approve; false = reject
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
   """
 
   approved = _messages.BooleanField(1)
+  overrideDeployPolicy = _messages.StringField(2, repeated=True)
 
 
 class ApproveRolloutResponse(_messages.Message):
@@ -514,6 +520,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
   object.
 
   Fields:
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
     parent: Required. The parent collection in which the `Release` should be
       created. Format should be projects/{project_id}/locations/{location_name
       }/deliveryPipelines/{pipeline_name}.
@@ -534,11 +542,12 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
       user is provided with an expected result, but no actual change is made.
   """
 
-  parent = _messages.StringField(1, required=True)
-  release = _messages.MessageField('Release', 2)
-  releaseId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+  parent = _messages.StringField(2, required=True)
+  release = _messages.MessageField('Release', 3)
+  releaseId = _messages.StringField(4)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest(_messages.Message):
@@ -621,6 +630,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
   object.
 
   Fields:
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
     parent: Required. The parent collection in which the `Rollout` should be
       created. Format should be projects/{project_id}/locations/{location_name
       }/deliveryPipelines/{pipeline_name}/releases/{release_name}.
@@ -641,11 +652,12 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
       user is provided with an expected result, but no actual change is made.
   """
 
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  rollout = _messages.MessageField('Rollout', 3)
-  rolloutId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  rollout = _messages.MessageField('Rollout', 4)
+  rolloutId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_messages.Message):
@@ -779,6 +791,149 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTestIamPermissionsRequest(_me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(
+    _messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesCreateRequest object.
+
+  Fields:
+    deployPolicy: A DeployPolicy resource to be passed as the request body.
+    deployPolicyId: Required. ID of the `DeployPolicy`.
+    parent: Required. The parent collection in which the `DeployPolicy` should
+      be created. Format should be
+      projects/{project_id}/locations/{location_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  deployPolicy = _messages.MessageField('DeployPolicy', 1)
+  deployPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(
+    _messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing `DeployPolicy` will succeed.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    name: Required. The name of the `DeployPolicy` to delete. Format should be
+      projects/{project_id}/locations/{location_name}/deployPolicies/{deploy_p
+      olicy_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsDeployPoliciesGetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesGetRequest object.
+
+  Fields:
+    name: Required. Name of the `DeployPolicy`. Format must be projects/{proje
+      ct_id}/locations/{location_name}/deployPolicies/{deploy_policy_name}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsDeployPoliciesListRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesListRequest object.
+
+  Fields:
+    filter: Filter deploy policies to be returned. See
+      https://google.aip.dev/160 for more details. All fields can be used in
+      the filter.
+    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
+      more details.
+    pageSize: The maximum number of deploy policies to return. The service may
+      return fewer than this value. If unspecified, at most 50 deploy policies
+      will be returned. The maximum value is 1000; values above 1000 will be
+      set to 1000.
+    pageToken: A page token, received from a previous `ListDeployPolicies`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
+    parent: Required. The parent, which owns this collection of deploy
+      policies. Format must be
+      projects/{project_id}/locations/{location_name}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeployPoliciesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, updating a `DeployPolicy` that
+      does not exist will result in the creation of a new `DeployPolicy`.
+    deployPolicy: A DeployPolicy resource to be passed as the request body.
+    name: Name of the `DeployPolicy`. Format is projects/{project}/
+      locations/{location}/deployPolicies/a-z{0,62}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `DeployPolicy` resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  deployPolicy = _messages.MessageField('DeployPolicy', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsGetConfigRequest(_messages.Message):
@@ -1275,6 +1430,52 @@ class DeliveryPipeline(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class DeliveryPipelineAttribute(_messages.Message):
+  r"""Contains criteria for selecting DeliveryPipelines.
+
+  Attributes provided must match the delivery pipeline resource in order for
+  policy restrictions to apply. E.g. if id "prod" and labels "foo: bar" are
+  given the delivery pipeline resource must match both that id and have that
+  label in order to be selected for a deploy policy.
+
+  Messages:
+    LabelsValue: DeliveryPipeline labels.
+
+  Fields:
+    id: ID of the `DeliveryPipeline`. Not using the resource name as only the
+      id is needed to determine which pipeline is being referred to.
+    labels: DeliveryPipeline labels.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""DeliveryPipeline labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+
+
 class DeliveryPipelineNotificationEvent(_messages.Message):
   r"""Payload proto for
   "clouddeploy.googleapis.com/deliverypipeline_notification" Platform Log
@@ -1374,6 +1575,125 @@ class DeployJobRunMetadata(_messages.Message):
   """
 
   cloudRun = _messages.MessageField('CloudRunMetadata', 1)
+
+
+class DeployPolicy(_messages.Message):
+  r"""A `DeployPolicy` resource in the Google Cloud Deploy API.
+
+  A `DeployPolicy` defines a policy to apply for a project/location.
+
+  Messages:
+    AnnotationsValue: User annotations. These attributes can only be set and
+      used by the user, and not by Google Cloud Deploy.
+    LabelsValue: Labels are attributes that can be set and used by both the
+      user and by Google Cloud Deploy. Labels must meet the following
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
+
+  Fields:
+    annotations: User annotations. These attributes can only be set and used
+      by the user, and not by Google Cloud Deploy.
+    createTime: Output only. Time at which the deploy policy was created.
+    description: Description of the `DeployPolicy`. Max length is 255
+      characters.
+    etag: This checksum is computed by the server based on the value of other
+      fields. If this is provided on update, it must match the server's etag.
+    labels: Labels are attributes that can be set and used by both the user
+      and by Google Cloud Deploy. Labels must meet the following constraints:
+      * Keys and values can contain only lowercase letters, numeric
+      characters, underscores, and dashes. * All characters must use UTF-8
+      encoding, and international characters are allowed. * Keys must start
+      with a lowercase letter or international character. * Each resource is
+      limited to a maximum of 64 labels. Both keys and values are additionally
+      constrained to be <= 128 bytes.
+    name: Name of the `DeployPolicy`. Format is projects/{project}/
+      locations/{location}/deployPolicies/a-z{0,62}.
+    rules: Rules to apply.
+    selects: Resources to apply the policy to.
+    suspended: When suspended, the policy will not prevent actions from
+      occurring, even if the action violates the policy.
+    uid: Output only. Unique identifier of the `DeployPolicy`.
+    updateTime: Output only. Most recent time at which the deploy policy was
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""User annotations.
+
+    These attributes can only be set and used by the user, and not by Google
+    Cloud Deploy.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are attributes that can be set and used by both the user and by
+
+    Google Cloud Deploy. Labels must meet the following constraints: * Keys
+    and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('PolicyRule', 7, repeated=True)
+  selects = _messages.MessageField('Resource', 8)
+  suspended = _messages.BooleanField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class DeploymentJobs(_messages.Message):
@@ -1696,6 +2016,21 @@ class ListDeliveryPipelinesResponse(_messages.Message):
   """
 
   deliveryPipelines = _messages.MessageField('DeliveryPipeline', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListDeployPoliciesResponse(_messages.Message):
+  r"""The response object from `ListDeployPolicies`.
+
+  Fields:
+    deployPolicies: The `DeployPolicy` objects.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  deployPolicies = _messages.MessageField('DeployPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -2108,7 +2443,7 @@ class PipelineCondition(_messages.Message):
 
   Fields:
     pipelineReadyCondition: Details around the Pipeline's overall status.
-    targetsPresentCondition: Detalis around targets enumerated in the
+    targetsPresentCondition: Details around targets enumerated in the
       pipeline.
   """
 
@@ -2210,6 +2545,16 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PolicyRule(_messages.Message):
+  r"""Rule to apply.
+
+  Fields:
+    restrictRollouts: Rollout restrictions.
+  """
+
+  restrictRollouts = _messages.MessageField('RestrictRollout', 1)
+
+
 class PrivatePool(_messages.Message):
   r"""Execution using a private Cloud Build pool.
 
@@ -2229,6 +2574,50 @@ class PrivatePool(_messages.Message):
   artifactStorage = _messages.StringField(1)
   serviceAccount = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class Range(_messages.Message):
+  r"""Range within which actions are restricted.
+
+  Enums:
+    DayOfWeekValueListEntryValuesEnum:
+
+  Fields:
+    dayOfWeek: Days of week.
+    endDate: End date.
+    endTimeOfDay: End time of day.
+    startDate: Start date.
+    startTimeOfDay: Start time of day.
+  """
+
+  class DayOfWeekValueListEntryValuesEnum(_messages.Enum):
+    r"""DayOfWeekValueListEntryValuesEnum enum type.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  dayOfWeek = _messages.EnumField(
+      'DayOfWeekValueListEntryValuesEnum', 1, repeated=True)
+  endDate = _messages.MessageField('Date', 2)
+  endTimeOfDay = _messages.MessageField('TimeOfDay', 3)
+  startDate = _messages.MessageField('Date', 4)
+  startTimeOfDay = _messages.MessageField('TimeOfDay', 5)
 
 
 class Release(_messages.Message):
@@ -2507,16 +2896,97 @@ class RenderMetadata(_messages.Message):
   cloudRun = _messages.MessageField('CloudRunRenderMetadata', 1)
 
 
+class Resource(_messages.Message):
+  r"""Contains information on the resources to select for a deploy policy.
+
+  Fields:
+    deliveryPipelines: Contains attributes about a delivery pipeline.
+    targets: Contains attributes about a target.
+  """
+
+  deliveryPipelines = _messages.MessageField(
+      'DeliveryPipelineAttribute', 1, repeated=True)
+  targets = _messages.MessageField('TargetAttribute', 2, repeated=True)
+
+
+class RestrictRollout(_messages.Message):
+  r"""Rollout restrictions.
+
+  Enums:
+    ActionsValueListEntryValuesEnum:
+    InvokerValueListEntryValuesEnum:
+
+  Fields:
+    actions: Rollout actions to be restricted as part of the policy. If left
+      empty, all actions will be restricted.
+    invoker: What invoked the action. If left empty, all invoker types will be
+      restricted.
+    name: Restriction name.
+    timeWindows: Time Windows within which actions are restricted.
+  """
+
+  class ActionsValueListEntryValuesEnum(_messages.Enum):
+    r"""ActionsValueListEntryValuesEnum enum type.
+
+    Values:
+      ACTIONS_UNSPECIFIED: Unspecified.
+      ADVANCE: Advance the rollout to the next phase.
+      APPROVE: Approve the rollout.
+      CANCEL: Cancel the rollout.
+      CREATE: Create a rollout.
+      DELETE: Delete a rollout.
+      IGNORE_JOB: Ignore a job result on the rollout.
+      REJECT: Reject a rollout.
+      RETRY_JOB: Retry a job for a rollout.
+      ROLLBACK: Rollback a rollout.
+      TERMINATE_JOBRUN: Terminate a jobrun.
+    """
+    ACTIONS_UNSPECIFIED = 0
+    ADVANCE = 1
+    APPROVE = 2
+    CANCEL = 3
+    CREATE = 4
+    DELETE = 5
+    IGNORE_JOB = 6
+    REJECT = 7
+    RETRY_JOB = 8
+    ROLLBACK = 9
+    TERMINATE_JOBRUN = 10
+
+  class InvokerValueListEntryValuesEnum(_messages.Enum):
+    r"""InvokerValueListEntryValuesEnum enum type.
+
+    Values:
+      INVOKER_UNSPECIFIED: Unspecified.
+      USER: The action is user-driven (e.g. creating a rollout manually via a
+        gcloud create command).
+      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
+    """
+    INVOKER_UNSPECIFIED = 0
+    USER = 1
+    DEPLOY_AUTOMATION = 2
+
+  actions = _messages.EnumField(
+      'ActionsValueListEntryValuesEnum', 1, repeated=True)
+  invoker = _messages.EnumField(
+      'InvokerValueListEntryValuesEnum', 2, repeated=True)
+  name = _messages.StringField(3)
+  timeWindows = _messages.MessageField('TimeWindow', 4)
+
+
 class RetryJobRequest(_messages.Message):
   r"""RetryJobRequest is the request object used by `RetryJob`.
 
   Fields:
     jobId: Required. The job ID for the Job to retry.
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
     phaseId: Required. The phase ID the Job to retry belongs to.
   """
 
   jobId = _messages.StringField(1)
-  phaseId = _messages.StringField(2)
+  overrideDeployPolicy = _messages.StringField(2, repeated=True)
+  phaseId = _messages.StringField(3)
 
 
 class RetryJobResponse(_messages.Message):
@@ -3195,6 +3665,52 @@ class TargetArtifact(_messages.Message):
   skaffoldConfigPath = _messages.StringField(4)
 
 
+class TargetAttribute(_messages.Message):
+  r"""Contains criteria for selecting Targets.
+
+  Attributes provided must match the target resource in order for policy
+  restrictions to apply. E.g. if id "prod" and labels "foo: bar" are given the
+  target resource must match both that id and have that label in order to be
+  selected for a deploy policy.
+
+  Messages:
+    LabelsValue: Target labels.
+
+  Fields:
+    id: ID of the `Target`. Not using the resource name as only the id is
+      needed to determine which target is being referred to.
+    labels: Target labels.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Target labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+
+
 class TargetNotificationEvent(_messages.Message):
   r"""Payload proto for "clouddeploy.googleapis.com/target_notification"
   Platform Log event that describes the failure to send target status change
@@ -3296,7 +3812,7 @@ class TargetsPresentCondition(_messages.Message):
   the Delivery Pipeline that do not actually exist.
 
   Fields:
-    missingTargets: The list of Target names that are missing. For example,
+    missingTargets: The list of Target names that do not exist. For example,
       projects/{project_id}/locations/{location_name}/targets/{target_name}.
     status: True if there aren't any missing Targets.
     updateTime: Last time the condition was updated.
@@ -3329,6 +3845,42 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day.
+
+  The date and time zone are either not significant or are specified elsewhere.
+  An API may choose to allow leap seconds. Related types are google.type.Date
+  and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class TimeWindow(_messages.Message):
+  r"""Time Window within which actions are restricted.
+
+  Fields:
+    ranges: Range within which actions are restricted.
+    timeZone: The time zone in IANA format [IANA Time Zone
+      Database](https://www.iana.org/time-zones) (e.g. America/New_York).
+  """
+
+  ranges = _messages.MessageField('Range', 1, repeated=True)
+  timeZone = _messages.StringField(2)
 
 
 class VerifyJob(_messages.Message):

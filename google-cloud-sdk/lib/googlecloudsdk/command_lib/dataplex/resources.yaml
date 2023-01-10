@@ -181,11 +181,26 @@ datascan:
   attributes:
   - *project
   - *location
-  - &dataScan
+  - &datascan
     parameter_name: dataScansId
     attribute_name: datascan
     help: |
-      Datascan_id of the Dataplex datascan resource.
+      Datascan ID of the Dataplex datascan resource.
+
+datascanjob:
+  name: job
+  collection: dataplex.projects.locations.dataScans.jobs
+  request_id_field: jobID
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *datascan
+  - &datascanjob
+    parameter_name: jobsId
+    attribute_name: job
+    help: |
+      Job ID of the Job running a particular Datascan in Dataplex.
 
 data_attribute_binding:
   name: data attribute binding

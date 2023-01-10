@@ -27,7 +27,6 @@ import os
 import random
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import manifest_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
@@ -86,9 +85,9 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
 
   def execute(self, task_status_queue=None):
     destination_provider = self._destination_resource.storage_url.scheme
+    api_client = api_factory.get_api(destination_provider)
     if copy_util.check_for_cloud_clobber(
-        self._user_request_args, api_factory.get_api(destination_provider),
-        self._destination_resource):
+        self._user_request_args, api_client, self._destination_resource):
       log.status.Print(
           copy_util.get_no_clobber_message(
               self._destination_resource.storage_url))
@@ -120,9 +119,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         size,
         properties.VALUES.storage.parallel_composite_upload_component_size.Get(
         ),
-        # TODO(b/232550921): This is a big no-no. Keep API references out of the
-        # task-level. Porting because in the process of solving a major bug.
-        gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
+        api_client.MAX_OBJECTS_PER_COMPOSE_CALL)
     should_perform_single_transfer = (
         not self._is_composite_upload_eligible or
         not task_util.should_use_parallelism() or component_count <= 1)

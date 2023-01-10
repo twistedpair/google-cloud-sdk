@@ -31,7 +31,8 @@ from googlecloudsdk.core.util import files
 def decompress_gzip_if_necessary(source_resource,
                                  gzipped_path,
                                  destination_path,
-                                 do_not_decompress_flag=False):
+                                 do_not_decompress_flag=False,
+                                 server_encoding=None):
   """Checks if file is elligible for decompression and decompresses if true.
 
   Args:
@@ -39,13 +40,15 @@ def decompress_gzip_if_necessary(source_resource,
     gzipped_path (str): File path to unzip.
     destination_path (str): File path to write unzipped file to.
     do_not_decompress_flag (bool): User flag that blocks decompression.
+    server_encoding (str|None): Server-reported `content-encoding` of file.
 
   Returns:
     (bool) True if file was successfully decompressed, else False.
   """
   content_encoding = getattr(source_resource.metadata, 'contentEncoding', '')
-  if (do_not_decompress_flag or content_encoding is None or
-      'gzip' not in content_encoding.split(',')):
+  if do_not_decompress_flag or not (
+      content_encoding and 'gzip' in content_encoding.split(',') or
+      server_encoding and 'gzip' in server_encoding.split(',')):
     return False
 
   try:

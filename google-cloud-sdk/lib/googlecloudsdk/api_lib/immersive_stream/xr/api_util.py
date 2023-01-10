@@ -19,30 +19,38 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
 _API_NAME = 'stream'
-_DEFAULT_API_VERSION = 'v1alpha1'
+_VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.GA: 'v1'
+}
 
 
-def GetClient(version=_DEFAULT_API_VERSION):
+def GetApiVersion(release_track):
+  return _VERSION_MAP.get(release_track)
+
+
+def GetClient(release_track):
   """Import and return the appropriate projects client.
 
   Args:
-    version: the API version
+    release_track: the release track of the command, either ALPHA or GA
 
   Returns:
     Immersive Stream for XR client for the appropriate release track.
   """
-  return apis.GetClientInstance(_API_NAME, version)
+  return apis.GetClientInstance(_API_NAME, GetApiVersion(release_track))
 
 
-def GetMessages(version=_DEFAULT_API_VERSION):
+def GetMessages(release_track):
   """Import and return the appropriate projects messages module.
 
   Args:
-    version: the API version
+    release_track: the release track of the command, either ALPHA or GA
 
   Returns:
     Immersive Stream for XR message.
   """
-  return apis.GetMessagesModule(_API_NAME, version)
+  return apis.GetMessagesModule(_API_NAME, GetApiVersion(release_track))

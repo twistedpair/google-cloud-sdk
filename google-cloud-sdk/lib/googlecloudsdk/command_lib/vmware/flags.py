@@ -53,6 +53,7 @@ def AddOperationArgToParser(parser):
       )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
+
 def AddSubnetArgToParser(parser):
   """Sets up an argument for the subnet resource."""
 
@@ -103,6 +104,21 @@ def AddExternalAddressArgToParser(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddManagementDnsZoneBindingArgToParser(parser):
+  """Sets up an argument for the management DNS zone binding resource."""
+
+  path = 'vmware.management_dns_zone_binding'
+  address_data = yaml_data.ResourceYAMLData.FromPath(path)
+  resource_spec = concepts.ResourceSpec.FromYaml(address_data.GetData())
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='management_dns_zone_binding',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='management_dns_zone_binding.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddHcxActivationKeyArgToParser(parser):
   """Sets up an argument for the HCX activation key resource."""
   hcx_activation_key_data = yaml_data.ResourceYAMLData.FromPath(
@@ -118,9 +134,12 @@ def AddHcxActivationKeyArgToParser(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddLocationArgToParser(parser, positional=False):
+def AddLocationArgToParser(parser, regional=False, positional=False):
   """Parses location flag."""
   location_data = yaml_data.ResourceYAMLData.FromPath('vmware.location')
+  if regional:
+    location_data = yaml_data.ResourceYAMLData.FromPath(
+        'vmware.regional_location')
   resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
   name = '--location'
   if positional:
@@ -168,4 +187,21 @@ def AddProjectArgToParser(parser, positional=False):
       concept_spec=resource_spec,
       required=True,
       group_help='project.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddPrivateConnectionToParser(parser, positional=False):
+  """Sets up an argument for the Private Connection resource."""
+  name = '--private-connection'
+  if positional:
+    name = 'private_connection'
+  private_connection_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.private_connection')
+  resource_spec = concepts.ResourceSpec.FromYaml(
+      private_connection_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='private_connection.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

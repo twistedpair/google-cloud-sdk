@@ -107,7 +107,7 @@ def BakExportContext(sql_messages, uri, database, stripe_count, striped):
     ExportContext, for use in InstancesExportRequest.exportContext.
   """
   bak_export_options = None
-  if striped or stripe_count:
+  if striped is not None or stripe_count is not None:
     bak_export_options = sql_messages.ExportContext.BakExportOptionsValue(
         stripeCount=stripe_count, striped=striped)
 

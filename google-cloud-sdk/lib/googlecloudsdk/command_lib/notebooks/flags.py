@@ -174,7 +174,7 @@ def GetRuntimeResourceArg(help_text):
 
     def RuntimeAttributeConfig():
       return concepts.ResourceParameterAttributeConfig(
-          name='rumtime', help_text=help_text)
+          name='runtime', help_text=help_text)
 
     def LocationAttributeConfig():
       return concepts.ResourceParameterAttributeConfig(

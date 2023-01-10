@@ -85,7 +85,7 @@ class Validator:
     Returns:
       A list of strings.  Each item is a GCP API that is not enabled.
     """
-    required_apis = self.integration['required_apis'].union(
+    required_apis = set(self.integration['required_apis']).union(
         types_utils.BASELINE_APIS)
     project_id = properties.VALUES.core.project.Get()
     apis_not_enabled = [

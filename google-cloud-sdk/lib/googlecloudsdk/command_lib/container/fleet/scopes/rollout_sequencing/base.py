@@ -29,7 +29,6 @@ from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.util import times
 import six
 
-
 CLUSTER_UPGRADE_FEATURE = 'clusterupgrade'
 
 
@@ -134,7 +133,8 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
       raise exceptions.Error(msg)
 
     return ({
-        'scope': scope_name,
+        'scope':
+            scope_name,
         'state':
             self.hubclient.ToPyDefaultDict(
                 self.messages.ScopeFeatureState,
@@ -236,10 +236,10 @@ class UpdateCommand(feature_base.UpdateCommandMixin, ClusterUpgradeCommand):
   def Update(self, feature, scope_name):
     """Updates Cluster Upgrade Feature information."""
     scope_specs_map = self.hubclient.ToPyDefaultDict(
-        self.messages.ScopeFeatureSpec,
-        feature.scopeSpecs)
-    cluster_upgrade_spec = (scope_specs_map[scope_name].clusterupgrade or
-                            self.messages.ClusterUpgradeScopeSpec())
+        self.messages.ScopeFeatureSpec, feature.scopeSpecs)
+    cluster_upgrade_spec = (
+        scope_specs_map[scope_name].clusterupgrade or
+        self.messages.ClusterUpgradeScopeSpec())
 
     self.HandleUpstreamScopes(cluster_upgrade_spec)
     self.HandleDefaultSoakTime(cluster_upgrade_spec)
@@ -247,7 +247,8 @@ class UpdateCommand(feature_base.UpdateCommandMixin, ClusterUpgradeCommand):
 
     scope_specs_map[scope_name].clusterupgrade = cluster_upgrade_spec
     patch = self.messages.Feature(
-        scopeSpecs=self.hubclient.ToScopeSpecs(scope_specs_map))
+        scopeSpecs=self.hubclient.ToScopeSpecs(
+            {scope_name: scope_specs_map[scope_name]}))
 
     # Until the Feature API supports update masking for map values, this
     # presents a potential race condition; however, this is incredibly unlikely
@@ -300,6 +301,6 @@ class UpdateCommand(feature_base.UpdateCommandMixin, ClusterUpgradeCommand):
       upgrade_version = self.args.upgrade_selector['version']
       new_gke_upgrade_override.upgrade = self.messages.ClusterUpgradeGKEUpgrade(
           name=upgrade_name, version=upgrade_version)
-      new_gke_upgrade_overrides = (existing_gke_upgrade_overrides +
-                                   [new_gke_upgrade_override])
+      new_gke_upgrade_overrides = (
+          existing_gke_upgrade_overrides + [new_gke_upgrade_override])
       cluster_upgrade_spec.gkeUpgradeOverrides = new_gke_upgrade_overrides

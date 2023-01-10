@@ -215,6 +215,10 @@ class IntegrationsOperationError(exceptions.Error):
   """An error encountered when waiting for LRO to finish."""
 
 
+class UnsupportedIntegrationsLocationError(exceptions.Error):
+  """An error encountered when an unsupported location is provided."""
+
+
 class KubernetesExceptionParser(object):
   """Converts a kubernetes exception to an object."""
 

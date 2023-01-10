@@ -105,7 +105,44 @@ subnet:
   - *location
   - *private_cloud
   - &subnet
-    parameter_name: subnetId
+    parameter_name: subnetsId
     attribute_name: subnet
     help: Resource ID of the Subnet
+  disable_auto_completers: false
+
+management_dns_zone_binding:
+  name: management DNS zone binding
+  collection: vmwareengine.projects.locations.privateClouds.managementDnsZoneBindings
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - &management_dns_zone_binding
+    parameter_name: managementDnsZoneBindingsId
+    attribute_name: management-dns-zone-binding
+    help: Resource ID of the Management DNS zone binding
+  disable_auto_completers: false
+
+regional_location:
+  name: regional location
+  collection: vmwareengine.projects.locations
+  attributes:
+  - *project
+  - &regional_location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The resource name of the location.
+    property: compute/region
+  disable_auto_completers: false
+
+private_connection:
+  name: Private Connection
+  collection: vmwareengine.projects.locations.privateConnections
+  attributes:
+  - *project
+  - *regional_location
+  - &private_connection
+    parameter_name: privateConnectionsId
+    attribute_name: private-connection
+    help: Private Connection
   disable_auto_completers: false

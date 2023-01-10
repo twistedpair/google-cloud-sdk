@@ -34,9 +34,20 @@ class HashAlgorithm(enum.Enum):
   CRC32C = 'crc32c'
 
 
+def get_base64_string(hash_bytes):
+  """Takes bytes and returns base64-encoded string."""
+  return base64.b64encode(hash_bytes).decode(encoding='utf-8')
+
+
+def get_bytes_from_base64_string(hash_string):
+  """Takes base64-encoded string and returns bytes."""
+  hash_bytes = hash_string.encode('utf-8')
+  return base64.b64decode(hash_bytes)
+
+
 def get_base64_hash_digest_string(hash_object):
   """Takes hashlib object and returns base64-encoded digest as string."""
-  return base64.b64encode(hash_object.digest()).decode(encoding='utf-8')
+  return get_base64_string(hash_object.digest())
 
 
 def get_hash_from_file_stream(file_stream,
@@ -58,7 +69,7 @@ def get_hash_from_file_stream(file_stream,
     stop (int): Stop hashing at this byte index.
 
   Returns:
-    String of base64-encoded hash digest for file.
+    Hash object for file.
   """
   if hash_algorithm == HashAlgorithm.MD5:
     hash_object = hashing.get_md5()

@@ -58,6 +58,14 @@ def GetLocationResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
+def GetOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'gkemulticloud.projects.locations.operations',
+      resource_name='operation',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def AddAttachedClusterResourceArg(parser, verb, positional=True):
   """Adds a resource argument for an Attached cluster.
 
@@ -127,3 +135,23 @@ def AddFleetMembershipResourceArg(parser):
       }).AddToParser(parser)
 
   parser.set_defaults(fleet_membership_location='global')
+
+
+def AddOperationResourceArg(parser, verb):
+  """Adds a resource argument for operation on Attached clusters.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'operation_id',
+      GetOperationResourceSpec(),
+      'operation {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def ParseOperationResourceArg(args):
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.operation_id.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.operations')

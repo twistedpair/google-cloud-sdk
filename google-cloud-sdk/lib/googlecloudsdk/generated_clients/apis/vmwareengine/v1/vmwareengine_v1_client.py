@@ -52,6 +52,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_privateClouds_managementDnsZoneBindings = self.ProjectsLocationsPrivateCloudsManagementDnsZoneBindingsService(self)
     self.projects_locations_privateClouds_subnets = self.ProjectsLocationsPrivateCloudsSubnetsService(self)
     self.projects_locations_privateClouds = self.ProjectsLocationsPrivateCloudsService(self)
+    self.projects_locations_privateConnections_peeringRoutes = self.ProjectsLocationsPrivateConnectionsPeeringRoutesService(self)
     self.projects_locations_privateConnections = self.ProjectsLocationsPrivateConnectionsService(self)
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1419,6 +1420,33 @@ class VmwareengineV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single subnet.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Subnet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/subnets/{subnetsId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.subnets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest',
+        response_type_name='Subnet',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists subnets in a given private cloud.
 
@@ -1443,6 +1471,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest',
         response_type_name='ListSubnetsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single subnet. Only fields specified in `update_mask` are applied. *Note*: This API is synchronous and always returns a successful `google.longrunning.Operation` (LRO). The returned LRO will only have `done` and `response` fields.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/subnets/{subnetsId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.privateClouds.subnets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='subnet',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1804,6 +1859,43 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='undeletePrivateCloudRequest',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateConnectionsPeeringRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateConnections_peeringRoutes resource."""
+
+    _NAME = 'projects_locations_privateConnections_peeringRoutes'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateConnectionsPeeringRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the private connection routes exchanged over a peering connection.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateConnectionsPeeringRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPrivateConnectionPeeringRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}/peeringRoutes',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateConnections.peeringRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/peeringRoutes',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateConnectionsPeeringRoutesListRequest',
+        response_type_name='ListPrivateConnectionPeeringRoutesResponse',
         supports_download=False,
     )
 

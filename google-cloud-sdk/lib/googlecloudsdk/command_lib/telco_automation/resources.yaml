@@ -18,6 +18,18 @@ location:
     attribute_name: location
     help: The location name.
 
+operation:
+  name: operation
+  collection: telcoautomation.projects.locations.operations
+  request_id_field: operationId
+  attributes:
+  - *project
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: Telco Automation long-running operation.
+  disable_auto_completers: false
+
 orchestrationCluster:
   name: Orchestration Cluster
   collection: telcoautomation.projects.locations.orchestrationClusters

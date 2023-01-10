@@ -749,6 +749,24 @@ def CheckRedirectionPermission(project):
   return authorized
 
 
+def GetVPCSCConfig(unused_ref, args):
+  project = GetProject(args)
+  location = GetLocation(args)
+  return ar_requests.GetVPCSCConfig(project, location)
+
+
+def AllowVPCSCConfig(unused_ref, args):
+  project = GetProject(args)
+  location = GetLocation(args)
+  return ar_requests.AllowVPCSCConfig(project, location)
+
+
+def DenyVPCSCConfig(unused_ref, args):
+  project = GetProject(args)
+  location = GetLocation(args)
+  return ar_requests.DenyVPCSCConfig(project, location)
+
+
 def EnableUpgradeRedirection(unused_ref, args):
   """Enables upgrade redirection for the active project."""
   project = GetProject(args)

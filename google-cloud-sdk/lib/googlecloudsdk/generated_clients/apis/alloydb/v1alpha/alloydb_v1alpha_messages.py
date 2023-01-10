@@ -710,7 +710,7 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
       * projects/{project}/locations/{location} Regardless of the parent
       specified here, as long it is contains a valid project and location, the
       service will return a static list of supported flags resources. Note
-      that we do not not yet support region-specific flags (see b/211502903).
+      that we do not yet support region-specific flags (see b/211502903).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1217,14 +1217,14 @@ class ContinuousBackupConfig(_messages.Message):
       backups with a customer-managed encryption key (CMEK). When this field
       is not specified, the backup will then use default encryption scheme to
       protect the user data.
-    retentionWindowDays: The number of days the log records and backups will
-      be retained. This is also the recovery window as logs and backups are
-      needed for recovery. If not set, it defaults to 14 days.
+    recoveryWindowDays: The number of days backups and logs will be retained,
+      which determines the window of time that data is recoverable for. If not
+      set, it defaults to 14 days.
   """
 
   enabled = _messages.BooleanField(1)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  retentionWindowDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  recoveryWindowDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class ContinuousBackupSource(_messages.Message):

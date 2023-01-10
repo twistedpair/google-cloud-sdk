@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CONVERSIONWORKSPACES = (
+      'projects.locations.conversionWorkspaces',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'conversionWorkspaces/{conversionWorkspacesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MIGRATIONJOBS = (
       'projects.locations.migrationJobs',
       '{+name}',
@@ -70,6 +81,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PRIVATECONNECTIONS = (
+      'projects.locations.privateConnections',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'privateConnections/{privateConnectionsId}',
       },
       ['name'],
       True

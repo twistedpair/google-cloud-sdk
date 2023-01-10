@@ -59,7 +59,7 @@ def DoWorkforceHeadfulLogin(login_config_file, **kwargs):
     # <workforce-pool-id>/providers/<provider-id>",
     # Then the provider_name is "locations/global/workforcePools/
     # <workforce-pool-id>/providers/<provider-id>".
-    provider_name = audience[path_start:]
+    provider_name = audience[path_start + 1:]
 
   creds = auth_util.DoInstalledAppBrowserFlowGoogleAuth(
       config.CLOUDSDK_EXTERNAL_ACCOUNT_SCOPES,

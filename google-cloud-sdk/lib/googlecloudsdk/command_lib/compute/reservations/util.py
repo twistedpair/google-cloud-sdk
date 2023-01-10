@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.resource_policies import util as maintenance_util
 import six
 
@@ -31,8 +33,9 @@ def MakeReservationMessageFromArgs(messages, args, reservation_ref, resources):
   share_settings = MakeShareSettingsWithArgs(
       messages, args, getattr(args, 'share_setting', None))
   specific_reservation = MakeSpecificSKUReservationMessage(
-      messages, args.vm_count, accelerators, local_ssds, args.machine_type,
-      args.min_cpu_platform, getattr(args, 'location_hint', None),
+      messages, resources, args.vm_count, accelerators, local_ssds,
+      args.machine_type, args.min_cpu_platform,
+      getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None),
       getattr(args, 'source_instance_template', None))
@@ -71,14 +74,28 @@ def MakeLocalSsds(messages, ssd_configs):
       messages
       .AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk)
   interface_msg = disk_msg.InterfaceValueValuesEnum
-
+  total_partitions = 0
   for s in ssd_configs:
     if s['interface'].upper() == 'NVME':
       interface = interface_msg.NVME
     else:
       interface = interface_msg.SCSI
     m = disk_msg(diskSizeGb=s['size'], interface=interface)
-    local_ssds.append(m)
+    partitions = s.get('count', 1)
+    if partitions not in range(24 + 1):
+      raise exceptions.InvalidArgumentException(
+          '--local-ssd',
+          'The number of SSDs attached to an instance must be in the range of 1-24.'
+      )
+
+    total_partitions += partitions
+    if total_partitions > 24:
+      raise exceptions.InvalidArgumentException(
+          '--local-ssd',
+          'The total number of SSDs attached to an instance must not exceed 24.'
+      )
+
+    local_ssds.extend([m] * partitions)
 
   return local_ssds
 
@@ -176,6 +193,7 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
 
 
 def MakeSpecificSKUReservationMessage(messages,
+                                      resources,
                                       vm_count,
                                       accelerators,
                                       local_ssds,
@@ -191,7 +209,8 @@ def MakeSpecificSKUReservationMessage(messages,
   if source_instance_template:
     return messages.AllocationSpecificSKUReservation(
         count=vm_count,
-        sourceInstanceTemplate=source_instance_template,
+        sourceInstanceTemplate=MakeInstanceTemplateUrl(source_instance_template,
+                                                       resources),
         instanceProperties=None)
   else:
     instance_properties = prop_msgs(
@@ -261,6 +280,20 @@ def MakeResourcePolicies(messages, reservation_ref, resource_policy_dictionary,
           key=key, value=MakeUrl(resources, value, reservation_ref))
       for key, value in sorted(six.iteritems(resource_policy_dictionary))
   ])
+
+
+def MakeInstanceTemplateUrl(template, resources):
+  """Builds the URL of the provided Global Instance Template."""
+  reservation_instance_template_resolver = (
+      compute_flags.ResourceResolver.FromMap(
+          'instance template',
+          {compute_scope.ScopeEnum.GLOBAL: 'compute.instanceTemplates'}))
+
+  instance_template_ref = (
+      reservation_instance_template_resolver.ResolveResources(
+          [str(template)], compute_scope.ScopeEnum.GLOBAL, None, resources)[0])
+
+  return instance_template_ref.SelfLink()
 
 
 def MakeUrl(resources, value, reservation_ref):

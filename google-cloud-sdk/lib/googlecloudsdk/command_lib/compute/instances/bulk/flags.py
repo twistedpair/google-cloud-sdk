@@ -218,7 +218,7 @@ def AddBulkCreateArgs(parser, add_zone_region_flags):
       """)
 
 
-def AddBulkCreateNetworkingArgs(parser):
+def AddBulkCreateNetworkingArgs(parser, support_no_address=False):
   """Adds Networking Args for Bulk Create Command."""
 
   multiple_network_interface_cards_spec = {
@@ -259,6 +259,13 @@ def AddBulkCreateNetworkingArgs(parser):
       the interface. ``NIC_TYPE'' must be one of: `GVNIC`, `VIRTIO_NET`.
   """
 
+  if support_no_address:
+    multiple_network_interface_cards_spec['no-address'] = None
+    network_interface_help += """
+      *no-address*::: If specified the interface will have no external IP.
+      If not specified instances will get ephemeral IPs.
+      """
+
   parser.add_argument(
       '--network-interface',
       type=arg_parsers.ArgDict(
@@ -285,7 +292,8 @@ def AddCommonBulkInsertArgs(parser,
                             support_enable_target_shape=False,
                             add_zone_region_flags=True,
                             support_confidential_compute_type=False,
-                            support_provisioned_throughput=False):
+                            support_provisioned_throughput=False,
+                            support_no_address_in_networking=False):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
   AddDiskArgsForBulk(parser)
@@ -324,7 +332,7 @@ def AddCommonBulkInsertArgs(parser,
   instances_flags.AddNoAddressArg(parser)
   instances_flags.AddNetworkArgs(parser)
   instances_flags.AddNetworkTierArgs(parser, instance=True)
-  AddBulkCreateNetworkingArgs(parser)
+  AddBulkCreateNetworkingArgs(parser, support_no_address_in_networking)
 
   instances_flags.AddImageArgs(parser, enable_snapshots=True)
   instances_flags.AddShieldedInstanceConfigArgs(parser)

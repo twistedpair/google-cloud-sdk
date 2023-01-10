@@ -19,9 +19,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from frozendict import frozendict
+import os
+
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 
 BASELINE_APIS = (
     'runapps.googleapis.com',
@@ -32,159 +34,22 @@ INTEGRATION_TYPE = 'integration_type'
 REQUIRED_FIELD = 'required_field'
 LATEST_DEPLOYMENT_FIELD = 'latestDeployment'
 
-# TODO(b/237328242) Convert this to class
-_INTEGRATION_TYPES = frozenset([
-    frozendict({
-        INTEGRATION_TYPE:
-            'custom-domains',
-        RESOURCE_TYPE:
-            'router',
-        'singleton':
-            True,
-        'singleton_name':
-            'custom-domains',
-        REQUIRED_FIELD:
-            'domains',
-        'visible': True,
-        'description':
-            'Configure custom domains for Cloud Run services with Google Cloud '
-            'Load Balancer.',
-        'example_command':
-            """Create the integration to add the first domain mapping:
-    $ gcloud {track} run integrations create --type=custom-domains --parameters='set-mapping=example.com/*:[SERVICE]'
-  Update the integration to add subsequent mappings:
-    $ gcloud {track} run integrations update custom-domains --parameters='set-mapping=anotherexample.com/*:[SERVICE]'
-        """,
-        'parameters':
-            frozendict({
-                'set-mapping':
-                    frozendict({
-                        'description':
-                            'Set a route mapping from a path to a service. ' +
-                            'Format: set-mapping=[DOMAIN]/[PATH]:[SERVICE]',
-                        'required': True,
-                        'type':
-                            'domain-path-service',
-                    }),
-                'remove-mapping':
-                    frozendict({
-                        'description':
-                            'Remove a route mapping. ' +
-                            'Format: remove-mapping=[DOMAIN]/[PATH]',
-                        'type':
-                            'domain-path',
-                        'create_allowed': False,
-                    }),
-                'remove-domain':
-                    frozendict({
-                        'description':
-                            'To remove a domain an all of its route mappings.',
-                        'type': 'domain',
-                        'create_allowed': False,
-                    }),
-            }),
-        'update_exclusive_groups':
-            frozenset({
-                frozendict({
-                    'params':
-                        frozenset(
-                            {'set-mapping', 'remove-mapping', 'remove-domain'}),
-                })
-            }),
-        'disable_service_flags': True,
-        'required_apis':
-            frozenset({'compute.googleapis.com'}),
-    }),
-    frozendict({
-        INTEGRATION_TYPE:
-            'redis',
-        RESOURCE_TYPE:
-            'redis',
-        'description':
-            'Configure a Redis instance (Cloud Memorystore) and connect it '
-            'to a Cloud Run Service.',
-        'example_command':
-            '$ gcloud {track} run integrations create --service=[SERVICE] '
-            '--type=redis --parameters=memory-size-gb=2',
-        'backing_service': True,
-        'visible': True,
-        'parameters':
-            frozendict({
-                'memory-size-gb':
-                    frozendict({
-                        'description': 'Memory capacity of the Redis instance.',
-                        'type': 'int',
-                        'default': 1,
-                    }),
-                'tier':
-                    frozendict({
-                        'description':
-                            'The service tier of the instance. '
-                            'Supported options include BASIC for standalone '
-                            'instance and STANDARD_HA for highly available '
-                            'primary/replica instances.',
-                        'type': 'string',
-                        'hidden': True,
-                    }),
-                'version':
-                    frozendict({
-                        'description':
-                            'The version of Redis software. If not '
-                            'provided, latest supported version will be used. '
-                            'Supported values include: REDIS_6_X, REDIS_5_0, '
-                            'REDIS_4_0 and REDIS_3_2.',
-                        'type': 'string',
-                        'update_allowed': False,
-                        'hidden': True,
-                    }),
-            }),
-        'required_apis':
-            frozenset({'redis.googleapis.com', 'vpcaccess.googleapis.com'}),
-    }),
-    frozendict({
-        INTEGRATION_TYPE:
-            'cloudsql',
-        RESOURCE_TYPE:
-            'cloudsql',
-        'description':
-            'Configure a CloudSQL database instance and connect it '
-            'to a Cloud Run Service.',
-        'visible': False,
-        'example_command':
-            '$ gcloud {track} run integrations create --service=[SERVICE] '
-            '--type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro',
-        'backing_service': True,
-        'parameters':
-            frozendict({
-                'tier':
-                    frozendict({
-                        'description':
-                            'The service tier of the instance. '
-                            'For example: db-f1-micro or db-g1-small.',
-                        'type': 'string',
-                        'update_allowed': False,
-                        'required': True,
-                    }),
-                'version':
-                    frozendict({
-                        'description':
-                            'The version of CloudSQL software. '
-                            'For example: MYSQL_8_0, POSTGRES_14, '
-                            'or SQLSERVER_2019_STANDARD. '
-                            'See https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/SqlDatabaseVersion for more details.',
-                        'type': 'string',
-                        'update_allowed': False,
-                        'required': True,
-                    }),
-            }),
-        'required_apis':
-            frozenset({
-                'sqladmin.googleapis.com',
-                'cloudresourcemanager.googleapis.com',
-                'secretmanager.googleapis.com'
-            }),
-    }),
-])
+_TYPE_METADATA = {}
+
+
+def _GetIntegrationMetadata():
+  """Gets the type metadata.
+
+  Returns:
+    array, the type metadata list
+  """
+  # TODO(b/237328242) Return a class instead of primitive dict
+  global _TYPE_METADATA
+  if not _TYPE_METADATA:
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'metadata.yaml')
+    _TYPE_METADATA = yaml.load_path(filename)
+  return _TYPE_METADATA['integrations']
 
 
 def IntegrationTypes(client):
@@ -202,7 +67,7 @@ def IntegrationTypes(client):
   del client
 
   return [
-      integration for integration in _INTEGRATION_TYPES
+      integration for integration in _GetIntegrationMetadata()
       if _IntegrationVisible(integration)
   ]
 
@@ -218,7 +83,7 @@ def GetIntegration(integration_type):
       If the integration does not exist or is not visible to the user,
       then None is returned.
   """
-  for integration in _INTEGRATION_TYPES:
+  for integration in _GetIntegrationMetadata():
     if (
         integration[INTEGRATION_TYPE] == integration_type
         and _IntegrationVisible(integration)
@@ -283,7 +148,7 @@ def GetIntegrationFromResource(resource_config):
   resource_type = GetResourceTypeFromConfig(resource_config)
   config = resource_config[resource_type]
   match = None
-  for integration_type in _INTEGRATION_TYPES:
+  for integration_type in _GetIntegrationMetadata():
     if not _IntegrationVisible(integration_type):
       continue
     if integration_type.get(RESOURCE_TYPE, None) == resource_type:

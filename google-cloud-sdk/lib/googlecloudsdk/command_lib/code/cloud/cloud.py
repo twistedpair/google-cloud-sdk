@@ -18,10 +18,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import copy
 import os
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
+from googlecloudsdk.command_lib.artifacts import docker_util
 from googlecloudsdk.command_lib.code import builders
 from googlecloudsdk.command_lib.code import common
 from googlecloudsdk.command_lib.code import dataobject
@@ -58,10 +60,24 @@ def _BuilderFromArg(builder_arg):
 
 
 class Settings(dataobject.DataObject):
-  """Settings for a Cloud dev deployment."""
+  """Settings for a Cloud dev deployment.
+
+  Attributes:
+    image: image to deploy from local sources
+    project: the gcp project to deploy to
+    region: the Cloud Run region to deploy to
+    service_name: the name of the Cloud Run service to deploy
+    builder: the build configuration. Docker and Buildpacks are supported.
+    context: the folder in which the build will be executed
+    service: the base service to build off of. Using this allows any field not
+      explicitly supported by code dev --cloud to still propagate
+    cpu: the amount of CPU to be used
+    memory: the amount of memory to be specified.
+    ar_repo: the Artifact Registry Docker repo to deploy to.
+  """
   NAMES = [
       'image', 'project', 'region', 'builder', 'service_name', 'service',
-      'context'
+      'context', 'cpu', 'memory', 'ar_repo'
   ]
 
   @classmethod
@@ -71,13 +87,11 @@ class Settings(dataobject.DataObject):
     service_name = dir_name.replace('_', '-').replace(' ', '-').lower()
     service = RUN_MESSAGES_MODULE.Service(
         apiVersion='serving.knative.dev/v1', kind='Service')
-    image = service_name
     dockerfile_arg_default = 'Dockerfile'
     bldr = builders.DockerfileBuilder(dockerfile=dockerfile_arg_default)
     return cls(
         service_name=service_name,
         service=service,
-        image=image,
         builder=bldr,
         context=os.path.abspath(files.GetCWD()))
 
@@ -116,7 +130,11 @@ class Settings(dataobject.DataObject):
       service.metadata.namespace = str(self.project)
     replacements = {'service': service}
     # assume first image is the one we're replacing.
-    replacements['image'] = service.spec.template.spec.containers[0].image
+    container = service.spec.template.spec.containers[0]
+    replacements['image'] = container.image
+    if container.resources and container.resources.limits:
+      for limit in container.resources.limits.additionalProperties:
+        replacements[limit.key] = limit.value
     if service.metadata.name:
       replacements['service_name'] = service.metadata.name
     return self.replace(**replacements)
@@ -127,6 +145,11 @@ class Settings(dataobject.DataObject):
     region = run_flags.GetRegion(args, prompt=False)
     replacements = {'project': project, 'region': region}
 
+    if args.IsKnownAndSpecified('cpu'):
+      replacements['cpu'] = args.cpu
+    elif args.IsKnownAndSpecified('memory'):
+      replacements['memory'] = args.memory
+
     if args.IsKnownAndSpecified('builder'):
       replacements['builder'] = _BuilderFromArg(args.builder)
     elif args.IsKnownAndSpecified('dockerfile'):
@@ -135,10 +158,13 @@ class Settings(dataobject.DataObject):
     return self.replace(**replacements)
 
   def Build(self):
-    metadata = self.service.metadata or RUN_MESSAGES_MODULE.ObjectMeta()
-    metadata.name = self.service_name
-    self.service.metadata = metadata
-    replacements = {'service': self.service}
+    ar_repo = docker_util.DockerRepo(
+        project_id=self.project,
+        location_id=self.region,
+        repo_id='cloud-run-source-deploy')
+    replacements = {'ar_repo': ar_repo}
+    if not self.image:
+      replacements['image'] = _DefaultImageName(ar_repo, self.service_name)
     return self.replace(**replacements)
 
 
@@ -151,3 +177,60 @@ def AssembleSettings(args):
     settings = settings.WithServiceYaml(yaml_file)
   settings = settings.WithArgs(args)
   return settings.Build()
+
+
+def GenerateService(settings):
+  """Generate a service configuration from a Cloud Settings configuration."""
+  service = copy.deepcopy(settings.service)
+  metadata = service.metadata or RUN_MESSAGES_MODULE.ObjectMeta()
+  metadata.name = settings.service_name
+  metadata.namespace = str(settings.project)
+  service.metadata = metadata
+  _BuildSpecTemplate(service)
+  container = service.spec.template.spec.containers[0]
+  container.image = settings.image
+  _FillContainerRequirements(container, settings)
+  return service
+
+
+def _BuildSpecTemplate(service):
+  if not service.spec:
+    service.spec = RUN_MESSAGES_MODULE.ServiceSpec()
+  if not service.spec.template:
+    service.spec.template = RUN_MESSAGES_MODULE.RevisionTemplate()
+  if not service.spec.template.spec:
+    service.spec.template.spec = RUN_MESSAGES_MODULE.RevisionSpec()
+  if not service.spec.template.spec.containers:
+    service.spec.template.spec.containers = [RUN_MESSAGES_MODULE.Container()]
+
+
+def _DefaultImageName(ar_repo, service_name):
+  return '{repo}/{service}'.format(
+      repo=ar_repo.GetDockerString(), service=service_name)
+
+
+def _FillContainerRequirements(container, settings):
+  """Set the container CPU and memory limits based on settings."""
+  found = set()
+  resources = container.resources or RUN_MESSAGES_MODULE.ResourceRequirements()
+  limits = (
+      resources.limits or
+      RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue())
+  for limit in limits.additionalProperties:
+    if limit.key == 'cpu' and settings.cpu:
+      limit.value = settings.cpu
+    elif limit.key == 'memory' and settings.memory:
+      limit.value = settings.memory
+    found.append(limit.key)
+
+  # if requirements weren't already specified add them
+  if 'cpu' not in found and settings.cpu:
+    cpu = RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue.AdditionalProperty(
+        key='cpu', value=str(settings.cpu))
+    limits.additionalProperties.append(cpu)
+  if 'memory' not in found and settings.memory:
+    mem = RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue.AdditionalProperty(
+        key='memory', value=str(settings.memory))
+    limits.additionalProperties.append(mem)
+  resources.limits = limits
+  container.resources = resources

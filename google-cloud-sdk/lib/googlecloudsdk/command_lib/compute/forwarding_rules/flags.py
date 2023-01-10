@@ -363,26 +363,27 @@ def AddressArgHelp():
                 'INTERNAL_MANAGED)')
 
   detailed_help = """\
-    IP address that the forwarding rule serves. When a client sends traffic
-    to this IP address, the forwarding rule directs the traffic to the target
-    that you specify in the forwarding rule.
+    The IP address that the forwarding rule serves. When a client sends traffic
+    to this IP address, the forwarding rule directs the traffic to the
+    target that you specify in the forwarding rule.
 
     If you don't specify a reserved IP address, an ephemeral IP address is
-    assigned. You can specify the IP address as a literal IP address or a
-    reference to an existing Address resource. The following examples are all
-    valid:
-    - 100.1.2.3
-    - https://compute.googleapis.com/compute/v1/projects/project-1/regions/us-central1/addresses/address-1
-    - projects/project-1/regions/us-central1/addresses/address-1
-    - regions/us-central1/addresses/address-1
-    - global/addresses/address-1
-    - address-1
+    assigned. You can specify the IP address as a literal IP address or as a
+    reference to an existing Address resource. The following examples are
+    all valid:
+    * 100.1.2.3
+    * 2600:1901::/96
+    * https://compute.googleapis.com/compute/v1/projects/project-1/regions/us-central1/addresses/address-1
+    * projects/project-1/regions/us-central1/addresses/address-1
+    * regions/us-central1/addresses/address-1
+    * global/addresses/address-1
+    * address-1
 
-    The load-balancing-scheme %s and the forwarding rule's target determine
-    the type of IP address that you can use. The address type must be external
-    for load-balancing-scheme EXTERNAL or EXTERNAL_MANAGED, and for the other
-    load-balancing-schemes the address must be internal. For detailed
-    information, refer to
+    The load-balancing-scheme %s and the target of the forwarding rule
+    determine the type of IP address that you can use. The address
+    type must be external for load-balancing-scheme EXTERNAL or
+    EXTERNAL_MANAGED. For other load-balancing-schemes, the address type
+    must be internal. For detailed information, refer to
     https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications.
   """ % (
       lb_schemes)
@@ -687,25 +688,19 @@ def AddIPProtocols(parser, support_all_protocol, support_l3_default):
       help=help_str)
 
 
-def AddIpVersionGroup(parser):
-  """Adds IP versions flag in a mutually exclusive group."""
+def AddAddressesAndIPVersions(parser):
+  """Adds Addresses and IP versions flag."""
+
+  address_arg = AddressArg()
+  address_arg.AddArgument(parser)
   parser.add_argument(
       '--ip-version',
       choices=['IPV4', 'IPV6'],
       type=lambda x: x.upper(),
       help="""\
-      Version of the IP address to be allocated if no --address is given.
+      Version of the IP address to be allocated or assigned.
       The default is IPv4.
       """)
-
-
-def AddAddressesAndIPVersions(parser, required):
-  """Adds Addresses and IP versions flag."""
-
-  address_arg = AddressArg()
-  group = parser.add_mutually_exclusive_group(required=required)
-  AddIpVersionGroup(group)
-  address_arg.AddArgument(parser, mutex_group=group)
 
 
 def AddDescription(parser):

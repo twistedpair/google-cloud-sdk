@@ -375,6 +375,27 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BufferTaskRequest(_messages.Message):
+  r"""Request message for BufferTask.
+
+  Fields:
+    body: Optional. Body of the HTTP request. The body can take any generic
+      value. The value is written to the HttpRequest of the [Task].
+  """
+
+  body = _messages.MessageField('HttpBody', 1)
+
+
+class BufferTaskResponse(_messages.Message):
+  r"""Response message for BufferTask.
+
+  Fields:
+    task: The created task.
+  """
+
+  task = _messages.MessageField('Task', 1)
+
+
 class CloudtasksProjectsLocationsGetRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsGetRequest object.
 
@@ -580,6 +601,24 @@ class CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class CloudtasksProjectsLocationsQueuesTasksBufferRequest(_messages.Message):
+  r"""A CloudtasksProjectsLocationsQueuesTasksBufferRequest object.
+
+  Fields:
+    bufferTaskRequest: A BufferTaskRequest resource to be passed as the
+      request body.
+    queue: Required. The parent queue name. For example:
+      projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID` The queue
+      must already exist.
+    taskId: Optional. Task ID for the task being created. If not provided, a
+      random task ID is assigned to the task.
+  """
+
+  bufferTaskRequest = _messages.MessageField('BufferTaskRequest', 1)
+  queue = _messages.StringField(2, required=True)
+  taskId = _messages.StringField(3, required=True)
 
 
 class CloudtasksProjectsLocationsQueuesTasksCreateRequest(_messages.Message):
@@ -905,6 +944,89 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class Header(_messages.Message):
+  r"""Defines a header message. A header can have a key and a value.
+
+  Fields:
+    key: The Key of the header.
+    value: The Value of the header.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class HeaderOverride(_messages.Message):
+  r"""Wraps the Header object.
+
+  Fields:
+    header: header embodying a key and a value.
+  """
+
+  header = _messages.MessageField('Header', 1)
+
+
+class HttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
 class HttpRequest(_messages.Message):
   r"""HTTP request. The task will be pushed to the worker as an HTTP request.
   If the worker or the redirected worker acknowledges the task by returning a
@@ -1049,6 +1171,71 @@ class HttpRequest(_messages.Message):
   oauthToken = _messages.MessageField('OAuthToken', 4)
   oidcToken = _messages.MessageField('OidcToken', 5)
   url = _messages.StringField(6)
+
+
+class HttpTarget(_messages.Message):
+  r"""HTTP target. When specified as a Queue, all the tasks with [HttpRequest]
+  will be overridden according to the target.
+
+  Enums:
+    HttpMethodValueValuesEnum: The HTTP method to use for the request. When
+      specified, it will override HttpRequest for the task. Note that if the
+      value is set to HttpMethod the HttpRequest of the task will be ignored
+      at execution time.
+
+  Fields:
+    headerOverrides: HTTP target headers. This map contains the header field
+      names and values. Headers will be set when running the CreateTask and/or
+      BufferTask. These headers represent a subset of the headers that will be
+      configured for the task's HTTP request. Some HTTP request headers will
+      be ignored or replaced. A partial list of headers that will be ignored
+      or replaced is: * Several predefined headers, prefixed with "X-Google-
+      Cloud-Tasks-", can be used to define properties of the task. * Host:
+      This will be computed by Cloud Tasks and derived from HttpRequest.url. *
+      Content-Length: This will be computed by Cloud Tasks. `Content-Type`
+      won't be set by Cloud Tasks. You can explicitly set `Content-Type` to a
+      media type when the task is created. For example,`Content-Type` can be
+      set to `"application/octet-stream"` or `"application/json"`. The default
+      value is set to "application/json"`. * User-Agent: This will be set to
+      `"Google-Cloud-Tasks"`. Headers which can have multiple values
+      (according to RFC2616) can be specified using comma-separated values.
+      The size of the headers must be less than 80KB. Queue-level headers to
+      override headers of all the tasks in the queue.
+    httpMethod: The HTTP method to use for the request. When specified, it
+      will override HttpRequest for the task. Note that if the value is set to
+      HttpMethod the HttpRequest of the task will be ignored at execution
+      time.
+    uriOverride: URI override. When specified, modifies the execution URI for
+      all the tasks in the queue.
+  """
+
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    r"""The HTTP method to use for the request. When specified, it will
+    override HttpRequest for the task. Note that if the value is set to
+    HttpMethod the HttpRequest of the task will be ignored at execution time.
+
+    Values:
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
+      POST: HTTP POST
+      GET: HTTP GET
+      HEAD: HTTP HEAD
+      PUT: HTTP PUT
+      DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
+    """
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
+
+  headerOverrides = _messages.MessageField('HeaderOverride', 1, repeated=True)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
+  uriOverride = _messages.MessageField('UriOverride', 3)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1214,6 +1401,16 @@ class OidcToken(_messages.Message):
   serviceAccountEmail = _messages.StringField(2)
 
 
+class PathOverride(_messages.Message):
+  r"""PathOverride. Path message defines path override for HTTP targets.
+
+  Fields:
+    path: The URI path (e.g., a/b/c). Default is Empty string.
+  """
+
+  path = _messages.StringField(1)
+
+
 class PauseQueueRequest(_messages.Message):
   r"""Request message for PauseQueue."""
 
@@ -1318,6 +1515,17 @@ class PurgeQueueRequest(_messages.Message):
   r"""Request message for PurgeQueue."""
 
 
+class QueryOverride(_messages.Message):
+  r"""QueryOverride. Query message defines query override for HTTP targets.
+
+  Fields:
+    queryParams: The query parameters (e.g., qparam1=123&qparam2=456). Default
+      is Empty string.
+  """
+
+  queryParams = _messages.StringField(1)
+
+
 class Queue(_messages.Message):
   r"""A queue is a container of related tasks. Queues are configured to manage
   how those tasks are dispatched. Configurable properties include rate limits,
@@ -1336,6 +1544,7 @@ class Queue(_messages.Message):
   Fields:
     appEngineHttpQueue: AppEngineHttpQueue settings apply only to App Engine
       tasks in this queue. Http tasks are not affected by this proto.
+    httpTarget: Modifies HTTP target for HTTP tasks.
     name: Caller-specified and required in CreateQueue, after which it becomes
       output only. The queue name. The queue name must have the following
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID` *
@@ -1453,16 +1662,17 @@ class Queue(_messages.Message):
     PUSH = 2
 
   appEngineHttpQueue = _messages.MessageField('AppEngineHttpQueue', 1)
-  name = _messages.StringField(2)
-  purgeTime = _messages.StringField(3)
-  rateLimits = _messages.MessageField('RateLimits', 4)
-  retryConfig = _messages.MessageField('RetryConfig', 5)
-  stackdriverLoggingConfig = _messages.MessageField('StackdriverLoggingConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stats = _messages.MessageField('QueueStats', 8)
-  taskTtl = _messages.StringField(9)
-  tombstoneTtl = _messages.StringField(10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  httpTarget = _messages.MessageField('HttpTarget', 2)
+  name = _messages.StringField(3)
+  purgeTime = _messages.StringField(4)
+  rateLimits = _messages.MessageField('RateLimits', 5)
+  retryConfig = _messages.MessageField('RetryConfig', 6)
+  stackdriverLoggingConfig = _messages.MessageField('StackdriverLoggingConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stats = _messages.MessageField('QueueStats', 9)
+  taskTtl = _messages.StringField(10)
+  tombstoneTtl = _messages.StringField(11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class QueueStats(_messages.Message):
@@ -1922,6 +2132,79 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UriOverride(_messages.Message):
+  r"""URI Override. When specified, all the HTTP tasks inside the queue will
+  be partially or fully overridden depending on the configured values.
+
+  Enums:
+    SchemeValueValuesEnum: Scheme override. When specified, the task URI
+      scheme is replaced by the provided value (HTTP or HTTPS).
+    UriOverrideEnforceModeValueValuesEnum: URI Override Enforce Mode When
+      specified, determines the Target UriOverride mode. If not specified, it
+      defaults to ALWAYS.
+
+  Fields:
+    host: Host override. When specified, will replace the host part of the
+      task URL. For example, if the task URL is "https://www.google.com", and
+      host value is set to "example.net", the overridden URI will be changed
+      to "https://example.net". Host value cannot be an empty string.
+    pathOverride: URI path. When specified, will replace the existing path of
+      the task URL. Setting the path value to an empty string clears the URI
+      path segment.
+    port: Port override. When specified, will replace the port part of the
+      task URI. For instance, for a URI http://www.google.com/foo and
+      port=123, the overridden URI becomes http://www.google.com:123/foo. Note
+      that the port value must be a positive integer. Setting the port to 0
+      (Zero) clears the URI port.
+    queryOverride: URI Query. When specified, will replace the query part of
+      the task URI. Setting the query value to an empty string clears the URI
+      query segment.
+    scheme: Scheme override. When specified, the task URI scheme is replaced
+      by the provided value (HTTP or HTTPS).
+    uriOverrideEnforceMode: URI Override Enforce Mode When specified,
+      determines the Target UriOverride mode. If not specified, it defaults to
+      ALWAYS.
+  """
+
+  class SchemeValueValuesEnum(_messages.Enum):
+    r"""Scheme override. When specified, the task URI scheme is replaced by
+    the provided value (HTTP or HTTPS).
+
+    Values:
+      SCHEME_UNSPECIFIED: Scheme unspecified. Defaults to HTTPS.
+      HTTP: Convert the scheme to HTTP, e.g., https://www.google.ca will
+        change to http://www.google.ca.
+      HTTPS: Convert the scheme to HTTPS, e.g., http://www.google.ca will
+        change to https://www.google.ca.
+    """
+    SCHEME_UNSPECIFIED = 0
+    HTTP = 1
+    HTTPS = 2
+
+  class UriOverrideEnforceModeValueValuesEnum(_messages.Enum):
+    r"""URI Override Enforce Mode When specified, determines the Target
+    UriOverride mode. If not specified, it defaults to ALWAYS.
+
+    Values:
+      URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED: OverrideMode Unspecified.
+        Defaults to ALWAYS.
+      IF_NOT_EXISTS: In the IF_NOT_EXISTS mode, queue-level configuration is
+        only applied where task-level configuration does not exist.
+      ALWAYS: In the ALWAYS mode, queue-level configuration overrides all
+        task-level configuration
+    """
+    URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED = 0
+    IF_NOT_EXISTS = 1
+    ALWAYS = 2
+
+  host = _messages.StringField(1)
+  pathOverride = _messages.MessageField('PathOverride', 2)
+  port = _messages.IntegerField(3)
+  queryOverride = _messages.MessageField('QueryOverride', 4)
+  scheme = _messages.EnumField('SchemeValueValuesEnum', 5)
+  uriOverrideEnforceMode = _messages.EnumField('UriOverrideEnforceModeValueValuesEnum', 6)
 
 
 encoding.AddCustomJsonFieldMapping(

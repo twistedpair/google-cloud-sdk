@@ -48,6 +48,7 @@ from googlecloudsdk.core.resource import list_printer
 from googlecloudsdk.core.resource import object_printer
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer_base
+from googlecloudsdk.core.resource import resource_printer_types as formats
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
@@ -159,22 +160,22 @@ class PrinterAttributes(resource_printer_base.ResourcePrinter):
 
 
 _FORMATTERS = {
-    'config': config_printer.ConfigPrinter,
-    'csv': csv_printer.CsvPrinter,
-    'default': DefaultPrinter,
-    'diff': diff_printer.DiffPrinter,
-    'disable': DisablePrinter,
-    'flattened': flattened_printer.FlattenedPrinter,
-    'get': csv_printer.GetPrinter,
-    'json': json_printer.JsonPrinter,
-    'list': list_printer.ListPrinter,
-    'multi': MultiPrinter,
-    'none': NonePrinter,
-    'object': object_printer.ObjectPrinter,
-    'table': table_printer.TablePrinter,
-    'text': TextPrinter,
-    'value': csv_printer.ValuePrinter,
-    'yaml': yaml_printer.YamlPrinter,
+    formats.CONFIG: config_printer.ConfigPrinter,
+    formats.CSV: csv_printer.CsvPrinter,
+    formats.DEFAULT: DefaultPrinter,
+    formats.DIFF: diff_printer.DiffPrinter,
+    formats.DISABLE: DisablePrinter,
+    formats.FLATTENED: flattened_printer.FlattenedPrinter,
+    formats.GET: csv_printer.GetPrinter,
+    formats.JSON: json_printer.JsonPrinter,
+    formats.LIST: list_printer.ListPrinter,
+    formats.MULTI: MultiPrinter,
+    formats.NONE: NonePrinter,
+    formats.OBJECT: object_printer.ObjectPrinter,
+    formats.TABLE: table_printer.TablePrinter,
+    formats.TEXT: TextPrinter,
+    formats.VALUE: csv_printer.ValuePrinter,
+    formats.YAML: yaml_printer.YamlPrinter,
 }
 
 _HIDDEN_FORMATTERS = {}

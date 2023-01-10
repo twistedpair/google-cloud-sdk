@@ -414,32 +414,69 @@ def AddPublishMessageFlags(parser, add_deprecated=False):
           Pub/Sub receives them.""")
 
 
-def AddSchemaSettingsFlags(parser):
+def AddSchemaSettingsFlags(
+    parser, with_revisions=False, group_hidden=True, is_update=False
+):
   """Adds the flags for filling the SchemaSettings message.
 
   Args:
     parser: The argparse parser.
+    with_revisions: (bool) If true, first and last revision ids are included in
+      the help text and the argument group.
+    group_hidden: (bool) If true, the entire group should be hidden.
+    is_update: (bool) If true, add another group with clear-schema-settings as a
+      mutually exclusive argument.
   """
   current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group(
+        hidden=group_hidden
+    )
+    mutual_exclusive_group.add_argument(
+        '--clear-schema-settings',
+        action='store_true',
+        default=None,
+        help="""If set, clear the Schema Settings from the topic.""",
+        hidden=group_hidden,
+    )
+    current_group = mutual_exclusive_group
   set_schema_settings_group = current_group.add_argument_group(
-      help="""Schema settings. The schema that messages published to this topic must conform to and the expected message encoding."""
+      help="""Schema settings. The schema that messages published to this topic must conform to and the expected message encoding.""",
+      hidden=group_hidden,
   )
 
-  schema_help_text = ('that messages published to this topic must conform to.')
+  schema_help_text = 'that messages published to this topic must conform to.'
   schema = resource_args.CreateSchemaResourceArg(
-      schema_help_text, positional=False, plural=False, required=True)
+      schema_help_text, positional=False, plural=False, required=True
+  )
   resource_args.AddResourceArgs(set_schema_settings_group, [schema])
-
   set_schema_settings_group.add_argument(
       '--message-encoding',
       type=arg_parsers.ArgList(
           element_type=lambda x: str(x).lower(),
           min_length=1,
           max_length=1,
-          choices=['json', 'binary']),
+          choices=['json', 'binary'],
+      ),
       metavar='ENCODING',
       help="""The encoding of messages validated against the schema.""",
-      required=True)
+      required=True,
+  )
+  if with_revisions:
+    set_schema_settings_group.add_argument(
+        '--first-revision-id',
+        help="""The id of the oldest
+          revision allowed for the specified schema.""",
+        required=False,
+        hidden=True,
+    )
+    set_schema_settings_group.add_argument(
+        '--last-revision-id',
+        help="""The id of the most recent
+          revision allowed for the specified schema""",
+        required=False,
+        hidden=True,
+    )
 
 
 def AddCommitSchemaFlags(parser):

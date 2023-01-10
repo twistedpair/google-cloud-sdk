@@ -45,6 +45,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ACCESSPOLICIES_AUTHORIZEDORGSDESCS = (
+      'accessPolicies.authorizedOrgsDescs',
+      '{+name}',
+      {
+          '':
+              'accessPolicies/{accessPoliciesId}/authorizedOrgsDescs/'
+              '{authorizedOrgsDescsId}',
+      },
+      ['name'],
+      True
+  )
   ACCESSPOLICIES_SERVICEPERIMETERS = (
       'accessPolicies.servicePerimeters',
       '{+name}',

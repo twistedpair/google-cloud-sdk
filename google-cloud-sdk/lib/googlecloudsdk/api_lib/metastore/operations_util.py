@@ -125,14 +125,11 @@ class _OperationPollerWithError(waiter.CloudOperationPollerNoResources):
         log.status.Print("Status Code:", operation.error.code)
       if operation.error.message:
         log.status.Print("Error message:", operation.error.message)
-      if operation.error.details and operation.error.details[
-          0].additionalProperties and len(
-              operation.error.details[0].additionalProperties
-          ) > 1 and operation.error.details[0].additionalProperties[
-              1].value.object_value.properties:
-        log.status.Print(
-            "Error details:",
-            operation.error.details[0].additionalProperties[1].value
-            .object_value.properties[0].value.string_value)
+      if operation.error.details:
+        for message in operation.error.details[0].additionalProperties:
+          if message.key == "details":
+            log.status.Print(
+                "Error details:",
+                message.value.object_value.properties[0].value.string_value)
       raise api_util.OperationError(operation.name, "")
     return True

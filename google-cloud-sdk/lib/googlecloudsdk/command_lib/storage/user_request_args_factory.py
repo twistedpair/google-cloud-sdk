@@ -111,10 +111,12 @@ class _UserBucketArgs(_UserResourceArgs):
                location=None,
                log_bucket=None,
                log_object_prefix=None,
+               placement=None,
                public_access_prevention=None,
+               recovery_point_objective=None,
                requester_pays=None,
                retention_period=None,
-               retention_period_to_be_locked=None,
+               retention_period_to_be_locked=False,
                uniform_bucket_level_access=None,
                versioning=None,
                web_error_page=None,
@@ -137,10 +139,12 @@ class _UserBucketArgs(_UserResourceArgs):
     self.location = location
     self.log_bucket = log_bucket
     self.log_object_prefix = log_object_prefix
+    self.placement = placement
     self.public_access_prevention = public_access_prevention
+    self.recovery_point_objective = recovery_point_objective
+    self.requester_pays = requester_pays
     self.retention_period = retention_period
     self.retention_period_to_be_locked = retention_period_to_be_locked
-    self.requester_pays = requester_pays
     self.uniform_bucket_level_access = uniform_bucket_level_access
     self.versioning = versioning
     self.web_error_page = web_error_page
@@ -168,7 +172,9 @@ class _UserBucketArgs(_UserResourceArgs):
             self.location == other.location and
             self.log_bucket == other.log_bucket and
             self.log_object_prefix == other.log_object_prefix and
+            self.placement == other.placement and
             self.public_access_prevention == other.public_access_prevention and
+            self.recovery_point_objective == other.recovery_point_objective and
             self.requester_pays == other.requester_pays and
             self.retention_period == other.retention_period and
             self.retention_period_to_be_locked
@@ -350,13 +356,16 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           location=getattr(args, 'location', None),
           log_bucket=log_bucket,
           log_object_prefix=log_object_prefix,
+          placement=getattr(args, 'placement', None),
           public_access_prevention=_get_value_or_clear_from_flag(
               args, 'clear_public_access_prevention',
               'public_access_prevention'),
+          recovery_point_objective=getattr(args, 'recovery_point_objective',
+                                           None),
           requester_pays=getattr(args, 'requester_pays', None),
           retention_period=retention_period,
           retention_period_to_be_locked=getattr(args, 'lock_retention_period',
-                                                None),
+                                                False),
           uniform_bucket_level_access=getattr(args,
                                               'uniform_bucket_level_access',
                                               None),
@@ -420,15 +429,27 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       precondition_metageneration_match=getattr(args, 'if_metageneration_match',
                                                 None),
       predefined_acl_string=getattr(args, 'predefined_acl', None),
+      predefined_default_object_acl_string=getattr(
+          args, 'predefined_default_object_acl', None),
       resource_args=resource_args,
       system_posix_data=system_posix_data,
   )
+
+
+def adds_or_removes_acls(user_request_args):
+  """Returns whether existing ACL policy needs to be patched."""
+  return bool(
+      user_request_args.resource_args and
+      (user_request_args.resource_args.acl_grants_to_add or
+       user_request_args.resource_args.acl_grants_to_remove or getattr(
+           user_request_args.resource_args, 'default_object_acl_grants_to_add',
+           False) or getattr(user_request_args.resource_args,
+                             'default_object_acl_grants_to_remove', False)))
 
 
 def modifies_full_acl_policy(user_request_args):
   """Checks if UserRequestArgs has ACL field aside from predefined ACL."""
   return bool(
       user_request_args.resource_args and
-      (user_request_args.resource_args.acl_file_path or
-       user_request_args.resource_args.acl_grants_to_add or
-       user_request_args.resource_args.acl_grants_to_remove))
+      (adds_or_removes_acls(user_request_args) or
+       user_request_args.resource_args.acl_file_path))

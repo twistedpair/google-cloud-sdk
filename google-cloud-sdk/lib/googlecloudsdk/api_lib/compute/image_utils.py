@@ -383,10 +383,9 @@ def AddGuestOsFeaturesArg(parser, messages, supported_features=None):
       type=arg_parsers.ArgList(
           element_type=lambda x: x.upper(), choices=sorted(guest_os_features)),
       help="""\
-      This parameter enables one or more features for VM instances that use the
-      image for their boot disks. See
-      https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images#guest-os-features
-      for descriptions of the supported features.""")
+      Enables one or more features for VM instances that use the
+      image for their boot disks. See the descriptions of supported features at:
+      https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images#guest-os-features.""")
 
 
 def AddImageFamilyScopeFlag(parser):

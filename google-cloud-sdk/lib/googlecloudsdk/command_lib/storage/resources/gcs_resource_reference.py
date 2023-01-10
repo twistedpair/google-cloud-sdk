@@ -68,6 +68,7 @@ class GcsBucketResource(resource_reference.BucketResource):
   Additional GCS Attributes:
     autoclass_enabled_time (datetime|None): Datetime autoclass feature was
       enabled on bucket. None means the feature is disabled.
+    custom_placement_config (dict|None): Dual Region of a bucket.
     default_acl (dict|None): Default object ACLs for the bucket.
     default_kms_key (str|None): Default KMS key for objects in the bucket.
     location_type (str|None): Region, dual-region, etc.
@@ -86,6 +87,7 @@ class GcsBucketResource(resource_reference.BucketResource):
                autoclass_enabled_time=None,
                cors_config=None,
                creation_time=None,
+               custom_placement_config=None,
                default_acl=None,
                default_event_based_hold=None,
                default_kms_key=None,
@@ -130,6 +132,7 @@ class GcsBucketResource(resource_reference.BucketResource):
         website_config=website_config,
     )
     self.autoclass_enabled_time = autoclass_enabled_time
+    self.custom_placement_config = custom_placement_config
     self.default_acl = default_acl
     self.default_kms_key = default_kms_key
     self.location_type = location_type
@@ -138,6 +141,12 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.rpo = rpo
     self.satisfies_pzs = satisfies_pzs
     self.uniform_bucket_level_access = uniform_bucket_level_access
+
+  @property
+  def data_locations(self):
+    if self.custom_placement_config:
+      return self.custom_placement_config.get('dataLocations')
+    return None
 
   @property
   def retention_period(self):
@@ -197,6 +206,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     return (
         super(GcsBucketResource, self).__eq__(other) and
         self.autoclass_enabled_time == other.autoclass_enabled_time and
+        self.custom_placement_config == other.custom_placement_config and
         self.default_acl == other.default_acl and
         self.default_kms_key == other.default_kms_key and
         self.location_type == other.location_type and
@@ -207,6 +217,27 @@ class GcsBucketResource(resource_reference.BucketResource):
 
   def get_json_dump(self):
     return _get_json_dump(self)
+
+
+class GcsHmacKeyResource:
+  """Holds HMAC key metadata."""
+
+  def __init__(self, metadata):
+    self.metadata = metadata
+
+  @property
+  def access_id(self):
+    key_metadata = getattr(self.metadata, 'metadata', None)
+    return getattr(key_metadata, 'accessId', None)
+
+  @property
+  def secret(self):
+    return getattr(self.metadata, 'secret', None)
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return self.metadata == other.metadata
 
 
 class GcsObjectResource(resource_reference.ObjectResource):

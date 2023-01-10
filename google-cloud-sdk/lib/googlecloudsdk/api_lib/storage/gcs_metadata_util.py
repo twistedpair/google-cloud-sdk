@@ -147,6 +147,8 @@ def get_bucket_resource_from_metadata(metadata):
       autoclass_enabled_time=autoclass_enabled_time,
       cors_config=_message_to_dict(metadata.cors),
       creation_time=metadata.timeCreated,
+      custom_placement_config=_message_to_dict(
+          metadata.customPlacementConfig),
       default_acl=_message_to_dict(metadata.defaultObjectAcl),
       default_event_based_hold=metadata.defaultEventBasedHold,
       default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
@@ -259,7 +261,8 @@ def get_object_resource_from_metadata(metadata):
 
 def _get_list_with_added_and_removed_acl_grants(acl_list,
                                                 resource_args,
-                                                is_bucket=False):
+                                                is_bucket=False,
+                                                is_default_object_acl=False):
   """Returns shallow copy of ACL policy object with requested changes.
 
   Args:
@@ -268,17 +271,26 @@ def _get_list_with_added_and_removed_acl_grants(acl_list,
       changes for the ACL policy.
     is_bucket (bool): Used to determine if ACL for bucket or object. False
       implies a cloud storage object.
+    is_default_object_acl (bool): Used to determine if target is default object
+      ACL list.
 
   Returns:
     list: Shallow copy of acl_list with added and removed grants.
   """
+
   new_acl_list = []
-  acl_grants_to_remove = set(resource_args.acl_grants_to_remove or [])
+  if is_default_object_acl:
+    acl_grants_to_remove = set(
+        resource_args.default_object_acl_grants_to_remove or [])
+    acl_grants_to_add = resource_args.default_object_acl_grants_to_add or []
+  else:
+    acl_grants_to_remove = set(resource_args.acl_grants_to_remove or [])
+    acl_grants_to_add = resource_args.acl_grants_to_add or []
+
   for existing_grant in acl_list:
     if existing_grant.entity not in acl_grants_to_remove:
       new_acl_list.append(existing_grant)
 
-  acl_grants_to_add = resource_args.acl_grants_to_add or []
   acl_class = gcs_metadata_field_converters.get_bucket_or_object_acl_class(
       is_bucket)
 
@@ -365,6 +377,10 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.logging = gcs_metadata_field_converters.process_log_config(
         bucket_metadata.name, resource_args.log_bucket,
         resource_args.log_object_prefix)
+  if resource_args.placement is not None:
+    bucket_metadata.customPlacementConfig = (
+        gcs_metadata_field_converters.process_placement_config(
+            resource_args.placement))
   if (resource_args.public_access_prevention is not None or
       resource_args.uniform_bucket_level_access is not None):
     # Note: The IAM policy (with role grants) is stored separately because it
@@ -374,6 +390,8 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
             bucket_metadata.iamConfiguration,
             resource_args.public_access_prevention,
             resource_args.uniform_bucket_level_access))
+  if resource_args.recovery_point_objective is not None:
+    bucket_metadata.rpo = resource_args.recovery_point_objective
   if resource_args.requester_pays is not None:
     bucket_metadata.billing = (
         gcs_metadata_field_converters.process_requester_pays(
@@ -396,15 +414,24 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
         resource_args.acl_file_path)
   bucket_metadata.acl = (
       _get_list_with_added_and_removed_acl_grants(
-          bucket_metadata.acl, resource_args, is_bucket=True))
+          bucket_metadata.acl,
+          resource_args,
+          is_bucket=True,
+          is_default_object_acl=False))
 
   if resource_args.default_object_acl_file_path is not None:
     bucket_metadata.defaultObjectAcl = gcs_metadata_field_converters.process_acl_file(
         resource_args.default_object_acl_file_path)
+  bucket_metadata.defaultObjectAcl = (
+      _get_list_with_added_and_removed_acl_grants(
+          bucket_metadata.defaultObjectAcl,
+          resource_args,
+          is_bucket=False,
+          is_default_object_acl=True))
 
   if resource_args.labels_file_path is not None:
     bucket_metadata.labels = gcs_metadata_field_converters.process_labels(
-        resource_args.labels_file_path)
+        bucket_metadata.labels, resource_args.labels_file_path)
   # Can still add labels after clear.
   bucket_metadata.labels = _get_labels_object_with_added_and_removed_labels(
       bucket_metadata.labels, resource_args)
@@ -555,6 +582,9 @@ def update_object_metadata_from_request_config(object_metadata,
   if resource_args.temporary_hold is not None:
     object_metadata.temporaryHold = resource_args.temporary_hold
 
+  if resource_args.acl_file_path is not None:
+    object_metadata.acl = gcs_metadata_field_converters.process_acl_file(
+        resource_args.acl_file_path)
   object_metadata.acl = (
       _get_list_with_added_and_removed_acl_grants(
           object_metadata.acl, resource_args, is_bucket=False))

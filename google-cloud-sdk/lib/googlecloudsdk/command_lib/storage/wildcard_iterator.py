@@ -59,6 +59,7 @@ def contains_wildcard(url_string):
 def get_wildcard_iterator(url_str,
                           all_versions=False,
                           error_on_missing_key=True,
+                          fetch_encrypted_object_hashes=False,
                           fields_scope=cloud_api.FieldsScope.NO_ACL,
                           get_bucket_metadata=False,
                           ignore_symlinks=False):
@@ -71,6 +72,8 @@ def get_wildcard_iterator(url_str,
     error_on_missing_key (bool): If true, and the encryption key needed to
         decrypt an object is missing, the iterator raises an error for that
         object.
+    fetch_encrypted_object_hashes (bool): Fall back to GET requests for
+        encrypted cloud objects in order to fetch their hash values.
     fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
     get_bucket_metadata (bool): If true, perform a bucket GET request when
@@ -86,6 +89,7 @@ def get_wildcard_iterator(url_str,
         url,
         all_versions=all_versions,
         error_on_missing_key=error_on_missing_key,
+        fetch_encrypted_object_hashes=fetch_encrypted_object_hashes,
         fields_scope=fields_scope,
         get_bucket_metadata=get_bucket_metadata)
   elif isinstance(url, storage_url.FileUrl):
@@ -180,6 +184,7 @@ class CloudWildcardIterator(WildcardIterator):
                url,
                all_versions=False,
                error_on_missing_key=True,
+               fetch_encrypted_object_hashes=False,
                fields_scope=cloud_api.FieldsScope.NO_ACL,
                get_bucket_metadata=False):
     """Instantiates an iterator that matches the wildcard URL.
@@ -191,6 +196,8 @@ class CloudWildcardIterator(WildcardIterator):
       error_on_missing_key (bool): If true, and the encryption key needed to
           decrypt an object is missing, the iterator raises an error for that
           object.
+      fetch_encrypted_object_hashes (bool): Fall back to GET requests for
+        encrypted objects in order to fetch their hash values.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
           returned by API.
       get_bucket_metadata (bool): If true, perform a bucket GET request when
@@ -203,6 +210,7 @@ class CloudWildcardIterator(WildcardIterator):
 
     self._all_versions = all_versions
     self._error_on_missing_key = error_on_missing_key
+    self._fetch_encrypted_object_hashes = fetch_encrypted_object_hashes
     self._fields_scope = fields_scope
     self._get_bucket_metadata = get_bucket_metadata
 
@@ -216,30 +224,34 @@ class CloudWildcardIterator(WildcardIterator):
       for bucket_resource in self._client.list_buckets(self._fields_scope):
         yield bucket_resource
     else:
-      for bucket_resource in self._fetch_buckets():
+      for bucket_or_unknown_resource in self._fetch_buckets():
         if self._url.is_bucket():
-          yield bucket_resource
+          yield bucket_or_unknown_resource
         else:  # URL is an object or prefix.
           for obj_resource in self._fetch_objects(
-              bucket_resource.storage_url.bucket_name):
+              bucket_or_unknown_resource.storage_url.bucket_name):
             yield obj_resource
 
   def _decrypt_resource_if_necessary(self, resource):
-    should_decrypt_resource = (
+    if (self._fetch_encrypted_object_hashes and
         cloud_api.Capability.ENCRYPTION in self._client.capabilities and
         self._fields_scope != cloud_api.FieldsScope.SHORT and
-        isinstance(resource, resource_reference.ObjectResource) and
-        resource.decryption_key_hash_sha256)
-
-    if not should_decrypt_resource:
-      return resource
-
-    request_config = request_config_factory.get_request_config(
-        resource.storage_url,
-        decryption_key_hash_sha256=resource.decryption_key_hash_sha256,
-        error_on_missing_key=self._error_on_missing_key)
-    return self._client.get_object_metadata(
-        resource.bucket, resource.name, request_config)
+        isinstance(resource, resource_reference.ObjectResource)):
+      # LIST won't return GCS hash fields. Need to GET.
+      if resource.kms_key:
+        # Backend will reject if user does not have KMS encryption permissions.
+        return self._client.get_object_metadata(resource.bucket, resource.name)
+      if resource.decryption_key_hash_sha256:
+        request_config = request_config_factory.get_request_config(
+            resource.storage_url,
+            decryption_key_hash_sha256=resource.decryption_key_hash_sha256,
+            error_on_missing_key=self._error_on_missing_key)
+        if getattr(request_config.resource_args, 'decryption_key', None):
+          # Don't GET unless we have a key that will decrypt object.
+          return self._client.get_object_metadata(resource.bucket,
+                                                  resource.name, request_config)
+    # No decryption necessary or don't have proper key.
+    return resource
 
   def _try_getting_object_directly(self, bucket_name):
     """Matches user input that doesn't need expansion."""
@@ -408,7 +420,7 @@ class CloudWildcardIterator(WildcardIterator):
     """Fetch the bucket(s) corresponding to the url.
 
     Returns:
-      An iterable of BucketResource objects.
+      An iterable of BucketResource or UnknownResource objects.
     """
     if contains_wildcard(self._url.bucket_name):
       return self._expand_bucket_wildcards(self._url.bucket_name)
@@ -417,8 +429,8 @@ class CloudWildcardIterator(WildcardIterator):
           self._client.get_bucket(self._url.bucket_name, self._fields_scope)
       ]
     else:
-      # TODO(b/256156346): Make UnknownResource because existence not verified.
-      return [resource_reference.BucketResource(self._url)]
+      # Avoids API call.
+      return [resource_reference.UnknownResource(self._url)]
 
   def _expand_bucket_wildcards(self, bucket_name):
     """Expand bucket names with wildcard.

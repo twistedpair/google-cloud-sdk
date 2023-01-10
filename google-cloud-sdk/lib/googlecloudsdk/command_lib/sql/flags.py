@@ -1018,20 +1018,28 @@ def AddEncryptedBakFlags(parser):
 
 def AddBakExportStripeCountArgument(parser):
   """Add the 'stripe_count' argument to the parser for striped export."""
-  parser.add_argument('--stripe_count', type=int, hidden=True, help=(
+  parser.add_argument('--stripe_count', type=int, default=None, help=(
       'Specifies the number of stripes to use for SQL Server exports.'))
 
 
-def AddBakExportStripedArgument(parser):
+def AddBakExportStripedArgument(parser, show_negated_in_help=True):
   """Add the 'striped' argument to the parser for striped export."""
-  parser.add_argument('--striped', type=bool, hidden=True, help=(
-      'Whether or not the SQL Server export should be striped.'))
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--striped',
+      required=False,
+      help='Whether SQL Server export should be striped.',
+      **kwargs)
 
 
-def AddBakImportStripedArgument(parser):
+def AddBakImportStripedArgument(parser, show_negated_in_help=True):
   """Add the 'striped' argument to the parser for striped import."""
-  parser.add_argument('--striped', type=bool, hidden=True, help=(
-      'Whether or not the SQL Server import is striped.'))
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--striped',
+      required=False,
+      help='Whether SQL Server import should be striped.',
+      **kwargs)
 
 
 def AddRescheduleType(parser):

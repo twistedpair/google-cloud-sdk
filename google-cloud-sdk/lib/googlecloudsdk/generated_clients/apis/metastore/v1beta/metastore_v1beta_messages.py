@@ -2302,7 +2302,14 @@ class QueryMetadataResponse(_messages.Message):
 
 
 class RemoveIamPolicyRequest(_messages.Message):
-  r"""Request message for DataprocMetastore.RemoveIamPolicy."""
+  r"""Request message for DataprocMetastore.RemoveIamPolicy.
+
+  Fields:
+    asynchronous: Optional. Removes IAM policy attached to database or table
+      asynchronously when it is set. The default is false.
+  """
+
+  asynchronous = _messages.BooleanField(1)
 
 
 class RemoveIamPolicyResponse(_messages.Message):

@@ -186,18 +186,16 @@ def AddNetworkTier(parser):
       """)
 
 
-def AddIPv6EndPointType(parser, support_ipv6_reservation):
+def AddIPv6EndPointType(parser):
   """Adds IPv6 EndPoint flag."""
   choices = ['VM', 'NETLB']
-  if support_ipv6_reservation:
-    parser.add_argument(
-        '--endpoint-type',
-        choices=choices,
-        type=lambda x: x.upper(),
-        help="""\
-         The endpoint type of the external IPv6 address to be reserved.
-         Currently it can only be 'VM'.
-        """)
+  parser.add_argument(
+      '--endpoint-type',
+      choices=choices,
+      type=lambda x: x.upper(),
+      help="""\
+        The endpoint type of the external IPv6 address to be reserved.
+      """)
 
 
 def AddPurpose(parser, support_psc_google_apis):

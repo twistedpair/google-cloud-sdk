@@ -279,8 +279,8 @@ def _UseExecAuth():
   Returns:
     bool, which notes if ExecAuth should be enabled
   """
-  # Enable ExecAuth for all Googlers
-  use_exec_auth = _IsGoogler()
+  # Enable ExecAuth for all users
+  use_exec_auth = True
 
   use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(
       os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN')
@@ -294,18 +294,6 @@ def _UseExecAuth():
     use_exec_auth = False
 
   return use_exec_auth
-
-
-def _IsGoogler():
-  """Returns a bool noting if User is a Googler.
-
-  Returns:
-    bool, which notes if user is a Googler
-  """
-  username = properties.VALUES.core.account.Get()
-  if username and username.lower().endswith('@google.com'):
-    return True
-  return False
 
 SDK_BIN_PATH_NOT_FOUND = '''\
 Path to sdk installation not found. Please switch to application default

@@ -172,6 +172,35 @@ def Delete(resource_ref=None,
   log.DeletedResource(resource_ref, kind=kind, is_async=async_)
 
 
+def CancelOperationMessage(name, kind):
+  """Message to display after cancelling an LRO operation.
+
+  Args:
+    name: str, name of the operation.
+    kind: str, the kind of LRO operation e.g. AWS or Azure.
+
+  Returns:
+    The operation cancellation message.
+  """
+  msg = ('Cancelation of operation {0} has been requested. '
+         'Please use gcloud container {1} operations describe {2} to '
+         'check if the operation has been cancelled successfully.')
+  return msg.format(name, kind, name)
+
+
+def CancelOperationPrompt(op_name):
+  """Prompt the user before cancelling an LRO operation.
+
+  Args:
+    op_name: str, name of the operation.
+  """
+  message = 'The operation {0} will be cancelled.'
+  console_io.PromptContinue(
+      message=message.format(op_name),
+      throw_if_unattended=True,
+      cancel_on_no=True)
+
+
 def Import(location_ref=None,
            resource_client=None,
            fleet_membership_ref=None,

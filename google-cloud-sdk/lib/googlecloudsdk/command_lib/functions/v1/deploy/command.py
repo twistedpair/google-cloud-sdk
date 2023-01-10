@@ -23,6 +23,7 @@ import re
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions import api_enablement
+from googlecloudsdk.api_lib.functions import cmek_util
 from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
 from googlecloudsdk.api_lib.functions.v1 import exceptions as function_exceptions
@@ -207,7 +208,7 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
     function.kmsKeyName = (None if args.clear_kms_key else args.kms_key)
     if function.kmsKeyName != old_kms_key:
       if function.kmsKeyName:
-        api_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
+        cmek_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
       updated_fields.append('kmsKeyName')
   if args.IsSpecified('docker_repository') or args.IsSpecified(
       'clear_docker_repository'):
@@ -216,7 +217,7 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
                                  args.docker_repository)
     if function.dockerRepository != old_docker_repository:
       if function.dockerRepository:
-        api_util.ValidateDockerRepositoryForFunction(
+        cmek_util.ValidateDockerRepositoryForFunction(
             function.dockerRepository, function_ref)
       updated_fields.append('dockerRepository')
   if function.kmsKeyName and not function.dockerRepository:

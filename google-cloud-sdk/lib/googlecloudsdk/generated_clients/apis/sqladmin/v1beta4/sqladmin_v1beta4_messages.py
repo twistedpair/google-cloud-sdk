@@ -427,6 +427,8 @@ class ConnectSettings(_messages.Message):
         version is 29.
       MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
         version is 30.
+      MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
+        version is 31.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -456,10 +458,11 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_28 = 19
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
-    SQLSERVER_2019_STANDARD = 22
-    SQLSERVER_2019_ENTERPRISE = 23
-    SQLSERVER_2019_EXPRESS = 24
-    SQLSERVER_2019_WEB = 25
+    MYSQL_8_0_31 = 22
+    SQLSERVER_2019_STANDARD = 23
+    SQLSERVER_2019_ENTERPRISE = 24
+    SQLSERVER_2019_EXPRESS = 25
+    SQLSERVER_2019_WEB = 26
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -669,6 +672,8 @@ class DatabaseInstance(_messages.Message):
         version is 29.
       MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
         version is 30.
+      MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
+        version is 31.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -698,10 +703,11 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_28 = 19
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
-    SQLSERVER_2019_STANDARD = 22
-    SQLSERVER_2019_ENTERPRISE = 23
-    SQLSERVER_2019_EXPRESS = 24
-    SQLSERVER_2019_WEB = 25
+    MYSQL_8_0_31 = 22
+    SQLSERVER_2019_STANDARD = 23
+    SQLSERVER_2019_ENTERPRISE = 24
+    SQLSERVER_2019_EXPRESS = 25
+    SQLSERVER_2019_WEB = 26
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -738,6 +744,8 @@ class DatabaseInstance(_messages.Message):
         version is 29.
       MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
         version is 30.
+      MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
+        version is 31.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -767,10 +775,11 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_28 = 19
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
-    SQLSERVER_2019_STANDARD = 22
-    SQLSERVER_2019_ENTERPRISE = 23
-    SQLSERVER_2019_EXPRESS = 24
-    SQLSERVER_2019_WEB = 25
+    MYSQL_8_0_31 = 22
+    SQLSERVER_2019_STANDARD = 23
+    SQLSERVER_2019_ENTERPRISE = 24
+    SQLSERVER_2019_EXPRESS = 25
+    SQLSERVER_2019_WEB = 26
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1013,6 +1022,15 @@ class DiskEncryptionStatus(_messages.Message):
   kmsKeyVersionName = _messages.StringField(2)
 
 
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
 class ExportContext(_messages.Message):
   r"""Database instance export context.
 
@@ -1226,6 +1244,8 @@ class Flag(_messages.Message):
         version is 29.
       MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
         version is 30.
+      MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
+        version is 31.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1255,10 +1275,11 @@ class Flag(_messages.Message):
     MYSQL_8_0_28 = 19
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
-    SQLSERVER_2019_STANDARD = 22
-    SQLSERVER_2019_ENTERPRISE = 23
-    SQLSERVER_2019_EXPRESS = 24
-    SQLSERVER_2019_WEB = 25
+    MYSQL_8_0_31 = 22
+    SQLSERVER_2019_STANDARD = 23
+    SQLSERVER_2019_ENTERPRISE = 24
+    SQLSERVER_2019_EXPRESS = 25
+    SQLSERVER_2019_WEB = 26
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -3163,6 +3184,18 @@ class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):
   errors = _messages.MessageField('SqlExternalSyncSettingError', 1, repeated=True)
   kind = _messages.StringField(2)
   warnings = _messages.MessageField('SqlExternalSyncSettingError', 3, repeated=True)
+
+
+class SqlOperationsCancelRequest(_messages.Message):
+  r"""A SqlOperationsCancelRequest object.
+
+  Fields:
+    operation: Instance operation ID.
+    project: Project ID of the project that contains the instance.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlOperationsGetRequest(_messages.Message):

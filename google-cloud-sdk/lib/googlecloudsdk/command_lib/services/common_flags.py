@@ -156,6 +156,7 @@ def add_key_update_args(parser):
   """Add args for api-keys update command."""
   update_set_group = parser.add_mutually_exclusive_group(required=False)
   _add_clear_restrictions_arg(update_set_group)
+  _add_clear_annotations_arg(update_set_group)
   restriction_group = update_set_group.add_argument_group()
   client_restriction_group = restriction_group.add_mutually_exclusive_group()
   _allowed_referrers_arg(client_restriction_group)
@@ -163,6 +164,7 @@ def add_key_update_args(parser):
   _allowed_bundle_ids(client_restriction_group)
   _allowed_application(client_restriction_group)
   _api_targets_arg(restriction_group)
+  _annotations(parser)
 
 
 def add_key_create_args(parser):
@@ -174,6 +176,7 @@ def add_key_create_args(parser):
   _allowed_bundle_ids(client_restriction_group)
   _allowed_application(client_restriction_group)
   _api_targets_arg(restriction_group)
+  _annotations(parser)
 
 
 def _add_clear_restrictions_arg(parser):
@@ -181,6 +184,13 @@ def _add_clear_restrictions_arg(parser):
       '--clear-restrictions',
       action='store_true',
       help='If set, clear all restrictions on the key.').AddToParser(parser)
+
+
+def _add_clear_annotations_arg(parser):
+  base.Argument(
+      '--clear-annotations',
+      action='store_true',
+      help='If set, clear all annotations on the key.').AddToParser(parser)
 
 
 def _allowed_referrers_arg(parser):
@@ -225,9 +235,20 @@ def _allowed_application(parser):
           max_length=2),
       metavar='sha1_fingerprint=SHA1_FINGERPRINT,package_name=PACKAGE_NAME',
       action='append',
-      help=('This flag is repeatable to specify multiple allowed applications. '
+      help=('Repeatable. Specify multiple allowed applications. '
             'The accepted keys are `sha1_fingerprint` and `package_name`.'
            )).AddToParser(parser)
+
+
+def _annotations(parser):
+  base.Argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      required=False,
+      help=("""Annotations are key resource. Specify annotations as
+            a key-value dictionary for small amounts of arbitrary client data.
+            """)).AddToParser(parser)
 
 
 def _api_targets_arg(parser):
@@ -243,10 +264,9 @@ def _api_targets_arg(parser):
       metavar='service=SERVICE',
       action='append',
       help="""\
-       This flag is repeatable to specify multiple api targets.
-        `service` and optionally one or multiple specific `methods`.
-        Both fields are case insensitive.
-        If you need to specify methods, it should be specified
+      Repeatable. Specify service and optionally one or multiple specific
+      methods. Both fields are case insensitive.
+      If you need to specify methods, it should be specified
       with the `--flags-file`. See $ gcloud topic flags-file for details.
       See the examples section for how to use `--api-target` in
       `--flags-file`.""").AddToParser(parser)

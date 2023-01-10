@@ -113,14 +113,6 @@ class RequestModel(enum.Enum):
   VIRTUAL_HOSTED_STYLE = 'VIRTUAL_HOSTED_STYLE'
 
 
-class StorageClass(enum.Enum):
-  ARCHIVE = 'archive'
-  COLDLINE = 'coldline'
-  NEARLINE = 'nearline'
-  PRESERVE = 'preserve'
-  STANDARD = 'standard'
-
-
 def add_source_creds_flag(parser):
   parser.add_argument(
       '--source-creds-file',
@@ -434,9 +426,18 @@ def setup_parser(parser, is_update=False):
   transfer_options.add_argument(
       '--custom-storage-class',
       help='Specifies the storage class to set on objects being transferred to'
-      ' Google Cloud Storage buckets. If unspecified, the behavior is'
-      ' to match the destination bucket default. The value "preserve" will'
-      " use the class from the object's Google Cloud Storage source bucket.")
+      " Cloud Storage buckets. If unspecified, the objects' storage class is"
+      ' set to the destination bucket default.'
+      ' Valid values are:\n\n'
+      ' - Any of the values listed in the Cloud Storage documentation:'
+      '   [Available storage classes](https://cloud.google.com/storage/docs/storage-classes#classes).\n'
+      " - `preserve` - Preserves each object's original storage class. Only"
+      '   supported for transfers between Cloud Storage buckets.\n'
+      ' \nCustom storage class settings are ignored if the destination bucket'
+      ' is'
+      ' [Autoclass-enabled](https://cloud.google.com/storage/docs/autoclass).'
+      ' Objects transferred into Autoclass-enabled buckets are initially'
+      ' set to the `STANDARD` storage class.')
 
   notification_config = parser.add_group(
       help=(

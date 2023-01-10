@@ -65,7 +65,8 @@ class JobPrinter(cp.CustomPrinterBase):
         ('CPU', limits['cpu']),
         ('Task Timeout', '{}s'.format(record.template.spec.timeoutSeconds)
          if record.template.spec.timeoutSeconds else None),
-        ('Max Retries', record.max_retries),
+        ('Max Retries', '{}'.format(record.max_retries)
+         if record.max_retries is not None else None),
         ('Parallelism',
          record.parallelism if record.parallelism else 'No limit'),
         ('Service account', record.template.service_account),
@@ -140,7 +141,8 @@ class TaskPrinter(cp.CustomPrinterBase):
         ('CPU', limits['cpu']),
         ('Timeout', '{}s'.format(record.spec.timeoutSeconds)
          if record.spec.timeoutSeconds else None),
-        ('Max Retries', record.spec.maxRetries),
+        ('Max Retries', '{}'.format(record.spec.maxRetries)
+         if record.spec.maxRetries is not None else None),
         ('Service account', record.service_account),
         ('Env vars', container_util.GetUserEnvironmentVariables(record)),
         ('Secrets', container_util.GetSecrets(record)),
@@ -188,7 +190,8 @@ class ExecutionPrinter(cp.CustomPrinterBase):
         ('CPU', limits['cpu']),
         ('Task Timeout', '{}s'.format(record.template.spec.timeoutSeconds)
          if record.template.spec.timeoutSeconds else None),
-        ('Max Retries', record.template.spec.maxRetries),
+        ('Max Retries', '{}'.format(record.template.spec.maxRetries)
+         if record.template.spec.maxRetries is not None else None),
         ('Parallelism', record.parallelism),
         ('Service account', record.template.service_account),
         ('Env vars',

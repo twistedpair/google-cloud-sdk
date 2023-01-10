@@ -30,7 +30,8 @@ from googlecloudsdk.command_lib.storage import tracker_file_util
 def decompress_or_rename_file(source_resource,
                               temporary_file_path,
                               final_file_path,
-                              do_not_decompress_flag=False):
+                              do_not_decompress_flag=False,
+                              server_encoding=None):
   """Converts temporary file to final form by decompressing or renaming.
 
   Args:
@@ -38,6 +39,7 @@ def decompress_or_rename_file(source_resource,
     temporary_file_path (str): File path to unzip or rename.
     final_file_path (str): File path to write final file to.
     do_not_decompress_flag (bool): User flag that blocks decompression.
+    server_encoding (str|None): Server-reported `content-encoding` of file.
 
   Returns:
     (bool) True if file was decompressed or renamed, and
@@ -49,7 +51,8 @@ def decompress_or_rename_file(source_resource,
   if gzip_util.decompress_gzip_if_necessary(source_resource,
                                             temporary_file_path,
                                             final_file_path,
-                                            do_not_decompress_flag):
+                                            do_not_decompress_flag,
+                                            server_encoding):
     os.remove(temporary_file_path)
   else:
     os.rename(temporary_file_path, final_file_path)

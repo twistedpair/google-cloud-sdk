@@ -22,6 +22,7 @@ import abc
 import collections
 import datetime
 
+from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 
@@ -57,6 +58,7 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'default_storage_class',
         'location_type',
         'location',
+        'data_locations',
         'versioning_enabled',
         'logging_config',
         'website_config',
@@ -71,6 +73,8 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'update_time',
         'metageneration',
         'uniform_bucket_level_access',
+        'public_access_prevention',
+        'rpo',
         'autoclass_enabled_time',
         'satisfies_pzs',
         ACL_KEY,
@@ -118,9 +122,10 @@ def _get_formatted_line(display_name, value, default_value=None):
       return resource_util.get_metadata_json_section_string(display_name, value)
     elif isinstance(value, datetime.datetime):
       return resource_util.get_padded_metadata_time_line(display_name, value)
-    else:
+    elif isinstance(value, errors.CloudApiError):
       return resource_util.get_padded_metadata_key_value_line(
-          display_name, value)
+          display_name, str(value))
+    return resource_util.get_padded_metadata_key_value_line(display_name, value)
   elif default_value is not None:
     return resource_util.get_padded_metadata_key_value_line(
         display_name, default_value)

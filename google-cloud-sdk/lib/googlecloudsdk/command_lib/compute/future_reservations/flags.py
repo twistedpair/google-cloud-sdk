@@ -135,6 +135,7 @@ def AddCreateFlags(
     support_fleet=False,
     support_instance_template=False,
     support_planning_status=False,
+    support_local_ssd_count=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
@@ -159,7 +160,11 @@ def AddCreateFlags(
   instance_properties_group.AddArgument(
       reservation_flags.GetMachineType())
   instance_properties_group.AddArgument(reservation_flags.GetMinCpuPlatform())
-  instance_properties_group.AddArgument(reservation_flags.GetLocalSsdFlag())
+  if support_local_ssd_count:
+    instance_properties_group.AddArgument(
+        reservation_flags.GetLocalSsdFlagWithCount())
+  else:
+    instance_properties_group.AddArgument(reservation_flags.GetLocalSsdFlag())
   instance_properties_group.AddArgument(reservation_flags.GetAcceleratorFlag())
   if support_location_hint:
     instance_properties_group.AddArgument(reservation_flags.GetLocationHint())
@@ -183,7 +188,8 @@ def AddCreateFlags(
 def AddUpdateFlags(parser,
                    support_location_hint=False,
                    support_fleet=False,
-                   support_planning_status=False):
+                   support_planning_status=False,
+                   support_local_ssd_count=False):
   """Adds all flags needed for the update command."""
   GetTotalCountFlag(required=False).AddToParser(parser)
   if support_planning_status:
@@ -193,7 +199,10 @@ def AddUpdateFlags(parser,
       required=False)
   group.AddArgument(reservation_flags.GetMachineType(required=False))
   group.AddArgument(reservation_flags.GetMinCpuPlatform())
-  group.AddArgument(reservation_flags.GetLocalSsdFlag())
+  if support_local_ssd_count:
+    group.AddArgument(reservation_flags.GetLocalSsdFlagWithCount())
+  else:
+    group.AddArgument(reservation_flags.GetLocalSsdFlag())
   group.AddArgument(reservation_flags.GetAcceleratorFlag())
   if support_location_hint:
     group.AddArgument(reservation_flags.GetLocationHint())

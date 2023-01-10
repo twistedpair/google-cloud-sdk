@@ -80,6 +80,7 @@ IDENTITY_CATEGORY = 'Identity'
 COMMERCE_CATEGORY = 'Commerce'
 DECLARATIVE_CONFIGURATION_CATEGORY = 'Declarative Resource Management'
 MICROSERVICES_CATEGORY = 'Microservices'
+WEB3_CATEGORY = 'Web3'
 
 
 # Common markdown.
@@ -369,9 +370,13 @@ FORMAT_FLAG = Argument(
     default=None,
     category=COMMONLY_USED_FLAGS,
     help="""\
-        Set the format for printing command output resources. The default is a
-        command-specific human-friendly output format. The supported formats
-        are: `{0}`. For more details run $ gcloud topic formats.""".format(
+        Sets the format for printing command output resources. The default is a
+        command-specific human-friendly output format. If both `core/format` and
+        `--format` are specified, `--format` takes precedence. `--format`
+        and `core/format` both take precedence over `core/default_format. The
+        supported formats are limited to: `{0}`. For more details run $ gcloud
+        topic formats. Run `$ gcloud config set --help` to see more information
+        about `core/format`""".format(
             '`, `'.join(resource_printer.SupportedFormats())))
 
 LIST_COMMAND_FLAGS = 'LIST COMMAND'
@@ -623,7 +628,7 @@ class Command(six.with_metaclass(abc.ABCMeta, _Common)):
     Args:
       parser: The argparse parser.
     """
-    parser.display_info.AddFormat('default')
+    parser.display_info.AddFormat(properties.VALUES.core.default_format.Get())
 
   @abc.abstractmethod
   def Run(self, args):
@@ -738,7 +743,7 @@ class ListCommand(six.with_metaclass(abc.ABCMeta, CacheCommand)):
     PAGE_SIZE_FLAG.AddToParser(parser)
     SORT_BY_FLAG.AddToParser(parser)
     URI_FLAG.AddToParser(parser)
-    parser.display_info.AddFormat('default')
+    parser.display_info.AddFormat(properties.VALUES.core.default_format.Get())
 
   def Epilog(self, resources_were_displayed):
     """Called after resources are displayed if the default format was used.

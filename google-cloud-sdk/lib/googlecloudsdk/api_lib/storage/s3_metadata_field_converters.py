@@ -48,9 +48,9 @@ def process_labels(file_path):
   if file_path == user_request_args_factory.CLEAR:
     return user_request_args_factory.CLEAR
 
-  labels_pair_list = metadata_util.get_label_pairs_from_file(file_path)
+  labels_dict = metadata_util.cached_read_json_file(file_path)
   s3_tag_set_list = []
-  for key, value in labels_pair_list:
+  for key, value in labels_dict.items():
     s3_tag_set_list.append({'Key': key, 'Value': value})
 
   return {'TagSet': s3_tag_set_list}

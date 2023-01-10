@@ -26,19 +26,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import contextlib
+import errno
 import json
 
 from apitools.base.py import encoding_helper
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
-
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_download
 from googlecloudsdk.api_lib.storage import gcs_error_util
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
+from googlecloudsdk.api_lib.storage import grpc_util
+from googlecloudsdk.api_lib.storage import headers_util
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import encryption_util
@@ -48,6 +50,7 @@ from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
+from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
@@ -57,7 +60,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import scaled_integer
-
 import six
 
 
@@ -69,9 +71,6 @@ patch_gcs_messages.patch()
 # improve performance.
 KB = 1024  # Bytes.
 MINIMUM_PROGRESS_CALLBACK_THRESHOLD = 512 * KB
-# The API limits the number of objects that can be composed in a single call.
-# https://cloud.google.com/storage/docs/json_api/v1/objects/compose
-MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
 # Determines which IAM format to use as new features are added.
 _IAM_POLICY_VERSION = 3
@@ -119,9 +118,11 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     self._progress_callback_threshold = max(MINIMUM_PROGRESS_CALLBACK_THRESHOLD,
                                             self._chunk_size)
 
-  def update_destination_info(self, stream,
+  def update_destination_info(self,
+                              stream,
                               size,
                               digesters=None,
+                              download_strategy=None,
                               processed_bytes=0,
                               progress_callback=None):
     """Updates the stream handler with destination information.
@@ -137,6 +138,8 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
       size (int): The amount of data in bytes to be downloaded.
       digesters (dict<HashAlgorithm, hashlib object> | None): For updating hash
         digests of downloaded objects on the fly.
+      download_strategy (DownloadStrategy): Indicates if user wants to retry
+        download on failures.
       processed_bytes (int): For keeping track of how much progress has been
         made.
       progress_callback (func<int>): Accepts processed_bytes and submits
@@ -145,6 +148,8 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     self._stream = stream
     self._size = size
     self._digesters = digesters if digesters is not None else {}
+    # ONE_SHOT strategy may need to break out of Apitools's automatic retries.
+    self._download_strategy = download_strategy
     self._processed_bytes = processed_bytes
     self._progress_callback = progress_callback
     self._start_byte = self._processed_bytes
@@ -153,12 +158,21 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     if self._stream is None:
       raise ValueError('Stream was not found.')
 
+    # For example, can happen if piping to a command that only reads one line.
+    destination_pipe_is_broken = False
     # Start reading the raw stream.
     bytes_since_last_progress_callback = 0
     while True:
       data = source_stream.read(self._chunk_size)
       if data:
-        self._stream.write(data)
+        try:
+          self._stream.write(data)
+        except OSError as e:
+          if (e.errno == errno.EPIPE and
+              self._download_strategy is cloud_api.DownloadStrategy.ONE_SHOT):
+            log.info('Writing to download stream raised broken pipe error.')
+            destination_pipe_is_broken = True
+            break
 
         for hash_object in self._digesters.values():
           hash_object.update(data)
@@ -178,7 +192,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
         break
 
     total_downloaded_data = self._processed_bytes - self._start_byte
-    if self._size != total_downloaded_data:
+    if self._size != total_downloaded_data and not destination_pipe_is_broken:
       # The input stream terminated before the entire content was read,
       # possibly due to a network condition.
       message = (
@@ -210,14 +224,31 @@ class GcsApi(cloud_api.CloudApi):
       cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM,
   }
 
+  # The API limits the number of objects that can be composed in a single call.
+  # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+  MAX_OBJECTS_PER_COMPOSE_CALL = 32
+
   def __init__(self):
     super(GcsApi, self).__init__()
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.client.overwrite_transfer_urls_with_client_base = True
+    self.client.additional_http_headers = (
+        headers_util.get_additional_header_dict())
+
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
     self._stream_response_handler = _StorageStreamResponseHandler()
     self._download_http_client = None
     self._upload_http_client = None
+    self._gapic_client = None
+
+  def _get_gapic_client(self):
+    # Not using @property because the side-effect is non-trivial and
+    # might not be obvious. Someone might accidentally access the
+    # property and end up creating the gapic client.
+    # Creating the gapic client before "fork" will lead to a deadlock.
+    if self._gapic_client is None:
+      self._gapic_client = core_apis.GetGapicClientInstance('storage', 'v2')
+    return self._gapic_client
 
   @contextlib.contextmanager
   def _apitools_request_headers_context(self, headers):
@@ -373,8 +404,9 @@ class GcsApi(cloud_api.CloudApi):
     """See super class."""
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsPatchRequest)
-    metadata = bucket_resource.metadata or (
-        gcs_metadata_util.get_apitools_metadata_from_url(
+    metadata = getattr(
+        bucket_resource, 'metadata',
+        None) or (gcs_metadata_util.get_apitools_metadata_from_url(
             bucket_resource.storage_url))
     gcs_metadata_util.update_bucket_metadata_from_request_config(
         metadata, request_config)
@@ -412,6 +444,7 @@ class GcsApi(cloud_api.CloudApi):
         predefinedDefaultObjectAcl=predefined_default_object_acl)
 
     with self.client.IncludeFields(cleared_fields):
+      # IncludeFields nulls out field in Apitools (does not just edit them).
       return gcs_metadata_util.get_bucket_resource_from_metadata(
           self.client.buckets.Patch(apitools_request))
 
@@ -421,6 +454,36 @@ class GcsApi(cloud_api.CloudApi):
     return self.client.buckets.SetIamPolicy(
         self.messages.StorageBucketsSetIamPolicyRequest(
             bucket=bucket_name, policy=policy))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def create_hmac_key(self, service_account_email):
+    """See super class."""
+    request = self.messages.StorageProjectsHmacKeysCreateRequest(
+        projectId=properties.VALUES.core.project.GetOrFail(),
+        serviceAccountEmail=service_account_email)
+    return gcs_resource_reference.GcsHmacKeyResource(
+        self.client.projects_hmacKeys.Create(request))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def delete_hmac_key(self, access_id):
+    """See super class."""
+    request = self.messages.StorageProjectsHmacKeysDeleteRequest(
+        projectId=properties.VALUES.core.project.GetOrFail(),
+        accessId=access_id)
+    self.client.projects_hmacKeys.Delete(request)
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def patch_hmac_key(self, access_id, etag, state):
+    """See super class."""
+    updated_metadata = self.messages.HmacKeyMetadata(state=state.value)
+    if etag:
+      updated_metadata.etag = etag
+    request = self.messages.StorageProjectsHmacKeysUpdateRequest(
+        projectId=properties.VALUES.core.project.GetOrFail(),
+        hmacKeyMetadata=updated_metadata,
+        accessId=access_id)
+    return gcs_resource_reference.GcsHmacKeyResource(
+        self.client.projects_hmacKeys.Update(request))
 
   @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def compose_objects(self,
@@ -434,10 +497,10 @@ class GcsApi(cloud_api.CloudApi):
       raise cloud_errors.GcsApiError(
           'Compose requires at least one component object.')
 
-    if len(source_resources) > MAX_OBJECTS_PER_COMPOSE_CALL:
+    if len(source_resources) > self.MAX_OBJECTS_PER_COMPOSE_CALL:
       raise cloud_errors.GcsApiError(
           'Compose was called with {} objects. The limit is {}.'.format(
-              len(source_resources), MAX_OBJECTS_PER_COMPOSE_CALL))
+              len(source_resources), self.MAX_OBJECTS_PER_COMPOSE_CALL))
 
     source_messages = []
     for source in source_resources:
@@ -646,6 +709,21 @@ class GcsApi(cloud_api.CloudApi):
           posix_attributes=posix_attributes_to_set,
           server_reported_encoding=None)
 
+    if properties.VALUES.storage.use_grpc.GetBool():
+      log.debug('Using GRPC client')
+      grpc_util.download_object(
+          gapic_client=self._get_gapic_client(),
+          cloud_resource=cloud_resource,
+          download_stream=download_stream,
+          digesters=digesters,
+          progress_callback=progress_callback,
+          start_byte=start_byte,
+          end_byte=end_byte)
+      # TODO(b/261180916) Return server encoding.
+      return cloud_api.DownloadApiClientReturnValue(
+          posix_attributes=posix_attributes_to_set,
+          server_reported_encoding=None)
+
     serialization_data = get_download_serialization_data(
         cloud_resource, start_byte)
     apitools_download = apitools_transfer.Download.FromData(
@@ -656,9 +734,10 @@ class GcsApi(cloud_api.CloudApi):
 
     self._stream_response_handler.update_destination_info(
         stream=download_stream,
-        size=(end_byte - start_byte + 1
-              if end_byte is not None else cloud_resource.size),
+        size=(end_byte - start_byte +
+              1 if end_byte is not None else cloud_resource.size),
         digesters=digesters,
+        download_strategy=download_strategy,
         processed_bytes=start_byte,
         progress_callback=progress_callback)
 
@@ -668,7 +747,7 @@ class GcsApi(cloud_api.CloudApi):
           response_handler=self._stream_response_handler)
     apitools_download.bytes_http = self._download_http_client
 
-    additional_headers = {}
+    additional_headers = self.client.additional_http_headers
     if do_not_decompress:
       # TODO(b/161453101): Optimize handling of gzip-encoded downloads.
       additional_headers['accept-encoding'] = 'gzip'
@@ -855,6 +934,13 @@ class GcsApi(cloud_api.CloudApi):
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See CloudApi class for function doc strings."""
+    if properties.VALUES.storage.use_grpc.GetBool():
+      log.debug('Using GRPC client')
+      return grpc_util.upload_object(self._get_gapic_client(),
+                                     source_stream,
+                                     destination_resource,
+                                     request_config)
+
     if self._upload_http_client is None:
       self._upload_http_client = transports.GetApitoolsTransport(
           redact_request_body_reason=(

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.code import builders
 from googlecloudsdk.command_lib.code import yaml_helper
+from googlecloudsdk.command_lib.code.cloud import cloud
 from googlecloudsdk.core import yaml
 
 import six
@@ -46,12 +47,8 @@ class CloudRuntimeFiles(object):
     self._settings = settings
 
   def KubernetesConfig(self):
-    # use command_lib.run.flags.GetServiceConfigurationChanges
-    # to parse args
-
-    # use command_lib.run.config_changes to apply changes to
-    # provided service or default.
-    return yaml.dump(encoding.MessageToDict(self._settings.service))
+    return yaml.dump(
+        encoding.MessageToDict(cloud.GenerateService(self._settings)))
 
   def SkaffoldConfig(self, service_file_path):
     """Generate the Skaffold yaml for the deploy."""

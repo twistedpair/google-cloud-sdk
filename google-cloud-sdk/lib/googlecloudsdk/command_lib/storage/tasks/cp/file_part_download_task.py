@@ -104,10 +104,10 @@ def _get_digesters(component_number, resource):
   if check_hashes != properties.CheckHashes.NEVER.value:
     if component_number is None and resource.md5_hash:
       digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
-
-    elif (resource.crc32c_hash and
-          (check_hashes == properties.CheckHashes.ALWAYS.value or
-           fast_crc32c_util.is_fast_crc32c_available())):
+    elif (
+        resource.crc32c_hash and
+        (check_hashes == properties.CheckHashes.ALWAYS.value or
+         fast_crc32c_util.check_if_fast_crc32c_available_and_install_if_not())):
       digesters[hash_util.HashAlgorithm.CRC32C] = fast_crc32c_util.get_crc32c()
 
   if not digesters:
@@ -155,13 +155,28 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     super(FilePartDownloadTask,
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
-    self._do_not_decompress = do_not_decompress
+    self._do_not_decompress_flag = do_not_decompress
     self._strategy = strategy
     self._user_request_args = user_request_args
 
+  def _disable_in_flight_decompression(self, is_resumable_or_sliced_download):
+    """Whether or not to disable on-the-fly decompression."""
+    if self._do_not_decompress_flag:
+      # Respect user preference.
+      return True
+    if not is_resumable_or_sliced_download:
+      # If we don't decompress in-flight, we'll do it later on the disk, which
+      # is probably slower. However, the requests library might add the
+      # "accept-encoding: gzip" header anyways.
+      return False
+    # Decompressing in flight changes file size, making resumable and sliced
+    # downloads impossible.
+    return bool(self._source_resource.content_encoding and
+                'gzip' in self._source_resource.content_encoding)
+
   def _perform_download(self, request_config, progress_callback,
-                        download_strategy, start_byte, end_byte, write_mode,
-                        digesters):
+                        do_not_decompress, download_strategy, start_byte,
+                        end_byte, write_mode, digesters):
     """Prepares file stream, calls API, and validates hash."""
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
@@ -179,7 +194,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           download_stream,
           request_config,
           digesters=digesters,
-          do_not_decompress=self._do_not_decompress,
+          do_not_decompress=do_not_decompress,
           download_strategy=download_strategy,
           progress_callback=progress_callback,
           start_byte=start_byte,
@@ -217,10 +232,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     return self._perform_download(
         request_config, progress_callback,
-        cloud_api.DownloadStrategy.RETRIABLE_IN_FLIGHT,
-        start_byte, end_byte,
-        files.BinaryFileWriterMode.TRUNCATE,
-        digesters)
+        self._disable_in_flight_decompression(False),
+        cloud_api.DownloadStrategy.RETRIABLE_IN_FLIGHT, start_byte, end_byte,
+        files.BinaryFileWriterMode.TRUNCATE, digesters)
 
   def _catch_up_digesters(self, digesters, start_byte, end_byte):
     with files.BinaryFileReader(
@@ -255,6 +269,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       write_mode = files.BinaryFileWriterMode.TRUNCATE
 
     return self._perform_download(request_config, progress_callback,
+                                  self._disable_in_flight_decompression(True),
                                   cloud_api.DownloadStrategy.RESUMABLE,
                                   start_byte, end_byte, write_mode, digesters)
 
@@ -332,6 +347,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       start_byte = self._offset
 
     return self._perform_download(request_config, progress_callback,
+                                  self._disable_in_flight_decompression(True),
                                   self._strategy, start_byte, end_byte,
                                   files.BinaryFileWriterMode.MODIFY, digesters)
 

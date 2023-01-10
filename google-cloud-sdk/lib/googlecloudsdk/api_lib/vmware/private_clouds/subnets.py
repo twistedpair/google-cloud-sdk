@@ -41,3 +41,9 @@ class SubnetsClient(util.VmwareClientBase):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='subnets')
+
+  def Get(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest(
+        name=resource.RelativeName())
+    response = self.service.Get(request)
+    return response

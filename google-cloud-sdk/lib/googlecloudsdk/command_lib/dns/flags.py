@@ -685,7 +685,7 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       'over the total across all weights.\n\n'
       'For --routing-policy-type = "GEO" this flag indicates the geo-locations '
       'policy data. The field accepts a semicolon-delimited list of the format '
-      '"${region}:${rrdata},${rrdata}". Each individual rrdata can either be '
+      '"${region}=${rrdata},${rrdata}". Each individual rrdata can either be '
       'an ip address or a string of the format forwarding_config_name@region.')
 
 

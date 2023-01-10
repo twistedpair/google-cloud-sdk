@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as gcloud_exceptions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.scc.settings import exceptions as scc_exceptions
 from googlecloudsdk.core import properties
@@ -206,12 +207,9 @@ class SettingsClient(object):
           return self.service_client.folders.GetRapidVulnerabilityDetectionSettings(
               request_message)
     except exceptions.HttpError as err:
-      if err.status_code == 404:
-        raise scc_exceptions.SecurityCenterSettingsNotFoundException(
-            'Not found {}'.format(path))
-      else:
-        raise scc_exceptions.SecurityCenterSettingsException(
-            'Invalid argument {}'.format(path))
+      gcloud_exceptions.core_exceptions.reraise(
+          gcloud_exceptions.HttpException(
+              err, error_format='Status code [{status_code}]. {message}.'))
 
   def DescribeService(self, args):
     """Describe service settings of organization/folder/project."""
@@ -617,12 +615,16 @@ class SettingsClient(object):
   def _UpdateModules(self, args, enabled, clear_config=False, config=None):
     """Update modules within service settings."""
     state = self.message_module.Config.ModuleEnablementStateValueValuesEnum.ENABLED if enabled else self.message_module.Config.ModuleEnablementStateValueValuesEnum.DISABLED
+    curr_modules = None
 
     try:
       curr_modules = self.DescribeServiceExplicit(args).modules
-    except scc_exceptions.SecurityCenterSettingsNotFoundException:
-      curr_modules = None
-      config = None
+    except gcloud_exceptions.HttpException as err:
+      if err.payload.status_code == 404:
+        curr_modules = None
+        config = None
+      else:
+        raise err
     if not clear_config and config is None and curr_modules is not None:
       module = [
           p for p in curr_modules.additionalProperties if p.key == args.module

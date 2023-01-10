@@ -244,6 +244,86 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsCreateRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsCreateRequest
+  object.
+
+  Fields:
+    authorizedOrgsDesc: A AuthorizedOrgsDesc resource to be passed as the
+      request body.
+    parent: Required. Resource name for the access policy which owns this
+      Authorized Orgs Desc. Format: `accessPolicies/{policy_id}`
+  """
+
+  authorizedOrgsDesc = _messages.MessageField('AuthorizedOrgsDesc', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsDeleteRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Resource name for the Authorized Orgs Desc. Format:
+      `accessPolicies/{policy_id}/authorizedOrgsDesc/{authorized_orgs_desc_id}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsGetRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsGetRequest
+  object.
+
+  Fields:
+    name: Required. Resource name for the Authorized Orgs Desc. Format: `acces
+      sPolicies/{policy_id}/authorizedOrgsDescs/{authorized_orgs_descs_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsListRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsListRequest
+  object.
+
+  Fields:
+    pageSize: Number of Authorized Orgs Descs to include in the list. Default
+      100.
+    pageToken: Next page token for the next batch of Authorized Orgs Desc
+      instances. Defaults to the first page of results.
+    parent: Required. Resource name for the access policy to list Authorized
+      Orgs Desc from. Format: `accessPolicies/{policy_id}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsPatchRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsPatchRequest
+  object.
+
+  Fields:
+    authorizedOrgsDesc: A AuthorizedOrgsDesc resource to be passed as the
+      request body.
+    name: Assigned by the server during creation. The last segment has an
+      arbitrary length and has only URI unreserved characters (as defined by
+      [RFC 3986 Section
+      2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
+      specified by the client during creation. Example:
+      "accessPolicies/122256/authorizedOrgs/b3-BhcX_Ud5N"
+    updateMask: Required. Mask to control which fields get updated. Must be
+      non-empty.
+  """
+
+  authorizedOrgsDesc = _messages.MessageField('AuthorizedOrgsDesc', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesDeleteRequest object.
 
@@ -642,6 +722,107 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AuthorizedOrgsDesc(_messages.Message):
+  r"""`AuthorizedOrgsDesc` is a resource that contains a list of organizations
+  for a authorization type and asset type and its authorization direction.
+
+  Enums:
+    AssetTypeValueValuesEnum: The asset type of this authorized orgs desc.
+      e.g. device, credential strength.
+    AuthorizationDirectionValueValuesEnum: Authorization direction of this
+      authorization relationship. i.e. Whether to allow specified orgs to
+      evaluate this org's traffic, or allow specified orgs' traffic to be
+      evaluated by this org. Orgs specified as `AUTHORIZATION_DIRECTION_TO` in
+      this AuthorizedOrgDesc[com.google.identity.accesscontextmanager.v1alpha.
+      AuthorizedOrgsDesc] must also specify this org as the
+      `AUTHORIZATION_DIRECTION_FROM` in their own AuthorizedOrgDesc in order
+      for this relationship to take effect. Orgs specified as
+      `AUTHORIZATION_DIRECTION_FROM` in this AuthorizedOrgDesc[com.google.iden
+      tity.accesscontextmanager.v1alpha.AuthorizedOrgsDesc] must also specify
+      this org as the `AUTHORIZATION_DIRECTION_TO` in their own
+      AuthorizedOrgDesc in order for this relationship to take effect.
+    AuthorizationTypeValueValuesEnum: The authorization type of this
+      authorized orgs desc. e.g.authorization, troubleshooting or logging.
+
+  Fields:
+    assetType: The asset type of this authorized orgs desc. e.g. device,
+      credential strength.
+    authorizationDirection: Authorization direction of this authorization
+      relationship. i.e. Whether to allow specified orgs to evaluate this
+      org's traffic, or allow specified orgs' traffic to be evaluated by this
+      org. Orgs specified as `AUTHORIZATION_DIRECTION_TO` in this AuthorizedOr
+      gDesc[com.google.identity.accesscontextmanager.v1alpha.AuthorizedOrgsDes
+      c] must also specify this org as the `AUTHORIZATION_DIRECTION_FROM` in
+      their own AuthorizedOrgDesc in order for this relationship to take
+      effect. Orgs specified as `AUTHORIZATION_DIRECTION_FROM` in this Authori
+      zedOrgDesc[com.google.identity.accesscontextmanager.v1alpha.AuthorizedOr
+      gsDesc] must also specify this org as the `AUTHORIZATION_DIRECTION_TO`
+      in their own AuthorizedOrgDesc in order for this relationship to take
+      effect.
+    authorizationType: The authorization type of this authorized orgs desc.
+      e.g.authorization, troubleshooting or logging.
+    name: Assigned by the server during creation. The last segment has an
+      arbitrary length and has only URI unreserved characters (as defined by
+      [RFC 3986 Section
+      2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
+      specified by the client during creation. Example:
+      "accessPolicies/122256/authorizedOrgs/b3-BhcX_Ud5N"
+    orgs: The list of organization ids in this AuthorizedOrgsDesc.
+  """
+
+  class AssetTypeValueValuesEnum(_messages.Enum):
+    r"""The asset type of this authorized orgs desc. e.g. device, credential
+    strength.
+
+    Values:
+      ASSET_TYPE_UNSPECIFIED: No asset type specified.
+      ASSET_TYPE_DEVICE: Device asset type.
+      ASSET_TYPE_CREDENTIAL_STRENGTH: credential strength asset type.
+    """
+    ASSET_TYPE_UNSPECIFIED = 0
+    ASSET_TYPE_DEVICE = 1
+    ASSET_TYPE_CREDENTIAL_STRENGTH = 2
+
+  class AuthorizationDirectionValueValuesEnum(_messages.Enum):
+    r"""Authorization direction of this authorization relationship. i.e.
+    Whether to allow specified orgs to evaluate this org's traffic, or allow
+    specified orgs' traffic to be evaluated by this org. Orgs specified as
+    `AUTHORIZATION_DIRECTION_TO` in this AuthorizedOrgDesc[com.google.identity
+    .accesscontextmanager.v1alpha.AuthorizedOrgsDesc] must also specify this
+    org as the `AUTHORIZATION_DIRECTION_FROM` in their own AuthorizedOrgDesc
+    in order for this relationship to take effect. Orgs specified as
+    `AUTHORIZATION_DIRECTION_FROM` in this AuthorizedOrgDesc[com.google.identi
+    ty.accesscontextmanager.v1alpha.AuthorizedOrgsDesc] must also specify this
+    org as the `AUTHORIZATION_DIRECTION_TO` in their own AuthorizedOrgDesc in
+    order for this relationship to take effect.
+
+    Values:
+      AUTHORIZATION_DIRECTION_UNSPECIFIED: No direction specified.
+      AUTHORIZATION_DIRECTION_TO: Specified orgs will evaluate traffic.
+      AUTHORIZATION_DIRECTION_FROM: Specified orgs' traffic will be evaluated.
+    """
+    AUTHORIZATION_DIRECTION_UNSPECIFIED = 0
+    AUTHORIZATION_DIRECTION_TO = 1
+    AUTHORIZATION_DIRECTION_FROM = 2
+
+  class AuthorizationTypeValueValuesEnum(_messages.Enum):
+    r"""The authorization type of this authorized orgs desc.
+    e.g.authorization, troubleshooting or logging.
+
+    Values:
+      AUTHORIZATION_TYPE_UNSPECIFIED: No authorization type specified.
+      AUTHORIZATION_TYPE_TRUST: This authorization relationship is "trust".
+    """
+    AUTHORIZATION_TYPE_UNSPECIFIED = 0
+    AUTHORIZATION_TYPE_TRUST = 1
+
+  assetType = _messages.EnumField('AssetTypeValueValuesEnum', 1)
+  authorizationDirection = _messages.EnumField('AuthorizationDirectionValueValuesEnum', 2)
+  authorizationType = _messages.EnumField('AuthorizationTypeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  orgs = _messages.StringField(5, repeated=True)
 
 
 class BasicLevel(_messages.Message):
@@ -1236,6 +1417,19 @@ class ListAccessPoliciesResponse(_messages.Message):
   """
 
   accessPolicies = _messages.MessageField('AccessPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAuthorizedOrgsDescsResponse(_messages.Message):
+  r"""A response to `ListAuthorizedOrgsDescsRequest`.
+
+  Fields:
+    authorizedOrgsDescs: List of the Authorized Orgs Desc instances.
+    nextPageToken: The pagination token to retrieve the next page of results.
+      If the value is empty, no further results remain.
+  """
+
+  authorizedOrgsDescs = _messages.MessageField('AuthorizedOrgsDesc', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

@@ -77,14 +77,18 @@ class TopicsClient(object):
     self._service = self.client.projects_topics
     self._subscriptions_service = self.client.projects_subscriptions
 
-  def Create(self,
-             topic_ref,
-             labels=None,
-             kms_key=None,
-             message_retention_duration=None,
-             message_storage_policy_allowed_regions=None,
-             schema=None,
-             message_encoding=None):
+  def Create(
+      self,
+      topic_ref,
+      labels=None,
+      kms_key=None,
+      message_retention_duration=None,
+      message_storage_policy_allowed_regions=None,
+      schema=None,
+      message_encoding=None,
+      first_revision_id=None,
+      last_revision_id=None,
+  ):
     """Creates a Topic.
 
     Args:
@@ -95,17 +99,23 @@ class TopicsClient(object):
         the Topic.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
-      schema (Resource): Full resource name of schema used to validate
-        messages published on Topic.
+      schema (Resource): Full resource name of schema used to validate messages
+        published on Topic.
       message_encoding (str): If a schema is set, the message encoding of
         incoming messages to be validated against the schema.
+      first_revision_id (str): If a schema is set, the revision id of the oldest
+        revision allowed for validation.
+      last_revision_id (str): If a schema is set, the revision id of the newest
+        revision allowed for validation.
 
     Returns:
       Topic: The created topic.
 
     Raises:
-      InvalidSchemaSettingsException: If an invalid --schema or
-          --message-encoding flag comnbination is specified.
+      InvalidSchemaSettingsException: If an invalid --schema,
+          --message-encoding flag comnbination is specified,
+          or if the --first_revision_id revision is newer than
+          the --last_revision_id specified.
     """
     topic = self.messages.Topic(
         name=topic_ref.RelativeName(),
@@ -119,7 +129,11 @@ class TopicsClient(object):
     if schema and message_encoding:
       encoding_enum = ParseMessageEncoding(self.messages, message_encoding)
       topic.schemaSettings = self.messages.SchemaSettings(
-          schema=schema, encoding=encoding_enum)
+          schema=schema,
+          encoding=encoding_enum,
+          firstRevisionId=first_revision_id,
+          lastRevisionId=last_revision_id,
+      )
     return self._service.Create(topic)
 
   def Get(self, topic_ref):
@@ -331,14 +345,21 @@ class TopicsClient(object):
     iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(topic_ref, policy)
 
-  def Patch(self,
-            topic_ref,
-            labels=None,
-            kms_key_name=None,
-            message_retention_duration=None,
-            clear_message_retention_duration=False,
-            recompute_message_storage_policy=False,
-            message_storage_policy_allowed_regions=None):
+  def Patch(
+      self,
+      topic_ref,
+      labels=None,
+      kms_key_name=None,
+      message_retention_duration=None,
+      clear_message_retention_duration=False,
+      recompute_message_storage_policy=False,
+      message_storage_policy_allowed_regions=None,
+      schema=None,
+      message_encoding=None,
+      first_revision_id=None,
+      last_revision_id=None,
+      clear_schema_settings=None,
+  ):
     """Updates a Topic.
 
     Args:
@@ -353,12 +374,26 @@ class TopicsClient(object):
         the message storage policy.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
+      schema (Resource): Full resource name of schema used to validate messages
+        published on Topic.
+      message_encoding (str): If a schema is set, the message encoding of
+        incoming messages to be validated against the schema.
+      first_revision_id (str): If a schema is set, the revision id of the oldest
+        revision allowed for validation.
+      last_revision_id (str): If a schema is set, the revision id of the newest
+        revision allowed for validation.
+      clear_schema_settings (bool): If set, clear schema settings from the
+        topic.
 
     Returns:
       Topic: The updated topic.
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
       PatchConflictingArgumentsError: if conflicting arguments were provided
+      InvalidSchemaSettingsException: If an invalid --schema,
+          --message-encoding flag comnbination is specified,
+          or if the --first_revision_id revision is newer than
+          the --last_revision_id specified.
     """
     update_settings = []
     if labels:
@@ -385,6 +420,21 @@ class TopicsClient(object):
                   allowedPersistenceRegions=message_storage_policy_allowed_regions
               )))
 
+    if clear_schema_settings:
+      update_settings.append(_TopicUpdateSetting('schemaSettings', None))
+    elif schema and message_encoding:
+      encoding_enum = ParseMessageEncoding(self.messages, message_encoding)
+      update_settings.append(
+          _TopicUpdateSetting(
+              'schemaSettings',
+              self.messages.SchemaSettings(
+                  schema=schema,
+                  encoding=encoding_enum,
+                  firstRevisionId=first_revision_id,
+                  lastRevisionId=last_revision_id,
+              ),
+          )
+      )
     topic = self.messages.Topic(name=topic_ref.RelativeName())
 
     update_mask = []

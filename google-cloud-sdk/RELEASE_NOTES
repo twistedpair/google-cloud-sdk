@@ -1,6 +1,193 @@
 # Google Cloud CLI - Release Notes
 
-Copyright 2014-2022 Google Inc. All rights reserved.
+Copyright 2014-2023 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 413.0.0 (2023-01-10)
+
+### Breaking Changes
+
+*   **(Cloud Storage)** Added `--fetch-encrypted-object-hashes` flag to `ls` and `objects list` commands. API requests to the LIST endpoint do not fetch the hashes for encrypted objects by default. If this flag is set, a GET request is sent for each encrypted object in order to fetch hashes. This can significantly increase the cost of the commands.
+  * Previously, the fallback to GET was implemented for CSEK-encrypted objects as the default behavior. With this flag, both CSEK and CMEK are handled, and `gcloud` CLI checks if it has the necessary CSEK key before sending a GET request.
+*   **(Kubernetes Engine)** This change starts using the Client-Go Credential Plugin `gke-gcloud-auth-plugin` as noted in [Client-go Credential Plugin changes](https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke).
+
+
+### Google Cloud CLI
+
+* Fixed a crash during reauth when Enterprise Certificate is used.
+* Fixed issue where the `gcloud` CLI would crash when invoked in PowerShell 7.3.
+  This issue was reported at:
+  <https://issuetracker.google.com/issues/259295558>.
+* Added `core/default_format` and `core/format` properties to config in order
+  enable setting a default print format. Print format is first determined by
+  global flag `--format`. If `--format` flag is not defined, then CLI defaults
+  to `core/format` value. If `core/format` is not defined, then CLI defaults to
+  command specific output. If command specific output is undefined, then format
+  is determined by `core/default_format`. `core/default_format` defaults to yaml
+  format.
+
+### AI
+
+* Modified `--region` flag of `gcloud ai model-monitoring-jobs` to include new
+model monitoring jobs regions.
+* Modified `--explanation-metadata-file` flag of `gcloud ai models upload` from required to optional.
+* Added optional `output-image-uri` field to `--worker-pool-spec` flag of `gcloud ai custom-jobs create` to name and store the custom image built with autopackaging in the specified Google Container Registry or Artifact Registry.
+
+### Anthos Multi-Cloud
+
+*   Updated `gcloud container aws operations list` to show the underlying action
+    (create, update, delete, etc) associated with AWS long-running operations.
+*   Updated `gcloud container azure operations list` to show the underlying
+    action (create, update, delete, etc) associated with Azure long-running
+    operations.
+*   Added `gcloud container azure operations cancel` to cancel an ongoing
+    LRO operation on Azure resources.
+*   Added `gcloud container aws operations cancel` to cancel an ongoing
+    LRO operation on AWS resources.
+*   Added `--tags` flag to `gcloud container aws node-pools update` to
+    update the tags assigned to AWS node pool resources.
+*   Added `--clear-tags` flag to `gcloud container aws node-pools update`
+    to clear the tags assigned to AWS node pool resources.
+*   Added `--autoscaling-metrics-granularity` flag to
+    `gcloud container aws node-pools create` to set granularity when enabling
+    CloudWatch metrics collection of the autoscaling group of AWS node pools.
+*   Added `--autoscaling-metrics` flag to
+    `gcloud container aws node-pools create` to enable collection of specific
+    CloudWatch metrics of the autoscaling group of AWS node pools.
+*   Added `--autoscaling-metrics-granularity` flag to
+    `gcloud container aws node-pools update` to update the granularity of
+    CloudWatch metrics collection for the autoscaling group of AWS node
+    pools.
+*   Added `--autoscaling-metrics` flag to
+    `gcloud container aws node-pools update` to update the collection of
+    specific CloudWatch metrics for the autoscaling group of AWS node pools.
+*   Added `--clear-autoscaling-metrics` flag to
+    `gcloud container aws node-pools update` to clear the CloudWatch metrics
+    collection associated with the autoscaling group of AWS node pools.
+*   Added `gcloud container attached operations list` to show the underlying
+    action (create, update, delete, etc) associated with Attached clusters
+    long-running operations.
+*   Added `gcloud container attached operations describe` to show detailed
+    status of a provided Attached clusters long-running operation.
+*   Added `gcloud container attached operations wait` to wait for completion of
+    a provided Attached clusters long-running operation.
+
+### BigQuery
+
+* Fixed issue with timestamp normalization in Windows.
+* Extended the insert flags to include a `insert_id` flag that's appended to the
+  row number of the data to be inserted as the `insertId` field that's used for
+  deduping newly inserted rows. This can be used to ensure repeat executions
+  don't add unintended data.
+
+### Cloud Access Context Manager
+
+* Promoted `gcloud access-context-manager authorized-orgs` to GA.
+
+### Cloud Build
+
+* Removed `--subscription-filter` flag of `gcloud builds triggers create manual`.
+
+### Cloud Composer
+
+* Added `--enable-cloud-data-lineage-integration` to `gcloud composer
+  environments create/update` to enable Cloud Data Lineage integration.
+* Added `--disable-cloud-data-lineage-integration` to `gcloud composer
+  environments update` to disable Cloud Data Lineage integration.
+* Enabled `db clean` and `db check` Airflow commands executable via `gcloud
+ composer environments run` for environments with Airflow 2.3 or newer.
+
+### Cloud Run
+
+* Added `--env-vars-file` to `gcloud beta run jobs create` to add environment
+  variables to the job from a YAML file.
+* Removed the call to action from `gcloud beta run integrations describe` for
+  Redis integrations that are not ready for use.
+
+### Cloud SQL
+
+*   Added `--striped` and `--stripe_count` flags to `gcloud sql import bak`
+    and added `--striped` flag to `gcloud sql export bak` to enable the striped
+    import/export feature for SQL Server.
+*   Promoted `--restore-database-name` flag for `gcloud sql instance clone --point-in-time`
+    to support single database PITR restore for SQL Server to beta and GA.
+*   Added `gcloud sql users describe` command, which describes a Cloud SQL user in an instance in alpha.
+
+### Cloud Services
+
+*  Promoted `gcloud services api-keys list` in beta.
+ *  Promoted `gcloud services api-keys describe` in beta.
+ *  Promoted `gcloud services api-keys get-key-string` in beta.
+ *  Promoted `gcloud services api-keys create` in beta.
+ *  Promoted `gcloud services api-keys update` in beta.
+
+### Cloud Storage
+
+* Added `gcloud storage buckets create --placement` flag.
+* Promoted `gcloud storage objects update` retention flags to GA.
+  * `--event-based-hold`
+  * `--temporary-hold`
+* Removed `gcloud storage buckets update --no-lock-retention-period` flag.
+
+### Cloud Workstations
+
+* Added `gcloud beta workstations clusters create` which creates a cluster under a specified region.
+* Added `gcloud beta workstations configs create` which creates a workstation configuration under a specified cluster.
+* Added `gcloud beta workstations create` which creates a workstation under a specified config.
+* Added `gcloud beta workstations delete` which deletes the given workstation.
+* Added `gcloud beta workstations configs delete` which deletes the given config.
+* Added `gcloud beta workstations clusters delete` which deletes the given cluster.
+* Added `gcloud beta workstations describe` which displays all fields for a given workstation.
+* Added `gcloud beta workstations configs describe` which displays all fields for a given config.
+* Added `gcloud beta workstations clusters describe` which displays all fields for a given cluster.
+* Added `gcloud beta workstations start` which starts a specified workstation.
+* Added `gcloud beta workstations stop` which stops a specified workstation.
+
+### Compute Engine
+
+* Added <get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud beta compute backend-buckets`.
+* Promoted `--endpoint-type` flag of `gcloud compute addresses create` to GA.
+* Promoted `gcloud compute sole-tenancy node-groups simulate-maintenance-event` to beta.
+* Added `--all-instances-config-effective` flag of `gcloud compute instance-groups managed wait-until` to beta.
+* Modified `gcloud compute forwarding-rules create` to allow specifying `--address` and `--ip-version` at the same time.
+
+### Compute Firewall Policies
+
+* Fixed `gcloud compute network-firewall-policies rules update` not sending an
+  empty list to the API if a field is specified as empty.
+
+### Database Migration
+
+* Added `gcloud database-migration private-connections create` which creates a database-migration private connection.
+* Added `gcloud database-migration private-connections list` which lists the database-migration private connections.
+* Added `gcloud database-migration private-connections describe` which describes a database-migration private connection.
+* Added `gcloud database-migration private-connections delete` which deletes a database-migration private connection.
+* Updated `gcloud database-migration connection-profiles create` to support creating Oracle connection profiles.
+* Updated `gcloud database-migration connection-profiles create` to support connectivity in creating Postgresql connection profiles.
+* Added `gcloud database-migrate conversion-workspaces create` which creates a database-migration conversion workspace.
+* Added `gcloud database-migrate conversion-workspaces update` which updates a database-migration conversion workspace.
+* Added `gcloud database-migration conversion-workspaces list` which lists the database-migration conversion workspaces.
+* Added `gcloud database-migration conversion-workspaces describe` which describes a database-migration conversion workspace.
+* Added `gcloud database-migration conversion-workspaces commit` which commits a database-migration conversion workspace.
+* Added `gcloud database-migration conversion-workspaces rollback` which rollbacks a database-migration conversion workspace.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.23.14 to 1.23.15.
+* Removes kubectl.1.20, since it is no longer needed.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.15)
+  * kubectl.1.24 (1.24.9)
+  * kubectl.1.25 (1.25.5)
+
+### Pubsub Emulator
+
+*   Added support for Exactly-once Delivery.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

@@ -69,13 +69,6 @@ _SUGGESTED_GO_RUNTIME = 'go113'
 
 _BUCKET_RESOURCE_URI_RE = re.compile(r'^projects/_/buckets/.{3,222}$')
 
-_KMS_KEY_RE = re.compile(
-    r'^projects/[^/]+/locations/(?P<location>[^/]+)/keyRings/[a-zA-Z0-9_-]+'
-    '/cryptoKeys/[a-zA-Z0-9_-]+$')
-_DOCKER_REPOSITORY_RE = re.compile(
-    r'^projects/(?P<project>[^/]+)/locations/(?P<location>[^/]+)'
-    '/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$')
-
 _API_NAME = 'cloudfunctions'
 _API_VERSION = 'v1'
 
@@ -286,59 +279,6 @@ def ValidatePathOrRaise(path):
   """
   path = _ValidateArgumentByRegexOrRaise(path, _PATH, _PATH_RE_ERROR)
   return path
-
-
-def ValidateKMSKeyForFunction(kms_key, function_ref):
-  """Checks that the KMS key is compatible with the function.
-
-  Args:
-    kms_key: Fully qualified KMS key name.
-    function_ref: Function resource reference.
-
-  Raises:
-    InvalidArgumentException: If the specified KMS key is not compatible with
-      the function.
-  """
-  function_project = function_ref.projectsId
-  function_location = function_ref.locationsId
-  kms_key_match = _KMS_KEY_RE.search(kms_key)
-  if kms_key_match:
-    kms_keyring_location = kms_key_match.group('location')
-    if kms_keyring_location == 'global':
-      raise base_exceptions.InvalidArgumentException(
-          '--kms-key', 'Global KMS keyrings are not allowed.')
-    if function_location != kms_keyring_location:
-      raise base_exceptions.InvalidArgumentException(
-          '--kms-key',
-          'KMS keyrings should be created in the same region as the function.')
-
-
-def ValidateDockerRepositoryForFunction(docker_repository, function_ref):
-  """Checks that the Docker repository is compatible with the function.
-
-  Args:
-    docker_repository: Fully qualified Docker repository resource name.
-    function_ref: Function resource reference.
-
-  Raises:
-    InvalidArgumentException: If the specified Docker repository is not
-      compatible with the function.
-  """
-  function_project = function_ref.projectsId
-  function_location = function_ref.locationsId
-  repo_match = _DOCKER_REPOSITORY_RE.search(docker_repository)
-  if repo_match:
-    repo_project = repo_match.group('project')
-    repo_location = repo_match.group('location')
-    if function_project != repo_project and function_project.isdigit(
-    ) == repo_project.isdigit():
-      raise base_exceptions.InvalidArgumentException(
-          '--docker-repository',
-          'Cross-project repositories are not supported.')
-    if function_location != repo_location:
-      raise base_exceptions.InvalidArgumentException(
-          '--docker-repository',
-          'Cross-location repositories are not supported.')
 
 
 def _GetViolationsFromError(error):

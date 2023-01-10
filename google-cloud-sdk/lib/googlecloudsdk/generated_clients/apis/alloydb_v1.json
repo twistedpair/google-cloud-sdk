@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "AlloyDB API",
-  "description": "AlloyDB for PostgreSQL is an open source-compatible database service that\u2019s a powerful option for migrating, modernizing, or building commercial-grade applications. It offers full compatibility with standard PostgreSQL, and is more than 4x faster for transactional workloads and up to 100x faster for analytical queries than standard PostgreSQL in our performance tests. AlloyDB for PostgreSQL offers a 99.99 percent availability SLA inclusive of maintenance. AlloyDB is optimized for the most demanding use cases, allowing you to build new applications that require high transaction throughput, large database sizes, or multiple read resources; scale existing PostgreSQL workloads with no application changes; and modernize legacy proprietary databases. ",
+  "description": "AlloyDB for PostgreSQL is an open source-compatible database service that provides a powerful option for migrating, modernizing, or building commercial-grade applications. It offers full compatibility with standard PostgreSQL, and is more than 4x faster for transactional workloads and up to 100x faster for analytical queries than standard PostgreSQL in our performance tests. AlloyDB for PostgreSQL offers a 99.99 percent availability SLA inclusive of maintenance. AlloyDB is optimized for the most demanding use cases, allowing you to build new applications that require high transaction throughput, large database sizes, or multiple read resources; scale existing PostgreSQL workloads with no application changes; and modernize legacy proprietary databases. ",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -245,7 +245,7 @@
           "$ref": "MigrationSource"
         },
         "name": {
-          "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression `[a-z0-9-]+`. For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
           "readOnly": true,
           "type": "string"
         },
@@ -399,6 +399,11 @@
       "description": "Message describing a BackupSource.",
       "type": "object",
       "properties": {
+        "backupUid": {
+          "description": "Output only. The system-generated UID of the backup which was used to create this resource. The UID is generated when the backup is created, and it is retained until the backup is deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
         "backupName": {
           "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
           "type": "string"
@@ -741,11 +746,11 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB. NEXT ID: 22",
+      "description": "An Instance is a computing unit that an end customer can connect to. It's the main unit of computing resources in AlloyDB.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
           "readOnly": true,
           "type": "string"
         },
@@ -868,6 +873,10 @@
             "$ref": "Node"
           }
         },
+        "queryInsightsConfig": {
+          "description": "Configuration for query insights.",
+          "$ref": "QueryInsightsInstanceConfig"
+        },
         "readPoolConfig": {
           "description": "Read pool specific config.",
           "$ref": "ReadPoolConfig"
@@ -927,6 +936,31 @@
         "state": {
           "description": "Determined by state of the compute VM and postgres-service health. Compute VM state can have values listed in https:\/\/cloud.google.com\/compute\/docs\/instances\/instance-life-cycle and postgres-service health can have values: HEALTHY and UNHEALTHY.",
           "type": "string"
+        }
+      }
+    },
+    "QueryInsightsInstanceConfig": {
+      "id": "QueryInsightsInstanceConfig",
+      "description": "QueryInsights Instance specific configuration.",
+      "type": "object",
+      "properties": {
+        "recordApplicationTags": {
+          "description": "Record application tags for an instance. This flag is turned \"on\" by default.",
+          "type": "boolean"
+        },
+        "recordClientAddress": {
+          "description": "Record client address for an instance. Client address is PII information. This flag is turned \"on\" by default.",
+          "type": "boolean"
+        },
+        "queryStringLength": {
+          "description": "Query string length. The default value is 1024. Any integer between 256 and 4500 is considered valid.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "queryPlansPerMinute": {
+          "description": "Number of query execution plans captured by Insights per minute for all queries combined. The default value is 5. Any integer between 0 and 20 is considered valid.",
+          "type": "integer",
+          "format": "uint32"
         }
       }
     },
@@ -998,7 +1032,7 @@
     },
     "Backup": {
       "id": "Backup",
-      "description": "Message describing Backup object NEXT ID: 18",
+      "description": "Message describing Backup object",
       "type": "object",
       "properties": {
         "name": {
@@ -1077,6 +1111,11 @@
           "description": "User-provided description of the backup.",
           "type": "string"
         },
+        "clusterUid": {
+          "description": "Output only. The system-generated UID of the cluster which was used to create this resource.",
+          "readOnly": true,
+          "type": "string"
+        },
         "clusterName": {
           "description": "Required. The full resource name of the backup source cluster (e.g., projects\/\/locations\/\/clusters\/).",
           "type": "string"
@@ -1146,7 +1185,7 @@
           "$ref": "IntegerRestrictions"
         },
         "name": {
-          "description": "The name of the flag resource, following GCP conventions, e.g.: * projects\/{project}\/locations\/{location}\/flags\/{flag} This field currently has no semantic meaning.",
+          "description": "The name of the flag resource, following Google Cloud conventions, e.g.: * projects\/{project}\/locations\/{location}\/flags\/{flag} This field currently has no semantic meaning.",
           "type": "string"
         },
         "flagName": {
@@ -1645,7 +1684,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+                      "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression `[a-z0-9-]+`. For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1901,7 +1940,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z]([a-z0-9-]{0,61}[a-z0-9])?\", e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+                          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of lowercase letters, numbers, and dashes, starting with a letter, and ending with a letter or number. For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2259,7 +2298,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the parent resource. The required format is: * projects\/{project}\/locations\/{location} Regardless of the parent specified here, as long it is contains a valid project and location, the service will return a static list of supported flags resources. Note that we do not not yet support region-specific flags (see b\/211502903).",
+                      "description": "Required. The name of the parent resource. The required format is: * projects\/{project}\/locations\/{location} Regardless of the parent specified here, as long it is contains a valid project and location, the service will return a static list of supported flags resources. Note that we do not yet support region-specific flags.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,

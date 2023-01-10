@@ -338,3 +338,75 @@ def AddProxyConfigForUpdate(parser, noun):
 
 def GetSubnetIds(args):
   return getattr(args, 'subnet_ids', None) or []
+
+
+def AddAutoScalingMetricsCollection(parser):
+  """Adds autoscaling metrics collection flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_argument_group('Node pool autoscaling metrics collection')
+  AddAutoscalingMetricsGranularity(group, required=True)
+  AddAutoscalingMetrics(group)
+
+
+def AddAutoscalingMetricsGranularity(parser, required=False):
+  parser.add_argument(
+      '--autoscaling-metrics-granularity',
+      required=required,
+      help=('Frequency at which EC2 Auto Scaling sends aggregated data to '
+            'AWS CloudWatch. The only valid value is "1Minute".'))
+
+
+def GetAutoscalingMetricsGranularity(args):
+  return getattr(args, 'autoscaling_metrics_granularity', None)
+
+
+def AddAutoscalingMetrics(parser):
+  parser.add_argument(
+      '--autoscaling-metrics',
+      type=arg_parsers.ArgList(),
+      metavar='AUTOSCALING_METRIC',
+      required=False,
+      help=('Autoscaling metrics to enable. For a list of valid metrics, '
+            'refer to https://docs.aws.amazon.com/autoscaling/ec2/APIReference/'
+            'API_EnableMetricsCollection.html. If granularity is specified '
+            'but not any metrics, all metrics are enabled.'))
+
+
+def GetAutoscalingMetrics(args):
+  return getattr(args, 'autoscaling_metrics', None)
+
+
+def AddAutoScalingMetricsCollectionForUpdate(parser):
+  """Adds autoscaling metrics collection flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_group(
+      'Node pool autoscaling metrics collection', mutex=True)
+  update_metrics_group = group.add_group(
+      'Update existing cloudwatch '
+      'autoscaling metrics collection parameters')
+  AddAutoscalingMetricsGranularity(update_metrics_group)
+  AddAutoscalingMetrics(update_metrics_group)
+  AddClearAutoscalingMetrics(group)
+
+
+def AddClearAutoscalingMetrics(parser):
+  """Adds flag for clearing the cloudwatch autoscaling metrics collection.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  parser.add_argument(
+      '--clear-autoscaling-metrics',
+      action='store_true',
+      default=None,
+      help='Clear the cloudwatch autoscaling metrics collection '
+      'associated with the nodepool.')

@@ -456,26 +456,36 @@ def AddRestoreClusterSourceFlags(parser):
             '2012-11-15T16:19:00.094Z.'))
 
 
-def AddPitrConfigFlags(parser):
-  """Adds PITR configuration flags.
+def AddContinuousBackupConfigFlags(parser):
+  """Adds Continuous backup configuration flags.
 
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
   """
-  group = parser.add_group(mutex=True, hidden=True, help='PITR configuration.')
+  group = parser.add_group(
+      mutex=True, hidden=True, help='Continuous Backup configuration.')
+  enable_config_group = group.add_group(
+      help='Enable continuous backup configuration.')
+  # TODO(b/258257161): Consider changing 'disable-continuous-backup' to
+  # 'enable-continuous-backup' and 'store_false' instead
   group.add_argument(
-      '--disable-pitr',
+      '--disable-continuous-backup',
       hidden=True,
       action='store_true',
-      help='Disables PITR on the cluster.')
-  group.add_argument(
-      '--pitr-log-retention-window',
+      help='Disables Continuous Backups on the cluster.')
+  enable_config_group.add_argument(
+      '--continuous-backup-recovery-window-days',
       hidden=True,
-      metavar='RETENTION_PERIOD',
-      type=arg_parsers.Duration(parsed_unit='s'),
-      help=('Retention window of the log files saved to support PITR. See '
-            '`$ gcloud topic datetimes` for information on absolute duration '
-            'formats.'))
+      metavar='RECOVERY_PERIOD',
+      type=int,
+      help=('Recovery window of the log files and backups saved to support '
+            'Continuous Backups.'))
+  kms_resource_args.AddKmsKeyResourceArg(
+      enable_config_group,
+      'continuous backup',
+      flag_overrides=GetContinuousBackupKmsFlagOverrides(),
+      permission_info="The 'AlloyDB Service Agent' service account must hold permission 'Cloud KMS CryptoKey Encrypter/Decrypter'",
+      name='--continuous-backup-encryption-key')
 
 
 def KmsKeyAttributeConfig():
@@ -546,6 +556,15 @@ def GetAutomatedBackupKmsFlagOverrides():
       'kms-keyring': '--automated-backup-encryption-key-keyring',
       'kms-location': '--automated-backup-encryption-key-location',
       'kms-project': '--automated-backup-encryption-key-project'
+  }
+
+
+def GetContinuousBackupKmsFlagOverrides():
+  return {
+      'kms-key': '--continuous-backup-encryption-key',
+      'kms-keyring': '--continuous-backup-encryption-key-keyring',
+      'kms-location': '--continuous-backup-encryption-key-location',
+      'kms-project': '--continuous-backup-encryption-key-project'
   }
 
 

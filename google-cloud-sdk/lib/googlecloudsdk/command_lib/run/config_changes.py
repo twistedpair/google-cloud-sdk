@@ -1224,3 +1224,51 @@ class NetworkInterfacesChange(ConfigChanger):
     self._SetOrClear(annotations, k8s_object.NETWORK_INTERFACES_ANNOTATION,
                      value)
     return resource
+
+
+class CustomAudiencesChanges(ConfigChanger):
+  """Represents the intent to update the custom audiences."""
+
+  def __init__(self, args):
+    """Initializes the intent to update the custom audiences.
+
+    Args:
+      args: Args to the command.
+    """
+    super(CustomAudiencesChanges, self).__init__(adjusts_template=True)
+    self._args = args
+
+  @property
+  def add_custom_audiences(self):
+    return getattr(self._args, 'add_custom_audiences', None)
+
+  @property
+  def remove_custom_audiences(self):
+    return getattr(self._args, 'remove_custom_audiences', None)
+
+  @property
+  def set_custom_audiences(self):
+    return getattr(self._args, 'set_custom_audiences', None)
+
+  @property
+  def clear_custom_audiences(self):
+    return getattr(self._args, 'clear_custom_audiences', None)
+
+  def Adjust(self, resource):
+
+    def GetCurrentCustomAudiences():
+      annotation_val = resource.annotations.get(
+          k8s_object.CUSTOM_AUDIENCES_ANNOTATION)
+      if annotation_val:
+        return json.loads(annotation_val)
+      return []
+
+    audiences = repeated.ParsePrimitiveArgs(self, 'custom-audiences',
+                                            GetCurrentCustomAudiences)
+    if audiences is not None:
+      if audiences:
+        resource.annotations[
+            k8s_object.CUSTOM_AUDIENCES_ANNOTATION] = json.dumps(audiences)
+      elif k8s_object.CUSTOM_AUDIENCES_ANNOTATION in resource.annotations:
+        del resource.annotations[k8s_object.CUSTOM_AUDIENCES_ANNOTATION]
+    return resource

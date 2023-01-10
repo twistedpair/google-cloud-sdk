@@ -26,38 +26,37 @@ from googlecloudsdk.core import yaml
 
 def MakeReservations(args, messages, holder):
   if args.IsSpecified('reservations_from_file'):
-    return _MakeReservationsFromFile(messages, args)
+    return _MakeReservationsFromFile(messages, args, holder.resources)
   elif args.IsSpecified('reservation'):
     return [_MakeSingleReservation(args, messages, holder)]
   else:
     return []
 
 
-def MakeUpdateReservations(args, messages):
+def MakeUpdateReservations(args, messages, resources):
   if args.IsSpecified('reservations_from_file'):
-    return _MakeReservationsFromFile(messages, args)
+    return _MakeReservationsFromFile(messages, args, resources)
   elif args.IsSpecified('source_reservation'):
-    return MakeSourceDestReservations(args, messages)
+    return MakeSourceDestReservations(args, messages, resources)
   else:
     return []
 
 
-def MakeSourceDestReservations(args, messages):
+def MakeSourceDestReservations(args, messages, resources):
   """Return messages required for update-reservations command."""
   source_msg = ReservationArgToMessage('source_reservation',
                                        'source_accelerator', 'source_local_ssd',
                                        'source_share_setting',
-                                       'source_share_with', args, messages)
-  destination_msg = ReservationArgToMessage('dest_reservation',
-                                            'dest_accelerator',
-                                            'dest_local_ssd',
-                                            'dest_share_setting',
-                                            'dest_share_with', args, messages)
+                                       'source_share_with', args, messages,
+                                       resources)
+  destination_msg = ReservationArgToMessage(
+      'dest_reservation', 'dest_accelerator', 'dest_local_ssd',
+      'dest_share_setting', 'dest_share_with', args, messages, resources)
   return [source_msg, destination_msg]
 
 
 def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
-                            share_with, args, messages):
+                            share_with, args, messages, resources):
   """Convert single reservation argument into a message."""
   accelerators = util.MakeGuestAccelerators(messages,
                                             getattr(args, accelerator,
@@ -68,7 +67,7 @@ def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
       messages, args, getattr(args, share_setting, None), share_with)
   reservation = getattr(args, reservation, None)
   specific_allocation = util.MakeSpecificSKUReservationMessage(
-      messages, reservation.get('vm-count', None),
+      messages, resources, reservation.get('vm-count', None),
       accelerators, local_ssds,
       reservation.get('machine-type', None),
       reservation.get('min-cpu-platform', None))
@@ -82,12 +81,12 @@ def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
   return a_msg
 
 
-def _MakeReservationsFromFile(messages, args):
+def _MakeReservationsFromFile(messages, args, resources):
   reservations_yaml = yaml.load(args.reservations_from_file)
-  return _ConvertYAMLToMessage(messages, reservations_yaml)
+  return _ConvertYAMLToMessage(messages, reservations_yaml, resources)
 
 
-def _ConvertYAMLToMessage(messages, reservations_yaml):
+def _ConvertYAMLToMessage(messages, reservations_yaml, resources):
   """Converts the fields in yaml to allocation message object."""
   if not reservations_yaml:
     return []
@@ -100,7 +99,7 @@ def _ConvertYAMLToMessage(messages, reservations_yaml):
     share_settings = util.MakeShareSettingsWithDict(
         messages, a, a.get('share_setting', None))
     specific_allocation = util.MakeSpecificSKUReservationMessage(
-        messages, a.get('vm_count', None), accelerators, local_ssds,
+        messages, resources, a.get('vm_count', None), accelerators, local_ssds,
         a.get('machine_type', None), a.get('min_cpu_platform', None))
     a_msg = util.MakeReservationMessage(
         messages, a.get('reservation', None), share_settings,

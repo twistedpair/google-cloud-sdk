@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 _REDIS_INSTANCE_TYPE = 'google_redis_instance'
@@ -81,6 +82,9 @@ class RedisFormatter(base_formatter.BaseFormatter):
   def CallToAction(self, record):
     """Call to action to use generated environment variables.
 
+    If the resource state is not ACTIVE then the resource is not ready for
+    use and the call to action will not be shown.
+
     Args:
       record: dict, the integration.
 
@@ -91,6 +95,10 @@ class RedisFormatter(base_formatter.BaseFormatter):
     ## TODO(b/222759433):Once more than one redis instance is supported print
     ## correct variables. This will not be trivial since binding is not
     ## contained with redis resource.
+
+    state = record.get('status', '{}').get('state', '')
+    if state != states.ACTIVE:
+      return None
 
     return ('To connect to the Redis instance utilize the '
             'environment variables {} and {}. These have '

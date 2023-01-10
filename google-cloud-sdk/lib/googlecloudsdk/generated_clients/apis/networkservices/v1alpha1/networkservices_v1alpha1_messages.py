@@ -725,14 +725,17 @@ class EdgeCacheOrigin(_messages.Message):
       the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
       character must be a letter, and all following characters must be a dash,
       underscore, letter or digit.
-    originAddress: Required. - **FQDN**: `media-backend.example.com` -
-      **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google
-      Cloud Storage**: `gs://bucketname` or
-      `bucketname.storage.googleapis.com` The following limitations apply to
-      fully-qualified domain names: * They must be resolvable through public
-      DNS. * They must not contain a protocol (such as `https://`). * They
-      must not contain any slashes. When providing an IP address, it must be
-      publicly routable. IPv6 addresses must not be enclosed in square
+    originAddress: Required. A fully qualified domain name (FQDN), an IPv4 or
+      IPv6 address reachable over the public Internet, or the address of a
+      Google Cloud Storage bucket. This address is used as the origin for
+      cache requests. The following are example origins: - **FQDN**: `media-
+      backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**:
+      `2607:f8b0:4012:809::200e` - **Google Cloud Storage**: `gs://bucketname`
+      or `bucketname.storage.googleapis.com` The following limitations apply
+      to fully-qualified domain names: * They must be resolvable through
+      public DNS. * They must not contain a protocol (such as `https://`). *
+      They must not contain any slashes. When providing an IP address, it must
+      be publicly routable. IPv6 addresses must not be enclosed in square
       brackets.
     originOverrideAction: Optional. The override actions, including
       url_rewrites and header additions, for requests that use this origin.
@@ -3672,6 +3675,103 @@ class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NetworkservicesProjectsLocationsGlobalGetServiceObserverRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGlobalGetServiceObserverRequest
+  object.
+
+  Fields:
+    name: Required. A name of the ServiceObserver to get. Must be in the
+      format `projects/*/locations/global/serviceObserver`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGlobalServiceObserverGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsGlobalServiceObserverGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsGlobalServiceObserverSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsGlobalServiceObserverSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsGlobalServiceObserverTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGlobalServiceObserverTestIamPermission
+  sRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsGlobalUpdateServiceObserverRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGlobalUpdateServiceObserverRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ServiceObserver resource. It matches pattern
+      `projects/*/locations/global/serviceObserver`. Note: this is a
+      Singleton, so the name is derived from the name of the project.
+    serviceObserver: A ServiceObserver resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceObserver resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceObserver = _messages.MessageField('ServiceObserver', 2)
+  updateMask = _messages.StringField(3)
+
+
 class NetworkservicesProjectsLocationsGrpcRoutesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGrpcRoutesCreateRequest object.
 
@@ -5823,6 +5923,75 @@ class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
   enable = _messages.BooleanField(1)
 
 
+class ServiceObserver(_messages.Message):
+  r"""ServiceObserver is a resource for defining parameters for Service
+  Observer (AKA Service-Graph).
+
+  Enums:
+    StateValueValuesEnum: Optional. State of Service Observer. The state set
+      here applies to the entire project. Disabled by default.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceObserver resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    labels: Optional. Set of label tags associated with the ServiceObserver
+      resource.
+    name: Required. Name of the ServiceObserver resource. It matches pattern
+      `projects/*/locations/global/serviceObserver`. Note: this is a
+      Singleton, so the name is derived from the name of the project.
+    state: Optional. State of Service Observer. The state set here applies to
+      the entire project. Disabled by default.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional. State of Service Observer. The state set here applies to the
+    entire project. Disabled by default.
+
+    Values:
+      STATE_UNSPECIFIED: Service Observer wasn't set. Default is disabled.
+      DISABLED: Service Observer is disabled.
+      ENABLED: Service Observer is enabled.
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceObserver
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -6517,18 +6686,33 @@ class WasmPluginVersion(_messages.Message):
       whether a tag or digest was originally specified in the "image" field.
     imageUri: Optional. URI of the container image containing the Wasm plugin,
       stored in the Artifact Registry. When a new WasmPluginVersion is
-      created, the URI gets resolved to an image digest and saved in the
-      `image_digest` field, and the user-provided tag or digest is removed
-      from the "image" field.
+      created, the digest of the container image is saved in the
+      `image_digest` field. When downloading an image, the digest value will
+      be used instead of an image tag.
     labels: Optional. Set of label tags associated with the WasmPluginVersion
       resource.
     name: Optional. Name of the WasmPluginVersion resource. System-generated
       if unspecified by the user. It matches pattern
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}/
       versions/{wasm_plugin_version}'.
+    pluginConfigData: Configuration for the Wasm plugin. The configuration is
+      provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure
+      Proxy-Wasm ABI. When a new WasmPluginVersion is created, the digest of
+      the contents is saved in the "plugin_config_digest" field.
+    pluginConfigDigest: Output only. This field holds the digest (usually
+      checksum) value for the plugin configuration. The value is calculated
+      based on the contents of the "plugin_config_data" or the container image
+      defined by the "plugin_config_uri" field.
+    pluginConfigUri: URI of the WasmPlugin configuration stored in the
+      Artifact Registry. The configuration is provided to the Proxy-Wasm
+      plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. The
+      container image must contain only a single file with the exact name
+      "plugin.config". When a new WasmPluginVersion is created, the digest of
+      the container image is saved in the "plugin_config_digest" field.
     proxyWasmPluginConfig: Optional. Configuration for the Wasm plugin. The
       configuration is provided to the Proxy-Wasm plugin at runtime via the
-      proxy_on_configure Proxy-Wasm ABI.
+      proxy_on_configure Proxy-Wasm ABI. Deprecated: Please use
+      "plugin_config_data" or "plugin_config_uri".
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -6563,8 +6747,11 @@ class WasmPluginVersion(_messages.Message):
   imageUri = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  proxyWasmPluginConfig = _messages.BytesField(7)
-  updateTime = _messages.StringField(8)
+  pluginConfigData = _messages.BytesField(7)
+  pluginConfigDigest = _messages.StringField(8)
+  pluginConfigUri = _messages.StringField(9)
+  proxyWasmPluginConfig = _messages.BytesField(10)
+  updateTime = _messages.StringField(11)
 
 
 class WasmPluginVersionDetails(_messages.Message):
@@ -6582,15 +6769,30 @@ class WasmPluginVersionDetails(_messages.Message):
       WasmPluginVersion. This field holds the digest value regardless of
       whether a tag or digest was originally specified in the "image" field.
     imageUri: Required. URI of the container image containing the Wasm plugin,
-      stored in the Artifact Registry. When a new WasmPluginVersion is
-      created, the URI gets resolved to an image digest and saved in the
-      `image_digest` field, and the user-provided tag or digest is removed
-      from the "image" field.
+      stored in the Artifact Registry. The container image must contain only a
+      single file with the exact name "plugin.wasm". When a new
+      WasmPluginVersion is created, the URI gets resolved to an image digest
+      and saved in the `image_digest` field.
     labels: Optional. Set of label tags associated with the WasmPluginVersion
       resource.
     pluginConfig: Optional. Configuration for the Wasm plugin. The
       configuration is provided to the Proxy-Wasm plugin at runtime via the
-      proxy_on_configure Proxy-Wasm ABI.
+      proxy_on_configure Proxy-Wasm ABI. Deprecated: Please use
+      "plugin_config_data" or "plugin_config_uri".
+    pluginConfigData: Configuration for the Wasm plugin. The configuration is
+      provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure
+      Proxy-Wasm ABI. When a new WasmPluginVersion is created, the digest of
+      the contents is saved in the "plugin_config_digest" field.
+    pluginConfigDigest: Output only. This field holds the digest (usually
+      checksum) value for the plugin configuration. The value is calculated
+      based on the contents of the "plugin_config_data" or the container image
+      defined by the "plugin_config_uri" field.
+    pluginConfigUri: URI of the WasmPlugin configuration stored in the
+      Artifact Registry. The configuration is provided to the Proxy-Wasm
+      plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. The
+      container image must contain only a single file with the exact name
+      "plugin.config". When a new WasmPluginVersion is created, the digest of
+      the container image is saved in the "plugin_config_digest" field.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -6625,7 +6827,10 @@ class WasmPluginVersionDetails(_messages.Message):
   imageUri = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   pluginConfig = _messages.BytesField(6)
-  updateTime = _messages.StringField(7)
+  pluginConfigData = _messages.BytesField(7)
+  pluginConfigDigest = _messages.StringField(8)
+  pluginConfigUri = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 encoding.AddCustomJsonFieldMapping(

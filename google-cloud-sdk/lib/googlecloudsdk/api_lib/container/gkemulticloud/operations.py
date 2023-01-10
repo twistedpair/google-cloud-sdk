@@ -52,6 +52,15 @@ class OperationsClient(client.ClientBase):
         wait_ceiling_ms=constants.MAX_LRO_POLL_INTERVAL_MS,
         max_wait_ms=constants.MAX_LRO_WAIT_MS)
 
+  def Cancel(self, operation_ref):
+    """Cancels an ongoing LRO.
+
+    Args:
+      operation_ref: object, operation resource to be canceled.
+    """
+    request_type = self._service.GetRequestType('Cancel')
+    self._service.Cancel(request_type(name=operation_ref.RelativeName()))
+
 
 class _Poller(waiter.CloudOperationPollerNoResources):
   """Poller for Anthos Multi-cloud operations.

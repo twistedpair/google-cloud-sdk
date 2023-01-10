@@ -27,6 +27,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
 
@@ -43,6 +44,7 @@ S3_RESOURCE_ERROR_FIELDS = {
     'enable_autoclass': 'Enabling Autoclass',
     'predefined_default_object_acl': 'Setting Predefined Default ACL',
     'public_access_prevention': 'Public Access Prevention',
+    'recovery_point_objective': 'Setting Recovery Point Objective',
     'retention_period': 'Setting Retention Period',
     'retention_period_to_be_locked': 'Locking Retention Period',
 }
@@ -52,6 +54,7 @@ S3_RESOURCE_WARNING_FIELDS = {
     'default_event_based_hold': 'Setting Default Event Based Hold',
     'default_storage_class': 'Setting Default Storage Class',
     'event_based_hold': 'Setting Event-Based Holds',
+    'placement': 'Setting Dual-Region for a Bucket',
     'preserve_acl': 'Preserving ACLs',
     'temporary_hold': 'Setting Temporary Holds',
     'uniform_bucket_level_access': 'Setting Uniform Bucket Level Access',
@@ -173,18 +176,21 @@ class _GcsBucketConfig(_BucketConfig):
       automatically be applied to new objects in bucket.
     default_object_acl_file_path (str|None): File path to default object ACL
       file.
-    default_object_acl_grants_to_add (str|None): Add default object ACL grants
-      to an entity for objects in the bucket.
-    default_object_acl_grants_to_remove (str|None): Remove default object ACL
-      grants.
+    default_object_acl_grants_to_add (list[dict]|None): Add default object ACL
+      grants to an entity for objects in the bucket.
+    default_object_acl_grants_to_remove (list[str]|None): Remove default object
+      ACL grants.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
     enable_autoclass (bool|None): Enable, disable, or don't do anything to the
       autoclass feature. Autoclass automatically changes object storage class
       based on usage.
+    placement (list|None): Dual-region of bucket.
     public_access_prevention (bool|None): Blocks public access to bucket.
       See docs for specifics:
       https://cloud.google.com/storage/docs/public-access-prevention
+    recovery_point_objective (str|None): Specifies the replication setting for
+      dual-region and multi-region buckets.
     retention_period (int|None): Minimum retention period in seconds for objects
       in a bucket. Attempts to delete an object earlier will be denied.
     uniform_bucket_level_access (bool|None):
@@ -210,10 +216,12 @@ class _GcsBucketConfig(_BucketConfig):
                location=None,
                log_bucket=None,
                log_object_prefix=None,
+               placement=None,
                public_access_prevention=None,
+               recovery_point_objective=None,
+               requester_pays=None,
                retention_period=None,
                retention_period_to_be_locked=None,
-               requester_pays=None,
                uniform_bucket_level_access=None,
                versioning=None,
                web_error_page=None,
@@ -232,6 +240,8 @@ class _GcsBucketConfig(_BucketConfig):
     self.default_object_acl_grants_to_remove = default_object_acl_grants_to_remove
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
+    self.placement = placement
+    self.recovery_point_objective = recovery_point_objective
     self.requester_pays = requester_pays
     self.retention_period = retention_period
     self.retention_period_to_be_locked = retention_period_to_be_locked
@@ -251,6 +261,8 @@ class _GcsBucketConfig(_BucketConfig):
         == other.default_object_acl_grants_to_remove and
         self.default_storage_class == other.default_storage_class and
         self.enable_autoclass == other.enable_autoclass and
+        self.placement == other.placement and
+        self.recovery_point_objective == other.recovery_point_objective and
         self.requester_pays == other.requester_pays and
         self.retention_period == other.retention_period and
         self.retention_period_to_be_locked
@@ -520,6 +532,10 @@ def _extract_unsupported_features_from_user_args(user_args, unsupported_fields):
 def _check_for_unsupported_s3_fields(user_request_args):
   """Raises error or logs warning if unsupported S3 field present."""
   user_resource_args = getattr(user_request_args, 'resource_args', None)
+  # The default value of False would raise an error.
+  if user_resource_args and not getattr(
+      user_resource_args, 'retention_period_to_be_locked', None):
+    user_resource_args.retention_period_to_be_locked = None
   error_fields_present = (
       _extract_unsupported_features_from_user_args(user_request_args,
                                                    S3_REQUEST_ERROR_FIELDS) +
@@ -569,8 +585,11 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_storage_class)
           new_resource_args.enable_autoclass = (
               user_resource_args.enable_autoclass)
+          new_resource_args.placement = user_resource_args.placement
           new_resource_args.public_access_prevention = (
               user_resource_args.public_access_prevention)
+          new_resource_args.recovery_point_objective = (
+              user_resource_args.recovery_point_objective)
           new_resource_args.retention_period = (
               user_resource_args.retention_period)
           new_resource_args.retention_period_to_be_locked = (
@@ -714,9 +733,15 @@ def get_request_config(url,
 
 
 def modifies_full_acl_policy(request_config):
-  """Checks if RequestConfig has ACL field aside from predefined ACL."""
-  return bool(
-      request_config.resource_args and
-      (request_config.resource_args.acl_file_path or
-       request_config.resource_args.acl_grants_to_add or
-       request_config.resource_args.acl_grants_to_remove))
+  """Checks if RequestConfig has ACL field aside from predefined ACL.
+
+  A separate implementation for RequestConfig may be needed in the future
+  if the ACL keys differ from UserRequestArgs.
+
+  Args:
+    request_config: RequestConfig.
+
+  Returns:
+    Boolean of whether RequestConfig modifies full ACL policy.
+  """
+  return user_request_args_factory.modifies_full_acl_policy(request_config)

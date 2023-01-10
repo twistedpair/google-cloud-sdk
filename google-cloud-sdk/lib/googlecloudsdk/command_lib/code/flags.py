@@ -236,6 +236,8 @@ class CommonFlags(FlagDefs):
         action='store_true',
         hidden=True,
         help='deploy code to Cloud Run')
+    self._AddFlag(
+        '--region', help='region to deploy the dev service', hidden=True)
 
   def _GetGroup(self, klass):
     if klass not in self._group_cache:

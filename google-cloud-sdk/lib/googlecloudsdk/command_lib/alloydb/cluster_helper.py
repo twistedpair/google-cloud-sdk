@@ -54,16 +54,22 @@ def _ConstructAutomatedBackupPolicy(alloydb_messages, args):
   return backup_policy
 
 
-def _ConstructPitrConfig(alloydb_messages, args):
-  """Returns the pitr config based on args."""
-  pitr_config = alloydb_messages.PitrConfig()
-  if args.disable_pitr:
-    pitr_config.enabled = False
-  elif args.pitr_log_retention_window:
-    pitr_config.enabled = True
-    pitr_config.logRetentionWindow = '{}s'.format(
-        args.pitr_log_retention_window)
-  return pitr_config
+def _ConstructContinuousBackupConfig(alloydb_messages, args):
+  """Returns the continuous backup config based on args."""
+  continuous_backup_config = alloydb_messages.ContinuousBackupConfig()
+  if args.disable_continuous_backup:
+    continuous_backup_config.enabled = False
+  elif args.continuous_backup_recovery_window_days:
+    continuous_backup_config.enabled = True
+    continuous_backup_config.recoveryWindowDays = args.continuous_backup_recovery_window_days
+  kms_key = flags.GetAndValidateKmsKeyName(
+      args, flag_overrides=flags.GetContinuousBackupKmsFlagOverrides())
+
+  if kms_key:
+    encryption_config = alloydb_messages.EncryptionConfig()
+    encryption_config.kmsKeyName = kms_key
+    continuous_backup_config.encryptionConfig = encryption_config
+  return continuous_backup_config
 
 
 def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
@@ -89,8 +95,9 @@ def _ConstructClusterForCreateRequestAlphaBeta(alloydb_messages, args):
   """Returns the cluster for alpha or beta create request based on args."""
   cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
 
-  if args.disable_pitr or args.pitr_log_retention_window:
-    cluster.pitrConfig = _ConstructPitrConfig(alloydb_messages, args)
+  if args.continuous_backup_recovery_window_days or args.disable_continuous_backup:
+    cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
+        alloydb_messages, args)
 
   return cluster
 
@@ -206,9 +213,10 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
 def _ConstructClusterAndMaskForPatchRequestAlphaBeta(alloydb_messages, args):
   cluster, update_masks = _ConstructClusterAndMaskForPatchRequestGA(
       alloydb_messages, args)
-  if args.disable_pitr or args.pitr_log_retention_window:
-    cluster.pitrConfig = _ConstructPitrConfig(alloydb_messages, args)
-    update_masks.append('pitr_config')
+  if args.disable_continuous_backup or args.continuous_backup_recovery_window_days:
+    cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
+        alloydb_messages, args)
+    update_masks.append('continuous_backup_config')
   return cluster, update_masks
 
 

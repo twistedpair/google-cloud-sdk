@@ -511,7 +511,7 @@ def AddAndroidBetaArgs(parser):
       greater than the total number of test cases. When you select one or more
       physical devices, the number of shards specified must be <= 50. When you
       select one or more ARM virtual devices, the number of shards specified
-      must be <= 50. When you select only x86 virtual devices, the number of
+      must be <= 100. When you select only x86 virtual devices, the number of
       shards specified must be <= 500.
       """)
   sharding_options.add_argument(
@@ -523,7 +523,7 @@ def AddAndroidBetaArgs(parser):
       each shard (a group of test cases). Each time this flag is repeated, it
       creates a new shard. The shards are run in parallel on separate devices.
       You can repeat this flag up to 50 times when you select one or more
-      physical devices, up to 50 times when you select one or more ARM virtual
+      physical devices, up to 100 times when you select one or more ARM virtual
       devices, and up to 500 times when you select only x86 virtual devices.
 
       Note: If you include the flags *--environment-variable* or

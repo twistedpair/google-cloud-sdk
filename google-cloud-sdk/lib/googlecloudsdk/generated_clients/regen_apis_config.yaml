@@ -896,6 +896,10 @@ apis:
       discovery_doc: logging_v2.json
       gcloud_gapic_library: google/logging/v2:logging_v2_py
       default: true
+  looker:
+    v1alpha1:
+      discovery_doc: looker_v1alpha1.json
+      default: true
   memcache:
     v1beta2:
       discovery_doc: memcache_v1beta2.json
@@ -960,6 +964,8 @@ apis:
       default: true
     v1beta1:
       discovery_doc: networkmanagement_v1beta1.json
+    v1alpha1:
+      discovery_doc: networkmanagement_v1alpha1.json
   networkservices:
     v1alpha1:
       discovery_doc: networkservices_v1alpha1.json
@@ -1125,6 +1131,9 @@ apis:
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
+  sasportal:
+    v1alpha1:
+      discovery_doc: sasportal_v1alpha1.json
   secretmanager:
     v1:
       discovery_doc: secretmanager_v1.json
@@ -1420,3 +1429,13 @@ apis:
     v1alpha1:
       discovery_doc: telcoautomation_v1alpha1.json
       default: true
+  workloadcertificate:
+    v1alpha1:
+      discovery_doc: workloadcertificate_v1alpha1.json
+      default: true
+      # Include projects.locations.workloadCertificateFeature collection explicitly.
+      # This is not imported automatically since gcloud skips collections that do not have a GET
+      # method. Workload Certificate Feature only implemented GetWorkloadCertificateFeature.
+      resources:
+        projects.locations.workloadCertificateFeature:
+          path: projects/{projectsId}/locations/global/workloadCertificateFeature

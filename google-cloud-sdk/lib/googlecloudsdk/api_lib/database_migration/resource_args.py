@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +33,21 @@ def MigrationJobAttributeConfig(name='migration_job'):
       name=name, help_text='The migration job of the {resource}.')
 
 
+def PrivateConnectionAttributeConfig(name='private_connection'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name, help_text='The private connection of the {resource}.')
+
+
+def ServiceAttachmentAttributeConfig(name='service_attachment'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name, help_text='The service attachment of the {resource}.')
+
+
+def ConversionWorkspaceAttributeConfig(name='conversion_workspace'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name, help_text='The conversion workspace of the {resource}.')
+
+
 def RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region', help_text='The Cloud region for the {resource}.')
@@ -62,6 +77,37 @@ def GetMigrationJobResourceSpec(resource_name='migration_job'):
       'datamigration.projects.locations.migrationJobs',
       resource_name=resource_name,
       migrationJobsId=MigrationJobAttributeConfig(name=resource_name),
+      locationsId=RegionAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetPrivateConnectionResourceSpec(resource_name='private_connection'):
+  return concepts.ResourceSpec(
+      'datamigration.projects.locations.privateConnections',
+      resource_name=resource_name,
+      api_version='v1',
+      privateConnectionsId=PrivateConnectionAttributeConfig(name=resource_name),
+      locationsId=RegionAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetServiceAttachmentResourceSpec(resource_name='service_attachment'):
+  return concepts.ResourceSpec(
+      'compute.serviceAttachments',
+      resource_name=resource_name,
+      serviceAttachment=ServiceAttachmentAttributeConfig(name=resource_name),
+      project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetConversionWorkspaceResourceSpec(resource_name='conversion_workspace'):
+  return concepts.ResourceSpec(
+      'datamigration.projects.locations.conversionWorkspaces',
+      resource_name=resource_name,
+      api_version='v1',
+      conversionWorkspacesId=ConversionWorkspaceAttributeConfig(
+          name=resource_name),
       locationsId=RegionAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
@@ -114,6 +160,112 @@ def AddCloudSqlConnectionProfileResouceArgs(parser, verb):
       }).AddToParser(parser)
 
 
+def AddOracleConnectionProfileResourceArg(parser,
+                                          verb,
+                                          positional=True,
+                                          required=True):
+  """Add a resource argument for a database migration oracle cp.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+    required: bool, if True, means that a flag is required.
+  """
+  if positional:
+    name = 'connection_profile'
+  else:
+    name = '--connection-profile'
+
+  connectivity_parser = parser.add_group(mutex=True)
+  connectivity_parser.add_argument(
+      '--static-ip-connectivity',
+      action='store_true',
+      help="""use static ip connectivity""")
+
+  forward_ssh_parser = connectivity_parser.add_group()
+  forward_ssh_parser.add_argument(
+      '--forward-ssh-hostname',
+      help="""Hostname for the SSH tunnel.""",
+      required=required)
+  forward_ssh_parser.add_argument(
+      '--forward-ssh-username',
+      help="""Username for the SSH tunnel.""",
+      required=required)
+  forward_ssh_parser.add_argument(
+      '--forward-ssh-port',
+      help="""Port for the SSH tunnel, default value is 22.\
+      """,
+      default=22)
+  password_group = forward_ssh_parser.add_group(required=required, mutex=True)
+  password_group.add_argument(
+      '--forward-ssh-password', help="""\
+          SSH password.
+          """)
+  password_group.add_argument(
+      '--forward-ssh-private-key', help='SSH private key..')
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetConnectionProfileResourceSpec(),
+          'The connection profile {}.'.format(verb),
+          required=True),
+      presentation_specs.ResourcePresentationSpec(
+          '--private-connection',
+          GetPrivateConnectionResourceSpec(),
+          'Resource ID of the private connection.',
+          flag_name_overrides={'region': ''},
+          group=connectivity_parser)
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--private-connection.region': ['--region']
+      }).AddToParser(parser)
+
+
+def AddPostgresqlConnectionProfileResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a database migration postgresql cp.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'connection_profile'
+  else:
+    name = '--connection-profile'
+
+  connectivity_parser = parser.add_group(mutex=True)
+  connectivity_parser.add_argument(
+      '--static-ip-connectivity',
+      action='store_true',
+      help="""use static ip connectivity""")
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetConnectionProfileResourceSpec(),
+          'The connection profile {}.'.format(verb),
+          required=True),
+      presentation_specs.ResourcePresentationSpec(
+          '--psc-service-attachment',
+          GetServiceAttachmentResourceSpec(),
+          'Resource ID of the service attachment.',
+          flag_name_overrides={'region': ''},
+          group=connectivity_parser)
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--psc-service-attachment.region': ['--region']
+      }).AddToParser(parser)
+
+
 def AddMigrationJobResourceArgs(parser, verb, required=False):
   """Add resource arguments for creating/updating a database migration job.
 
@@ -148,3 +300,100 @@ def AddMigrationJobResourceArgs(parser, verb, required=False):
           '--source.region': ['--region'],
           '--destination.region': ['--region']
       }).AddToParser(parser)
+
+
+def GetVpcResourceSpec():
+  """Constructs and returns the Resource specification for VPC."""
+
+  def VpcAttributeConfig():
+    return concepts.ResourceParameterAttributeConfig(
+        name='vpc',
+        help_text='fully qualified name of the VPC database migration will peer to.'
+    )
+
+  return concepts.ResourceSpec(
+      'compute.networks',
+      resource_name='vpc',
+      network=VpcAttributeConfig(),
+      project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def AddPrivateConnectionResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a database migration private connection.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'private_connection'
+  else:
+    name = '--private-connection'
+
+  vpc_peering_config_parser = parser.add_group(required=True)
+
+  vpc_peering_config_parser.add_argument(
+      '--subnet',
+      help="""A free subnet for peering. (CIDR of /29).""",
+      required=True)
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetPrivateConnectionResourceSpec(),
+          'The private connection {}.'.format(verb),
+          required=True),
+      presentation_specs.ResourcePresentationSpec(
+          '--vpc',
+          GetVpcResourceSpec(),
+          'Resource ID of the private connection.',
+          group=vpc_peering_config_parser,
+          required=True)
+  ]
+  concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
+
+
+def AddPrivateConnectionDeleteResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a database migration private connection.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'private_connection'
+  else:
+    name = '--private-connection'
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetPrivateConnectionResourceSpec(),
+          'The private connection {}.'.format(verb),
+          required=True)
+  ]
+  concept_parsers.ConceptParser(resource_specs).AddToParser(parser)
+
+
+def AddConversionWorkspaceResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a database migration conversion workspace.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'conversion_workspace'
+  else:
+    name = '--conversion-workspace'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetConversionWorkspaceResourceSpec(),
+      'The conversion workspace {}.'.format(verb),
+      required=True).AddToParser(parser)

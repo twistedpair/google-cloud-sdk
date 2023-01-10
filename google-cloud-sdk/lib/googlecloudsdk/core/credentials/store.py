@@ -1101,7 +1101,8 @@ def RevokeCredentials(credentials):
   """
   if (not c_creds.IsUserAccountCredentials(credentials) or
       # External account user credentials cannot be revoked.
-      c_creds.IsExternalAccountUserCredentials(credentials)):
+      c_creds.IsExternalAccountUserCredentials(credentials) or
+      c_creds.IsExternalAccountAuthorizedUserCredentials(credentials)):
     raise RevokeError('The token cannot be revoked from server because it is '
                       'not user account credentials.')
   if c_creds.IsOauth2ClientCredentials(credentials):

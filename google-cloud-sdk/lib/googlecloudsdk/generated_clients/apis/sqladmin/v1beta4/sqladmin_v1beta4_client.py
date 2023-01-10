@@ -995,6 +995,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels an instance operation that has been performed on an instance.
+
+      Args:
+        request: (SqlOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.operations.cancel',
+        ordered_params=['project', 'operation'],
+        path_params=['operation', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/operations/{operation}/cancel',
+        request_field='',
+        request_type_name='SqlOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves an instance operation that has been performed on an instance.
 

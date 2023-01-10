@@ -105,49 +105,57 @@ class DeferredCrc32c(object):
 
 
 def _is_gcloud_crc32c_installed():
+  """Returns if gcloud-crc32c is installed and does not attempt install."""
+  try:
+    return BINARY_NAME in binary_operations.CheckForInstalledBinary(BINARY_NAME)
+  except binary_operations.MissingExecutableException:
+    return False
+
+
+def _check_if_gcloud_crc32c_available_and_install_if_not():
   """Returns True if gcloud-crc32c is installed, otherwise tries to install."""
-  is_preferred = properties.VALUES.storage.use_gcloud_crc32c.GetBool()
-  no_preference = is_preferred is None
-  install_if_missing = is_preferred or no_preference
   try:
     return BINARY_NAME in binary_operations.CheckForInstalledBinary(
-        BINARY_NAME, install_if_missing=install_if_missing)
+        BINARY_NAME, install_if_missing=True)
   except binary_operations.MissingExecutableException:
-    # If install_if_missing is True, either the user has access to gcloud
-    # components but opted not to install or the user doesn't have access to the
-    # gcloud components manager.
-    if install_if_missing:
-      # This will prevent automatic installation in the future, but it won't
-      # prevent gcloud-crc32c from being used if later installed separately.
-      properties.VALUES.storage.use_gcloud_crc32c.Set(False)
+    # Failed because user has access to gcloud components but opted not to
+    # install or the user doesn't have access to the gcloud components manager.
+    # This property will prevent automatic installation in the future, but it
+    # won't prevent gcloud-crc32c from being used if later installed separately.
+    properties.VALUES.storage.use_gcloud_crc32c.Set(False)
   except:  # pylint: disable=bare-except
     # Other errors that happen during installation checks aren't fatal.
     pass
   return False
 
 
-def is_fast_crc32c_available():
-  return crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or _is_gcloud_crc32c_installed()
+def check_if_fast_crc32c_available_and_install_if_not():
+  return (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
+          _check_if_gcloud_crc32c_available_and_install_if_not())
 
 
-def _should_use_gcloud_crc32c(is_installed, is_crc32c_slow, is_preferred):
+def should_use_gcloud_crc32c(install_if_missing=False):
   """Returns True if gcloud-crc32c should be used and installs if needed.
 
   Args:
-    is_installed (bool): Whether gcloud-crc32c is installed.
-    is_crc32c_slow (bool): Whether google-crc32c is missing.
-    is_preferred (bool): Whether gcloud-crc32c is preferred.
+    install_if_missing (bool): Install gcloud-crc32c if not already present.
 
   Returns:
     True if the Go binary gcloud-crc32c should be used.
   """
-  no_preference = is_preferred is None
-  if is_installed:
-    if is_crc32c_slow:
-      return True
-    else:
-      return False if no_preference else is_preferred
-  return False
+  user_wants_gcloud_crc32c = (
+      properties.VALUES.storage.use_gcloud_crc32c.GetBool())
+  # pylint:disable=g-bool-id-comparison
+  if user_wants_gcloud_crc32c is False:
+    # pylint:enable=g-bool-id-comparison
+    return False
+  if (user_wants_gcloud_crc32c is None and
+      crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE):
+    # User has no preference, and we can rely on google-crc32c module.
+    return False
+  if install_if_missing:
+    return _check_if_gcloud_crc32c_available_and_install_if_not()
+  return _is_gcloud_crc32c_installed()
 
 
 def get_crc32c(initial_data=b''):
@@ -166,10 +174,7 @@ def get_crc32c(initial_data=b''):
     (https://github.com/googleapis/python-crc32c) is available and a
     predefined.Crc instance from crcmod library if not.
   """
-  should_defer = _should_use_gcloud_crc32c(
-      is_installed=_is_gcloud_crc32c_installed(),
-      is_crc32c_slow=not crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE,
-      is_preferred=properties.VALUES.storage.use_gcloud_crc32c.GetBool())
+  should_defer = should_use_gcloud_crc32c(install_if_missing=True)
   return DeferredCrc32c() if should_defer else crc32c.get_crc32c(initial_data)
 
 

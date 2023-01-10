@@ -244,7 +244,7 @@ class TaskGraph:
           dependent_task_wrapper.task.received_messages.extend(
               task_output.messages)
 
-      if task_output is None or task_output.additional_task_iterators is None:
+      if task_output is None or not task_output.additional_task_iterators:
         # The executed task did not return new tasks, so the only ones newly
         # ready for execution will be those freed up after removing the executed
         # task.

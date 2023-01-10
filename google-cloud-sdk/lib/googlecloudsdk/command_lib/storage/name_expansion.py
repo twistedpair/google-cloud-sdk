@@ -172,14 +172,15 @@ class NameExpansionIterator:
       self._raise_error_if_multiple_sources_include_stdin(
           name_expansion_result.expanded_url)
 
-      should_return_bucket = self._include_buckets and isinstance(
-          name_expansion_result.resource, resource_reference.BucketResource)
-      if not name_expansion_result.resource.is_container() or (
-          should_return_bucket):
+      should_return_bucket = self._include_buckets and (
+          name_expansion_result.resource.storage_url.is_bucket())
+      if not resource_reference.is_container_or_has_container_url(
+          name_expansion_result.resource) or should_return_bucket:
         self._url_found_match_tracker[input_url] = True
         yield name_expansion_result
 
-      if name_expansion_result.resource.is_container():
+      if resource_reference.is_container_or_has_container_url(
+          name_expansion_result.resource):
         if self._recursion_requested is RecursionSetting.YES:
           for nested_name_expansion_result in self._get_nested_objects_iterator(
               name_expansion_result):

@@ -27,6 +27,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
 from googlecloudsdk.api_lib.functions import api_enablement
+from googlecloudsdk.api_lib.functions import cmek_util
 from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as api_client_v2
@@ -35,6 +36,7 @@ from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.eventarc import types as trigger_types
@@ -101,11 +103,6 @@ _V1_ONLY_FLAGS = [
     ('security_level', '--security-level'),
 
     # Not yet supported flags
-    # TODO(b/235229081): GCF (2nd Gen) CMEK Support
-    ('clear_docker_repository', '--clear-docker-repository'),
-    ('clear_kms_key', '--clear-kms-key'),
-    ('docker_repository', '--docker-repository'),
-    ('kms_key', '--kms-key'),
     ('buildpack_stack', '--buildpack-stack'),
 ]
 _V1_ONLY_FLAG_ERROR = (
@@ -873,9 +870,24 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
     return None, None, frozenset()
 
 
-def _ValidateV1OnlyFlags(args):
+def _ValidateV1OnlyFlags(args, release_track):
+  """Ensures that only the arguments supported in V2 are passing through."""
   for flag_variable, flag_name in _V1_ONLY_FLAGS:
     if args.IsKnownAndSpecified(flag_variable):
+      raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
+  # TODO(b/242182323): Special handling of transitive flags that are in the
+  # process of being supported across tracks. Remove once they reach the GA.
+  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+    if release_track != calliope_base.ReleaseTrack.ALPHA:
+      flag_name = ('--kms-key'
+                   if args.IsSpecified('kms_key') else '--clear-kms-key')
+      raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
+  if args.IsSpecified('docker_repository') or args.IsSpecified(
+      'clear_docker_repository'):
+    if release_track != calliope_base.ReleaseTrack.ALPHA:
+      flag_name = ('--docker-repository'
+                   if args.IsSpecified('docker_repository') else
+                   '--clear-docker-repository')
       raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
 
 
@@ -904,6 +916,79 @@ def _GetLabels(args, messages, existing_function):
     return labels_update.labels, frozenset(['labels'])
   else:
     return None, frozenset()
+
+
+def _SetCmekFields(args, function, existing_function, function_ref,
+                   release_track):
+  """Sets CMEK-related fields on the function.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with.
+    function: cloudfunctions_v2alpha_messages.Function, recently created or
+      updated GCF function.
+    existing_function: pre-existing function
+      (cloudfunctions_v2alpha_messages.Function | None).
+    function_ref: resource reference.
+    release_track: the release track (alpha|beta|ga).
+
+  Returns:
+    updated_fields_set: frozenset[str], set of update mask fields.
+  """
+  updated_fields = set()
+  if release_track != calliope_base.ReleaseTrack.ALPHA:
+    return updated_fields
+  function.kmsKeyName = (
+      existing_function.kmsKeyName if existing_function else None)
+  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+    function.kmsKeyName = None if args.IsSpecified(
+        'clear_kms_key') else args.kms_key
+  if (existing_function is None or
+      function.kmsKeyName != existing_function.kmsKeyName):
+    if args.kms_key is not None:
+      cmek_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
+    updated_fields.add('kms_key_name')
+  return updated_fields
+
+
+def _SetDockerRepositoryConfig(args, function, existing_function, function_ref,
+                               release_track):
+  """Sets user-provided docker repository field on the function.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    function: cloudfunctions_v2alpha_messages.Function, recently created or
+      updated GCF function.
+    existing_function: pre-existing function.
+      (cloudfunctions_v2alpha_messages.Function | None).
+    function_ref: resource reference.
+    release_track: the release track (alpha|beta|ga).
+
+  Returns:
+    updated_fields_set: frozenset[str], set of update mask fields.
+  """
+
+  updated_fields = set()
+  if release_track != calliope_base.ReleaseTrack.ALPHA:
+    return updated_fields
+  function.buildConfig.dockerRepository = (
+      existing_function.buildConfig.dockerRepository if existing_function else
+      None)
+  if args.IsSpecified('docker_repository') or args.IsSpecified(
+      'clear_docker_repository'):
+    function.buildConfig.dockerRepository = (
+        None if args.clear_docker_repository else args.docker_repository)
+    if (existing_function is None or function.buildConfig.dockerRepository !=
+        existing_function.buildConfig.dockerRepository):
+      if function.buildConfig.dockerRepository:
+        cmek_util.ValidateDockerRepositoryForFunction(
+            function.buildConfig.dockerRepository, function_ref)
+      updated_fields.add('build_config.docker_repository')
+  if function.kmsKeyName and not function.buildConfig.dockerRepository:
+    raise calliope_exceptions.RequiredArgumentException(
+        '--docker-repository',
+        'A Docker repository must be specified when a KMS key is configured '
+        'for the function.')
+  return updated_fields
 
 
 def _SetInvokerPermissions(args, function, is_new_function):
@@ -1053,7 +1138,7 @@ def Run(args, release_track):
 
   function_ref = args.CONCEPTS.name.Parse()
 
-  _ValidateV1OnlyFlags(args)
+  _ValidateV1OnlyFlags(args, release_track)
 
   existing_function = _GetFunction(client, messages, function_ref)
 
@@ -1102,6 +1187,11 @@ def Run(args, release_track):
       serviceConfig=service_config,
       labels=labels_value)
 
+  cmek_updated_fields = _SetCmekFields(args, function, existing_function,
+                                       function_ref, release_track)
+  docker_repository_updated_fields = _SetDockerRepositoryConfig(
+      args, function, existing_function, function_ref, release_track)
+
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
   if is_new_function:
@@ -1110,7 +1200,8 @@ def Run(args, release_track):
     _UpdateAndWait(
         client, messages, function_ref, function,
         frozenset.union(trigger_updated_fields, build_updated_fields,
-                        service_updated_fields, labels_updated_fields))
+                        service_updated_fields, labels_updated_fields,
+                        cmek_updated_fields, docker_repository_updated_fields))
 
   function = client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(

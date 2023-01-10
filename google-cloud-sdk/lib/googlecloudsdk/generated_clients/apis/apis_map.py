@@ -246,10 +246,10 @@ MAP = {
     'alloydb': {
         'v1':
             APIDef(
-                ApitoolsClientDef(
+                apitools=ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.alloydb.v1',
                     client_classpath='alloydb_v1_client.AlloydbV1',
-                    base_url='',
+                    base_url='https://alloydb.googleapis.com/',
                     messages_modulepath='alloydb_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
@@ -2191,6 +2191,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'looker': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.looker.v1alpha1',
+                    client_classpath='looker_v1alpha1_client.LookerV1alpha1',
+                    base_url='https://looker.googleapis.com/',
+                    messages_modulepath='looker_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'managedidentities': {
         'v1':
             APIDef(
@@ -2378,6 +2390,16 @@ MAP = {
                     base_url='https://networkmanagement.googleapis.com/',
                     messages_modulepath='networkmanagement_v1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.networkmanagement.v1alpha1',
+                    client_classpath='networkmanagement_v1alpha1_client.NetworkmanagementV1alpha1',
+                    base_url='https://networkmanagement.googleapis.com/',
+                    messages_modulepath='networkmanagement_v1alpha1_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta1':
@@ -2685,7 +2707,7 @@ MAP = {
                 apitools=ApitoolsClientDef(
                     class_path='googlecloudsdk.generated_clients.apis.policytroubleshooter.v3alpha',
                     client_classpath='policytroubleshooter_v3alpha_client.PolicytroubleshooterV3alpha',
-                    base_url='',
+                    base_url='https://policytroubleshooter.googleapis.com/',
                     messages_modulepath='policytroubleshooter_v3alpha_messages'),
                 default_version=False,
                 enable_mtls=False,
@@ -2921,6 +2943,18 @@ MAP = {
                     client_classpath='runtimeconfig_v1beta1_client.RuntimeconfigV1beta1',
                     base_url='https://runtimeconfig.googleapis.com/',
                     messages_modulepath='runtimeconfig_v1beta1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'sasportal': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.sasportal.v1alpha1',
+                    client_classpath='sasportal_v1alpha1_client.SasportalV1alpha1',
+                    base_url='https://sasportal.googleapis.com/',
+                    messages_modulepath='sasportal_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -3505,6 +3539,18 @@ MAP = {
                     base_url='https://workflows.googleapis.com/',
                     messages_modulepath='workflows_v1beta_messages'),
                 default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'workloadcertificate': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.workloadcertificate.v1alpha1',
+                    client_classpath='workloadcertificate_v1alpha1_client.WorkloadcertificateV1alpha1',
+                    base_url='https://workloadcertificate.googleapis.com/',
+                    messages_modulepath='workloadcertificate_v1alpha1_messages'),
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

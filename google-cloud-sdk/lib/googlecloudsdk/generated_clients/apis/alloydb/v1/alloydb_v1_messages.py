@@ -1,9 +1,9 @@
 """Generated message classes for alloydb version v1.
 
-AlloyDB for PostgreSQL is an open source-compatible database service that's a
-powerful option for migrating, modernizing, or building commercial-grade
-applications. It offers full compatibility with standard PostgreSQL, and is
-more than 4x faster for transactional workloads and up to 100x faster for
+AlloyDB for PostgreSQL is an open source-compatible database service that
+provides a powerful option for migrating, modernizing, or building commercial-
+grade applications. It offers full compatibility with standard PostgreSQL, and
+is more than 4x faster for transactional workloads and up to 100x faster for
 analytical queries than standard PostgreSQL in our performance tests. AlloyDB
 for PostgreSQL offers a 99.99 percent availability SLA inclusive of
 maintenance. AlloyDB is optimized for the most demanding use cases, allowing
@@ -375,7 +375,7 @@ class AlloydbProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
-      regex expression "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters
+      regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters
       of lowercase letters, numbers, and dashes, starting with a letter, and
       ending with a letter or number. For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
@@ -456,7 +456,7 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
     cluster: A Cluster resource to be passed as the request body.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
-      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
+      cluster ID segment should satisfy the regex expression `[a-z0-9-]+`. For
       more details see https://google.aip.dev/122. The prefix of the cluster
       resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
@@ -593,7 +593,7 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
       * projects/{project}/locations/{location} Regardless of the parent
       specified here, as long it is contains a valid project and location, the
       service will return a static list of supported flags resources. Note
-      that we do not not yet support region-specific flags (see b/211502903).
+      that we do not yet support region-specific flags.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -666,7 +666,7 @@ class AutomatedBackupPolicy(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Message describing Backup object NEXT ID: 18
+  r"""Message describing Backup object
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the backup.
@@ -684,6 +684,8 @@ class Backup(_messages.Message):
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
     clusterName: Required. The full resource name of the backup source cluster
       (e.g., projects//locations//clusters/).
+    clusterUid: Output only. The system-generated UID of the cluster which was
+      used to create this resource.
     createTime: Output only. Create time stamp
     deleteTime: Output only. Delete time stamp
     description: User-provided description of the backup.
@@ -798,21 +800,22 @@ class Backup(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   clusterName = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 7)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 8)
-  etag = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  reconciling = _messages.BooleanField(12)
-  sizeBytes = _messages.IntegerField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  clusterUid = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  deleteTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
+  etag = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  reconciling = _messages.BooleanField(13)
+  sizeBytes = _messages.IntegerField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class BackupSource(_messages.Message):
@@ -821,9 +824,13 @@ class BackupSource(_messages.Message):
   Fields:
     backupName: Required. The name of the backup resource with the format: *
       projects/{project}/locations/{region}/backups/{backup_id}
+    backupUid: Output only. The system-generated UID of the backup which was
+      used to create this resource. The UID is generated when the backup is
+      created, and it is retained until the backup is deleted.
   """
 
   backupName = _messages.StringField(1)
+  backupUid = _messages.StringField(2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -887,7 +894,7 @@ class Cluster(_messages.Message):
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
-      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
+      cluster ID segment should satisfy the regex expression `[a-z0-9-]+`. For
       more details see https://google.aip.dev/122. The prefix of the cluster
       resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
@@ -1251,7 +1258,7 @@ class GoogleTypeTimeOfDay(_messages.Message):
 
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
-  It's the main unit of computing resources in AlloyDB. NEXT ID: 22
+  It's the main unit of computing resources in AlloyDB.
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
@@ -1315,7 +1322,7 @@ class Instance(_messages.Message):
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
-      regex expression "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters
+      regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters
       of lowercase letters, numbers, and dashes, starting with a letter, and
       ending with a letter or number. For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
@@ -1323,6 +1330,7 @@ class Instance(_messages.Message):
       projects/{project}/locations/{region}/clusters/{cluster_id}
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    queryInsightsConfig: Configuration for query insights.
     readPoolConfig: Read pool specific config.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
@@ -1501,12 +1509,13 @@ class Instance(_messages.Message):
   machineConfig = _messages.MessageField('MachineConfig', 12)
   name = _messages.StringField(13)
   nodes = _messages.MessageField('Node', 14, repeated=True)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 15)
-  reconciling = _messages.BooleanField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  writableNode = _messages.MessageField('Node', 20)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 15)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 16)
+  reconciling = _messages.BooleanField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  writableNode = _messages.MessageField('Node', 21)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -1812,6 +1821,27 @@ class QuantityBasedRetention(_messages.Message):
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class QueryInsightsInstanceConfig(_messages.Message):
+  r"""QueryInsights Instance specific configuration.
+
+  Fields:
+    queryPlansPerMinute: Number of query execution plans captured by Insights
+      per minute for all queries combined. The default value is 5. Any integer
+      between 0 and 20 is considered valid.
+    queryStringLength: Query string length. The default value is 1024. Any
+      integer between 256 and 4500 is considered valid.
+    recordApplicationTags: Record application tags for an instance. This flag
+      is turned "on" by default.
+    recordClientAddress: Record client address for an instance. Client address
+      is PII information. This flag is turned "on" by default.
+  """
+
+  queryPlansPerMinute = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  queryStringLength = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  recordApplicationTags = _messages.BooleanField(3)
+  recordClientAddress = _messages.BooleanField(4)
+
+
 class ReadPoolConfig(_messages.Message):
   r"""Configuration for a read pool instance.
 
@@ -2085,8 +2115,8 @@ class SupportedDatabaseFlag(_messages.Message):
     flagName: The name of the database flag, e.g. "max_allowed_packets". The
       is a possibly key for the Instance.database_flags map field.
     integerRestrictions: Restriction on INTEGER type value.
-    name: The name of the flag resource, following GCP conventions, e.g.: *
-      projects/{project}/locations/{location}/flags/{flag} This field
+    name: The name of the flag resource, following Google Cloud conventions,
+      e.g.: * projects/{project}/locations/{location}/flags/{flag} This field
       currently has no semantic meaning.
     requiresDbRestart: Whether setting or updating this flag on an Instance
       requires a database restart. If a flag that requires database restart is

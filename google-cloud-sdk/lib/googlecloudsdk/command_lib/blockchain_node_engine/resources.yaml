@@ -1,0 +1,23 @@
+project:
+  name: project
+  collection: blockchainnodeengine.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      Name of the Cloud project to use.
+    property: core/project
+
+location:
+  name: location
+  collection: blockchainnodeengine.projects.locations
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      Location of the blockchain node resource.
+    property: web3/location

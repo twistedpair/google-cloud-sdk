@@ -32,6 +32,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.feature_flags import config as feature_flags_config
+from googlecloudsdk.core.resource import resource_printer_types as formats
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
@@ -250,6 +251,24 @@ or it can be set temporarily by the environment variable [{env_var}]""".format(
     self.property = prop
 
 
+class UnknownFormatError(exceptions.Error):
+  """Unknown format name exception."""
+
+  def __init__(self, printer_name, supported_formats):
+    """Constructs a new exception.
+
+    Args:
+      printer_name: str, The unknown printer format.
+      supported_formats: [str], Supported printer formats.
+    """
+    super(UnknownFormatError, self).__init__("""\
+Format must be one of {0}; received [{1}].
+
+For information on output formats:
+  $ gcloud topic formats
+""".format(', '.join(supported_formats), printer_name))
+
+
 class PropertyValue(object):
   """Represents a value and source for a property.
 
@@ -374,6 +393,7 @@ class _Sections(object):
       SDK.
     lifesciences: Section, The section containing lifesciencs properties for the
       Cloud SDK.
+    looker: Section, The section containing looker properties for the Cloud SDK.
     media_asset: Section, the section containing mediaasset protperties for the
       Cloud SDK.
     memcache: Section, The section containing memcache properties for the Cloud
@@ -414,6 +434,8 @@ class _Sections(object):
     transcoder: Section, The section containing transcoder properties for the
       Cloud SDK.
     vmware: Section, The section containing vmware properties for the Cloud SDK.
+    web3: Section, the section containing web3 properties for the
+      Cloud SDK.
     workflows: Section, The section containing workflows properties for the
       Cloud SDK.
   """
@@ -476,6 +498,7 @@ class _Sections(object):
     self.interactive = _SectionInteractive()
     self.kuberun = _SectionKubeRun()
     self.lifesciences = _SectionLifeSciences()
+    self.looker = _SectionLooker()
     self.media_asset = _SectionMediaAsset()
     self.memcache = _SectionMemcache()
     self.metastore = _SectionMetastore()
@@ -500,6 +523,7 @@ class _Sections(object):
     self.transport = _SectionTransport()
     self.transcoder = _SectionTranscoder()
     self.vmware = _SectionVmware()
+    self.web3 = _SectionWeb3()
     self.workflows = _SectionWorkflows()
 
     sections = [
@@ -552,6 +576,7 @@ class _Sections(object):
         self.interactive,
         self.kuberun,
         self.lifesciences,
+        self.looker,
         self.media_asset,
         self.memcache,
         self.metastore,
@@ -575,6 +600,7 @@ class _Sections(object):
         self.transport,
         self.transcoder,
         self.vmware,
+        self.web3,
         self.workflows,
     ]
     self.__sections = {section.name: section for section in sections}
@@ -1196,6 +1222,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.language = self._Add('language', command='gcloud ml language')
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
     self.logging = self._Add('logging', command='gcloud logging')
+    self.looker = self._Add('looker', command='gcloud looker')
     self.managedidentities = self._Add(
         'managedidentities', command='gcloud active-directory')
     self.manager = self._Add('manager', hidden=True)
@@ -2062,6 +2089,46 @@ class _SectionCore(_Section):
         help_text='If True, use legacy format for flattened() and text().'
         'Please note that this option will not be supported indefinitely.')
 
+    # Only formats that accept empty projections can be used globally
+    supported_global_formats = sorted([
+        formats.CONFIG, formats.DEFAULT, formats.DISABLE, formats.FLATTENED,
+        formats.JSON, formats.LIST, formats.NONE, formats.OBJECT, formats.TEXT
+    ])
+
+    def FormatValidator(print_format):
+      if print_format and print_format not in supported_global_formats:
+        raise UnknownFormatError(print_format, supported_global_formats)
+
+    self.format = self._Add(
+        'format',
+        validator=FormatValidator,
+        help_text=textwrap.dedent("""\
+        Sets the format for printing all command resources. This overrides the
+        default command-specific human-friendly output format. Use
+        `--verbosity=debug` flag to view the command-specific format. If both
+        `core/default_format` and `core/format` are specified, `core/format`
+        takes precedence. If both `core/format` and `--format` are specified,
+        `--format` takes precedence. The supported formats are limited to:
+        `{0}`. For more details run $ gcloud topic formats. Run `$ gcloud config
+        set --help` to see more information about `core/format`""".format(
+            '`, `'.join(supported_global_formats))))
+
+    self.default_format = self._Add(
+        'default_format',
+        default='default',
+        validator=FormatValidator,
+        help_text=textwrap.dedent("""\
+        Sets the default format for printing command resources.
+        `core/default_format` overrides the default yaml format. If the command
+        contains a command-specific output format, it takes precedence over the
+        `core/default_format` value. Use `--verbosity=debug` flag to view the
+        command-specific format. Both `core/format` and `--format` also take
+        precedence over `core/default_format`. The supported formats are limited
+        to: `{0}`. For more details run $ gcloud topic formats. Run `$ gcloud
+        config set --help` to see more information about
+        `core/default_format`""".format(
+            '`, `'.join(supported_global_formats))))
+
     def ShowStructuredLogsValidator(show_structured_logs):
       if show_structured_logs is None:
         return
@@ -2701,6 +2768,18 @@ class _SectionLifeSciences(_Section):
         'command will fall back to this value.')
 
 
+class _SectionLooker(_Section):
+  """Contains the properties for the 'looker' section."""
+
+  def __init__(self):
+    super(_SectionLooker, self).__init__('looker')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with Cloud '
+        'Looker resources. When a `region` is required but not '
+        'provided by a flag, the command will fall back to this value, if set.')
+
+
 class _SectionMediaAsset(_Section):
   """Contains the properties for the 'media_asset' section."""
 
@@ -3104,6 +3183,13 @@ class _SectionStorage(_Section):
 
   def __init__(self):
     super(_SectionStorage, self).__init__('storage')
+    self.additional_headers = self._Add(
+        'additional_headers',
+        help_text='Includes arbitrary headers in storage API calls.'
+        ' Accepts a comma separated list of key=value pairs, e.g.'
+        ' `header1=value1,header2=value2`.',
+    )
+
     self.run_by_gsutil_shim = self._AddBool(
         'run_by_gsutil_shim',
         help_text=(
@@ -3318,6 +3404,12 @@ class _SectionStorage(_Section):
         ' on the same thread. Turning off can help with some bugs but will'
         ' hurt performance.')
 
+    self.use_grpc = self._AddBool(
+        'use_grpc',
+        default=False,
+        hidden=True,
+        help_text='Use GRPC API for GCS.')
+
 
 class _SectionSurvey(_Section):
   """Contains the properties for the 'survey' section."""
@@ -3414,6 +3506,19 @@ class _SectionVmware(_Section):
         default='c1-highmem-72-metal',
         hidden=True,
         help_text='Node type to use when creating a new cluster.')
+
+
+class _SectionWeb3(_Section):
+  """Contains the properties for the 'web3' section."""
+
+  def __init__(self):
+    super(_SectionWeb3, self).__init__('web3', hidden=True)
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='The default region to use when working with Cloud '
+        'Web3 resources. When a `--location` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
 
 
 class _SectionWorkflows(_Section):

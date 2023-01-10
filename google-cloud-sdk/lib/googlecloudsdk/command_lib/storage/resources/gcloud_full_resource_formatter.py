@@ -31,6 +31,8 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Location Type', default=None),
         location=base.FieldDisplayTitleAndDefault(
             title='Location Constraint', default=shim_format_util.NONE_STRING),
+        data_locations=base.FieldDisplayTitleAndDefault(
+            title='Placement Locations', default=None),
         versioning_enabled=base.FieldDisplayTitleAndDefault(
             title='Versioning Enabled', default=shim_format_util.NONE_STRING),
         logging_config=base.FieldDisplayTitleAndDefault(
@@ -63,6 +65,9 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = (
             title='Metageneration', default=None),
         uniform_bucket_level_access=base.FieldDisplayTitleAndDefault(
             title='Bucket Policy Only Enabled', default=None),
+        public_access_prevention=base.FieldDisplayTitleAndDefault(
+            title='Public Access Prevention', default=None),
+        rpo=base.FieldDisplayTitleAndDefault(title='RPO', default=None),
         autoclass_enabled_time=base.FieldDisplayTitleAndDefault(
             title='Autoclass', default=None),
         satisfies_pzs=base.FieldDisplayTitleAndDefault(

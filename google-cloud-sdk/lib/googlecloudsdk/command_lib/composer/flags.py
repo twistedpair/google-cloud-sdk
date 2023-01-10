@@ -1543,7 +1543,7 @@ def AddCloudDataLineageIntegrationUpdateFlagsToGroup(update_type_group):
     update_type_group: argument group, the group to which flags should be added.
   """
   update_group = update_type_group.add_argument_group(
-      CLOUD_DATA_LINEAGE_INTEGRATION_GROUP_DESCRIPTION, hidden=True)
+      CLOUD_DATA_LINEAGE_INTEGRATION_GROUP_DESCRIPTION)
 
   update_enable_disable_group = update_group.add_argument_group(mutex=True)
   ENABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG.AddToParser(

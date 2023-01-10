@@ -131,9 +131,10 @@ class BucketResource(CloudResource):
     name (str): Name of bucket.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
       hosts the bucket.
-    acl (dict|str|None): ACLs dict or predefined-ACL string for the bucket.
-      If the API call to fetch the data failed, this can be an error string.
-    cors_config (dict|str|None): CORS configuration for the bucket.
+    acl (dict|CloudApiError|None): ACLs dict or predefined-ACL string for the
+      bucket. If the API call to fetch the data failed, this can be an error
+      string.
+    cors_config (dict|CloudApiError|None): CORS configuration for the bucket.
       If the API call to fetch the data failed, this can be an error string.
     creation_time (datetime|None): Bucket's creation time in UTC.
     default_event_based_hold (bool|None): Prevents objects in bucket from being
@@ -142,16 +143,17 @@ class BucketResource(CloudResource):
       bucket.
     etag (str|None): HTTP version identifier.
     labels (dict|None): Labels for the bucket.
-    lifecycle_config (dict|str|None): Lifecycle configuration for bucket.
-      If the API call to fetch the data failed, this can be an error string.
+    lifecycle_config (dict|CloudApiError|None): Lifecycle configuration for
+      bucket. If the API call to fetch the data failed, this can be an error
+      string.
     location (str|None): Represents region bucket was created in.
       If the API call to fetch the data failed, this can be an error string.
-    logging_config (dict|str|None): Logging configuration for bucket.
+    logging_config (dict|CloudApiError|None): Logging configuration for bucket.
       If the API call to fetch the data failed, this can be an error string.
     metadata (object|dict|None): Cloud-provider specific data type for holding
       bucket metadata.
     metageneration (int|None): The generation of the bucket's metadata.
-    requester_pays (bool|str|None): "Requester pays" status of bucket.
+    requester_pays (bool|CloudApiError|None): "Requester pays" status of bucket.
       If the API call to fetch the data failed, this can be an error string.
     retention_period (int|None): Default time to hold items in bucket before
       before deleting in seconds. Generated from retention_policy.
@@ -159,9 +161,10 @@ class BucketResource(CloudResource):
     retention_policy_is_locked (bool|None): True if a retention policy is
       locked.
     update_time (str|None): Bucket's update time.
-    versioning_enabled (bool|str|None): Whether past object versions are saved.
-      If the API call to fetch the data failed, this can be an error string.
-    website_config (dict|str|None): Website configuration for bucket.
+    versioning_enabled (bool|CloudApiError|None): Whether past object versions
+      are saved. If the API call to fetch the data failed, this can be an error
+      string.
+    website_config (dict|CloudApiError|None): Website configuration for bucket.
       If the API call to fetch the data failed, this can be an error string.
   """
   TYPE_STRING = 'cloud_bucket'
@@ -750,3 +753,11 @@ class DisplayableObjectData(DisplayableResourceData):
 
   def __repr__(self):
     return debug_output.generic_repr(self)
+
+
+def is_container_or_has_container_url(resource):
+  """Returns if resource is a known or unverified container resource."""
+  if isinstance(resource, UnknownResource):
+    # May query for objects in bucket, skipping check if the bucket exists.
+    return resource.storage_url.is_bucket()
+  return resource.is_container()

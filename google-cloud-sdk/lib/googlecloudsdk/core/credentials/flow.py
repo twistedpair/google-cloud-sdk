@@ -457,7 +457,7 @@ class UrlManager(object):
       return None
 
 
-_REQUIRED_QUERY_PARAMS_IN_AUTH_RESPONSE = ('state', 'code', 'scope')
+_REQUIRED_QUERY_PARAMS_IN_AUTH_RESPONSE = ('state', 'code')
 
 _AUTH_RESPONSE_ERR_MSG = (
     'The provided authorization response is invalid. Expect a url '

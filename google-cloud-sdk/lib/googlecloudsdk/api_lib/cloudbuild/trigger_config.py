@@ -287,38 +287,6 @@ For more details, see: https://cloud.google.com/cloud-build/docs/build-config
   return build_config
 
 
-def AddGitLabEnterpriseBuildConfigArgs(flag_config):
-  """Adds additional argparse flags to a group for build configuration options for GitLab Enterprise.
-
-  Args:
-    flag_config: argparse argument group. Additional flags will be added to this
-      group to cover common build configuration settings.
-  """
-
-  # Build config and inline config support substitutions whereas dockerfile
-  # does not. We can't have a flag with the same name in two separate
-  # groups so we have to have one flag outside of the config argument group.
-  AddSubstitutions(flag_config)
-
-  build_config = flag_config.add_mutually_exclusive_group(required=True)
-  build_config.add_argument(
-      '--build-config',
-      metavar='PATH',
-      help="""\
-Path to a YAML or JSON file containing the build configuration in the repository.
-
-For more details, see: https://cloud.google.com/cloud-build/docs/build-config
-""")
-  build_config.add_argument(
-      '--inline-config',
-      metavar='PATH',
-      help="""\
-      Local path to a YAML or JSON file containing a build configuration.
-    """)
-
-  AddBuildDockerArgs(build_config)
-
-
 def AddBuildDockerArgs(argument_group, require_docker_image=False):
   """Adds additional argparse flags to a group for build docker options.
 

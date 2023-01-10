@@ -127,16 +127,26 @@ def process_bucket_iam_configuration(existing_iam_metadata,
   return iam_metadata
 
 
-def process_labels(file_path):
+def process_labels(existing_labels_object, file_path):
   """Converts labels file to Apitools objects."""
   if file_path == user_request_args_factory.CLEAR:
     return None
 
-  labels_pair_list = metadata_util.get_label_pairs_from_file(file_path)
+  if existing_labels_object:
+    # The backend deletes labels whose value is None.
+    new_labels_dict = {
+        key: None for key in encoding.MessageToDict(existing_labels_object)
+    }
+  else:
+    new_labels_dict = {}
+
+  for key, value in metadata_util.cached_read_json_file(file_path).items():
+    new_labels_dict[key] = value
+
   messages = apis.GetMessagesModule('storage', 'v1')
   labels_property_list = [
       messages.Bucket.LabelsValue.AdditionalProperty(key=key, value=value)
-      for key, value in labels_pair_list
+      for key, value in new_labels_dict.items()
   ]
 
   return messages.Bucket.LabelsValue(additionalProperties=labels_property_list)
@@ -195,6 +205,12 @@ def process_log_config(target_bucket, log_bucket, log_object_prefix):
 
   logging_value.logObjectPrefix = schemeless_prefix
   return logging_value
+
+
+def process_placement_config(regions):
+  """Converts a list of regions to Apitools object."""
+  messages = apis.GetMessagesModule('storage', 'v1')
+  return messages.Bucket.CustomPlacementConfigValue(dataLocations=regions)
 
 
 def process_requester_pays(existing_billing, requester_pays):

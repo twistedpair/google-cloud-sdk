@@ -41,7 +41,6 @@ import requests
 import six
 from six.moves.urllib import parse as urlparse
 
-
 _CLUSTER_EVENTS_API_NAME = 'anthosevents'
 _CLUSTER_EVENTS_API_VERSION = 'v1beta1'
 
@@ -152,8 +151,7 @@ def _CheckTLSSupport():
         'Your Python installation is using the SSL library {}, '
         'which does not support TLS 1.2. TLS 1.2 is required to connect to '
         'Cloud Run on Kubernetes Engine. Please use python with '
-        'OpenSSL >1.0'.format(
-            ssl.OPENSSL_VERSION))
+        'OpenSSL >1.0'.format(ssl.OPENSSL_VERSION))
   # PROTOCOL_TLSv1_2 applies to [2.7.9, 2.7.13) or [3.4, 3.6).
   # PROTOCOL_TLS applies to 2.7.13 and above, or 3.6 and above.
   if not (hasattr(ssl, 'PROTOCOL_TLS') or hasattr(ssl, 'PROTOCOL_TLSv1_2')):
@@ -163,10 +161,8 @@ def _CheckTLSSupport():
         'Your Python {}.{}.{} installation does not support TLS 1.2, which is'
         ' required to connect to Cloud Run on Kubernetes Engine. '
         'Please upgrade to Python {} or greater.'.format(
-            sys.version_info.major,
-            sys.version_info.minor,
-            sys.version_info.micro,
-            min_required_version))
+            sys.version_info.major, sys.version_info.minor,
+            sys.version_info.micro, min_required_version))
 
 
 class GKEConnectionContext(ConnectionInfo):
@@ -196,14 +192,12 @@ class GKEConnectionContext(ConnectionInfo):
     assert self.active
     from googlecloudsdk.core.credentials import transports  # pylint: disable=g-import-not-at-top
     http_client = transports.GetApitoolsTransport(
-        response_encoding=transport.ENCODING,
-        ca_certs=self.ca_certs)
+        response_encoding=transport.ENCODING, ca_certs=self.ca_certs)
     return http_client
 
   @property
   def location_label(self):
-    return ' of cluster [{{{{bold}}}}{}{{{{reset}}}}]'.format(
-        self.cluster_name)
+    return ' of cluster [{{{{bold}}}}{}{{{{reset}}}}]'.format(self.cluster_name)
 
   @property
   def cluster_name(self):
@@ -252,15 +246,14 @@ class KubeconfigConnectionContext(ConnectionInfo):
     with self._LoadClusterDetails():
       try:
         if self.ca_data:
-          with gke.MonkeypatchAddressChecking(
-              'kubernetes.default', self.raw_hostname) as endpoint:
-            self.endpoint = 'https://{}/'.format(endpoint)
-            with _OverrideEndpointOverrides(self._api_name, self.endpoint):
-              yield self
+          with gke.MonkeypatchAddressChecking('kubernetes.default',
+                                              self.raw_hostname) as endpoint:
+            self.endpoint = 'https://{}/{}'.format(endpoint, self.raw_path)
         else:
-          self.endpoint = 'https://{}/'.format(self.raw_hostname)
-          with _OverrideEndpointOverrides(self._api_name, self.endpoint):
-            yield self
+          self.endpoint = 'https://{}/{}'.format(self.raw_hostname,
+                                                 self.raw_path)
+        with _OverrideEndpointOverrides(self._api_name, self.endpoint):
+          yield self
       # SSL Exceptions raised by the http2lib and requests library
       except (ssl.SSLError, requests.exceptions.SSLError) as e:
         if 'CERTIFICATE_VERIFY_FAILED' in six.text_type(e):
@@ -289,8 +282,7 @@ class KubeconfigConnectionContext(ConnectionInfo):
       return http_client
     from googlecloudsdk.core.credentials import transports  # pylint: disable=g-import-not-at-top
     http_client = transports.GetApitoolsTransport(
-        response_encoding=transport.ENCODING,
-        ca_certs=self.ca_certs)
+        response_encoding=transport.ENCODING, ca_certs=self.ca_certs)
     return http_client
 
   @property
@@ -301,8 +293,7 @@ class KubeconfigConnectionContext(ConnectionInfo):
   def location_label(self):
     return (' of context [{{{{bold}}}}{}{{{{reset}}}}]'
             ' referenced by config file [{{{{bold}}}}{}{{{{reset}}}}]'.format(
-                self.curr_ctx['name'],
-                self.kubeconfig.filename))
+                self.curr_ctx['name'], self.kubeconfig.filename))
 
   @property
   def cluster_name(self):
@@ -346,15 +337,23 @@ class KubeconfigConnectionContext(ConnectionInfo):
     """
     try:
       self.curr_ctx = self.kubeconfig.contexts[self.kubeconfig.current_context]
-      self.cluster = self.kubeconfig.clusters[
-          self.curr_ctx['context']['cluster']]
+      self.cluster = self.kubeconfig.clusters[self.curr_ctx['context']
+                                              ['cluster']]
       self.ca_certs = self.cluster['cluster'].get('certificate-authority', None)
       if not self.ca_certs:
-        self.ca_data = self.cluster['cluster'].get(
-            'certificate-authority-data', None)
+        self.ca_data = self.cluster['cluster'].get('certificate-authority-data',
+                                                   None)
 
       parsed_server = urlparse.urlparse(self.cluster['cluster']['server'])
       self.raw_hostname = parsed_server.hostname
+      # When server is a URL, the path is a prefix which must be appended to
+      # all request URIs used ot access the API server. This is the case for
+      # hub connected kubernetes clusters.
+      # See go/kubernetes-client-go-config-host-defn for the field definition.
+      if parsed_server.path:
+        self.raw_path = parsed_server.path.strip('/') + '/'
+      else:
+        self.raw_path = ''
       self.user = self.kubeconfig.users[self.curr_ctx['context']['user']]
       self.client_key = self.user['user'].get('client-key', None)
       self.client_key_data = None
@@ -408,8 +407,7 @@ class RegionalConnectionContext(ConnectionInfo):
 
   @property
   def location_label(self):
-    return ' region [{{{{bold}}}}{}{{{{reset}}}}]'.format(
-        self.region)
+    return ' region [{{{{bold}}}}{}{{{{reset}}}}]'.format(self.region)
 
   @contextlib.contextmanager
   def Connect(self):

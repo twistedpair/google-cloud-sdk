@@ -66,7 +66,7 @@ class GkemulticloudProjectsLocationsAttachedClustersDeleteRequest(_messages.Mess
       `AttachedCluster` names are formatted as
       `projects//locations//attachedClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     validateOnly: If set, only validate the request, but do not actually
       delete the resource.
   """
@@ -86,7 +86,7 @@ class GkemulticloudProjectsLocationsAttachedClustersGetRequest(_messages.Message
       `AttachedCluster` names are formatted as
       `projects//locations//attachedClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   name = _messages.StringField(1, required=True)
@@ -125,7 +125,7 @@ class GkemulticloudProjectsLocationsAttachedClustersListRequest(_messages.Messag
       AttachedCluster resources. Location names are formatted as
       `projects//locations/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -143,7 +143,7 @@ class GkemulticloudProjectsLocationsAttachedClustersPatchRequest(_messages.Messa
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//attachedClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AttachedCluster: * `description`. *
@@ -331,7 +331,7 @@ class GkemulticloudProjectsLocationsAwsClustersDeleteRequest(_messages.Message):
     name: Required. The resource name the AwsCluster to delete. `AwsCluster`
       names are formatted as `projects//locations//awsClusters/`. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names)
-      for more details on GCP resource names.
+      for more details on Google Cloud Platform resource names.
     validateOnly: If set, only validate the request, but do not actually
       delete the resource.
   """
@@ -376,7 +376,7 @@ class GkemulticloudProjectsLocationsAwsClustersGetRequest(_messages.Message):
       `AwsCluster` names are formatted as `projects//locations//awsClusters/`.
       See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   name = _messages.StringField(1, required=True)
@@ -397,7 +397,7 @@ class GkemulticloudProjectsLocationsAwsClustersListRequest(_messages.Message):
       AwsCluster resources. Location names are formatted as
       `projects//locations/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -415,7 +415,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AwsCluster: * `description`. *
@@ -534,7 +534,7 @@ class GkemulticloudProjectsLocationsAzureClientsListRequest(_messages.Message):
       AzureClient resources. Location names are formatted as
       `projects//locations/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -704,7 +704,7 @@ class GkemulticloudProjectsLocationsAzureClustersDeleteRequest(_messages.Message
       `AzureCluster` names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     validateOnly: If set, only validate the request, but do not actually
       delete the resource.
   """
@@ -750,7 +750,7 @@ class GkemulticloudProjectsLocationsAzureClustersGetRequest(_messages.Message):
       `AzureCluster` names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   name = _messages.StringField(1, required=True)
@@ -771,7 +771,7 @@ class GkemulticloudProjectsLocationsAzureClustersListRequest(_messages.Message):
       AzureCluster resources. Location names are formatted as
       `projects//locations/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -789,13 +789,16 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureCluster: * `description`. *
       `azureClient`. * `control_plane.version`. * `control_plane.vm_size`. *
       `annotations`. * `authorization.admin_users`. *
-      `control_plane.root_volume.size_gib`. * `control_plane.proxy_config`. *
+      `control_plane.root_volume.size_gib`. * `azure_services_authentication`.
+      * `azure_services_authentication.tenant_id`. *
+      `azure_services_authentication.application_id`. *
+      `control_plane.proxy_config`. *
       `control_plane.proxy_config.resource_group_id`. *
       `control_plane.proxy_config.secret_id`. *
       `control_plane.ssh_config.authorized_key`. *
@@ -988,7 +991,7 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//attachedClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     oidcConfig: Required. OpenID Connect (OIDC) configuration for the cluster.
     platformVersion: Required. The platform version for the cluster (e.g.
       `1.19.0-gke.1000`). You can list all supported versions on a given
@@ -1118,12 +1121,12 @@ class GoogleCloudGkemulticloudV1AttachedClustersAuthorization(_messages.Message)
 class GoogleCloudGkemulticloudV1AttachedOidcConfig(_messages.Message):
   r"""OIDC discovery information of the target cluster. Kubernetes Service
   Account (KSA) tokens are JWT tokens signed by the cluster API server. This
-  fields indicates how GCP services validate KSA tokens in order to allow
-  system workloads (such as GKE Connect and telemetry agents) to authenticate
-  back to GCP. Both clusters with public and private issuer URLs are
-  supported. Clusters with public issuers only need to specify the
-  `issuer_url` field while clusters with private issuers need to provide both
-  `issuer_url` and `oidc_jwks`.
+  fields indicates how Google Cloud Platform services validate KSA tokens in
+  order to allow system workloads (such as GKE Connect and telemetry agents)
+  to authenticate back to Google Cloud Platform. Both clusters with public and
+  private issuer URLs are supported. Clusters with public issuers only need to
+  specify the `issuer_url` field while clusters with private issuers need to
+  provide both `issuer_url` and `oidc_jwks`.
 
   Fields:
     issuerUrl: A JSON Web Token (JWT) issuer URI. `issuer` must start with
@@ -1241,7 +1244,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     networking: Required. Cluster-wide networking configuration.
     reconciling: Output only. If set, there are currently changes in flight to
       the cluster.
@@ -2034,17 +2037,19 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
       alphanumerics between.
     authorization: Required. Configuration related to the cluster RBAC
       settings.
-    azureClient: Required. Name of the AzureClient that contains
+    azureClient: Optional. Name of the AzureClient that contains
       authentication configuration for how the Anthos Multi-Cloud API connects
-      to Azure APIs. The `AzureClient` resource must reside on the same GCP
-      project and region as the `AzureCluster`. `AzureClient` names are
-      formatted as `projects//locations//azureClients/`. See [Resource
-      Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on Google Cloud resource names.
+      to Azure APIs. The `AzureClient` resource must reside on the same Google
+      Cloud Platform project and region as the `AzureCluster`. `AzureClient`
+      names are formatted as `projects//locations//azureClients/`. See
+      [Resource Names](https://cloud.google.com/apis/design/resource_names)
+      for more details on Google Cloud resource names.
     azureRegion: Required. The Azure region where the cluster runs. Each
       Google Cloud region supports a subset of nearby Azure regions. You can
       call GetAzureServerConfig to list all supported Azure regions within a
       given Google Cloud region.
+    azureServicesAuthentication: Optional. Authentication configuration for
+      management of Azure resources.
     clusterCaCertificate: Output only. PEM encoded x509 certificate of the
       cluster root of trust.
     controlPlane: Required. Configuration related to the cluster control
@@ -2064,7 +2069,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     networking: Required. Cluster-wide networking configuration.
     reconciling: Output only. If set, there are currently changes in flight to
       the cluster.
@@ -2138,25 +2143,26 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AzureAuthorization', 2)
   azureClient = _messages.StringField(3)
   azureRegion = _messages.StringField(4)
-  clusterCaCertificate = _messages.StringField(5)
-  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AzureControlPlane', 6)
-  createTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  endpoint = _messages.StringField(9)
-  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterError', 10, repeated=True)
-  etag = _messages.StringField(11)
-  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 12)
-  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 13)
-  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 14)
-  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 15)
-  name = _messages.StringField(16)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 17)
-  reconciling = _messages.BooleanField(18)
-  resourceGroupId = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 23)
+  azureServicesAuthentication = _messages.MessageField('GoogleCloudGkemulticloudV1AzureServicesAuthentication', 5)
+  clusterCaCertificate = _messages.StringField(6)
+  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AzureControlPlane', 7)
+  createTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  endpoint = _messages.StringField(10)
+  errors = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterError', 11, repeated=True)
+  etag = _messages.StringField(12)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 13)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 14)
+  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 15)
+  monitoringConfig = _messages.MessageField('GoogleCloudGkemulticloudV1MonitoringConfig', 16)
+  name = _messages.StringField(17)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 18)
+  reconciling = _messages.BooleanField(19)
+  resourceGroupId = _messages.StringField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 24)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterError(_messages.Message):
@@ -2687,7 +2693,7 @@ class GoogleCloudGkemulticloudV1AzureServerConfig(_messages.Message):
     name: The `AzureServerConfig` resource name. `AzureServerConfig` names are
       formatted as `projects//locations//azureServerConfig`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
+      details on Google Cloud Platform resource names.
     supportedAzureRegions: The list of supported Azure regions.
     validVersions: List of valid Kubernetes versions.
   """
@@ -2695,6 +2701,18 @@ class GoogleCloudGkemulticloudV1AzureServerConfig(_messages.Message):
   name = _messages.StringField(1)
   supportedAzureRegions = _messages.StringField(2, repeated=True)
   validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AzureK8sVersionInfo', 3, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1AzureServicesAuthentication(_messages.Message):
+  r"""Authentication configuration for the management of Azure resources.
+
+  Fields:
+    applicationId: Required. The Azure Active Directory Application ID.
+    tenantId: Required. The Azure Active Directory Tenant ID.
+  """
+
+  applicationId = _messages.StringField(1)
+  tenantId = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1AzureSshConfig(_messages.Message):
@@ -2815,8 +2833,8 @@ class GoogleCloudGkemulticloudV1ListAttachedClustersResponse(_messages.Message):
   r"""Response message for `AttachedClusters.ListAttachedClusters` method.
 
   Fields:
-    attachedClusters: A list of AttachedCluster resources in the specified GCP
-      project and region region.
+    attachedClusters: A list of AttachedCluster resources in the specified
+      Google Cloud Platform project and region region.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
@@ -2829,8 +2847,8 @@ class GoogleCloudGkemulticloudV1ListAwsClustersResponse(_messages.Message):
   r"""Response message for `AwsClusters.ListAwsClusters` method.
 
   Fields:
-    awsClusters: A list of AwsCluster resources in the specified GCP project
-      and region region.
+    awsClusters: A list of AwsCluster resources in the specified Google Cloud
+      Platform project and region region.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
@@ -2871,8 +2889,8 @@ class GoogleCloudGkemulticloudV1ListAzureClustersResponse(_messages.Message):
   r"""Response message for `AzureClusters.ListAzureClusters` method.
 
   Fields:
-    azureClusters: A list of AzureCluster resources in the specified GCP
-      project and region region.
+    azureClusters: A list of AzureCluster resources in the specified Google
+      Cloud Platform project and region region.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """

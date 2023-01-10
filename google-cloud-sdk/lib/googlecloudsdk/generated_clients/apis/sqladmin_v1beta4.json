@@ -877,6 +877,7 @@
               "The database major version is MySQL 8.0 and the minor version is 28.",
               "The database major version is MySQL 8.0 and the minor version is 29.",
               "The database major version is MySQL 8.0 and the minor version is 30.",
+              "The database major version is MySQL 8.0 and the minor version is 31.",
               "The database version is SQL Server 2019 Standard.",
               "The database version is SQL Server 2019 Enterprise.",
               "The database version is SQL Server 2019 Express.",
@@ -905,6 +906,7 @@
               "MYSQL_8_0_28",
               "MYSQL_8_0_29",
               "MYSQL_8_0_30",
+              "MYSQL_8_0_31",
               "SQLSERVER_2019_STANDARD",
               "SQLSERVER_2019_ENTERPRISE",
               "SQLSERVER_2019_EXPRESS",
@@ -1203,6 +1205,7 @@
             "The database major version is MySQL 8.0 and the minor version is 28.",
             "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database major version is MySQL 8.0 and the minor version is 30.",
+            "The database major version is MySQL 8.0 and the minor version is 31.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -1231,6 +1234,7 @@
             "MYSQL_8_0_28",
             "MYSQL_8_0_29",
             "MYSQL_8_0_30",
+            "MYSQL_8_0_31",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -1434,6 +1438,7 @@
             "The database major version is MySQL 8.0 and the minor version is 28.",
             "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database major version is MySQL 8.0 and the minor version is 30.",
+            "The database major version is MySQL 8.0 and the minor version is 31.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -1462,6 +1467,7 @@
             "MYSQL_8_0_28",
             "MYSQL_8_0_29",
             "MYSQL_8_0_30",
+            "MYSQL_8_0_31",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -2761,6 +2767,13 @@
         }
       }
     },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
     "SslCertsInsertRequest": {
       "id": "SslCertsInsertRequest",
       "description": "SslCerts insert request.",
@@ -2878,6 +2891,7 @@
             "The database major version is MySQL 8.0 and the minor version is 28.",
             "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database major version is MySQL 8.0 and the minor version is 30.",
+            "The database major version is MySQL 8.0 and the minor version is 31.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -2906,6 +2920,7 @@
             "MYSQL_8_0_28",
             "MYSQL_8_0_29",
             "MYSQL_8_0_30",
+            "MYSQL_8_0_31",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -4682,6 +4697,38 @@
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
           "description": "Lists all instance operations that have been performed on the given Cloud SQL instance in the reverse chronological order of the start time."
+        },
+        "cancel": {
+          "id": "sql.operations.cancel",
+          "path": "sql/v1beta4/projects/{project}/operations/{operation}/cancel",
+          "flatPath": "sql/v1beta4/projects/{project}/operations/{operation}/cancel",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Project ID of the project that contains the instance.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "operation": {
+              "description": "Instance operation ID.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "operation"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/sqlservice.admin"
+          ],
+          "description": "Cancels an instance operation that has been performed on an instance."
         }
       }
     },

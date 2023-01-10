@@ -66,37 +66,26 @@ class CommandData(object):
 
 
 class CommandType(Enum):
-  """An enum for the types of commands the generator supports.
+  """An enum for the types of commands the generator supports."""
+  DESCRIBE = 1
+  LIST = 2
+  DELETE = 3
+  IMPORT = 4
+  EXPORT = 5
+  CONFIG_EXPORT = 6
+  CREATE = 7
+  WAIT = 8
+  UPDATE = 9
+  GET_IAM_POLICY = 10
+  SET_IAM_POLICY = 11
+  ADD_IAM_POLICY_BINDING = 12
+  REMOVE_IAM_POLICY_BINDING = 13
+  GENERIC = 14
 
-  Attributes:
-    default_method: str, The name of the API method to use by default for this
-      type of command.
-  """
-  DESCRIBE = 'get'
-  LIST = 'list'
-  DELETE = 'delete'
-  IMPORT = 'patch'
-  EXPORT = 'get'
-  CONFIG_EXPORT = 'config_export'
-  CREATE = 'create'
-  WAIT = 'get'
-  UPDATE = 'patch'
-  # IAM support currently implemented as subcommands
-  GET_IAM_POLICY = 'getIamPolicy'
-  SET_IAM_POLICY = 'setIamPolicy'
-  # For add/remove-iam-policy-binding commands, the actual API method to modify
-  # the iam support is 'setIamPolicy'.
-  ADD_IAM_POLICY_BINDING = 'setIamPolicy'
-  REMOVE_IAM_POLICY_BINDING = 'setIamPolicy'
-  # Generic commands are those that don't extend a specific calliope command
-  # base class.
-  GENERIC = None
-
-  def __init__(self, default_method):
-    # Set the value to a unique object so multiple enums can have the same
-    # default method.
-    self._value_ = object()
-    self.default_method = default_method
+  @property
+  def default_method(self):
+    """Returns the default API method name for this type of command."""
+    return _DEFAULT_METHODS_BY_COMMAND_TYPE.get(self)
 
   @classmethod
   def ForName(cls, name):
@@ -109,6 +98,29 @@ class CommandType(Enum):
   def HasRequestMethod(cls, name):
     methodless_commands = {cls.CONFIG_EXPORT}
     return name not in methodless_commands
+
+
+_DEFAULT_METHODS_BY_COMMAND_TYPE = {
+    CommandType.DESCRIBE: 'get',
+    CommandType.LIST: 'list',
+    CommandType.DELETE: 'delete',
+    CommandType.IMPORT: 'patch',
+    CommandType.EXPORT: 'get',
+    CommandType.CONFIG_EXPORT: 'config_export',
+    CommandType.CREATE: 'create',
+    CommandType.WAIT: 'get',
+    CommandType.UPDATE: 'patch',
+    # IAM support currently implemented as subcommands
+    CommandType.GET_IAM_POLICY: 'getIamPolicy',
+    CommandType.SET_IAM_POLICY: 'setIamPolicy',
+    # For add/remove-iam-policy-binding commands, the actual API method to
+    # modify the iam support is 'setIamPolicy'.
+    CommandType.ADD_IAM_POLICY_BINDING: 'setIamPolicy',
+    CommandType.REMOVE_IAM_POLICY_BINDING: 'setIamPolicy',
+    # Generic commands are those that don't extend a specific calliope command
+    # base class.
+    CommandType.GENERIC: None,
+}
 
 
 class Request(object):

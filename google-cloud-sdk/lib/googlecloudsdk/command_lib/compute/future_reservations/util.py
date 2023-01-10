@@ -22,7 +22,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute.reservations import util as reservation_util
 
 
-def MakeFutureReservationMessageFromArgs(messages, args,
+def MakeFutureReservationMessageFromArgs(messages, resources, args,
                                          future_reservation_ref):
   """Construct future reservation message from args passed in."""
   local_ssds = reservation_util.MakeLocalSsds(messages,
@@ -35,7 +35,7 @@ def MakeFutureReservationMessageFromArgs(messages, args,
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None))
   sku_properties = MakeSpecificSKUPropertiesMessage(
-      messages, allocated_instance_properties, args.total_count,
+      messages, resources, allocated_instance_properties, args.total_count,
       getattr(args, 'source_instance_template', None))
   time_window = MakeTimeWindowMessage(messages, args.start_time,
                                       getattr(args, 'end_time', None),
@@ -78,17 +78,21 @@ def MakeAllocatedInstanceProperties(messages,
 
 
 def MakeSpecificSKUPropertiesMessage(messages,
+                                     resources,
                                      instance_properties,
                                      total_count,
                                      source_instance_template=None):
   """Constructs a specific sku properties message object."""
+  properties = None
+  source_instance_template_url = None
   if source_instance_template:
-    properties = None
+    source_instance_template_url = reservation_util.MakeInstanceTemplateUrl(
+        source_instance_template, resources)
   else:
     properties = instance_properties
   return messages.FutureReservationSpecificSKUProperties(
       totalCount=total_count,
-      sourceInstanceTemplate=source_instance_template,
+      sourceInstanceTemplate=source_instance_template_url,
       instanceProperties=properties)
 
 

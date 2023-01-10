@@ -62,7 +62,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new AttachedCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
+      r"""Creates a new AttachedCluster resource on a given Google Cloud Platform project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAttachedClustersCreateRequest) input message
@@ -416,7 +416,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new AwsCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
+      r"""Creates a new AwsCluster resource on a given Google Cloud Platform project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersCreateRequest) input message
@@ -915,7 +915,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new AzureCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
+      r"""Creates a new AzureCluster resource on a given Google Cloud Platform project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersCreateRequest) input message

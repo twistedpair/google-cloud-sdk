@@ -32,6 +32,16 @@ perimeter:
     attribute_name: perimeter
     help: |
       The ID of the service perimeter.
+authorized-orgs-desc:
+  name: authorized-orgs-desc
+  request_id_field: authorizedOrgsDesc.name
+  collection: accesscontextmanager.accessPolicies.authorizedOrgsDescs
+  attributes:
+  - *policy
+  - parameter_name: authorizedOrgsDescsId
+    attribute_name: authorized_orgs_desc
+    help: |
+      The ID of the authorized organizations description.
 organization:
   name: organization
   request_id_field: parent

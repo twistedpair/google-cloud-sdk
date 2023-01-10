@@ -623,15 +623,15 @@
       "resources": {
         "locations": {
           "methods": {
-            "listLocations": {
-              "id": "stream.projects.locations.listLocations",
-              "path": "v1/{+name}",
-              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+            "list": {
+              "id": "stream.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -694,15 +694,15 @@
           "resources": {
             "operations": {
               "methods": {
-                "listOperations": {
-                  "id": "stream.projects.locations.operations.listOperations",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                "list": {
+                  "id": "stream.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

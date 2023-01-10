@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import progress_callbacks
-from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.buckets import delete_bucket_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 
@@ -60,15 +59,14 @@ class DeleteTaskIteratorFactory:
       True if resource found.
     """
     for name_expansion_result in self._name_expansion_iterator:
-      resource = name_expansion_result.resource
-      if isinstance(resource, resource_reference.BucketResource):
+      resource_url = name_expansion_result.resource.storage_url
+      if resource_url.is_bucket():
         self._bucket_delete_tasks.put(
-            delete_bucket_task.DeleteBucketTask(resource.storage_url))
+            delete_bucket_task.DeleteBucketTask(resource_url))
       else:
         self._object_delete_tasks.put(
             delete_object_task.DeleteObjectTask(
-                resource.storage_url,
-                user_request_args=self._user_request_args))
+                resource_url, user_request_args=self._user_request_args))
       yield True
 
   def _resource_iterator(self, resource_queue):

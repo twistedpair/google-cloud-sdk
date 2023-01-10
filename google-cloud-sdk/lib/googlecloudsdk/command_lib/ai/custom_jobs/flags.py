@@ -77,6 +77,7 @@ _WORKER_POOL_SPEC = base.Argument(
             'accelerator-count': int,
             'container-image-uri': str,
             'executor-image-uri': str,
+            'output-image-uri': str,
             'python-module': str,
             'script': str,
             'local-package-path': str,
@@ -111,6 +112,8 @@ _WORKER_POOL_SPEC = base.Argument(
         `containerSpec.imageUri` field in `WorkerPoolSpec` API message.
       *executor-image-uri*::: The URI of a container image that will run the
         provided package.
+      *output-image-uri*::: The URI of a custom container image to be built for
+      autopackaged custom jobs.
       *python-module*::: The Python module name to run within the provided
         package.
       *local-package-path*::: The local path of a folder that contains training
@@ -158,7 +161,13 @@ _WORKER_POOL_SPEC = base.Argument(
       Example:
       --worker-pool-spec=machine-type=e2-standard-4,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,python-module=trainer.task
 
-      `local-package-path, executor-image-uri, python-module|script`::::
+      `output-image-uri`::::
+      Specify this field to push the output custom container training image to a specific path in Container Registry or Artifact Registry for an autopackaged custom job.
+
+      Example:
+      --worker-pool-spec=machine-type=e2-standard-4,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,output-image-uri='eu.gcr.io/projectName/imageName',python-module=trainer.task
+
+      `local-package-path, executor-image-uri, output-image-uri, python-module|script`::::
       Specify these fields, optionally with `requirements`, `extra-packages`, or
       `extra-dirs`, to train using a pre-built container and Python code from a
       local path.

@@ -705,8 +705,8 @@
           "description": "Whether ContinuousBackup is enabled.",
           "type": "boolean"
         },
-        "retentionWindowDays": {
-          "description": "The number of days the log records and backups will be retained. This is also the recovery window as logs and backups are needed for recovery. If not set, it defaults to 14 days.",
+        "recoveryWindowDays": {
+          "description": "The number of days backups and logs will be retained, which determines the window of time that data is recoverable for. If not set, it defaults to 14 days.",
           "type": "integer",
           "format": "int32"
         },
@@ -2648,7 +2648,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the parent resource. The required format is: * projects\/{project}\/locations\/{location} Regardless of the parent specified here, as long it is contains a valid project and location, the service will return a static list of supported flags resources. Note that we do not not yet support region-specific flags (see b\/211502903).",
+                      "description": "Required. The name of the parent resource. The required format is: * projects\/{project}\/locations\/{location} Regardless of the parent specified here, as long it is contains a valid project and location, the service will return a static list of supported flags resources. Note that we do not yet support region-specific flags (see b\/211502903).",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,

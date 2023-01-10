@@ -183,6 +183,24 @@ def _ValidateWorkerPoolSoftwareWithLocalPackage(spec):
         'Exactly one of keys [python-module, script] is required '
         'when `local-package-path` is specified.')
 
+  if 'output-image-uri' in spec:
+    output_image = spec['output-image-uri']
+    hostname = output_image.split('/')[0]
+    container_registries = ['gcr.io', 'eu.gcr.io', 'asia.gcr.io', 'us.gcr.io']
+    if hostname not in container_registries and not hostname.endswith(
+        '-docker.pkg.dev'):
+      raise exceptions.InvalidArgumentException(
+          '--worker-pool-spec',
+          'The value of `output-image-uri` has to be a valid gcr.io or Artifact Registry image'
+      )
+    try:
+      docker_utils.ValidateRepositoryAndTag(output_image)
+    except ValueError as e:
+      raise exceptions.InvalidArgumentException(
+          '--worker-pool-spec',
+          r"'{}' is not a valid container image uri: {}".format(
+              output_image, e))
+
 
 def _ValidateWorkerPoolSoftwareWithoutLocalPackages(spec):
   """Validate the software in a single `--worker-pool-spec` when `local-package-path` is not specified."""

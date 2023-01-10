@@ -1051,6 +1051,82 @@
         }
       }
     },
+    "ListAuthorizedOrgsDescsResponse": {
+      "id": "ListAuthorizedOrgsDescsResponse",
+      "description": "A response to `ListAuthorizedOrgsDescsRequest`.",
+      "type": "object",
+      "properties": {
+        "authorizedOrgsDescs": {
+          "description": "List of the Authorized Orgs Desc instances.",
+          "type": "array",
+          "items": {
+            "$ref": "AuthorizedOrgsDesc"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of results. If the value is empty, no further results remain.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthorizedOrgsDesc": {
+      "id": "AuthorizedOrgsDesc",
+      "description": "`AuthorizedOrgsDesc` is a resource that contains a list of organizations for a authorization type and asset type and its authorization direction.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Assigned by the server during creation. The last segment has an arbitrary length and has only URI unreserved characters (as defined by [RFC 3986 Section 2.3](https:\/\/tools.ietf.org\/html\/rfc3986#section-2.3)). Should not be specified by the client during creation. Example: \"accessPolicies\/122256\/authorizedOrgs\/b3-BhcX_Ud5N\"",
+          "type": "string"
+        },
+        "authorizationType": {
+          "description": "The authorization type of this authorized orgs desc. e.g.authorization, troubleshooting or logging.",
+          "type": "string",
+          "enumDescriptions": [
+            "No authorization type specified.",
+            "This authorization relationship is \"trust\"."
+          ],
+          "enum": [
+            "AUTHORIZATION_TYPE_UNSPECIFIED",
+            "AUTHORIZATION_TYPE_TRUST"
+          ]
+        },
+        "assetType": {
+          "description": "The asset type of this authorized orgs desc. e.g. device, credential strength.",
+          "type": "string",
+          "enumDescriptions": [
+            "No asset type specified.",
+            "Device asset type.",
+            "credential strength asset type."
+          ],
+          "enum": [
+            "ASSET_TYPE_UNSPECIFIED",
+            "ASSET_TYPE_DEVICE",
+            "ASSET_TYPE_CREDENTIAL_STRENGTH"
+          ]
+        },
+        "authorizationDirection": {
+          "description": "Authorization direction of this authorization relationship. i.e. Whether to allow specified orgs to evaluate this org's traffic, or allow specified orgs' traffic to be evaluated by this org. Orgs specified as `AUTHORIZATION_DIRECTION_TO` in this AuthorizedOrgDesc[com.google.identity.accesscontextmanager.v1alpha.AuthorizedOrgsDesc] must also specify this org as the `AUTHORIZATION_DIRECTION_FROM` in their own AuthorizedOrgDesc in order for this relationship to take effect. Orgs specified as `AUTHORIZATION_DIRECTION_FROM` in this AuthorizedOrgDesc[com.google.identity.accesscontextmanager.v1alpha.AuthorizedOrgsDesc] must also specify this org as the `AUTHORIZATION_DIRECTION_TO` in their own AuthorizedOrgDesc in order for this relationship to take effect.",
+          "type": "string",
+          "enumDescriptions": [
+            "No direction specified.",
+            "Specified orgs will evaluate traffic.",
+            "Specified orgs' traffic will be evaluated."
+          ],
+          "enum": [
+            "AUTHORIZATION_DIRECTION_UNSPECIFIED",
+            "AUTHORIZATION_DIRECTION_TO",
+            "AUTHORIZATION_DIRECTION_FROM"
+          ]
+        },
+        "orgs": {
+          "description": "The list of organization ids in this AuthorizedOrgsDesc.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ReplaceAccessLevelsResponse": {
       "id": "ReplaceAccessLevelsResponse",
       "description": "A response to ReplaceAccessLevelsRequest. This will be put inside of Operation.response field.",
@@ -1828,6 +1904,158 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource can be an AccessPolicy, AccessLevel, or ServicePerimeter. This method does not support other resources."
+            }
+          }
+        },
+        "authorizedOrgsDescs": {
+          "methods": {
+            "list": {
+              "id": "accesscontextmanager.accessPolicies.authorizedOrgsDescs.list",
+              "path": "v1alpha/{+parent}/authorizedOrgsDescs",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/authorizedOrgsDescs",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy to list Authorized Orgs Desc from. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Number of Authorized Orgs Descs to include in the list. Default 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Next page token for the next batch of Authorized Orgs Desc instances. Defaults to the first page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListAuthorizedOrgsDescsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all authorized orgs descs for an access policy."
+            },
+            "get": {
+              "id": "accesscontextmanager.accessPolicies.authorizedOrgsDescs.get",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/authorizedOrgsDescs/{authorizedOrgsDescsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Authorized Orgs Desc. Format: `accessPolicies\/{policy_id}\/authorizedOrgsDescs\/{authorized_orgs_descs_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/authorizedOrgsDescs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "AuthorizedOrgsDesc"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets a authorized orgs desc based on the resource name."
+            },
+            "create": {
+              "id": "accesscontextmanager.accessPolicies.authorizedOrgsDescs.create",
+              "path": "v1alpha/{+parent}/authorizedOrgsDescs",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/authorizedOrgsDescs",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the access policy which owns this Authorized Orgs Desc. Format: `accessPolicies\/{policy_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "AuthorizedOrgsDesc"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a authorized orgs desc. The long-running operation from this RPC has a successful status after the authorized orgs desc propagates to long-lasting storage. If a authorized orgs desc contains errors, an error response is returned for the first error encountered. The name of this `AuthorizedOrgsDesc` will be assigned during creation."
+            },
+            "patch": {
+              "id": "accesscontextmanager.accessPolicies.authorizedOrgsDescs.patch",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/authorizedOrgsDescs/{authorizedOrgsDescsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Assigned by the server during creation. The last segment has an arbitrary length and has only URI unreserved characters (as defined by [RFC 3986 Section 2.3](https:\/\/tools.ietf.org\/html\/rfc3986#section-2.3)). Should not be specified by the client during creation. Example: \"accessPolicies\/122256\/authorizedOrgs\/b3-BhcX_Ud5N\"",
+                  "pattern": "^accessPolicies\/[^\/]+\/authorizedOrgsDescs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. Mask to control which fields get updated. Must be non-empty.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "AuthorizedOrgsDesc"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates a authorized orgs desc. The long-running operation from this RPC has a successful status after the authorized orgs desc propagates to long-lasting storage. If a authorized orgs desc contains errors, an error response is returned for the first error encountered. Only the organization list in `AuthorizedOrgsDesc` can be updated. The name, authorization_type, asset_type and authorization_direction cannot be updated."
+            },
+            "delete": {
+              "id": "accesscontextmanager.accessPolicies.authorizedOrgsDescs.delete",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/authorizedOrgsDescs/{authorizedOrgsDescsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name for the Authorized Orgs Desc. Format: `accessPolicies\/{policy_id}\/authorizedOrgsDesc\/{authorized_orgs_desc_id}`",
+                  "pattern": "^accessPolicies\/[^\/]+\/authorizedOrgsDescs\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a authorized orgs desc based on the resource name. The long-running operation from this RPC has a successful status after the authorized orgs desc is removed from long-lasting storage."
             }
           }
         }

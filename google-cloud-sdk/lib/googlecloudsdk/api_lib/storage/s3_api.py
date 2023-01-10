@@ -24,6 +24,7 @@ import boto3
 import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import headers_util
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.api_lib.storage import s3_metadata_util
@@ -40,6 +41,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
 import s3transfer
+
 
 # S3 does not allow upload of size > 5 GiB for put_object.
 MAX_PUT_OBJECT_SIZE = 5 * (1024**3)  # 5 GiB
@@ -84,6 +86,13 @@ def _create_client(resource_location=None):
         if disable_ssl_validation is not None else True)
 
 
+def _add_additional_headers_to_request(request, **kwargs):
+  del kwargs
+  headers = headers_util.get_additional_header_dict()
+  for key, value in headers.items():
+    request.headers.add_header(key, value)
+
+
 # pylint:disable=abstract-method
 class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
@@ -98,6 +107,11 @@ class S3Api(cloud_api.CloudApi):
         'S3 support is currently unstable and should not be relied on for'
         ' production workloads.')
     self.client = _create_client()
+
+    # Adding headers to s3 calls requires registering an event handler.
+    # https://github.com/boto/boto3/issues/2251
+    self.client.meta.events.register_first('before-sign.s3.*',
+                                           _add_additional_headers_to_request)
 
   @_catch_client_error_raise_s3_api_error()
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):

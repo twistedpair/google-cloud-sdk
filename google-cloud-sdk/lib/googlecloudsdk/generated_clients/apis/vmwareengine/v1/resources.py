@@ -153,6 +153,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_SUBNETS = (
+      'projects.locations.privateClouds.subnets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
+              '{privateCloudsId}/subnets/{subnetsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PRIVATECONNECTIONS = (
       'projects.locations.privateConnections',
       '{+name}',

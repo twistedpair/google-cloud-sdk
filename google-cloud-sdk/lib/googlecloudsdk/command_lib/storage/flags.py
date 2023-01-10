@@ -18,7 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.core import properties
 
 
 REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS = ('project', 'bucket', 'name')
@@ -30,6 +34,42 @@ OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS = (
 ALL_INVENTORY_REPORTS_METADATA_FIELDS = (
     REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS +
     OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS)
+
+
+class ReplicationStrategy(enum.Enum):
+  """Enum class for specifying the replication setting."""
+  DEFAULT = 'DEFAULT'
+  ASYNC_TURBO = 'ASYNC_TURBO'
+
+
+def add_additional_headers_flag(parser):
+  """Adds a flag that allows users to specify arbitrary headers in API calls."""
+  parser.add_argument(
+      '--additional-headers',
+      action=actions.StoreProperty(
+          properties.VALUES.storage.additional_headers),
+      metavar='HEADER=VALUE',
+      help='Includes arbitrary headers in storage API calls.'
+      ' Accepts a comma separated list of key=value pairs, e.g.'
+      ' `header1=value1,header2=value2`.')
+
+
+def add_fetch_encrypted_object_hashes_flag(parser, is_list=True):
+  """Adds flag to commands that need object hashes."""
+  if is_list:
+    help_text = (
+        'API requests to the LIST endpoint do not fetch the hashes for'
+        ' encrypted objects by default. If this flag is set, a GET request'
+        ' is sent for each encrypted object in order to fetch hashes. This'
+        ' can significantly increase the cost of the command.')
+  else:
+    help_text = (
+        'If the initial GET request returns an object encrypted with a'
+        ' customer-supplied encryption key, the hash fields will be null.'
+        ' If the matching decryption key is present on the system, this flag'
+        ' retries the GET request with the key.')
+  parser.add_argument(
+      '--fetch-encrypted-object-hashes', action='store_true', help=help_text)
 
 
 def add_predefined_acl_flag(parser):
@@ -358,3 +398,27 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
           _get_optional_help_text(require_create_flags, 'end_date')))
   if require_create_flags:
     add_inventory_reports_metadata_fields_flag(parser, require_create_flags)
+
+
+def add_recovery_point_objective_flag(parser):
+  """Adds the recovery point objective flag for buckets commands.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+  """
+  parser.add_argument(
+      '--recovery-point-objective',
+      '--rpo',
+      choices=sorted([option.value for option in ReplicationStrategy]),
+      metavar='SETTING',
+      type=str,
+      help=('Sets the [recovery point objective](https://cloud.google.com'
+            '/architecture/dr-scenarios-planning-guide#basics_of_dr_planning)'
+            ' of a bucket. This flag can only be used with multi-region and'
+            ' dual-region buckets. `DEFAULT` option is valid for multi-region'
+            ' and dual-regions buckets. `ASYNC_TURBO` option is only valid for'
+            ' dual-region buckets. If unspecified when the bucket is created,'
+            ' it defaults to `DEFAULT` for dual-region and multi-region'
+            ' buckets. For more information, see'
+            ' [Turbo Replication](https://cloud.google.com/storage/docs'
+            '/turbo-replication).'))

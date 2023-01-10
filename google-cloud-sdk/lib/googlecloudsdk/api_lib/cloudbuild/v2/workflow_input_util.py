@@ -85,7 +85,7 @@ def _ResourcesTransform(workflow):
           "Kind is required for resource.")
 
     if "ref" in resource and "kind" in resource and resource[
-        "kind"] == "cloudbuild.googleapis.com/SecretManagerSecret":
+        "kind"] == "secretmanager.googleapis.com/SecretVersion":
       resource.pop("kind")
       resource["secret"] = {}
       resource["secret"]["secretVersion"] = resource.pop("ref")

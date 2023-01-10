@@ -35,14 +35,6 @@ def cached_read_json_file(file_path):
     return json.load(file_reader)
 
 
-def get_label_pairs_from_file(file_path):
-  """Convert JSON file to a list of label keys and values."""
-  # Expected JSON file format: Dict<str: str>
-  labels_dict = cached_read_json_file(file_path)
-  # {'key1': 'val1', 'key2': 'val2', ...} -> [('key1', 'val1'), ...]
-  return list(labels_dict.items())
-
-
 def get_updated_custom_fields(existing_custom_fields,
                               request_config,
                               file_path=None):

@@ -152,21 +152,43 @@ class _AwsClientBase(client.ClientBase):
     return self._messages.GoogleCloudGkemulticloudV1AwsInstancePlacement(
         **kwargs) if any(kwargs.values()) else None
 
+  def _AutoScalingMetricsCollection(self, args):
+    kwargs = {
+        'granularity': aws_flags.GetAutoscalingMetricsGranularity(args),
+        'metrics': aws_flags.GetAutoscalingMetrics(args)
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection(
+        **kwargs) if any(kwargs.values()) else None
+
   def _NodeConfig(self, args):
     node_config_type = self._messages.GoogleCloudGkemulticloudV1AwsNodeConfig
     kwargs = {
-        'configEncryption': self._ConfigEncryption(args),
-        'iamInstanceProfile': aws_flags.GetIamInstanceProfile(args),
-        'imageType': flags.GetImageType(args),
-        'instancePlacement': self._InstancePlacement(args),
-        'instanceType': aws_flags.GetInstanceType(args),
-        'proxyConfig': self._ProxyConfig(args),
-        'rootVolume': self._VolumeTemplate(args, 'root'),
-        'securityGroupIds': aws_flags.GetSecurityGroupIds(args),
-        'sshConfig': self._SshConfig(args),
-        'taints': flags.GetNodeTaints(args),
-        'labels': self._Labels(args, node_config_type),
-        'tags': self._Tags(args, node_config_type),
+        'configEncryption':
+            self._ConfigEncryption(args),
+        'iamInstanceProfile':
+            aws_flags.GetIamInstanceProfile(args),
+        'imageType':
+            flags.GetImageType(args),
+        'instancePlacement':
+            self._InstancePlacement(args),
+        'instanceType':
+            aws_flags.GetInstanceType(args),
+        'proxyConfig':
+            self._ProxyConfig(args),
+        'rootVolume':
+            self._VolumeTemplate(args, 'root'),
+        'securityGroupIds':
+            aws_flags.GetSecurityGroupIds(args),
+        'sshConfig':
+            self._SshConfig(args),
+        'taints':
+            flags.GetNodeTaints(args),
+        'labels':
+            self._Labels(args, node_config_type),
+        'tags':
+            self._Tags(args, node_config_type),
+        'autoscalingMetricsCollection':
+            self._AutoScalingMetricsCollection(args),
     }
     return self._messages.GoogleCloudGkemulticloudV1AwsNodeConfig(
         **kwargs) if any(kwargs.values()) else None

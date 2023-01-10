@@ -136,29 +136,29 @@ class StreamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListOperations(self, request, global_params=None):
+    def List(self, request, global_params=None):
       r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
-        request: (StreamProjectsLocationsOperationsListOperationsRequest) input message
+        request: (StreamProjectsLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListOperationsResponse) The response message.
       """
-      config = self.GetMethodConfig('ListOperations')
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    ListOperations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
         http_method='GET',
-        method_id='stream.projects.locations.operations.listOperations',
+        method_id='stream.projects.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}',
+        relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name='StreamProjectsLocationsOperationsListOperationsRequest',
+        request_type_name='StreamProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
@@ -517,29 +517,29 @@ class StreamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListLocations(self, request, global_params=None):
+    def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
       Args:
-        request: (StreamProjectsLocationsListLocationsRequest) input message
+        request: (StreamProjectsLocationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListLocationsResponse) The response message.
       """
-      config = self.GetMethodConfig('ListLocations')
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    ListLocations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations',
         http_method='GET',
-        method_id='stream.projects.locations.listLocations',
+        method_id='stream.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}',
+        relative_path='v1/{+name}/locations',
         request_field='',
-        request_type_name='StreamProjectsLocationsListLocationsRequest',
+        request_type_name='StreamProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
         supports_download=False,
     )

@@ -322,7 +322,8 @@ def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
 Enables autoscaling for a node pool.
 
 Enables autoscaling in the node pool specified by --node-pool or
-the default node pool if --node-pool is not provided.""",
+the default node pool if --node-pool is not provided. If not already,
+--max-nodes or --total-max-nodes must also be set.""",
       hidden=hidden,
       action='store_true')
   group.add_argument(

@@ -98,6 +98,11 @@ class FieldsScope(enum.Enum):
   SHORT = 3
 
 
+class HmacKeyState(enum.Enum):
+  ACTIVE = 'ACTIVE'
+  INACTIVE = 'INACTIVE'
+
+
 DEFAULT_PROVIDER = storage_url.ProviderPrefix.GCS
 NUM_ITEMS_PER_LIST_PAGE = 1000
 
@@ -115,6 +120,11 @@ class CloudApi(object):
       API can be used to execute related logic in tasks.
   """
   capabilities = set()
+
+  # Some APIs limit the number of objects that can be composed in a single call.
+  # This field should be overidden by those APIs, and default to 1 for APIs
+  # that do not support compose_objects.
+  MAX_OBJECTS_PER_COMPOSE_CALL = 1
 
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):
     """Creates a new bucket with the specified metadata.
@@ -229,7 +239,7 @@ class CloudApi(object):
     """Patches bucket metadata.
 
     Args:
-      bucket_resource (BucketResource): The bucket to patch.
+      bucket_resource (BucketResource|UnknownResource): The bucket to patch.
       request_config (RequestConfig): Contains new metadata for the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
@@ -265,6 +275,58 @@ class CloudApi(object):
         this interface.
     """
     raise NotImplementedError('get_bucket_iam_policy must be overridden.')
+
+  def create_hmac_key(self, service_account_email):
+    """Creates an HMAC key.
+
+    Args:
+      service_account_email (str): The email of the service account to use.
+
+    Returns:
+      gcs_resource_reference.GcsHmacKeyResource. Provider-specific data type
+      is used for now because we currently support this feature only for the
+      JSON API.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('create_hmac_key must be overridden.')
+
+  def delete_hmac_key(self, access_id):
+    """Deletes an HMAC key.
+
+    Args:
+      access_id (str): The access ID corresponding to the HMAC key.
+
+    Returns:
+      None
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('delete_hmac_key must be overridden.')
+
+  def patch_hmac_key(self, access_id, etag, state):
+    """Updates an HMAC key.
+
+    Args:
+      access_id (str): The access ID corresponding to the HMAC key.
+      etag (str): Only perform the patch request if the etag matches this value.
+      state (HmacKeyState): The desired state of the HMAC key.
+
+    Returns:
+      None
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('patch_hmac_key must be overridden.')
 
   def compose_objects(self,
                       source_resources,

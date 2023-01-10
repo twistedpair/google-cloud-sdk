@@ -1216,6 +1216,10 @@
       "description": "Request message for DataprocMetastore.RemoveIamPolicy.",
       "type": "object",
       "properties": {
+        "asynchronous": {
+          "description": "Optional. Removes IAM policy attached to database or table asynchronously when it is set. The default is false.",
+          "type": "boolean"
+        }
       }
     },
     "RemoveIamPolicyResponse": {

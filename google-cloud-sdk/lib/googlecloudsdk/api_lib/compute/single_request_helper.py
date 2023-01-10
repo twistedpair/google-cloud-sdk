@@ -22,6 +22,24 @@ import json
 
 from apitools.base.py import exceptions
 
+from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as http_exception
+from googlecloudsdk.core import properties
+
+
+def _GenerateErrorMessage(exception):
+  """Generate Error Message given exception."""
+  error_message = None
+  try:
+    data = json.loads(exception.content)
+    error_message = (exception.status_code, data.get('error',
+                                                     {}).get('message'))
+  except ValueError:
+    pass
+  if not error_message:
+    error_message = (exception.status_code, exception.content)
+  return error_message
+
 
 def MakeSingleRequest(service, method, request_body):
   """Makes single request.
@@ -38,17 +56,29 @@ def MakeSingleRequest(service, method, request_body):
   try:
     response = getattr(service, method)(request=request_body)
     responses.append(response)
+  # Catch all 403 forbidden errors and give a special
+  # treatment to the "Compute API not enabled" error.
+  except exceptions.HttpForbiddenError as exception:
+    # check if gcloud should prompt
+    if properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+      enablement_info = apis.GetApiEnablementInfo(exception)
+      if enablement_info:
+        project, service_token, enable_exception = enablement_info
+        try:
+          # prompt to enable then retry request
+          apis.PromptToEnableApi(
+              project, service_token, enable_exception, is_batch_request=True)
+          response = getattr(service, method)(request=request_body)
+          responses.append(response)
+          return responses, errors
+          # if not attempt enabled
+        except http_exception.HttpException:
+          pass
+    error_message = _GenerateErrorMessage(exception)
+    errors.append(error_message)
+    return responses, errors
   except exceptions.HttpError as exception:
-
     # TODO(b/260144046): Add Enable Service Prompt and Retry.
-    error_message = None
-    try:
-      data = json.loads(exception.content)
-      error_message = (exception.status_code, data.get('error',
-                                                       {}).get('message'))
-    except ValueError:
-      pass
-    if not error_message:
-      error_message = (exception.status_code, exception.content)
+    error_message = _GenerateErrorMessage(exception)
     errors.append(error_message)
   return responses, errors

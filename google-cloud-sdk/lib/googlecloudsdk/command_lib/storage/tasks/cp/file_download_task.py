@@ -81,7 +81,8 @@ def _log_or_raise_crc32c_issues(resource):
     errors.Error: gcloud storage set to fail if performance-optimized digesters
       could not be created.
   """
-  if (not resource.crc32c_hash or fast_crc32c.is_fast_crc32c_available()):
+  if (not resource.crc32c_hash or
+      fast_crc32c.check_if_fast_crc32c_available_and_install_if_not()):
     # If resource.crc32c not available, no hash will be verified.
     # If a binary crc32c libary is available, hashing behavior will be standard.
     return
@@ -294,11 +295,16 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     ).execute(task_status_queue=task_status_queue)
 
     temporary_file_url = self._temporary_destination_resource.storage_url
+    download_result = task_util.get_first_matching_message_payload(
+        part_download_task_output.messages, task.Topic.API_DOWNLOAD_RESULT)
+    server_encoding = (
+        download_result.server_reported_encoding if download_result else None)
     download_util.decompress_or_rename_file(
         self._source_resource,
         temporary_file_url.object_name,
         destination_url.object_name,
-        do_not_decompress_flag=self._do_not_decompress)
+        do_not_decompress_flag=self._do_not_decompress,
+        server_encoding=server_encoding)
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files
     # were left behind.

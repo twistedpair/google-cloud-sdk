@@ -202,7 +202,7 @@ def MembershipBindingResourceName(project,
                                   name,
                                   membership,
                                   location='global',
-                                  release_track=base.ReleaseTrack.ALPHA):
+                                  release_track=base.ReleaseTrack.GA):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Parse(
       line=None,
@@ -219,7 +219,7 @@ def MembershipBindingResourceName(project,
 def MembershipBindingParentName(project,
                                 membership,
                                 location='global',
-                                release_track=base.ReleaseTrack.ALPHA):
+                                release_track=base.ReleaseTrack.GA):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Parse(
       line=None,

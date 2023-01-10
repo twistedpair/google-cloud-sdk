@@ -40,8 +40,11 @@ class DatamigrationV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_connectionProfiles = self.ProjectsLocationsConnectionProfilesService(self)
+    self.projects_locations_conversionWorkspaces_mappingRules = self.ProjectsLocationsConversionWorkspacesMappingRulesService(self)
+    self.projects_locations_conversionWorkspaces = self.ProjectsLocationsConversionWorkspacesService(self)
     self.projects_locations_migrationJobs = self.ProjectsLocationsMigrationJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_privateConnections = self.ProjectsLocationsPrivateConnectionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -74,7 +77,7 @@ class DatamigrationV1(base_api.BaseApiClient):
         method_id='datamigration.projects.locations.connectionProfiles.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['connectionProfileId', 'requestId'],
+        query_params=['connectionProfileId', 'requestId', 'skipValidation', 'validateOnly'],
         relative_path='v1/{+parent}/connectionProfiles',
         request_field='connectionProfile',
         request_type_name='DatamigrationProjectsLocationsConnectionProfilesCreateRequest',
@@ -209,7 +212,7 @@ class DatamigrationV1(base_api.BaseApiClient):
         method_id='datamigration.projects.locations.connectionProfiles.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId', 'updateMask'],
+        query_params=['requestId', 'skipValidation', 'updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='connectionProfile',
         request_type_name='DatamigrationProjectsLocationsConnectionProfilesPatchRequest',
@@ -268,6 +271,404 @@ class DatamigrationV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='DatamigrationProjectsLocationsConnectionProfilesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversionWorkspacesMappingRulesService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversionWorkspaces_mappingRules resource."""
+
+    _NAME = 'projects_locations_conversionWorkspaces_mappingRules'
+
+    def __init__(self, client):
+      super(DatamigrationV1.ProjectsLocationsConversionWorkspacesMappingRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Import(self, request, global_params=None):
+      r"""Imports the mapping rules for a given conversion workspace. Supports various formats of external rules files.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesMappingRulesImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}/mappingRules:import',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.mappingRules.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/mappingRules:import',
+        request_field='importMappingRulesRequest',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesMappingRulesImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversionWorkspacesService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversionWorkspaces resource."""
+
+    _NAME = 'projects_locations_conversionWorkspaces'
+
+    def __init__(self, client):
+      super(DatamigrationV1.ProjectsLocationsConversionWorkspacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Apply(self, request, global_params=None):
+      r"""Apply draft tree onto a specific destination database.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesApplyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Apply')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Apply.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:apply',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.apply',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:apply',
+        request_field='applyConversionWorkspaceRequest',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesApplyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Commit(self, request, global_params=None):
+      r"""Marks all the data in the conversion workspace as committed.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesCommitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Commit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Commit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:commit',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.commit',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:commit',
+        request_field='commitConversionWorkspaceRequest',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesCommitRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Convert(self, request, global_params=None):
+      r"""Creates a draft tree schema for the destination database.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesConvertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Convert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Convert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:convert',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.convert',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:convert',
+        request_field='convertConversionWorkspaceRequest',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesConvertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new conversion workspace in a given project and location.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['conversionWorkspaceId', 'requestId'],
+        relative_path='v1/{+parent}/conversionWorkspaces',
+        request_field='conversionWorkspace',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single conversion workspace.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}',
+        http_method='DELETE',
+        method_id='datamigration.projects.locations.conversionWorkspaces.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DescribeConversionWorkspaceRevisions(self, request, global_params=None):
+      r"""Retrieves a list of committed revisions of a specific conversion workspace.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesDescribeConversionWorkspaceRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DescribeConversionWorkspaceRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('DescribeConversionWorkspaceRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DescribeConversionWorkspaceRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:describeConversionWorkspaceRevisions',
+        http_method='GET',
+        method_id='datamigration.projects.locations.conversionWorkspaces.describeConversionWorkspaceRevisions',
+        ordered_params=['conversionWorkspace'],
+        path_params=['conversionWorkspace'],
+        query_params=['commitId'],
+        relative_path='v1/{+conversionWorkspace}:describeConversionWorkspaceRevisions',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesDescribeConversionWorkspaceRevisionsRequest',
+        response_type_name='DescribeConversionWorkspaceRevisionsResponse',
+        supports_download=False,
+    )
+
+    def DescribeDatabaseEntities(self, request, global_params=None):
+      r"""Use this method to describe the database entities tree for a specific conversion workspace and a specific tree type. The DB Entities are not a resource like conversion workspace or mapping rule, and they can not be created, updated or deleted like one. Instead they are simple data objects describing the structure of the client database.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DescribeDatabaseEntitiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('DescribeDatabaseEntities')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DescribeDatabaseEntities.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:describeDatabaseEntities',
+        http_method='GET',
+        method_id='datamigration.projects.locations.conversionWorkspaces.describeDatabaseEntities',
+        ordered_params=['conversionWorkspace'],
+        path_params=['conversionWorkspace'],
+        query_params=['commitId', 'filter', 'pageSize', 'pageToken', 'tree', 'uncommitted'],
+        relative_path='v1/{+conversionWorkspace}:describeDatabaseEntities',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest',
+        response_type_name='DescribeDatabaseEntitiesResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single conversion workspace.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConversionWorkspace) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.conversionWorkspaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesGetRequest',
+        response_type_name='ConversionWorkspace',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists conversion workspaces in a given project and location.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConversionWorkspacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces',
+        http_method='GET',
+        method_id='datamigration.projects.locations.conversionWorkspaces.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/conversionWorkspaces',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesListRequest',
+        response_type_name='ListConversionWorkspacesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single conversion workspace.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}',
+        http_method='PATCH',
+        method_id='datamigration.projects.locations.conversionWorkspaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='conversionWorkspace',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      r"""Rollbacks a conversion workspace to the last committed spanshot.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:rollback',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rollback',
+        request_field='rollbackConversionWorkspaceRequest',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesRollbackRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SearchBackgroundJobs(self, request, global_params=None):
+      r"""Use this method to search/list the background jobs for a specific conversion workspace. The background jobs are not a resource like conversion workspace or mapping rule, and they can not be created, updated or deleted like one. Instead they are a way to expose the data plane jobs log.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesSearchBackgroundJobsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchBackgroundJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchBackgroundJobs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchBackgroundJobs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:searchBackgroundJobs',
+        http_method='GET',
+        method_id='datamigration.projects.locations.conversionWorkspaces.searchBackgroundJobs',
+        ordered_params=['conversionWorkspace'],
+        path_params=['conversionWorkspace'],
+        query_params=['completedUntilTime', 'maxSize', 'returnMostRecentPerJobType'],
+        relative_path='v1/{+conversionWorkspace}:searchBackgroundJobs',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesSearchBackgroundJobsRequest',
+        response_type_name='SearchBackgroundJobsResponse',
+        supports_download=False,
+    )
+
+    def Seed(self, request, global_params=None):
+      r"""Imports a snapshot of the source database into the conversion workspace.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConversionWorkspacesSeedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Seed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Seed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/conversionWorkspaces/{conversionWorkspacesId}:seed',
+        http_method='POST',
+        method_id='datamigration.projects.locations.conversionWorkspaces.seed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:seed',
+        request_field='seedConversionWorkspaceRequest',
+        request_type_name='DatamigrationProjectsLocationsConversionWorkspacesSeedRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -801,6 +1202,124 @@ class DatamigrationV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DatamigrationProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateConnectionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateConnections resource."""
+
+    _NAME = 'projects_locations_privateConnections'
+
+    def __init__(self, client):
+      super(DatamigrationV1.ProjectsLocationsPrivateConnectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new private connection in a given project and location.
+
+      Args:
+        request: (DatamigrationProjectsLocationsPrivateConnectionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateConnections',
+        http_method='POST',
+        method_id='datamigration.projects.locations.privateConnections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['privateConnectionId', 'requestId'],
+        relative_path='v1/{+parent}/privateConnections',
+        request_field='privateConnection',
+        request_type_name='DatamigrationProjectsLocationsPrivateConnectionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Database Migration Service private connection.
+
+      Args:
+        request: (DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}',
+        http_method='DELETE',
+        method_id='datamigration.projects.locations.privateConnections.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single private connection.
+
+      Args:
+        request: (DatamigrationProjectsLocationsPrivateConnectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PrivateConnection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateConnections/{privateConnectionsId}',
+        http_method='GET',
+        method_id='datamigration.projects.locations.privateConnections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsPrivateConnectionsGetRequest',
+        response_type_name='PrivateConnection',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of private connections in a given project and location.
+
+      Args:
+        request: (DatamigrationProjectsLocationsPrivateConnectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPrivateConnectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateConnections',
+        http_method='GET',
+        method_id='datamigration.projects.locations.privateConnections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/privateConnections',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsPrivateConnectionsListRequest',
+        response_type_name='ListPrivateConnectionsResponse',
         supports_download=False,
     )
 

@@ -36,8 +36,7 @@ class UpdateBucketTask(task.Task):
     """Initializes task.
 
     Args:
-      bucket_resource (resource_reference.UnknownResource):
-          The bucket to update.
+      bucket_resource (BucketResource|UnknownResource): The bucket to update.
       user_request_args (UserRequestArgs|None): Describes metadata updates to
           perform.
     """
@@ -58,8 +57,8 @@ class UpdateBucketTask(task.Task):
     Args:
       api_client (cloud_api.CloudApi): API client that should issue the lock
         request.
-      bucket_resource (resource_reference.BucketResource): Metadata of the
-        bucket containing the retention policy to lock.
+      bucket_resource (BucketResource): Metadata of the bucket containing the
+        retention policy to lock.
       request_config (request_config_factory._RequestConfig): Contains
         additional request parameters.
     """

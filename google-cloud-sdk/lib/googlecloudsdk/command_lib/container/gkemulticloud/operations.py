@@ -23,6 +23,7 @@ _OPERATION_TABLE_FORMAT = """\
         name.basename():label=OPERATION_NAME,
         name.segment(3):label=LOCATION,
         metadata.target.basename(),
+        metadata.verb,
         done.yesno(yes='DONE', no='RUNNING'):label=STATUS,
         metadata.createTime.date():sort=1,
         duration(start=metadata.createTime,end=metadata.endTime,precision=0,calendar=false).slice(2:).join("").yesno(no="<1S"):label=DURATION

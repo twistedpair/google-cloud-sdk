@@ -32,6 +32,18 @@ migration_job:
     help: The migration job name.
   disable_auto_completers: false
 
+conversion_workspace:
+  name: conversion_workspace
+  collection: datamigration.projects.locations.conversionWorkspaces
+  request_id_field: conversion_workspace.name
+  attributes:
+  - *region
+  - &conversion_workspace
+    parameter_name: conversionWorkspacesId
+    attribute_name: conversion_workspace
+    help: The conversion workspace name.
+  disable_auto_completers: false
+
 operation:
   name: operation
   collection: datamigration.projects.locations.operations
@@ -42,4 +54,16 @@ operation:
     parameter_name: operationsId
     attribute_name: operation
     help: The operation name.
+  disable_auto_completers: false
+
+private_connection:
+  name: private_connection
+  collection: datamigration.projects.locations.privateConnections
+  request_id_field: private_connection.name
+  attributes:
+  - *region
+  - &private_connection
+    parameter_name: privateConnectionsId
+    attribute_name: private_connection
+    help: The private connection name.
   disable_auto_completers: false

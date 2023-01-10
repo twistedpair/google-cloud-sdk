@@ -75,14 +75,17 @@ def GenerateRequestId():
   return six.text_type(uuid.uuid4())
 
 
-def HandleLRO(client, result_operation, service):
+def HandleLRO(client, result_operation, service, no_resource=False):
   """Uses the waiter library to handle LRO synchronous execution."""
   op_resource = resources.REGISTRY.ParseRelativeName(
       result_operation.name,
       collection='datamigration.projects.locations.operations')
-  poller = waiter.CloudOperationPoller(
-      service,
-      client.projects_locations_operations)
+  if no_resource:
+    poller = waiter.CloudOperationPollerNoResources(
+        client.projects_locations_operations)
+  else:
+    poller = waiter.CloudOperationPoller(service,
+                                         client.projects_locations_operations)
   try:
     waiter.WaitFor(
         poller, op_resource,

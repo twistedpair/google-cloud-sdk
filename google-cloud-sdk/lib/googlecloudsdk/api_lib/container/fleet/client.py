@@ -35,6 +35,7 @@ class HubClient(object):
   is a thin wrapper around the base client, and does not handle any exceptions.
 
   Fields:
+    release_track: The release track of the command [ALPHA, BETA, GA].
     client: The raw GKE Hub API client for the specified release track.
     messages: The matching messages module for the client.
     resourceless_waiter: A waiter.CloudOperationPollerNoResources for polling
@@ -43,6 +44,7 @@ class HubClient(object):
   """
 
   def __init__(self, release_track=base.ReleaseTrack.GA):
+    self.release_track = release_track
     self.client = util.GetClientInstance(release_track)
     self.messages = util.GetMessagesModule(release_track)
     self.resourceless_waiter = waiter.CloudOperationPollerNoResources(
@@ -207,6 +209,7 @@ class FleetClient(object):
   is a thin wrapper around the base client, and does not handle any exceptions.
 
   Fields:
+    release_track: The release track of the command [ALPHA, BETA, GA].
     client: The raw Fleet API client for the specified release track.
     messages: The matching messages module for the client.
     resourceless_waiter: A waiter.CloudOperationPollerNoResources for polling
@@ -215,13 +218,16 @@ class FleetClient(object):
   """
 
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+    self.release_track = release_track
     self.client = util.GetClientInstance(release_track)
     self.messages = util.GetMessagesModule(release_track)
     self.resourceless_waiter = waiter.CloudOperationPollerNoResources(
         operation_service=self.client.projects_locations_operations)
-    self.fleet_waiter = waiter.CloudOperationPoller(
-        result_service=self.client.projects_locations_fleets,
-        operation_service=self.client.projects_locations_operations)
+
+    if release_track == base.ReleaseTrack.ALPHA:
+      self.fleet_waiter = waiter.CloudOperationPoller(
+          result_service=self.client.projects_locations_fleets,
+          operation_service=self.client.projects_locations_operations)
 
   def GetFleet(self, project):
     """Gets a fleet resource from the Fleet API.
@@ -604,8 +610,9 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsListRequest(
-        pageToken='', parent=util.MembershipBindingParentName(
-            project, membership, location))
+        pageToken='',
+        parent=util.MembershipBindingParentName(project, membership, location,
+                                                self.release_track))
     return list_pager.YieldFromList(
         self.client.projects_locations_memberships_bindings,
         req,
@@ -655,5 +662,3 @@ class FleetClient(object):
         name=name)
     return self.client.projects_locations_memberships_bindings.Delete(
         req)
-
-

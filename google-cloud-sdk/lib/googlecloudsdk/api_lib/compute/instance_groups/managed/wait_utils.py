@@ -29,6 +29,7 @@ class IgmState(enum.Enum):
   """Represents IGM state to wait for."""
   STABLE = 0
   VERSION_TARGET_REACHED = 1
+  ALL_INSTANCES_CONFIG_EFFECTIVE = 2
 
 _TIME_BETWEEN_POLLS_MS = 10000
 
@@ -46,6 +47,8 @@ def WaitForIgmState(client, group_ref, desired_igm_state, timeout_sec=None):
       log.out.Print('Group is stable')
     elif desired_igm_state == IgmState.VERSION_TARGET_REACHED:
       log.out.Print('Version target is reached')
+    elif desired_igm_state == IgmState.ALL_INSTANCES_CONFIG_EFFECTIVE:
+      log.out.Print('All-instances config is effective')
 
   except retry.WaitException:
     if desired_igm_state == IgmState.STABLE:
@@ -54,6 +57,9 @@ def WaitForIgmState(client, group_ref, desired_igm_state, timeout_sec=None):
     if desired_igm_state == IgmState.VERSION_TARGET_REACHED:
       raise utils.TimeoutError('Timeout while waiting for group to reach '
                                'version target.')
+    if desired_igm_state == IgmState.ALL_INSTANCES_CONFIG_EFFECTIVE:
+      raise utils.TimeoutError('Timeout while waiting for group to reach '
+                               'effective all-instances config.')
 
 
 def _IsStateReached(client, group_ref, desired_igm_state):
@@ -71,6 +77,12 @@ def _IsStateReached(client, group_ref, desired_igm_state):
     if not is_version_target_reached:
       log.out.Print('Waiting for group to reach version target')
     return is_version_target_reached
+  elif desired_igm_state == IgmState.ALL_INSTANCES_CONFIG_EFFECTIVE:
+    all_instances_config_effective = responses[
+        0].status.allInstancesConfig.effective
+    if not all_instances_config_effective:
+      log.out.Print('Waiting for group to reach all-instances config effective')
+    return all_instances_config_effective
   else:
     raise Exception('Incorrect desired_igm_state')
 

@@ -131,6 +131,7 @@ class MembershipCRDCreationOperation(object):
   """An operation that waits for a membership CRD to be created."""
 
   CREATED_KEYWORD = 'unchanged'
+  CONFIGURED_KEYWORD = 'configured'
 
   def __init__(self, kube_client, membership_crd_manifest):
     self.kube_client = kube_client
@@ -151,7 +152,8 @@ class MembershipCRDCreationOperation(object):
       self.error = err
 
     # If creation is successful, the create operation should show "unchanged"
-    elif self.CREATED_KEYWORD in out:
+    # or "configured"
+    elif self.CREATED_KEYWORD in out or self.CONFIGURED_KEYWORD in out:
       self.done = True
       self.succeeded = True
 

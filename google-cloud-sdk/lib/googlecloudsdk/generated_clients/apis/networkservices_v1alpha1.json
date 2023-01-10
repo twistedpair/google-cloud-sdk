@@ -591,7 +591,7 @@
           }
         },
         "originAddress": {
-          "description": "Required. - **FQDN**: `media-backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google Cloud Storage**: `gs:\/\/bucketname` or `bucketname.storage.googleapis.com` The following limitations apply to fully-qualified domain names: * They must be resolvable through public DNS. * They must not contain a protocol (such as `https:\/\/`). * They must not contain any slashes. When providing an IP address, it must be publicly routable. IPv6 addresses must not be enclosed in square brackets.",
+          "description": "Required. A fully qualified domain name (FQDN), an IPv4 or IPv6 address reachable over the public Internet, or the address of a Google Cloud Storage bucket. This address is used as the origin for cache requests. The following are example origins: - **FQDN**: `media-backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google Cloud Storage**: `gs:\/\/bucketname` or `bucketname.storage.googleapis.com` The following limitations apply to fully-qualified domain names: * They must be resolvable through public DNS. * They must not contain a protocol (such as `https:\/\/`). * They must not contain any slashes. When providing an IP address, it must be publicly routable. IPv6 addresses must not be enclosed in square brackets.",
           "type": "string"
         },
         "protocol": {
@@ -1632,6 +1632,15 @@
       "description": "A single immutable version of a WasmPlugin (code + runtime config).",
       "type": "object",
       "properties": {
+        "pluginConfigData": {
+          "description": "Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. When a new WasmPluginVersion is created, the digest of the contents is saved in the \"plugin_config_digest\" field.",
+          "type": "string",
+          "format": "byte"
+        },
+        "pluginConfigUri": {
+          "description": "URI of the WasmPlugin configuration stored in the Artifact Registry. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. The container image must contain only a single file with the exact name \"plugin.config\". When a new WasmPluginVersion is created, the digest of the container image is saved in the \"plugin_config_digest\" field.",
+          "type": "string"
+        },
         "name": {
           "description": "Optional. Name of the WasmPluginVersion resource. System-generated if unspecified by the user. It matches pattern `projects\/{project}\/locations\/{location}\/wasmPlugins\/{wasm_plugin}\/ versions\/{wasm_plugin_version}'.",
           "type": "string"
@@ -1660,7 +1669,7 @@
           }
         },
         "imageUri": {
-          "description": "Optional. URI of the container image containing the Wasm plugin, stored in the Artifact Registry. When a new WasmPluginVersion is created, the URI gets resolved to an image digest and saved in the `image_digest` field, and the user-provided tag or digest is removed from the \"image\" field.",
+          "description": "Optional. URI of the container image containing the Wasm plugin, stored in the Artifact Registry. When a new WasmPluginVersion is created, the digest of the container image is saved in the `image_digest` field. When downloading an image, the digest value will be used instead of an image tag.",
           "type": "string"
         },
         "imageDigest": {
@@ -1669,9 +1678,14 @@
           "type": "string"
         },
         "proxyWasmPluginConfig": {
-          "description": "Optional. Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI.",
+          "description": "Optional. Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. Deprecated: Please use \"plugin_config_data\" or \"plugin_config_uri\".",
           "type": "string",
           "format": "byte"
+        },
+        "pluginConfigDigest": {
+          "description": "Output only. This field holds the digest (usually checksum) value for the plugin configuration. The value is calculated based on the contents of the \"plugin_config_data\" or the container image defined by the \"plugin_config_uri\" field.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1745,6 +1759,15 @@
       "description": "Details of a WasmPluginVersion to be inlined in the WasmPlugin resource.",
       "type": "object",
       "properties": {
+        "pluginConfigData": {
+          "description": "Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. When a new WasmPluginVersion is created, the digest of the contents is saved in the \"plugin_config_digest\" field.",
+          "type": "string",
+          "format": "byte"
+        },
+        "pluginConfigUri": {
+          "description": "URI of the WasmPlugin configuration stored in the Artifact Registry. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. The container image must contain only a single file with the exact name \"plugin.config\". When a new WasmPluginVersion is created, the digest of the container image is saved in the \"plugin_config_digest\" field.",
+          "type": "string"
+        },
         "createTime": {
           "description": "Output only. The timestamp when the resource was created.",
           "readOnly": true,
@@ -1769,7 +1792,7 @@
           }
         },
         "imageUri": {
-          "description": "Required. URI of the container image containing the Wasm plugin, stored in the Artifact Registry. When a new WasmPluginVersion is created, the URI gets resolved to an image digest and saved in the `image_digest` field, and the user-provided tag or digest is removed from the \"image\" field.",
+          "description": "Required. URI of the container image containing the Wasm plugin, stored in the Artifact Registry. The container image must contain only a single file with the exact name \"plugin.wasm\". When a new WasmPluginVersion is created, the URI gets resolved to an image digest and saved in the `image_digest` field.",
           "type": "string"
         },
         "imageDigest": {
@@ -1778,9 +1801,14 @@
           "type": "string"
         },
         "pluginConfig": {
-          "description": "Optional. Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI.",
+          "description": "Optional. Configuration for the Wasm plugin. The configuration is provided to the Proxy-Wasm plugin at runtime via the proxy_on_configure Proxy-Wasm ABI. Deprecated: Please use \"plugin_config_data\" or \"plugin_config_uri\".",
           "type": "string",
           "format": "byte"
+        },
+        "pluginConfigDigest": {
+          "description": "Output only. This field holds the digest (usually checksum) value for the plugin configuration. The value is calculated based on the contents of the \"plugin_config_data\" or the container image defined by the \"plugin_config_uri\" field.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -2291,6 +2319,50 @@
         "enabled": {
           "description": "Defines whether the observability for service graph is enabled. If enabled, samples from user defined services will be collected and a graph visualization of those services will be built.",
           "type": "boolean"
+        }
+      }
+    },
+    "ServiceObserver": {
+      "id": "ServiceObserver",
+      "description": "ServiceObserver is a resource for defining parameters for Service Observer (AKA Service-Graph).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the ServiceObserver resource. It matches pattern `projects\/*\/locations\/global\/serviceObserver`. Note: this is a Singleton, so the name is derived from the name of the project.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the ServiceObserver resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Optional. State of Service Observer. The state set here applies to the entire project. Disabled by default.",
+          "type": "string",
+          "enumDescriptions": [
+            "Service Observer wasn't set. Default is disabled.",
+            "Service Observer is disabled.",
+            "Service Observer is enabled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
         }
       }
     },
@@ -6158,6 +6230,163 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "global": {
+              "methods": {
+                "getServiceObserver": {
+                  "id": "networkservices.projects.locations.global.getServiceObserver",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/global/serviceObserver",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the ServiceObserver to get. Must be in the format `projects\/*\/locations\/global\/serviceObserver`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/global\/serviceObserver$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ServiceObserver"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetServiceObserver gets a singleton without a parent resource."
+                },
+                "updateServiceObserver": {
+                  "id": "networkservices.projects.locations.global.updateServiceObserver",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/global/serviceObserver",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the ServiceObserver resource. It matches pattern `projects\/*\/locations\/global\/serviceObserver`. Note: this is a Singleton, so the name is derived from the name of the project.",
+                      "pattern": "^projects\/[^\/]+\/locations\/global\/serviceObserver$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the ServiceObserver resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ServiceObserver"
+                  },
+                  "response": {
+                    "$ref": "ServiceObserver"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateServiceObserver updates a singleton without a parent resource."
+                }
+              }
+              ,
+              "resources": {
+                "serviceObserver": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "networkservices.projects.locations.global.serviceObserver.setIamPolicy",
+                      "path": "v1alpha1/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/serviceObserver:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/serviceObserver$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "networkservices.projects.locations.global.serviceObserver.getIamPolicy",
+                      "path": "v1alpha1/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/serviceObserver:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/serviceObserver$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "networkservices.projects.locations.global.serviceObserver.testIamPermissions",
+                      "path": "v1alpha1/{+resource}:testIamPermissions",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/serviceObserver:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See [Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/serviceObserver$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
                 }
               }
             },

@@ -423,8 +423,7 @@ class RunAppsOperations(object):
             etag=application.etag)
       except exceptions.IntegrationsOperationError as err:
         tracker.AddWarning(
-            'To retry the deployment, use update command ' +
-            'gcloud alpha run integrations update {}'.format(name))
+            messages_util.RetryDeploymentMessage(self._release_track, name))
         raise err
 
     return name

@@ -11,6 +11,7 @@ region:
 cluster:
   name: cluster
   collection: workstations.projects.locations.workstationClusters
+  request_id_field: workstationClusterId
   attributes:
   - *region
   - &cluster
@@ -22,6 +23,7 @@ cluster:
 config:
   name: config
   collection: workstations.projects.locations.workstationClusters.workstationConfigs
+  request_id_field: workstationConfigId
   attributes:
   - *region
   - *cluster
@@ -30,3 +32,27 @@ config:
     attribute_name: config
     help: |
       The name of the config containing the {resource}.
+
+workstation:
+  name: workstation
+  collection: workstations.projects.locations.workstationClusters.workstationConfigs.workstations
+  request_id_field: workstationId
+  attributes:
+  - *region
+  - *cluster
+  - *config
+  - &workstation
+    parameter_name: workstationsId
+    attribute_name: workstation
+    help: |
+      The name of the workstation.
+
+operation:
+  name: operation
+  collection: workstations.projects.locations.operations
+  attributes:
+  - *region
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The name of the Cloud Workstations operation.

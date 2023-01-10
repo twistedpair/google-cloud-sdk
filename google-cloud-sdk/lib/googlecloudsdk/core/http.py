@@ -88,7 +88,7 @@ def HttpClient(
       disable_ssl_certificate_validation=disable_ssl_certificate_validation)
 
   ca_config = context_aware.Config()
-  if ca_config:
+  if ca_config and ca_config.config_type == context_aware.ConfigType.ON_DISK_CERTIFICATE:
     log.debug('Using client certificate %s',
               ca_config.encrypted_client_cert_path)
     result.add_certificate(ca_config.encrypted_client_cert_path,

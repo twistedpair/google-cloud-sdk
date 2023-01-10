@@ -9,6 +9,11 @@ default_upgrade_soaking:
 
     See `$ gcloud topic datetimes` for information on duration formats.
 
+    To configure Rollout Sequencing for a given scope, ``SCOPE_NAME'', this attribute must be set.
+    To do this while specifying a default soaking duration of 7 days, run:
+
+      $ {command} SCOPE_NAME default-upgrade-soaking=7d
+
 add_upgrade_soaking_override:
   arg_name: add-upgrade-soaking-override
   required: true
@@ -25,7 +30,8 @@ upgrade_selector:
   required: true
   type: "googlecloudsdk.command_lib.container.fleet.scopes.rollout_sequencing.util:UpgradeSelector:"
   help_text: | #TODO(b/233397411): Add link to documentation here.
-    Name and version of the upgrade to be overridden where version is a full GKE version.
+    Name and version of the upgrade to be overridden where version is a full GKE version. Currently,
+    name can be either `k8s_control_plane` or `k8s_node`.
 
 upstream_scope:
   arg_name: upstream-scope
@@ -34,3 +40,8 @@ upstream_scope:
     Full resource name of the upstream scope in the format of
     projects/{project}/locations/{location}/scopes/{scope}. GKE will finish upgrades on the upstream
     scope before applying the same upgrades to the current scope.
+
+    To configure the upstream scope for ``SCOPE_NAME'', run:
+
+      $ {command} SCOPE_NAME \
+        --upstream-scope=projects/{upstream_project}/locations/global/scopes/{upstream_scope}
