@@ -22,7 +22,6 @@ import re
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
-from googlecloudsdk.command_lib.vmware.networks import util as networks_util
 
 
 class ExternalAccessRulesClient(util.VmwareClientBase):
@@ -90,7 +89,7 @@ class ExternalAccessRulesClient(util.VmwareClientBase):
         parent=parent,
         externalAccessRule=external_access_rule,
         externalAccessRuleId=external_access_rule_id,
-        requestId=networks_util.GetUniqueId())
+    )
     return self.service.Create(request)
 
   def Update(self,
@@ -142,30 +141,23 @@ class ExternalAccessRulesClient(util.VmwareClientBase):
         externalAccessRule=external_access_rule,
         name=resource.RelativeName(),
         updateMask=','.join(update_mask),
-        requestId=networks_util.GetUniqueId())
+    )
     return self.service.Patch(request)
 
   def Delete(self, resource):
     return self.service.Delete(
-        self.messages.
-        VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteRequest(
-            name=resource.RelativeName(),
-            requestId=networks_util.GetUniqueId()))
+        self.messages.VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteRequest(
+            name=resource.RelativeName()
+        )
+    )
 
-  def List(self,
-           network_policy_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None):
+  def List(self, network_policy_resource):
     network_policy = network_policy_resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest(
-        parent=network_policy, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=network_policy
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='externalAccessRules')

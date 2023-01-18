@@ -4775,12 +4775,19 @@ def AddManagedConfigFlag(parser, hidden=True):
 
 
 def AddFleetProjectFlag(parser, is_update=False, hidden=True):
-  """Adds --fleet-project flag to the parser."""
-  help_text = """
+  """Adds fleet related flags to the parser."""
+  enable_text = """
 Sets fleet host project for the cluster. If specified, the current cluster will be registered as a fleet membership under the fleet host project.
 
 Example:
 $ {command} --fleet-project=my-project
+"""
+
+  auto_enable_text = """
+Set cluster project as the fleet host project. This will register the cluster to the same project.
+To register the cluster to a fleet in a different project, please use `--fleet-project=FLEET_HOST_PROJECT`.
+Example:
+$ {command} --enable-fleet
 """
 
   unset_text = """
@@ -4791,9 +4798,16 @@ $ {command} --clear-fleet-project
 
   parser.add_argument(
       '--fleet-project',
-      help=help_text,
+      help=enable_text,
       metavar='PROJECT_ID_OR_NUMBER',
       type=str,
+      hidden=hidden)
+
+  parser.add_argument(
+      '--enable-fleet',
+      default=None,
+      help=auto_enable_text,
+      action='store_true',
       hidden=hidden)
 
   if is_update:

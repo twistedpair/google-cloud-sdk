@@ -429,6 +429,8 @@ class ConnectSettings(_messages.Message):
         version is 30.
       MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
         version is 31.
+      MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
+        version is 32.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -459,10 +461,11 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
     MYSQL_8_0_31 = 22
-    SQLSERVER_2019_STANDARD = 23
-    SQLSERVER_2019_ENTERPRISE = 24
-    SQLSERVER_2019_EXPRESS = 25
-    SQLSERVER_2019_WEB = 26
+    MYSQL_8_0_32 = 23
+    SQLSERVER_2019_STANDARD = 24
+    SQLSERVER_2019_ENTERPRISE = 25
+    SQLSERVER_2019_EXPRESS = 26
+    SQLSERVER_2019_WEB = 27
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -564,6 +567,7 @@ class DatabaseInstance(_messages.Message):
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance.
     diskEncryptionStatus: Disk encryption status specific to an instance.
+    dnsName: Output only. The dns name of the instance.
     etag: This field is deprecated and will be removed from a future version
       of the API. Use the `settings.settingsVersion` field instead.
     failoverReplica: The name and status of the failover replica.
@@ -591,6 +595,8 @@ class DatabaseInstance(_messages.Message):
       database wellness job
     project: The project ID of the project containing the Cloud SQL instance.
       The Google apps domain is prefixed if applicable.
+    pscServiceAttachmentLink: Output only. The link to service attachment of
+      PSC instance.
     region: The geographical region. Can be: * `us-central` (`FIRST_GEN`
       instances only) * `us-central1` (`SECOND_GEN` instances only) * `asia-
       east1` or `europe-west1`. Defaults to `us-central` or `us-central1`
@@ -674,6 +680,8 @@ class DatabaseInstance(_messages.Message):
         version is 30.
       MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
         version is 31.
+      MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
+        version is 32.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -704,10 +712,11 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
     MYSQL_8_0_31 = 22
-    SQLSERVER_2019_STANDARD = 23
-    SQLSERVER_2019_ENTERPRISE = 24
-    SQLSERVER_2019_EXPRESS = 25
-    SQLSERVER_2019_WEB = 26
+    MYSQL_8_0_32 = 23
+    SQLSERVER_2019_STANDARD = 24
+    SQLSERVER_2019_ENTERPRISE = 25
+    SQLSERVER_2019_EXPRESS = 26
+    SQLSERVER_2019_WEB = 27
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -746,6 +755,8 @@ class DatabaseInstance(_messages.Message):
         version is 30.
       MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
         version is 31.
+      MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
+        version is 32.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -776,10 +787,11 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
     MYSQL_8_0_31 = 22
-    SQLSERVER_2019_STANDARD = 23
-    SQLSERVER_2019_ENTERPRISE = 24
-    SQLSERVER_2019_EXPRESS = 25
-    SQLSERVER_2019_WEB = 26
+    MYSQL_8_0_32 = 23
+    SQLSERVER_2019_STANDARD = 24
+    SQLSERVER_2019_ENTERPRISE = 25
+    SQLSERVER_2019_EXPRESS = 26
+    SQLSERVER_2019_WEB = 27
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -867,34 +879,36 @@ class DatabaseInstance(_messages.Message):
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
   diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 8)
   diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 9)
-  etag = _messages.StringField(10)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 11)
-  gceZone = _messages.StringField(12)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 13)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 14)
-  ipAddresses = _messages.MessageField('IpMapping', 15, repeated=True)
-  ipv6Address = _messages.StringField(16)
-  kind = _messages.StringField(17)
-  maintenanceVersion = _messages.StringField(18)
-  masterInstanceName = _messages.StringField(19)
-  maxDiskSize = _messages.IntegerField(20)
-  name = _messages.StringField(21)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 22)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 23)
-  project = _messages.StringField(24)
-  region = _messages.StringField(25)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 26)
-  replicaNames = _messages.StringField(27, repeated=True)
-  rootPassword = _messages.StringField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 30)
-  secondaryGceZone = _messages.StringField(31)
-  selfLink = _messages.StringField(32)
-  serverCaCert = _messages.MessageField('SslCert', 33)
-  serviceAccountEmailAddress = _messages.StringField(34)
-  settings = _messages.MessageField('Settings', 35)
-  state = _messages.EnumField('StateValueValuesEnum', 36)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 37, repeated=True)
+  dnsName = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 12)
+  gceZone = _messages.StringField(13)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 14)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 15)
+  ipAddresses = _messages.MessageField('IpMapping', 16, repeated=True)
+  ipv6Address = _messages.StringField(17)
+  kind = _messages.StringField(18)
+  maintenanceVersion = _messages.StringField(19)
+  masterInstanceName = _messages.StringField(20)
+  maxDiskSize = _messages.IntegerField(21)
+  name = _messages.StringField(22)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 23)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 24)
+  project = _messages.StringField(25)
+  pscServiceAttachmentLink = _messages.StringField(26)
+  region = _messages.StringField(27)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 28)
+  replicaNames = _messages.StringField(29, repeated=True)
+  rootPassword = _messages.StringField(30)
+  satisfiesPzs = _messages.BooleanField(31)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 32)
+  secondaryGceZone = _messages.StringField(33)
+  selfLink = _messages.StringField(34)
+  serverCaCert = _messages.MessageField('SslCert', 35)
+  serviceAccountEmailAddress = _messages.StringField(36)
+  settings = _messages.MessageField('Settings', 37)
+  state = _messages.EnumField('StateValueValuesEnum', 38)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 39, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1246,6 +1260,8 @@ class Flag(_messages.Message):
         version is 30.
       MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
         version is 31.
+      MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
+        version is 32.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1276,10 +1292,11 @@ class Flag(_messages.Message):
     MYSQL_8_0_29 = 20
     MYSQL_8_0_30 = 21
     MYSQL_8_0_31 = 22
-    SQLSERVER_2019_STANDARD = 23
-    SQLSERVER_2019_ENTERPRISE = 24
-    SQLSERVER_2019_EXPRESS = 25
-    SQLSERVER_2019_WEB = 26
+    MYSQL_8_0_32 = 23
+    SQLSERVER_2019_STANDARD = 24
+    SQLSERVER_2019_ENTERPRISE = 25
+    SQLSERVER_2019_EXPRESS = 26
+    SQLSERVER_2019_WEB = 27
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -1646,6 +1663,7 @@ class IpConfiguration(_messages.Message):
       SQL instance is accessible for private IP. For example,
       `/projects/myProject/global/networks/default`. This setting can be
       updated, but it cannot be removed after it is set.
+    pscConfig: PSC settings for this instance.
     requireSsl: Whether SSL connections over IP are enforced or not.
     reservedIpRange: This field is deprecated and will be removed from a
       future version of the API.
@@ -1656,8 +1674,9 @@ class IpConfiguration(_messages.Message):
   enablePrivatePathForGoogleCloudServices = _messages.BooleanField(3)
   ipv4Enabled = _messages.BooleanField(4)
   privateNetwork = _messages.StringField(5)
-  requireSsl = _messages.BooleanField(6)
-  reservedIpRange = _messages.StringField(7)
+  pscConfig = _messages.MessageField('PscConfig', 6)
+  requireSsl = _messages.BooleanField(7)
+  reservedIpRange = _messages.StringField(8)
 
 
 class IpMapping(_messages.Message):
@@ -2112,6 +2131,22 @@ class PasswordValidationPolicy(_messages.Message):
   minLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   passwordChangeInterval = _messages.StringField(5)
   reuseInterval = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class PscConfig(_messages.Message):
+  r"""PSC settings for a Cloud SQL instance.
+
+  Fields:
+    allowedConsumerProjects: List of consumer projects that are allow-listed
+      for PSC connections to this instance. This instance can be connected to
+      with PSC from any network in these projects. Each consumer project in
+      this list may be represented by a project number (numeric) or by a
+      project id (alphanumeric).
+    pscEnabled: Whether PSC connectivity is enabled for this instance.
+  """
+
+  allowedConsumerProjects = _messages.StringField(1, repeated=True)
+  pscEnabled = _messages.BooleanField(2)
 
 
 class ReplicaConfiguration(_messages.Message):
@@ -3838,9 +3873,7 @@ class UsersListResponse(_messages.Message):
   Fields:
     items: List of user resources in the instance.
     kind: This is always *sql#usersList*.
-    nextPageToken: An identifier that uniquely identifies the operation. You
-      can use this identifier to retrieve the Operations resource that has
-      information about the operation.
+    nextPageToken: Unused.
   """
 
   items = _messages.MessageField('User', 1, repeated=True)

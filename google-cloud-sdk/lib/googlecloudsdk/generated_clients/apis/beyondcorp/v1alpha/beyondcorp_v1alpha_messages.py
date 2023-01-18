@@ -3878,10 +3878,12 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
       STATE_UNSPECIFIED: Default value. This value is unused.
       ACTIVE: Represents an active subscription.
       INACTIVE: Represents an upcomming subscription.
+      COMPLETED: Represents a completed subscription.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     INACTIVE = 2
+    COMPLETED = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of subscription.

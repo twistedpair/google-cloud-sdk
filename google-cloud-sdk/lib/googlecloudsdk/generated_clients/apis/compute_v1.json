@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20221205",
+  "revision": "20230106",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2316,7 +2316,7 @@
           "$ref": "FirewallPolicyRuleMatcher"
         },
         "action": {
-          "description": "The Action to perform when the client connection triggers the rule. Can currently be either \"allow\" or \"deny()\" where valid values for status are 403, 404, and 502.",
+          "description": "The Action to perform when the client connection triggers the rule. Valid actions are \"allow\", \"deny\" and \"goto_next\".",
           "type": "string"
         },
         "direction": {
@@ -3401,6 +3401,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -3409,6 +3410,7 @@
             "MULTI_IP_SUBNET",
             "SECURE_BOOT",
             "SEV_CAPABLE",
+            "SEV_SNP_CAPABLE",
             "UEFI_COMPATIBLE",
             "VIRTIO_SCSI_MULTIQUEUE",
             "WINDOWS"
@@ -4783,6 +4785,10 @@
             "UNSPECIFIED_NIC_TYPE",
             "VIRTIO_NET"
           ]
+        },
+        "networkAttachment": {
+          "description": "The URL of the network attachment that this interface should connect to in the following format: projects\/{project_number}\/regions\/{region_name}\/networkAttachments\/{network_attachment_name}.",
+          "type": "string"
         }
       }
     },
@@ -6591,6 +6597,10 @@
         "satisfiesPzs": {
           "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
+        },
+        "resourceStatus": {
+          "description": "[Output Only] Status information for Reservation resource.",
+          "$ref": "AllocationResourceStatus"
         }
       }
     },
@@ -6617,6 +6627,10 @@
           "description": "[Output Only] Indicates how many instances are actually usable currently.",
           "type": "string",
           "format": "int64"
+        },
+        "sourceInstanceTemplate": {
+          "description": "Specifies the instance template to create the reservation. If you use this field, you must exclude the instanceProperties field. This field is optional, and it can be a full or partial URL. For example, the following are all valid URLs to an instance template: - https:\/\/www.googleapis.com\/compute\/v1\/projects\/project \/global\/instanceTemplates\/instanceTemplate - projects\/project\/global\/instanceTemplates\/instanceTemplate - global\/instanceTemplates\/instanceTemplate ",
+          "type": "string"
         }
       }
     },
@@ -6713,6 +6727,24 @@
       "properties": {
         "projectId": {
           "description": "The project ID, should be same as the key of this project config in the parent map.",
+          "type": "string"
+        }
+      }
+    },
+    "AllocationResourceStatus": {
+      "id": "AllocationResourceStatus",
+      "type": "object",
+      "properties": {
+        "specificSkuAllocation": {
+          "$ref": "AllocationResourceStatusSpecificSKUAllocation"
+        }
+      }
+    },
+    "AllocationResourceStatusSpecificSKUAllocation": {
+      "id": "AllocationResourceStatusSpecificSKUAllocation",
+      "type": "object",
+      "properties": {
+        "sourceInstanceTemplateId": {
           "type": "string"
         }
       }
@@ -16769,7 +16801,7 @@
       "type": "object",
       "properties": {
         "diskConfigs": {
-          "description": "Attached disks configuration. If not provided, defaults are applied: For boot disk and any other R\/W disks, new custom images will be created from each disk. For read-only disks, they will be attached in read-only mode. Local SSD disks will be created as blank volumes.",
+          "description": "Attached disks configuration. If not provided, defaults are applied: For boot disk and any other R\/W disks, the source images for each disk will be used. For read-only disks, they will be attached in read-only mode. Local SSD disks will be created as blank volumes.",
           "type": "array",
           "items": {
             "$ref": "DiskInstantiationConfig"

@@ -1566,12 +1566,16 @@ class PackageData(_messages.Message):
       MAVEN: Java packages from Maven.
       GO: Go third-party packages.
       GO_STDLIB: Go toolchain + standard library packages.
+      PYPI: Python packages.
+      NPM: NPM packages.
     """
     PACKAGE_TYPE_UNSPECIFIED = 0
     OS = 1
     MAVEN = 2
     GO = 3
     GO_STDLIB = 4
+    PYPI = 5
+    NPM = 6
 
   cpeUri = _messages.StringField(1)
   dependencyChain = _messages.MessageField('LanguagePackageDependency', 2, repeated=True)

@@ -337,11 +337,26 @@ class StandardQueryParameters(_messages.Message):
 class StateError(_messages.Message):
   r"""Describes an error related to the current state of the workflow.
 
+  Enums:
+    TypeValueValuesEnum: The type of this state error.
+
   Fields:
     details: Provides specifics about the error.
+    type: The type of this state error.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of this state error.
+
+    Values:
+      TYPE_UNSPECIFIED: No type specified.
+      KMS_ERROR: Caused by an issue with KMS.
+    """
+    TYPE_UNSPECIFIED = 0
+    KMS_ERROR = 1
+
   details = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Status(_messages.Message):

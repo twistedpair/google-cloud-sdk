@@ -299,7 +299,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get DataScanJob resource.
+      r"""Gets a DataScanJob resource.
 
       Args:
         request: (DataplexProjectsLocationsDataScansJobsGetRequest) input message
@@ -326,7 +326,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DataScanJobs under the given dataScan.
+      r"""Lists DataScanJobs under the given DataScan.
 
       Args:
         request: (DataplexProjectsLocationsDataScansJobsListRequest) input message
@@ -363,7 +363,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a dataScan resource.
+      r"""Creates a DataScan resource.
 
       Args:
         request: (DataplexProjectsLocationsDataScansCreateRequest) input message
@@ -390,7 +390,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete the dataScan resource.
+      r"""Deletes a DataScan resource.
 
       Args:
         request: (DataplexProjectsLocationsDataScansDeleteRequest) input message
@@ -417,7 +417,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get dataScan resource.
+      r"""Gets a DataScan resource.
 
       Args:
         request: (DataplexProjectsLocationsDataScansGetRequest) input message
@@ -471,7 +471,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists dataScans.
+      r"""Lists DataScans.
 
       Args:
         request: (DataplexProjectsLocationsDataScansListRequest) input message
@@ -498,7 +498,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update the dataScan resource.
+      r"""Updates a DataScan resource.
 
       Args:
         request: (DataplexProjectsLocationsDataScansPatchRequest) input message
@@ -525,7 +525,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Run an on demand execution of a DataScan.
+      r"""Runs an on-demand execution of a DataScan.
 
       Args:
         request: (DataplexProjectsLocationsDataScansRunRequest) input message
@@ -2069,6 +2069,33 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleCloudDataplexV1Task',
         request_type_name='DataplexProjectsLocationsLakesTasksPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Run an on demand execution of a Task.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1RunTaskResponse) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}:run',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.tasks.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:run',
+        request_field='googleCloudDataplexV1RunTaskRequest',
+        request_type_name='DataplexProjectsLocationsLakesTasksRunRequest',
+        response_type_name='GoogleCloudDataplexV1RunTaskResponse',
         supports_download=False,
     )
 

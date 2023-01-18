@@ -380,7 +380,7 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Me
 
 
 class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
-  r"""Workload monitoring Violation.
+  r"""Workload monitoring Violation. Next Id: 22
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation

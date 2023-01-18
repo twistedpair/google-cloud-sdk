@@ -439,7 +439,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the container specified as a DNS_LABEL. Currently unused in Cloud Run. More info: https:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/names\/#dns-label-names",
+          "description": "Name of the container specified as a DNS_LABEL (RFC 1123). More info: https:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/names\/#dns-label-names",
           "type": "string"
         },
         "image": {
@@ -461,7 +461,7 @@
           }
         },
         "env": {
-          "description": "List of environment variables to set in the container.",
+          "description": "List of environment variables to set in the container. EnvVar with duplicate names are generally allowed; if referencing a secret, the name must be unique for the container. For non-secret EnvVar names, the Container will only get the last-declared one.",
           "type": "array",
           "items": {
             "$ref": "EnvVar"

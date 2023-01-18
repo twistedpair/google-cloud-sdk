@@ -29,17 +29,14 @@ class SubnetsClient(util.VmwareClientBase):
     super(SubnetsClient, self).__init__()
     self.service = self.client.projects_locations_privateClouds_subnets
 
-  def List(self, resource, page_size=None):
+  def List(self, resource):
     address_name = resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest(
         parent=address_name)
-    if page_size:
-      request.pageSize = page_size
     return list_pager.YieldFromList(
         self.service,
         request,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='subnets')
 
   def Get(self, resource):

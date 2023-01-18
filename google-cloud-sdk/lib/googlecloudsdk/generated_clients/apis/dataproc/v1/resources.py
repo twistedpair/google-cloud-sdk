@@ -123,13 +123,10 @@ class Collections(enum.Enum):
   )
   PROJECTS_REGIONS_CLUSTERS_GCENODEPOOLS = (
       'projects.regions.clusters.gceNodePools',
-      '{+name}',
-      {
-          '':
-              'projects/{projectId}/regions/{region}/clusters/{clusterName}/'
-              'gceNodePools/{gceNodePoolsId}',
-      },
-      ['name'],
+      'projects/{projectId}/regions/{region}/clusters/{clusterName}/'
+      'gceNodePools/{gceNodePoolsId}',
+      {},
+      ['projectId', 'region', 'clusterName', 'gceNodePoolsId'],
       True
   )
   PROJECTS_REGIONS_CLUSTERS_NODEGROUPS = (

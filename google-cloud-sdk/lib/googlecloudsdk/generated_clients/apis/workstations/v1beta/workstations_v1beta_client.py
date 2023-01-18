@@ -63,7 +63,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
         request: (WorkstationsProjectsLocationsOperationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Cancel')
       return self._RunMethod(
@@ -79,7 +79,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}:cancel',
         request_field='cancelOperationRequest',
         request_type_name='WorkstationsProjectsLocationsOperationsCancelRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -90,7 +90,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
         request: (WorkstationsProjectsLocationsOperationsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (GoogleProtobufEmpty) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -106,7 +106,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='WorkstationsProjectsLocationsOperationsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -175,7 +175,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Workstation.
+      r"""Creates a new workstation.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsCreateRequest) input message
@@ -202,7 +202,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Workstation.
+      r"""Deletes the specified workstation.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsDeleteRequest) input message
@@ -256,7 +256,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the requested Workstation.
+      r"""Returns the requested workstation.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsGetRequest) input message
@@ -364,7 +364,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing Workstation.
+      r"""Updates an existing workstation.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsPatchRequest) input message
@@ -509,7 +509,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkstationConfig.
+      r"""Creates a new workstation configuration.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRequest) input message
@@ -536,7 +536,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified WorkstationConfig.
+      r"""Deletes the specified workstation configuration.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsDeleteRequest) input message
@@ -563,7 +563,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the requested WorkstationConfig.
+      r"""Returns the requested workstation configuration.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsGetRequest) input message
@@ -617,7 +617,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns all WorkstationConfigs in the specified cluster.
+      r"""Returns all workstation configurations in the specified cluster.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListRequest) input message
@@ -644,7 +644,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Returns all WorkstationConfigs in the specified cluster on which the caller has the "workstations.workstation.create" permission.
+      r"""Returns all workstation configurations in the specified cluster on which the caller has the "workstations.workstation.create" permission.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsListUsableRequest) input message
@@ -671,7 +671,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing WorkstationConfig.
+      r"""Updates an existing workstation configuration.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchRequest) input message
@@ -762,7 +762,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkstationCluster.
+      r"""Creates a new workstation cluster.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersCreateRequest) input message
@@ -789,7 +789,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified WorkstationCluster.
+      r"""Deletes the specified workstation cluster.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersDeleteRequest) input message
@@ -816,7 +816,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the requested WorkstationCluster.
+      r"""Returns the requested workstation cluster.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersGetRequest) input message
@@ -843,7 +843,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns all WorkstationClusters in the specified location.
+      r"""Returns all workstation clusters in the specified location.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersListRequest) input message
@@ -870,7 +870,7 @@ class WorkstationsV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing WorkstationCluster.
+      r"""Updates an existing workstation cluster.
 
       Args:
         request: (WorkstationsProjectsLocationsWorkstationClustersPatchRequest) input message

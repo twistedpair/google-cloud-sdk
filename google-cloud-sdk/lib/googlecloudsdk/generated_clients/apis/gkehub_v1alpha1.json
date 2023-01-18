@@ -627,7 +627,7 @@
           "$ref": "OciConfig"
         },
         "allowVerticalScale": {
-          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling.",
+          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling. This field is deprecated.",
           "type": "boolean"
         }
       }
@@ -1195,6 +1195,10 @@
         "monitoring": {
           "description": "Monitoring specifies the configuration of monitoring.",
           "$ref": "PolicyControllerMonitoringConfig"
+        },
+        "policyContent": {
+          "description": "Specifies the desired policy content on the cluster",
+          "$ref": "PolicyContentSpec"
         }
       }
     },
@@ -1229,6 +1233,46 @@
               "PROMETHEUS",
               "CLOUD_MONITORING"
             ]
+          }
+        }
+      }
+    },
+    "PolicyContentSpec": {
+      "id": "PolicyContentSpec",
+      "description": "PolicyContentSpec defines the user's desired content configuration on the cluster.",
+      "type": "object",
+      "properties": {
+        "bundles": {
+          "description": "map of bundle name to BundleInstallSpec. The bundle name maps to the `bundleName` key in the `policycontroller.gke.io\/constraintData` annotation on a constraint.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "BundleInstallSpec"
+          }
+        }
+      }
+    },
+    "BundleInstallSpec": {
+      "id": "BundleInstallSpec",
+      "description": "BundleInstallSpec is the specification configuration for a single managed bundle.",
+      "type": "object",
+      "properties": {
+        "management": {
+          "description": "Management specifies how the bundle will be managed by the controller.",
+          "type": "string",
+          "enumDescriptions": [
+            "No Management strategy has been specified.",
+            "The entity should be insistently reconciled by the Hub controller."
+          ],
+          "enum": [
+            "MANAGEMENT_UNSPECIFIED",
+            "INSTALLED"
+          ]
+        },
+        "exemptedNamespaces": {
+          "description": "the set of namespaces to be exempted from the bundle",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -2473,7 +2517,14 @@
           ]
         },
         "componentStates": {
-          "description": "On-cluster states of the components we would like to track. Currently these include (also serving as map keys): 1. \"admission\" 2. \"audit\" 3. \"mutation\" 4. \"constraint template library\"",
+          "description": "On-cluster states of the components we would like to track. Currently these include (also serving as map keys): 1. \"admission\" 2. \"audit\" 3. \"mutation\"",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "OnClusterState"
+          }
+        },
+        "contentStates": {
+          "description": "The state of the template library and any specified bundles",
           "type": "object",
           "additionalProperties": {
             "$ref": "OnClusterState"

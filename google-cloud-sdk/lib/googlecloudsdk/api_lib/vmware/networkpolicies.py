@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
 from googlecloudsdk.api_lib.vmware.networks import NetworksClient
-from googlecloudsdk.command_lib.vmware.networks import util as networks_util
 
 
 class NetworkPoliciesClient(util.VmwareClientBase):
@@ -38,13 +37,15 @@ class NetworkPoliciesClient(util.VmwareClientBase):
     response = self.service.Get(request)
     return response
 
-  def Create(self,
-             resource,
-             vmware_engine_network_id=None,
-             description=None,
-             edge_services_cidr=None,
-             internet_access=None,
-             external_ip_access=None):
+  def Create(
+      self,
+      resource,
+      vmware_engine_network_id,
+      edge_services_cidr,
+      description=None,
+      internet_access=None,
+      external_ip_access=None,
+  ):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     network_policy_id = resource.Name()
@@ -52,17 +53,18 @@ class NetworkPoliciesClient(util.VmwareClientBase):
     internet_access_obj = self.messages.NetworkService(enabled=internet_access)
     external_ip_access_obj = self.messages.NetworkService(
         enabled=external_ip_access)
-    if vmware_engine_network_id is not None:
-      ven = self.networks_client.GetByID(project, vmware_engine_network_id)
-      network_policy.vmwareEngineNetwork = ven.name
+    ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+    network_policy.vmwareEngineNetwork = ven.name
     network_policy.edgeServicesCidr = edge_services_cidr
     network_policy.internetAccess = internet_access_obj
     network_policy.externalIp = external_ip_access_obj
-    request = self.messages.VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(
-        parent=parent,
-        networkPolicy=network_policy,
-        networkPolicyId=network_policy_id,
-        requestId=networks_util.GetUniqueId())
+    request = (
+        self.messages.VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(
+            parent=parent,
+            networkPolicy=network_policy,
+            networkPolicyId=network_policy_id,
+        )
+    )
     return self.service.Create(request)
 
   def Update(self,
@@ -89,34 +91,31 @@ class NetworkPoliciesClient(util.VmwareClientBase):
           enabled=external_ip_access)
       network_policy.externalIp = external_ip_access_obj
       update_mask.append('external_ip.enabled')
-    request = self.messages.VmwareengineProjectsLocationsNetworkPoliciesPatchRequest(
-        networkPolicy=network_policy,
-        name=resource.RelativeName(),
-        updateMask=','.join(update_mask),
-        requestId=networks_util.GetUniqueId())
+    request = (
+        self.messages.VmwareengineProjectsLocationsNetworkPoliciesPatchRequest(
+            networkPolicy=network_policy,
+            name=resource.RelativeName(),
+            updateMask=','.join(update_mask),
+        )
+    )
     return self.service.Patch(request)
 
   def Delete(self, resource):
     return self.service.Delete(
-        self.messages
-        .VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(
-            name=resource.RelativeName(),
-            requestId=networks_util.GetUniqueId()))
+        self.messages.VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(
+            name=resource.RelativeName()
+        )
+    )
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None):
+  def List(self, location_resource):
     location = location_resource.RelativeName()
-    request = self.messages.VmwareengineProjectsLocationsNetworkPoliciesListRequest(
-        parent=location, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+    request = (
+        self.messages.VmwareengineProjectsLocationsNetworkPoliciesListRequest(
+            parent=location
+        )
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='networkPolicies')

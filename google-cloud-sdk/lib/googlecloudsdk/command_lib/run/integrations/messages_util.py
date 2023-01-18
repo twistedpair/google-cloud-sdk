@@ -112,27 +112,6 @@ def _ReleaseCommandPrefix(release_track):
   return track
 
 
-def GetDeployMessage(resource_type, create=False):
-  """Generates a message about the deployment of the integration type.
-
-  Args:
-    resource_type: Resource Type of the integration.
-    create: whether it's for the create command.
-
-  Returns:
-    A string message, or None if no message is configured for that type.
-  """
-
-  if resource_type == 'redis':
-    return 'This might take up to 10 minutes.'
-  if resource_type == 'router':
-    message = 'This might take up to 5 minutes.'
-    if create:
-      message += ' Manual DNS configuration will be required after completion.'
-    return message
-  return None
-
-
 def IntegrationAlreadyExists(name):
   """Generates a message when an integration already exists during create.
 

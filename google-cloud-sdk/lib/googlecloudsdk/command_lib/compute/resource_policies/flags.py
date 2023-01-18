@@ -199,6 +199,11 @@ def AddGroupPlacementArgs(parser, messages, track):
         '--tpu-topology',
         type=str,
         help='Specifies the shape of the TPU pod slice.')
+    parser.add_argument(
+        '--max-distance',
+        type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=2),
+        help='Specifies the number of max logical switches.'
+    )
 
 
 def GetCollocationFlagMapper(messages, track):

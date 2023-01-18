@@ -1032,3 +1032,95 @@ def AddAdminClusterMembershipResourceArg(parser,
           'project': '--admin-cluster-membership-project',
           'location': '--admin-cluster-membership-location',
       }).AddToParser(parser)
+
+
+def AddAdminLoadBalancerConfig(parser, is_update=False):
+  """Adds a command group to set the load balancer config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  bare_metal_admin_load_balancer_config_group = parser.add_group(
+      help='Anthos on bare metal admin cluster load balancer configuration.',
+      required=required,
+  )
+  _AddAdminVIPConfig(bare_metal_admin_load_balancer_config_group)
+  _AddAdminLoadBalancerPortConfig(bare_metal_admin_load_balancer_config_group)
+  _AddAdminManualLBConfig(bare_metal_admin_load_balancer_config_group)
+
+
+def _AddAdminVIPConfig(bare_metal_admin_load_balancer_config_group):
+  """Adds flags to set VIPs used by the load balancer.
+
+  Args:
+    bare_metal_admin_load_balancer_config_group: The parent group to add the
+      flags to.
+  """
+  bare_metal_vip_config_group = (
+      bare_metal_admin_load_balancer_config_group.add_group(
+          help='VIPs used by the load balancer.',
+          required=True,
+      )
+  )
+  bare_metal_vip_config_group.add_argument(
+      '--control-plane-vip',
+      required=True,
+      help='VIP for the Kubernetes API of this cluster.',
+  )
+
+
+def _AddAdminLoadBalancerPortConfig(
+    bare_metal_admin_load_balancer_config_group):
+  """Adds flags to set port for load balancer.
+
+  Args:
+    bare_metal_admin_load_balancer_config_group: The parent group to add the
+      flags to.
+  """
+  control_plane_load_balancer_port_config_group = (
+      bare_metal_admin_load_balancer_config_group.add_group(
+          help='Control plane load balancer port configuration.',
+          required=True,
+      )
+  )
+  control_plane_load_balancer_port_config_group.add_argument(
+      '--control-plane-load-balancer-port',
+      required=True,
+      help='Control plane load balancer port configuration.',
+      type=int,
+  )
+
+
+def _AddAdminManualLBConfig(bare_metal_admin_load_balancer_config_group):
+  """Adds flags for manual load balancer.
+
+  Args:
+    bare_metal_admin_load_balancer_config_group: The parent group to add the
+      flags to.
+  """
+  manual_lb_config_group = (
+      bare_metal_admin_load_balancer_config_group.add_group(
+          help='Manual load balancer configuration.',
+      )
+  )
+  manual_lb_config_group.add_argument(
+      '--enable-manual-lb',
+      required=True,
+      action='store_true',
+      help='ManualLB typed load balancers configuration.',
+  )
+
+
+def AddAdminWorkloadNodeConfig(parser):
+  """Adds a command group to set the workload node config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  bare_metal_workload_node_config_group = parser.add_group(
+      help='Anthos on bare metal admin cluster workload node configuration.',
+  )
+
+  _AddMaxPodsPerNode(bare_metal_workload_node_config_group)

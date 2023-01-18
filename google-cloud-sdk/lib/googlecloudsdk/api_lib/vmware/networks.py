@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
 from googlecloudsdk.command_lib.util.apis import arg_utils
-from googlecloudsdk.command_lib.vmware.networks import util as networks_util
 from googlecloudsdk.core.exceptions import Error
 from googlecloudsdk.core.resources import REGISTRY
 
@@ -72,7 +71,7 @@ class NetworksClient(util.VmwareClientBase):
 
     return networks[0]
 
-  def Create(self, resource, description=None, network_type=None):
+  def Create(self, resource, network_type, description=None):
     parent = resource.Parent().RelativeName()
     network_id = resource.Name()
     network = self.messages.VmwareEngineNetwork(description=description)
@@ -86,10 +85,10 @@ class NetworksClient(util.VmwareClientBase):
         parent=parent,
         vmwareEngineNetwork=network,
         vmwareEngineNetworkId=network_id,
-        requestId=networks_util.GetUniqueId())
+    )
     return self.service.Create(request)
 
-  def Update(self, resource, description=None):
+  def Update(self, resource, description):
     network = self.Get(resource)
     update_mask = []
     if description is not None:
@@ -99,31 +98,23 @@ class NetworksClient(util.VmwareClientBase):
         vmwareEngineNetwork=network,
         name=resource.RelativeName(),
         updateMask=','.join(update_mask),
-        requestId=networks_util.GetUniqueId())
+    )
     return self.service.Patch(request)
 
   def Delete(self, resource, delay_hours=None):
     return self.service.Delete(
-        self.messages
-        .VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest(
-            name=resource.RelativeName(),
-            requestId=networks_util.GetUniqueId()))
+        self.messages.VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest(
+            name=resource.RelativeName()
+        )
+    )
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, location_resource):
     location = location_resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsVmwareEngineNetworksListRequest(
-        parent=location, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=location
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='vmwareEngineNetworks')

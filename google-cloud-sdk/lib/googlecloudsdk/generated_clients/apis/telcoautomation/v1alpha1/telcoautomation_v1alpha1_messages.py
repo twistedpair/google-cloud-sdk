@@ -17,6 +17,22 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CidrBlock(_messages.Message):
+  r"""CidrBlock contains an optional name and one CIDR block.
+
+  Fields:
+    cidrBlock: Optional. cidr_block must be specified in CIDR notation when
+      using master_authorized_networks_config. Currently, the user could still
+      use the deprecated man_block field, so this field is currently optional,
+      but will be required in the future.
+    displayName: Optional. display_name is an optional field for users to
+      identify CIDR blocks.
+  """
+
+  cidrBlock = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+
+
 class EdgeSlm(_messages.Message):
   r"""Message describing EdgeTnaComponent object. The applications installed
   by TNA on edge are bundled as a single control plane resource :
@@ -72,6 +88,51 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class FullManagementConfig(_messages.Message):
+  r"""Configuration of the full (Autopilot) cluster management
+
+  Fields:
+    clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    clusterNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for pod IP addresses. Alternatively,
+      cluster_cidr_block can be used to automatically create a GKE-managed
+      one.
+    masterAuthorizedNetworksConfig: Master Authorized Network that supports
+      multiple CIDR blocks. Allows access to the k8s master from multiple
+      blocks. It cannot be set at the same time with the field man_block.
+    masterIpv4CidrBlock: The /28 network that the masters will use.
+    network: Name of the VPC Network to put the GKE cluster and nodes in. The
+      VPC will be created if it doesn't exist.
+    servicesCidrBlock: The IP address range for the cluster service IPs. Set
+      to blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    servicesNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for service ClusterIPs. Alternatively,
+      services_cidr_block can be used to automatically create a GKE-managed
+      one.
+    subnet: Specifies the subnet that the interface will be part of. Network
+      key must be specified and the subnet must be a subnetwork of the
+      specified network.
+  """
+
+  clusterCidrBlock = _messages.StringField(1)
+  clusterNamedRange = _messages.StringField(2)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  network = _messages.StringField(5)
+  servicesCidrBlock = _messages.StringField(6)
+  servicesNamedRange = _messages.StringField(7)
+  subnet = _messages.StringField(8)
 
 
 class ListEdgeSlmsResponse(_messages.Message):
@@ -208,6 +269,32 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class ManagementConfig(_messages.Message):
+  r"""Configuration of the cluster management
+
+  Fields:
+    fullManagementConfig: Configuration of the full (Autopilot) cluster
+      management. Full cluster management is a preview feature.
+    standardManagementConfig: Configuration of the standard (GKE) cluster
+      management
+  """
+
+  fullManagementConfig = _messages.MessageField('FullManagementConfig', 1)
+  standardManagementConfig = _messages.MessageField('StandardManagementConfig', 2)
+
+
+class MasterAuthorizedNetworksConfig(_messages.Message):
+  r"""Configuration of the Master Authorized Network that support multiple
+  CIDRs
+
+  Fields:
+    cidrBlocks: cidr_blocks define up to 50 external networks that could
+      access Kubernetes master through HTTPS.
+  """
+
+  cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -354,7 +441,9 @@ class OrchestrationCluster(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
+    managementConfig: Configuration of the cluster management
     name: name of resource
+    tnaVersion: Output only. Provides the TNA version installed on the cluster
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -384,8 +473,55 @@ class OrchestrationCluster(_messages.Message):
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  managementConfig = _messages.MessageField('ManagementConfig', 3)
+  name = _messages.StringField(4)
+  tnaVersion = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class StandardManagementConfig(_messages.Message):
+  r"""Configuration of the standard (GKE) cluster management
+
+  Fields:
+    clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    clusterNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for pod IP addresses. Alternatively,
+      cluster_cidr_block can be used to automatically create a GKE-managed
+      one.
+    masterAuthorizedNetworksConfig: Master Authorized Network that supports
+      multiple CIDR blocks. Allows access to the k8s master from multiple
+      blocks. It cannot be set at the same time with the field man_block.
+    masterIpv4CidrBlock: The /28 network that the masters will use.
+    network: Name of the VPC Network to put the GKE cluster and nodes in. The
+      VPC will be created if it doesn't exist.
+    servicesCidrBlock: The IP address range for the cluster service IPs. Set
+      to blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    servicesNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for service ClusterIPs. Alternatively,
+      services_cidr_block can be used to automatically create a GKE-managed
+      one.
+    subnet: Specifies the subnet that the interface will be part of. Network
+      key must be specified and the subnet must be a subnetwork of the
+      specified network.
+  """
+
+  clusterCidrBlock = _messages.StringField(1)
+  clusterNamedRange = _messages.StringField(2)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  network = _messages.StringField(5)
+  servicesCidrBlock = _messages.StringField(6)
+  servicesNamedRange = _messages.StringField(7)
+  subnet = _messages.StringField(8)
 
 
 class StandardQueryParameters(_messages.Message):

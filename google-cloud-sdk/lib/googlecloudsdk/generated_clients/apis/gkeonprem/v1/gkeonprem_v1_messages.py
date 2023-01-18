@@ -44,7 +44,7 @@ class BareMetalAdminApiServerArgument(_messages.Message):
 
 
 class BareMetalAdminCluster(_messages.Message):
-  r"""Resource that represents a bare metal admin cluster.
+  r"""Resource that represents a bare metal admin cluster. LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the bare metal
@@ -99,10 +99,12 @@ class BareMetalAdminCluster(_messages.Message):
       maintenance.
     name: Immutable. The bare metal admin cluster resource name.
     networkConfig: Network configuration.
+    nodeAccessConfig: Node access related configurations.
     nodeConfig: Workload node configuration.
     proxy: Proxy configuration.
     reconciling: Output only. If set, there are currently changes in flight to
       the bare metal Admin Cluster.
+    securityConfig: Security related configuration.
     state: Output only. The current state of the bare metal admin cluster.
     status: Output only. ResourceStatus representing detailed cluster status.
     storage: Storage configuration.
@@ -186,15 +188,17 @@ class BareMetalAdminCluster(_messages.Message):
   maintenanceStatus = _messages.MessageField('BareMetalAdminMaintenanceStatus', 14)
   name = _messages.StringField(15)
   networkConfig = _messages.MessageField('BareMetalAdminNetworkConfig', 16)
-  nodeConfig = _messages.MessageField('BareMetalAdminWorkloadNodeConfig', 17)
-  proxy = _messages.MessageField('BareMetalAdminProxyConfig', 18)
-  reconciling = _messages.BooleanField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  status = _messages.MessageField('ResourceStatus', 21)
-  storage = _messages.MessageField('BareMetalAdminStorageConfig', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  validationCheck = _messages.MessageField('ValidationCheck', 25)
+  nodeAccessConfig = _messages.MessageField('BareMetalAdminNodeAccessConfig', 17)
+  nodeConfig = _messages.MessageField('BareMetalAdminWorkloadNodeConfig', 18)
+  proxy = _messages.MessageField('BareMetalAdminProxyConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  securityConfig = _messages.MessageField('BareMetalAdminSecurityConfig', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  status = _messages.MessageField('ResourceStatus', 23)
+  storage = _messages.MessageField('BareMetalAdminStorageConfig', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  validationCheck = _messages.MessageField('ValidationCheck', 27)
 
 
 class BareMetalAdminClusterOperationsConfig(_messages.Message):
@@ -289,29 +293,13 @@ class BareMetalAdminLoadBalancerConfig(_messages.Message):
 
   Fields:
     manualLbConfig: Manually configured load balancers.
-    metalLbConfig: Configuration for MetalLB typed load balancers.
     portConfig: Configures the ports that the load balancer will listen on.
     vipConfig: The VIPs used by the load balancer.
   """
 
   manualLbConfig = _messages.MessageField('BareMetalAdminManualLbConfig', 1)
-  metalLbConfig = _messages.MessageField('BareMetalAdminMetalLbConfig', 2)
-  portConfig = _messages.MessageField('BareMetalAdminPortConfig', 3)
-  vipConfig = _messages.MessageField('BareMetalAdminVipConfig', 4)
-
-
-class BareMetalAdminLoadBalancerNodePoolConfig(_messages.Message):
-  r"""BareMetalAdminLoadBalancerNodePoolConfig specifies the load balancer's
-  node pool configuration. We have a Load Balancer specific Node Pool config
-  so that we can flexible about supporting Load Balancer specific fields in
-  the future.
-
-  Fields:
-    nodePoolConfig: The generic configuration for a node pool running a load
-      balancer.
-  """
-
-  nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 1)
+  portConfig = _messages.MessageField('BareMetalAdminPortConfig', 2)
+  vipConfig = _messages.MessageField('BareMetalAdminVipConfig', 3)
 
 
 class BareMetalAdminMachineDrainStatus(_messages.Message):
@@ -365,19 +353,6 @@ class BareMetalAdminManualLbConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
-class BareMetalAdminMetalLbConfig(_messages.Message):
-  r"""BareMetalAdminMetalLbConfig represents configuration parameters for a
-  MetalLb load balancer.
-
-  Fields:
-    nodePoolConfig: Specifies the node pool running the load balancer. L2
-      connectivity is required among nodes in this pool. If missing, the
-      control plane node pool is used as load balancer pool.
-  """
-
-  nodePoolConfig = _messages.MessageField('BareMetalAdminLoadBalancerNodePoolConfig', 1)
-
-
 class BareMetalAdminNetworkConfig(_messages.Message):
   r"""BareMetalAdminNetworkConfig specifies the cluster network configuration.
 
@@ -386,6 +361,18 @@ class BareMetalAdminNetworkConfig(_messages.Message):
   """
 
   islandModeCidr = _messages.MessageField('BareMetalAdminIslandModeCidrConfig', 1)
+
+
+class BareMetalAdminNodeAccessConfig(_messages.Message):
+  r"""Specifies the node access related settings for the bare metal admin
+  cluster.
+
+  Fields:
+    loginUser: Required. LoginUser is the user name used to access node
+      machines. It defaults to "root" if not set.
+  """
+
+  loginUser = _messages.StringField(1)
 
 
 class BareMetalAdminPortConfig(_messages.Message):
@@ -412,6 +399,17 @@ class BareMetalAdminProxyConfig(_messages.Message):
 
   noProxy = _messages.StringField(1, repeated=True)
   uri = _messages.StringField(2)
+
+
+class BareMetalAdminSecurityConfig(_messages.Message):
+  r"""Specifies the security related settings for the bare metal admin
+  cluster.
+
+  Fields:
+    authorization: Configures user access to the admin cluster.
+  """
+
+  authorization = _messages.MessageField('Authorization', 1)
 
 
 class BareMetalAdminStorageConfig(_messages.Message):
@@ -1155,7 +1153,7 @@ class BareMetalSecurityConfig(_messages.Message):
 
 
 class BareMetalStorageConfig(_messages.Message):
-  r"""Specifies the cluster storage configuration.
+  r"""BareMetalStorageConfig specifies the cluster storage configuration.
 
   Fields:
     lvpNodeMountsConfig: Required. Specifies the config for local
@@ -1217,15 +1215,10 @@ class BareMetalWorkloadNodeConfig(_messages.Message):
 
     Values:
       CONTAINER_RUNTIME_UNSPECIFIED: No container runtime selected.
-      DOCKER: Docker runtime. Anthos version 1.13 and higher clusters can no
-        longer use Docker Engine.
-        https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/instal
-        ling/runtime#kubernetes_124_ends_support_of_docker_engine
       CONTAINERD: Containerd runtime.
     """
     CONTAINER_RUNTIME_UNSPECIFIED = 0
-    DOCKER = 1
-    CONTAINERD = 2
+    CONTAINERD = 1
 
   containerRuntime = _messages.EnumField('ContainerRuntimeValueValuesEnum', 1)
   maxPodsPerNode = _messages.IntegerField(2)
@@ -4366,15 +4359,13 @@ class VmwareLoadBalancerConfig(_messages.Message):
     f5Config: Configuration for F5 Big IP typed load balancers.
     manualLbConfig: Manually configured load balancers.
     metalLbConfig: Configuration for MetalLB typed load balancers.
-    seesawConfig: Configuration for Seesaw typed load balancers.
     vipConfig: The VIPs used by the load balancer.
   """
 
   f5Config = _messages.MessageField('VmwareF5BigIpConfig', 1)
   manualLbConfig = _messages.MessageField('VmwareManualLbConfig', 2)
   metalLbConfig = _messages.MessageField('VmwareMetalLbConfig', 3)
-  seesawConfig = _messages.MessageField('VmwareSeesawConfig', 4)
-  vipConfig = _messages.MessageField('VmwareVipConfig', 5)
+  vipConfig = _messages.MessageField('VmwareVipConfig', 4)
 
 
 class VmwareManualLbConfig(_messages.Message):
@@ -4666,27 +4657,6 @@ class VmwarePlatformConfig(_messages.Message):
   status = _messages.MessageField('ResourceStatus', 4)
 
 
-class VmwareSeesawConfig(_messages.Message):
-  r"""A VmwareSeesawConfig object.
-
-  Fields:
-    enableHa: Enable two load balancer VMs to achieve a highly-available
-      Seesaw load balancer.
-    group: Required. In general the following format should be used for the
-      Seesaw group name: seesaw-for-[cluster_name].
-    ipBlocks: Required. The IP Blocks to be used by the Seesaw load balancer
-    masterIp: Required. MasterIP is the IP announced by the master of Seesaw
-      group.
-    vms: Names of the VMs created for this Seesaw group.
-  """
-
-  enableHa = _messages.BooleanField(1)
-  group = _messages.StringField(2)
-  ipBlocks = _messages.MessageField('VmwareIpBlock', 3, repeated=True)
-  masterIp = _messages.StringField(4)
-  vms = _messages.StringField(5, repeated=True)
-
-
 class VmwareStaticIpConfig(_messages.Message):
   r"""Represents the network configuration required for the VMware user
   clusters with Static IP configurations.
@@ -4792,14 +4762,7 @@ class VmwareVsphereTag(_messages.Message):
 
 
 class VmwareWorkloadIdentityConfig(_messages.Message):
-  r"""Specifies workload identity config for VMware user cluster.
-
-  Fields:
-    workloadIdentityDisabled: Whether or not workload identity is disabled in
-      the cluster. Workload Identity is enabled by default.
-  """
-
-  workloadIdentityDisabled = _messages.BooleanField(1)
+  r"""Specifies workload identity config for VMware user cluster."""
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -3781,6 +3781,45 @@
           }
         }
       }
+    },
+    "projects": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "applications": {
+              "methods": {
+                "get": {
+                  "id": "appengine.projects.locations.applications.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the Application resource to get. Example: apps\/myapp.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/applications\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Application"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/appengine.admin",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets information about an application."
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "basePath": ""

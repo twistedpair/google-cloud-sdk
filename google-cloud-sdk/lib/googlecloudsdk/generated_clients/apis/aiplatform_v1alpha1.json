@@ -1789,6 +1789,10 @@
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
         }
       }
     },
@@ -2452,6 +2456,10 @@
         },
         "useElapsedDuration": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        },
+        "updateAllStoppedTrials": {
+          "description": "ConvexAutomatedStoppingSpec by default only updates the trials that needs to be early stopped using a newly trained auto-regressive model. When this flag is set to True, all stopped trials from the beginning are potentially updated in terms of their `final_measurement`. Also, note that the training logic of autoregressive models is different in this case. Enabling this option has shown better results and this may be the default option in the future.",
           "type": "boolean"
         }
       }
@@ -6278,7 +6286,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1TensorboardRun"
         },
         "tensorboardRunId": {
-          "description": "Required. The ID to use for the Tensorboard run, which will become the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+          "description": "Required. The ID to use for the Tensorboard run, which becomes the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
           "type": "string"
         }
       }
@@ -6339,7 +6347,7 @@
           "type": "string"
         },
         "tensorboardTimeSeriesId": {
-          "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
+          "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which becomes the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
           "type": "string"
         },
         "tensorboardTimeSeries": {
@@ -6689,7 +6697,7 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "The maximum number of data points to return per page. The default page_size will be 1000. Values must be between 1 and 10000. Values above 10000 will be coerced to 10000.",
+          "description": "The maximum number of data points to return per page. The default page_size is 1000. Values must be between 1 and 10000. Values above 10000 are coerced to 10000.",
           "type": "integer",
           "format": "int32"
         },
@@ -6698,7 +6706,7 @@
           "type": "string"
         },
         "orderBy": {
-          "description": "Field to use to sort the TensorboardTimeSeries' data. By default, TensorboardTimeSeries' data will be returned in a pseudo random order.",
+          "description": "Field to use to sort the TensorboardTimeSeries' data. By default, TensorboardTimeSeries' data is returned in a pseudo random order.",
           "type": "string"
         }
       }
@@ -7580,6 +7588,10 @@
         },
         "disableContainerLogging": {
           "description": "For custom-trained Models and AutoML Tabular Models, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging by default. Please note that the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing). User can disable container logging by setting this flag to true.",
+          "type": "boolean"
+        },
+        "enableAccessLogging": {
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         }
       }
@@ -10787,7 +10799,7 @@
           "type": "boolean"
         },
         "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         },
         "privateEndpoints": {
@@ -11690,7 +11702,7 @@
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformUiDedicatedResources"
         },
         "enableAccessLogging": {
@@ -13681,6 +13693,10 @@
         },
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
         }
       }
@@ -17460,7 +17476,7 @@
           "type": "boolean"
         },
         "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         },
         "privateEndpoints": {
@@ -18149,7 +18165,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "enableAccessLogging": {
@@ -20630,6 +20646,10 @@
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
         }
       }
     },
@@ -21042,6 +21062,10 @@
         },
         "useElapsedDuration": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        },
+        "updateAllStoppedTrials": {
+          "description": "ConvexAutomatedStoppingSpec by default only updates the trials that needs to be early stopped using a newly trained auto-regressive model. When this flag is set to True, all stopped trials from the beginning are potentially updated in terms of their `final_measurement`. Also, note that the training logic of autoregressive models is different in this case. Enabling this option has shown better results and this may be the default option in the future.",
           "type": "boolean"
         }
       }
@@ -23023,7 +23047,7 @@
           "type": "boolean"
         },
         "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         },
         "privateEndpoints": {
@@ -23633,7 +23657,7 @@
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformV1DedicatedResources"
         },
         "enableAccessLogging": {
@@ -26067,6 +26091,10 @@
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
         }
       }
     },
@@ -26441,6 +26469,10 @@
         },
         "useElapsedDuration": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        },
+        "updateAllStoppedTrials": {
+          "description": "ConvexAutomatedStoppingSpec by default only updates the trials that needs to be early stopped using a newly trained auto-regressive model. When this flag is set to True, all stopped trials from the beginning are potentially updated in terms of their `final_measurement`. Also, note that the training logic of autoregressive models is different in this case. Enabling this option has shown better results and this may be the default option in the future.",
           "type": "boolean"
         }
       }
@@ -34764,7 +34796,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Tensorboard resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Tensorboard resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -34803,7 +34835,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 100 Tensorboards will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 100 Tensorboards are returned. The maximum value is 100; values above 100 are coerced to 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -35032,7 +35064,7 @@
                           "type": "string"
                         },
                         "tensorboardExperimentId": {
-                          "description": "Required. The ID to use for the Tensorboard experiment, which will become the final component of the Tensorboard experiment's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+                          "description": "Required. The ID to use for the Tensorboard experiment, which becomes the final component of the Tensorboard experiment's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
                           "location": "query",
                           "type": "string"
                         }
@@ -35091,7 +35123,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardExperiment resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardExperiment resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -35130,7 +35162,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of TensorboardExperiments to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardExperiments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "description": "The maximum number of TensorboardExperiments to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardExperiments are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -35215,7 +35247,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error will be returned."
+                      "description": "Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error is returned."
                     }
                   }
                   ,
@@ -35387,7 +35419,7 @@
                               "type": "string"
                             },
                             "tensorboardRunId": {
-                              "description": "Required. The ID to use for the Tensorboard run, which will become the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+                              "description": "Required. The ID to use for the Tensorboard run, which becomes the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
                               "location": "query",
                               "type": "string"
                             }
@@ -35474,7 +35506,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardRun resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                              "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardRun resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"
@@ -35513,7 +35545,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "The maximum number of TensorboardRuns to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardRuns will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "description": "The maximum number of TensorboardRuns to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardRuns are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -35598,7 +35630,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned."
+                          "description": "Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error is returned."
                         }
                       }
                       ,
@@ -35804,7 +35836,7 @@
                                   "type": "string"
                                 },
                                 "tensorboardTimeSeriesId": {
-                                  "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
+                                  "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which becomes the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
                                   "location": "query",
                                   "type": "string"
                                 }
@@ -35863,7 +35895,7 @@
                                   "type": "string"
                                 },
                                 "updateMask": {
-                                  "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardTimeSeries resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                                  "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardTimeSeries resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                                   "location": "query",
                                   "type": "string",
                                   "format": "google-fieldmask"
@@ -35902,7 +35934,7 @@
                                   "type": "string"
                                 },
                                 "pageSize": {
-                                  "description": "The maximum number of TensorboardTimeSeries to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardTimeSeries will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                                  "description": "The maximum number of TensorboardTimeSeries to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardTimeSeries are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                                   "location": "query",
                                   "type": "integer",
                                   "format": "int32"
@@ -36002,7 +36034,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data will be returned. Otherwise, that limit number of data points will be randomly selected from this time series and returned."
+                              "description": "Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data is returned. Otherwise, the number limit of data points is randomly selected from this time series and returned."
                             },
                             "read": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.read",
@@ -36039,7 +36071,7 @@
                                 "https://www.googleapis.com/auth/cloud-platform",
                                 "https://www.googleapis.com/auth/cloud-platform.read-only"
                               ],
-                              "description": "Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k."
+                              "description": "Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data is returned. Otherwise, 1000 data points is randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k."
                             },
                             "readBlobData": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.readBlobData",

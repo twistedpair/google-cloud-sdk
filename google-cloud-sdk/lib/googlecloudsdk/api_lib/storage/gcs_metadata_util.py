@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
@@ -141,15 +142,21 @@ def get_bucket_resource_from_metadata(metadata):
       getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', None),
       'enabled', None)
 
+  # TODO(b/264528234): Delete `remove_excess_acl_fields`.
   return gcs_resource_reference.GcsBucketResource(
       url,
-      acl=_message_to_dict(metadata.acl),
+      acl=_message_to_dict(
+          gcs_metadata_field_converters.remove_excess_acl_fields(metadata.acl)
+      ),
       autoclass_enabled_time=autoclass_enabled_time,
       cors_config=_message_to_dict(metadata.cors),
       creation_time=metadata.timeCreated,
-      custom_placement_config=_message_to_dict(
-          metadata.customPlacementConfig),
-      default_acl=_message_to_dict(metadata.defaultObjectAcl),
+      custom_placement_config=_message_to_dict(metadata.customPlacementConfig),
+      default_acl=_message_to_dict(
+          gcs_metadata_field_converters.remove_excess_acl_fields(
+              metadata.defaultObjectAcl
+          )
+      ),
       default_event_based_hold=metadata.defaultEventBasedHold,
       default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
       default_storage_class=metadata.storageClass,
@@ -162,8 +169,9 @@ def get_bucket_resource_from_metadata(metadata):
       metadata=metadata,
       metageneration=metadata.metageneration,
       project_number=metadata.projectNumber,
-      public_access_prevention=getattr(metadata.iamConfiguration,
-                                       'publicAccessPrevention', None),
+      public_access_prevention=getattr(
+          metadata.iamConfiguration, 'publicAccessPrevention', None
+      ),
       requester_pays=getattr(metadata.billing, 'requesterPays', None),
       retention_policy=_message_to_dict(metadata.retentionPolicy),
       rpo=metadata.rpo,
@@ -171,7 +179,8 @@ def get_bucket_resource_from_metadata(metadata):
       uniform_bucket_level_access=uniform_bucket_level_access,
       update_time=metadata.updated,
       versioning_enabled=getattr(metadata.versioning, 'enabled', None),
-      website_config=_message_to_dict(metadata.website))
+      website_config=_message_to_dict(metadata.website),
+  )
 
 
 def get_metadata_from_bucket_resource(resource):
@@ -228,9 +237,12 @@ def get_object_resource_from_metadata(metadata):
   else:
     decryption_key_hash_sha256 = encryption_algorithm = None
 
+  # TODO(b/264528234): Delete `remove_excess_acl_fields`.
   return gcs_resource_reference.GcsObjectResource(
       url,
-      acl=_message_to_dict(metadata.acl),
+      acl=_message_to_dict(
+          gcs_metadata_field_converters.remove_excess_acl_fields(metadata.acl)
+      ),
       cache_control=metadata.cacheControl,
       component_count=metadata.componentCount,
       content_disposition=metadata.contentDisposition,
@@ -244,8 +256,9 @@ def get_object_resource_from_metadata(metadata):
       decryption_key_hash_sha256=decryption_key_hash_sha256,
       encryption_algorithm=encryption_algorithm,
       etag=metadata.etag,
-      event_based_hold=(metadata.eventBasedHold
-                        if metadata.eventBasedHold else None),
+      event_based_hold=(
+          metadata.eventBasedHold if metadata.eventBasedHold else None
+      ),
       kms_key=metadata.kmsKeyName,
       md5_hash=metadata.md5Hash,
       metadata=metadata,
@@ -256,7 +269,8 @@ def get_object_resource_from_metadata(metadata):
       storage_class=metadata.storageClass,
       storage_class_update_time=metadata.timeStorageClassUpdated,
       temporary_hold=metadata.temporaryHold if metadata.temporaryHold else None,
-      update_time=metadata.updated)
+      update_time=metadata.updated,
+  )
 
 
 def _get_list_with_added_and_removed_acl_grants(acl_list,
@@ -287,16 +301,27 @@ def _get_list_with_added_and_removed_acl_grants(acl_list,
     acl_grants_to_remove = set(resource_args.acl_grants_to_remove or [])
     acl_grants_to_add = resource_args.acl_grants_to_add or []
 
+  found_match = {entity: False for entity in acl_grants_to_remove}
   for existing_grant in acl_list:
-    if existing_grant.entity not in acl_grants_to_remove:
+    if existing_grant.entity in acl_grants_to_remove:
+      found_match[existing_grant.entity] = True
+    else:
       new_acl_list.append(existing_grant)
+
+  unmatched_entities = [k for k, v in found_match.items() if not v]
+  if unmatched_entities:
+    raise errors.Error(
+        'ACL entities marked for removal did not match existing grants:'
+        ' {}'.format(sorted(unmatched_entities))
+    )
 
   acl_class = gcs_metadata_field_converters.get_bucket_or_object_acl_class(
       is_bucket)
 
   for new_grant in acl_grants_to_add:
     new_acl_list.append(
-        acl_class(entity=new_grant['entity'], role=new_grant['role']))
+        acl_class(entity=new_grant.get('entity'), role=new_grant.get('role'))
+    )
 
   return new_acl_list
 
@@ -411,7 +436,8 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
 
   if resource_args.acl_file_path is not None:
     bucket_metadata.acl = gcs_metadata_field_converters.process_acl_file(
-        resource_args.acl_file_path)
+        resource_args.acl_file_path, is_bucket=True
+    )
   bucket_metadata.acl = (
       _get_list_with_added_and_removed_acl_grants(
           bucket_metadata.acl,
@@ -420,8 +446,11 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
           is_default_object_acl=False))
 
   if resource_args.default_object_acl_file_path is not None:
-    bucket_metadata.defaultObjectAcl = gcs_metadata_field_converters.process_acl_file(
-        resource_args.default_object_acl_file_path)
+    bucket_metadata.defaultObjectAcl = (
+        gcs_metadata_field_converters.process_acl_file(
+            resource_args.default_object_acl_file_path, is_bucket=False
+        )
+    )
   bucket_metadata.defaultObjectAcl = (
       _get_list_with_added_and_removed_acl_grants(
           bucket_metadata.defaultObjectAcl,

@@ -474,7 +474,7 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       exclude from cache keys. All other parameters are included. Either
       specify included_query_parameters or excluded_query_parameters, not
       both. `&` and `=` are percent encoded and not treated as delimiters. You
-      may exclude up to 10 query parameters. Each query parameter name must be
+      may exclude up to 20 query parameters. Each query parameter name must be
       between 1 and 32 characters long (inclusive).
     includeProtocol: Optional. If `true`, HTTP and HTTPS requests are cached
       separately.
@@ -499,7 +499,7 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       include in cache keys. All other parameters are excluded. Either specify
       included_query_parameters or excluded_query_parameters, not both. `&`
       and `=` are percent encoded and not treated as delimiters. You may
-      include up to 10 query parameters. Each query parameter name must be
+      include up to 20 query parameters. Each query parameter name must be
       between 1 and 32 characters long (inclusive).
   """
 
@@ -719,14 +719,17 @@ class EdgeCacheOrigin(_messages.Message):
       the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
       character must be a letter, and all following characters must be a dash,
       underscore, letter or digit.
-    originAddress: Required. - **FQDN**: `media-backend.example.com` -
-      **IPv4**: `35.218.1.1` - **IPv6**: `2607:f8b0:4012:809::200e` - **Google
-      Cloud Storage**: `gs://bucketname` or
-      `bucketname.storage.googleapis.com` The following limitations apply to
-      fully-qualified domain names: * They must be resolvable through public
-      DNS. * They must not contain a protocol (such as `https://`). * They
-      must not contain any slashes. When providing an IP address, it must be
-      publicly routable. IPv6 addresses must not be enclosed in square
+    originAddress: Required. A fully qualified domain name (FQDN), an IPv4 or
+      IPv6 address reachable over the public Internet, or the address of a
+      Google Cloud Storage bucket. This address is used as the origin for
+      cache requests. The following are example origins: - **FQDN**: `media-
+      backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**:
+      `2607:f8b0:4012:809::200e` - **Google Cloud Storage**: `gs://bucketname`
+      or `bucketname.storage.googleapis.com` The following limitations apply
+      to fully-qualified domain names: * They must be resolvable through
+      public DNS. * They must not contain a protocol (such as `https://`). *
+      They must not contain any slashes. When providing an IP address, it must
+      be publicly routable. IPv6 addresses must not be enclosed in square
       brackets.
     originOverrideAction: Optional. The override actions, including
       url_rewrites and header additions, for requests that use this origin.
@@ -2444,6 +2447,66 @@ class ListMeshesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMulticastDomainActivationsResponse(_messages.Message):
+  r"""Message for response to listing MulticastDomainActivations
+
+  Fields:
+    multicastDomainActivations: The list of MulticastDomainActivation
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomainActivations = _messages.MessageField('MulticastDomainActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastDomainsResponse(_messages.Message):
+  r"""Message for response to listing MulticastDomains
+
+  Fields:
+    multicastDomains: The list of MulticastDomain
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastDomains = _messages.MessageField('MulticastDomain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupDefinitionsResponse(_messages.Message):
+  r"""Message for response to listing MulticastGroupDefinitions
+
+  Fields:
+    multicastGroupDefinitions: The list of MulticastGroupDefinition
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupDefinitions = _messages.MessageField('MulticastGroupDefinition', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMulticastGroupsResponse(_messages.Message):
+  r"""Message for response to listing MulticastGroups
+
+  Fields:
+    multicastGroups: The list of MulticastGroup
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroups = _messages.MessageField('MulticastGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -2700,6 +2763,178 @@ class Mesh(_messages.Message):
   name = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class MulticastDomain(_messages.Message):
+  r"""Message describing MulticastDomain object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class MulticastDomainActivation(_messages.Message):
+  r"""Message describing MulticastDomainActivation object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class MulticastGroup(_messages.Message):
+  r"""Message describing MulticastGroup object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class MulticastGroupDefinition(_messages.Message):
+  r"""Message describing MulticastGroupDefinition object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -3719,6 +3954,462 @@ class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest
+  object.
+
+  Fields:
+    multicastDomainActivation: A MulticastDomainActivation resource to be
+      passed as the request body.
+    multicastDomainActivationId: Required. Id of the requesting object If
+      auto-generating Id server-side, remove this field and
+      multicast_domain_activation_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  multicastDomainActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastDomainActivationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest
+  object.
+
+  Fields:
+    multicastDomainActivation: A MulticastDomainActivation resource to be
+      passed as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastDomainActivation resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsCreateRequest object.
+
+  Fields:
+    multicastDomain: A MulticastDomain resource to be passed as the request
+      body.
+    multicastDomainId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and multicast_domain_id
+      from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  multicastDomainId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastDomainsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsPatchRequest object.
+
+  Fields:
+    multicastDomain: A MulticastDomain resource to be passed as the request
+      body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastDomain resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest
+  object.
+
+  Fields:
+    multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
+      as the request body.
+    multicastGroupDefinitionId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      multicast_group_definition_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupDefinition = _messages.MessageField('MulticastGroupDefinition', 1)
+  multicastGroupDefinitionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastGroupDefinitionsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest
+  object.
+
+  Fields:
+    multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
+      as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastGroupDefinition resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastGroupDefinition = _messages.MessageField('MulticastGroupDefinition', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsCreateRequest object.
+
+  Fields:
+    multicastGroup: A MulticastGroup resource to be passed as the request
+      body.
+    multicastGroupId: Required. Id of the requesting object If auto-generating
+      Id server-side, remove this field and multicast_group_id from the
+      method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroup = _messages.MessageField('MulticastGroup', 1)
+  multicastGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListMulticastGroupsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsPatchRequest object.
+
+  Fields:
+    multicastGroup: A MulticastGroup resource to be passed as the request
+      body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastGroup = _messages.MessageField('MulticastGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):

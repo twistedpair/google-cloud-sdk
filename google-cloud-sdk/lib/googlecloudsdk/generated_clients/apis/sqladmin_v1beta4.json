@@ -878,6 +878,7 @@
               "The database major version is MySQL 8.0 and the minor version is 29.",
               "The database major version is MySQL 8.0 and the minor version is 30.",
               "The database major version is MySQL 8.0 and the minor version is 31.",
+              "The database major version is MySQL 8.0 and the minor version is 32.",
               "The database version is SQL Server 2019 Standard.",
               "The database version is SQL Server 2019 Enterprise.",
               "The database version is SQL Server 2019 Express.",
@@ -907,6 +908,7 @@
               "MYSQL_8_0_29",
               "MYSQL_8_0_30",
               "MYSQL_8_0_31",
+              "MYSQL_8_0_32",
               "SQLSERVER_2019_STANDARD",
               "SQLSERVER_2019_ENTERPRISE",
               "SQLSERVER_2019_EXPRESS",
@@ -1206,6 +1208,7 @@
             "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database major version is MySQL 8.0 and the minor version is 30.",
             "The database major version is MySQL 8.0 and the minor version is 31.",
+            "The database major version is MySQL 8.0 and the minor version is 32.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -1235,6 +1238,7 @@
             "MYSQL_8_0_29",
             "MYSQL_8_0_30",
             "MYSQL_8_0_31",
+            "MYSQL_8_0_32",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -1439,6 +1443,7 @@
             "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database major version is MySQL 8.0 and the minor version is 30.",
             "The database major version is MySQL 8.0 and the minor version is 31.",
+            "The database major version is MySQL 8.0 and the minor version is 32.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -1468,6 +1473,7 @@
             "MYSQL_8_0_29",
             "MYSQL_8_0_30",
             "MYSQL_8_0_31",
+            "MYSQL_8_0_32",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -1498,6 +1504,16 @@
         },
         "maintenanceVersion": {
           "description": "The current software version on the instance.",
+          "type": "string"
+        },
+        "pscServiceAttachmentLink": {
+          "description": "Output only. The link to service attachment of PSC instance.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "dnsName": {
+          "description": "Output only. The dns name of the instance.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1761,6 +1777,10 @@
         "enablePrivatePathForGoogleCloudServices": {
           "description": "Controls connectivity to private IP instances from Google services, such as BigQuery.",
           "type": "boolean"
+        },
+        "pscConfig": {
+          "description": "PSC settings for this instance.",
+          "$ref": "PscConfig"
         }
       }
     },
@@ -1785,6 +1805,24 @@
         "kind": {
           "description": "This is always `sql#aclEntry`.",
           "type": "string"
+        }
+      }
+    },
+    "PscConfig": {
+      "id": "PscConfig",
+      "description": "PSC settings for a Cloud SQL instance.",
+      "type": "object",
+      "properties": {
+        "pscEnabled": {
+          "description": "Whether PSC connectivity is enabled for this instance.",
+          "type": "boolean"
+        },
+        "allowedConsumerProjects": {
+          "description": "List of consumer projects that are allow-listed for PSC connections to this instance. This instance can be connected to with PSC from any network in these projects. Each consumer project in this list may be represented by a project number (numeric) or by a project id (alphanumeric).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2892,6 +2930,7 @@
             "The database major version is MySQL 8.0 and the minor version is 29.",
             "The database major version is MySQL 8.0 and the minor version is 30.",
             "The database major version is MySQL 8.0 and the minor version is 31.",
+            "The database major version is MySQL 8.0 and the minor version is 32.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -2921,6 +2960,7 @@
             "MYSQL_8_0_29",
             "MYSQL_8_0_30",
             "MYSQL_8_0_31",
+            "MYSQL_8_0_32",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -3188,7 +3228,7 @@
           }
         },
         "nextPageToken": {
-          "description": "An identifier that uniquely identifies the operation. You can use this identifier to retrieve the Operations resource that has information about the operation.",
+          "description": "Unused.",
           "type": "string"
         }
       }

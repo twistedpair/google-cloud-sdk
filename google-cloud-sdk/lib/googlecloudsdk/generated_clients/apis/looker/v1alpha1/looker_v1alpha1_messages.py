@@ -486,6 +486,30 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""Configuration for Encryption - e.g. CMEK Currently we only allow the key
+  name to be modified here, but in the future we may add some additional
+  tuning parameters that are currently hard-coded.
+
+  Fields:
+    kmsKeyName: Name of the CMEK key in KMS
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
+class ExportInstanceRequest(_messages.Message):
+  r"""Requestion options for exporting data of an Instance
+
+  Fields:
+    uri: Required. The path to the folder in Google Cloud Storage where the
+      export will be stored. The URI is in the form
+      `gs://bucketName/folderName`.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -536,8 +560,19 @@ class HostMetadata(_messages.Message):
   subdomain = _messages.StringField(2)
 
 
+class ImportInstanceRequest(_messages.Message):
+  r"""Requestion options for importing looker data to an Instance
+
+  Fields:
+    uri: Required. Path to the import folder in Google Cloud Storage, in the
+      form `gs://bucketName/folderName`.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class Instance(_messages.Message):
-  r"""A Looker instance. NEXT ID: 23
+  r"""A Looker instance. NEXT ID: 24
 
   Enums:
     PlatformEditionValueValuesEnum: Platform edition.
@@ -545,7 +580,9 @@ class Instance(_messages.Message):
 
   Fields:
     consumerNetwork: Network name in the consumer project. Format:
-      projects/{project}/global/networks/{network}
+      projects/{project}/global/networks/{network} Note that the consumer
+      network may be in a different GCP project than the consumer project that
+      is hosting the Looker Instance.
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
     customDomain: Custom Domain Information
@@ -555,11 +592,15 @@ class Instance(_messages.Message):
     egressPublicIp: Output only. Public Egress IP (IPv4).
     enablePrivateIp: Whether private IP is enabled on the Looker instance.
     enablePublicIp: Whether public IP is enabled on the Looker instance.
+    encryptionConfig: Encryption configuration (CMEK) -- if enabled
     expireTime: Output only. The time when the Looker instance will expire at.
     hostMetadata: Output only. The subdomain uri part of the hosted Looker
       instance
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
+    lastDenyMaintenancePeriod: Last maintenance denial period for this
+      instance. Used to determine the next eligible deny_maintenance_period
+      even if the customer removes deny_maintenance_period.
     lookerUri: Output only. Looker instance URL.
     lookerVersion: Output only. The Looker version that the instance is using.
     maintenanceSchedule: Maintenane schedule for this instance
@@ -622,20 +663,22 @@ class Instance(_messages.Message):
   egressPublicIp = _messages.StringField(6)
   enablePrivateIp = _messages.BooleanField(7)
   enablePublicIp = _messages.BooleanField(8)
-  expireTime = _messages.StringField(9)
-  hostMetadata = _messages.MessageField('HostMetadata', 10)
-  ingressPrivateIp = _messages.StringField(11)
-  ingressPublicIp = _messages.StringField(12)
-  lookerUri = _messages.StringField(13)
-  lookerVersion = _messages.StringField(14)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 15)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
-  name = _messages.StringField(17)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 18)
-  reservedRange = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  updateTime = _messages.StringField(21)
-  users = _messages.MessageField('Users', 22)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
+  expireTime = _messages.StringField(10)
+  hostMetadata = _messages.MessageField('HostMetadata', 11)
+  ingressPrivateIp = _messages.StringField(12)
+  ingressPublicIp = _messages.StringField(13)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 14)
+  lookerUri = _messages.StringField(15)
+  lookerVersion = _messages.StringField(16)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
+  name = _messages.StringField(19)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
+  reservedRange = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
+  users = _messages.MessageField('Users', 24)
 
 
 class InstanceBackup(_messages.Message):
@@ -716,6 +759,28 @@ class InstanceBackupInternal(_messages.Message):
   name = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   tenantProjectId = _messages.StringField(7)
+
+
+class IssueRedirectTicketInternalRequest(_messages.Message):
+  r"""IssueRedirectTicketInternalRequest is the request to issue a redirect
+  ticket for an instance. For internal use only.
+
+  Fields:
+    redirectUri: Required. URI to be used in the redirect.
+  """
+
+  redirectUri = _messages.StringField(1)
+
+
+class IssueRedirectTicketInternalResponse(_messages.Message):
+  r"""IssueRedirectTicketInternalResponse is the response for issuing a
+  redirect ticket. For internal use only.
+
+  Fields:
+    ticketId: ID of the created redirect ticket.
+  """
+
+  ticketId = _messages.StringField(1)
 
 
 class ListInstanceBackupsResponse(_messages.Message):
@@ -1035,6 +1100,20 @@ class LookerProjectsLocationsInstancesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LookerProjectsLocationsInstancesExportRequest(_messages.Message):
+  r"""A LookerProjectsLocationsInstancesExportRequest object.
+
+  Fields:
+    exportInstanceRequest: A ExportInstanceRequest resource to be passed as
+      the request body.
+    name: Required. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+  """
+
+  exportInstanceRequest = _messages.MessageField('ExportInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class LookerProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesGetIamPolicyRequest object.
 
@@ -1070,6 +1149,34 @@ class LookerProjectsLocationsInstancesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class LookerProjectsLocationsInstancesImportRequest(_messages.Message):
+  r"""A LookerProjectsLocationsInstancesImportRequest object.
+
+  Fields:
+    importInstanceRequest: A ImportInstanceRequest resource to be passed as
+      the request body.
+    name: Required. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+  """
+
+  importInstanceRequest = _messages.MessageField('ImportInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest(_messages.Message):
+  r"""A LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest
+  object.
+
+  Fields:
+    instance: Required. The instance resource to issue a redirect ticket for.
+    issueRedirectTicketInternalRequest: A IssueRedirectTicketInternalRequest
+      resource to be passed as the request body.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  issueRedirectTicketInternalRequest = _messages.MessageField('IssueRedirectTicketInternalRequest', 2)
 
 
 class LookerProjectsLocationsInstancesListRequest(_messages.Message):

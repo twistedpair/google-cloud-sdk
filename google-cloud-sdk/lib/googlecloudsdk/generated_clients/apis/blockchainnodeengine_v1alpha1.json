@@ -282,17 +282,21 @@
             "The state has not been specified.",
             "The node has been requested and is in the process of being created.",
             "The existing node is undergoing deletion, but not yet finished.",
-            "The node has been deleted.",
             "The node is running and ready for use.",
-            "The node is in an unexpected or errored state."
+            "The node is in an unexpected or errored state.",
+            "The node is currently being updated.",
+            "The node is currently being repaired.",
+            "The node is currently being reconciled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "DELETING",
-            "DELETED",
             "RUNNING",
-            "ERROR"
+            "ERROR",
+            "UPDATING",
+            "REPAIRING",
+            "RECONCILING"
           ]
         },
         "ethereumDetails": {
@@ -348,11 +352,13 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            ""
+            "The ethereum Mainnet.",
+            "Ethereum Testnet based on Goerli protocol."
           ],
           "enum": [
             "NETWORK_UNSPECIFIED",
-            "MAINNET"
+            "MAINNET",
+            "TESTNET_GOERLI_PRATER"
           ]
         },
         "nodeType": {

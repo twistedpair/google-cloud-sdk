@@ -1529,6 +1529,20 @@
           "type": "string"
         }
       }
+    },
+    "MoveTableToDatabaseResponse": {
+      "id": "MoveTableToDatabaseResponse",
+      "description": "Response message for DataprocMetastore.MoveTableToDatabase.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AlterMetadataResourceLocationResponse": {
+      "id": "AlterMetadataResourceLocationResponse",
+      "description": "Response message for DataprocMetastore.AlterMetadataResourceLocation.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

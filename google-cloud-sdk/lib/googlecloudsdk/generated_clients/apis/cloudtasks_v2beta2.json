@@ -344,7 +344,7 @@
       "type": "object",
       "properties": {
         "scheme": {
-          "description": "Scheme override. When specified, the Uri scheme is replaced by the provided value.",
+          "description": "Scheme override. When specified, the task URI scheme is replaced by the provided value (HTTP or HTTPS).",
           "type": "string",
           "enumDescriptions": [
             "Scheme unspecified. Defaults to HTTPS.",
@@ -358,24 +358,24 @@
           ]
         },
         "host": {
-          "description": "Host override. When specified, the host part of url will be overridden. For example, if the original Uri is \"https:\/\/www.google.com\", and host is set to \"example.net\", the overridden Uri will be \"https:\/\/example.net\".",
+          "description": "Host override. When specified, will replace the host part of the task URL. For example, if the task URL is \"https:\/\/www.google.com\", and host value is set to \"example.net\", the overridden URI will be changed to \"https:\/\/example.net\". Host value cannot be an empty string.",
           "type": "string"
         },
         "port": {
-          "description": "Port override. When specified, the port part of Uri will be replaced by the provided value. For instance, for a Uri http:\/\/www.google.com\/foo and port=123 the overridden Uri becomes http:\/\/www.google.com:123\/foo.",
+          "description": "Port override. When specified, will replace the port part of the task URI. For instance, for a URI http:\/\/www.google.com\/foo and port=123, the overridden URI becomes http:\/\/www.google.com:123\/foo. Note that the port value must be a positive integer. Setting the port to 0 (Zero) clears the URI port.",
           "type": "string",
           "format": "int64"
         },
-        "path": {
-          "description": "Uri path. Will be used as the path for the current Uri (replaces any existing path of the task url).",
-          "type": "string"
+        "pathOverride": {
+          "description": "URI path. When specified, will replace the existing path of the task URL. Setting the path value to an empty string clears the URI path segment.",
+          "$ref": "PathOverride"
         },
-        "query": {
-          "description": "Uri Query. Will replace the query part of the task uri.",
-          "type": "string"
+        "queryOverride": {
+          "description": "URI Query. When specified, will replace the query part of the task URI. Setting the query value to an empty string clears the URI query segment.",
+          "$ref": "QueryOverride"
         },
         "uriOverrideEnforceMode": {
-          "description": "Uri Override Enforce Mode Determines the Target UriOverride mode.",
+          "description": "URI Override Enforce Mode When specified, determines the Target UriOverride mode. If not specified, it defaults to ALWAYS.",
           "type": "string",
           "enumDescriptions": [
             "OverrideMode Unspecified. Defaults to ALWAYS.",
@@ -387,6 +387,28 @@
             "IF_NOT_EXISTS",
             "ALWAYS"
           ]
+        }
+      }
+    },
+    "PathOverride": {
+      "id": "PathOverride",
+      "description": "PathOverride. Path message defines path override for HTTP targets.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "The URI path (e.g., a\/b\/c). Default is Empty string.",
+          "type": "string"
+        }
+      }
+    },
+    "QueryOverride": {
+      "id": "QueryOverride",
+      "description": "QueryOverride. Query message defines query override for HTTP targets.",
+      "type": "object",
+      "properties": {
+        "queryParams": {
+          "description": "The query parameters (e.g., qparam1=123&qparam2=456). Default is Empty string.",
+          "type": "string"
         }
       }
     },

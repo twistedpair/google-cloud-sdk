@@ -954,8 +954,7 @@ class CloudresourcemanagerTagValuesListRequest(_messages.Message):
       unspecified, the server will use 100 as the default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagValues` that indicates where this listing should continue from.
-    parent: Required. Resource name for TagKey, parent of the TagValues to be
-      listed, in the format `tagKeys/123`.
+    parent: Required.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1855,7 +1854,7 @@ class Project(_messages.Message):
       must be between 1 and 63 characters long and must conform to the
       following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?. Label
       values must be between 0 and 63 characters long and must conform to the
-      regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. No more than 256
+      regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. No more than 64
       labels can be associated with a given resource. Clients should store
       labels in a representation such as JSON that does not depend on specific
       characters being disallowed. Example: `"myBusinessDimension" :
@@ -1876,7 +1875,7 @@ class Project(_messages.Message):
       be between 1 and 63 characters long and must conform to the following
       regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?. Label values must
       be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. No more than 256 labels
+      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. No more than 64 labels
       can be associated with a given resource. Clients should store labels in
       a representation such as JSON that does not depend on specific
       characters being disallowed. Example: `"myBusinessDimension" :
@@ -1915,7 +1914,7 @@ class Project(_messages.Message):
     between 1 and 63 characters long and must conform to the following regular
     expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?. Label values must be between
     0 and 63 characters long and must conform to the regular expression
-    (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. No more than 256 labels can be
+    (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. No more than 64 labels can be
     associated with a given resource. Clients should store labels in a
     representation such as JSON that does not depend on specific characters
     being disallowed. Example: `"myBusinessDimension" : "businessValue"`

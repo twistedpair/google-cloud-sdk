@@ -38,14 +38,16 @@ class BiEngineReason(_messages.Message):
       disabled acceleration.
   """
 
-  code = _messages.StringField(1, default='$(reason.code)')
-  message = _messages.StringField(2, default='$(reason.message)')
+  code = _messages.StringField(1)
+  message = _messages.StringField(2)
 
 
 class BiEngineStatistics(_messages.Message):
   r"""A BiEngineStatistics object.
 
   Fields:
+    accelerationMode: [Output-only] Specifies which mode of BI Engine
+      acceleration was performed (if any).
     biEngineMode: [Output-only] Specifies which mode of BI Engine acceleration
       was performed (if any).
     biEngineReasons: In case of DISABLED or PARTIAL bi_engine_mode, these
@@ -54,8 +56,9 @@ class BiEngineStatistics(_messages.Message):
       populated.
   """
 
-  biEngineMode = _messages.StringField(1, default='$(stats.bi_engine_mode)')
-  biEngineReasons = _messages.MessageField('BiEngineReason', 2, repeated=True)
+  accelerationMode = _messages.StringField(1)
+  biEngineMode = _messages.StringField(2)
+  biEngineReasons = _messages.MessageField('BiEngineReason', 3, repeated=True)
 
 
 class BigQueryModelTraining(_messages.Message):

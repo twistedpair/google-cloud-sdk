@@ -32,6 +32,9 @@ from googlecloudsdk.command_lib.run.integrations.typekits import base
 class CloudSqlTypeKit(base.TypeKit):
   """The Cloud SQL integration typekit."""
 
+  def GetDeployMessage(self, create=False):
+    return 'This might take up to 15 minutes.'
+
   def UpdateResourceConfig(self, parameters, resource_config):
     """Updates the existing resource config with the parameters provided.
 

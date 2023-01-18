@@ -34,7 +34,7 @@ class CloudRouter(_messages.Message):
   r"""The Cloud Router info.
 
   Fields:
-    name: The created Cloud Router name.
+    name: The associated Cloud Router name.
   """
 
   name = _messages.StringField(1)

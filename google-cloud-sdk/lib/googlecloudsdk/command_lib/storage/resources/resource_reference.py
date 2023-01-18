@@ -73,6 +73,9 @@ class Resource(object):
         ]))
 
   def __repr__(self):
+    # Includes generation ("gs://b/o#some-generation"). Warning: Terminal may
+    # may think "#" is a comment and ignore it. Be careful using this like:
+    # `self.Run('describe {}'.format(resource))`.
     return self.storage_url.url_string
 
   def __eq__(self, other):

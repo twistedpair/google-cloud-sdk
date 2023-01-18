@@ -679,7 +679,7 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       'depending on the choice of routing-policy-type.\n\n'
       'For --routing-policy-type = "WRR" this flag indicates the weighted '
       'round robin policy data. The field accepts a semicolon-delimited list '
-      'of the format "${weight_percent}:${rrdata},${rrdata}". Specify weight '
+      'of the format "${weight_percent}=${rrdata},${rrdata}". Specify weight '
       'as a non-negative number (0 is allowed). Ratio of traffic '
       'routed to the target is calculated from the ratio of individual weight '
       'over the total across all weights.\n\n'

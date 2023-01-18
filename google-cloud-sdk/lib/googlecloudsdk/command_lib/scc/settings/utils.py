@@ -614,7 +614,9 @@ class SettingsClient(object):
 
   def _UpdateModules(self, args, enabled, clear_config=False, config=None):
     """Update modules within service settings."""
-    state = self.message_module.Config.ModuleEnablementStateValueValuesEnum.ENABLED if enabled else self.message_module.Config.ModuleEnablementStateValueValuesEnum.DISABLED
+    # TODO(b/264680929): Python 3.10 typing.TypeAlias
+    StateEnum = self.message_module.Config.ModuleEnablementStateValueValuesEnum  # pylint: disable=invalid-name
+    state = StateEnum.ENABLED if enabled else StateEnum.DISABLED
     curr_modules = None
 
     try:

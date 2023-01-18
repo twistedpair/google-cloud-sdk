@@ -1926,10 +1926,11 @@ class Group(_messages.Message):
       `Group`. Shall be of the form `groups/{group}`.
     parent: Required. Immutable. The resource name of the entity under which
       this `Group` resides in the Cloud Identity resource hierarchy. Must be
-      of the form `identitysources/{identity_source}` for external- identity-
-      mapped groups or `customers/{customer_id}` for Google Groups. The
-      `customer_id` must begin with "C" (for example, 'C046psxkn'). [Find your
-      customer ID.] (https://support.google.com/cloudidentity/answer/10070793)
+      of the form `identitysources/{identity_source}` for external [identity-
+      mapped groups](https://support.google.com/a/answer/9039510) or
+      `customers/{customer_id}` for Google Groups. The `customer_id` must
+      begin with "C" (for example, 'C046psxkn'). [Find your customer ID.]
+      (https://support.google.com/cloudidentity/answer/10070793)
     updateTime: Output only. The time when the `Group` was last updated.
   """
 

@@ -25,9 +25,8 @@ from googlecloudsdk.calliope import base
 
 _API_NAME = 'policytroubleshooter'
 VERSION_MAP = {
-    base.ReleaseTrack.ALPHA: 'v2alpha1',
-    base.ReleaseTrack.BETA: 'v1',
-    base.ReleaseTrack.GA: 'v1'
+    base.ReleaseTrack.ALPHA: 'v3alpha',
+    # Future versions to be added.
 }
 
 
@@ -41,8 +40,9 @@ class PolicyTroubleshooterApi(object):
 
   def __new__(cls, release_track):
     if release_track == base.ReleaseTrack.ALPHA:
-      return super(PolicyTroubleshooterApi,
-                   cls).__new__(PolicyTroubleshooterApiAlpha)
+      return super(PolicyTroubleshooterApi, cls).__new__(
+          PolicyTroubleshooterApiAlpha
+      )
 
   def __init__(self, release_track):
     api_version = GetApiVersion(release_track)
@@ -54,24 +54,25 @@ class PolicyTroubleshooterApi(object):
     pass
 
   @abc.abstractmethod
-  def GetPolicyTroubleshooterAccessTuple(self,
-                                         condition_context=None,
-                                         full_resource_name=None,
-                                         principal_email=None,
-                                         permission=None):
+  def GetPolicyTroubleshooterAccessTuple(
+      self,
+      condition_context=None,
+      full_resource_name=None,
+      principal_email=None,
+      permission=None,
+  ):
     pass
 
   @abc.abstractmethod
-  def GetPolicyTroubleshooterConditionContext(self,
-                                              destination=None,
-                                              request=None,
-                                              resource=None):
+  def GetPolicyTroubleshooterConditionContext(
+      self, destination=None, request=None, resource=None
+  ):
     pass
 
   @abc.abstractmethod
-  def GetPolicyTroubleshooterPeer(self,
-                                  destination_ip=None,
-                                  destination_port=None):
+  def GetPolicyTroubleshooterPeer(
+      self, destination_ip=None, destination_port=None
+  ):
     pass
 
   @abc.abstractmethod
@@ -79,10 +80,9 @@ class PolicyTroubleshooterApi(object):
     pass
 
   @abc.abstractmethod
-  def GetPolicyTroubleshooterResource(self,
-                                      resource_name=None,
-                                      resource_service=None,
-                                      resource_type=None):
+  def GetPolicyTroubleshooterResource(
+      self, resource_name=None, resource_service=None, resource_type=None
+  ):
     pass
 
 
@@ -90,45 +90,49 @@ class PolicyTroubleshooterApiAlpha(PolicyTroubleshooterApi):
   """Base Class for Policy Troubleshooter API Alpha."""
 
   def TroubleshootIAMPolicies(self, access_tuple):
-    request = self.messages.GoogleCloudPolicytroubleshooterV2alpha1TroubleshootIamPolicyRequest(
-        accessTuple=access_tuple)
+    request = self.messages.GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest(
+        accessTuple=access_tuple
+    )
     return self.client.iam.Troubleshoot(request)
 
-  def GetPolicyTroubleshooterAccessTuple(self,
-                                         condition_context=None,
-                                         full_resource_name=None,
-                                         principal_email=None,
-                                         permission=None):
-    return self.messages.GoogleCloudPolicytroubleshooterV2alpha1AccessTuple(
-        conditionContext=condition_context,
+  def GetPolicyTroubleshooterAccessTuple(
+      self,
+      condition_context=None,
+      full_resource_name=None,
+      principal_email=None,
+      permission=None,
+  ):
+    return self.messages.GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple(
         fullResourceName=full_resource_name,
         principal=principal_email,
-        permission=permission)
+        permission=permission,
+        conditionContext=condition_context,
+    )
 
   def GetPolicyTroubleshooterRequest(self, request_time=None):
-    return self.messages.GoogleCloudPolicytroubleshooterV2alpha1Request(
-        receiveTime=request_time)
+    return self.messages.GoogleCloudPolicytroubleshooterV3alphaIamConditionContextRequest(
+        receiveTime=request_time
+    )
 
-  def GetPolicyTroubleshooterResource(self,
-                                      resource_name=None,
-                                      resource_service=None,
-                                      resource_type=None):
-    return self.messages.GoogleCloudPolicytroubleshooterV2alpha1Resource(
-        name=resource_name,
-        service=resource_service,
-        type=resource_type)
+  def GetPolicyTroubleshooterResource(
+      self, resource_name=None, resource_service=None, resource_type=None
+  ):
+    return self.messages.GoogleCloudPolicytroubleshooterV3alphaIamConditionContextResource(
+        name=resource_name, service=resource_service, type=resource_type
+    )
 
-  def GetPolicyTroubleshooterPeer(self,
-                                  destination_ip=None,
-                                  destination_port=None):
-    return self.messages.GoogleCloudPolicytroubleshooterV2alpha1Peer(
-        ip=destination_ip, port=destination_port)
+  def GetPolicyTroubleshooterPeer(
+      self, destination_ip=None, destination_port=None
+  ):
+    return self.messages.GoogleCloudPolicytroubleshooterV3alphaIamConditionContextPeer(
+        ip=destination_ip, port=destination_port
+    )
 
-  def GetPolicyTroubleshooterConditionContext(self,
-                                              destination=None,
-                                              request=None,
-                                              resource=None):
-    return self.messages.GoogleCloudPolicytroubleshooterV2alpha1ConditionContext(
-        destination=destination,
-        request=request,
-        resource=resource)
+  def GetPolicyTroubleshooterConditionContext(
+      self, destination=None, request=None, resource=None
+  ):
+    return (
+        self.messages.GoogleCloudPolicytroubleshooterV3alphaIamConditionContext(
+            destination=destination, request=request, resource=resource
+        )
+    )

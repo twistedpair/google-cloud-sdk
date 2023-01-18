@@ -750,7 +750,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The created Cloud Router name.",
+          "description": "The associated Cloud Router name.",
           "type": "string"
         }
       }

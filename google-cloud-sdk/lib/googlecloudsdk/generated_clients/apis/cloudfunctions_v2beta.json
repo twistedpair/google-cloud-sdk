@@ -368,7 +368,7 @@
           "type": "string"
         },
         "environment": {
-          "description": "Describe whether the function is gen1 or gen2.",
+          "description": "Describe whether the function is 1st Gen or 2nd Gen.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified",
@@ -922,11 +922,43 @@
       "properties": {
       }
     },
+    "AbortFunctionUpgradeRequest": {
+      "id": "AbortFunctionUpgradeRequest",
+      "description": "Request for the `AbortFunctionUpgrade` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RedirectFunctionUpgradeTrafficRequest": {
+      "id": "RedirectFunctionUpgradeTrafficRequest",
+      "description": "Request for the `RedirectFunctionUpgradeTraffic` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RollbackFunctionUpgradeTrafficRequest": {
+      "id": "RollbackFunctionUpgradeTrafficRequest",
+      "description": "Request for the `RollbackFunctionUpgradeTraffic` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CommitFunctionUpgradeRequest": {
+      "id": "CommitFunctionUpgradeRequest",
+      "description": "Request for the `CommitFunctionUpgrade` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GenerateUploadUrlRequest": {
       "id": "GenerateUploadUrlRequest",
       "description": "Request of `GenerateSourceUploadUrl` method.",
       "type": "object",
       "properties": {
+        "kmsKeyName": {
+          "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function source code objects in intermediate Cloud Storage buckets. When you generate an upload url and upload your source code, it gets copied to an intermediate Cloud Storage bucket. The source code is then copied to a versioned directory in the sources bucket in the consumer project during the function deployment. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`. The Google Cloud Functions service account (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) must be granted the role 'Cloud KMS CryptoKey Encrypter\/Decrypter (roles\/cloudkms.cryptoKeyEncrypterDecrypter)' on the Key\/KeyRing\/Project\/Organization (least access preferred).",
+          "type": "string"
+        }
       }
     },
     "GenerateUploadUrlResponse": {
@@ -1927,6 +1959,118 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a 2nd Gen copy of the function configuration based on the 1st Gen function with the given name. This is the first step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Only 2nd Gen configuration is setup as part of this request and traffic continues to be served by 1st Gen."
+                },
+                "abortFunctionUpgrade": {
+                  "id": "cloudfunctions.projects.locations.functions.abortFunctionUpgrade",
+                  "path": "v2beta/{+name}:abortFunctionUpgrade",
+                  "flatPath": "v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:abortFunctionUpgrade",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which upgrade should be aborted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AbortFunctionUpgradeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Aborts generation upgrade process for a function with the given name from the specified project. Deletes all 2nd Gen copy related configuration and resources which were created during the upgrade process."
+                },
+                "redirectFunctionUpgradeTraffic": {
+                  "id": "cloudfunctions.projects.locations.functions.redirectFunctionUpgradeTraffic",
+                  "path": "v2beta/{+name}:redirectFunctionUpgradeTraffic",
+                  "flatPath": "v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:redirectFunctionUpgradeTraffic",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which traffic target should be changed to 2nd Gen from 1st Gen.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RedirectFunctionUpgradeTrafficRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Changes the traffic target of a function from the original 1st Gen function to the 2nd Gen copy. This is the second step of the multi step process to upgrade 1st Gen functions to 2nd Gen. After this operation, all new traffic will be served by 2nd Gen copy."
+                },
+                "rollbackFunctionUpgradeTraffic": {
+                  "id": "cloudfunctions.projects.locations.functions.rollbackFunctionUpgradeTraffic",
+                  "path": "v2beta/{+name}:rollbackFunctionUpgradeTraffic",
+                  "flatPath": "v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:rollbackFunctionUpgradeTraffic",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which traffic target should be changed back to 1st Gen from 2nd Gen.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RollbackFunctionUpgradeTrafficRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Reverts the traffic target of a function from the 2nd Gen copy to the original 1st Gen function. After this operation, all new traffic would be served by the 1st Gen."
+                },
+                "commitFunctionUpgrade": {
+                  "id": "cloudfunctions.projects.locations.functions.commitFunctionUpgrade",
+                  "path": "v2beta/{+name}:commitFunctionUpgrade",
+                  "flatPath": "v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:commitFunctionUpgrade",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which upgrade should be finalized.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CommitFunctionUpgradeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Finalizes the upgrade after which function upgrade can not be rolled back. This is the last step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Deletes all original 1st Gen related configuration and resources."
                 },
                 "delete": {
                   "id": "cloudfunctions.projects.locations.functions.delete",

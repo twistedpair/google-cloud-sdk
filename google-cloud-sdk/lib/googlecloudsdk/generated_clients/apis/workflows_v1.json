@@ -359,6 +359,18 @@
         "details": {
           "description": "Provides specifics about the error.",
           "type": "string"
+        },
+        "type": {
+          "description": "The type of this state error.",
+          "type": "string",
+          "enumDescriptions": [
+            "No type specified.",
+            "Caused by an issue with KMS."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "KMS_ERROR"
+          ]
         }
       }
     },

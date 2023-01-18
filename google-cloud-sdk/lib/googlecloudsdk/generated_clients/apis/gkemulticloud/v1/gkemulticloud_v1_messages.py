@@ -1968,8 +1968,11 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud resource names.
     pemCertificate: Output only. The PEM encoded x509 certificate.
+    reconciling: Output only. If set, there are currently pending changes to
+      the client.
     tenantId: Required. The Azure Active Directory Tenant ID.
     uid: Output only. A globally unique identifier for the client.
+    updateTime: Output only. The time at which this client was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2008,8 +2011,10 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
   createTime = _messages.StringField(3)
   name = _messages.StringField(4)
   pemCertificate = _messages.StringField(5)
-  tenantId = _messages.StringField(6)
-  uid = _messages.StringField(7)
+  reconciling = _messages.BooleanField(6)
+  tenantId = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):

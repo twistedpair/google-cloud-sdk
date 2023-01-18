@@ -250,14 +250,18 @@
             "Operating System",
             "Java packages from Maven.",
             "Go third-party packages.",
-            "Go toolchain + standard library packages."
+            "Go toolchain + standard library packages.",
+            "Python packages.",
+            "NPM packages."
           ],
           "enum": [
             "PACKAGE_TYPE_UNSPECIFIED",
             "OS",
             "MAVEN",
             "GO",
-            "GO_STDLIB"
+            "GO_STDLIB",
+            "PYPI",
+            "NPM"
           ]
         },
         "hashDigest": {

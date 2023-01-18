@@ -306,13 +306,15 @@
             "Default value, if not explicitly set. Equivalent to FORBIDDEN.",
             "Linux actions and worker pools are forbidden.",
             "No restrictions on execution of Linux actions.",
-            "Linux actions will be hardened using gVisor. Actions that specify a configuration incompatible with gVisor hardening will be rejected. Example per-action platform properties that are incompatible with gVisor hardening are: 1. dockerRuntime is set to a value other than \"runsc\". Leaving dockerRuntime unspecified *is* compatible with gVisor. 2. dockerPrivileged is set to \"true\". etc."
+            "Linux actions will be hardened using gVisor. Actions that specify a configuration incompatible with gVisor hardening will be rejected. Example per-action platform properties that are incompatible with gVisor hardening are: 1. dockerRuntime is set to a value other than \"runsc\". Leaving dockerRuntime unspecified *is* compatible with gVisor. 2. dockerPrivileged is set to \"true\". etc.",
+            "Linux actions will be hardened using gVisor if their configuration is compatible with gVisor hardening. Otherwise, the action will be terminal, i.e., the worker VM that runs the action will be terminated after the action finishes."
           ],
           "enum": [
             "LINUX_EXECUTION_UNSPECIFIED",
             "LINUX_EXECUTION_FORBIDDEN",
             "LINUX_EXECUTION_UNRESTRICTED",
-            "LINUX_EXECUTION_HARDENED_GVISOR"
+            "LINUX_EXECUTION_HARDENED_GVISOR",
+            "LINUX_EXECUTION_HARDENED_GVISOR_OR_TERMINAL"
           ]
         },
         "windowsExecution": {
@@ -321,12 +323,14 @@
           "enumDescriptions": [
             "Default value, if not explicitly set. Equivalent to FORBIDDEN.",
             "Windows actions and worker pools are forbidden.",
-            "No restrictions on execution of Windows actions."
+            "No restrictions on execution of Windows actions.",
+            "Windows actions will always result in the worker VM being terminated after the action completes."
           ],
           "enum": [
             "WINDOWS_EXECUTION_UNSPECIFIED",
             "WINDOWS_EXECUTION_FORBIDDEN",
-            "WINDOWS_EXECUTION_UNRESTRICTED"
+            "WINDOWS_EXECUTION_UNRESTRICTED",
+            "WINDOWS_EXECUTION_TERMINAL"
           ]
         },
         "macExecution": {

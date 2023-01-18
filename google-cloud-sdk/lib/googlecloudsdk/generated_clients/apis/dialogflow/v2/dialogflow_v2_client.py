@@ -63,6 +63,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_conversations_messages = self.ProjectsConversationsMessagesService(self)
     self.projects_conversations_participants_suggestions = self.ProjectsConversationsParticipantsSuggestionsService(self)
     self.projects_conversations_participants = self.ProjectsConversationsParticipantsService(self)
+    self.projects_conversations_suggestions = self.ProjectsConversationsSuggestionsService(self)
     self.projects_conversations = self.ProjectsConversationsService(self)
     self.projects_knowledgeBases_documents = self.ProjectsKnowledgeBasesDocumentsService(self)
     self.projects_knowledgeBases = self.ProjectsKnowledgeBasesService(self)
@@ -88,6 +89,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_conversations_messages = self.ProjectsLocationsConversationsMessagesService(self)
     self.projects_locations_conversations_participants_suggestions = self.ProjectsLocationsConversationsParticipantsSuggestionsService(self)
     self.projects_locations_conversations_participants = self.ProjectsLocationsConversationsParticipantsService(self)
+    self.projects_locations_conversations_suggestions = self.ProjectsLocationsConversationsSuggestionsService(self)
     self.projects_locations_conversations = self.ProjectsLocationsConversationsService(self)
     self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
     self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
@@ -3060,6 +3062,43 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2Participant',
         request_type_name='DialogflowProjectsConversationsParticipantsPatchRequest',
         response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+  class ProjectsConversationsSuggestionsService(base_api.BaseApiService):
+    """Service class for the projects_conversations_suggestions resource."""
+
+    _NAME = 'projects_conversations_suggestions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationsSuggestionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SuggestConversationSummary(self, request, global_params=None):
+      r"""Suggests summary for a conversation based on specific historical messages. The range of the messages to be used for summary can be specified in the request.
+
+      Args:
+        request: (DialogflowProjectsConversationsSuggestionsSuggestConversationSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestConversationSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestConversationSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestConversationSummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/suggestions:suggestConversationSummary',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.suggestions.suggestConversationSummary',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}/suggestions:suggestConversationSummary',
+        request_field='googleCloudDialogflowV2SuggestConversationSummaryRequest',
+        request_type_name='DialogflowProjectsConversationsSuggestionsSuggestConversationSummaryRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestConversationSummaryResponse',
         supports_download=False,
     )
 
@@ -6280,6 +6319,43 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2Participant',
         request_type_name='DialogflowProjectsLocationsConversationsParticipantsPatchRequest',
         response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationsSuggestionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversations_suggestions resource."""
+
+    _NAME = 'projects_locations_conversations_suggestions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationsSuggestionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SuggestConversationSummary(self, request, global_params=None):
+      r"""Suggests summary for a conversation based on specific historical messages. The range of the messages to be used for summary can be specified in the request.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsSuggestionsSuggestConversationSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestConversationSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestConversationSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestConversationSummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/suggestions:suggestConversationSummary',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.suggestions.suggestConversationSummary',
+        ordered_params=['conversation'],
+        path_params=['conversation'],
+        query_params=[],
+        relative_path='v2/{+conversation}/suggestions:suggestConversationSummary',
+        request_field='googleCloudDialogflowV2SuggestConversationSummaryRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsSuggestionsSuggestConversationSummaryRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestConversationSummaryResponse',
         supports_download=False,
     )
 

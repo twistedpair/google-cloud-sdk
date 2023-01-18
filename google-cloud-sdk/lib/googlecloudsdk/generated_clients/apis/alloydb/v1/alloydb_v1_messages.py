@@ -696,6 +696,9 @@ class Backup(_messages.Message):
       scheme to protect the user data.
     encryptionInfo: Output only. The encryption information for the backup.
     etag: For Resource freshness validation (https://google.aip.dev/154)
+    expiryTime: Output only. The time at which after the backup is eligible to
+      be garbage collected. It is the duration specified by the backup's
+      retention policy, added to the backup's create_time.
     labels: Labels as key value pairs
     name: Output only. The name of the backup resource with the format: *
       projects/{project}/locations/{region}/backups/{backup_id} where the
@@ -808,14 +811,15 @@ class Backup(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
   etag = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  reconciling = _messages.BooleanField(13)
-  sizeBytes = _messages.IntegerField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  expiryTime = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  sizeBytes = _messages.IntegerField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class BackupSource(_messages.Message):

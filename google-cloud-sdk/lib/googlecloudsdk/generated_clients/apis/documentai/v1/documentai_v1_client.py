@@ -187,6 +187,33 @@ class DocumentaiV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Gets a processor type detail.
+
+      Args:
+        request: (DocumentaiProjectsLocationsProcessorTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1ProcessorType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/processorTypes/{processorTypesId}',
+        http_method='GET',
+        method_id='documentai.projects.locations.processorTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsProcessorTypesGetRequest',
+        response_type_name='GoogleCloudDocumentaiV1ProcessorType',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the processor types that exist.
 

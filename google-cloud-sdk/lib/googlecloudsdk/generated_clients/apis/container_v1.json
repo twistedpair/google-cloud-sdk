@@ -431,6 +431,10 @@
         "managedConfig": {
           "description": "ManagedConfig configuration for the cluster.",
           "$ref": "ManagedConfig"
+        },
+        "concurrentOpsConfig": {
+          "description": "Allows enabling concurrent ops for supported operations on this cluster. This flag is for EAP users only. Concurrent ops will become the only option, and thus having an opt in\/out is only applicable pre-GA. Once the feature is GA, \"disabling\" concurrent ops will have no effect and the flag will be removed in the future.",
+          "$ref": "ConcurrentOpsConfig"
         }
       }
     },
@@ -467,7 +471,7 @@
           }
         },
         "imageType": {
-          "description": "The image type to use for this node. Note that for a given image type, the latest version of it will be used.",
+          "description": "The image type to use for this node. Note that for a given image type, the latest version of it will be used. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
         },
         "nodeImageConfig": {
@@ -1225,7 +1229,7 @@
           "type": "string"
         },
         "version": {
-          "description": "The version of the Kubernetes of this node.",
+          "description": "The version of Kubernetes running on this NodePool's nodes. If unspecified, it defaults as described [here](https:\/\/cloud.google.com\/kubernetes-engine\/versioning#specifying_node_version).",
           "type": "string"
         },
         "instanceGroupUrls": {
@@ -1602,7 +1606,7 @@
           "description": "Update strategy of the node pool.",
           "type": "string",
           "enumDescriptions": [
-            "Default value.",
+            "Default value if unset. GKE internally defaults the update strategy to SURGE for unspecified strategies.",
             "ROLLING is the synonymous with SURGE. Deprecate this value and use SURGE instead.",
             "blue-green upgrade.",
             "SURGE is the traditional way of upgrade a node pool. max_surge and max_unavailable determines the level of upgrade parallelism."
@@ -1888,6 +1892,16 @@
         "podCidrOverprovisionConfig": {
           "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
           "$ref": "PodCIDROverprovisionConfig"
+        },
+        "subnetIpv6CidrBlock": {
+          "description": "Output only. [Output only] The subnet's IPv6 CIDR block used by nodes and pods.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "servicesIpv6CidrBlock": {
+          "description": "Output only. [Output only] The services IPv6 CIDR block for the cluster.",
+          "readOnly": true,
+          "type": "string"
         },
         "additionalPodRangesConfig": {
           "description": "Output only. [Output only] The additional pod ranges that are added to the cluster. These pod ranges can be used by new node pools to allocate pod IPs automatically. Once the range is removed it will not show up in IPAllocationPolicy.",
@@ -2178,7 +2192,7 @@
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform). This field is deprecated, min_cpu_platform should be specified using https:\/\/cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform). This field is deprecated, min_cpu_platform should be specified using `cloud.google.com\/requested-min-cpu-platform` label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -2199,7 +2213,7 @@
           "type": "string"
         },
         "imageType": {
-          "description": "The image type to use for NAP created node.",
+          "description": "The image type to use for NAP created node. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
         }
       }
@@ -2842,6 +2856,29 @@
         }
       }
     },
+    "ConcurrentOpsConfig": {
+      "id": "ConcurrentOpsConfig",
+      "description": "Configures operations using concurrent ops.",
+      "type": "object",
+      "properties": {
+        "enableConcurrentCreateNodePool": {
+          "description": "Enables concurrent ops for supported CreateNodePool cases. Some fields may still use legacy ops.",
+          "type": "boolean"
+        },
+        "enableConcurrentDeleteNodePool": {
+          "description": "Enables concurrent ops for supported DeleteNodePool cases. Some fields may still use legacy ops.",
+          "type": "boolean"
+        },
+        "enableConcurrentUpdateNodePoolVersion": {
+          "description": "Enables concurrent ops for UpdateNodePool with only the version field. Some cluster features may still use legacy ops.",
+          "type": "boolean"
+        },
+        "enableConcurrentRollbackNodePool": {
+          "description": "Enables concurrent ops for supported RollbackNodePool cases. Some fields may still use legacy ops.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -3345,6 +3382,10 @@
         "removedAdditionalPodRangesConfig": {
           "description": "The additional pod ranges that are to be removed from the cluster. The pod ranges specified here must have been specified earlier in the 'additional_pod_ranges_config' argument.",
           "$ref": "AdditionalPodRangesConfig"
+        },
+        "desiredConcurrentOpsConfig": {
+          "description": "Desired value for the cluster's concurrent_ops_config.",
+          "$ref": "ConcurrentOpsConfig"
         }
       }
     },
@@ -3396,7 +3437,7 @@
           "type": "string"
         },
         "imageType": {
-          "description": "Required. The desired image type for the node pool.",
+          "description": "Required. The desired image type for the node pool. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
         },
         "name": {

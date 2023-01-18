@@ -1466,8 +1466,7 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
       OSPolicyResourceCompliance after a successful run. Absence or failure to
       read this file will result in this ExecResource being non-compliant.
       Output file size is limited to 100K bytes.
-    script: An inline script. The size of the script is limited to 1024
-      characters.
+    script: An inline script. The size of the script is limited to 32KiB.
   """
 
   class InterpreterValueValuesEnum(_messages.Enum):
@@ -1548,7 +1547,7 @@ class OSPolicyResourceFileResource(_messages.Message):
 
   Fields:
     content: A a file with this content. The size of the content is limited to
-      1024 characters.
+      32KiB.
     file: A remote or local source.
     path: Required. The absolute path of the file within the VM.
     permissions: Consists of three octal digits which represent, in order, the

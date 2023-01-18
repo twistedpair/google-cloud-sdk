@@ -1507,7 +1507,8 @@ class FhirStore(_messages.Message):
     notificationConfig: If non-empty, publish all resource modifications of
       this FHIR store to this destination. The Pub/Sub message attributes
       contain a map with a string describing the action that has triggered the
-      notification. For example, "action":"CreateResource".
+      notification. For example, "action":"CreateResource". Deprecated. Use
+      `notification_configs` instead.
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config

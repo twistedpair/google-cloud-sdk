@@ -3748,7 +3748,7 @@ class AiplatformProjectsLocationsTensorboardsExperimentsCreateRequest(_messages.
       TensorboardExperiment in. Format:
       `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
     tensorboardExperimentId: Required. The ID to use for the Tensorboard
-      experiment, which will become the final component of the Tensorboard
+      experiment, which becomes the final component of the Tensorboard
       experiment's resource name. This value should be 1-128 characters, and
       valid characters are /a-z-/.
   """
@@ -3791,8 +3791,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsListRequest(_messages.Me
     orderBy: Field to use to sort the list.
     pageSize: The maximum number of TensorboardExperiments to return. The
       service may return fewer than this value. If unspecified, at most 50
-      TensorboardExperiments will be returned. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
+      TensorboardExperiments are returned. The maximum value is 1000; values
+      above 1000 are coerced to 1000.
     pageToken: A page token, received from a previous
       TensorboardService.ListTensorboardExperiments call. Provide this to
       retrieve the subsequent page. When paginating, all other parameters
@@ -3895,9 +3895,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest(_messages.M
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the TensorboardExperiment resource by the update. The
       fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten if
-      new values are specified.
+      the full request. A field is overwritten if it's in the mask. If the
+      user does not provide a mask then all fields are overwritten if new
+      values are specified.
   """
 
   googleCloudAiplatformV1alpha1TensorboardExperiment = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardExperiment', 1)
@@ -3936,8 +3936,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest(_messa
       the TensorboardRun in. Format: `projects/{project}/locations/{location}/
       tensorboards/{tensorboard}/experiments/{experiment}`
     tensorboardRunId: Required. The ID to use for the Tensorboard run, which
-      will become the final component of the Tensorboard run's resource name.
-      This value should be 1-128 characters, and valid characters are /a-z-/.
+      becomes the final component of the Tensorboard run's resource name. This
+      value should be 1-128 characters, and valid characters are /a-z-/.
   """
 
   googleCloudAiplatformV1alpha1TensorboardRun = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardRun', 1)
@@ -3980,8 +3980,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsListRequest(_message
     orderBy: Field to use to sort the list.
     pageSize: The maximum number of TensorboardRuns to return. The service may
       return fewer than this value. If unspecified, at most 50 TensorboardRuns
-      will be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      are returned. The maximum value is 1000; values above 1000 are coerced
+      to 1000.
     pageToken: A page token, received from a previous
       TensorboardService.ListTensorboardRuns call. Provide this to retrieve
       the subsequent page. When paginating, all other parameters provided to
@@ -4084,9 +4084,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsPatchRequest(_messag
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the TensorboardRun resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten if new
-      values are specified.
+      request. A field is overwritten if it's in the mask. If the user does
+      not provide a mask then all fields are overwritten if new values are
+      specified.
   """
 
   googleCloudAiplatformV1alpha1TensorboardRun = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardRun', 1)
@@ -4152,7 +4152,7 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequ
       TensorboardTimeSeries in. Format: `projects/{project}/locations/{locatio
       n}/tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}`
     tensorboardTimeSeriesId: Optional. The user specified unique ID to use for
-      the TensorboardTimeSeries, which will become the final component of the
+      the TensorboardTimeSeries, which becomes the final component of the
       TensorboardTimeSeries's resource name. This value should match
       "a-z0-9{0, 127}"
   """
@@ -4217,8 +4217,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesListReques
     orderBy: Field to use to sort the list.
     pageSize: The maximum number of TensorboardTimeSeries to return. The
       service may return fewer than this value. If unspecified, at most 50
-      TensorboardTimeSeries will be returned. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
+      TensorboardTimeSeries are returned. The maximum value is 1000; values
+      above 1000 are coerced to 1000.
     pageToken: A page token, received from a previous
       TensorboardService.ListTensorboardTimeSeries call. Provide this to
       retrieve the subsequent page. When paginating, all other parameters
@@ -4317,9 +4317,9 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchReque
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the TensorboardTimeSeries resource by the update. The
       fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten if
-      new values are specified.
+      the full request. A field is overwritten if it's in the mask. If the
+      user does not provide a mask then all fields are overwritten if new
+      values are specified.
   """
 
   googleCloudAiplatformV1alpha1TensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardTimeSeries', 1)
@@ -4400,8 +4400,8 @@ class AiplatformProjectsLocationsTensorboardsListRequest(_messages.Message):
     orderBy: Field to use to sort the list.
     pageSize: The maximum number of Tensorboards to return. The service may
       return fewer than this value. If unspecified, at most 100 Tensorboards
-      will be returned. The maximum value is 100; values above 100 will be
-      coerced to 100.
+      are returned. The maximum value is 100; values above 100 are coerced to
+      100.
     pageToken: A page token, received from a previous
       TensorboardService.ListTensorboards call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
@@ -4493,9 +4493,9 @@ class AiplatformProjectsLocationsTensorboardsPatchRequest(_messages.Message):
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Tensorboard resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten if new
-      values are specified.
+      request. A field is overwritten if it's in the mask. If the user does
+      not provide a mask then all fields are overwritten if new values are
+      specified.
   """
 
   googleCloudAiplatformV1alpha1Tensorboard = _messages.MessageField('GoogleCloudAiplatformV1alpha1Tensorboard', 1)
@@ -5204,6 +5204,12 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       container logging by setting this flag to true.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
+    enableAccessLogging: If true, online prediction access logs are sent to
+      StackDriver Logging. These logs are like standard server access logs,
+      containing information like timestamp and latency for each prediction
+      request. Note that Stackdriver logs may incur a cost, especially if your
+      project receives prediction requests at a high queries per second rate
+      (QPS). Estimate your costs before enabling this option.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -5237,12 +5243,13 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformInternalDedicatedResources', 3)
   disableContainerLogging = _messages.BooleanField(4)
   displayName = _messages.StringField(5)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformInternalExplanationSpec', 6)
-  id = _messages.StringField(7)
-  model = _messages.StringField(8)
-  modelVersionId = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  sharedResources = _messages.StringField(11)
+  enableAccessLogging = _messages.BooleanField(6)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformInternalExplanationSpec', 7)
+  id = _messages.StringField(8)
+  model = _messages.StringField(9)
+  modelVersionId = _messages.StringField(10)
+  serviceAccount = _messages.StringField(11)
+  sharedResources = _messages.StringField(12)
 
 
 class GoogleCloudAiplatformInternalDocumentCriteria(_messages.Message):
@@ -7872,6 +7879,11 @@ class GoogleCloudAiplatformUiCustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    enableDashboardAccess: Optional. Whether you want Vertex AI to enable
+      access to the customized dashboard in training chief container. If set
+      to `true`, you can access the dashboard at the URIs given by
+      CustomJob.web_access_uris or Trial.web_access_uris (within
+      HyperparameterTuningJob.trials).
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -7909,13 +7921,14 @@ class GoogleCloudAiplatformUiCustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformUiGcsDestination', 1)
-  enableWebAccess = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  reservedIpRanges = _messages.StringField(4, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformUiScheduling', 5)
-  serviceAccount = _messages.StringField(6)
-  tensorboard = _messages.StringField(7)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformUiWorkerPoolSpec', 8, repeated=True)
+  enableDashboardAccess = _messages.BooleanField(2)
+  enableWebAccess = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  reservedIpRanges = _messages.StringField(5, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformUiScheduling', 6)
+  serviceAccount = _messages.StringField(7)
+  tensorboard = _messages.StringField(8)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformUiWorkerPoolSpec', 9, repeated=True)
 
 
 class GoogleCloudAiplatformUiDataLabelingJobRef(_messages.Message):
@@ -8100,7 +8113,13 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
       configuration. If min_replica_count is not set, the default value is 2
       (we don't provide SLA when min_replica_count=1). If max_replica_count is
       not set, the default value is min_replica_count. The max allowed replica
-      count is 1000. Available machine types: n1-standard-16 n1-standard-32
+      count is 1000. Available machine types for SMALL shard: e2-standard-2
+      and all machine types available for MEDIUM and LARGE shard. Available
+      machine types for MEDIUM shard: e2-standard-16 and all machine types
+      available for LARGE shard. Available machine types for LARGE shard:
+      e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and
+      n1-standard-32 are still available, but we recommend e2-standard-16 and
+      e2-standard-32 for cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -8243,7 +8262,8 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       container logging by setting this flag to true.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
-    enableAccessLogging: These logs are like standard server access logs,
+    enableAccessLogging: If true, online prediction access logs are sent to
+      StackDriver Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
       request. Note that Stackdriver logs may incur a cost, especially if your
       project receives prediction requests at a high queries per second rate
@@ -14084,6 +14104,11 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    enableDashboardAccess: Optional. Whether you want Vertex AI to enable
+      access to the customized dashboard in training chief container. If set
+      to `true`, you can access the dashboard at the URIs given by
+      CustomJob.web_access_uris or Trial.web_access_uris (within
+      HyperparameterTuningJob.trials).
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -14121,13 +14146,14 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
-  enableWebAccess = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  reservedIpRanges = _messages.StringField(4, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 5)
-  serviceAccount = _messages.StringField(6)
-  tensorboard = _messages.StringField(7)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 8, repeated=True)
+  enableDashboardAccess = _messages.BooleanField(2)
+  enableWebAccess = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  reservedIpRanges = _messages.StringField(5, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 6)
+  serviceAccount = _messages.StringField(7)
+  tensorboard = _messages.StringField(8)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 9, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -14258,7 +14284,13 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
       configuration. If min_replica_count is not set, the default value is 2
       (we don't provide SLA when min_replica_count=1). If max_replica_count is
       not set, the default value is min_replica_count. The max allowed replica
-      count is 1000. Available machine types: n1-standard-16 n1-standard-32
+      count is 1000. Available machine types for SMALL shard: e2-standard-2
+      and all machine types available for MEDIUM and LARGE shard. Available
+      machine types for MEDIUM shard: e2-standard-16 and all machine types
+      available for LARGE shard. Available machine types for LARGE shard:
+      e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and
+      n1-standard-32 are still available, but we recommend e2-standard-16 and
+      e2-standard-32 for cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -14370,7 +14402,8 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       container logging by setting this flag to true.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
-    enableAccessLogging: These logs are like standard server access logs,
+    enableAccessLogging: If true, online prediction access logs are sent to
+      StackDriver Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
       request. Note that Stackdriver logs may incur a cost, especially if your
       project receives prediction requests at a high queries per second rate
@@ -18922,6 +18955,14 @@ class GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec(_messages.Mess
       can be early stopped at any stage. By default, min_step_count is set to
       be one-tenth of the max_step_count. When use_elapsed_duration is true,
       this field is set to the minimum elapsed seconds.
+    updateAllStoppedTrials: ConvexAutomatedStoppingSpec by default only
+      updates the trials that needs to be early stopped using a newly trained
+      auto-regressive model. When this flag is set to True, all stopped trials
+      from the beginning are potentially updated in terms of their
+      `final_measurement`. Also, note that the training logic of
+      autoregressive models is different in this case. Enabling this option
+      has shown better results and this may be the default option in the
+      future.
     useElapsedDuration: This bool determines whether or not the rule is
       applied based on elapsed_secs or steps. If use_elapsed_duration==false,
       the early stopping decision is made according to the predicted objective
@@ -18935,7 +18976,8 @@ class GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec(_messages.Mess
   maxStepCount = _messages.IntegerField(2)
   minMeasurementCount = _messages.IntegerField(3)
   minStepCount = _messages.IntegerField(4)
-  useElapsedDuration = _messages.BooleanField(5)
+  updateAllStoppedTrials = _messages.BooleanField(5)
+  useElapsedDuration = _messages.BooleanField(6)
 
 
 class GoogleCloudAiplatformV1StudySpecDecayCurveAutomatedStoppingSpec(_messages.Message):
@@ -20851,8 +20893,8 @@ class GoogleCloudAiplatformV1alpha1CreateTensorboardRunRequest(_messages.Message
       tensorboards/{tensorboard}/experiments/{experiment}`
     tensorboardRun: Required. The TensorboardRun to create.
     tensorboardRunId: Required. The ID to use for the Tensorboard run, which
-      will become the final component of the Tensorboard run's resource name.
-      This value should be 1-128 characters, and valid characters are /a-z-/.
+      becomes the final component of the Tensorboard run's resource name. This
+      value should be 1-128 characters, and valid characters are /a-z-/.
   """
 
   parent = _messages.StringField(1)
@@ -20869,7 +20911,7 @@ class GoogleCloudAiplatformV1alpha1CreateTensorboardTimeSeriesRequest(_messages.
       n}/tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}`
     tensorboardTimeSeries: Required. The TensorboardTimeSeries to create.
     tensorboardTimeSeriesId: Optional. The user specified unique ID to use for
-      the TensorboardTimeSeries, which will become the final component of the
+      the TensorboardTimeSeries, which becomes the final component of the
       TensorboardTimeSeries's resource name. This value should match
       "a-z0-9{0, 127}"
   """
@@ -21066,6 +21108,11 @@ class GoogleCloudAiplatformV1alpha1CustomJobSpec(_messages.Message):
   r"""Represents the spec of a CustomJob.
 
   Fields:
+    enableDashboardAccess: Optional. Whether you want Vertex AI to enable
+      access to the customized dashboard in training chief container. If set
+      to `true`, you can access the dashboard at the URIs given by
+      CustomJob.web_access_uris or Trial.web_access_uris (within
+      HyperparameterTuningJob.trials).
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -21091,12 +21138,13 @@ class GoogleCloudAiplatformV1alpha1CustomJobSpec(_messages.Message):
       optional and can be skipped by providing an empty value.
   """
 
-  enableWebAccess = _messages.BooleanField(1)
-  reservedIpRanges = _messages.StringField(2, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1alpha1Scheduling', 3)
-  serviceAccount = _messages.StringField(4)
-  tensorboard = _messages.StringField(5)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1alpha1WorkerPoolSpec', 6, repeated=True)
+  enableDashboardAccess = _messages.BooleanField(1)
+  enableWebAccess = _messages.BooleanField(2)
+  reservedIpRanges = _messages.StringField(3, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1alpha1Scheduling', 4)
+  serviceAccount = _messages.StringField(5)
+  tensorboard = _messages.StringField(6)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1alpha1WorkerPoolSpec', 7, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1DataItem(_messages.Message):
@@ -22729,10 +22777,10 @@ class GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest(_messa
     filter: Exports the TensorboardTimeSeries' data that match the filter
       expression.
     orderBy: Field to use to sort the TensorboardTimeSeries' data. By default,
-      TensorboardTimeSeries' data will be returned in a pseudo random order.
+      TensorboardTimeSeries' data is returned in a pseudo random order.
     pageSize: The maximum number of data points to return per page. The
-      default page_size will be 1000. Values must be between 1 and 10000.
-      Values above 10000 will be coerced to 10000.
+      default page_size is 1000. Values must be between 1 and 10000. Values
+      above 10000 are coerced to 10000.
     pageToken: A page token, received from a previous
       TensorboardService.ExportTensorboardTimeSeries call. Provide this to
       retrieve the subsequent page. When paginating, all other parameters
@@ -27330,6 +27378,14 @@ class GoogleCloudAiplatformV1alpha1StudySpecConvexAutomatedStoppingSpec(_message
       can be early stopped at any stage. By default, min_step_count is set to
       be one-tenth of the max_step_count. When use_elapsed_duration is true,
       this field is set to the minimum elapsed seconds.
+    updateAllStoppedTrials: ConvexAutomatedStoppingSpec by default only
+      updates the trials that needs to be early stopped using a newly trained
+      auto-regressive model. When this flag is set to True, all stopped trials
+      from the beginning are potentially updated in terms of their
+      `final_measurement`. Also, note that the training logic of
+      autoregressive models is different in this case. Enabling this option
+      has shown better results and this may be the default option in the
+      future.
     useElapsedDuration: This bool determines whether or not the rule is
       applied based on elapsed_secs or steps. If use_elapsed_duration==false,
       the early stopping decision is made according to the predicted objective
@@ -27343,7 +27399,8 @@ class GoogleCloudAiplatformV1alpha1StudySpecConvexAutomatedStoppingSpec(_message
   maxStepCount = _messages.IntegerField(2)
   minMeasurementCount = _messages.IntegerField(3)
   minStepCount = _messages.IntegerField(4)
-  useElapsedDuration = _messages.BooleanField(5)
+  updateAllStoppedTrials = _messages.BooleanField(5)
+  useElapsedDuration = _messages.BooleanField(6)
 
 
 class GoogleCloudAiplatformV1alpha1StudySpecConvexStopConfig(_messages.Message):
@@ -29046,6 +29103,11 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    enableDashboardAccess: Optional. Whether you want Vertex AI to enable
+      access to the customized dashboard in training chief container. If set
+      to `true`, you can access the dashboard at the URIs given by
+      CustomJob.web_access_uris or Trial.web_access_uris (within
+      HyperparameterTuningJob.trials).
     enableWebAccess: Optional. Whether you want Vertex AI to enable
       [interactive shell access](https://cloud.google.com/vertex-
       ai/docs/training/monitor-debug-interactive-shell) to training
@@ -29083,13 +29145,14 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
-  enableWebAccess = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  reservedIpRanges = _messages.StringField(4, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 5)
-  serviceAccount = _messages.StringField(6)
-  tensorboard = _messages.StringField(7)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 8, repeated=True)
+  enableDashboardAccess = _messages.BooleanField(2)
+  enableWebAccess = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  reservedIpRanges = _messages.StringField(5, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 6)
+  serviceAccount = _messages.StringField(7)
+  tensorboard = _messages.StringField(8)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 9, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
@@ -29235,7 +29298,13 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
       configuration. If min_replica_count is not set, the default value is 2
       (we don't provide SLA when min_replica_count=1). If max_replica_count is
       not set, the default value is min_replica_count. The max allowed replica
-      count is 1000. Available machine types: n1-standard-16 n1-standard-32
+      count is 1000. Available machine types for SMALL shard: e2-standard-2
+      and all machine types available for MEDIUM and LARGE shard. Available
+      machine types for MEDIUM shard: e2-standard-16 and all machine types
+      available for LARGE shard. Available machine types for LARGE shard:
+      e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and
+      n1-standard-32 are still available, but we recommend e2-standard-16 and
+      e2-standard-32 for cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -29341,7 +29410,8 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       DeployedModel, and that need a higher degree of manual configuration.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
-    enableAccessLogging: These logs are like standard server access logs,
+    enableAccessLogging: If true, online prediction access logs are sent to
+      StackDriver Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
       request. Note that Stackdriver logs may incur a cost, especially if your
       project receives prediction requests at a high queries per second rate
@@ -34152,6 +34222,14 @@ class GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec(_messages
       can be early stopped at any stage. By default, min_step_count is set to
       be one-tenth of the max_step_count. When use_elapsed_duration is true,
       this field is set to the minimum elapsed seconds.
+    updateAllStoppedTrials: ConvexAutomatedStoppingSpec by default only
+      updates the trials that needs to be early stopped using a newly trained
+      auto-regressive model. When this flag is set to True, all stopped trials
+      from the beginning are potentially updated in terms of their
+      `final_measurement`. Also, note that the training logic of
+      autoregressive models is different in this case. Enabling this option
+      has shown better results and this may be the default option in the
+      future.
     useElapsedDuration: This bool determines whether or not the rule is
       applied based on elapsed_secs or steps. If use_elapsed_duration==false,
       the early stopping decision is made according to the predicted objective
@@ -34165,7 +34243,8 @@ class GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec(_messages
   maxStepCount = _messages.IntegerField(2)
   minMeasurementCount = _messages.IntegerField(3)
   minStepCount = _messages.IntegerField(4)
-  useElapsedDuration = _messages.BooleanField(5)
+  updateAllStoppedTrials = _messages.BooleanField(5)
+  useElapsedDuration = _messages.BooleanField(6)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig(_messages.Message):

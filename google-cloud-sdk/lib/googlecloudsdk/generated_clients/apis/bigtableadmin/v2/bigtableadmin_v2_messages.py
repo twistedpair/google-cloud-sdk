@@ -1865,9 +1865,9 @@ class Instance(_messages.Message):
       128 bytes.
 
   Fields:
-    createTime: Output only. A server-assigned timestamp representing when
-      this Instance was created. For instances created before this field was
-      added (August 2021), this value is `seconds: 0, nanos: 1`.
+    createTime: Output only. A commit timestamp representing when this
+      Instance was created. For instances created before this field was added
+      (August 2021), this value is `seconds: 0, nanos: 1`.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Can be changed at any time, but should be kept globally
       unique to avoid confusion.
@@ -2817,7 +2817,7 @@ class Table(_messages.Message):
       column family ID. Views: `SCHEMA_VIEW`, `STATS_VIEW`, `FULL`
     deletionProtection: Set to true to make the table protected against data
       loss. i.e. deleting the following resources through Admin APIs are
-      prohibited: - The table. - The column families in the table. - The
+      prohibited: * The table. * The column families in the table. * The
       instance containing the table. Note one can still delete the data stored
       in the table through Data APIs.
     granularity: Immutable. The granularity (i.e. `MILLIS`) at which

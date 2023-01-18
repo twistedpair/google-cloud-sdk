@@ -73,17 +73,15 @@ class IPAddressesClient(util.VmwareClientBase):
 
     return result.replace(cluster_groups_id_path, cluster_groups_id)
 
-  def List(self, resource, filter_expression=None,
-           limit=None, page_size=None):
+  def List(self, resource):
     ip_name = resource.RelativeName()
-    request = self.messages.SddcProjectsLocationsClusterGroupsIpAddressesListRequest(
-        parent=ip_name, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+    request = (
+        self.messages.SddcProjectsLocationsClusterGroupsIpAddressesListRequest(
+            parent=ip_name
+        )
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='ipAddresses')

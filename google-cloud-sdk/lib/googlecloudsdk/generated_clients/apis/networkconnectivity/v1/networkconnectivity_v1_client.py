@@ -627,7 +627,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new InternalRange in a given project and location.
+      r"""Creates a new internal range in a given project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsInternalRangesCreateRequest) input message
@@ -654,7 +654,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single InternalRange.
+      r"""Deletes a single internal range.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsInternalRangesDeleteRequest) input message
@@ -681,7 +681,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single InternalRange.
+      r"""Gets details of a single internal range.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsInternalRangesGetRequest) input message
@@ -708,7 +708,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists InternalRanges in a given project and location.
+      r"""Lists internal ranges in a given project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsInternalRangesListRequest) input message
@@ -735,7 +735,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single InternalRange.
+      r"""Updates the parameters of a single internal range.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsInternalRangesPatchRequest) input message

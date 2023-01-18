@@ -190,8 +190,8 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
       "type": "object",
       "properties": {
@@ -206,7 +206,7 @@
     },
     "WorkstationCluster": {
       "id": "WorkstationCluster",
-      "description": "A grouping of WorkstationConfigs and their associated Workstations in a region.",
+      "description": "A grouping of workstation configurations and the associated workstations in that region.",
       "type": "object",
       "properties": {
         "name": {
@@ -229,6 +229,13 @@
         },
         "annotations": {
           "description": "Client-specified annotations.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Client-specified labels that are applied to the resource and that are also propagated to the underlying Compute Engine resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -257,11 +264,11 @@
           "type": "string"
         },
         "network": {
-          "description": "Name of the Compute Engine network in which instances associated with this cluster will be created.",
+          "description": "Immutable. Name of the Compute Engine network in which instances associated with this cluster will be created.",
           "type": "string"
         },
         "subnetwork": {
-          "description": "Name of the Compute Engine subnetwork in which instances associated with this cluster will be created. Must be part of the subnetwork specified for this cluster.",
+          "description": "Immutable. Name of the Compute Engine subnetwork in which instances associated with this cluster will be created. Must be part of the subnetwork specified for this cluster.",
           "type": "string"
         },
         "privateClusterConfig": {
@@ -289,16 +296,16 @@
       "type": "object",
       "properties": {
         "enablePrivateEndpoint": {
-          "description": "Whether Workstations endpoint is private.",
+          "description": "Immutable. Whether Workstations endpoint is private.",
           "type": "boolean"
         },
         "clusterHostname": {
-          "description": "Output only. Hostname for the Workstation Cluster. This field will be populated only when private endpoint is enabled. To access workstations in the cluster, create a new DNS zone mapping this domain name to an internal IP address and a forwarding rule mapping that address to the service attachment.",
+          "description": "Output only. Hostname for the workstation cluster. This field will be populated only when private endpoint is enabled. To access workstations in the cluster, create a new DNS zone mapping this domain name to an internal IP address and a forwarding rule mapping that address to the service attachment.",
           "readOnly": true,
           "type": "string"
         },
         "serviceAttachmentUri": {
-          "description": "Output only. Service attachment URI for the Workstation Cluster. The service attachemnt is created when private endpoint is enabled. To access workstations in the cluster, configure access to the managed service using (Private Service Connect)[https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services].",
+          "description": "Output only. Service attachment URI for the workstation cluster. The service attachemnt is created when private endpoint is enabled. To access workstations in the cluster, configure access to the managed service using (Private Service Connect)[https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services].",
           "readOnly": true,
           "type": "string"
         }
@@ -331,7 +338,7 @@
     },
     "WorkstationConfig": {
       "id": "WorkstationConfig",
-      "description": "A set of configuration options describing how a workstation will be run. WorkstationConfigs are intended to be shared across multiple workstations.",
+      "description": "A set of configuration options describing how a workstation will be run. Workstation configurations are intended to be shared across multiple workstations.",
       "type": "object",
       "properties": {
         "name": {
@@ -354,6 +361,13 @@
         },
         "annotations": {
           "description": "Client-specified annotations.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Client-specified labels that are applied to the resource and that are also propagated to the underlying Compute Engine resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -392,18 +406,18 @@
           "format": "google-duration"
         },
         "host": {
-          "description": "Runtime host for the Workstation.",
+          "description": "Runtime host for the workstation.",
           "$ref": "Host"
         },
         "persistentDirectories": {
-          "description": "Directories to persist across Workstation sessions.",
+          "description": "Directories to persist across workstation sessions.",
           "type": "array",
           "items": {
             "$ref": "PersistentDirectory"
           }
         },
         "container": {
-          "description": "Container that will be run for each Workstation using this config when that Workstation is started.",
+          "description": "Container that will be run for each workstation using this configuration when that workstation is started.",
           "$ref": "Container"
         },
         "degraded": {
@@ -423,22 +437,22 @@
     },
     "Host": {
       "id": "Host",
-      "description": "The system will attempt to keep enough computational resources on standby Runtime host for a Workstation.",
+      "description": "Runtime host for a workstation.",
       "type": "object",
       "properties": {
         "gceInstance": {
-          "description": "Specifies a Google Compute Engine Instance as the host.",
+          "description": "Specifies a Compute Engine instance as the host.",
           "$ref": "GceInstance"
         }
       }
     },
     "GceInstance": {
       "id": "GceInstance",
-      "description": "A runtime using a Google Compute Engine Instance.",
+      "description": "A runtime using a Compute Engine instance.",
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "The name of a Google Compute Engine machine type.",
+          "description": "The name of a Compute Engine machine type.",
           "type": "string"
         },
         "serviceAccount": {
@@ -446,14 +460,14 @@
           "type": "string"
         },
         "tags": {
-          "description": "Network tags to add to the Google Compute Engine machines backing the Workstations.",
+          "description": "Network tags to add to the Compute Engine machines backing the Workstations.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "poolSize": {
-          "description": "Number of instances to pool for faster Workstation starup.",
+          "description": "Number of instances to pool for faster workstation starup.",
           "type": "integer",
           "format": "int32"
         },
@@ -462,11 +476,11 @@
           "type": "boolean"
         },
         "shieldedInstanceConfig": {
-          "description": "A set of Shielded Google Compute Engine Instance options.",
+          "description": "A set of Compute Engine Shielded instance options.",
           "$ref": "GceShieldedInstanceConfig"
         },
         "confidentialInstanceConfig": {
-          "description": "A set of Confidential Google Compute Engine Instance option.",
+          "description": "A set of Compute Engine Confidential VM instance options.",
           "$ref": "GceConfidentialInstanceConfig"
         },
         "bootDiskSizeGb": {
@@ -478,7 +492,7 @@
     },
     "GceShieldedInstanceConfig": {
       "id": "GceShieldedInstanceConfig",
-      "description": "A set of Shielded Google Compute Engine Instance options.",
+      "description": "A set of Compute Engine Shielded instance options.",
       "type": "object",
       "properties": {
         "enableSecureBoot": {
@@ -497,7 +511,7 @@
     },
     "GceConfidentialInstanceConfig": {
       "id": "GceConfidentialInstanceConfig",
-      "description": "A set of Confidential Google Compute Engine Instance option.",
+      "description": "A set of Compute Engine Confidential VM instance options.",
       "type": "object",
       "properties": {
         "enableConfidentialCompute": {
@@ -508,11 +522,11 @@
     },
     "PersistentDirectory": {
       "id": "PersistentDirectory",
-      "description": "A directory persisted across Workstation sessions.",
+      "description": "A directory to persist across workstation sessions.",
       "type": "object",
       "properties": {
         "mountPath": {
-          "description": "Location of this directory in the running Workstation.",
+          "description": "Location of this directory in the running workstation.",
           "type": "string"
         },
         "gcePd": {
@@ -532,7 +546,7 @@
           "format": "int32"
         },
         "fsType": {
-          "description": "Type of file system that the disk should be formatted with. The Workstation image must support this file system type. Must be empty if source_snapshot is set.",
+          "description": "Type of file system that the disk should be formatted with. The workstation image must support this file system type. Must be empty if source_snapshot is set.",
           "type": "string"
         },
         "diskType": {
@@ -540,11 +554,11 @@
           "type": "string"
         },
         "reclaimPolicy": {
-          "description": "What should happen to the disk after the Workstation is deleted. Defaults to DELETE.",
+          "description": "What should happen to the disk after the workstation is deleted. Defaults to DELETE.",
           "type": "string",
           "enumDescriptions": [
             "Do not use.",
-            "The persistent disk will be deleted with the Workstation.",
+            "The persistent disk will be deleted with the workstation.",
             "The persistent disk will be remain after the workstation is deleted, and the administrator must manually delete the disk."
           ],
           "enum": [
@@ -671,6 +685,13 @@
         },
         "annotations": {
           "description": "Client-specified annotations.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Client-specified labels that are applied to the resource and that are also propagated to the underlying Compute Engine resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1007,17 +1028,17 @@
     },
     "OperationMetadata": {
       "id": "OperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
+      "description": "Metadata for long-running operations.",
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The time the operation was created.",
+          "description": "Output only. Time that the operation was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running.",
+          "description": "Output only. Time that the operation finished running.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1032,13 +1053,13 @@
           "readOnly": true,
           "type": "string"
         },
-        "statusDetail": {
+        "statusMessage": {
           "description": "Output only. Human-readable status of the operation, if any.",
           "readOnly": true,
           "type": "string"
         },
-        "cancelRequested": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation.",
           "readOnly": true,
           "type": "boolean"
         },
@@ -1141,7 +1162,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "GoogleProtobufEmpty"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1169,7 +1190,7 @@
                     "$ref": "CancelOperationRequest"
                   },
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "GoogleProtobufEmpty"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1203,7 +1224,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Returns the requested WorkstationCluster."
+                  "description": "Returns the requested workstation cluster."
                 },
                 "list": {
                   "id": "workstations.projects.locations.workstationClusters.list",
@@ -1239,7 +1260,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Returns all WorkstationClusters in the specified location."
+                  "description": "Returns all workstation clusters in the specified location."
                 },
                 "create": {
                   "id": "workstations.projects.locations.workstationClusters.create",
@@ -1277,7 +1298,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new WorkstationCluster."
+                  "description": "Creates a new workstation cluster."
                 },
                 "patch": {
                   "id": "workstations.projects.locations.workstationClusters.patch",
@@ -1321,7 +1342,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates an existing WorkstationCluster."
+                  "description": "Updates an existing workstation cluster."
                 },
                 "delete": {
                   "id": "workstations.projects.locations.workstationClusters.delete",
@@ -1347,7 +1368,7 @@
                       "type": "string"
                     },
                     "force": {
-                      "description": "If set, any WorkstationConfigs and Workstations in the cluster will also be deleted. Otherwise, the request will work only if the cluster has no configs or workstations.",
+                      "description": "If set, any workstation configurations and workstations in the cluster will also be deleted. Otherwise, the request will work only if the cluster has no configurations or workstations.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1361,7 +1382,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the specified WorkstationCluster."
+                  "description": "Deletes the specified workstation cluster."
                 }
               }
               ,
@@ -1391,7 +1412,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns the requested WorkstationConfig."
+                      "description": "Returns the requested workstation configuration."
                     },
                     "list": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.list",
@@ -1427,7 +1448,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns all WorkstationConfigs in the specified cluster."
+                      "description": "Returns all workstation configurations in the specified cluster."
                     },
                     "listUsable": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.listUsable",
@@ -1463,7 +1484,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns all WorkstationConfigs in the specified cluster on which the caller has the \"workstations.workstation.create\" permission."
+                      "description": "Returns all workstation configurations in the specified cluster on which the caller has the \"workstations.workstation.create\" permission."
                     },
                     "create": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.create",
@@ -1501,7 +1522,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new WorkstationConfig."
+                      "description": "Creates a new workstation configuration."
                     },
                     "patch": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.patch",
@@ -1545,7 +1566,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates an existing WorkstationConfig."
+                      "description": "Updates an existing workstation configuration."
                     },
                     "delete": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.delete",
@@ -1585,7 +1606,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes the specified WorkstationConfig."
+                      "description": "Deletes the specified workstation configuration."
                     },
                     "setIamPolicy": {
                       "id": "workstations.projects.locations.workstationClusters.workstationConfigs.setIamPolicy",
@@ -1702,7 +1723,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Returns the requested Workstation."
+                          "description": "Returns the requested workstation."
                         },
                         "list": {
                           "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.list",
@@ -1812,7 +1833,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Creates a new Workstation."
+                          "description": "Creates a new workstation."
                         },
                         "patch": {
                           "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.patch",
@@ -1856,7 +1877,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates an existing Workstation."
+                          "description": "Updates an existing workstation."
                         },
                         "delete": {
                           "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.delete",
@@ -1891,7 +1912,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes the specified Workstation."
+                          "description": "Deletes the specified workstation."
                         },
                         "start": {
                           "id": "workstations.projects.locations.workstationClusters.workstationConfigs.workstations.start",

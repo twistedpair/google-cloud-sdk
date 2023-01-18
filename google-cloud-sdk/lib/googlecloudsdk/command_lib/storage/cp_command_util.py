@@ -220,9 +220,12 @@ def add_cp_flags(parser):
       type=arg_parsers.ArgList(),
       help=_GZIP_LOCAL_EXTENSIONS_HELP_TEXT)
 
+  acl_flags_group = parser.add_group()
+  flags.add_predefined_acl_flag(acl_flags_group)
+  flags.add_preserve_acl_flag(acl_flags_group)
+
   flags.add_continue_on_error_flag(parser)
   flags.add_precondition_flags(parser)
-  flags.add_object_acl_setter_flags(parser)
   flags.add_object_metadata_flags(parser)
   flags.add_encryption_flags(parser)
 

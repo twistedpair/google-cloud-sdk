@@ -26,6 +26,9 @@ from googlecloudsdk.command_lib.run.integrations.typekits import base
 class RedisTypeKit(base.TypeKit):
   """The redis integration typekit."""
 
+  def GetDeployMessage(self, create=False):
+    return 'This might take up to 10 minutes.'
+
   def UpdateResourceConfig(self, parameters, resource_config):
     """Updates the resource config according to the parameters.
 

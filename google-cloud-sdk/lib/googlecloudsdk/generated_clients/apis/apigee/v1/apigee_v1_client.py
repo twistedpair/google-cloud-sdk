@@ -88,6 +88,8 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_queries = self.OrganizationsEnvironmentsQueriesService(self)
     self.organizations_environments_references = self.OrganizationsEnvironmentsReferencesService(self)
     self.organizations_environments_resourcefiles = self.OrganizationsEnvironmentsResourcefilesService(self)
+    self.organizations_environments_securityActions = self.OrganizationsEnvironmentsSecurityActionsService(self)
+    self.organizations_environments_securityIncidents = self.OrganizationsEnvironmentsSecurityIncidentsService(self)
     self.organizations_environments_securityReports = self.OrganizationsEnvironmentsSecurityReportsService(self)
     self.organizations_environments_securityStats = self.OrganizationsEnvironmentsSecurityStatsService(self)
     self.organizations_environments_sharedflows_deployments = self.OrganizationsEnvironmentsSharedflowsDeploymentsService(self)
@@ -2993,6 +2995,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetDeployedIngressConfig(self, request, global_params=None):
+      r"""Gets the deployed ingress configuration for an environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsGetDeployedIngressConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1EnvironmentGroupConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetDeployedIngressConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDeployedIngressConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}/deployedIngressConfig',
+        http_method='GET',
+        method_id='apigee.organizations.envgroups.getDeployedIngressConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsGetDeployedIngressConfigRequest',
+        response_type_name='GoogleCloudApigeeV1EnvironmentGroupConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all environment groups.
 
@@ -4823,6 +4852,215 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsEnvironmentsSecurityActionsService(base_api.BaseApiService):
+    """Service class for the organizations_environments_securityActions resource."""
+
+    _NAME = 'organizations_environments_securityActions'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsSecurityActionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateSecurityAction creates a SecurityAction.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityAction) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions',
+        http_method='POST',
+        method_id='apigee.organizations.environments.securityActions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['securityActionId'],
+        relative_path='v1/{+parent}/securityActions',
+        request_field='googleCloudApigeeV1SecurityAction',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityAction',
+        supports_download=False,
+    )
+
+    def Disable(self, request, global_params=None):
+      r"""Disable a SecurityAction. The `state` of the SecurityAction after disabling is `DISABLED`. `DisableSecurityAction` can be called on SecurityActions in the state `ENABLED`; SecurityActions in a different state (including `DISABLED`) return an error.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityAction) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions/{securityActionsId}:disable',
+        http_method='POST',
+        method_id='apigee.organizations.environments.securityActions.disable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:disable',
+        request_field='googleCloudApigeeV1DisableSecurityActionRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsDisableRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityAction',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""Enable a SecurityAction. The `state` of the SecurityAction after enabling is `ENABLED`. `EnableSecurityAction` can be called on SecurityActions in the state `DISABLED`; SecurityActions in a different state (including `ENABLED) return an error.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityAction) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions/{securityActionsId}:enable',
+        http_method='POST',
+        method_id='apigee.organizations.environments.securityActions.enable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enable',
+        request_field='googleCloudApigeeV1EnableSecurityActionRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsEnableRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityAction',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a SecurityAction by name.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityAction) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions/{securityActionsId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityActions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsGetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityAction',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of SecurityActions. This returns both enabled and disabled actions.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityActionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityActionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActions',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityActions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityActions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityActionsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityActionsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsEnvironmentsSecurityIncidentsService(base_api.BaseApiService):
+    """Service class for the organizations_environments_securityIncidents resource."""
+
+    _NAME = 'organizations_environments_securityIncidents'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsSecurityIncidentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""GetSecurityIncident gets the specified security incident. Returns NOT_FOUND if security incident is not present for the specified organization and environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityIncident) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityIncidents/{securityIncidentsId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityIncidents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityIncident',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListSecurityIncidents lists all the security incident associated with the environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityIncidentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityIncidents',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityIncidents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityIncidents',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityIncidentsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsSecurityReportsService(base_api.BaseApiService):
     """Service class for the organizations_environments_securityReports resource."""
 
@@ -5679,6 +5917,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetSecurityActionsConfig(self, request, global_params=None):
+      r"""GetSecurityActionConfig returns the current SecurityActions configuration.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsGetSecurityActionsConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityActionsConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetSecurityActionsConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSecurityActionsConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActionsConfig',
+        http_method='GET',
+        method_id='apigee.organizations.environments.getSecurityActionsConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsGetSecurityActionsConfigRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityActionsConfig',
+        supports_download=False,
+    )
+
     def GetTraceConfig(self, request, global_params=None):
       r"""Get distributed trace configuration in an environment.
 
@@ -5919,6 +6184,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1Environment',
         response_type_name='GoogleCloudApigeeV1Environment',
+        supports_download=False,
+    )
+
+    def UpdateSecurityActionsConfig(self, request, global_params=None):
+      r"""UpdateSecurityActionConfig updates the current SecurityActions configuration. This method is used to enable/disable the feature at the environment level.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsUpdateSecurityActionsConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityActionsConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecurityActionsConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecurityActionsConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityActionsConfig',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.updateSecurityActionsConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecurityActionsConfig',
+        request_type_name='ApigeeOrganizationsEnvironmentsUpdateSecurityActionsConfigRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityActionsConfig',
         supports_download=False,
     )
 
@@ -8049,7 +8341,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Apigee organizations and associated GCP projects that you have permission to access. See [Understanding organizations](https://cloud.google.com/apigee/docs/api-platform/fundamentals/organization-structure).
+      r"""Lists the Apigee organizations and associated Google Cloud projects that you have permission to access. See [Understanding organizations](https://cloud.google.com/apigee/docs/api-platform/fundamentals/organization-structure).
 
       Args:
         request: (ApigeeOrganizationsListRequest) input message

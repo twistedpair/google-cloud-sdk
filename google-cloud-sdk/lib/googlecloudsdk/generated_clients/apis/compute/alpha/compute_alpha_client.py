@@ -6284,6 +6284,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeInstanceTemplatesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceTemplateAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceTemplates.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/instanceTemplates',
+        request_field='',
+        request_type_name='ComputeInstanceTemplatesAggregatedListRequest',
+        response_type_name='InstanceTemplateAggregatedList',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
 
@@ -15666,6 +15692,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AttachNetworkEndpoints(self, request, global_params=None):
+      r"""Attach a list of network endpoints to the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AttachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AttachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.attachNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
+        request_field='regionNetworkEndpointGroupsAttachEndpointsRequest',
+        request_type_name='ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
 
@@ -15688,6 +15740,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
         request_type_name='ComputeRegionNetworkEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DetachNetworkEndpoints(self, request, global_params=None):
+      r"""Detach the network endpoint from the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.detachNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
+        request_field='regionNetworkEndpointGroupsDetachEndpointsRequest',
+        request_type_name='ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -15767,6 +15845,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionNetworkEndpointGroupsListRequest',
         response_type_name='NetworkEndpointGroupList',
+        supports_download=False,
+    )
+
+    def ListNetworkEndpoints(self, request, global_params=None):
+      r"""Lists the network endpoints in the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroupsListNetworkEndpoints) The response message.
+      """
+      config = self.GetMethodConfig('ListNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.listNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
+        request_field='',
+        request_type_name='ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest',
+        response_type_name='NetworkEndpointGroupsListNetworkEndpoints',
         supports_download=False,
     )
 
@@ -18362,7 +18466,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.resourcePolicies.patch',
         ordered_params=['project', 'region', 'resourcePolicy'],
         path_params=['project', 'region', 'resourcePolicy'],
-        query_params=['requestId', 'updateMask'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
         request_field='resourcePolicyResource',
         request_type_name='ComputeResourcePoliciesPatchRequest',

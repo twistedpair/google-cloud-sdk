@@ -648,7 +648,7 @@
     },
     "BareMetalStorageConfig": {
       "id": "BareMetalStorageConfig",
-      "description": "Specifies the cluster storage configuration.",
+      "description": "BareMetalStorageConfig specifies the cluster storage configuration.",
       "type": "object",
       "properties": {
         "lvpShareConfig": {
@@ -750,12 +750,10 @@
           "type": "string",
           "enumDescriptions": [
             "No container runtime selected.",
-            "Docker runtime. Anthos version 1.13 and higher clusters can no longer use Docker Engine. https:\/\/cloud.google.com\/anthos\/clusters\/docs\/bare-metal\/latest\/installing\/runtime#kubernetes_124_ends_support_of_docker_engine",
             "Containerd runtime."
           ],
           "enum": [
             "CONTAINER_RUNTIME_UNSPECIFIED",
-            "DOCKER",
             "CONTAINERD"
           ]
         }
@@ -1343,10 +1341,6 @@
       "description": "Specifies workload identity config for VMware user cluster.",
       "type": "object",
       "properties": {
-        "workloadIdentityDisabled": {
-          "description": "Whether or not workload identity is disabled in the cluster. Workload Identity is enabled by default.",
-          "type": "boolean"
-        }
       }
     },
     "VmwareAAGConfig": {
@@ -1516,10 +1510,6 @@
           "description": "Manually configured load balancers.",
           "$ref": "VmwareManualLbConfig"
         },
-        "seesawConfig": {
-          "description": "Configuration for Seesaw typed load balancers.",
-          "$ref": "VmwareSeesawConfig"
-        },
         "metalLbConfig": {
           "description": "Configuration for MetalLB typed load balancers.",
           "$ref": "VmwareMetalLbConfig"
@@ -1583,38 +1573,6 @@
           "description": "NodePort for konnectivity server service running as a sidecar in each kube-apiserver pod (ex. 30564).",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "VmwareSeesawConfig": {
-      "id": "VmwareSeesawConfig",
-      "type": "object",
-      "properties": {
-        "group": {
-          "description": "Required. In general the following format should be used for the Seesaw group name: seesaw-for-[cluster_name].",
-          "type": "string"
-        },
-        "masterIp": {
-          "description": "Required. MasterIP is the IP announced by the master of Seesaw group.",
-          "type": "string"
-        },
-        "ipBlocks": {
-          "description": "Required. The IP Blocks to be used by the Seesaw load balancer",
-          "type": "array",
-          "items": {
-            "$ref": "VmwareIpBlock"
-          }
-        },
-        "enableHa": {
-          "description": "Enable two load balancer VMs to achieve a highly-available Seesaw load balancer.",
-          "type": "boolean"
-        },
-        "vms": {
-          "description": "Names of the VMs created for this Seesaw group.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -2536,7 +2494,7 @@
     },
     "BareMetalAdminCluster": {
       "id": "BareMetalAdminCluster",
-      "description": "Resource that represents a bare metal admin cluster.",
+      "description": "Resource that represents a bare metal admin cluster. LINT.IfChange",
       "type": "object",
       "properties": {
         "name": {
@@ -2673,6 +2631,14 @@
         "proxy": {
           "description": "Proxy configuration.",
           "$ref": "BareMetalAdminProxyConfig"
+        },
+        "securityConfig": {
+          "description": "Security related configuration.",
+          "$ref": "BareMetalAdminSecurityConfig"
+        },
+        "nodeAccessConfig": {
+          "description": "Node access related configurations.",
+          "$ref": "BareMetalAdminNodeAccessConfig"
         }
       }
     },
@@ -2765,10 +2731,6 @@
           "description": "Configures the ports that the load balancer will listen on.",
           "$ref": "BareMetalAdminPortConfig"
         },
-        "metalLbConfig": {
-          "description": "Configuration for MetalLB typed load balancers.",
-          "$ref": "BareMetalAdminMetalLbConfig"
-        },
         "manualLbConfig": {
           "description": "Manually configured load balancers.",
           "$ref": "BareMetalAdminManualLbConfig"
@@ -2794,28 +2756,6 @@
         "controlPlaneLoadBalancerPort": {
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "BareMetalAdminMetalLbConfig": {
-      "id": "BareMetalAdminMetalLbConfig",
-      "description": "BareMetalAdminMetalLbConfig represents configuration parameters for a MetalLb load balancer.",
-      "type": "object",
-      "properties": {
-        "nodePoolConfig": {
-          "description": "Specifies the node pool running the load balancer. L2 connectivity is required among nodes in this pool. If missing, the control plane node pool is used as load balancer pool.",
-          "$ref": "BareMetalAdminLoadBalancerNodePoolConfig"
-        }
-      }
-    },
-    "BareMetalAdminLoadBalancerNodePoolConfig": {
-      "id": "BareMetalAdminLoadBalancerNodePoolConfig",
-      "description": "BareMetalAdminLoadBalancerNodePoolConfig specifies the load balancer's node pool configuration. We have a Load Balancer specific Node Pool config so that we can flexible about supporting Load Balancer specific fields in the future.",
-      "type": "object",
-      "properties": {
-        "nodePoolConfig": {
-          "description": "The generic configuration for a node pool running a load balancer.",
-          "$ref": "BareMetalNodePoolConfig"
         }
       }
     },
@@ -2956,6 +2896,28 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "BareMetalAdminSecurityConfig": {
+      "id": "BareMetalAdminSecurityConfig",
+      "description": "Specifies the security related settings for the bare metal admin cluster.",
+      "type": "object",
+      "properties": {
+        "authorization": {
+          "description": "Configures user access to the admin cluster.",
+          "$ref": "Authorization"
+        }
+      }
+    },
+    "BareMetalAdminNodeAccessConfig": {
+      "id": "BareMetalAdminNodeAccessConfig",
+      "description": "Specifies the node access related settings for the bare metal admin cluster.",
+      "type": "object",
+      "properties": {
+        "loginUser": {
+          "description": "Required. LoginUser is the user name used to access node machines. It defaults to \"root\" if not set.",
+          "type": "string"
         }
       }
     },

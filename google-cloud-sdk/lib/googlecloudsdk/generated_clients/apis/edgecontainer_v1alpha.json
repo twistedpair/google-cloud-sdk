@@ -722,6 +722,10 @@
           "description": "Whether this VPN connection has HA enabled on cluster side. If enabled, when creating VPN connection we will attempt to use 2 ANG floating IPs.",
           "type": "boolean"
         },
+        "router": {
+          "description": "Optional. The VPN connection Cloud Router name.",
+          "type": "string"
+        },
         "details": {
           "description": "Output only. The created connection details.",
           "readOnly": true,
@@ -788,7 +792,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The created Cloud Router name.",
+          "description": "The associated Cloud Router name.",
           "type": "string"
         }
       }

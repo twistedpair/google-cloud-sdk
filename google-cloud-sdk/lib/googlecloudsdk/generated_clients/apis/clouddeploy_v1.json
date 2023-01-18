@@ -520,6 +520,10 @@
         "targetsPresentCondition": {
           "description": "Details around targets enumerated in the pipeline.",
           "$ref": "TargetsPresentCondition"
+        },
+        "targetsTypeCondition": {
+          "description": "Details on the whether the targets enumerated in the pipeline are of the same type.",
+          "$ref": "TargetsTypeCondition"
         }
       }
     },
@@ -559,6 +563,21 @@
           "description": "Last time the condition was updated.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "TargetsTypeCondition": {
+      "id": "TargetsTypeCondition",
+      "description": "TargetsTypeCondition contains information on whether the Targets defined in the Delivery Pipeline are of the same type.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "True if the targets are all a comparable type. For example this is true if all targets are GKE clusters. This is false if some targets are Cloud Run targets and others are GKE clusters.",
+          "type": "boolean"
+        },
+        "errorDetails": {
+          "description": "Human readable error message.",
+          "type": "string"
         }
       }
     },
@@ -1057,12 +1076,14 @@
           "enumDescriptions": [
             "No reason for failure is specified.",
             "Cloud Build is not available, either because it is not enabled or because Google Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
-            "The render operation did not complete successfully; check Cloud Build logs."
+            "The render operation did not complete successfully; check Cloud Build logs.",
+            "Cloud Build failed to fulfill Google Cloud Deploy's request. See failure_message for additional details."
           ],
           "enum": [
             "FAILURE_CAUSE_UNSPECIFIED",
             "CLOUD_BUILD_UNAVAILABLE",
-            "EXECUTION_FAILED"
+            "EXECUTION_FAILED",
+            "CLOUD_BUILD_REQUEST_FAILED"
           ]
         },
         "failureMessage": {
@@ -1500,6 +1521,27 @@
       "properties": {
       }
     },
+    "CancelRolloutRequest": {
+      "id": "CancelRolloutRequest",
+      "description": "The request object used by `CancelRollout`.",
+      "type": "object",
+      "properties": {
+        "overrideDeployPolicy": {
+          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CancelRolloutResponse": {
+      "id": "CancelRolloutResponse",
+      "description": "The response object from `CancelRollout`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListRolloutsResponse": {
       "id": "ListRolloutsResponse",
       "description": "ListRolloutsResponse is the response object reutrned by `ListRollouts`.",
@@ -1660,7 +1702,8 @@
             "Deployment did not complete within the alloted time.",
             "Release is in a failed state.",
             "Release is abandoned.",
-            "No skaffold verify configuration was found."
+            "No skaffold verify configuration was found.",
+            "Cloud Build failed to fulfill Google Cloud Deploy's request. See failure_message for additional details."
           ],
           "enum": [
             "FAILURE_CAUSE_UNSPECIFIED",
@@ -1669,7 +1712,8 @@
             "DEADLINE_EXCEEDED",
             "RELEASE_FAILED",
             "RELEASE_ABANDONED",
-            "VERIFICATION_CONFIG_NOT_FOUND"
+            "VERIFICATION_CONFIG_NOT_FOUND",
+            "CLOUD_BUILD_REQUEST_FAILED"
           ]
         },
         "phases": {
@@ -1914,6 +1958,35 @@
         }
       }
     },
+    "IgnoreJobRequest": {
+      "id": "IgnoreJobRequest",
+      "description": "The request object used by `IgnoreJob`.",
+      "type": "object",
+      "properties": {
+        "phaseId": {
+          "description": "Required. The phase ID the Job to ignore belongs to.",
+          "type": "string"
+        },
+        "jobId": {
+          "description": "Required. The job ID for the Job to ignore.",
+          "type": "string"
+        },
+        "overrideDeployPolicy": {
+          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IgnoreJobResponse": {
+      "id": "IgnoreJobResponse",
+      "description": "The response object from `IgnoreJob`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RetryJobRequest": {
       "id": "RetryJobRequest",
       "description": "RetryJobRequest is the request object used by `RetryJob`.",
@@ -2073,14 +2146,16 @@
             "Cloud Build is not available, either because it is not enabled or because Google Cloud Deploy has insufficient permissions. See [Required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
             "The deploy operation did not complete successfully; check Cloud Build logs.",
             "The deploy build did not complete within the alloted time.",
-            "There were missing resources in the runtime environment required for a canary deployment. Check the Cloud Build logs for more information."
+            "There were missing resources in the runtime environment required for a canary deployment. Check the Cloud Build logs for more information.",
+            "Cloud Build failed to fulfill Google Cloud Deploy's request. See failure_message for additional details."
           ],
           "enum": [
             "FAILURE_CAUSE_UNSPECIFIED",
             "CLOUD_BUILD_UNAVAILABLE",
             "EXECUTION_FAILED",
             "DEADLINE_EXCEEDED",
-            "MISSING_RESOURCES_FOR_CANARY"
+            "MISSING_RESOURCES_FOR_CANARY",
+            "CLOUD_BUILD_REQUEST_FAILED"
           ]
         },
         "failureMessage": {
@@ -2136,14 +2211,16 @@
             "Cloud Build is not available, either because it is not enabled or because Google Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
             "The verify operation did not complete successfully; check Cloud Build logs.",
             "The verify build did not complete within the alloted time.",
-            "No Skaffold verify configuration was found."
+            "No Skaffold verify configuration was found.",
+            "Cloud Build failed to fulfill Google Cloud Deploy's request. See failure_message for additional details."
           ],
           "enum": [
             "FAILURE_CAUSE_UNSPECIFIED",
             "CLOUD_BUILD_UNAVAILABLE",
             "EXECUTION_FAILED",
             "DEADLINE_EXCEEDED",
-            "VERIFICATION_CONFIG_NOT_FOUND"
+            "VERIFICATION_CONFIG_NOT_FOUND",
+            "CLOUD_BUILD_REQUEST_FAILED"
           ]
         },
         "failureMessage": {
@@ -2197,16 +2274,14 @@
           "type": "string"
         },
         "supportedVersions": {
-          "description": "Output only. All supported versions of Skaffold.",
-          "readOnly": true,
+          "description": "All supported versions of Skaffold.",
           "type": "array",
           "items": {
             "$ref": "SkaffoldVersion"
           }
         },
         "defaultSkaffoldVersion": {
-          "description": "Output only. Default Skaffold version that is assigned when a Release is created without specifying a Skaffold version.",
-          "readOnly": true,
+          "description": "Default Skaffold version that is assigned when a Release is created without specifying a Skaffold version.",
           "type": "string"
         }
       }
@@ -3417,6 +3492,34 @@
                           ],
                           "description": "Advances a Rollout in a given project and location."
                         },
+                        "cancel": {
+                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.cancel",
+                          "path": "v1/{+name}:cancel",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:cancel",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. Name of the Rollout. Format is projects\/{project}\/locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/{rollout}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "CancelRolloutRequest"
+                          },
+                          "response": {
+                            "$ref": "CancelRolloutResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Cancels a Rollout in a given project and location."
+                        },
                         "list": {
                           "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.list",
                           "path": "v1/{+parent}/rollouts",
@@ -3536,6 +3639,34 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Creates a new Rollout in a given project and location."
+                        },
+                        "ignoreJob": {
+                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.ignoreJob",
+                          "path": "v1/{+rollout}:ignoreJob",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:ignoreJob",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "rollout": {
+                              "description": "Required. Name of the Rollout. Format is projects\/{project}\/locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/{rollout}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "rollout"
+                          ],
+                          "request": {
+                            "$ref": "IgnoreJobRequest"
+                          },
+                          "response": {
+                            "$ref": "IgnoreJobResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Ignores the specified Job in a Rollout."
                         },
                         "retryJob": {
                           "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.retryJob",

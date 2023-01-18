@@ -2791,6 +2791,10 @@
           "description": "Hybrid pool configuration",
           "$ref": "HybridPoolConfig"
         },
+        "privatePoolConfig": {
+          "description": "Private Pool configuration.",
+          "$ref": "PrivatePoolConfig"
+        },
         "etag": {
           "description": "Output only. Checksum computed by the server. May be sent on update and delete requests to ensure that the client has an up-to-date value before proceeding.",
           "readOnly": true,
@@ -2823,7 +2827,7 @@
           "type": "string"
         },
         "diskSizeGb": {
-          "description": "Size of the disk attached to the worker, in GB. See [Worker pool config file](https:\/\/cloud.google.com\/build\/docs\/private-pools\/worker-pool-config-file-schema). Specify a value of up to 1000. If `0` is specified, Cloud Build will use a standard disk size.",
+          "description": "Size of the disk attached to the worker, in GB. See [Worker pool config file](https:\/\/cloud.google.com\/build\/docs\/private-pools\/worker-pool-config-file-schema). Specify a value of up to 2000. If `0` is specified, Cloud Build will use a standard disk size.",
           "type": "string",
           "format": "int64"
         }
@@ -2853,7 +2857,7 @@
           ]
         },
         "peeredNetworkIpRange": {
-          "description": "Immutable. Subnet IP range within the peered network. This is specified in CIDR notation. The IP and prefix size are both optional. If unspecified, the default value for IP is blank (will use an automatic value from the peered network), and the prefix size will default to 24 bits. e.g. `192.168.0.0\/30` would specify a subnet mask of 192.168.0.0 with a prefix size of 30 bits. `192.168.0.0` would specify a subnet mask of 192.168.0.0 with a prefix size of 24 bits (the default prefix size). `\/16` would specify a prefix size of 16 bits, with an unspecified IP.",
+          "description": "Immutable. Subnet IP range within the peered network. This is specified in CIDR notation with a slash and the subnet prefix size. You can optionally specify an IP address before the subnet prefix value. e.g. `192.168.0.0\/29` would specify an IP range starting at 192.168.0.0 with a prefix size of 29 bits. `\/16` would specify a prefix size of 16 bits, with an automatically determined IP within the peered VPC. If unspecified, a value of `\/24` will be used.",
           "type": "string"
         }
       }
@@ -2907,6 +2911,111 @@
           "type": "number",
           "format": "float"
         }
+      }
+    },
+    "PrivatePoolConfig": {
+      "id": "PrivatePoolConfig",
+      "description": "Configuration for a PrivatePool.",
+      "type": "object",
+      "properties": {
+        "workerConfig": {
+          "description": "Configuration options for individual workers.",
+          "$ref": "GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig"
+        },
+        "privilegedMode": {
+          "description": "Immutable. Specifies the privileged mode for the worker pool. Once created, this setting cannot be changed on the worker pool, as we are unable to guarantee that the cluster has not been altered by misuse of privileged Docker daemon.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified - this is treated as NON_PRIVILEGED_ONLY.",
+            "Users can only run builds using a non-privileged Docker daemon. This is suitable for most cases.",
+            "Users are allowed to run builds using a privileged Docker daemon. This setting should be used with caution, as using a privileged Docker daemon introduces a security risk. A user would want this if they need to run \"docker-in-docker\", i.e. their builds use docker or docker-compose."
+          ],
+          "enum": [
+            "PRIVILEGED_MODE_UNSPECIFIED",
+            "NON_PRIVILEGED_ONLY",
+            "PRIVILEGED_PERMITTED"
+          ]
+        },
+        "networkConfig": {
+          "description": "Network configuration for the pool.",
+          "$ref": "GoogleDevtoolsCloudbuildV1NetworkConfig"
+        },
+        "scalingConfig": {
+          "description": "Configuration options for worker pool.",
+          "$ref": "GoogleDevtoolsCloudbuildV1ScalingConfig"
+        },
+        "securityConfig": {
+          "description": "Security configuration for the pool.",
+          "$ref": "SecurityConfig"
+        },
+        "loggingSas": {
+          "description": "Output only. ",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig": {
+      "id": "GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig",
+      "description": "Defines the configuration to be used for creating workers in the pool.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "Machine type of the workers in the pool. This field does not currently support mutations.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsCloudbuildV1NetworkConfig": {
+      "id": "GoogleDevtoolsCloudbuildV1NetworkConfig",
+      "description": "Network configuration for a PrivatePool.",
+      "type": "object",
+      "properties": {
+        "peeredNetwork": {
+          "description": "Required. Immutable. The network definition that the workers are peered to. If this section is left empty, the workers will be peered to `WorkerPool.project_id` on the service producer network. Must be in the format `projects\/{project}\/global\/networks\/{network}`, where `{project}` is a project number, such as `12345`, and `{network}` is the name of a VPC network in the project. See [Understanding network configuration options](https:\/\/cloud.google.com\/build\/docs\/private-pools\/set-up-private-pool-environment)",
+          "type": "string"
+        },
+        "egressOption": {
+          "description": "Immutable. Define whether workloads on the PrivatePool can talk to public IPs. If unset, the value NO_PUBLIC_EGRESS will be used.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified policy - this is treated as NO_PUBLIC_EGRESS.",
+            "Public egress is disallowed.",
+            "Public egress is allowed."
+          ],
+          "enum": [
+            "EGRESS_OPTION_UNSPECIFIED",
+            "NO_PUBLIC_EGRESS",
+            "PUBLIC_EGRESS"
+          ]
+        }
+      }
+    },
+    "GoogleDevtoolsCloudbuildV1ScalingConfig": {
+      "id": "GoogleDevtoolsCloudbuildV1ScalingConfig",
+      "description": "Defines the scaling configuration for the pool.",
+      "type": "object",
+      "properties": {
+        "readyWorkers": {
+          "description": "The number of preemptible workers (pods) that will run with the minimum vCPU and memory to keep resources ready for customer workloads in the cluster. If unset, a value of 0 will be used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxWorkersPerZone": {
+          "description": "Max number of workers in the Private Pool per zone. Cloud Build will run workloads in three zones per Private Pool for reliability.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SecurityConfig": {
+      "id": "SecurityConfig",
+      "description": "Defines the security configuration for the pool.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListWorkerPoolsResponse": {

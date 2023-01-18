@@ -717,6 +717,16 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class AppengineProjectsLocationsApplicationsGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsGetRequest object.
+
+  Fields:
+    name: Name of the Application resource to get. Example: apps/myapp.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class Application(_messages.Message):
   r"""An Application resource contains the top-level configuration of an App
   Engine application.

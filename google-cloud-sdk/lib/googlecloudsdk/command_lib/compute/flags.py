@@ -125,9 +125,9 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
   Args:
     parser: argparse parser.
     resource_type: str, human readable name for the resource type this flag is
-                   qualifying, for example "instance group".
+      qualifying, for example "instance group".
     operation_type: str, human readable name for the operation, for example
-                    "update" or "delete".
+      "update" or "delete".
     flag_prefix: str, flag will be named --{flag_prefix}-zone.
     explanation: str, detailed explanation of the flag.
     help_text: str, help text will be overridden with this value.
@@ -160,9 +160,9 @@ def AddRegionFlag(parser, resource_type, operation_type,
   Args:
     parser: argparse parser.
     resource_type: str, human readable name for the resource type this flag is
-                   qualifying, for example "instance group".
+      qualifying, for example "instance group".
     operation_type: str, human readable name for the operation, for example
-                    "update" or "delete".
+      "update" or "delete".
     flag_prefix: str, flag will be named --{flag_prefix}-region.
     explanation: str, detailed explanation of the flag.
     help_text: str, help text will be overridden with this value.
@@ -762,11 +762,14 @@ class ResourceArgument(object):
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
   # plural flags.
-  def AddArgument(self,
-                  parser,
-                  mutex_group=None,
-                  operation_type='operate on',
-                  cust_metavar=None):
+  def AddArgument(
+      self,
+      parser,
+      mutex_group=None,
+      operation_type='operate on',
+      cust_metavar=None,
+      category=None
+  ):
     """Add this set of arguments to argparse parser."""
 
     params = dict(
@@ -799,6 +802,9 @@ class ResourceArgument(object):
 
     if self.name_arg.startswith('--'):
       params['required'] = self.required
+      if not self.required:
+        # Only not required flags can be group by category.
+        params['category'] = category
       if self.plural:
         params['type'] = arg_parsers.ArgList(min_length=1)
     else:
@@ -814,7 +820,7 @@ class ResourceArgument(object):
       return
 
     if len(self.scopes) > 1:
-      scope = parser.add_mutually_exclusive_group()
+      scope = parser.add_group(mutex=True, category=category)
     else:
       scope = parser
 

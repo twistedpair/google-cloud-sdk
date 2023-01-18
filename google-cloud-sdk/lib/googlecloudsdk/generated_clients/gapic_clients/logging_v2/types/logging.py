@@ -238,17 +238,15 @@ class ListLogEntriesRequest(proto.Message):
             -  ``folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
 
             Projects listed in the ``project_ids`` field are added to
-            this list.
+            this list. A maximum of 100 resources may be specified in a
+            single request.
         filter (str):
-            Optional. A filter that chooses which log entries to return.
-            See `Advanced Logs
-            Queries <https://cloud.google.com/logging/docs/view/advanced-queries>`__.
-            Only log entries that match the filter are returned. An
-            empty filter matches all log entries in the resources listed
-            in ``resource_names``. Referencing a parent resource that is
-            not listed in ``resource_names`` will cause the filter to
-            return no results. The maximum length of the filter is 20000
-            characters.
+            Optional. Only log entries that match the filter are
+            returned. An empty filter matches all log entries in the
+            resources listed in ``resource_names``. Referencing a parent
+            resource that is not listed in ``resource_names`` will cause
+            the filter to return no results. The maximum length of a
+            filter is 20,000 characters.
         order_by (str):
             Optional. How the results should be sorted. Presently, the
             only permitted values are ``"timestamp asc"`` (default) and
@@ -498,15 +496,12 @@ class TailLogEntriesRequest(proto.Message):
             -  ``billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
             -  ``folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
         filter (str):
-            Optional. A filter that chooses which log entries to return.
-            See `Advanced Logs
-            Filters <https://cloud.google.com/logging/docs/view/advanced_filters>`__.
-            Only log entries that match the filter are returned. An
-            empty filter matches all log entries in the resources listed
-            in ``resource_names``. Referencing a parent resource that is
-            not in ``resource_names`` will cause the filter to return no
-            results. The maximum length of the filter is 20000
-            characters.
+            Optional. Only log entries that match the filter are
+            returned. An empty filter matches all log entries in the
+            resources listed in ``resource_names``. Referencing a parent
+            resource that is not listed in ``resource_names`` will cause
+            the filter to return no results. The maximum length of a
+            filter is 20,000 characters.
         buffer_window (google.protobuf.duration_pb2.Duration):
             Optional. The amount of time to buffer log
             entries at the server before being returned to

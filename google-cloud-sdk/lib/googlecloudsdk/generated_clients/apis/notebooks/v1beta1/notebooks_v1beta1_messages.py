@@ -17,8 +17,8 @@ package = 'notebooks'
 class AcceleratorConfig(_messages.Message):
   r"""Definition of a hardware accelerator. Note that not all combinations of
   `type` and `core_count` are valid. Check [GPUs on Compute
-  Engine](/compute/docs/gpus/#gpus-list) to find a valid combination. TPUs are
-  not supported.
+  Engine](https://cloud.google.com/compute/docs/gpus/#gpus-list) to find a
+  valid combination. TPUs are not supported.
 
   Enums:
     TypeValueValuesEnum: Type of this accelerator.
@@ -239,7 +239,7 @@ class Instance(_messages.Message):
     acceleratorConfig: The hardware accelerator used on this instance. If you
       use accelerators, make sure that your configuration has [enough vCPUs
       and memory to support the `machine_type` you have
-      selected](/compute/docs/gpus/#gpus-list).
+      selected](https://cloud.google.com/compute/docs/gpus/#gpus-list).
     bootDiskSizeGb: Input only. The size of the boot disk in GB attached to
       this instance, up to a maximum of 64000 GB (64 TB). The minimum
       recommended value is 100 GB. If not specified, this defaults to 100.
@@ -270,11 +270,13 @@ class Instance(_messages.Message):
     kmsKey: Input only. The KMS key used to encrypt the disks, only applicable
       if disk_encryption is CMEK. Format: `projects/{project_id}/locations/{lo
       cation}/keyRings/{key_ring_id}/cryptoKeys/{key_id}` Learn more about
-      [using your own encryption keys](/kms/docs/quickstart).
+      [using your own encryption
+      keys](https://cloud.google.com/kms/docs/quickstart).
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
     machineType: Required. The [Compute Engine machine
-      type](/compute/docs/machine-types) of this instance.
+      type](https://cloud.google.com/compute/docs/machine-types) of this
+      instance.
     metadata: Custom metadata to apply to this instance.
     name: Output only. The name of this notebook instance. Format:
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
@@ -289,7 +291,7 @@ class Instance(_messages.Message):
       deleted when deleting the instance.
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
-      Storage path (gs://path-to-file/file-name).
+      Storage path (`gs://path-to-file/file-name`).
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
     reservationAffinity: Optional. The optional reservation affinity. Setting
@@ -521,8 +523,8 @@ class ListInstancesResponse(_messages.Message):
     instances: A list of returned instances.
     nextPageToken: Page token that can be used to continue listing from the
       last result in the next list call.
-    unreachable: Locations that could not be reached. For example, ['us-
-      west1-a', 'us-central1-b']. A ListInstancesResponse will only contain
+    unreachable: Locations that could not be reached. For example, `['us-
+      west1-a', 'us-central1-b']`. A ListInstancesResponse will only contain
       either instances or unreachables,
   """
 

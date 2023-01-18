@@ -34,7 +34,7 @@ class CloudRouter(_messages.Message):
   r"""The Cloud Router info.
 
   Fields:
-    name: The created Cloud Router name.
+    name: The associated Cloud Router name.
   """
 
   name = _messages.StringField(1)
@@ -1305,6 +1305,7 @@ class VpnConnection(_messages.Message):
       multiple NAT IPs, the customer needs to configure NAT such that only one
       external IP maps to the GMEC Anthos cluster. This is empty if NAT is not
       used.
+    router: Optional. The VPN connection Cloud Router name.
     updateTime: Output only. The time when the VPN connection was last
       updated.
     vpc: The network ID of VPC to connect to.
@@ -1356,9 +1357,10 @@ class VpnConnection(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   natGatewayIp = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  vpc = _messages.StringField(10)
-  vpcProject = _messages.MessageField('VpcProject', 11)
+  router = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  vpc = _messages.StringField(11)
+  vpcProject = _messages.MessageField('VpcProject', 12)
 
 
 class ZoneMetadata(_messages.Message):

@@ -32,9 +32,9 @@ _UPDATE_FILE_DESC = ('File that contains updates to the configuration for'
                      ' the worker pool. See %s for options.' % _PWP_CONFIG_LINK)
 
 _CREATE_FILE_DESC_ALPHA = (
-    'File that contains the configuration for the worker pool to be created.\n\n'
-    'Private pool options:\n\n %s\n\nHybrid pool options:\n\n %s') % (
-        _PWP_CONFIG_LINK, _HWP_CONFIG_LINK)
+    'File that contains the configuration for the worker pool to be '
+    'created.\n\nPrivate pool options:\n\n %s\n\nHybrid pool options:\n\n %s'
+) % (_PWP_CONFIG_LINK, _HWP_CONFIG_LINK)
 _UPDATE_FILE_DESC_ALPHA = (
     'File that contains updates to the configuration for worker pool to be '
     'created.\n\n'
@@ -94,6 +94,22 @@ resource URL format
 projects/{network_project}/global/networks/{network_name}.
 
 If not specified, the workers are not peered to any network.
+""")
+
+  if not update:
+    private_flags.add_argument(
+        '--peered-network-ip-range',
+        help="""\
+An IP range for your peered network. Specify the IP range using Classless
+Inter-Domain Routing (CIDR) notation with a slash and the subnet prefix size,
+such as '/29'.
+
+Your subnet prefix size must be between 1 and 29.  Optional: you can specify an
+IP address before the subnet prefix value - for example `192.168.0.1/24`.
+
+If no IP address is specified, your VPC automatically determines the starting
+IP for the range. If no IP range is specified, Cloud Build uses '/24' as the
+default network IP range.
 """)
 
   if release_track == base.ReleaseTrack.ALPHA:

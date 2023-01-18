@@ -261,6 +261,21 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CancelRolloutRequest(_messages.Message):
+  r"""The request object used by `CancelRollout`.
+
+  Fields:
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+  """
+
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+
+
+class CancelRolloutResponse(_messages.Message):
+  r"""The response object from `CancelRollout`."""
+
+
 class ChildRolloutJobs(_messages.Message):
   r"""ChildRollouts job composition
 
@@ -624,6 +639,23 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveReques
   name = _messages.StringField(2, required=True)
 
 
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest(_messages.Message):
+  r"""A
+  ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest
+  object.
+
+  Fields:
+    cancelRolloutRequest: A CancelRolloutRequest resource to be passed as the
+      request body.
+    name: Required. Name of the Rollout. Format is projects/{project}/location
+      s/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/{rollout}.
+  """
+
+  cancelRolloutRequest = _messages.MessageField('CancelRolloutRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest(_messages.Message):
   r"""A
   ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
@@ -672,6 +704,22 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_m
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJobRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJob
+  Request object.
+
+  Fields:
+    ignoreJobRequest: A IgnoreJobRequest resource to be passed as the request
+      body.
+    rollout: Required. Name of the Rollout. Format is projects/{project}/locat
+      ions/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/{rollout}.
+  """
+
+  ignoreJobRequest = _messages.MessageField('IgnoreJobRequest', 1)
+  rollout = _messages.StringField(2, required=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGetRequest(_messages.Message):
@@ -793,8 +841,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTestIamPermissionsRequest(_me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(
-    _messages.Message):
+class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeployPoliciesCreateRequest object.
 
   Fields:
@@ -825,8 +872,7 @@ class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(
   validateOnly = _messages.BooleanField(5)
 
 
-class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(
-    _messages.Message):
+class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeployPoliciesDeleteRequest object.
 
   Fields:
@@ -1225,11 +1271,10 @@ class Config(_messages.Message):
   r"""Service-wide configuration.
 
   Fields:
-    defaultSkaffoldVersion: Output only. Default Skaffold version that is
-      assigned when a Release is created without specifying a Skaffold
-      version.
+    defaultSkaffoldVersion: Default Skaffold version that is assigned when a
+      Release is created without specifying a Skaffold version.
     name: Name of the configuration.
-    supportedVersions: Output only. All supported versions of Skaffold.
+    supportedVersions: All supported versions of Skaffold.
   """
 
   defaultSkaffoldVersion = _messages.StringField(1)
@@ -1431,12 +1476,11 @@ class DeliveryPipeline(_messages.Message):
 
 
 class DeliveryPipelineAttribute(_messages.Message):
-  r"""Contains criteria for selecting DeliveryPipelines.
-
-  Attributes provided must match the delivery pipeline resource in order for
-  policy restrictions to apply. E.g. if id "prod" and labels "foo: bar" are
-  given the delivery pipeline resource must match both that id and have that
-  label in order to be selected for a deploy policy.
+  r"""Contains criteria for selecting DeliveryPipelines. Attributes provided
+  must match the delivery pipeline resource in order for policy restrictions
+  to apply. E.g. if id "prod" and labels "foo: bar" are given the delivery
+  pipeline resource must match both that id and have that label in order to be
+  selected for a deploy policy.
 
   Messages:
     LabelsValue: DeliveryPipeline labels.
@@ -1469,8 +1513,7 @@ class DeliveryPipelineAttribute(_messages.Message):
       key = _messages.StringField(1)
       value = _messages.StringField(2)
 
-    additionalProperties = _messages.MessageField(
-        'AdditionalProperty', 1, repeated=True)
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   id = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
@@ -1552,12 +1595,15 @@ class DeployJobRun(_messages.Message):
       MISSING_RESOURCES_FOR_CANARY: There were missing resources in the
         runtime environment required for a canary deployment. Check the Cloud
         Build logs for more information.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
+        Deploy's request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     DEADLINE_EXCEEDED = 3
     MISSING_RESOURCES_FOR_CANARY = 4
+    CLOUD_BUILD_REQUEST_FAILED = 5
 
   build = _messages.StringField(1)
   failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
@@ -1578,9 +1624,8 @@ class DeployJobRunMetadata(_messages.Message):
 
 
 class DeployPolicy(_messages.Message):
-  r"""A `DeployPolicy` resource in the Google Cloud Deploy API.
-
-  A `DeployPolicy` defines a policy to apply for a project/location.
+  r"""A `DeployPolicy` resource in the Google Cloud Deploy API. A
+  `DeployPolicy` defines a policy to apply for a project/location.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
@@ -1623,10 +1668,8 @@ class DeployPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations.
-
-    These attributes can only be set and used by the user, and not by Google
-    Cloud Deploy.
+    r"""User annotations. These attributes can only be set and used by the
+    user, and not by Google Cloud Deploy.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1647,13 +1690,11 @@ class DeployPolicy(_messages.Message):
       key = _messages.StringField(1)
       value = _messages.StringField(2)
 
-    additionalProperties = _messages.MessageField(
-        'AdditionalProperty', 1, repeated=True)
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-
     Google Cloud Deploy. Labels must meet the following constraints: * Keys
     and values can contain only lowercase letters, numeric characters,
     underscores, and dashes. * All characters must use UTF-8 encoding, and
@@ -1680,8 +1721,7 @@ class DeployPolicy(_messages.Message):
       key = _messages.StringField(1)
       value = _messages.StringField(2)
 
-    additionalProperties = _messages.MessageField(
-        'AdditionalProperty', 1, repeated=True)
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
@@ -1838,6 +1878,25 @@ class GkeCluster(_messages.Message):
 
   cluster = _messages.StringField(1)
   internalIp = _messages.BooleanField(2)
+
+
+class IgnoreJobRequest(_messages.Message):
+  r"""The request object used by `IgnoreJob`.
+
+  Fields:
+    jobId: Required. The job ID for the Job to ignore.
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+    phaseId: Required. The phase ID the Job to ignore belongs to.
+  """
+
+  jobId = _messages.StringField(1)
+  overrideDeployPolicy = _messages.StringField(2, repeated=True)
+  phaseId = _messages.StringField(3)
+
+
+class IgnoreJobResponse(_messages.Message):
+  r"""The response object from `IgnoreJob`."""
 
 
 class Job(_messages.Message):
@@ -2445,10 +2504,13 @@ class PipelineCondition(_messages.Message):
     pipelineReadyCondition: Details around the Pipeline's overall status.
     targetsPresentCondition: Details around targets enumerated in the
       pipeline.
+    targetsTypeCondition: Details on the whether the targets enumerated in the
+      pipeline are of the same type.
   """
 
   pipelineReadyCondition = _messages.MessageField('PipelineReadyCondition', 1)
   targetsPresentCondition = _messages.MessageField('TargetsPresentCondition', 2)
+  targetsTypeCondition = _messages.MessageField('TargetsTypeCondition', 3)
 
 
 class PipelineReadyCondition(_messages.Message):
@@ -2612,8 +2674,7 @@ class Range(_messages.Message):
     SATURDAY = 6
     SUNDAY = 7
 
-  dayOfWeek = _messages.EnumField(
-      'DayOfWeekValueListEntryValuesEnum', 1, repeated=True)
+  dayOfWeek = _messages.EnumField('DayOfWeekValueListEntryValuesEnum', 1, repeated=True)
   endDate = _messages.MessageField('Date', 2)
   endTimeOfDay = _messages.MessageField('TimeOfDay', 3)
   startDate = _messages.MessageField('Date', 4)
@@ -2904,8 +2965,7 @@ class Resource(_messages.Message):
     targets: Contains attributes about a target.
   """
 
-  deliveryPipelines = _messages.MessageField(
-      'DeliveryPipelineAttribute', 1, repeated=True)
+  deliveryPipelines = _messages.MessageField('DeliveryPipelineAttribute', 1, repeated=True)
   targets = _messages.MessageField('TargetAttribute', 2, repeated=True)
 
 
@@ -2966,10 +3026,8 @@ class RestrictRollout(_messages.Message):
     USER = 1
     DEPLOY_AUTOMATION = 2
 
-  actions = _messages.EnumField(
-      'ActionsValueListEntryValuesEnum', 1, repeated=True)
-  invoker = _messages.EnumField(
-      'InvokerValueListEntryValuesEnum', 2, repeated=True)
+  actions = _messages.EnumField('ActionsValueListEntryValuesEnum', 1, repeated=True)
+  invoker = _messages.EnumField('InvokerValueListEntryValuesEnum', 2, repeated=True)
   name = _messages.StringField(3)
   timeWindows = _messages.MessageField('TimeWindow', 4)
 
@@ -3101,6 +3159,8 @@ class Rollout(_messages.Message):
       RELEASE_ABANDONED: Release is abandoned.
       VERIFICATION_CONFIG_NOT_FOUND: No skaffold verify configuration was
         found.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
+        Deploy's request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -3109,6 +3169,7 @@ class Rollout(_messages.Message):
     RELEASE_FAILED = 4
     RELEASE_ABANDONED = 5
     VERIFICATION_CONFIG_NOT_FOUND = 6
+    CLOUD_BUILD_REQUEST_FAILED = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the `Rollout`.
@@ -3666,12 +3727,10 @@ class TargetArtifact(_messages.Message):
 
 
 class TargetAttribute(_messages.Message):
-  r"""Contains criteria for selecting Targets.
-
-  Attributes provided must match the target resource in order for policy
-  restrictions to apply. E.g. if id "prod" and labels "foo: bar" are given the
-  target resource must match both that id and have that label in order to be
-  selected for a deploy policy.
+  r"""Contains criteria for selecting Targets. Attributes provided must match
+  the target resource in order for policy restrictions to apply. E.g. if id
+  "prod" and labels "foo: bar" are given the target resource must match both
+  that id and have that label in order to be selected for a deploy policy.
 
   Messages:
     LabelsValue: Target labels.
@@ -3704,8 +3763,7 @@ class TargetAttribute(_messages.Message):
       key = _messages.StringField(1)
       value = _messages.StringField(2)
 
-    additionalProperties = _messages.MessageField(
-        'AdditionalProperty', 1, repeated=True)
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   id = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
@@ -3780,10 +3838,13 @@ class TargetRender(_messages.Message):
         service-account#required_permissions).
       EXECUTION_FAILED: The render operation did not complete successfully;
         check Cloud Build logs.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
+        Deploy's request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
+    CLOUD_BUILD_REQUEST_FAILED = 3
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.
@@ -3823,6 +3884,21 @@ class TargetsPresentCondition(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class TargetsTypeCondition(_messages.Message):
+  r"""TargetsTypeCondition contains information on whether the Targets defined
+  in the Delivery Pipeline are of the same type.
+
+  Fields:
+    errorDetails: Human readable error message.
+    status: True if the targets are all a comparable type. For example this is
+      true if all targets are GKE clusters. This is false if some targets are
+      Cloud Run targets and others are GKE clusters.
+  """
+
+  errorDetails = _messages.StringField(1)
+  status = _messages.BooleanField(2)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -3848,11 +3924,9 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TimeOfDay(_messages.Message):
-  r"""Represents a time of day.
-
-  The date and time zone are either not significant or are specified elsewhere.
-  An API may choose to allow leap seconds. Related types are google.type.Date
-  and `google.protobuf.Timestamp`.
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
   Fields:
     hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
@@ -3925,12 +3999,15 @@ class VerifyJobRun(_messages.Message):
         time.
       VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
         found.
+      CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Google Cloud
+        Deploy's request. See failure_message for additional details.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     DEADLINE_EXCEEDED = 3
     VERIFICATION_CONFIG_NOT_FOUND = 4
+    CLOUD_BUILD_REQUEST_FAILED = 5
 
   artifactUri = _messages.StringField(1)
   build = _messages.StringField(2)

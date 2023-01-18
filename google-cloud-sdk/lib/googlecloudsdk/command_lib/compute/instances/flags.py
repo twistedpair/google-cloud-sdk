@@ -1294,6 +1294,8 @@ def AddAddressArgs(parser,
       'network-attachment': str,
       'ipv6-address': str,
       'ipv6-prefix-length': int,
+      'external-ipv6-address': str,
+      'external-ipv6-prefix-length': int,
       'internal-ipv6-address': str,
       'internal-ipv6-prefix-length': int,
   }
@@ -1316,7 +1318,8 @@ def AddAddressArgs(parser,
       of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
       *--private-network-ip*, *--stack-type*, *--ipv6-network-tier*,
       *--ipv6-public-ptr-domain*, *--internal-ipv6-address*,
-      *--internal-ipv6-prefix-length*, *--ipv6-address*, *--ipv6-prefix-length*.
+      *--internal-ipv6-prefix-length*, *--ipv6-address*, *--ipv6-prefix-length*,
+      *--external-ipv6-address*, *--external-ipv6-prefix-length*.
       This flag can be repeated to specify multiple network interfaces.
     """)
   else:
@@ -1406,16 +1409,25 @@ def AddAddressArgs(parser,
         address, it must belong to the CIDR range specified by the range
         name on the subnet. If the IP range is specified by netmask, the
         IP allocator will pick an available range with the specified netmask
-        and allocate it to this network interface.""")
+        and allocate it to this network interface.
+        """)
   else:
     network_interface_help_texts.append("""
-        Each IP alias range consists of a range name and an CIDR netmask
-        (e.g. `/24`) separated by a colon, or just the netmask.
+        Each IP alias range consists of a range name and a CIDR netmask
+        (e.g. `/24`) separated by a colon or just the netmask.
         The range name is the name of the range within the network
         interface's subnet from which to allocate an IP alias range. If
         unspecified, it defaults to the primary IP range of the subnet.
         The IP allocator will pick an available range with the specified
-        netmask and allocate it to this network interface.""")
+        netmask and allocate it to this network interface.
+        """)
+
+  # TODO(b/265153883): Add a link to the user guide.
+  network_interface_help_texts.append("""
+      *network-attachment*::: Specifies the network attachment that this
+      interface should connect to. Mutually exclusive with *--network* and
+      *--subnet* flags.
+      """)
 
   if instance_create:
     network_interfaces = parser.add_group(mutex=True)
@@ -3247,6 +3259,17 @@ def AddIpv6NetworkTierArgs(parser):
 
 def AddIPv6AddressArgs(parser):
   parser.add_argument(
+      '--external-ipv6-address',
+      type=NonEmptyString('--external-ipv6-address'),
+      help="""
+      Assigns the given external IPv6 address to the instance that is created.
+      The address must be the first IP address in the range. This option can be
+      used only when creating a single instance.
+    """)
+
+
+def AddIPv6AddressAlphaArgs(parser):
+  parser.add_argument(
       '--ipv6-address',
       type=NonEmptyString('--ipv6-address'),
       help="""
@@ -3258,11 +3281,22 @@ def AddIPv6AddressArgs(parser):
 
 def AddIPv6PrefixLengthArgs(parser):
   parser.add_argument(
+      '--external-ipv6-prefix-length',
+      type=int,
+      help="""
+      The prefix length of the external IPv6 address range. This field should be
+      used together with `--external-ipv6-address`. Only the /96 IP address range
+      is supported, and the default value is 96.
+    """)
+
+
+def AddIPv6PrefixLengthAlphaArgs(parser):
+  parser.add_argument(
       '--ipv6-prefix-length',
       type=int,
       help="""
       The prefix length of the external IPv6 address range. This field should be
-      used together with --ipv6-address. Only the /96 IP address range is
+      used together with `--ipv6-address`. Only the /96 IP address range is
       supported, and the default value is 96.
     """)
 

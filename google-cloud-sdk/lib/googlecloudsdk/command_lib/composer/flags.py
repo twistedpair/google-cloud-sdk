@@ -243,6 +243,7 @@ UPDATE_AIRFLOW_VERSION_FLAG = base.Argument(
     Upgrade the environment to a later Apache Airflow version in-place.
 
     Must be of the form `X[.Y[.Z]]`, where `[]` denotes optional fragments.
+    Examples: `2`, `2.3`, `2.3.4`.
 
     The Apache Airflow version is a semantic version or an alias in the form of
     major or major.minor version numbers, resolved to the latest matching Apache
@@ -261,6 +262,9 @@ UPDATE_IMAGE_VERSION_FLAG = base.Argument(
     Apache Airflow. Must be of the form
     `composer-A[.B.C[-D.E]]-airflow-X[.Y[.Z]]`, where `[]` denotes optional
     fragments.
+
+    Examples: `composer-2-airflow-2`, `composer-2-airflow-2.2`,
+    `composer-2.1.2-airflow-2.3.4`.
 
     The Cloud Composer portion of the image version is a semantic version or
     an alias in the form of major version number or `latest`, resolved to the
@@ -315,7 +319,7 @@ MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION = (
 
 CLOUD_DATA_LINEAGE_INTEGRATION_GROUP_DESCRIPTION = (
     'Group of arguments for setting Cloud Data Lineage integration '
-    'configuration in Composer 2')
+    'configuration in Composer 2.')
 
 CLEAR_PYPI_PACKAGES_FLAG = base.Argument(
     '--clear-pypi-packages',

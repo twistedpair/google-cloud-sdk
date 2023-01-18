@@ -762,50 +762,6 @@
     "projects": {
       "resources": {
         "locations": {
-          "methods": {
-            "listPipelines": {
-              "id": "datapipelines.projects.locations.listPipelines",
-              "path": "v1/{+parent}",
-              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The location name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "filter": {
-                  "description": "An expression for filtering the results of the request. If unspecified, all pipelines will be returned. Multiple filters can be applied and must be comma separated. Fields eligible for filtering are: + `type`: The type of the pipeline (streaming or batch). Allowed values are `ALL`, `BATCH`, and `STREAMING`. + `status`: The activity status of the pipeline. Allowed values are `ALL`, `ACTIVE`, `ARCHIVED`, and `PAUSED`. For example, to limit results to active batch processing pipelines: type:BATCH,status:ACTIVE",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The maximum number of entities to return. The service may return fewer than this value, even if there are additional pages. If unspecified, the max limit is yet to be determined by the backend implementation.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "A page token, received from a previous `ListPipelines` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPipelines` must match the call that provided the page token.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "GoogleCloudDatapipelinesV1ListPipelinesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Lists pipelines. Returns a \"FORBIDDEN\" error if the caller doesn't have permission to access it."
-            }
-          }
-          ,
           "resources": {
             "pipelines": {
               "methods": {
@@ -895,6 +851,47 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a pipeline. If a scheduler job is attached to the pipeline, it will be deleted."
+                },
+                "list": {
+                  "id": "datapipelines.projects.locations.pipelines.list",
+                  "path": "v1/{+parent}/pipelines",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/pipelines",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The location name. For example: `projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "An expression for filtering the results of the request. If unspecified, all pipelines will be returned. Multiple filters can be applied and must be comma separated. Fields eligible for filtering are: + `type`: The type of the pipeline (streaming or batch). Allowed values are `ALL`, `BATCH`, and `STREAMING`. + `status`: The activity status of the pipeline. Allowed values are `ALL`, `ACTIVE`, `ARCHIVED`, and `PAUSED`. For example, to limit results to active batch processing pipelines: type:BATCH,status:ACTIVE",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of entities to return. The service may return fewer than this value, even if there are additional pages. If unspecified, the max limit is yet to be determined by the backend implementation.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListPipelines` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPipelines` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatapipelinesV1ListPipelinesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists pipelines. Returns a \"FORBIDDEN\" error if the caller doesn't have permission to access it."
                 },
                 "get": {
                   "id": "datapipelines.projects.locations.pipelines.get",

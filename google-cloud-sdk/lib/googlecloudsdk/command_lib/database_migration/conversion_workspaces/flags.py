@@ -93,3 +93,15 @@ def AddCommitNameFlag(parser):
     letter.
     """
   parser.add_argument('--commit-name', help=help_text)
+
+
+def AddAutoCommitFlag(parser):
+  """Adds a --auto-commit flag to the given parser."""
+  help_text = ('Auto commits the conversion workspace.')
+  parser.add_argument('--auto-commit', action='store_true', help=help_text)
+
+
+def AddFilterFlag(parser):
+  """Adds a --filter-string flag to the given parser."""
+  help_text = 'Filter the entities based on AIP-160 standard.'
+  parser.add_argument('--filter-string', help=help_text)

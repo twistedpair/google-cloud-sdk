@@ -27,7 +27,7 @@ from googlecloudsdk.core import properties
 
 REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS = ('project', 'bucket', 'name')
 OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS = (
-    'location', 'size', 'timeCreated', 'type',
+    'location', 'size', 'timeCreated', 'timeDeleted', 'type',
     'updated', 'storageClass', 'etag', 'retentionExpirationTime', 'crc32c',
     'md5Hash', 'generation', 'metageneration', 'contentType',
     'contentEncoding', 'timeStorageClassUpdated')
@@ -83,29 +83,57 @@ def add_predefined_acl_flag(parser):
       '/storage/docs/access-control/lists#predefined-acl')
 
 
-def add_object_acl_setter_flags(parser):
-  """Adds flags common among commands that modify object ACLs."""
-  acl_flags_group = parser.add_group(mutex=True)
-  acl_flags_group.add_argument(
+def add_preserve_acl_flag(parser):
+  """Adds preserve ACL flag."""
+  parser.add_argument(
       '--preserve-acl',
       '-p',
       action=arg_parsers.StoreTrueFalseAction,
-      help='Preserves ACLs when copying in the cloud. This option is Google'
-      ' Cloud Storage-only, and you need OWNER access to all copied objects.'
-      ' If all objects in the destination bucket should have the same ACL,'
-      ' you can also set a default object ACL on that bucket instead of using'
-      ' this flag.\nPreserving ACLs is the default behavior for updating'
-      ' existing objects.')
-  add_predefined_acl_flag(acl_flags_group)
+      help=(
+          'Preserves ACLs when copying in the cloud. This option is Google'
+          ' Cloud Storage-only, and you need OWNER access to all copied'
+          ' objects. If all objects in the destination bucket should have the'
+          ' same ACL, you can also set a default object ACL on that bucket'
+          ' instead of using this flag.\nPreserving ACLs is the default'
+          ' behavior for updating existing objects.'
+      ),
+  )
 
 
-def add_predefined_default_object_acl_flag(parser):
-  """Adds predefined default ACL flag shared for buckets."""
+def add_acl_modifier_flags(parser):
+  """Adds flags common among commands that modify ACLs."""
+  add_predefined_acl_flag(parser)
   parser.add_argument(
-      '--predefined-default-object-acl',
-      help='Apply a predefined set of default object access controls to'
-      'buckets',
-      hidden=True)
+      '--acl-file',
+      help=(
+          'Path to a local JSON or YAML formatted file containing a valid'
+          ' policy. The output of `gcloud storage [buckets|objects] describe`'
+          ' `--format="multi(acl:format=json)"` is a valid file and can be'
+          ' edited for more fine-grained control.'
+      ),
+  )
+  parser.add_argument(
+      '--add-acl-grant',
+      action='append',
+      metavar='ACL_GRANT',
+      type=arg_parsers.ArgDict(),
+      help=(
+          'Key-value pairs mirroring the JSON accepted by your cloud provider.'
+          ' For example, for Google Cloud Storage,'
+          '`--add-acl-grant=entity=user-tim@gmail.com,role=OWNER`'
+      ),
+  )
+  parser.add_argument(
+      '--remove-acl-grant',
+      action='append',
+      help=(
+          'Key-value pairs mirroring the JSON accepted by your cloud provider.'
+          ' For example, for Google Cloud Storage, `--remove-acl-grant=ENTITY`,'
+          ' where `ENTITY` has a valid ACL entity format,'
+          ' such as `user-tim@gmail.com`,'
+          ' `group-admins`, `allUsers`, etc.'
+      ),
+  )
 
 
 def add_precondition_flags(parser):
@@ -393,9 +421,9 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
       type=arg_parsers.Day.Parse,
       metavar='END_DATE',
       help=(
-          'Sets date after which you want to stop generating inventory reports. '
-          'For example, 2022-03-30.' +
-          _get_optional_help_text(require_create_flags, 'end_date')))
+          'Sets date after which you want to stop generating inventory reports.'
+          ' For example, 2022-03-30.'
+          + _get_optional_help_text(require_create_flags, 'end_date')))
   if require_create_flags:
     add_inventory_reports_metadata_fields_flag(parser, require_create_flags)
 

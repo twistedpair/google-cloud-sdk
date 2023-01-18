@@ -189,15 +189,6 @@ class Container(_messages.Message):
   workingDir = _messages.StringField(6)
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
-
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -235,7 +226,7 @@ class Expr(_messages.Message):
 
 
 class GceConfidentialInstanceConfig(_messages.Message):
-  r"""A set of Confidential Google Compute Engine Instance option.
+  r"""A set of Compute Engine Confidential VM instance options.
 
   Fields:
     enableConfidentialCompute: Whether the instance has confidential compute
@@ -246,24 +237,23 @@ class GceConfidentialInstanceConfig(_messages.Message):
 
 
 class GceInstance(_messages.Message):
-  r"""A runtime using a Google Compute Engine Instance.
+  r"""A runtime using a Compute Engine instance.
 
   Fields:
     bootDiskSizeGb: Size of the boot disk in GB.
-    confidentialInstanceConfig: A set of Confidential Google Compute Engine
-      Instance option.
+    confidentialInstanceConfig: A set of Compute Engine Confidential VM
+      instance options.
     disablePublicIpAddresses: Whether instances have no public IP address.
-    machineType: The name of a Google Compute Engine machine type.
-    poolSize: Number of instances to pool for faster Workstation starup.
+    machineType: The name of a Compute Engine machine type.
+    poolSize: Number of instances to pool for faster workstation starup.
     serviceAccount: Email address of the service account that will be used on
       VM instances used to support this config. This service account must have
       permission to pull the specified container image. If not set, VMs will
       run without a service account, in which case the image must be publicly
       accessible.
-    shieldedInstanceConfig: A set of Shielded Google Compute Engine Instance
-      options.
-    tags: Network tags to add to the Google Compute Engine machines backing
-      the Workstations.
+    shieldedInstanceConfig: A set of Compute Engine Shielded instance options.
+    tags: Network tags to add to the Compute Engine machines backing the
+      Workstations.
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -282,25 +272,25 @@ class GceRegionalPersistentDisk(_messages.Message):
 
   Enums:
     ReclaimPolicyValueValuesEnum: What should happen to the disk after the
-      Workstation is deleted. Defaults to DELETE.
+      workstation is deleted. Defaults to DELETE.
 
   Fields:
     diskType: Type of the disk to use.
     fsType: Type of file system that the disk should be formatted with. The
-      Workstation image must support this file system type. Must be empty if
+      workstation image must support this file system type. Must be empty if
       source_snapshot is set.
-    reclaimPolicy: What should happen to the disk after the Workstation is
+    reclaimPolicy: What should happen to the disk after the workstation is
       deleted. Defaults to DELETE.
     sizeGb: Size of the disk in GB. Must be empty if source_snapshot is set.
   """
 
   class ReclaimPolicyValueValuesEnum(_messages.Enum):
-    r"""What should happen to the disk after the Workstation is deleted.
+    r"""What should happen to the disk after the workstation is deleted.
     Defaults to DELETE.
 
     Values:
       RECLAIM_POLICY_UNSPECIFIED: Do not use.
-      DELETE: The persistent disk will be deleted with the Workstation.
+      DELETE: The persistent disk will be deleted with the workstation.
       RETAIN: The persistent disk will be remain after the workstation is
         deleted, and the administrator must manually delete the disk.
     """
@@ -315,7 +305,7 @@ class GceRegionalPersistentDisk(_messages.Message):
 
 
 class GceShieldedInstanceConfig(_messages.Message):
-  r"""A set of Shielded Google Compute Engine Instance options.
+  r"""A set of Compute Engine Shielded instance options.
 
   Fields:
     enableIntegrityMonitoring: Whether the instance has integrity monitoring
@@ -360,12 +350,20 @@ class GenerateAccessTokenResponse(_messages.Message):
   expireTime = _messages.StringField(2)
 
 
+class GoogleProtobufEmpty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
 class Host(_messages.Message):
-  r"""The system will attempt to keep enough computational resources on
-  standby Runtime host for a Workstation.
+  r"""Runtime host for a workstation.
 
   Fields:
-    gceInstance: Specifies a Google Compute Engine Instance as the host.
+    gceInstance: Specifies a Compute Engine instance as the host.
   """
 
   gceInstance = _messages.MessageField('GceInstance', 1)
@@ -568,37 +566,36 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""Metadata for long-running operations.
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
-    cancelRequested: Output only. Identifies whether the user has requested
-      cancellation of the operation. Operations that have been cancelled
-      successfully have Operation.error value with a google.rpc.Status.code of
-      1, corresponding to `Code.CANCELLED`.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    statusDetail: Output only. Human-readable status of the operation, if any.
+    createTime: Output only. Time that the operation was created.
+    endTime: Output only. Time that the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
     target: Output only. Server-defined resource path for the target of the
       operation.
     verb: Output only. Name of the verb executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  statusDetail = _messages.StringField(5)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
 
 
 class PersistentDirectory(_messages.Message):
-  r"""A directory persisted across Workstation sessions.
+  r"""A directory to persist across workstation sessions.
 
   Fields:
     gcePd: A PersistentDirectory backed by a Compute Engine persistent disk.
-    mountPath: Location of this directory in the running Workstation.
+    mountPath: Location of this directory in the running workstation.
   """
 
   gcePd = _messages.MessageField('GceRegionalPersistentDisk', 1)
@@ -687,14 +684,15 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
-    clusterHostname: Output only. Hostname for the Workstation Cluster. This
+    clusterHostname: Output only. Hostname for the workstation cluster. This
       field will be populated only when private endpoint is enabled. To access
       workstations in the cluster, create a new DNS zone mapping this domain
       name to an internal IP address and a forwarding rule mapping that
       address to the service attachment.
-    enablePrivateEndpoint: Whether Workstations endpoint is private.
+    enablePrivateEndpoint: Immutable. Whether Workstations endpoint is
+      private.
     serviceAttachmentUri: Output only. Service attachment URI for the
-      Workstation Cluster. The service attachemnt is created when private
+      workstation cluster. The service attachemnt is created when private
       endpoint is enabled. To access workstations in the cluster, configure
       access to the managed service using (Private Service
       Connect)[https://cloud.google.com/vpc/docs/configure-private-service-
@@ -898,6 +896,8 @@ class Workstation(_messages.Message):
 
   Messages:
     AnnotationsValue: Client-specified annotations.
+    LabelsValue: Client-specified labels that are applied to the resource and
+      that are also propagated to the underlying Compute Engine resources.
 
   Fields:
     annotations: Client-specified annotations.
@@ -912,6 +912,8 @@ class Workstation(_messages.Message):
       the workstation as HTTP on port 80. To send traffic to a different port,
       clients may prefix the host with the destination port in the format
       "{port}-{host}".
+    labels: Client-specified labels that are applied to the resource and that
+      are also propagated to the underlying Compute Engine resources.
     name: Full name of this resource.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
@@ -964,25 +966,53 @@ class Workstation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Client-specified labels that are applied to the resource and that are
+    also propagated to the underlying Compute Engine resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
   deleteTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
   etag = _messages.StringField(5)
   host = _messages.StringField(6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class WorkstationCluster(_messages.Message):
-  r"""A grouping of WorkstationConfigs and their associated Workstations in a
-  region.
+  r"""A grouping of workstation configurations and the associated workstations
+  in that region.
 
   Messages:
     AnnotationsValue: Client-specified annotations.
+    LabelsValue: Client-specified labels that are applied to the resource and
+      that are also propagated to the underlying Compute Engine resources.
 
   Fields:
     annotations: Client-specified annotations.
@@ -997,15 +1027,17 @@ class WorkstationCluster(_messages.Message):
     etag: Checksum computed by the server. May be sent on update and delete
       requests to ensure that the client has an up-to-date value before
       proceeding.
+    labels: Client-specified labels that are applied to the resource and that
+      are also propagated to the underlying Compute Engine resources.
     name: Full name of this resource.
-    network: Name of the Compute Engine network in which instances associated
-      with this cluster will be created.
+    network: Immutable. Name of the Compute Engine network in which instances
+      associated with this cluster will be created.
     privateClusterConfig: Configuration for private cluster.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
-    subnetwork: Name of the Compute Engine subnetwork in which instances
-      associated with this cluster will be created. Must be part of the
-      subnetwork specified for this cluster.
+    subnetwork: Immutable. Name of the Compute Engine subnetwork in which
+      instances associated with this cluster will be created. Must be part of
+      the subnetwork specified for this cluster.
     uid: Output only. A system-assigned unique identified for this resource.
     updateTime: Output only. Time when this resource was most recently
       updated.
@@ -1036,6 +1068,31 @@ class WorkstationCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Client-specified labels that are applied to the resource and that are
+    also propagated to the underlying Compute Engine resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   conditions = _messages.MessageField('Status', 2, repeated=True)
   createTime = _messages.StringField(3)
@@ -1043,28 +1100,32 @@ class WorkstationCluster(_messages.Message):
   deleteTime = _messages.StringField(5)
   displayName = _messages.StringField(6)
   etag = _messages.StringField(7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 10)
-  reconciling = _messages.BooleanField(11)
-  subnetwork = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 11)
+  reconciling = _messages.BooleanField(12)
+  subnetwork = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class WorkstationConfig(_messages.Message):
   r"""A set of configuration options describing how a workstation will be run.
-  WorkstationConfigs are intended to be shared across multiple workstations.
+  Workstation configurations are intended to be shared across multiple
+  workstations.
 
   Messages:
     AnnotationsValue: Client-specified annotations.
+    LabelsValue: Client-specified labels that are applied to the resource and
+      that are also propagated to the underlying Compute Engine resources.
 
   Fields:
     annotations: Client-specified annotations.
     conditions: Output only. Status conditions describing the current resource
       state.
-    container: Container that will be run for each Workstation using this
-      config when that Workstation is started.
+    container: Container that will be run for each workstation using this
+      configuration when that workstation is started.
     createTime: Output only. Time when this resource was created.
     degraded: Output only. Whether this resource is in degraded mode, in which
       case it may require user action to restore full functionality. Details
@@ -1074,12 +1135,14 @@ class WorkstationConfig(_messages.Message):
     etag: Checksum computed by the server. May be sent on update and delete
       requests to ensure that the client has an up-to-date value before
       proceeding.
-    host: Runtime host for the Workstation.
+    host: Runtime host for the workstation.
     idleTimeout: How long to wait before automatically stopping an instance
       that hasn't received any user traffic. A value of 0 indicates that this
       instance should never time out due to idleness. Defaults to 20 minutes.
+    labels: Client-specified labels that are applied to the resource and that
+      are also propagated to the underlying Compute Engine resources.
     name: Full name of this resource.
-    persistentDirectories: Directories to persist across Workstation sessions.
+    persistentDirectories: Directories to persist across workstation sessions.
     reconciling: Output only. Indicates whether this resource is currently
       being updated to match its intended state.
     runningTimeout: How long to wait before automatically stopping a
@@ -1116,6 +1179,31 @@ class WorkstationConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Client-specified labels that are applied to the resource and that are
+    also propagated to the underlying Compute Engine resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   conditions = _messages.MessageField('Status', 2, repeated=True)
   container = _messages.MessageField('Container', 3)
@@ -1126,12 +1214,13 @@ class WorkstationConfig(_messages.Message):
   etag = _messages.StringField(8)
   host = _messages.MessageField('Host', 9)
   idleTimeout = _messages.StringField(10)
-  name = _messages.StringField(11)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 12, repeated=True)
-  reconciling = _messages.BooleanField(13)
-  runningTimeout = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 13, repeated=True)
+  reconciling = _messages.BooleanField(14)
+  runningTimeout = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1207,9 +1296,9 @@ class WorkstationsProjectsLocationsWorkstationClustersDeleteRequest(_messages.Me
   Fields:
     etag: If set, the request will be rejected if the latest version of the
       cluster on the server does not have this etag.
-    force: If set, any WorkstationConfigs and Workstations in the cluster will
-      also be deleted. Otherwise, the request will work only if the cluster
-      has no configs or workstations.
+    force: If set, any workstation configurations and workstations in the
+      cluster will also be deleted. Otherwise, the request will work only if
+      the cluster has no configurations or workstations.
     name: Required. Name of the cluster to delete.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.

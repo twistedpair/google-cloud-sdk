@@ -1457,11 +1457,16 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
         set to a value other than "runsc". Leaving dockerRuntime unspecified
         *is* compatible with gVisor. 2. dockerPrivileged is set to "true".
         etc.
+      LINUX_EXECUTION_HARDENED_GVISOR_OR_TERMINAL: Linux actions will be
+        hardened using gVisor if their configuration is compatible with gVisor
+        hardening. Otherwise, the action will be terminal, i.e., the worker VM
+        that runs the action will be terminated after the action finishes.
     """
     LINUX_EXECUTION_UNSPECIFIED = 0
     LINUX_EXECUTION_FORBIDDEN = 1
     LINUX_EXECUTION_UNRESTRICTED = 2
     LINUX_EXECUTION_HARDENED_GVISOR = 3
+    LINUX_EXECUTION_HARDENED_GVISOR_OR_TERMINAL = 4
 
   class LinuxIsolationValueValuesEnum(_messages.Enum):
     r"""linux_isolation allows overriding the docker runtime used for
@@ -1514,10 +1519,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
         forbidden.
       WINDOWS_EXECUTION_UNRESTRICTED: No restrictions on execution of Windows
         actions.
+      WINDOWS_EXECUTION_TERMINAL: Windows actions will always result in the
+        worker VM being terminated after the action completes.
     """
     WINDOWS_EXECUTION_UNSPECIFIED = 0
     WINDOWS_EXECUTION_FORBIDDEN = 1
     WINDOWS_EXECUTION_UNRESTRICTED = 2
+    WINDOWS_EXECUTION_TERMINAL = 3
 
   actionHermeticity = _messages.EnumField('ActionHermeticityValueValuesEnum', 1)
   actionIsolation = _messages.EnumField('ActionIsolationValueValuesEnum', 2)

@@ -63,7 +63,9 @@ class EventarcClientBase(object):
     if loading_msg:
       message = '{}, {}'.format(message, loading_msg)
     try:
-      return waiter.WaitFor(poller, operation_ref, message)
+      return waiter.WaitFor(
+          poller, operation_ref, message, wait_ceiling_ms=20000
+      )
     except apitools_exceptions.HttpForbiddenError as e:
       desc_cmd = 'gcloud eventarc {}s describe {} --location={}'.format(
           self._resource_label, resource_name, location_name)

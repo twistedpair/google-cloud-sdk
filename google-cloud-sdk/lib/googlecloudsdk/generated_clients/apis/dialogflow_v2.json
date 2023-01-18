@@ -2897,6 +2897,31 @@
             "INEFFICIENT",
             "EFFICIENT"
           ]
+        },
+        "summarizationFeedback": {
+          "description": "Optional. Feedback for conversation summarization.",
+          "$ref": "GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback": {
+      "id": "GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback",
+      "description": "Feedback for conversation summarization.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Timestamp when composing of the summary starts.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "submitTime": {
+          "description": "Timestamp when the summary was submitted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "summaryText": {
+          "description": "Text of actual submitted summary.",
+          "type": "string"
         }
       }
     },
@@ -3961,6 +3986,64 @@
         },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2SuggestConversationSummaryRequest": {
+      "id": "GoogleCloudDialogflowV2SuggestConversationSummaryRequest",
+      "description": "The request message for Conversations.SuggestConversationSummary.",
+      "type": "object",
+      "properties": {
+        "latestMessage": {
+          "description": "The name of the latest conversation message used as context for compiling suggestion. If empty, the latest message of the conversation will be used. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
+          "type": "string"
+        },
+        "contextSize": {
+          "description": "Max number of messages prior to and including [latest_message] to use as context when compiling the suggestion. By default 500 and at most 1000.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2SuggestConversationSummaryResponse": {
+      "id": "GoogleCloudDialogflowV2SuggestConversationSummaryResponse",
+      "description": "The response message for Conversations.SuggestConversationSummary.",
+      "type": "object",
+      "properties": {
+        "summary": {
+          "description": "Generated summary.",
+          "$ref": "GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary"
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used as context for compiling suggestion. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
+          "type": "string"
+        },
+        "contextSize": {
+          "description": "Number of messages prior to and including last_conversation_message used to compile the suggestion. It may be smaller than the SuggestSummaryRequest.context_size field in the request if there weren't that many messages in the conversation.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary": {
+      "id": "GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary",
+      "description": "Generated summary for a conversation.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "The summary content that is concatenated into one string.",
+          "type": "string"
+        },
+        "textSections": {
+          "description": "The summary content that is divided into sections. The key is the section's name and the value is the section's content. There is no specific format for the key or value.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "answerRecord": {
+          "description": "The name of the answer record. Format: \"projects\/\/answerRecords\/\"",
           "type": "string"
         }
       }
@@ -6374,6 +6457,72 @@
         }
       }
     },
+    "GoogleCloudDialogflowCxV3ConversationSignals": {
+      "id": "GoogleCloudDialogflowCxV3ConversationSignals",
+      "description": "This message is used to hold all the Conversation Signals data, which will be converted to JSON and exported to BigQuery.",
+      "type": "object",
+      "properties": {
+        "turnSignals": {
+          "description": "Required. Turn signals for the current turn.",
+          "$ref": "GoogleCloudDialogflowCxV3TurnSignals"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3TurnSignals": {
+      "id": "GoogleCloudDialogflowCxV3TurnSignals",
+      "description": "Collection of all signals that were extracted for a single turn of the conversation.",
+      "type": "object",
+      "properties": {
+        "noMatch": {
+          "description": "Whether NLU predicted NO_MATCH.",
+          "type": "boolean"
+        },
+        "noUserInput": {
+          "description": "Whether user provided no input.",
+          "type": "boolean"
+        },
+        "dtmfUsed": {
+          "description": "Whether user was using DTMF input.",
+          "type": "boolean"
+        },
+        "userEscalated": {
+          "description": "Whether user was specifically asking for a live agent.",
+          "type": "boolean"
+        },
+        "agentEscalated": {
+          "description": "Whether agent responded with LiveAgentHandoff fulfillment.",
+          "type": "boolean"
+        },
+        "reachedEndPage": {
+          "description": "Whether turn resulted in End Session page.",
+          "type": "boolean"
+        },
+        "webhookStatuses": {
+          "description": "Human-readable statuses of the webhooks triggered during this turn.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failureReasons": {
+          "description": "Failure reasons of the turn.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Failure reason is not assigned.",
+              "Whether NLU failed to recognize user intent.",
+              "Whether webhook failed during the turn."
+            ],
+            "enum": [
+              "FAILURE_REASON_UNSPECIFIED",
+              "FAILED_INTENT",
+              "FAILED_WEBHOOK"
+            ]
+          }
+        }
+      }
+    },
     "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata": {
       "id": "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata",
       "description": "Metadata associated with the long running operation for Versions.CreateVersion.",
@@ -8165,6 +8314,72 @@
         "genericWebService": {
           "description": "Generic Service configuration of this webhook.",
           "$ref": "GoogleCloudDialogflowCxV3beta1WebhookGenericWebService"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1ConversationSignals": {
+      "id": "GoogleCloudDialogflowCxV3beta1ConversationSignals",
+      "description": "This message is used to hold all the Conversation Signals data, which will be converted to JSON and exported to BigQuery.",
+      "type": "object",
+      "properties": {
+        "turnSignals": {
+          "description": "Required. Turn signals for the current turn.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1TurnSignals"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1TurnSignals": {
+      "id": "GoogleCloudDialogflowCxV3beta1TurnSignals",
+      "description": "Collection of all signals that were extracted for a single turn of the conversation.",
+      "type": "object",
+      "properties": {
+        "noMatch": {
+          "description": "Whether NLU predicted NO_MATCH.",
+          "type": "boolean"
+        },
+        "noUserInput": {
+          "description": "Whether user provided no input.",
+          "type": "boolean"
+        },
+        "dtmfUsed": {
+          "description": "Whether user was using DTMF input.",
+          "type": "boolean"
+        },
+        "userEscalated": {
+          "description": "Whether user was specifically asking for a live agent.",
+          "type": "boolean"
+        },
+        "agentEscalated": {
+          "description": "Whether agent responded with LiveAgentHandoff fulfillment.",
+          "type": "boolean"
+        },
+        "reachedEndPage": {
+          "description": "Whether turn resulted in End Session page.",
+          "type": "boolean"
+        },
+        "webhookStatuses": {
+          "description": "Human-readable statuses of the webhooks triggered during this turn.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failureReasons": {
+          "description": "Failure reasons of the turn.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Failure reason is not assigned.",
+              "Whether NLU failed to recognize user intent.",
+              "Whether webhook failed during the turn."
+            ],
+            "enum": [
+              "FAILURE_REASON_UNSPECIFIED",
+              "FAILED_INTENT",
+              "FAILED_WEBHOOK"
+            ]
+          }
         }
       }
     },
@@ -10989,6 +11204,76 @@
         "genericMetadata": {
           "description": "The generic information of the operation.",
           "$ref": "GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1ConversationSignals": {
+      "id": "GoogleCloudDialogflowV3alpha1ConversationSignals",
+      "description": "This message is used to hold all the Conversation Signals data, which will be converted to JSON and exported to BigQuery.",
+      "type": "object",
+      "properties": {
+        "turnSignals": {
+          "description": "Required. Turn signals for the current turn.",
+          "$ref": "GoogleCloudDialogflowV3alpha1TurnSignals"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1TurnSignals": {
+      "id": "GoogleCloudDialogflowV3alpha1TurnSignals",
+      "description": "Collection of all signals that were extracted for a single turn of the conversation.",
+      "type": "object",
+      "properties": {
+        "noMatch": {
+          "description": "Whether NLU predicted NO_MATCH.",
+          "type": "boolean"
+        },
+        "noUserInput": {
+          "description": "Whether user provided no input.",
+          "type": "boolean"
+        },
+        "dtmfUsed": {
+          "description": "Whether user was using DTMF input.",
+          "type": "boolean"
+        },
+        "userEscalated": {
+          "description": "Whether user was specifically asking for a live agent.",
+          "type": "boolean"
+        },
+        "agentEscalated": {
+          "description": "Whether agent responded with LiveAgentHandoff fulfillment.",
+          "type": "boolean"
+        },
+        "triggeredAbandonmentEvent": {
+          "description": "Whether agent has triggered the event corresponding to user abandoning the conversation.",
+          "type": "boolean"
+        },
+        "reachedEndPage": {
+          "description": "Whether turn resulted in End Session page.",
+          "type": "boolean"
+        },
+        "webhookStatuses": {
+          "description": "Human-readable statuses of the webhooks triggered during this turn.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failureReasons": {
+          "description": "Failure reasons of the turn.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Failure reason is not assigned.",
+              "Whether NLU failed to recognize user intent.",
+              "Whether webhook failed during the turn."
+            ],
+            "enum": [
+              "FAILURE_REASON_UNSPECIFIED",
+              "FAILED_INTENT",
+              "FAILED_WEBHOOK"
+            ]
+          }
         }
       }
     }
@@ -14648,6 +14933,39 @@
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
                       "description": "Lists messages that belong to a given conversation. `messages` are ordered by `create_time` in descending order. To fetch updates without duplication, send request with filter `create_time_epoch_microseconds > [first item's create_time of previous request]` and empty page_token."
+                    }
+                  }
+                },
+                "suggestions": {
+                  "methods": {
+                    "suggestConversationSummary": {
+                      "id": "dialogflow.projects.locations.conversations.suggestions.suggestConversationSummary",
+                      "path": "v2/{+conversation}/suggestions:suggestConversationSummary",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/suggestions:suggestConversationSummary",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "conversation": {
+                          "description": "Required. The conversation to fetch suggestion for. Format: `projects\/\/locations\/\/conversations\/`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "conversation"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDialogflowV2SuggestConversationSummaryRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDialogflowV2SuggestConversationSummaryResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/dialogflow"
+                      ],
+                      "description": "Suggests summary for a conversation based on specific historical messages. The range of the messages to be used for summary can be specified in the request."
                     }
                   }
                 }
@@ -18557,6 +18875,39 @@
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
                   "description": "Lists messages that belong to a given conversation. `messages` are ordered by `create_time` in descending order. To fetch updates without duplication, send request with filter `create_time_epoch_microseconds > [first item's create_time of previous request]` and empty page_token."
+                }
+              }
+            },
+            "suggestions": {
+              "methods": {
+                "suggestConversationSummary": {
+                  "id": "dialogflow.projects.conversations.suggestions.suggestConversationSummary",
+                  "path": "v2/{+conversation}/suggestions:suggestConversationSummary",
+                  "flatPath": "v2/projects/{projectsId}/conversations/{conversationsId}/suggestions:suggestConversationSummary",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "conversation": {
+                      "description": "Required. The conversation to fetch suggestion for. Format: `projects\/\/locations\/\/conversations\/`.",
+                      "pattern": "^projects\/[^\/]+\/conversations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "conversation"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudDialogflowV2SuggestConversationSummaryRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudDialogflowV2SuggestConversationSummaryResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/dialogflow"
+                  ],
+                  "description": "Suggests summary for a conversation based on specific historical messages. The range of the messages to be used for summary can be specified in the request."
                 }
               }
             }

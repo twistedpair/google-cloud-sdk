@@ -122,13 +122,13 @@ class PipelinesClient(object):
     Returns:
       Generator of matching devices.
     """
-    list_req = self.messages.DatapipelinesProjectsLocationsListPipelinesRequest(
+    list_req = self.messages.DatapipelinesProjectsLocationsPipelinesListRequest(
         filter=input_filter, parent=region)
     return list_pager.YieldFromList(
-        self.client.projects_locations,
+        self.client.projects_locations_pipelines,
         list_req,
         field='pipelines',
-        method='ListPipelines',
+        method='List',
         batch_size=page_size,
         limit=limit,
         batch_size_attribute='pageSize')

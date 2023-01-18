@@ -300,7 +300,7 @@
           "type": "string"
         },
         "ipPrefixLength": {
-          "description": "Required. The prefix length of the subnet's IP address range. Use CIDR range notation, such as `30` to provision a subnet with an `x.x.x.x\/30` CIDR range. The IP address range is drawn from a pool of available ranges in the service consumer's allocated range.",
+          "description": "Required. The prefix length of the subnet's IP address range. Use CIDR range notation, such as `29` to provision a subnet with an `x.x.x.x\/29` CIDR range. The IP address range is drawn from a pool of available ranges in the service consumer's allocated range. GCE disallows subnets with prefix_length > 29",
           "type": "integer",
           "format": "int32"
         },
@@ -451,12 +451,12 @@
       "type": "object",
       "properties": {
         "ipPrefixLength": {
-          "description": "Required. The size of the desired subnet. Use usual CIDR range notation. For example, '30' to find unused x.x.x.x\/30 CIDR range. The goal is to determine if one of the allocated ranges has enough free space for a subnet of the requested size.",
+          "description": "Required. The size of the desired subnet. Use usual CIDR range notation. For example, '29' to find unused x.x.x.x\/29 CIDR range. The goal is to determine if one of the allocated ranges has enough free space for a subnet of the requested size. GCE disallows subnets with prefix_length > 29",
           "type": "integer",
           "format": "int32"
         },
         "secondaryRangeIpPrefixLengths": {
-          "description": "Optional. The size of the desired secondary ranges for the subnet. Use usual CIDR range notation. For example, '30' to find unused x.x.x.x\/30 CIDR range. The goal is to determine that the allocated ranges have enough free space for all the requested secondary ranges.",
+          "description": "Optional. The size of the desired secondary ranges for the subnet. Use usual CIDR range notation. For example, '29' to find unused x.x.x.x\/29 CIDR range. The goal is to determine that the allocated ranges have enough free space for all the requested secondary ranges. GCE disallows subnets with prefix_length > 29",
           "type": "array",
           "items": {
             "type": "integer",

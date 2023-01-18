@@ -935,18 +935,18 @@ class OutputConfig(_messages.Message):
       applied on the output bucket that may avoid file updating.
       (https://cloud.google.com/storage/docs/bucket-lock#retention-policy) The
       format of translations_file (for target language code 'trg') is:
-      gs://translation_test/a_b_c_'trg'_translations.[extension] If the input
-      file extension is tsv, the output has the following columns: Column 1:
-      ID of the request provided in the input, if it's not provided in the
-      input, then the input row number is used (0-based). Column 2: source
-      sentence. Column 3: translation without applying a glossary. Empty
-      string if there is an error. Column 4 (only present if a glossary is
-      provided in the request): translation after applying the glossary. Empty
-      string if there is an error applying the glossary. Could be same string
-      as column 3 if there is no glossary applied. If input file extension is
-      a txt or html, the translation is directly written to the output file.
-      If glossary is requested, a separate glossary_translations_file has
-      format of
+      `gs://translation_test/a_b_c_'trg'_translations.[extension]` If the
+      input file extension is tsv, the output has the following columns:
+      Column 1: ID of the request provided in the input, if it's not provided
+      in the input, then the input row number is used (0-based). Column 2:
+      source sentence. Column 3: translation without applying a glossary.
+      Empty string if there is an error. Column 4 (only present if a glossary
+      is provided in the request): translation after applying the glossary.
+      Empty string if there is an error applying the glossary. Could be same
+      string as column 3 if there is no glossary applied. If input file
+      extension is a txt or html, the translation is directly written to the
+      output file. If glossary is requested, a separate
+      glossary_translations_file has format of
       gs://translation_test/a_b_c_'trg'_glossary_translations.[extension] The
       format of errors file (for target language code 'trg') is:
       gs://translation_test/a_b_c_'trg'_errors.[extension] If the input file
@@ -1133,6 +1133,9 @@ class TranslateDocumentRequest(_messages.Message):
       output format. If not provided the translated file will only be returned
       through a byte-stream and its output mime type will be the same as the
       input file's mime type.
+    enableShadowRemovalNativePdf: Optional. If true, use the text removal
+      server to remove the shadow text on background image for native pdf
+      translation.
     glossaryConfig: Optional. Glossary to be applied. The glossary must be
       within the same region (have the same location-id) as the model,
       otherwise an INVALID_ARGUMENT (400) error is returned.
@@ -1197,12 +1200,13 @@ class TranslateDocumentRequest(_messages.Message):
   customizedAttribution = _messages.StringField(1)
   documentInputConfig = _messages.MessageField('DocumentInputConfig', 2)
   documentOutputConfig = _messages.MessageField('DocumentOutputConfig', 3)
-  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 4)
-  isTranslateNativePdfOnly = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  model = _messages.StringField(7)
-  sourceLanguageCode = _messages.StringField(8)
-  targetLanguageCode = _messages.StringField(9)
+  enableShadowRemovalNativePdf = _messages.BooleanField(4)
+  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 5)
+  isTranslateNativePdfOnly = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  model = _messages.StringField(8)
+  sourceLanguageCode = _messages.StringField(9)
+  targetLanguageCode = _messages.StringField(10)
 
 
 class TranslateDocumentResponse(_messages.Message):

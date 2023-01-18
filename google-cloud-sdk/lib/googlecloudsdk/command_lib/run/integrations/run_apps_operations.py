@@ -398,7 +398,7 @@ class RunAppsOperations(object):
         selectors=match_type_names,
         app_dict=app_dict)
 
-    deploy_message = messages_util.GetDeployMessage(resource_type, create=True)
+    deploy_message = typekit.GetDeployMessage(create=True)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     stages_map = stages.IntegrationStages(
         create=True, resource_types=resource_stages)
@@ -511,7 +511,7 @@ class RunAppsOperations(object):
           # Non-specified services are only added to selector if it exists.
           self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
 
-    deploy_message = messages_util.GetDeployMessage(resource_type)
+    deploy_message = typekit.GetDeployMessage()
     application = encoding.DictToMessage(app_dict, self.messages.Application)
 
     resource_stages = typekit.GetCreateComponentTypes(
@@ -616,7 +616,7 @@ class RunAppsOperations(object):
       self._UndeployResource(name, delete_selector, tracker, StatusUpdate)
 
     type_def = types_utils.GetIntegrationFromResource(resource)
-    integration_type = type_def[types_utils.INTEGRATION_TYPE]
+    integration_type = type_def.integration_type
     return integration_type
 
   def _UndeployResource(self,
@@ -676,7 +676,7 @@ class RunAppsOperations(object):
     Returns:
       An integration type definition. None if no matching type.
     """
-    return types_utils.GetIntegration(type_name)
+    return types_utils.GetTypeMetadata(type_name)
 
   def ListIntegrations(self, integration_type_filter, service_name_filter):
     """Returns the list of integrations.

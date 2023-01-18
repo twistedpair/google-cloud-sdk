@@ -14,6 +14,10 @@ from apitools.base.py import extra_types
 package = 'cloudfunctions'
 
 
+class AbortFunctionUpgradeRequest(_messages.Message):
+  r"""Request for the `AbortFunctionUpgrade` method."""
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -260,6 +264,36 @@ class BuildConfig(_messages.Message):
   workerPool = _messages.StringField(10)
 
 
+class CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest
+  object.
+
+  Fields:
+    abortFunctionUpgradeRequest: A AbortFunctionUpgradeRequest resource to be
+      passed as the request body.
+    name: Required. The name of the function for which upgrade should be
+      aborted.
+  """
+
+  abortFunctionUpgradeRequest = _messages.MessageField('AbortFunctionUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest
+  object.
+
+  Fields:
+    commitFunctionUpgradeRequest: A CommitFunctionUpgradeRequest resource to
+      be passed as the request body.
+    name: Required. The name of the function for which upgrade should be
+      finalized.
+  """
+
+  commitFunctionUpgradeRequest = _messages.MessageField('CommitFunctionUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsCreateRequest object.
 
@@ -398,6 +432,38 @@ class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTraffic
+  Request object.
+
+  Fields:
+    name: Required. The name of the function for which traffic target should
+      be changed to 2nd Gen from 1st Gen.
+    redirectFunctionUpgradeTrafficRequest: A
+      RedirectFunctionUpgradeTrafficRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  redirectFunctionUpgradeTrafficRequest = _messages.MessageField('RedirectFunctionUpgradeTrafficRequest', 2)
+
+
+class CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTraffic
+  Request object.
+
+  Fields:
+    name: Required. The name of the function for which traffic target should
+      be changed back to 1st Gen from 2nd Gen.
+    rollbackFunctionUpgradeTrafficRequest: A
+      RollbackFunctionUpgradeTrafficRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackFunctionUpgradeTrafficRequest = _messages.MessageField('RollbackFunctionUpgradeTrafficRequest', 2)
+
+
 class CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest object.
 
@@ -512,6 +578,10 @@ class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
+
+
+class CommitFunctionUpgradeRequest(_messages.Message):
+  r"""Request for the `CommitFunctionUpgrade` method."""
 
 
 class EventFilter(_messages.Message):
@@ -634,7 +704,8 @@ class Function(_messages.Message):
   response to an event. It encapsulates function and trigger configurations.
 
   Enums:
-    EnvironmentValueValuesEnum: Describe whether the function is gen1 or gen2.
+    EnvironmentValueValuesEnum: Describe whether the function is 1st Gen or
+      2nd Gen.
     StateValueValuesEnum: Output only. State of the function.
 
   Messages:
@@ -647,7 +718,7 @@ class Function(_messages.Message):
       base images (for building and runtime) that include a curated set of
       pre-installed packages.
     description: User-provided description of a function.
-    environment: Describe whether the function is gen1 or gen2.
+    environment: Describe whether the function is 1st Gen or 2nd Gen.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
       fires events in response to a condition in another service.
     kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
@@ -665,7 +736,7 @@ class Function(_messages.Message):
   """
 
   class EnvironmentValueValuesEnum(_messages.Enum):
-    r"""Describe whether the function is gen1 or gen2.
+    r"""Describe whether the function is 1st Gen or 2nd Gen.
 
     Values:
       ENVIRONMENT_UNSPECIFIED: Unspecified
@@ -750,7 +821,24 @@ class GenerateDownloadUrlResponse(_messages.Message):
 
 
 class GenerateUploadUrlRequest(_messages.Message):
-  r"""Request of `GenerateSourceUploadUrl` method."""
+  r"""Request of `GenerateSourceUploadUrl` method.
+
+  Fields:
+    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
+      to encrypt/decrypt function source code objects in intermediate Cloud
+      Storage buckets. When you generate an upload url and upload your source
+      code, it gets copied to an intermediate Cloud Storage bucket. The source
+      code is then copied to a versioned directory in the sources bucket in
+      the consumer project during the function deployment. It must match the
+      pattern `projects/{project}/locations/{location}/keyRings/{key_ring}/cry
+      ptoKeys/{crypto_key}`. The Google Cloud Functions service account
+      (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) must
+      be granted the role 'Cloud KMS CryptoKey Encrypter/Decrypter
+      (roles/cloudkms.cryptoKeyEncrypterDecrypter)' on the
+      Key/KeyRing/Project/Organization (least access preferred).
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class GenerateUploadUrlResponse(_messages.Message):
@@ -1611,6 +1699,10 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RedirectFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""Request for the `RedirectFunctionUpgradeTraffic` method."""
+
+
 class RepoSource(_messages.Message):
   r"""Location of the source in a Google Cloud Source Repository.
 
@@ -1640,6 +1732,10 @@ class RepoSource(_messages.Message):
   projectId = _messages.StringField(5)
   repoName = _messages.StringField(6)
   tagName = _messages.StringField(7)
+
+
+class RollbackFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""Request for the `RollbackFunctionUpgradeTraffic` method."""
 
 
 class Runtime(_messages.Message):

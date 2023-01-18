@@ -5,6 +5,88 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 414.0.0 (2023-01-18)
+
+### Anthos Multi-Cloud
+
+*   Added `--azure-tenant-id` and `--azure-application-id` flags to
+    `gcloud container azure clusters create` and
+    `gcloud container azure clusters update` to set authentication configuration
+    for management of Azure resources. These flags replace `--client` flag.
+
+### Apigee
+
+* Fixed issue where `gcloud apigee apis describe` would demand a non-existent
+  `--revision` argument.
+
+### Cloud API Gateway
+
+*   Fixed issue where `sort-by` arguments in list commands produced type
+    validation errors.
+
+### Cloud Build
+
+* Added `--peered-network-ip-range` flag to `gcloud builds worker-pools create`.
+
+### Cloud Firestore
+
+* Added database support for Firestore import/export.
+* Added namespace_ids support for Firestore import/export.
+* Added databaseId support for Firestore TTL.
+* Added databaseId support for Firestore SFI.
+
+### Cloud Storage
+
+* Add IAM and ACL-related flags.
+* Updated gsutil component to 5.18.
+
+### Compute Engine
+
+* Promoted `--external-ipv6-address` flag of `gcloud compute instances network-interfaces update` to GA.
+* Promoted `--external-ipv6-prefix-length` flag of `gcloud compute instances network-interfaces update` to GA.
+* Added keyword `network-attachment` for `--network-interface` in `gcloud compute instance-templates create`.
+* Promoted `--external-ipv6-address` flag of `gcloud compute instances create` to GA.
+* Promoted `--external-ipv6-prefix-length` flag of `gcloud compute instances create` to GA.
+* Promoted `--source-instance-template` flag of `gcloud compute reservations create` to GA.
+
+### Database Migration
+
+* Added `gcloud database-migration conversion-workspaces seed` which seeds from a connection profile for a database-migration conversion workspace.
+* Added `gcloud database-migration conversion-workspaces delete` which deletes a database-migration conversion workspace.
+* Added `gcloud database-migration conversion-workspaces convert` which converts source entities to draft entities in a database-migration conversion workspace.
+* Added `gcloud database-migration conversion-workspaces apply` which applies a database-migration conversion workspace onto the destination database.
+* Added `gcloud database-migration conversion-workspaces list-background-jobs` which lists the background jobs in a database-migration conversion workspaces.
+* Added `gcloud database-migration conversion-workspaces describe-entities` which describes the database entities in a database-migration conversion workspaces.
+
+### Dataproc Metastore
+
+* Promoted `gcloud metastore services` flag `--database-type` to GA.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.23.15 to 1.24.9.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.15)
+  * kubectl.1.24 (1.24.9)
+  * kubectl.1.25 (1.25.5)
+  * kubectl.1.26 (1.26.0)
+
+### Network Management
+
+* Added `appEngineVersion` and `cloudRunRevision` arguments for source in
+ `gcloud network-management connectivity-tests`. This allows the user to run
+ tests using App Engine version and Cloud Run revision endpoint types as source.
+
+### Security Command Center
+
+* Fixed `gcloud scc findings create` to require flag `event-time`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 413.0.0 (2023-01-10)
 
 ### Breaking Changes

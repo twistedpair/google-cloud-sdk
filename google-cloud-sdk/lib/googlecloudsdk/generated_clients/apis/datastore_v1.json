@@ -525,6 +525,11 @@
           "type": "string",
           "format": "int64"
         },
+        "createTime": {
+          "description": "The time at which the entity was created. This field is set for `FULL` entity results. If this entity is missing, this field will not be set.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "updateTime": {
           "description": "The time at which the entity was last changed. This field is set for `FULL` entity results. If this entity is missing, this field will not be set.",
           "type": "string",
@@ -1328,6 +1333,11 @@
           "description": "The version of the entity on the server after processing the mutation. If the mutation doesn't change anything on the server, then the version will be the version of the current entity or, if no entity is present, a version that is strictly greater than the version of any previous entity and less than the version of any possible future entity.",
           "type": "string",
           "format": "int64"
+        },
+        "createTime": {
+          "description": "The create time of the entity. This field will not be set after a 'delete'.",
+          "type": "string",
+          "format": "google-datetime"
         },
         "updateTime": {
           "description": "The update time of the entity on the server after processing the mutation. If the mutation doesn't change anything on the server, then the timestamp will be the update timestamp of the current entity. This field will not be set after a 'delete'.",

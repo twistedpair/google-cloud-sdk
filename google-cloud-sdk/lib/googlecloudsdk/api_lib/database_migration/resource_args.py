@@ -279,20 +279,28 @@ def AddMigrationJobResourceArgs(parser, verb, required=False):
           'migration_job',
           GetMigrationJobResourceSpec(),
           'The migration job {}.'.format(verb),
-          required=True),
+          required=True,
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--source',
           GetConnectionProfileResourceSpec(),
-          'ID of the source connection profile, representing the source database.',
+          (
+              'ID of the source connection profile, representing the source'
+              ' database.'
+          ),
           required=required,
-          flag_name_overrides={'region': ''}),
+          flag_name_overrides={'region': ''},
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--destination',
           GetConnectionProfileResourceSpec(),
-          'ID of the destination connection profile, representing the '
-          'destination database.',
+          (
+              'ID of the destination connection profile, representing the '
+              'destination database.'
+          ),
           required=required,
-          flag_name_overrides={'region': ''})
+          flag_name_overrides={'region': ''},
+      ),
   ]
   concept_parsers.ConceptParser(
       resource_specs,
@@ -308,7 +316,9 @@ def GetVpcResourceSpec():
   def VpcAttributeConfig():
     return concepts.ResourceParameterAttributeConfig(
         name='vpc',
-        help_text='fully qualified name of the VPC database migration will peer to.'
+        help_text=(
+            'fully qualified name of the VPC database migration will peer to.'
+        ),
     )
 
   return concepts.ResourceSpec(
@@ -397,3 +407,82 @@ def AddConversionWorkspaceResourceArg(parser, verb, positional=True):
       GetConversionWorkspaceResourceSpec(),
       'The conversion workspace {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddConversionWorkspaceSeedResourceArg(parser, verb, positional=True):
+  """Add a resource argument for seeding a database migration cw.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to seed'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'conversion_workspace'
+  else:
+    name = '--conversion-workspace'
+
+  connection_profile = parser.add_group(mutex=True, required=True)
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetConversionWorkspaceResourceSpec(),
+          'The conversion workspace {}.'.format(verb),
+          required=True),
+      presentation_specs.ResourcePresentationSpec(
+          '--source-connection-profile',
+          GetConnectionProfileResourceSpec(),
+          'The connection profile {} from.'.format(verb),
+          flag_name_overrides={'region': ''},
+          group=connection_profile),
+      presentation_specs.ResourcePresentationSpec(
+          '--destination-connection-profile',
+          GetConnectionProfileResourceSpec(),
+          'The connection profile {} from.'.format(verb),
+          flag_name_overrides={'region': ''},
+          group=connection_profile)
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--source-connection-profile.region': ['--region'],
+          '--destination-connection-profile.region': ['--region'],
+      }).AddToParser(parser)
+
+
+def AddConversionWorkspaceApplyResourceArg(parser, verb, positional=True):
+  """Add a resource argument for applying a database migration cw.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to apply'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'conversion_workspace'
+  else:
+    name = '--conversion-workspace'
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetConversionWorkspaceResourceSpec(),
+          'The conversion workspace {}.'.format(verb),
+          required=True,
+      ),
+      presentation_specs.ResourcePresentationSpec(
+          '--destination-connection-profile',
+          GetConnectionProfileResourceSpec(),
+          'The connection profile {} to.'.format(verb),
+          flag_name_overrides={'region': ''},
+          required=True,
+      ),
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--destination-connection-profile.region': ['--region']
+      }).AddToParser(parser)

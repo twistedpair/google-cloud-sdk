@@ -495,8 +495,6 @@ class _BareMetalClusterClient(client.ClientBase):
     container_runtime_mapping = {
         'ContainerRuntimeUnspecified':
             container_runtime_enum.CONTAINER_RUNTIME_UNSPECIFIED,
-        'Docker':
-            container_runtime_enum.DOCKER,
         'Conatinerd':
             container_runtime_enum.CONTAINERD,
     }

@@ -638,6 +638,7 @@ class CreateClusterOptions(object):
       enable_google_cloud_access=None,
       managed_config=None,
       fleet_project=None,
+      enable_fleet=None,
       gateway_api=None,
       logging_variant=None,
       enable_multi_networking=None,
@@ -815,6 +816,7 @@ class CreateClusterOptions(object):
     self.enable_google_cloud_access = enable_google_cloud_access
     self.managed_config = managed_config
     self.fleet_project = fleet_project
+    self.enable_fleet = enable_fleet
     self.gateway_api = gateway_api
     self.logging_variant = logging_variant
     self.enable_multi_networking = enable_multi_networking
@@ -936,6 +938,7 @@ class UpdateClusterOptions(object):
       additional_pod_ipv4_ranges=None,
       removed_additional_pod_ipv4_ranges=None,
       fleet_project=None,
+      enable_fleet=None,
       clear_fleet_project=None,
   ):
     self.version = version
@@ -1050,6 +1053,7 @@ class UpdateClusterOptions(object):
     self.additional_pod_ipv4_ranges = additional_pod_ipv4_ranges
     self.removed_additional_pod_ipv4_ranges = removed_additional_pod_ipv4_ranges
     self.fleet_project = fleet_project
+    self.enable_fleet = enable_fleet
     self.clear_fleet_project = clear_fleet_project
 
 
@@ -1906,6 +1910,11 @@ class APIAdapter(object):
         raise util.Error(
             MANGED_CONFIG_TYPE_NOT_SUPPORTED.format(
                 type=options.managed_config))
+
+    if options.enable_fleet:
+      if cluster.fleet is None:
+        cluster.fleet = self.messages.Fleet()
+      cluster.fleet.project = cluster_ref.projectId
 
     if options.fleet_project:
       if cluster.fleet is None:
@@ -3032,6 +3041,10 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_allocation))
+
+    if options.enable_fleet:
+      update = self.messages.ClusterUpdate(
+          desiredFleet=self.messages.Fleet(project=cluster_ref.projectId))
 
     if options.fleet_project:
       update = self.messages.ClusterUpdate(

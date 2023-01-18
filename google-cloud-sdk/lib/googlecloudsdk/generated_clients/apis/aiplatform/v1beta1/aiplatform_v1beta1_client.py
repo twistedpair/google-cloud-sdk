@@ -7243,7 +7243,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.models.listVersions',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
         relative_path='v1beta1/{+name}:listVersions',
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelsListVersionsRequest',
@@ -9582,7 +9582,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def BatchRead(self, request, global_params=None):
-      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data will be returned. Otherwise, that limit number of data points will be randomly selected from this time series and returned.
+      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data is returned. Otherwise, the number limit of data points is randomly selected from this time series and returned.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest) input message
@@ -9771,7 +9771,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def Read(self, request, global_params=None):
-      r"""Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k.
+      r"""Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data is returned. Otherwise, 1000 data points is randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest) input message
@@ -9997,7 +9997,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      r"""Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned.
+      r"""Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error is returned.
 
       Args:
         request: (GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest) input message
@@ -10169,7 +10169,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      r"""Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error will be returned.
+      r"""Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error is returned.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsWriteRequest) input message
@@ -10482,6 +10482,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1Tensorboard',
         request_type_name='AiplatformProjectsLocationsTensorboardsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ReadUsage(self, request, global_params=None):
+      r"""Returns a list of monthly active users for a given TensorBoard instance.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsReadUsageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReadUsage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadUsage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}:readUsage',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.readUsage',
+        ordered_params=['tensorboard'],
+        path_params=['tensorboard'],
+        query_params=[],
+        relative_path='v1beta1/{+tensorboard}:readUsage',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsReadUsageRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse',
         supports_download=False,
     )
 

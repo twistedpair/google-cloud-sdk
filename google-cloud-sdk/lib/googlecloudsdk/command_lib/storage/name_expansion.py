@@ -31,6 +31,14 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
 
 
+class BucketSetting(enum.Enum):
+  """An enum saying whether or not to include matched buckets."""
+
+  YES = '_yes'
+  NO = '_no'
+  NO_WITH_ERROR = '_no_with_error'
+
+
 class RecursionSetting(enum.Enum):
   """An enum saying whether or not recursion is requested."""
   YES = '_yes'
@@ -48,13 +56,15 @@ class NameExpansionIterator:
   See NameExpansionResult docstring for more info.
   """
 
-  def __init__(self,
-               urls_iterable,
-               all_versions=False,
-               fields_scope=cloud_api.FieldsScope.NO_ACL,
-               ignore_symlinks=False,
-               include_buckets=False,
-               recursion_requested=RecursionSetting.NO_WITH_WARNING):
+  def __init__(
+      self,
+      urls_iterable,
+      all_versions=False,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      ignore_symlinks=False,
+      include_buckets=BucketSetting.NO,
+      recursion_requested=RecursionSetting.NO_WITH_WARNING,
+  ):
     """Instantiates NameExpansionIterator.
 
     Args:
@@ -64,7 +74,8 @@ class NameExpansionIterator:
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
-      include_buckets (bool): True if buckets should be fetched.
+      include_buckets (BucketSetting): Whether to fetch matched buckets and
+        whether to raise an error.
       recursion_requested (RecursionSetting): Says whether or not recursion is
         requested.
     """
@@ -109,11 +120,21 @@ class NameExpansionIterator:
     return self._has_multiple_top_level_resources
 
   def _get_top_level_iterator(self):
+    """Iterates over user-entered URLs and does initial processing."""
     for url in self._urls_iterator:
+      original_storage_url = storage_url.storage_url_from_string(url)
+      if (
+          isinstance(original_storage_url, storage_url.CloudUrl)
+          and original_storage_url.is_bucket()
+          and self._recursion_requested is not RecursionSetting.YES
+          and self._include_buckets is BucketSetting.NO_WITH_ERROR
+      ):
+        raise errors.InvalidUrlError(
+            'Expected object URL. Received: {}'.format(url)
+        )
       # Set to True if associated Cloud resource found in __iter__.
       self._url_found_match_tracker[url] = False
       for resource in self._get_wildcard_iterator(url):
-        original_storage_url = storage_url.storage_url_from_string(url)
         yield url, self._get_name_expansion_result(resource,
                                                    resource.storage_url,
                                                    original_storage_url)
@@ -172,8 +193,9 @@ class NameExpansionIterator:
       self._raise_error_if_multiple_sources_include_stdin(
           name_expansion_result.expanded_url)
 
-      should_return_bucket = self._include_buckets and (
-          name_expansion_result.resource.storage_url.is_bucket())
+      should_return_bucket = self._include_buckets is BucketSetting.YES and (
+          name_expansion_result.resource.storage_url.is_bucket()
+      )
       if not resource_reference.is_container_or_has_container_url(
           name_expansion_result.resource) or should_return_bucket:
         self._url_found_match_tracker[input_url] = True

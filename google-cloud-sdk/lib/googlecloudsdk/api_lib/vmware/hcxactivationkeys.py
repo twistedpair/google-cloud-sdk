@@ -40,18 +40,11 @@ class HcxActivationKeysClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def List(self,
-           private_cloud_resource,
-           limit=None,
-           page_size=None):
+  def List(self, private_cloud_resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest(
         parent=private_cloud_resource.RelativeName())
-    if page_size:
-      request.page_size = page_size
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='hcxActivationKeys')

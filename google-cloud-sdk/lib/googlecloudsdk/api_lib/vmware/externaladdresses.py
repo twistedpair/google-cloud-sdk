@@ -49,17 +49,13 @@ class ExternalAddressesClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def List(self, resource, filter_expression=None,
-           limit=None, page_size=None):
+  def List(self, resource):
     address_name = resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest(
-        parent=address_name, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=address_name
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='externalAddresses')

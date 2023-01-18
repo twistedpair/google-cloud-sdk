@@ -1455,6 +1455,27 @@ class AliasIpRange(_messages.Message):
   subnetworkRangeName = _messages.StringField(2)
 
 
+class AllocationResourceStatus(_messages.Message):
+  r"""A AllocationResourceStatus object.
+
+  Fields:
+    specificSkuAllocation: A AllocationResourceStatusSpecificSKUAllocation
+      attribute.
+  """
+
+  specificSkuAllocation = _messages.MessageField('AllocationResourceStatusSpecificSKUAllocation', 1)
+
+
+class AllocationResourceStatusSpecificSKUAllocation(_messages.Message):
+  r"""A AllocationResourceStatusSpecificSKUAllocation object.
+
+  Fields:
+    sourceInstanceTemplateId: A string attribute.
+  """
+
+  sourceInstanceTemplateId = _messages.StringField(1)
+
+
 class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_messages.Message):
   r"""A AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk
   object.
@@ -1522,12 +1543,22 @@ class AllocationSpecificSKUReservation(_messages.Message):
     count: Specifies the number of resources that are allocated.
     inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
+    sourceInstanceTemplate: Specifies the instance template to create the
+      reservation. If you use this field, you must exclude the
+      instanceProperties field. This field is optional, and it can be a full
+      or partial URL. For example, the following are all valid URLs to an
+      instance template: -
+      https://www.googleapis.com/compute/v1/projects/project
+      /global/instanceTemplates/instanceTemplate -
+      projects/project/global/instanceTemplates/instanceTemplate -
+      global/instanceTemplates/instanceTemplate
   """
 
   assuredCount = _messages.IntegerField(1)
   count = _messages.IntegerField(2)
   inUseCount = _messages.IntegerField(3)
   instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 4)
+  sourceInstanceTemplate = _messages.StringField(5)
 
 
 class AttachedDisk(_messages.Message):
@@ -31633,8 +31664,7 @@ class FirewallPolicyRule(_messages.Message):
 
   Fields:
     action: The Action to perform when the client connection triggers the
-      rule. Can currently be either "allow" or "deny()" where valid values for
-      status are 403, 404, and 502.
+      rule. Valid actions are "allow", "deny" and "goto_next".
     description: An optional description for this resource.
     direction: The direction in which this rule applies.
     disabled: Denotes whether the firewall policy rule is disabled. When set
@@ -32992,6 +33022,7 @@ class GuestOsFeature(_messages.Message):
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
+      SEV_SNP_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
       WINDOWS: <no description>
@@ -33001,9 +33032,10 @@ class GuestOsFeature(_messages.Message):
     MULTI_IP_SUBNET = 2
     SECURE_BOOT = 3
     SEV_CAPABLE = 4
-    UEFI_COMPATIBLE = 5
-    VIRTIO_SCSI_MULTIQUEUE = 6
-    WINDOWS = 7
+    SEV_SNP_CAPABLE = 5
+    UEFI_COMPATIBLE = 6
+    VIRTIO_SCSI_MULTIQUEUE = 7
+    WINDOWS = 8
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -45795,6 +45827,9 @@ class NetworkInterface(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/project/global/networks/
       network - projects/project/global/networks/network -
       global/networks/default
+    networkAttachment: The URL of the network attachment that this interface
+      should connect to in the following format: projects/{project_number}/reg
+      ions/{region_name}/networkAttachments/{network_attachment_name}.
     networkIP: An IPv4 internal IP address to assign to the instance for this
       network interface. If not specified by the user, an unused internal IP
       is assigned by the system.
@@ -45865,11 +45900,12 @@ class NetworkInterface(_messages.Message):
   kind = _messages.StringField(8, default='compute#networkInterface')
   name = _messages.StringField(9)
   network = _messages.StringField(10)
-  networkIP = _messages.StringField(11)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 12)
-  queueCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
-  subnetwork = _messages.StringField(15)
+  networkAttachment = _messages.StringField(11)
+  networkIP = _messages.StringField(12)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 13)
+  queueCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 15)
+  subnetwork = _messages.StringField(16)
 
 
 class NetworkList(_messages.Message):
@@ -53708,6 +53744,7 @@ class Reservation(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    resourceStatus: [Output Only] Status information for Reservation resource.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -53748,13 +53785,14 @@ class Reservation(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  selfLink = _messages.StringField(8)
-  shareSettings = _messages.MessageField('ShareSettings', 9)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 10)
-  specificReservationRequired = _messages.BooleanField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  zone = _messages.StringField(13)
+  resourceStatus = _messages.MessageField('AllocationResourceStatus', 7)
+  satisfiesPzs = _messages.BooleanField(8)
+  selfLink = _messages.StringField(9)
+  shareSettings = _messages.MessageField('ShareSettings', 10)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 11)
+  specificReservationRequired = _messages.BooleanField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  zone = _messages.StringField(14)
 
 
 class ReservationAffinity(_messages.Message):
@@ -59964,8 +60002,8 @@ class SourceInstanceParams(_messages.Message):
 
   Fields:
     diskConfigs: Attached disks configuration. If not provided, defaults are
-      applied: For boot disk and any other R/W disks, new custom images will
-      be created from each disk. For read-only disks, they will be attached in
+      applied: For boot disk and any other R/W disks, the source images for
+      each disk will be used. For read-only disks, they will be attached in
       read-only mode. Local SSD disks will be created as blank volumes.
   """
 

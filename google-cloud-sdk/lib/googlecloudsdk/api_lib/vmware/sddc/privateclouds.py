@@ -35,13 +35,15 @@ class PrivatecloudsClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def Create(self,
-             resource,
-             labels=None,
-             description=None,
-             vpc_network=None,
-             management_ip_range=None,
-             workload_ip_range=None):
+  def Create(
+      self,
+      resource,
+      vpc_network,
+      management_ip_range,
+      workload_ip_range,
+      labels=None,
+      description=None,
+  ):
     parent = resource.Parent().RelativeName()
     cluster_group_id = resource.Name()
     cluster_group = self.messages.ClusterGroup(description=description)
@@ -83,21 +85,13 @@ class PrivatecloudsClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Delete(request)
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, location_resource):
     location = location_resource.RelativeName()
     request = self.messages.SddcProjectsLocationsClusterGroupsListRequest(
-        parent=location, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=location
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='clusterGroups')

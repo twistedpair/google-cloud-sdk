@@ -25,11 +25,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.transcoder import util
 from googlecloudsdk.command_lib.util.args import labels_util
 
-VERSION_MAP = {
-    base.ReleaseTrack.ALPHA: 'v1beta1',
-    base.ReleaseTrack.BETA: 'v1beta1',
-    base.ReleaseTrack.GA: 'v1'
-}
+VERSION_MAP = {base.ReleaseTrack.GA: 'v1'}
 
 
 def _GetClientInstance(release_track=base.ReleaseTrack.GA):

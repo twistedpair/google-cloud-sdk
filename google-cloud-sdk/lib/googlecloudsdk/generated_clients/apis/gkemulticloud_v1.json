@@ -1396,6 +1396,11 @@
           "description": "Required. The Azure Active Directory Application ID.",
           "type": "string"
         },
+        "reconciling": {
+          "description": "Output only. If set, there are currently pending changes to the client.",
+          "readOnly": true,
+          "type": "boolean"
+        },
         "annotations": {
           "description": "Optional. Annotations on the resource. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Keys can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
@@ -1415,6 +1420,12 @@
         },
         "createTime": {
           "description": "Output only. The time at which this resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time at which this client was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"

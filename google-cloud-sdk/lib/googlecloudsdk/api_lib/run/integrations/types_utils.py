@@ -25,31 +25,158 @@ from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 
-BASELINE_APIS = (
-    'runapps.googleapis.com',
-)
-
-RESOURCE_TYPE = 'resource_type'
-INTEGRATION_TYPE = 'integration_type'
-REQUIRED_FIELD = 'required_field'
+BASELINE_APIS = ('runapps.googleapis.com',)
 LATEST_DEPLOYMENT_FIELD = 'latestDeployment'
+_TYPE_METADATA = None
 
-_TYPE_METADATA = {}
+
+class UpdateExclusiveGroup:
+  def __init__(self, params, required=False):
+    self.params = params
+    self.required = required
 
 
-def _GetIntegrationMetadata():
-  """Gets the type metadata.
+class ServiceType:
+  """Types of services supported by runapps."""
+  BACKING = 'backing'
+  INGRESS = 'ingress'
+
+
+def _ServiceTypeFromStr(s):
+  """Converts string into service type."""
+  types = {
+      'backing': ServiceType.BACKING,
+      'ingress': ServiceType.INGRESS,
+  }
+
+  service_type = types.get(s.lower(), None)
+  if service_type is None:
+    raise exceptions.ArgumentError('Service type {} is not supported'.format(s))
+
+  return service_type
+
+
+class Parameters:
+  """Each integration has a list of parameters that are stored in this class.
+
+  Types denoted here for when Python2 is no longer supported and we can have
+  the types defined directly in code.
+    name: str
+    description: str
+    data_type: str
+    update_allowed: typing.Optional[bool] = True
+    required: typing.Optional[bool] = False
+    hidden: typing.Optional[bool] = False
+    create_allowed: typing.Optional[bool] = True
+    default: typing.Optional[any] = None
+
+  Attributes:
+    name: Name of the parameter.
+    description: Explanation of the parameter that is visible to the
+      customer.
+    data_type: Denotes what values are acceptable for the parameter.
+    update_allowed: If false, the param can not be provided in an update
+      command.
+    required:  If true, the param must be provided on a create command.
+    hidden: If true, the param will not show up in error messages, but can
+      be provided by the user.
+    create_allowed: If false, the param cannot be provided on a create
+      command.
+    default: The value provided for the param if the user has not provided one.
+  """
+
+  def __init__(self, name, description, data_type, update_allowed=True,
+               required=False, hidden=False, create_allowed=True, default=None):
+    self.name = name
+    self.description = description
+    self.data_type = data_type
+    self.update_allowed = update_allowed
+    self.required = required
+    self.hidden = hidden
+    self.create_allowed = create_allowed
+    self.default = default
+
+
+class TypeMetadata:
+  """Metadata for each integration type supported by Runapps.
+
+  Types denoted here for when Python2 is no longer supported and we can have
+  the types defined directly in code.
+    integration_type: str
+    resource_type: str
+    description: str
+    example_command: str
+    service_type: ServiceType
+    required_apis: set[str]
+    parameters: list[Parameters]
+    update_exclusive_groups: typing.Optional[list[UpdateExclusiveGroup]] = None
+    disable_service_flags: typing.Optional[bool] = False
+    singleton_name: typing.Optional[str] = None
+    required_field: typing.Optional[str] = None
+    visible: typing.Optional[bool] = False
+
+  Attributes:
+    integration_type: Name of integration type.
+    resource_type: Name of resource type.
+    description: Description of the integration that is visible to the user.
+    example_command: Example commands that will be provided to the user.
+    required_field: Field that must exist in the resource config.
+    service_type: Denotes what type of service the integration is.
+    parameters: What users can provide for the given integration.
+    update_exclusive_groups: A list of groups, where each group contains
+      parameters that cannot be provided at the same time.  Only one in the set
+      can be provided by the user for each command.
+    disable_service_flags: If true, the --service flag cannot be provided.
+    singleton_name: If this field is provided, then the integration can only be
+      a singleton.  The name is used as an identifier in the resource config.
+    required_apis: APIs required for the integration to work.  The user will be
+      prompted to enable these APIs if they are not already enabled.
+    visible: If true, then the integration is useable by anyone without any
+      special configuration.
+  """
+
+  def __init__(self, integration_type, resource_type, description,
+               example_command, service_type, required_apis, parameters,
+               update_exclusive_groups=None, disable_service_flags=False,
+               singleton_name=None, required_field=None, visible=False):
+    self.integration_type = integration_type
+    self.resource_type = resource_type
+    self.description = description
+    self.example_command = example_command
+    self.service_type = _ServiceTypeFromStr(service_type)
+    self.required_apis = required_apis
+    self.parameters = [Parameters(**param) for param in parameters]
+    self.disable_service_flags = disable_service_flags
+    self.singleton_name = singleton_name
+    self.required_field = required_field
+    self.visible = visible
+
+    if update_exclusive_groups is None:
+      update_exclusive_groups = []
+
+    self.update_exclusive_groups = [
+        UpdateExclusiveGroup(**group) for group in update_exclusive_groups]
+
+
+def _GetTypeMetadata():
+  """Returns metadata for each integration type.
+
+  This loads the metadata from a yaml file at most once and will return the
+  same data stored in memory upon future calls.
 
   Returns:
     array, the type metadata list
   """
-  # TODO(b/237328242) Return a class instead of primitive dict
   global _TYPE_METADATA
   if not _TYPE_METADATA:
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, 'metadata.yaml')
-    _TYPE_METADATA = yaml.load_path(filename)
-  return _TYPE_METADATA['integrations']
+    metadata = yaml.load_path(filename)
+    _TYPE_METADATA = [
+        TypeMetadata(**integ) for integ in metadata['integrations']
+    ]
+
+  return _TYPE_METADATA
 
 
 def IntegrationTypes(client):
@@ -67,27 +194,24 @@ def IntegrationTypes(client):
   del client
 
   return [
-      integration for integration in _GetIntegrationMetadata()
+      integration for integration in _GetTypeMetadata()
       if _IntegrationVisible(integration)
   ]
 
 
-def GetIntegration(integration_type):
-  """Returns values associated to an integration type.
+def GetTypeMetadata(integration_type):
+  """Returns metadata associated to an integration type.
 
   Args:
     integration_type: str
 
   Returns:
-    frozendict() of values associated to the integration type.
-      If the integration does not exist or is not visible to the user,
-      then None is returned.
+    If the integration does not exist or is not visible to the user,
+    then None is returned.
   """
-  for integration in _GetIntegrationMetadata():
-    if (
-        integration[INTEGRATION_TYPE] == integration_type
-        and _IntegrationVisible(integration)
-    ):
+  for integration in _GetTypeMetadata():
+    if (integration.integration_type == integration_type and
+        _IntegrationVisible(integration)):
       return integration
   return None
 
@@ -96,16 +220,15 @@ def _IntegrationVisible(integration):
   """Returns whether or not the integration is visible.
 
   Args:
-    integration: frozen_dict, each entry is defined in _INTEGRATION_TYPES
+    integration: Each entry is defined in _INTEGRATION_TYPES
 
   Returns:
     True if the integration is set to visible, or if the property
       is set to true.  Otherwise it is False.
   """
   show_experimental_integrations = (
-      properties.VALUES.runapps.experimental_integrations.GetBool()
-  )
-  return integration.get('visible', False) or show_experimental_integrations
+      properties.VALUES.runapps.experimental_integrations.GetBool())
+  return integration.visible or show_experimental_integrations
 
 
 def GetResourceTypeFromConfig(resource_config):
@@ -148,11 +271,11 @@ def GetIntegrationFromResource(resource_config):
   resource_type = GetResourceTypeFromConfig(resource_config)
   config = resource_config[resource_type]
   match = None
-  for integration_type in _GetIntegrationMetadata():
+  for integration_type in _GetTypeMetadata():
     if not _IntegrationVisible(integration_type):
       continue
-    if integration_type.get(RESOURCE_TYPE, None) == resource_type:
-      must_have_field = integration_type.get(REQUIRED_FIELD, None)
+    if integration_type.resource_type == resource_type:
+      must_have_field = integration_type.required_field
       if must_have_field:
         if config.get(must_have_field, None):
           return integration_type
@@ -173,7 +296,7 @@ def GetIntegrationType(resource_config):
   type_def = GetIntegrationFromResource(resource_config)
   if type_def is None:
     return GetResourceTypeFromConfig(resource_config)
-  return type_def[INTEGRATION_TYPE]
+  return type_def.integration_type
 
 
 def CheckValidIntegrationType(integration_type):
@@ -183,6 +306,6 @@ def CheckValidIntegrationType(integration_type):
     integration_type: str, integration type to validate.
   Rasies: ArgumentError
   """
-  if GetIntegration(integration_type) is None:
+  if GetTypeMetadata(integration_type) is None:
     raise exceptions.ArgumentError(
         'Integration of type {} is not supported'.format(integration_type))

@@ -43,8 +43,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     self.projects_locations_deliveryPipelines_releases_rollouts = self.ProjectsLocationsDeliveryPipelinesReleasesRolloutsService(self)
     self.projects_locations_deliveryPipelines_releases = self.ProjectsLocationsDeliveryPipelinesReleasesService(self)
     self.projects_locations_deliveryPipelines = self.ProjectsLocationsDeliveryPipelinesService(self)
-    self.projects_locations_deployPolicies = self.ProjectsLocationsDeployPoliciesService(
-        self)
+    self.projects_locations_deployPolicies = self.ProjectsLocationsDeployPoliciesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_targets = self.ProjectsLocationsTargetsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -178,6 +177,33 @@ class ClouddeployV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a Rollout in a given project and location.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CancelRolloutResponse) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:cancel',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelRolloutRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest',
+        response_type_name='CancelRolloutResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Rollout in a given project and location.
 
@@ -197,9 +223,7 @@ class ClouddeployV1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[
-            'overrideDeployPolicy', 'requestId', 'rolloutId', 'validateOnly'
-        ],
+        query_params=['overrideDeployPolicy', 'requestId', 'rolloutId', 'validateOnly'],
         relative_path='v1/{+parent}/rollouts',
         request_field='rollout',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest',
@@ -231,6 +255,33 @@ class ClouddeployV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest',
         response_type_name='Rollout',
+        supports_download=False,
+    )
+
+    def IgnoreJob(self, request, global_params=None):
+      r"""Ignores the specified Job in a Rollout.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJobRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IgnoreJobResponse) The response message.
+      """
+      config = self.GetMethodConfig('IgnoreJob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    IgnoreJob.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:ignoreJob',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.ignoreJob',
+        ordered_params=['rollout'],
+        path_params=['rollout'],
+        query_params=[],
+        relative_path='v1/{+rollout}:ignoreJob',
+        request_field='ignoreJobRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJobRequest',
+        response_type_name='IgnoreJobResponse',
         supports_download=False,
     )
 
@@ -344,9 +395,7 @@ class ClouddeployV1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.releases.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[
-            'overrideDeployPolicy', 'releaseId', 'requestId', 'validateOnly'
-        ],
+        query_params=['overrideDeployPolicy', 'releaseId', 'requestId', 'validateOnly'],
         relative_path='v1/{+parent}/releases',
         request_field='release',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest',
@@ -640,23 +689,22 @@ class ClouddeployV1(base_api.BaseApiClient):
     _NAME = 'projects_locations_deployPolicies'
 
     def __init__(self, client):
-      super(ClouddeployV1.ProjectsLocationsDeployPoliciesService,
-            self).__init__(client)
-      self._upload_configs = {}
+      super(ClouddeployV1.ProjectsLocationsDeployPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
 
     def Create(self, request, global_params=None):
       r"""Creates a new DeployPolicy in a given project and location.
 
       Args:
-        request: (ClouddeployProjectsLocationsDeployPoliciesCreateRequest) input
-          message
+        request: (ClouddeployProjectsLocationsDeployPoliciesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/deployPolicies',
@@ -676,15 +724,14 @@ class ClouddeployV1(base_api.BaseApiClient):
       r"""Deletes a single DeployPolicy.
 
       Args:
-        request: (ClouddeployProjectsLocationsDeployPoliciesDeleteRequest) input
-          message
+        request: (ClouddeployProjectsLocationsDeployPoliciesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/deployPolicies/{deployPoliciesId}',
@@ -704,15 +751,14 @@ class ClouddeployV1(base_api.BaseApiClient):
       r"""Gets details of a single DeployPolicy.
 
       Args:
-        request: (ClouddeployProjectsLocationsDeployPoliciesGetRequest) input
-          message
+        request: (ClouddeployProjectsLocationsDeployPoliciesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (DeployPolicy) The response message.
       """
       config = self.GetMethodConfig('Get')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/deployPolicies/{deployPoliciesId}',
@@ -732,15 +778,14 @@ class ClouddeployV1(base_api.BaseApiClient):
       r"""Lists DeployPolicies in a given project and location.
 
       Args:
-        request: (ClouddeployProjectsLocationsDeployPoliciesListRequest) input
-          message
+        request: (ClouddeployProjectsLocationsDeployPoliciesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (ListDeployPoliciesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/deployPolicies',
@@ -760,15 +805,14 @@ class ClouddeployV1(base_api.BaseApiClient):
       r"""Updates the parameters of a single DeployPolicy.
 
       Args:
-        request: (ClouddeployProjectsLocationsDeployPoliciesPatchRequest) input
-          message
+        request: (ClouddeployProjectsLocationsDeployPoliciesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/deployPolicies/{deployPoliciesId}',
@@ -776,9 +820,7 @@ class ClouddeployV1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deployPolicies.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[
-            'allowMissing', 'requestId', 'updateMask', 'validateOnly'
-        ],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='deployPolicy',
         request_type_name='ClouddeployProjectsLocationsDeployPoliciesPatchRequest',

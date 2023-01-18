@@ -16,6 +16,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
 
@@ -27,21 +29,12 @@ class LocationsClient(util.VmwareClientBase):
     super(LocationsClient, self).__init__()
     self.service = self.client.projects_locations
 
-  def List(self,
-           project_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, project_resource):
     request = self.messages.VmwareengineProjectsLocationsListRequest(
-        name=project_resource.RelativeName(),
-        filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        name=project_resource.RelativeName()
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='locations')

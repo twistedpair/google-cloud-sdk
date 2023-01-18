@@ -1077,11 +1077,11 @@ class DatamigrationProjectsLocationsConnectionProfilesCreateRequest(_messages.Me
     connectionProfileId: Required. The connection profile identifier.
     parent: Required. The parent, which owns this collection of connection
       profiles.
-    requestId: A unique id used to identify the request. If the server
-      receives two requests with the same id, then the second request will be
-      ignored. It is recommended to always set this value to a UUID. The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
-      and hyphens (-). The maximum length is 40 characters.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two requests with the same id, then the second request
+      will be ignored. It is recommended to always set this value to a UUID.
+      The id must contain only letters (a-z, A-Z), numbers (0-9), underscores
+      (_), and hyphens (-). The maximum length is 40 characters.
     skipValidation: Optional. Create the connection profile without validating
       it. The default is false. Only supported for Oracle connection profiles.
     validateOnly: Optional. Only validate the connection profile, but don't
@@ -1195,11 +1195,11 @@ class DatamigrationProjectsLocationsConnectionProfilesPatchRequest(_messages.Mes
       request body.
     name: The name of this connection profile resource in the form of projects
       /{project}/locations/{location}/connectionProfiles/{connectionProfile}.
-    requestId: A unique id used to identify the request. If the server
-      receives two requests with the same id, then the second request will be
-      ignored. It is recommended to always set this value to a UUID. The id
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
-      and hyphens (-). The maximum length is 40 characters.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two requests with the same id, then the second request
+      will be ignored. It is recommended to always set this value to a UUID.
+      The id must contain only letters (a-z, A-Z), numbers (0-9), underscores
+      (_), and hyphens (-). The maximum length is 40 characters.
     skipValidation: Optional. Update the connection profile without validating
       it. The default is false. Only supported for Oracle connection profiles.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -1358,7 +1358,7 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
   tiesRequest object.
 
   Enums:
-    TreeValueValuesEnum: The tree to fetch
+    TreeValueValuesEnum: The tree to fetch.
 
   Fields:
     commitId: Request a specific commit id. If not specified, the entities
@@ -1366,7 +1366,7 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
     conversionWorkspace: Required. Name of the conversion workspace resource
       whose DB entities are described in the form of: projects/{project}/locat
       ions/{location}/conversionWorkspaces/{conversion_workspace}.
-    filter: Filter the returned entities based on AIP-160 standard
+    filter: Filter the returned entities based on AIP-160 standard.
     pageSize: The maximum number of entities to return. The service may return
       fewer than this value.
     pageToken: The nextPageToken value received in the previous call to
@@ -1375,14 +1375,14 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
       be left blank. When paginating, all other parameters provided to
       conversionWorkspace.describeDatabaseEntities must match the call that
       provided the page token.
-    tree: The tree to fetch
+    tree: The tree to fetch.
     uncommitted: Whether to retrieve the latest committed version of the
       entities or the latest version. This field is ignored if a specific
       commit_id is specified.
   """
 
   class TreeValueValuesEnum(_messages.Enum):
-    r"""The tree to fetch
+    r"""The tree to fetch.
 
     Values:
       DB_TREE_TYPE_UNSPECIFIED: Unspecified tree type
@@ -1890,12 +1890,14 @@ class DatamigrationProjectsLocationsPrivateConnectionsCreateRequest(_messages.Me
       will be ignored. It is recommended to always set this value to a UUID.
       The id must contain only letters (a-z, A-Z), numbers (0-9), underscores
       (_), and hyphens (-). The maximum length is 40 characters.
+    skipValidation: Optional. If set to true, will skip validations.
   """
 
   parent = _messages.StringField(1, required=True)
   privateConnection = _messages.MessageField('PrivateConnection', 2)
   privateConnectionId = _messages.StringField(3)
   requestId = _messages.StringField(4)
+  skipValidation = _messages.BooleanField(5)
 
 
 class DatamigrationProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Message):

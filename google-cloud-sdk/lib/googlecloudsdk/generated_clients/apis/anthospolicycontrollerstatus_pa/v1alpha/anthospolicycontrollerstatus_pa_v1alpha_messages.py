@@ -734,7 +734,7 @@ class MembershipFeatureStatus(_messages.Message):
         running on the cluster. The Hub Feature controller has a Membership,
         is aware of the version the cluster should be running in, but has not
         confirmed for itself that the PC is running with that version.
-      DECOMISSIONING: Policy Controller (PC) may have resources on the
+      DECOMMISSIONING: Policy Controller (PC) may have resources on the
         cluster, but the Hub Feature controller wishes to remove the
         Membership. The Membership still exists.
       CLUSTER_ERROR: Policy Controller (PC) is not operational, and the Hub
@@ -760,7 +760,7 @@ class MembershipFeatureStatus(_messages.Message):
     INSTALLING = 2
     ACTIVE = 3
     UPDATING = 4
-    DECOMISSIONING = 5
+    DECOMMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8

@@ -55,6 +55,60 @@ class CloudfunctionsV2beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AbortFunctionUpgrade(self, request, global_params=None):
+      r"""Aborts generation upgrade process for a function with the given name from the specified project. Deletes all 2nd Gen copy related configuration and resources which were created during the upgrade process.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AbortFunctionUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AbortFunctionUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:abortFunctionUpgrade',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.abortFunctionUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}:abortFunctionUpgrade',
+        request_field='abortFunctionUpgradeRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CommitFunctionUpgrade(self, request, global_params=None):
+      r"""Finalizes the upgrade after which function upgrade can not be rolled back. This is the last step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Deletes all original 1st Gen related configuration and resources.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CommitFunctionUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CommitFunctionUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:commitFunctionUpgrade',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.commitFunctionUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}:commitFunctionUpgrade',
+        request_field='commitFunctionUpgradeRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new function. If a function with the given name already exists in the specified project, the long running operation will return `ALREADY_EXISTS` error.
 
@@ -267,6 +321,60 @@ class CloudfunctionsV2beta(base_api.BaseApiClient):
         relative_path='v2beta/{+name}',
         request_field='function',
         request_type_name='CloudfunctionsProjectsLocationsFunctionsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RedirectFunctionUpgradeTraffic(self, request, global_params=None):
+      r"""Changes the traffic target of a function from the original 1st Gen function to the 2nd Gen copy. This is the second step of the multi step process to upgrade 1st Gen functions to 2nd Gen. After this operation, all new traffic will be served by 2nd Gen copy.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RedirectFunctionUpgradeTraffic')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RedirectFunctionUpgradeTraffic.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:redirectFunctionUpgradeTraffic',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.redirectFunctionUpgradeTraffic',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}:redirectFunctionUpgradeTraffic',
+        request_field='redirectFunctionUpgradeTrafficRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RollbackFunctionUpgradeTraffic(self, request, global_params=None):
+      r"""Reverts the traffic target of a function from the 2nd Gen copy to the original 1st Gen function. After this operation, all new traffic would be served by the 1st Gen.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RollbackFunctionUpgradeTraffic')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RollbackFunctionUpgradeTraffic.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2beta/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:rollbackFunctionUpgradeTraffic',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.rollbackFunctionUpgradeTraffic',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2beta/{+name}:rollbackFunctionUpgradeTraffic',
+        request_field='rollbackFunctionUpgradeTrafficRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest',
         response_type_name='Operation',
         supports_download=False,
     )

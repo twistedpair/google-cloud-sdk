@@ -29,27 +29,17 @@ class NodeTypesClient(util.VmwareClientBase):
     super(NodeTypesClient, self).__init__()
     self.service = self.client.projects_locations_nodeTypes
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, location_resource):
     request = self.messages.VmwareengineProjectsLocationsNodeTypesListRequest(
-        parent=location_resource.RelativeName(),
-        filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=location_resource.RelativeName()
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='nodeTypes')
 
   def Get(self, resource):
     request = self.messages.VmwareengineProjectsLocationsNodeTypesGetRequest(
         name=resource.RelativeName())
     return self.service.Get(request)
-

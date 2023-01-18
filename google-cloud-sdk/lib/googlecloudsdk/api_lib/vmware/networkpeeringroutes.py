@@ -29,20 +29,13 @@ class NetworkPeeringRoutesClient(util.VmwareClientBase):
     super(NetworkPeeringRoutesClient, self).__init__()
     self.service = self.client.projects_locations_global_networkPeerings_peeringRoutes
 
-  def List(self,
-           network_peering,
-           filter_expression=None,
-           limit=None,
-           page_size=None):
+  def List(self, network_peering):
     networkpeering = network_peering.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(
-        parent=networkpeering, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=networkpeering
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='peeringRoutes')

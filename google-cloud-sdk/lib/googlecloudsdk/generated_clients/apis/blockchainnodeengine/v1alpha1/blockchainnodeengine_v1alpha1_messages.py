@@ -57,16 +57,20 @@ class BlockchainNode(_messages.Message):
         created.
       DELETING: The existing node is undergoing deletion, but not yet
         finished.
-      DELETED: The node has been deleted.
       RUNNING: The node is running and ready for use.
       ERROR: The node is in an unexpected or errored state.
+      UPDATING: The node is currently being updated.
+      REPAIRING: The node is currently being repaired.
+      RECONCILING: The node is currently being reconciled.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     DELETING = 2
-    DELETED = 3
-    RUNNING = 4
-    ERROR = 5
+    RUNNING = 3
+    ERROR = 4
+    UPDATING = 5
+    REPAIRING = 6
+    RECONCILING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -356,10 +360,12 @@ class EthereumDetails(_messages.Message):
 
     Values:
       NETWORK_UNSPECIFIED: <no description>
-      MAINNET: <no description>
+      MAINNET: The ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: Ethereum Testnet based on Goerli protocol.
     """
     NETWORK_UNSPECIFIED = 0
     MAINNET = 1
+    TESTNET_GOERLI_PRATER = 2
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of Ethereum node.

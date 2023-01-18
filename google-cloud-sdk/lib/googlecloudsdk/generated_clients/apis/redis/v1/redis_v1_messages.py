@@ -889,7 +889,7 @@ class PersistenceConfig(_messages.Message):
       ONE_HOUR: Snapshot every 1 hour.
       SIX_HOURS: Snapshot every 6 hours.
       TWELVE_HOURS: Snapshot every 12 hours.
-      TWENTY_FOUR_HOURS: Snapshot every 24 horus.
+      TWENTY_FOUR_HOURS: Snapshot every 24 hours.
     """
     SNAPSHOT_PERIOD_UNSPECIFIED = 0
     ONE_HOUR = 1

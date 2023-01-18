@@ -915,6 +915,11 @@
           "readOnly": true,
           "type": "string"
         },
+        "airflowByoidUri": {
+          "description": "Output only. The 'bring your own identity' variant of the URI of the Apache Airflow Web UI hosted within this environment, to be accessed with third-party identity credentials (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
+          "readOnly": true,
+          "type": "string"
+        },
         "environmentSize": {
           "description": "Optional. The size of the Cloud Composer environment. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
           "type": "string",

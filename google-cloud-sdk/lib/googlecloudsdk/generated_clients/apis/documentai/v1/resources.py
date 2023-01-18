@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PROCESSORTYPES = (
+      'projects.locations.processorTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/processorTypes/'
+              '{processorTypesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PROCESSORS = (
       'projects.locations.processors',
       '{+name}',

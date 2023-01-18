@@ -236,10 +236,10 @@ class Connection(_messages.Message):
 
 
 class Contact(_messages.Message):
-  r"""Representa a single contact's email address
+  r"""The email address of a contact.
 
   Fields:
-    email: An email address e.g. "person123@company.com"
+    email: An email address. For example, "`person123@company.com`".
   """
 
   email = _messages.StringField(1)
@@ -947,7 +947,7 @@ class Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: The state of the finding.
-    vulnerability: Represents vulnerability-specific fields like CVE and CVS
+    vulnerability: Represents vulnerability-specific fields like CVE and CVSS
       scores. CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
   """
@@ -1200,7 +1200,7 @@ class GoogleCloudSecuritycenterV1BigQueryExport(_messages.Message):
   r"""Configures how to deliver Findings to BigQuery Instance.
 
   Fields:
-    createTime: Output only. The time at which the big query export was
+    createTime: Output only. The time at which the BigQuery export was
       created. This field is set by the server and will be ignored if provided
       on export on creation.
     dataset: The dataset to write findings' updates to. Its format is
@@ -1220,8 +1220,8 @@ class GoogleCloudSecuritycenterV1BigQueryExport(_messages.Message):
       * integer literals without quotes. * boolean literals `true` and `false`
       without quotes.
     mostRecentEditor: Output only. Email address of the user who last edited
-      the big query export. This field is set by the server and will be
-      ignored if provided on export creation or update.
+      the BigQuery export. This field is set by the server and will be ignored
+      if provided on export creation or update.
     name: The relative resource name of this export. See: https://cloud.google
       .com/apis/design/resource_names#relative_resource_name. Example format:
       "organizations/{organization_id}/bigQueryExports/{export_id}" Example
@@ -1230,10 +1230,10 @@ class GoogleCloudSecuritycenterV1BigQueryExport(_messages.Message):
       is provided in responses, and is ignored when provided in create
       requests.
     principal: Output only. The service account that needs permission to
-      create table, upload data to the big query dataset.
-    updateTime: Output only. The most recent time at which the big export was
-      updated. This field is set by the server and will be ignored if provided
-      on export creation or update.
+      create table and upload data to the BigQuery dataset.
+    updateTime: Output only. The most recent time at which the BigQuery export
+      was updated. This field is set by the server and will be ignored if
+      provided on export creation or update.
   """
 
   createTime = _messages.StringField(1)
@@ -1253,8 +1253,8 @@ class GoogleCloudSecuritycenterV1Binding(_messages.Message):
     name: Name for binding.
     ns: Namespace for binding.
     role: The Role or ClusterRole referenced by the binding.
-    subjects: Represents the subjects(s) bound to the role. Not always
-      available for PATCH requests.
+    subjects: Represents one or more subjects that are bound to the role. Not
+      always available for PATCH requests.
   """
 
   name = _messages.StringField(1)
@@ -1875,14 +1875,16 @@ class IamBinding(_messages.Message):
 
 
 class Indicator(_messages.Message):
-  r"""Represents what's commonly known as an Indicator of compromise (IoC) in
-  computer forensics. This is an artifact observed on a network or in an
+  r"""Represents what's commonly known as an _indicator of compromise_ (IoC)
+  in computer forensics. This is an artifact observed on a network or in an
   operating system that, with high confidence, indicates a computer intrusion.
-  Reference: https://en.wikipedia.org/wiki/Indicator_of_compromise
+  For more information, see [Indicator of
+  compromise](https://en.wikipedia.org/wiki/Indicator_of_compromise).
 
   Fields:
     domains: List of domains associated to the Finding.
-    ipAddresses: List of ip addresses associated to the Finding.
+    ipAddresses: The list of IP addresses that are associated with the
+      finding.
     signatures: The list of matched signatures indicating that the given
       process is present in the environment.
     uris: The list of URIs associated to the Findings.
@@ -1900,7 +1902,7 @@ class KernelRootkit(_messages.Message):
   Fields:
     name: Rootkit name when available.
     unexpectedCodeModification: True when unexpected modifications of kernel
-      read-only data memory are present.
+      code memory are present.
     unexpectedFtraceHandler: True when `ftrace` points are present with
       callbacks pointing to regions that are not in the expected kernel or
       module code range.
@@ -1914,8 +1916,8 @@ class KernelRootkit(_messages.Message):
     unexpectedProcessesInRunqueue: True when unexpected processes in the
       scheduler run queue are present. Such processes are in the run queue,
       but not in the process task list.
-    unexpectedReadOnlyDataModification: Flag indicating unexpected
-      modifications of kernel read-only data memory.
+    unexpectedReadOnlyDataModification: True when unexpected modifications of
+      kernel read-only data memory are present.
     unexpectedSystemCallHandler: True when system call handlers that are are
       not in the expected kernel or module code regions are present.
   """
@@ -1932,7 +1934,7 @@ class KernelRootkit(_messages.Message):
 
 
 class Kubernetes(_messages.Message):
-  r"""Kubernetes related attributes.
+  r"""Kubernetes-related attributes.
 
   Fields:
     accessReviews: Provides information on any Kubernetes access reviews (i.e.

@@ -1648,6 +1648,9 @@ class CmekSettings(proto.Message):
             configured CryptoKeyVersion of ``kms_key`` that has been
             configured. It will be populated in cases where the CMEK
             settings are bound to a single key version.
+
+            If this field is populated, the ``kms_key`` is tied to a
+            specific CryptoKeyVersion.
         service_account_id (str):
             Output only. The service account that will be used by the
             Log Router to access your Cloud KMS key.

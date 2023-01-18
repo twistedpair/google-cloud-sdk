@@ -624,9 +624,9 @@ class ApigeeOrganizationsCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1Organization: A GoogleCloudApigeeV1Organization
       resource to be passed as the request body.
-    parent: Required. Name of the GCP project in which to associate the Apigee
-      organization. Pass the information as a query parameter using the
-      following structure in your request: `projects/`
+    parent: Required. Name of the Google Cloud project in which to associate
+      the Apigee organization. Pass the information as a query parameter using
+      the following structure in your request: `projects/`
   """
 
   googleCloudApigeeV1Organization = _messages.MessageField('GoogleCloudApigeeV1Organization', 1)
@@ -1475,6 +1475,46 @@ class ApigeeOrganizationsEnvgroupsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsEnvgroupsGetDeployedIngressConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsGetDeployedIngressConfigRequest object.
+
+  Enums:
+    ViewValueValuesEnum: When set to FULL, additional details about the
+      specific deployments receiving traffic will be included in the
+      IngressConfig response's RoutingRules.
+
+  Fields:
+    name: Required. Name of the deployed configuration for the environment
+      group in the following format:
+      'organizations/{org}/envgroups/{envgroup}/deployedIngressConfig'.
+    view: When set to FULL, additional details about the specific deployments
+      receiving traffic will be included in the IngressConfig response's
+      RoutingRules.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""When set to FULL, additional details about the specific deployments
+    receiving traffic will be included in the IngressConfig response's
+    RoutingRules.
+
+    Values:
+      INGRESS_CONFIG_VIEW_UNSPECIFIED: The default/unset value. The API will
+        default to the BASIC view.
+      BASIC: Include all ingress config data necessary for the runtime to
+        configure ingress, but no more. Routing rules will include only
+        basepath and destination environment. This the default value.
+      FULL: Include all ingress config data, including internal debug info for
+        each routing rule such as the proxy claiming a particular basepath and
+        when the routing rule first appeared in the env group.
+    """
+    INGRESS_CONFIG_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
 class ApigeeOrganizationsEnvgroupsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvgroupsGetRequest object.
 
@@ -2044,6 +2084,18 @@ class ApigeeOrganizationsEnvironmentsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsGetSecurityActionsConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsGetSecurityActionsConfigRequest object.
+
+  Fields:
+    name: Required. The name of the SecurityActionsConfig to retrieve. This
+      will always be:
+      `organizations/{org}/environments/{env}/security_actions_config`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsGetTraceConfigRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsGetTraceConfigRequest object.
 
@@ -2592,6 +2644,128 @@ class ApigeeOrganizationsEnvironmentsResourcefilesUpdateRequest(_messages.Messag
   type = _messages.StringField(4, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsSecurityActionsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityAction: A GoogleCloudApigeeV1SecurityAction
+      resource to be passed as the request body.
+    parent: Required. The organization and environment that this
+      SecurityAction applies to. Format:
+      organizations/{org}/environments/{env}
+    securityActionId: Required. The ID to use for the SecurityAction, which
+      will become the final component of the action's resource name. This
+      value should be 4-63 characters, and valid characters are /a-z-/.
+  """
+
+  googleCloudApigeeV1SecurityAction = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 1)
+  parent = _messages.StringField(2, required=True)
+  securityActionId = _messages.StringField(3)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityActionsDisableRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsDisableRequest object.
+
+  Fields:
+    googleCloudApigeeV1DisableSecurityActionRequest: A
+      GoogleCloudApigeeV1DisableSecurityActionRequest resource to be passed as
+      the request body.
+    name: Required. The name of the SecurityAction to disable. Format:
+      organizations/{org}/environments/{env}/securityActions/{security_action}
+  """
+
+  googleCloudApigeeV1DisableSecurityActionRequest = _messages.MessageField('GoogleCloudApigeeV1DisableSecurityActionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityActionsEnableRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsEnableRequest object.
+
+  Fields:
+    googleCloudApigeeV1EnableSecurityActionRequest: A
+      GoogleCloudApigeeV1EnableSecurityActionRequest resource to be passed as
+      the request body.
+    name: Required. The name of the SecurityAction to enable. Format:
+      organizations/{org}/environments/{env}/securityActions/{security_action}
+  """
+
+  googleCloudApigeeV1EnableSecurityActionRequest = _messages.MessageField('GoogleCloudApigeeV1EnableSecurityActionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityActionsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsGetRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the SecurityAction to
+      retrieve. Format:
+      organizations/{org}/environments/{env}/securityActions/{security_action}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityActionsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityActionsListRequest object.
+
+  Fields:
+    filter: The filter expression to filter List results.
+      https://google.aip.dev/160. Allows for filtering over: state,
+      create_time, update_time and api_proxies. E.g.: create_time >=
+      "2012-04-21T11:30:00-04:00" AND api_proxies: foo. Filtering by action is
+      not supported https://github.com/aip-dev/google.aip.dev/issues/624
+    pageSize: The maximum number of SecurityActions to return. If unspecified,
+      at most 50 SecurityActions will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: A page token, received from a previous `ListSecurityActions`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListSecurityActions` must match the call
+      that provided the page token.
+    parent: Required. The parent, which owns this collection of
+      SecurityActions. Format: organizations/{org}/environments/{env}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest object.
+
+  Fields:
+    name: Required. Security incident in the following format: `organizations/
+      {org}/environments/{environment}/securityIncidents/{incident}'. Example:
+      organizations/testOrg/environments/testEnv/securityIncident/1234-4567-89
+      0-111
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityIncidentsListRequest object.
+
+  Fields:
+    filter: The filter expression to be used to get the list of security
+      incidents, where filtering can be done on API Proxies. Example: filter =
+      "api_proxy = /", "first_detected_time >", "last_detected_time <"
+    pageSize: The maximum number of incidents to return. The service may
+      return fewer than this value. If unspecified, at most 50 incidents will
+      be returned.
+    pageToken: A page token, received from a previous `ListSecurityIncident`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. For a specific organization, list of all the security
+      incidents. Format: `organizations/{org}/environments/{environment}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest object.
 
@@ -3030,6 +3204,25 @@ class ApigeeOrganizationsEnvironmentsUpdateDebugmaskRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   replaceRepeatedFields = _messages.BooleanField(3)
   updateMask = _messages.StringField(4)
+
+
+class ApigeeOrganizationsEnvironmentsUpdateSecurityActionsConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsUpdateSecurityActionsConfigRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1SecurityActionsConfig: A
+      GoogleCloudApigeeV1SecurityActionsConfig resource to be passed as the
+      request body.
+    name: This is a singleton resource, the name will always be set by
+      SecurityActions and any user input will be ignored. The name is always:
+      `organizations/{org}/environments/{env}/security_actions_config`
+    updateMask: The list of fields to update.
+  """
+
+  googleCloudApigeeV1SecurityActionsConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionsConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsEnvironmentsUpdateTraceConfigRequest(_messages.Message):
@@ -5941,14 +6134,20 @@ class GoogleCloudApigeeV1DeploymentChangeReportRoutingDeployment(_messages.Messa
 
 
 class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
-  r"""NEXT ID: 9
+  r"""NEXT ID: 11
 
   Messages:
     AttributesValue: Additional key-value metadata for the deployment.
+    EndpointsValue: A mapping from basepaths to proxy endpoint names in this
+      proxy. Not populated for shared flows.
 
   Fields:
     attributes: Additional key-value metadata for the deployment.
     basePath: Base path where the application will be hosted. Defaults to "/".
+    deploymentGroups: The list of deployment groups in which this proxy should
+      be deployed. Not currently populated for shared flows.
+    endpoints: A mapping from basepaths to proxy endpoint names in this proxy.
+      Not populated for shared flows.
     location: Location of the API proxy bundle as a URI.
     name: Name of the API or shared flow revision to be deployed in the
       following format: `organizations/{org}/apis/{api}/revisions/{rev}` or
@@ -5985,13 +6184,58 @@ class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EndpointsValue(_messages.Message):
+    r"""A mapping from basepaths to proxy endpoint names in this proxy. Not
+    populated for shared flows.
+
+    Messages:
+      AdditionalProperty: An additional property for a EndpointsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EndpointsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EndpointsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   attributes = _messages.MessageField('AttributesValue', 1)
   basePath = _messages.StringField(2)
-  location = _messages.StringField(3)
-  name = _messages.StringField(4)
-  proxyUid = _messages.StringField(5)
-  serviceAccount = _messages.StringField(6)
-  uid = _messages.StringField(7)
+  deploymentGroups = _messages.StringField(3, repeated=True)
+  endpoints = _messages.MessageField('EndpointsValue', 4)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  proxyUid = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  uid = _messages.StringField(9)
+
+
+class GoogleCloudApigeeV1DeploymentGroupConfig(_messages.Message):
+  r"""DeploymentGroupConfig represents a deployment group that should be
+  present in a particular environment.
+
+  Fields:
+    name: Name of the deployment group in the following format:
+      `organizations/{org}/environments/{env}/deploymentGroups/{group}`.
+    revisionId: Revision number which can be used by the runtime to detect if
+      the deployment group has changed between two versions.
+    uid: Unique ID. The ID will only change if the deployment group is deleted
+      and recreated.
+  """
+
+  name = _messages.StringField(1)
+  revisionId = _messages.IntegerField(2)
+  uid = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1Developer(_messages.Message):
@@ -6206,6 +6450,14 @@ class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
   name = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1DisableSecurityActionRequest(_messages.Message):
+  r"""Message to disable an enabled SecurityAction."""
+
+
+class GoogleCloudApigeeV1EnableSecurityActionRequest(_messages.Message):
+  r"""Message to enable a disabled SecurityAction."""
+
+
 class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
   r"""Apigee endpoint attachment. For more information, see [Southbound
   networking patterns] (https://cloud.google.com/apigee/docs/api-
@@ -6280,6 +6532,22 @@ class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
   name = _messages.StringField(4)
   serviceAttachment = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleCloudApigeeV1EndpointChainingRule(_messages.Message):
+  r"""EndpointChainingRule specifies the proxies contained in a particular
+  deployment group, so that other deployment groups can find them in chaining
+  calls.
+
+  Fields:
+    deploymentGroup: The deployment group to target for cross-shard chaining
+      calls to these proxies.
+    proxyIds: List of proxy ids which may be found in the given deployment
+      group.
+  """
+
+  deploymentGroup = _messages.StringField(1)
+  proxyIds = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudApigeeV1EntityMetadata(_messages.Message):
@@ -6435,7 +6703,11 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
     dataCollectors: List of data collectors used by the deployments in the
       environment.
     debugMask: Debug mask that applies to all deployments in the environment.
+    deploymentGroups: List of deployment groups in the environment.
     deployments: List of deployments in the environment.
+    envScopedRevisionId: Revision ID for environment-scoped resources (e.g.
+      target servers, keystores) in this config. This ID will increment any
+      time a resource not scoped to a deployment group changes.
     featureFlags: Feature flags inherited from the organization and
       environment.
     flowhooks: List of flow hooks in the environment.
@@ -6492,22 +6764,24 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
   createTime = _messages.StringField(2)
   dataCollectors = _messages.MessageField('GoogleCloudApigeeV1DataCollectorConfig', 3, repeated=True)
   debugMask = _messages.MessageField('GoogleCloudApigeeV1DebugMask', 4)
-  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 5, repeated=True)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 6)
-  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 7, repeated=True)
-  forwardProxyUri = _messages.StringField(8)
-  gatewayConfigLocation = _messages.StringField(9)
-  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 10, repeated=True)
-  name = _messages.StringField(11)
-  provider = _messages.StringField(12)
-  pubsubTopic = _messages.StringField(13)
-  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 14, repeated=True)
-  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 15, repeated=True)
-  revisionId = _messages.IntegerField(16)
-  sequenceNumber = _messages.IntegerField(17)
-  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 18, repeated=True)
-  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 19)
-  uid = _messages.StringField(20)
+  deploymentGroups = _messages.MessageField('GoogleCloudApigeeV1DeploymentGroupConfig', 5, repeated=True)
+  deployments = _messages.MessageField('GoogleCloudApigeeV1DeploymentConfig', 6, repeated=True)
+  envScopedRevisionId = _messages.IntegerField(7)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 8)
+  flowhooks = _messages.MessageField('GoogleCloudApigeeV1FlowHookConfig', 9, repeated=True)
+  forwardProxyUri = _messages.StringField(10)
+  gatewayConfigLocation = _messages.StringField(11)
+  keystores = _messages.MessageField('GoogleCloudApigeeV1KeystoreConfig', 12, repeated=True)
+  name = _messages.StringField(13)
+  provider = _messages.StringField(14)
+  pubsubTopic = _messages.StringField(15)
+  resourceReferences = _messages.MessageField('GoogleCloudApigeeV1ReferenceConfig', 16, repeated=True)
+  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceConfig', 17, repeated=True)
+  revisionId = _messages.IntegerField(18)
+  sequenceNumber = _messages.IntegerField(19)
+  targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 20, repeated=True)
+  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 21)
+  uid = _messages.StringField(22)
 
 
 class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
@@ -6601,7 +6875,13 @@ class GoogleCloudApigeeV1EnvironmentGroupConfig(_messages.Message):
   and its associated routing rules.
 
   Fields:
+    endpointChainingRules: A list of proxies in each deployment group for
+      proxy chaining calls.
     hostnames: Host names for the environment group.
+    location: When this message appears in the top-level IngressConfig, this
+      field will be populated in lieu of the inlined routing_rules and
+      hostnames fields. Some URL for downloading the full
+      EnvironmentGroupConfig for this group.
     name: Name of the environment group in the following format:
       `organizations/{org}/envgroups/{envgroup}`.
     revisionId: Revision id that defines the ordering of the
@@ -6614,11 +6894,13 @@ class GoogleCloudApigeeV1EnvironmentGroupConfig(_messages.Message):
       the environment group is deleted and recreated.
   """
 
-  hostnames = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
-  revisionId = _messages.IntegerField(3)
-  routingRules = _messages.MessageField('GoogleCloudApigeeV1RoutingRule', 4, repeated=True)
-  uid = _messages.StringField(5)
+  endpointChainingRules = _messages.MessageField('GoogleCloudApigeeV1EndpointChainingRule', 1, repeated=True)
+  hostnames = _messages.StringField(2, repeated=True)
+  location = _messages.StringField(3)
+  name = _messages.StringField(4)
+  revisionId = _messages.IntegerField(5)
+  routingRules = _messages.MessageField('GoogleCloudApigeeV1RoutingRule', 6, repeated=True)
+  uid = _messages.StringField(7)
 
 
 class GoogleCloudApigeeV1ExpireDeveloperSubscriptionRequest(_messages.Message):
@@ -7556,7 +7838,8 @@ class GoogleCloudApigeeV1ListOrganizationsResponse(_messages.Message):
   r"""A GoogleCloudApigeeV1ListOrganizationsResponse object.
 
   Fields:
-    organizations: List of Apigee organizations and associated GCP projects.
+    organizations: List of Apigee organizations and associated Google Cloud
+      projects.
   """
 
   organizations = _messages.MessageField('GoogleCloudApigeeV1OrganizationProjectMapping', 1, repeated=True)
@@ -7574,6 +7857,33 @@ class GoogleCloudApigeeV1ListRatePlansResponse(_messages.Message):
 
   nextStartKey = _messages.StringField(1)
   ratePlans = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityActionsResponse(_messages.Message):
+  r"""Contains a list of SecurityActions in response to a
+  ListSecurityActionRequest.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    securityActions: The SecurityActions for the specified environment.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityActions = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityIncidentsResponse(_messages.Message):
+  r"""Response for ListSecurityIncidents.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    securityIncidents: List of security incidents in the organization
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityIncidents = _messages.MessageField('GoogleCloudApigeeV1SecurityIncident', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSecurityProfileRevisionsResponse(_messages.Message):
@@ -8057,8 +8367,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   Fields:
     addonsConfig: Addon configurations of the Apigee organization.
     analyticsRegion: Required. DEPRECATED: This field will be deprecated once
-      Apigee supports DRZ. Primary GCP region for analytics data storage. For
-      valid values, see [Create an Apigee
+      Apigee supports DRZ. Primary Google Cloud region for analytics data
+      storage. For valid values, see [Create an Apigee
       organization](https://cloud.google.com/apigee/docs/api-platform/get-
       started/create-org).
     apiConsumerDataEncryptionKeyName: Cloud KMS key name used for encrypting
@@ -8285,7 +8595,7 @@ class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
       located. For more information, see
       https://cloud.google.com/about/locations/.
     organization: Name of the Apigee organization.
-    projectId: GCP project associated with the Apigee organization
+    projectId: Google Cloud project associated with the Apigee organization
     projectIds: DEPRECATED: Use `project_id`. An Apigee Organization is mapped
       to a single project.
   """
@@ -9136,6 +9446,10 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
     basepath: URI path prefix used to route to the specified environment. May
       contain one or more wildcards. For example, path segments consisting of
       a single `*` character will match any string.
+    deploymentGroup: Name of a deployment group in an environment bound to the
+      environment group in the following format:
+      `organizations/{org}/environment/{env}/deploymentGroups/{group}` Only
+      one of environment or deployment_group will be set.
     envGroupRevision: The env group config revision_id when this rule was
       added or last updated. This value is set when the rule is created and
       will only update if the the environment_id changes. It is used to
@@ -9143,7 +9457,10 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
       field is omitted from the IngressConfig unless the
       GetDeployedIngressConfig API is called with view=FULL.
     environment: Name of an environment bound to the environment group in the
-      following format: `organizations/{org}/environments/{env}`.
+      following format: `organizations/{org}/environments/{env}`. Only one of
+      environment or deployment_group will be set.
+    otherTargets: Conflicting targets, which will be resource names specifying
+      either deployment groups or environments.
     receiver: The resource name of the proxy revision that is receiving this
       basepath in the following format:
       `organizations/{org}/apis/{api}/revisions/{rev}`. This field is omitted
@@ -9156,10 +9473,12 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
   """
 
   basepath = _messages.StringField(1)
-  envGroupRevision = _messages.IntegerField(2)
-  environment = _messages.StringField(3)
-  receiver = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  deploymentGroup = _messages.StringField(2)
+  envGroupRevision = _messages.IntegerField(3)
+  environment = _messages.StringField(4)
+  otherTargets = _messages.StringField(5, repeated=True)
+  receiver = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudApigeeV1RuntimeConfig(_messages.Message):
@@ -9418,6 +9737,199 @@ class GoogleCloudApigeeV1ScoreComponentRecommendationActionActionContext(_messag
   """
 
   documentationLink = _messages.StringField(1)
+
+
+class GoogleCloudApigeeV1SecurityAction(_messages.Message):
+  r"""A SecurityAction is rule that can be enforced at an environment level.
+  The result is one of: - A denied API call - An explicitly allowed API call -
+  A flagged API call (HTTP headers added before the target receives it) At
+  least one attribute is required to create a SecurityAction.
+
+  Enums:
+    StateValueValuesEnum: Required. Only an ENABLED SecurityAction is
+      enforced. An ENABLED SecurityAction past its expiration time will not be
+      enforced.
+
+  Fields:
+    allow: Allow a request through if it matches this SecurityAction.
+    apiProxies: Optional. If unset, this would apply to all proxies in the
+      environment. If set, this action is enforced only if at least one proxy
+      in the repeated list is deployed at the time of enforcement. If set,
+      several restrictions are enforced on SecurityActions. There can be at
+      most 100 enabled actions with proxies set in an env. Several other
+      restrictions apply on attributes and are detailed later.
+    attributeConfig: Required. A valid SecurityAction must contain at least
+      one attribute.
+    createTime: Output only. The create time for this SecurityAction.
+    deny: Deny a request through if it matches this SecurityAction.
+    description: Optional. An optional user provided description of the
+      SecurityAction.
+    expireTime: The exiration for this SecurityAction.
+    flag: Flag a request through if it matches this SecurityAction.
+    name: Immutable. This field is ignored during creation as per AIP-133.
+      Please set the `security_action_id` field in the
+      CreateSecurityActionRequest when creating a new SecurityAction. Format:
+      organizations/{org}/environments/{env}/securityActions/{security_action}
+    state: Required. Only an ENABLED SecurityAction is enforced. An ENABLED
+      SecurityAction past its expiration time will not be enforced.
+    ttl: Input only. The TTL for this SecurityAction.
+    updateTime: Output only. The update time for this SecurityAction. This
+      reflects when this SecurityAction changed states.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Only an ENABLED SecurityAction is enforced. An ENABLED
+    SecurityAction past its expiration time will not be enforced.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This only exists for forward
+        compatibility. A create request with this value will be rejected.
+      ENABLED: An ENABLED SecurityAction is actively enforced if the
+        `expiration_time` is in the future.
+      DISABLED: A disabled SecurityAction is never enforced.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  allow = _messages.MessageField('GoogleCloudApigeeV1SecurityActionAllow', 1)
+  apiProxies = _messages.StringField(2, repeated=True)
+  attributeConfig = _messages.MessageField('GoogleCloudApigeeV1SecurityActionAttributeConfig', 3)
+  createTime = _messages.StringField(4)
+  deny = _messages.MessageField('GoogleCloudApigeeV1SecurityActionDeny', 5)
+  description = _messages.StringField(6)
+  expireTime = _messages.StringField(7)
+  flag = _messages.MessageField('GoogleCloudApigeeV1SecurityActionFlag', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  ttl = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class GoogleCloudApigeeV1SecurityActionAllow(_messages.Message):
+  r"""Message that should be set in case of an Allow Action. This does not
+  have any fields.
+  """
+
+
+
+class GoogleCloudApigeeV1SecurityActionAttributeConfig(_messages.Message):
+  r"""The following are a list of attributes. A valid SecurityAction must
+  contain at least one attribute. Within a attribute, each condition is ORed.
+  Across attributes conditions are ANDed. For example if a SecurityAction has
+  the following: api_keys: ["key1", "key2"] and developers: ["dev1", "dev2"]
+  then this is interpreted as: enforce the action if the incoming request has
+  ((api_key = "key1" OR api_key="key") AND (developer="dev1" OR
+  developer="dev2"))
+
+  Fields:
+    accessTokens: Optional. A list of access_tokens. Limit 1000 per action.
+    apiKeys: Optional. A list of API keys. Limit 1000 per action.
+    apiProducts: Optional. A list of API Products. Limit 1000 per action.
+    botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
+      Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
+      TorListRule and Anomaly Detection.
+    developerApps: Optional. A list of developer apps. Limit 1000 per action.
+    developers: Optional. A list of developers. Limit 1000 per action.
+    httpMethods: Optional. Act only on particular HTTP methods. E.g. A read-
+      only API can block POST/PUT/DELETE methods. Accepted values are: GET,
+      HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE and PATCH.
+    ipAddressRanges: Optional. A list of IP ranges. This could be either IPv4
+      or IPv6. 200,000 per rule at the environment level or 1000 at the proxy
+      level.
+    userAgents: Optional. A list of user agents to deny. We look for exact
+      matches. Limit 50 per action.
+  """
+
+  accessTokens = _messages.StringField(1, repeated=True)
+  apiKeys = _messages.StringField(2, repeated=True)
+  apiProducts = _messages.StringField(3, repeated=True)
+  botReasons = _messages.StringField(4, repeated=True)
+  developerApps = _messages.StringField(5, repeated=True)
+  developers = _messages.StringField(6, repeated=True)
+  httpMethods = _messages.StringField(7, repeated=True)
+  ipAddressRanges = _messages.StringField(8, repeated=True)
+  userAgents = _messages.StringField(9, repeated=True)
+
+
+class GoogleCloudApigeeV1SecurityActionDeny(_messages.Message):
+  r"""Message that should be set in case of a Deny Action.
+
+  Fields:
+    responseCode: Optional. The HTTP response code if the Action = DENY.
+  """
+
+  responseCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApigeeV1SecurityActionFlag(_messages.Message):
+  r"""The message that should be set in the case of a Flag action.
+
+  Fields:
+    headers: Optional. A list of HTTP headers to be sent to the target in case
+      of a FLAG SecurityAction. Limit 5 headers per SecurityAction. At least
+      one is mandatory.
+  """
+
+  headers = _messages.MessageField('GoogleCloudApigeeV1SecurityActionHttpHeader', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1SecurityActionHttpHeader(_messages.Message):
+  r"""An HTTP header.
+
+  Fields:
+    name: The header name to be sent to the target.
+    value: The header value to be sent to the target.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1SecurityActionsConfig(_messages.Message):
+  r"""SecurityActionsConfig reflects the current state of the SecurityActions
+  feature. This is a singleton resource: https://google.aip.dev/156
+
+  Fields:
+    enabled: The flag that controls whether this feature is enabled. This is
+      `false` by default. When this flag is `false`, even if individual rules
+      are enabled, no SecurityActions will be enforced.
+    name: This is a singleton resource, the name will always be set by
+      SecurityActions and any user input will be ignored. The name is always:
+      `organizations/{org}/environments/{env}/security_actions_config`
+    updateTime: Output only. The update time for configuration.
+  """
+
+  enabled = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
+  r"""Represents an SecurityIncident resource.
+
+  Fields:
+    detectionTypes: Output only. Detection types which are part of the
+      incident. Examples: Flooder, OAuth Abuser, Static Content Scraper,
+      Anomaly Detection.
+    displayName: Display name of the security incident.
+    firstDetectedTime: Output only. The time when events associated with the
+      incident were first detected.
+    lastDetectedTime: Output only. The time when events associated with the
+      incident were last detected.
+    name: Immutable. Name of the security incident resource. Format: organizat
+      ions/{org}/environments/{environment}/securityIncidents/{incident}
+      Example: organizations/apigee-
+      org/environments/dev/securityIncidents/1234-5678-9101-1111
+    trafficCount: Total traffic detected as part of the incident.
+  """
+
+  detectionTypes = _messages.StringField(1, repeated=True)
+  displayName = _messages.StringField(2)
+  firstDetectedTime = _messages.StringField(3)
+  lastDetectedTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  trafficCount = _messages.IntegerField(6)
 
 
 class GoogleCloudApigeeV1SecurityProfile(_messages.Message):

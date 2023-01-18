@@ -150,7 +150,9 @@ AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'description': 'description',
     'clear_description': 'description',
     'annotations': 'annotations',
-    'clear_annotations': 'annotations'
+    'clear_annotations': 'annotations',
+    'azure_tenant_id': 'azure_services_authentication.tenant_id',
+    'azure_application_id': 'azure_services_authentication.application_id'
 }
 
 AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {

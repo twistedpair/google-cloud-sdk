@@ -586,9 +586,9 @@ class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):
   r"""The migrate key request message.
 
   Fields:
-    skipBillingCheck: Optional. Whether or not to do billing check. A
-      reCAPTCHA Enterprise or migrated key behaves differently than a
-      reCAPTCHA (non-Enterprise version) key when you reach a quota limit (see
+    skipBillingCheck: Optional. If true, skips the billing check. A reCAPTCHA
+      Enterprise key or migrated key behaves differently than a reCAPTCHA
+      (non-Enterprise version) key when you reach a quota limit (see
       https://cloud.google.com/recaptcha-enterprise/quotas#quota_limit). To
       avoid any disruption of your usage, we check that a billing account is
       present. If your usage of reCAPTCHA is under the free quota, you can

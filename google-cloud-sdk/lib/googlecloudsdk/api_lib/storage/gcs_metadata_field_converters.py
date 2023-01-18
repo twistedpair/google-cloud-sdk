@@ -30,6 +30,23 @@ from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core.util import iso_duration
 
 
+# TODO(b/264528234): Delete once integrated into resource formatters.
+def remove_excess_acl_fields(acl_object):
+  """Takes Apitools ACL object and removes metadata clutter."""
+  if not acl_object:
+    return acl_object
+  for acl_entry in acl_object:
+    if acl_entry.kind == 'storage#objectAccessControl':
+      acl_entry.object = None
+      acl_entry.generation = None
+    acl_entry.kind = None
+    acl_entry.bucket = None
+    acl_entry.id = None
+    acl_entry.selfLink = None
+    acl_entry.etag = None
+  return acl_object
+
+
 def get_bucket_or_object_acl_class(is_bucket=False):
   messages = apis.GetMessagesModule('storage', 'v1')
   if is_bucket:
@@ -42,11 +59,10 @@ def get_bucket_or_object_acl_class(is_bucket=False):
 def process_acl_file(file_path, is_bucket=False):
   """Converts ACL file to Apitools objects."""
   acl_dict_list = metadata_util.cached_read_json_file(file_path)
+  acl_class = get_bucket_or_object_acl_class(is_bucket)
   acl_messages = []
   for acl_dict in acl_dict_list:
-    acl_messages.append(
-        encoding.DictToMessage(acl_dict,
-                               get_bucket_or_object_acl_class(is_bucket)))
+    acl_messages.append(encoding.DictToMessage(acl_dict, acl_class))
   return acl_messages
 
 

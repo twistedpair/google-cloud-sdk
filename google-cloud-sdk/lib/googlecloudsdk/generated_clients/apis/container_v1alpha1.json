@@ -199,6 +199,10 @@
           "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha API groups (e.g. v1alpha1) and features that may not be production ready in the kubernetes version of the master and nodes. The cluster has no SLA for uptime and master\/node upgrades are disabled. Alpha enabled clusters are automatically deleted thirty days after creation.",
           "type": "boolean"
         },
+        "enableK8sBetaApis": {
+          "description": "Kubernetes open source beta apis enabled on the cluster. Only beta apis.",
+          "$ref": "K8sBetaAPIConfig"
+        },
         "resourceLabels": {
           "description": "The resource labels for the cluster to use to annotate any related GCE resources.",
           "type": "object",
@@ -522,6 +526,10 @@
         "managedConfig": {
           "description": "ManagedConfig configuration for the cluster.",
           "$ref": "ManagedConfig"
+        },
+        "concurrentOpsConfig": {
+          "description": "Allows enabling concurrent ops for supported operations on this cluster. This flag is for EAP users only. Concurrent ops will become the only option, and thus having an opt in\/out is only applicable pre-GA. Once the feature is GA, \"disabling\" concurrent ops will have no effect and the flag will be removed in the future.",
+          "$ref": "ConcurrentOpsConfig"
         }
       }
     },
@@ -558,7 +566,7 @@
           }
         },
         "imageType": {
-          "description": "The image type to use for this node. Note that for a given image type, the latest version of it will be used.",
+          "description": "The image type to use for this node. Note that for a given image type, the latest version of it will be used. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
         },
         "nodeImageConfig": {
@@ -1501,7 +1509,7 @@
           "type": "string"
         },
         "version": {
-          "description": "The version of the Kubernetes of this node.",
+          "description": "The version of Kubernetes running on this NodePool's nodes. If unspecified, it defaults as described [here](https:\/\/cloud.google.com\/kubernetes-engine\/versioning#specifying_node_version).",
           "type": "string"
         },
         "instanceGroupUrls": {
@@ -1564,6 +1572,10 @@
         "etag": {
           "description": "This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        },
+        "queuedProvisioning": {
+          "description": "Specifies the configuration of queued provisioning.",
+          "$ref": "QueuedProvisioning"
         }
       }
     },
@@ -1885,7 +1897,7 @@
           "description": "Update strategy of the node pool.",
           "type": "string",
           "enumDescriptions": [
-            "Default value.",
+            "Default value if unset. GKE internally defaults the update strategy to SURGE for unspecified strategies.",
             "ROLLING is the synonymous with SURGE. Deprecate this value and use SURGE instead.",
             "blue-green upgrade.",
             "SURGE is the traditional way of upgrading a node pool. max_surge and max_unavailable determines the level of upgrade parallelism."
@@ -2046,6 +2058,31 @@
         "greenPoolVersion": {
           "description": "Version of green pool.",
           "type": "string"
+        }
+      }
+    },
+    "QueuedProvisioning": {
+      "id": "QueuedProvisioning",
+      "description": "QueuedProvisioning defines the queued provisioning used by the node pool.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Denotes that this nodepool is QRM specific. I.e. nodes can be only obtained through queuing via Cluster Autoscaler ProvisioningRequest API.",
+          "type": "boolean"
+        }
+      }
+    },
+    "K8sBetaAPIConfig": {
+      "id": "K8sBetaAPIConfig",
+      "description": "Kubernetes open source beta apis enabled on the cluster.",
+      "type": "object",
+      "properties": {
+        "enabledApis": {
+          "description": "api name, e.g. storage.k8s.io\/v1beta1\/csistoragecapacities.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2502,7 +2539,7 @@
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform). This field is deprecated, min_cpu_platform should be specified using https:\/\/cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform). This field is deprecated, min_cpu_platform should be specified using `cloud.google.com\/requested-min-cpu-platform` label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -2523,7 +2560,7 @@
           "type": "string"
         },
         "imageType": {
-          "description": "The image type to use for NAP created node.",
+          "description": "The image type to use for NAP created node. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
         }
       }
@@ -3508,6 +3545,29 @@
         }
       }
     },
+    "ConcurrentOpsConfig": {
+      "id": "ConcurrentOpsConfig",
+      "description": "Configures operations using concurrent ops.",
+      "type": "object",
+      "properties": {
+        "enableConcurrentCreateNodePool": {
+          "description": "Enables concurrent ops for supported CreateNodePool cases. Some fields may still use legacy ops.",
+          "type": "boolean"
+        },
+        "enableConcurrentDeleteNodePool": {
+          "description": "Enables concurrent ops for supported DeleteNodePool cases. Some fields may still use legacy ops.",
+          "type": "boolean"
+        },
+        "enableConcurrentUpdateNodePoolVersion": {
+          "description": "Enables concurrent ops for UpdateNodePool with only the version field. Some cluster features may still use legacy ops.",
+          "type": "boolean"
+        },
+        "enableConcurrentRollbackNodePool": {
+          "description": "Enables concurrent ops for supported RollbackNodePool cases. Some fields may still use legacy ops.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -4069,6 +4129,10 @@
           "description": "The current etag of the cluster. If an etag is provided and does not match the current etag of the cluster, update will be blocked and an ABORTED error will be returned.",
           "type": "string"
         },
+        "enableK8sBetaApis": {
+          "description": "Kubernetes open source beta apis enabled on the cluster. Only beta apis",
+          "$ref": "K8sBetaAPIConfig"
+        },
         "desiredNodePoolLoggingConfig": {
           "description": "The desired node pool logging configuration defaults for the cluster.",
           "$ref": "NodePoolLoggingConfig"
@@ -4102,6 +4166,10 @@
         "removedAdditionalPodRangesConfig": {
           "description": "The additional pod ranges that are to be removed from the cluster. The pod ranges specified here must have been specified earlier in the 'additional_pod_ranges_config' argument.",
           "$ref": "AdditionalPodRangesConfig"
+        },
+        "desiredConcurrentOpsConfig": {
+          "description": "Desired value for the cluster's concurrent_ops_config.",
+          "$ref": "ConcurrentOpsConfig"
         }
       }
     },
@@ -4186,7 +4254,7 @@
           "type": "string"
         },
         "imageType": {
-          "description": "The desired image type for the node pool.",
+          "description": "The desired image type for the node pool. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
         },
         "image": {

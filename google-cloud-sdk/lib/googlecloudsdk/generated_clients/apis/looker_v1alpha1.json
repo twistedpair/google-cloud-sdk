@@ -283,7 +283,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Looker instance. NEXT ID: 23",
+      "description": "A Looker instance. NEXT ID: 24",
       "type": "object",
       "properties": {
         "name": {
@@ -397,7 +397,7 @@
           "type": "string"
         },
         "consumerNetwork": {
-          "description": "Network name in the consumer project. Format: projects\/{project}\/global\/networks\/{network}",
+          "description": "Network name in the consumer project. Format: projects\/{project}\/global\/networks\/{network} Note that the consumer network may be in a different GCP project than the consumer project that is hosting the Looker Instance.",
           "type": "string"
         },
         "reservedRange": {
@@ -412,6 +412,10 @@
           "description": "Maintenance denial period for this instance.",
           "$ref": "DenyMaintenancePeriod"
         },
+        "lastDenyMaintenancePeriod": {
+          "description": "Last maintenance denial period for this instance. Used to determine the next eligible deny_maintenance_period even if the customer removes deny_maintenance_period.",
+          "$ref": "DenyMaintenancePeriod"
+        },
         "maintenanceSchedule": {
           "description": "Maintenane schedule for this instance",
           "$ref": "MaintenanceSchedule"
@@ -423,6 +427,10 @@
         "customDomain": {
           "description": "Custom Domain Information",
           "$ref": "CustomDomain"
+        },
+        "encryptionConfig": {
+          "description": "Encryption configuration (CMEK) -- if enabled",
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -617,6 +625,17 @@
         }
       }
     },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Configuration for Encryption - e.g. CMEK Currently we only allow the key name to be modified here, but in the future we may add some additional tuning parameters that are currently hard-coded.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Name of the CMEK key in KMS",
+          "type": "string"
+        }
+      }
+    },
     "RestartInstanceRequest": {
       "id": "RestartInstanceRequest",
       "description": "Request options for restarting an instance.",
@@ -696,6 +715,50 @@
       "description": "Request options for restoring an instance",
       "type": "object",
       "properties": {
+      }
+    },
+    "ImportInstanceRequest": {
+      "id": "ImportInstanceRequest",
+      "description": "Requestion options for importing looker data to an Instance",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. Path to the import folder in Google Cloud Storage, in the form `gs:\/\/bucketName\/folderName`.",
+          "type": "string"
+        }
+      }
+    },
+    "ExportInstanceRequest": {
+      "id": "ExportInstanceRequest",
+      "description": "Requestion options for exporting data of an Instance",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. The path to the folder in Google Cloud Storage where the export will be stored. The URI is in the form `gs:\/\/bucketName\/folderName`.",
+          "type": "string"
+        }
+      }
+    },
+    "IssueRedirectTicketInternalRequest": {
+      "id": "IssueRedirectTicketInternalRequest",
+      "description": "IssueRedirectTicketInternalRequest is the request to issue a redirect ticket for an instance. For internal use only.",
+      "type": "object",
+      "properties": {
+        "redirectUri": {
+          "description": "Required. URI to be used in the redirect.",
+          "type": "string"
+        }
+      }
+    },
+    "IssueRedirectTicketInternalResponse": {
+      "id": "IssueRedirectTicketInternalResponse",
+      "description": "IssueRedirectTicketInternalResponse is the response for issuing a redirect ticket. For internal use only.",
+      "type": "object",
+      "properties": {
+        "ticketId": {
+          "description": "ID of the created redirect ticket.",
+          "type": "string"
+        }
       }
     },
     "SetIamPolicyRequest": {
@@ -1626,6 +1689,90 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Restart instance."
+                },
+                "import": {
+                  "id": "looker.projects.locations.instances.import",
+                  "path": "v1alpha1/{+name}:import",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ImportInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Import instance."
+                },
+                "export": {
+                  "id": "looker.projects.locations.instances.export",
+                  "path": "v1alpha1/{+name}:export",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ExportInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Export instance."
+                },
+                "issueRedirectTicketInternal": {
+                  "id": "looker.projects.locations.instances.issueRedirectTicketInternal",
+                  "path": "v1alpha1/{+instance}:issueRedirectTicketInternal",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:issueRedirectTicketInternal",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. The instance resource to issue a redirect ticket for.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "IssueRedirectTicketInternalRequest"
+                  },
+                  "response": {
+                    "$ref": "IssueRedirectTicketInternalResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "THIS METHOD IS FOR INTERNAL USE ONLY."
                 },
                 "setIamPolicy": {
                   "id": "looker.projects.locations.instances.setIamPolicy",

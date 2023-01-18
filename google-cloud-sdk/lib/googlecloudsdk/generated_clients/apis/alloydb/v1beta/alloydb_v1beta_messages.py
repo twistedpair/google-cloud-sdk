@@ -1,9 +1,9 @@
 """Generated message classes for alloydb version v1beta.
 
-AlloyDB for PostgreSQL is an open source-compatible database service that's a
-powerful option for migrating, modernizing, or building commercial-grade
-applications. It offers full compatibility with standard PostgreSQL, and is
-more than 4x faster for transactional workloads and up to 100x faster for
+AlloyDB for PostgreSQL is an open source-compatible database service that
+provides a powerful option for migrating, modernizing, or building commercial-
+grade applications. It offers full compatibility with standard PostgreSQL, and
+is more than 4x faster for transactional workloads and up to 100x faster for
 analytical queries than standard PostgreSQL in our performance tests. AlloyDB
 for PostgreSQL offers a 99.99 percent availability SLA inclusive of
 maintenance. AlloyDB is optimized for the most demanding use cases, allowing
@@ -478,7 +478,7 @@ class AlloydbProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
-      regex expression "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters
+      regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters
       of lowercase letters, numbers, and dashes, starting with a letter, and
       ending with a letter or number. For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
@@ -559,7 +559,7 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
     cluster: A Cluster resource to be passed as the request body.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
-      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
+      cluster ID segment should satisfy the regex expression `[a-z0-9-]+`. For
       more details see https://google.aip.dev/122. The prefix of the cluster
       resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
@@ -707,7 +707,7 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
       * projects/{project}/locations/{location} Regardless of the parent
       specified here, as long it is contains a valid project and location, the
       service will return a static list of supported flags resources. Note
-      that we do not yet support region-specific flags (see b/211502903).
+      that we do not yet support region-specific flags.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -780,7 +780,7 @@ class AutomatedBackupPolicy(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Message describing Backup object NEXT ID: 19
+  r"""Message describing Backup object
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the backup.
@@ -810,6 +810,9 @@ class Backup(_messages.Message):
       scheme to protect the user data.
     encryptionInfo: Output only. The encryption information for the backup.
     etag: For Resource freshness validation (https://google.aip.dev/154)
+    expiryTime: Output only. The time at which after the backup is eligible to
+      be garbage collected. It is the duration specified by the backup's
+      retention policy, added to the backup's create_time.
     labels: Labels as key value pairs
     name: Output only. The name of the backup resource with the format: *
       projects/{project}/locations/{region}/backups/{backup_id} where the
@@ -922,14 +925,15 @@ class Backup(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 8)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 9)
   etag = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  reconciling = _messages.BooleanField(13)
-  sizeBytes = _messages.IntegerField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  expiryTime = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  reconciling = _messages.BooleanField(14)
+  sizeBytes = _messages.IntegerField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class BackupSource(_messages.Message):
@@ -986,6 +990,8 @@ class Cluster(_messages.Message):
       create the cluster (i.e. `CreateCluster` vs. `CreateSecondaryCluster`
     continuousBackupConfig: Optional. Continuous backup configuration for this
       cluster.
+    continuousBackupInfo: Output only. Continuous backup properties for this
+      cluster.
     createTime: Output only. Create time stamp
     databaseVersion: Output only. The database engine major version. This is
       an output-only field and it's populated at the Cluster creation time.
@@ -1006,7 +1012,7 @@ class Cluster(_messages.Message):
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
-      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
+      cluster ID segment should satisfy the regex expression `[a-z0-9-]+`. For
       more details see https://google.aip.dev/122. The prefix of the cluster
       resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
@@ -1157,26 +1163,27 @@ class Cluster(_messages.Message):
   backupSource = _messages.MessageField('BackupSource', 3)
   clusterType = _messages.EnumField('ClusterTypeValueValuesEnum', 4)
   continuousBackupConfig = _messages.MessageField('ContinuousBackupConfig', 5)
-  createTime = _messages.StringField(6)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
-  deleteTime = _messages.StringField(8)
-  displayName = _messages.StringField(9)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 11)
-  etag = _messages.StringField(12)
-  initialUser = _messages.MessageField('UserPassword', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  migrationSource = _messages.MessageField('MigrationSource', 15)
-  name = _messages.StringField(16)
-  network = _messages.StringField(17)
-  pitrConfig = _messages.MessageField('PitrConfig', 18)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 21)
-  sslConfig = _messages.MessageField('SslConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  continuousBackupInfo = _messages.MessageField('ContinuousBackupInfo', 6)
+  createTime = _messages.StringField(7)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 8)
+  deleteTime = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 11)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 12)
+  etag = _messages.StringField(13)
+  initialUser = _messages.MessageField('UserPassword', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  migrationSource = _messages.MessageField('MigrationSource', 16)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  pitrConfig = _messages.MessageField('PitrConfig', 19)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
+  sslConfig = _messages.MessageField('SslConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1218,6 +1225,49 @@ class ContinuousBackupConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
   recoveryWindowDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ContinuousBackupInfo(_messages.Message):
+  r"""ContinuousBackupInfo describes the continuous backup properties of a
+  cluster.
+
+  Enums:
+    ScheduleValueListEntryValuesEnum:
+
+  Fields:
+    enabledTime: Output only. When ContinuousBackup was most recently enabled.
+      Set to null if ContinuousBackup is not enabled.
+    encryptionInfo: Output only. The encryption information for the WALs and
+      backups required for ContinuousBackup.
+    schedule: Output only. Days of the week on which a continuous backup is
+      taken. Output only field. Ignored if passed into the request.
+  """
+
+  class ScheduleValueListEntryValuesEnum(_messages.Enum):
+    r"""ScheduleValueListEntryValuesEnum enum type.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  enabledTime = _messages.StringField(1)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 2)
+  schedule = _messages.EnumField('ScheduleValueListEntryValuesEnum', 3, repeated=True)
 
 
 class ContinuousBackupSource(_messages.Message):
@@ -1472,7 +1522,7 @@ class GoogleTypeTimeOfDay(_messages.Message):
 
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
-  It's the main unit of computing resources in AlloyDB. NEXT ID: 22
+  It's the main unit of computing resources in AlloyDB.
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
@@ -1536,7 +1586,7 @@ class Instance(_messages.Message):
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
-      regex expression "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters
+      regex expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters
       of lowercase letters, numbers, and dashes, starting with a letter, and
       ending with a letter or number. For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
@@ -2395,8 +2445,8 @@ class SupportedDatabaseFlag(_messages.Message):
     flagName: The name of the database flag, e.g. "max_allowed_packets". The
       is a possibly key for the Instance.database_flags map field.
     integerRestrictions: Restriction on INTEGER type value.
-    name: The name of the flag resource, following GCP conventions, e.g.: *
-      projects/{project}/locations/{location}/flags/{flag} This field
+    name: The name of the flag resource, following Google Cloud conventions,
+      e.g.: * projects/{project}/locations/{location}/flags/{flag} This field
       currently has no semantic meaning.
     requiresDbRestart: Whether setting or updating this flag on an Instance
       requires a database restart. If a flag that requires database restart is

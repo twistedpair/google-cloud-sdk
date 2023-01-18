@@ -982,7 +982,7 @@
           "$ref": "ConfigManagementOciConfig"
         },
         "allowVerticalScale": {
-          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling.",
+          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling. This field is deprecated.",
           "type": "boolean"
         }
       }
@@ -2154,6 +2154,10 @@
       "description": "CommonFleetDefaultMemberConfigSpec contains default configuration information for memberships of a fleet",
       "type": "object",
       "properties": {
+        "helloworld": {
+          "description": "Hello World-specific spec.",
+          "$ref": "HelloWorldMembershipSpec"
+        },
         "mesh": {
           "description": "Anthos Service Mesh-specific spec",
           "$ref": "ServiceMeshMembershipSpec"

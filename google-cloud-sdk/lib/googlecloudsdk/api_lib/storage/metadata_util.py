@@ -21,10 +21,13 @@ from __future__ import unicode_literals
 import json
 import os
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import files
+
+import six
 
 
 @function_result_cache.lru(maxsize=None)
@@ -32,7 +35,14 @@ def cached_read_json_file(file_path):
   """Convert JSON file to an in-memory dict."""
   expanded_file_path = os.path.realpath(os.path.expanduser(file_path))
   with files.FileReader(expanded_file_path) as file_reader:
-    return json.load(file_reader)
+    try:
+      return json.load(file_reader)
+    except json.JSONDecodeError as e:
+      raise errors.InvalidUrlError(
+          'Found invalid JSON file {}\n\nOriginal JSONDecodeError: {}'.format(
+              file_path, six.text_type(e)
+          )
+      )
 
 
 def get_updated_custom_fields(existing_custom_fields,

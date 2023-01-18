@@ -2149,7 +2149,8 @@ class FhirStore(_messages.Message):
     notificationConfig: If non-empty, publish all resource modifications of
       this FHIR store to this destination. The Pub/Sub message attributes
       contain a map with a string describing the action that has triggered the
-      notification. For example, "action":"CreateResource".
+      notification. For example, "action":"CreateResource". Deprecated. Use
+      `notification_configs` instead.
     notificationConfigs: Specifies where and whether to send notifications
       upon changes to a Fhir store.
     searchConfig: Configuration for how FHIR resources can be searched.

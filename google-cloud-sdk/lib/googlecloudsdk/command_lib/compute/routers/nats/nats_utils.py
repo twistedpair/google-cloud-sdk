@@ -42,10 +42,8 @@ class IpAllocateOptionShouldNotBeSpecifiedError(core_exceptions.Error):
   """Raised when IP Allocation option is specified for private NAT."""
 
   def __init__(self):
-    msg = (
-        '--nat-external-ip-pool and --auto-allocate-nat-external-ips '
-        'cannot be specified for Private NAT.'
-    )
+    msg = ('--nat-external-ip-pool and --auto-allocate-nat-external-ips '
+           'cannot be specified for Private NAT.')
     super(IpAllocateOptionShouldNotBeSpecifiedError, self).__init__(msg)
 
 
@@ -53,10 +51,8 @@ class IpAllocationUnspecifiedError(core_exceptions.Error):
   """Raised when IP Allocation option is not specified for public NAT."""
 
   def __init__(self):
-    msg = (
-        'Either --nat-external-ip-pool or --auto-allocate-nat-external-ips '
-        'must be specified for Public NAT.'
-    )
+    msg = ('Either --nat-external-ip-pool or --auto-allocate-nat-external-ips '
+           'must be specified for Public NAT.')
     super(IpAllocationUnspecifiedError, self).__init__(msg)
 
 
@@ -71,7 +67,8 @@ def FindNatOrRaise(router, nat_name):
 def CreateNatMessage(args,
                      compute_holder,
                      with_private_nat=False,
-                     with_subnet_all=False):
+                     with_subnet_all=False,
+                     with_auto_network_tier=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -95,6 +92,10 @@ def CreateNatMessage(args,
     params['natIpAllocateOption'] = option
     params['natIps'] = nat_ips
 
+  if with_auto_network_tier and args.auto_network_tier is not None:
+    params['autoNetworkTier'] = (
+        compute_holder.client.messages.RouterNat.AutoNetworkTierValueValuesEnum(
+            args.auto_network_tier))
   params['udpIdleTimeoutSec'] = args.udp_idle_timeout
   params['icmpIdleTimeoutSec'] = args.icmp_idle_timeout
   params['tcpEstablishedIdleTimeoutSec'] = args.tcp_established_idle_timeout
@@ -128,7 +129,8 @@ def UpdateNatMessage(nat,
                      args,
                      compute_holder,
                      with_private_nat=False,
-                     with_subnet_all=False):
+                     with_subnet_all=False,
+                     with_auto_network_tier=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -145,8 +147,9 @@ def UpdateNatMessage(nat,
 
     # Remove a IP from nat_ips if it is going to be drained.
     if not args.nat_external_ip_pool:
-      nat.natIps = [ip for ip in nat.natIps
-                    if not _ContainIp(drain_nat_ips, ip)]
+      nat.natIps = [
+          ip for ip in nat.natIps if not _ContainIp(drain_nat_ips, ip)
+      ]
 
   if args.clear_nat_external_drain_ip_pool:
     nat.drainNatIps = []
@@ -155,6 +158,11 @@ def UpdateNatMessage(nat,
     option, nat_ips = _ParseNatIpFields(args, compute_holder)
     nat.natIpAllocateOption = option
     nat.natIps = nat_ips
+
+  if with_auto_network_tier and args.auto_network_tier is not None:
+    nat.autoNetworkTier = (
+        compute_holder.client.messages.RouterNat.AutoNetworkTierValueValuesEnum(
+            args.auto_network_tier))
 
   if args.udp_idle_timeout is not None:
     nat.udpIdleTimeoutSec = args.udp_idle_timeout
@@ -228,16 +236,16 @@ def _ParseSubnetFields(args, compute_holder, with_subnet_all):
   messages = compute_holder.client.messages
   if args.subnet_option == nat_flags.SubnetOption.ALL_RANGES:
     ranges_to_nat = (
-        messages.RouterNat.SourceSubnetworkIpRangesToNatValueValuesEnum.
-        ALL_SUBNETWORKS_ALL_IP_RANGES)
+        messages.RouterNat.SourceSubnetworkIpRangesToNatValueValuesEnum
+        .ALL_SUBNETWORKS_ALL_IP_RANGES)
   elif args.subnet_option == nat_flags.SubnetOption.PRIMARY_RANGES:
     ranges_to_nat = (
-        messages.RouterNat.SourceSubnetworkIpRangesToNatValueValuesEnum.
-        ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES)
+        messages.RouterNat.SourceSubnetworkIpRangesToNatValueValuesEnum
+        .ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES)
   else:
     ranges_to_nat = (
-        messages.RouterNat.SourceSubnetworkIpRangesToNatValueValuesEnum.
-        LIST_OF_SUBNETWORKS)
+        messages.RouterNat.SourceSubnetworkIpRangesToNatValueValuesEnum
+        .LIST_OF_SUBNETWORKS)
 
     # Mapping of subnet names to SubnetUsage.
     subnet_usages = dict()
@@ -284,12 +292,12 @@ def _ParseSubnetFields(args, compute_holder, with_subnet_all):
             .SourceIpRangesToNatValueListEntryValuesEnum.ALL_IP_RANGES)
       if subnet_usage.using_primary:
         options.append(
-            messages.RouterNatSubnetworkToNat.
-            SourceIpRangesToNatValueListEntryValuesEnum.PRIMARY_IP_RANGE)
+            messages.RouterNatSubnetworkToNat
+            .SourceIpRangesToNatValueListEntryValuesEnum.PRIMARY_IP_RANGE)
       if subnet_usage.secondary_ranges:
-        options.append(messages.RouterNatSubnetworkToNat.
-                       SourceIpRangesToNatValueListEntryValuesEnum.
-                       LIST_OF_SECONDARY_IP_RANGES)
+        options.append(messages.RouterNatSubnetworkToNat
+                       .SourceIpRangesToNatValueListEntryValuesEnum
+                       .LIST_OF_SECONDARY_IP_RANGES)
 
       subnetworks.append({
           'name': six.text_type(subnet_ref[0]),

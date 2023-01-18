@@ -570,14 +570,26 @@ class Disk(_messages.Message):
     diskInterface: Local SSDs are available through both "SCSI" and "NVMe"
       interfaces. If not indicated, "NVMe" will be the default one for local
       ssds. We only support "SCSI" for persistent disks now.
-    image: Name of a public or custom image used as the data source.
-    sizeGb: Disk size in GB. This field is ignored if `data_source` is `disk`
-      or `image`. If `type` is `local-ssd`, size_gb should be a multiple of
-      375GB, otherwise, the final size will be the next greater multiple of
-      375 GB.
+    image: Name of a public or custom image used as the data source. For
+      example, the following are all valid URLs: (1) Specify the image by its
+      family name: projects/{project}/global/images/family/{image_family} (2)
+      Specify the image version:
+      projects/{project}/global/images/{image_version} You can also use Batch
+      customized image in short names. The following image values are
+      supported for a boot disk: "batch-debian": use Batch Debian images.
+      "batch-centos": use Batch CentOS images. "batch-cos": use Batch
+      Container-Optimized images.
+    sizeGb: Disk size in GB. For persistent disk, this field is ignored if
+      `data_source` is `image` or `snapshot`. For local SSD, size_gb should be
+      a multiple of 375GB, otherwise, the final size will be the next greater
+      multiple of 375 GB. For boot disk, Batch will calculate the boot disk
+      size based on source image and task requirements if you do not speicify
+      the size. If both this field and the boot_disk_mib field in task spec's
+      compute_resource are defined, Batch will only honor this field.
     snapshot: Name of a snapshot used as the data source.
-    type: Disk type as shown in `gcloud compute disk-types list` For example,
-      "pd-ssd", "pd-standard", "pd-balanced", "local-ssd".
+    type: Disk type as shown in `gcloud compute disk-types list`. For example,
+      local SSD uses type "local-ssd". Persistent disks and boot disks use
+      "pd-balanced", "pd-extreme", "pd-ssd" or "pd-standard".
   """
 
   diskInterface = _messages.StringField(1)
@@ -601,11 +613,46 @@ class Environment(_messages.Message):
   when executing Tasks.
 
   Messages:
+    SecretVariablesValue: A map of environment variable names to Secret
+      Manager secret names. The VM will access the named secrets to set the
+      value of each environment variable.
     VariablesValue: A map of environment variable names to values.
 
   Fields:
+    encryptedVariables: An encrypted JSON dictionary where the key/value pairs
+      correspond to environment variable names and their values.
+    secretVariables: A map of environment variable names to Secret Manager
+      secret names. The VM will access the named secrets to set the value of
+      each environment variable.
     variables: A map of environment variable names to values.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecretVariablesValue(_messages.Message):
+    r"""A map of environment variable names to Secret Manager secret names.
+    The VM will access the named secrets to set the value of each environment
+    variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a SecretVariablesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SecretVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SecretVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class VariablesValue(_messages.Message):
@@ -631,7 +678,9 @@ class Environment(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  variables = _messages.MessageField('VariablesValue', 1)
+  encryptedVariables = _messages.MessageField('KMSEnvMap', 1)
+  secretVariables = _messages.MessageField('SecretVariablesValue', 2)
+  variables = _messages.MessageField('VariablesValue', 3)
 
 
 class Expr(_messages.Message):
@@ -690,6 +739,8 @@ class InstancePolicy(_messages.Message):
 
   Fields:
     accelerators: The accelerators attached to each VM instance.
+    bootDisk: Book disk to be created and attached to each VM by this
+      InstancePolicy. Boot disk will be deleted when the VM is deleted.
     disks: Non-boot disks to be attached for each VM created by this
       InstancePolicy. New disks will be deleted when the VM is deleted.
     machineType: The Compute Engine machine type.
@@ -718,10 +769,11 @@ class InstancePolicy(_messages.Message):
     PREEMPTIBLE = 3
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
-  disks = _messages.MessageField('AttachedDisk', 2, repeated=True)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 5)
+  bootDisk = _messages.MessageField('Disk', 2)
+  disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
+  machineType = _messages.StringField(4)
+  minCpuPlatform = _messages.StringField(5)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 6)
 
 
 class InstancePolicyOrTemplate(_messages.Message):
@@ -948,6 +1000,20 @@ class JobStatus(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
   statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
   taskGroups = _messages.MessageField('TaskGroupsValue', 4)
+
+
+class KMSEnvMap(_messages.Message):
+  r"""A KMSEnvMap object.
+
+  Fields:
+    cipherText: The value of the cipherText response from the `encrypt`
+      method.
+    keyName: The name of the KMS key that will be used to decrypt the cipher
+      text.
+  """
+
+  cipherText = _messages.StringField(1)
+  keyName = _messages.StringField(2)
 
 
 class LifecyclePolicy(_messages.Message):

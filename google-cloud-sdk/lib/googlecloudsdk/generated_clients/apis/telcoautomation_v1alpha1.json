@@ -290,6 +290,10 @@
           "description": "name of resource",
           "type": "string"
         },
+        "managementConfig": {
+          "description": "Configuration of the cluster management",
+          "$ref": "ManagementConfig"
+        },
         "createTime": {
           "description": "Output only. [Output only] Create time stamp",
           "readOnly": true,
@@ -308,6 +312,133 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "tnaVersion": {
+          "description": "Output only. Provides the TNA version installed on the cluster",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ManagementConfig": {
+      "id": "ManagementConfig",
+      "description": "Configuration of the cluster management",
+      "type": "object",
+      "properties": {
+        "standardManagementConfig": {
+          "description": "Configuration of the standard (GKE) cluster management",
+          "$ref": "StandardManagementConfig"
+        },
+        "fullManagementConfig": {
+          "description": "Configuration of the full (Autopilot) cluster management. Full cluster management is a preview feature.",
+          "$ref": "FullManagementConfig"
+        }
+      }
+    },
+    "StandardManagementConfig": {
+      "id": "StandardManagementConfig",
+      "description": "Configuration of the standard (GKE) cluster management",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Name of the VPC Network to put the GKE cluster and nodes in. The VPC will be created if it doesn't exist.",
+          "type": "string"
+        },
+        "subnet": {
+          "description": "Specifies the subnet that the interface will be part of. Network key must be specified and the subnet must be a subnetwork of the specified network.",
+          "type": "string"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The \/28 network that the masters will use.",
+          "type": "string"
+        },
+        "clusterCidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "servicesCidrBlock": {
+          "description": "The IP address range for the cluster service IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "clusterNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "servicesNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "masterAuthorizedNetworksConfig": {
+          "description": "Master Authorized Network that supports multiple CIDR blocks. Allows access to the k8s master from multiple blocks. It cannot be set at the same time with the field man_block.",
+          "$ref": "MasterAuthorizedNetworksConfig"
+        }
+      }
+    },
+    "MasterAuthorizedNetworksConfig": {
+      "id": "MasterAuthorizedNetworksConfig",
+      "description": "Configuration of the Master Authorized Network that support multiple CIDRs",
+      "type": "object",
+      "properties": {
+        "cidrBlocks": {
+          "description": "cidr_blocks define up to 50 external networks that could access Kubernetes master through HTTPS.",
+          "type": "array",
+          "items": {
+            "$ref": "CidrBlock"
+          }
+        }
+      }
+    },
+    "CidrBlock": {
+      "id": "CidrBlock",
+      "description": "CidrBlock contains an optional name and one CIDR block.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Optional. display_name is an optional field for users to identify CIDR blocks.",
+          "type": "string"
+        },
+        "cidrBlock": {
+          "description": "Optional. cidr_block must be specified in CIDR notation when using master_authorized_networks_config. Currently, the user could still use the deprecated man_block field, so this field is currently optional, but will be required in the future.",
+          "type": "string"
+        }
+      }
+    },
+    "FullManagementConfig": {
+      "id": "FullManagementConfig",
+      "description": "Configuration of the full (Autopilot) cluster management",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Name of the VPC Network to put the GKE cluster and nodes in. The VPC will be created if it doesn't exist.",
+          "type": "string"
+        },
+        "subnet": {
+          "description": "Specifies the subnet that the interface will be part of. Network key must be specified and the subnet must be a subnetwork of the specified network.",
+          "type": "string"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The \/28 network that the masters will use.",
+          "type": "string"
+        },
+        "clusterCidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "servicesCidrBlock": {
+          "description": "The IP address range for the cluster service IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "clusterNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "servicesNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "masterAuthorizedNetworksConfig": {
+          "description": "Master Authorized Network that supports multiple CIDR blocks. Allows access to the k8s master from multiple blocks. It cannot be set at the same time with the field man_block.",
+          "$ref": "MasterAuthorizedNetworksConfig"
         }
       }
     },

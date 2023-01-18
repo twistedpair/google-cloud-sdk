@@ -1266,8 +1266,6 @@ apis:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json
   transcoder:
-    v1beta1:
-      discovery_doc: transcoder_v1beta1.json
     v1:
       discovery_doc: transcoder_v1.json
       default: true

@@ -675,7 +675,23 @@ class FileShareConfig(_messages.Message):
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
-  r"""A GoogleCloudSaasacceleratorManagementProvidersV1Instance object.
+  r"""Instance represents the interface for SLM services to actuate the state
+  of control plane resources. Example Instance in JSON, where consumer-
+  project-number=123456, producer-project-id=cloud-sql: ```json Instance: {
+  "name": "projects/123456/locations/us-east1/instances/prod-instance",
+  "create_time": { "seconds": 1526406431, }, "labels": { "env": "prod", "foo":
+  "bar" }, "state": READY, "software_versions": { "software_update": "cloud-
+  sql-09-28-2018", }, "maintenance_policy_names": { "UpdatePolicy":
+  "projects/123456/locations/us-east1/maintenancePolicies/prod-update-policy",
+  } "tenant_project_id": "cloud-sql-test-tenant", "producer_metadata": {
+  "cloud-sql-tier": "basic", "cloud-sql-instance-size": "1G", },
+  "provisioned_resources": [ { "resource-type": "compute-instance", "resource-
+  url": "https://www.googleapis.com/compute/v1/projects/cloud-sql/zones/us-
+  east1-b/instances/vm-1", } ], "maintenance_schedules": { "csa_rollout": {
+  "start_time": { "seconds": 1526406431, }, "end_time": { "seconds":
+  1535406431, }, }, "ncsa_rollout": { "start_time": { "seconds": 1526406431,
+  }, "end_time": { "seconds": 1535406431, }, } }, "consumer_defined_name":
+  "my-sql-instance1", } ``` LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. Current lifecycle state of the resource
@@ -685,11 +701,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     LabelsValue: Optional. Resource labels to represent user provided
       metadata. Each label is a key-value pair, where both the key and the
       value are arbitrary strings provided by the user.
-    MaintenancePolicyNamesValue: Optional. Deprecated. The MaintenancePolicies
-      that have been attached to the instance. The key must be of the type
-      name of the oneof policy name defined in MaintenancePolicy, and the
-      referenced policy must define the same policy type. For complete details
-      of MaintenancePolicy, please refer to go/cloud-saas-mw-ug.
+    MaintenancePolicyNamesValue: Optional. The MaintenancePolicies that have
+      been attached to the instance. The key must be of the type name of the
+      oneof policy name defined in MaintenancePolicy, and the referenced
+      policy must define the same policy type. For details, please refer to
+      go/cloud-saas-mw-ug. Should not be set if
+      maintenance_settings.maintenance_policies is set.
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
@@ -719,11 +736,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     labels: Optional. Resource labels to represent user provided metadata.
       Each label is a key-value pair, where both the key and the value are
       arbitrary strings provided by the user.
-    maintenancePolicyNames: Optional. Deprecated. The MaintenancePolicies that
-      have been attached to the instance. The key must be of the type name of
-      the oneof policy name defined in MaintenancePolicy, and the referenced
-      policy must define the same policy type. For complete details of
-      MaintenancePolicy, please refer to go/cloud-saas-mw-ug.
+    maintenancePolicyNames: Optional. The MaintenancePolicies that have been
+      attached to the instance. The key must be of the type name of the oneof
+      policy name defined in MaintenancePolicy, and the referenced policy must
+      define the same policy type. For details, please refer to go/cloud-saas-
+      mw-ug. Should not be set if maintenance_settings.maintenance_policies is
+      set.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
@@ -810,11 +828,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MaintenancePolicyNamesValue(_messages.Message):
-    r"""Optional. Deprecated. The MaintenancePolicies that have been attached
-    to the instance. The key must be of the type name of the oneof policy name
+    r"""Optional. The MaintenancePolicies that have been attached to the
+    instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the referenced policy must define the
-    same policy type. For complete details of MaintenancePolicy, please refer
-    to go/cloud-saas-mw-ug.
+    same policy type. For details, please refer to go/cloud-saas-mw-ug. Should
+    not be set if maintenance_settings.maintenance_policies is set.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -1007,9 +1025,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     MaintenancePoliciesValue: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
-      define the same policy type. For complete details of MaintenancePolicy,
-      please refer to go/cloud-saas-mw-ug. If only the name is needed, then
-      only populate MaintenancePolicy.name.
+      define the same policy type. For details, please refer to go/cloud-saas-
+      mw-ug. Should not be set if maintenance_policy_names is set. If only the
+      name is needed, then only populate MaintenancePolicy.name.
 
   Fields:
     exclude: Optional. Exclude instance from maintenance. When true, rollout
@@ -1020,9 +1038,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     maintenancePolicies: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
-      define the same policy type. For complete details of MaintenancePolicy,
-      please refer to go/cloud-saas-mw-ug. If only the name is needed, then
-      only populate MaintenancePolicy.name.
+      define the same policy type. For details, please refer to go/cloud-saas-
+      mw-ug. Should not be set if maintenance_policy_names is set. If only the
+      name is needed, then only populate MaintenancePolicy.name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1030,9 +1048,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     r"""Optional. The MaintenancePolicies that have been attached to the
     instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the embedded policy must define the same
-    policy type. For complete details of MaintenancePolicy, please refer to
-    go/cloud-saas-mw-ug. If only the name is needed, then only populate
-    MaintenancePolicy.name.
+    policy type. For details, please refer to go/cloud-saas-mw-ug. Should not
+    be set if maintenance_policy_names is set. If only the name is needed,
+    then only populate MaintenancePolicy.name.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -1223,6 +1241,10 @@ class Instance(_messages.Message):
   r"""A Filestore instance.
 
   Enums:
+    ProtocolValueValuesEnum: Immutable. The protocol indicates the access
+      protocol for all shares in the instance. This field is immutable and it
+      cannot be changed after the instance has been created. Default value:
+      `NFS_V3`.
     StateValueValuesEnum: Output only. The instance state.
     SuspensionReasonsValueListEntryValuesEnum:
     TierValueValuesEnum: The service tier of the instance.
@@ -1253,6 +1275,9 @@ class Instance(_messages.Message):
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
+    protocol: Immutable. The protocol indicates the access protocol for all
+      shares in the instance. This field is immutable and it cannot be changed
+      after the instance has been created. Default value: `NFS_V3`.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The instance state.
     statusMessage: Output only. Additional information about the instance
@@ -1261,6 +1286,21 @@ class Instance(_messages.Message):
       instance is in "SUSPENDED" state.
     tier: The service tier of the instance.
   """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Immutable. The protocol indicates the access protocol for all shares
+    in the instance. This field is immutable and it cannot be changed after
+    the instance has been created. Default value: `NFS_V3`.
+
+    Values:
+      FILE_PROTOCOL_UNSPECIFIED: FILE_PROTOCOL_UNSPECIFIED serves a "not set"
+        default value when a FileProtocol is a separate field in a message.
+      NFS_V3: NFS 3.0.
+      NFS_V4_1: NFS 4.1.
+    """
+    FILE_PROTOCOL_UNSPECIFIED = 0
+    NFS_V3 = 1
+    NFS_V4_1 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The instance state.
@@ -1369,11 +1409,12 @@ class Instance(_messages.Message):
   multiShareEnabled = _messages.BooleanField(11)
   name = _messages.StringField(12)
   networks = _messages.MessageField('NetworkConfig', 13, repeated=True)
-  satisfiesPzs = _messages.BooleanField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 17, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 18)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 14)
+  satisfiesPzs = _messages.BooleanField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  statusMessage = _messages.StringField(17)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 18, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 19)
 
 
 class ListBackupsResponse(_messages.Message):

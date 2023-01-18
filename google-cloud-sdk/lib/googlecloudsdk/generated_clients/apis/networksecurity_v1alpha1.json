@@ -1444,7 +1444,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists AddressGroups in a given project and location."
+                  "description": "Lists address groups in a given project and location."
                 },
                 "get": {
                   "id": "networksecurity.projects.locations.addressGroups.get",
@@ -1469,7 +1469,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single AddressGroup."
+                  "description": "Gets details of a single address group."
                 },
                 "create": {
                   "id": "networksecurity.projects.locations.addressGroups.create",
@@ -1507,7 +1507,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new AddressGroup in a given project and location."
+                  "description": "Creates a new address group in a given project and location."
                 },
                 "patch": {
                   "id": "networksecurity.projects.locations.addressGroups.patch",
@@ -1546,7 +1546,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single AddressGroup."
+                  "description": "Updates the parameters of a single address group."
                 },
                 "addItems": {
                   "id": "networksecurity.projects.locations.addressGroups.addItems",
@@ -1574,7 +1574,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Add items to the AddressGroup"
+                  "description": "Adds items to an address group."
                 },
                 "removeItems": {
                   "id": "networksecurity.projects.locations.addressGroups.removeItems",
@@ -1602,7 +1602,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Remove items from the AddressGroup"
+                  "description": "Removes items from an address group."
                 },
                 "cloneItems": {
                   "id": "networksecurity.projects.locations.addressGroups.cloneItems",
@@ -1630,7 +1630,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Clone items to the AddressGroup from another address group."
+                  "description": "Clones items from one address group to another."
                 },
                 "delete": {
                   "id": "networksecurity.projects.locations.addressGroups.delete",
@@ -1660,7 +1660,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single AddressGroup."
+                  "description": "Deletes a single address group."
                 },
                 "listReferences": {
                   "id": "networksecurity.projects.locations.addressGroups.listReferences",
@@ -1696,7 +1696,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists references of the AddressGroup."
+                  "description": "Lists references of an address group."
                 },
                 "setIamPolicy": {
                   "id": "networksecurity.projects.locations.addressGroups.setIamPolicy",
@@ -3165,7 +3165,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists AddressGroups in a given project and location."
+                  "description": "Lists address groups in a given project and location."
                 },
                 "get": {
                   "id": "networksecurity.organizations.locations.addressGroups.get",
@@ -3190,7 +3190,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single AddressGroup."
+                  "description": "Gets details of a single address group."
                 },
                 "create": {
                   "id": "networksecurity.organizations.locations.addressGroups.create",
@@ -3228,7 +3228,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new AddressGroup in a given project and location."
+                  "description": "Creates a new address group in a given project and location."
                 },
                 "patch": {
                   "id": "networksecurity.organizations.locations.addressGroups.patch",
@@ -3267,7 +3267,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single AddressGroup."
+                  "description": "Updates parameters of an address group."
                 },
                 "addItems": {
                   "id": "networksecurity.organizations.locations.addressGroups.addItems",
@@ -3295,7 +3295,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Add items to the AddressGroup"
+                  "description": "Adds items to an address group."
                 },
                 "removeItems": {
                   "id": "networksecurity.organizations.locations.addressGroups.removeItems",
@@ -3323,7 +3323,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Remove items from the AddressGroup"
+                  "description": "Removes items from an address group."
                 },
                 "cloneItems": {
                   "id": "networksecurity.organizations.locations.addressGroups.cloneItems",
@@ -3351,7 +3351,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Clone items to the AddressGroup from another address group."
+                  "description": "Clones items from one address group to another."
                 },
                 "delete": {
                   "id": "networksecurity.organizations.locations.addressGroups.delete",
@@ -3381,7 +3381,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single AddressGroup."
+                  "description": "Deletes an address group."
                 },
                 "listReferences": {
                   "id": "networksecurity.organizations.locations.addressGroups.listReferences",
@@ -3417,7 +3417,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists references of the AddressGroup."
+                  "description": "Lists references of an address group."
                 }
               }
             }

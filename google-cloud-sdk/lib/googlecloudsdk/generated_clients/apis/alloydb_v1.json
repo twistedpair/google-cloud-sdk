@@ -1150,6 +1150,12 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "expiryTime": {
+          "description": "Output only. The time at which after the backup is eligible to be garbage collected. It is the duration specified by the backup's retention policy, added to the backup's create_time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

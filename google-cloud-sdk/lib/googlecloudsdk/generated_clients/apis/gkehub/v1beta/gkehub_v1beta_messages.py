@@ -270,10 +270,12 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   information for memberships of a fleet
 
   Fields:
+    helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
   """
 
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 1)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 1)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 2)
 
 
 class ConfigManagementBinauthzConfig(_messages.Message):
@@ -330,7 +332,7 @@ class ConfigManagementConfigSync(_messages.Message):
 
   Fields:
     allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
-      false which disallows vertical scaling.
+      false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields
@@ -3288,6 +3290,35 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PolicyControllerBundleInstallSpec(_messages.Message):
+  r"""BundleInstallSpec is the specification configuration for a single
+  managed bundle.
+
+  Enums:
+    ManagementValueValuesEnum: Management specifies how the bundle will be
+      managed by the controller.
+
+  Fields:
+    exemptedNamespaces: the set of namespaces to be exempted from the bundle
+    management: Management specifies how the bundle will be managed by the
+      controller.
+  """
+
+  class ManagementValueValuesEnum(_messages.Enum):
+    r"""Management specifies how the bundle will be managed by the controller.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: No Management strategy has been specified.
+      INSTALLED: The entity should be insistently reconciled by the Hub
+        controller
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    INSTALLED = 1
+
+  exemptedNamespaces = _messages.StringField(1, repeated=True)
+  management = _messages.EnumField('ManagementValueValuesEnum', 2)
+
+
 class PolicyControllerHubConfig(_messages.Message):
   r"""Configuration for Policy Controller
 
@@ -3312,6 +3343,7 @@ class PolicyControllerHubConfig(_messages.Message):
     monitoring: Monitoring specifies the configuration of monitoring.
     mutationEnabled: Enables the ability to mutate resources using Policy
       Controller.
+    policyContent: Specifies the desired policy content on the cluster
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -3344,8 +3376,9 @@ class PolicyControllerHubConfig(_messages.Message):
   logDeniesEnabled = _messages.BooleanField(4)
   monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 5)
   mutationEnabled = _messages.BooleanField(6)
-  referentialRulesEnabled = _messages.BooleanField(7)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 8)
+  policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 7)
+  referentialRulesEnabled = _messages.BooleanField(8)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 9)
 
 
 class PolicyControllerMembershipSpec(_messages.Message):
@@ -3371,11 +3404,15 @@ class PolicyControllerMembershipState(_messages.Message):
 
   Messages:
     ComponentStatesValue: Currently these include (also serving as map keys):
-      1. "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
+      1. "admission" 2. "audit" 3. "mutation"
+    ContentStatesValue: The state of the template library and any bundles
+      included in the chosen version of the manifest
 
   Fields:
     componentStates: Currently these include (also serving as map keys): 1.
-      "admission" 2. "audit" 3. "mutation" 4. "constraint template library"
+      "admission" 2. "audit" 3. "mutation"
+    contentStates: The state of the template library and any bundles included
+      in the chosen version of the manifest
     state: The overall Policy Controller lifecycle state observed by the Hub
       Feature controller.
   """
@@ -3435,7 +3472,7 @@ class PolicyControllerMembershipState(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ComponentStatesValue(_messages.Message):
     r"""Currently these include (also serving as map keys): 1. "admission" 2.
-    "audit" 3. "mutation" 4. "constraint template library"
+    "audit" 3. "mutation"
 
     Messages:
       AdditionalProperty: An additional property for a ComponentStatesValue
@@ -3458,8 +3495,35 @@ class PolicyControllerMembershipState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ContentStatesValue(_messages.Message):
+    r"""The state of the template library and any bundles included in the
+    chosen version of the manifest
+
+    Messages:
+      AdditionalProperty: An additional property for a ContentStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ContentStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ContentStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerOnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   componentStates = _messages.MessageField('ComponentStatesValue', 1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  contentStates = _messages.MessageField('ContentStatesValue', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -3556,6 +3620,50 @@ class PolicyControllerOnClusterState(_messages.Message):
 
   details = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class PolicyControllerPolicyContentSpec(_messages.Message):
+  r"""PolicyContentSpec defines the user's desired content configuration on
+  the cluster.
+
+  Messages:
+    BundlesValue: map of bundle name to BundleInstallSpec. The bundle name
+      maps to the `bundleName` key in the
+      `policycontroller.gke.io/constraintData` annotation on a constraint.
+
+  Fields:
+    bundles: map of bundle name to BundleInstallSpec. The bundle name maps to
+      the `bundleName` key in the `policycontroller.gke.io/constraintData`
+      annotation on a constraint.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BundlesValue(_messages.Message):
+    r"""map of bundle name to BundleInstallSpec. The bundle name maps to the
+    `bundleName` key in the `policycontroller.gke.io/constraintData`
+    annotation on a constraint.
+
+    Messages:
+      AdditionalProperty: An additional property for a BundlesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type BundlesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BundlesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerBundleInstallSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerBundleInstallSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bundles = _messages.MessageField('BundlesValue', 1)
 
 
 class PolicyControllerTemplateLibraryConfig(_messages.Message):

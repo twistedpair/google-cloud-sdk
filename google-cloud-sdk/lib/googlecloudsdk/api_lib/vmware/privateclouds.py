@@ -38,13 +38,15 @@ class PrivateCloudsClient(util.VmwareClientBase):
     response = self.service.Get(request)
     return response
 
-  def Create(self,
-             resource,
-             description=None,
-             cluster_id=None,
-             nodes_configs=None,
-             network_cidr=None,
-             vmware_engine_network_id=None):
+  def Create(
+      self,
+      resource,
+      cluster_id,
+      nodes_configs,
+      network_cidr,
+      vmware_engine_network_id,
+      description=None,
+  ):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
@@ -67,14 +69,11 @@ class PrivateCloudsClient(util.VmwareClientBase):
         privateCloud=private_cloud)
     return self.service.Create(request)
 
-  def Update(self,
-             resource,
-             description=None):
+  def Update(self, resource, description):
     private_cloud = self.Get(resource)
     update_mask = []
-    if description is not None:
-      private_cloud.description = description
-      update_mask.append('description')
+    private_cloud.description = description
+    update_mask.append('description')
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsPatchRequest(
         privateCloud=private_cloud,
         name=resource.RelativeName(),
@@ -91,23 +90,17 @@ class PrivateCloudsClient(util.VmwareClientBase):
         self.messages.VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(
             name=resource.RelativeName(), delayHours=delay_hours))
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, location_resource):
     location = location_resource.RelativeName()
-    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsListRequest(
-        parent=location, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+    request = (
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsListRequest(
+            parent=location
+        )
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='privateClouds')
 
   def GetNsxCredentials(self, resource):

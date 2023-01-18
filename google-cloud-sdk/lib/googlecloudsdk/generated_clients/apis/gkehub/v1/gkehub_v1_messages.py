@@ -239,10 +239,12 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   information for memberships of a fleet
 
   Fields:
+    helloworld: Hello World-specific spec.
     mesh: Anthos Service Mesh-specific spec
   """
 
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 1)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 1)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 2)
 
 
 class ConfigManagementConfigSync(_messages.Message):
@@ -250,7 +252,7 @@ class ConfigManagementConfigSync(_messages.Message):
 
   Fields:
     allowVerticalScale: Set to true to allow the vertical scaling. Defaults to
-      false which disallows vertical scaling.
+      false which disallows vertical scaling. This field is deprecated.
     enabled: Enables the installation of ConfigSync. If set to true,
       ConfigSync resources will be created and the other ConfigSync fields
       will be applied if exist. If set to false, all other ConfigSync fields

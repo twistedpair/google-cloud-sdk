@@ -437,55 +437,54 @@ class Hub(_messages.Message):
 
 
 class InternalRange(_messages.Message):
-  r"""The InternalRange resource for IPAM operations within a VPC network.
+  r"""The internal range resource for IPAM operations within a VPC network.
   Used to represent a private address range along with behavioral
-  characterstics of that range (it's usage and peering behavior). Networking
+  characterstics of that range (its usage and peering behavior). Networking
   resources can link to this range if they are created as belonging to it.
-  Next id: 14
 
   Enums:
     OverlapsValueListEntryValuesEnum:
-    PeeringValueValuesEnum: The type of peering set for this InternalRange.
-    UsageValueValuesEnum: The type of usage set for this InternalRange.
+    PeeringValueValuesEnum: The type of peering set for this internal range.
+    UsageValueValuesEnum: The type of usage set for this internal range.
 
   Messages:
     LabelsValue: User-defined labels.
 
   Fields:
-    createTime: Time when the InternalRange was created.
+    createTime: Time when the internal range was created.
     description: A description of this resource.
-    ipCidrRange: IP range that this InternalRange defines.
+    ipCidrRange: IP range that this internal range defines.
     labels: User-defined labels.
-    name: Immutable. The name of a InternalRange. Format:
+    name: Immutable. The name of an internal range. Format:
       projects/{project}/locations/{location}/internalRanges/{internal_range}
       See: https://google.aip.dev/122#fields-representing-resource-names
     network: The URL or resource ID of the network in which to reserve the
-      Internal Range. The network cannot be deleted if there are any reserved
-      Internal Ranges referring to it. Legacy network is not supported. This
+      internal range. The network cannot be deleted if there are any reserved
+      internal ranges referring to it. Legacy networks are not supported. This
       can only be specified for a global internal address. Example: - URL:
       /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
       network123
     overlaps: Optional. Types of resources that are allowed to overlap with
-      the current InternalRange.
-    peering: The type of peering set for this InternalRange.
-    prefixLength: An alternate to ip_cidr_range. Can be set when trying to
+      the current internal range.
+    peering: The type of peering set for this internal range.
+    prefixLength: An alternative to ip_cidr_range. Can be set when trying to
       create a reservation that automatically finds a free range of the given
-      size. If both ip_cidr_range and prefix_length are set, it's an error if
-      the range sizes don't match. Can also be used during updates to change
-      the range size.
+      size. If both ip_cidr_range and prefix_length are set, there is an error
+      if the range sizes do not match. Can also be used during updates to
+      change the range size.
     targetCidrRange: Optional. Can be set to narrow down or pick a different
       address space while searching for a free range. If not set, defaults to
       the "10.0.0.0/8" address space. This can be used to search in other
       rfc-1918 address spaces like "172.16.0.0/12" and "192.168.0.0/16" or
       non-rfc-1918 address spaces used in the VPC.
-    updateTime: Time when the InternalRange was updated.
-    usage: The type of usage set for this InternalRange.
+    updateTime: Time when the internal range was updated.
+    usage: The type of usage set for this internal range.
     users: Output only. The list of resources that refer to this internal
-      range. Resources that use the InternalRange for their range allocation
+      range. Resources that use the internal range for their range allocation
       are referred to as users of the range. Other resources mark themselves
-      as users while doing so by creating a reference to this InternalRange.
+      as users while doing so by creating a reference to this internal range.
       Having a user, based on this reference, prevents deletion of the
-      InternalRange referred to. Can be empty.
+      internal range that is referred to. Can be empty.
   """
 
   class OverlapsValueListEntryValuesEnum(_messages.Enum):
@@ -493,36 +492,36 @@ class InternalRange(_messages.Message):
 
     Values:
       OVERLAP_UNSPECIFIED: No overlap overrides.
-      OVERLAP_ROUTE_RANGE: Allow creation of static routes more specific that
-        the current InternalRange.
+      OVERLAP_ROUTE_RANGE: Allow creation of static routes more specific than
+        the current internal range.
     """
     OVERLAP_UNSPECIFIED = 0
     OVERLAP_ROUTE_RANGE = 1
 
   class PeeringValueValuesEnum(_messages.Enum):
-    r"""The type of peering set for this InternalRange.
+    r"""The type of peering set for this internal range.
 
     Values:
       PEERING_UNSPECIFIED: If Peering is left unspecified in
         CreateInternalRange or UpdateInternalRange, it will be defaulted to
         FOR_SELF.
       FOR_SELF: This is the default behavior and represents the case that this
-        InternalRange is intended to be used in the VPC on which it is created
-        and is accessible from it's peers. This implies that peers or peer-of-
-        peer's cannot use this range.
-      FOR_PEER: This behavior can be set when the Internal Range is being
+        internal range is intended to be used in the VPC in which it is
+        created and is accessible from its peers. This implies that peers or
+        peers-of-peers cannot use this range.
+      FOR_PEER: This behavior can be set when the internal range is being
         reserved for usage by the peers. This means that no resource within
         the VPC in which it is being created can use this to associate with a
-        GCP resource, but one of the peer's can. This represents "donating" a
+        VPC resource, but one of the peers can. This represents donating a
         range for peers to use.
-      NOT_SHARED: This behavior can be set when the Internal Range is being
-        reserved for usage by the VPC on which it is created but not shared
+      NOT_SHARED: This behavior can be set when the internal range is being
+        reserved for usage by the VPC in which it is created but not shared
         with the peers. In a sense it is local to the VPC. This can be used to
-        create Internal Ranges for various purposes like
-        HTTP_INTERNAL_LOAD_BALANCER or for interconnect routes that are not
-        shared with peers. This also implies that peer's cannot use this range
+        create internal ranges for various purposes like
+        HTTP_INTERNAL_LOAD_BALANCER or for Interconnect routes that are not
+        shared with peers. This also implies that peers cannot use this range
         in a way that is visible to this VPC, but can re-use this range as
-        long as it is NOT_SHARED from the peer VPC too.
+        long as it is NOT_SHARED from the peer VPC, too.
     """
     PEERING_UNSPECIFIED = 0
     FOR_SELF = 1
@@ -530,20 +529,20 @@ class InternalRange(_messages.Message):
     NOT_SHARED = 3
 
   class UsageValueValuesEnum(_messages.Enum):
-    r"""The type of usage set for this InternalRange.
+    r"""The type of usage set for this internal range.
 
     Values:
       USAGE_UNSPECIFIED: Unspecified usage is allowed in calls which identify
         the resource by other fields and do not need Usage set to complete.
-        These are i.e.: GetInternalRange and DeleteInternalRange. Usage needs
+        These are, i.e.: GetInternalRange and DeleteInternalRange. Usage needs
         to be specified explicitly in CreateInternalRange or
         UpdateInternalRange calls.
-      FOR_VPC: A GCP resource can use the reserved CIDR block by associating
-        it with the Internal Range resource if usage is set to FOR_VPC.
+      FOR_VPC: A VPC resource can use the reserved CIDR block by associating
+        it with the internal range resource if usage is set to FOR_VPC.
       EXTERNAL_TO_VPC: Ranges created with EXTERNAL_TO_VPC cannot be
-        associated with GCP resources and are meant to block out address
-        ranges for various use cases, like for example, usage on-prem, with
-        dynamic route announcements via interconnect.
+        associated with VPC resources and are meant to block out address
+        ranges for various use cases such as usage on-premises, with dynamic
+        route announcements via Interconnect.
     """
     USAGE_UNSPECIFIED = 0
     FOR_VPC = 1
@@ -608,7 +607,7 @@ class ListInternalRangesResponse(_messages.Message):
   r"""Response for InternalRange.ListInternalRanges
 
   Fields:
-    internalRanges: InternalRanges to be returned.
+    internalRanges: Internal range to be returned.
     nextPageToken: The next pagination token in the List response. It should
       be used as page_token for the following request. An empty value means no
       more result.
@@ -924,11 +923,11 @@ class NetworkconnectivityProjectsLocationsInternalRangesCreateRequest(_messages.
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
       request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      the same request ID, the server can check if the original operation with
+      the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   internalRange = _messages.MessageField('InternalRange', 1)
@@ -949,11 +948,11 @@ class NetworkconnectivityProjectsLocationsInternalRangesDeleteRequest(_messages.
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      the same request ID, the server can check if the original operation with
+      the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -1021,7 +1020,7 @@ class NetworkconnectivityProjectsLocationsInternalRangesPatchRequest(_messages.M
 
   Fields:
     internalRange: A InternalRange resource to be passed as the request body.
-    name: Immutable. The name of a InternalRange. Format:
+    name: Immutable. The name of an internal range. Format:
       projects/{project}/locations/{location}/internalRanges/{internal_range}
       See: https://google.aip.dev/122#fields-representing-resource-names
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -1030,13 +1029,13 @@ class NetworkconnectivityProjectsLocationsInternalRangesPatchRequest(_messages.M
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
       request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      the same request ID, the server can check if the original operation with
+      the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the InternalRange resource by the update. The fields
+      overwritten in the internal range resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.

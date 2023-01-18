@@ -1887,6 +1887,23 @@ class DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepliesR
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsConversationsSuggestionsSuggestConversationSummaryRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsConversationsSuggestionsSuggestConversationSummaryRequest
+  object.
+
+  Fields:
+    conversation: Required. The conversation to fetch suggestion for. Format:
+      `projects//locations//conversations/`.
+    googleCloudDialogflowV2SuggestConversationSummaryRequest: A
+      GoogleCloudDialogflowV2SuggestConversationSummaryRequest resource to be
+      passed as the request body.
+  """
+
+  conversation = _messages.StringField(1, required=True)
+  googleCloudDialogflowV2SuggestConversationSummaryRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestConversationSummaryRequest', 2)
+
+
 class DialogflowProjectsDeleteAgentRequest(_messages.Message):
   r"""A DialogflowProjectsDeleteAgentRequest object.
 
@@ -3863,6 +3880,22 @@ class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestSmar
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsLocationsConversationsSuggestionsSuggestConversationSummaryRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsConversationsSuggestionsSuggestConversation
+  SummaryRequest object.
+
+  Fields:
+    conversation: Required. The conversation to fetch suggestion for. Format:
+      `projects//locations//conversations/`.
+    googleCloudDialogflowV2SuggestConversationSummaryRequest: A
+      GoogleCloudDialogflowV2SuggestConversationSummaryRequest resource to be
+      passed as the request body.
+  """
+
+  conversation = _messages.StringField(1, required=True)
+  googleCloudDialogflowV2SuggestConversationSummaryRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestConversationSummaryRequest', 2)
+
+
 class DialogflowProjectsLocationsDeleteAgentRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsDeleteAgentRequest object.
 
@@ -4315,6 +4348,17 @@ class GoogleCloudDialogflowCxV3ContinuousTestResult(_messages.Message):
   result = _messages.EnumField('ResultValueValuesEnum', 2)
   runTime = _messages.StringField(3)
   testCaseResults = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ConversationSignals(_messages.Message):
+  r"""This message is used to hold all the Conversation Signals data, which
+  will be converted to JSON and exported to BigQuery.
+
+  Fields:
+    turnSignals: Required. Turn signals for the current turn.
+  """
+
+  turnSignals = _messages.MessageField('GoogleCloudDialogflowCxV3TurnSignals', 1)
 
 
 class GoogleCloudDialogflowCxV3ConversationTurn(_messages.Message):
@@ -5992,6 +6036,47 @@ class GoogleCloudDialogflowCxV3TransitionRoute(_messages.Message):
   triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 6)
 
 
+class GoogleCloudDialogflowCxV3TurnSignals(_messages.Message):
+  r"""Collection of all signals that were extracted for a single turn of the
+  conversation.
+
+  Enums:
+    FailureReasonsValueListEntryValuesEnum:
+
+  Fields:
+    agentEscalated: Whether agent responded with LiveAgentHandoff fulfillment.
+    dtmfUsed: Whether user was using DTMF input.
+    failureReasons: Failure reasons of the turn.
+    noMatch: Whether NLU predicted NO_MATCH.
+    noUserInput: Whether user provided no input.
+    reachedEndPage: Whether turn resulted in End Session page.
+    userEscalated: Whether user was specifically asking for a live agent.
+    webhookStatuses: Human-readable statuses of the webhooks triggered during
+      this turn.
+  """
+
+  class FailureReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""FailureReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      FAILURE_REASON_UNSPECIFIED: Failure reason is not assigned.
+      FAILED_INTENT: Whether NLU failed to recognize user intent.
+      FAILED_WEBHOOK: Whether webhook failed during the turn.
+    """
+    FAILURE_REASON_UNSPECIFIED = 0
+    FAILED_INTENT = 1
+    FAILED_WEBHOOK = 2
+
+  agentEscalated = _messages.BooleanField(1)
+  dtmfUsed = _messages.BooleanField(2)
+  failureReasons = _messages.EnumField('FailureReasonsValueListEntryValuesEnum', 3, repeated=True)
+  noMatch = _messages.BooleanField(4)
+  noUserInput = _messages.BooleanField(5)
+  reachedEndPage = _messages.BooleanField(6)
+  userEscalated = _messages.BooleanField(7)
+  webhookStatuses = _messages.StringField(8, repeated=True)
+
+
 class GoogleCloudDialogflowCxV3UpdateDocumentOperationMetadata(_messages.Message):
   r"""Metadata for UpdateDocument operation.
 
@@ -6435,6 +6520,17 @@ class GoogleCloudDialogflowCxV3beta1ContinuousTestResult(_messages.Message):
   result = _messages.EnumField('ResultValueValuesEnum', 2)
   runTime = _messages.StringField(3)
   testCaseResults = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ConversationSignals(_messages.Message):
+  r"""This message is used to hold all the Conversation Signals data, which
+  will be converted to JSON and exported to BigQuery.
+
+  Fields:
+    turnSignals: Required. Turn signals for the current turn.
+  """
+
+  turnSignals = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TurnSignals', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1ConversationTurn(_messages.Message):
@@ -8112,6 +8208,47 @@ class GoogleCloudDialogflowCxV3beta1TransitionRoute(_messages.Message):
   triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 6)
 
 
+class GoogleCloudDialogflowCxV3beta1TurnSignals(_messages.Message):
+  r"""Collection of all signals that were extracted for a single turn of the
+  conversation.
+
+  Enums:
+    FailureReasonsValueListEntryValuesEnum:
+
+  Fields:
+    agentEscalated: Whether agent responded with LiveAgentHandoff fulfillment.
+    dtmfUsed: Whether user was using DTMF input.
+    failureReasons: Failure reasons of the turn.
+    noMatch: Whether NLU predicted NO_MATCH.
+    noUserInput: Whether user provided no input.
+    reachedEndPage: Whether turn resulted in End Session page.
+    userEscalated: Whether user was specifically asking for a live agent.
+    webhookStatuses: Human-readable statuses of the webhooks triggered during
+      this turn.
+  """
+
+  class FailureReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""FailureReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      FAILURE_REASON_UNSPECIFIED: Failure reason is not assigned.
+      FAILED_INTENT: Whether NLU failed to recognize user intent.
+      FAILED_WEBHOOK: Whether webhook failed during the turn.
+    """
+    FAILURE_REASON_UNSPECIFIED = 0
+    FAILED_INTENT = 1
+    FAILED_WEBHOOK = 2
+
+  agentEscalated = _messages.BooleanField(1)
+  dtmfUsed = _messages.BooleanField(2)
+  failureReasons = _messages.EnumField('FailureReasonsValueListEntryValuesEnum', 3, repeated=True)
+  noMatch = _messages.BooleanField(4)
+  noUserInput = _messages.BooleanField(5)
+  reachedEndPage = _messages.BooleanField(6)
+  userEscalated = _messages.BooleanField(7)
+  webhookStatuses = _messages.StringField(8, repeated=True)
+
+
 class GoogleCloudDialogflowCxV3beta1UpdateDocumentOperationMetadata(_messages.Message):
   r"""Metadata for UpdateDocument operation.
 
@@ -8636,6 +8773,7 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
       efficient. For example, if the document is poorly written, hard to
       understand, hard to use or too long to find useful information,
       document_efficiency is DocumentEfficiency.INEFFICIENT.
+    summarizationFeedback: Optional. Feedback for conversation summarization.
   """
 
   class AnswerRelevanceValueValuesEnum(_messages.Enum):
@@ -8687,6 +8825,21 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
   answerRelevance = _messages.EnumField('AnswerRelevanceValueValuesEnum', 1)
   documentCorrectness = _messages.EnumField('DocumentCorrectnessValueValuesEnum', 2)
   documentEfficiency = _messages.EnumField('DocumentEfficiencyValueValuesEnum', 3)
+  summarizationFeedback = _messages.MessageField('GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback', 4)
+
+
+class GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback(_messages.Message):
+  r"""Feedback for conversation summarization.
+
+  Fields:
+    startTime: Timestamp when composing of the summary starts.
+    submitTime: Timestamp when the summary was submitted.
+    summaryText: Text of actual submitted summary.
+  """
+
+  startTime = _messages.StringField(1)
+  submitTime = _messages.StringField(2)
+  summaryText = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2AgentAssistantRecord(_messages.Message):
@@ -13605,6 +13758,91 @@ class GoogleCloudDialogflowV2SuggestArticlesResponse(_messages.Message):
   latestMessage = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message):
+  r"""The request message for Conversations.SuggestConversationSummary.
+
+  Fields:
+    contextSize: Max number of messages prior to and including
+      [latest_message] to use as context when compiling the suggestion. By
+      default 500 and at most 1000.
+    latestMessage: The name of the latest conversation message used as context
+      for compiling suggestion. If empty, the latest message of the
+      conversation will be used. Format:
+      `projects//locations//conversations//messages/`.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2SuggestConversationSummaryResponse(_messages.Message):
+  r"""The response message for Conversations.SuggestConversationSummary.
+
+  Fields:
+    contextSize: Number of messages prior to and including
+      last_conversation_message used to compile the suggestion. It may be
+      smaller than the SuggestSummaryRequest.context_size field in the request
+      if there weren't that many messages in the conversation.
+    latestMessage: The name of the latest conversation message used as context
+      for compiling suggestion. Format:
+      `projects//locations//conversations//messages/`.
+    summary: Generated summary.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(2)
+  summary = _messages.MessageField('GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary', 3)
+
+
+class GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary(_messages.Message):
+  r"""Generated summary for a conversation.
+
+  Messages:
+    TextSectionsValue: The summary content that is divided into sections. The
+      key is the section's name and the value is the section's content. There
+      is no specific format for the key or value.
+
+  Fields:
+    answerRecord: The name of the answer record. Format:
+      "projects//answerRecords/"
+    text: The summary content that is concatenated into one string.
+    textSections: The summary content that is divided into sections. The key
+      is the section's name and the value is the section's content. There is
+      no specific format for the key or value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TextSectionsValue(_messages.Message):
+    r"""The summary content that is divided into sections. The key is the
+    section's name and the value is the section's content. There is no
+    specific format for the key or value.
+
+    Messages:
+      AdditionalProperty: An additional property for a TextSectionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TextSectionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TextSectionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  answerRecord = _messages.StringField(1)
+  text = _messages.StringField(2)
+  textSections = _messages.MessageField('TextSectionsValue', 3)
+
+
 class GoogleCloudDialogflowV2SuggestFaqAnswersRequest(_messages.Message):
   r"""The request message for Participants.SuggestFaqAnswers.
 
@@ -16719,6 +16957,17 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   source = _messages.StringField(9)
 
 
+class GoogleCloudDialogflowV3alpha1ConversationSignals(_messages.Message):
+  r"""This message is used to hold all the Conversation Signals data, which
+  will be converted to JSON and exported to BigQuery.
+
+  Fields:
+    turnSignals: Required. Turn signals for the current turn.
+  """
+
+  turnSignals = _messages.MessageField('GoogleCloudDialogflowV3alpha1TurnSignals', 1)
+
+
 class GoogleCloudDialogflowV3alpha1CreateDocumentOperationMetadata(_messages.Message):
   r"""Metadata for CreateDocument operation.
 
@@ -16795,6 +17044,50 @@ class GoogleCloudDialogflowV3alpha1ReloadDocumentOperationMetadata(_messages.Mes
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudDialogflowV3alpha1GenericKnowledgeOperationMetadata', 1)
+
+
+class GoogleCloudDialogflowV3alpha1TurnSignals(_messages.Message):
+  r"""Collection of all signals that were extracted for a single turn of the
+  conversation.
+
+  Enums:
+    FailureReasonsValueListEntryValuesEnum:
+
+  Fields:
+    agentEscalated: Whether agent responded with LiveAgentHandoff fulfillment.
+    dtmfUsed: Whether user was using DTMF input.
+    failureReasons: Failure reasons of the turn.
+    noMatch: Whether NLU predicted NO_MATCH.
+    noUserInput: Whether user provided no input.
+    reachedEndPage: Whether turn resulted in End Session page.
+    triggeredAbandonmentEvent: Whether agent has triggered the event
+      corresponding to user abandoning the conversation.
+    userEscalated: Whether user was specifically asking for a live agent.
+    webhookStatuses: Human-readable statuses of the webhooks triggered during
+      this turn.
+  """
+
+  class FailureReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""FailureReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      FAILURE_REASON_UNSPECIFIED: Failure reason is not assigned.
+      FAILED_INTENT: Whether NLU failed to recognize user intent.
+      FAILED_WEBHOOK: Whether webhook failed during the turn.
+    """
+    FAILURE_REASON_UNSPECIFIED = 0
+    FAILED_INTENT = 1
+    FAILED_WEBHOOK = 2
+
+  agentEscalated = _messages.BooleanField(1)
+  dtmfUsed = _messages.BooleanField(2)
+  failureReasons = _messages.EnumField('FailureReasonsValueListEntryValuesEnum', 3, repeated=True)
+  noMatch = _messages.BooleanField(4)
+  noUserInput = _messages.BooleanField(5)
+  reachedEndPage = _messages.BooleanField(6)
+  triggeredAbandonmentEvent = _messages.BooleanField(7)
+  userEscalated = _messages.BooleanField(8)
+  webhookStatuses = _messages.StringField(9, repeated=True)
 
 
 class GoogleCloudDialogflowV3alpha1UpdateDocumentOperationMetadata(_messages.Message):

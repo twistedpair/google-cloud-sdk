@@ -84,9 +84,7 @@ _ASYNC_PRIMARY_DISK_REGION_EXPLANATION = """\
 
 _ASYNC_SECONDARY_DISK_HELP = """\
       Secondary disk for asynchronous replication. This flag is required when
-      starting replication. It is also required when stopping replication on the
-      primary disk. It must not be used when stopping replication on the
-      secondary disk.
+      starting replication.
 """
 
 _ASYNC_SECONDARY_DISK_ZONE_EXPLANATION = """\
@@ -95,6 +93,14 @@ _ASYNC_SECONDARY_DISK_ZONE_EXPLANATION = """\
 
 _ASYNC_SECONDARY_DISK_REGION_EXPLANATION = """\
       Region of the secondary disk for asynchronous replication.
+"""
+
+_ASYNC_SECONDARY_DISK_PROJECT_EXPLANATION = """\
+      Project of the secondary disk for asynchronous replication.
+"""
+
+_ASYNC_PRIMARY_DISK_PROJECT_EXPLANATION = """\
+      Project of the primary disk for asynchronous replication.
 """
 
 DEFAULT_LIST_FORMAT = """\
@@ -279,6 +285,45 @@ def MakeSecondaryDiskArg(required=False):
       .GENERATE_DEDICATED_SCOPE_FLAGS,
       zone_help_text=_ASYNC_SECONDARY_DISK_ZONE_EXPLANATION,
       region_help_text=_ASYNC_SECONDARY_DISK_REGION_EXPLANATION)
+
+
+def MakeDeprecatedSecondaryDiskArg(parser):
+  """Adds deprecated stop async replication specific arguments to parser."""
+  parser.add_argument(
+      '--secondary-disk',
+      completer=compute_completers.DisksCompleter,
+      help='Secondary disk for asynchronous replication.',
+      action=actions.DeprecationAction('--secondary-disk', removed=False),
+  )
+  scope_parser = parser.add_mutually_exclusive_group(required=False)
+  scope_parser.add_argument(
+      '--secondary-disk-zone',
+      completer=compute_completers.ZonesCompleter,
+      action=actions.DeprecationAction('--secondary-disk-zone', removed=False),
+      help=_ASYNC_SECONDARY_DISK_ZONE_EXPLANATION,
+  )
+  scope_parser.add_argument(
+      '--secondary-disk-region',
+      completer=compute_completers.RegionsCompleter,
+      action=actions.DeprecationAction('--secondary-disk-zone', removed=False),
+      help=_ASYNC_SECONDARY_DISK_REGION_EXPLANATION,
+  )
+
+
+def AddSecondaryDiskProject(parser, category=None):
+  parser.add_argument(
+      '--secondary-disk-project',
+      category=category,
+      help=_ASYNC_SECONDARY_DISK_PROJECT_EXPLANATION,
+  )
+
+
+def AddPrimaryDiskProject(parser, category=None):
+  parser.add_argument(
+      '--primary-disk-project',
+      category=category,
+      help=_ASYNC_PRIMARY_DISK_PROJECT_EXPLANATION,
+  )
 
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(

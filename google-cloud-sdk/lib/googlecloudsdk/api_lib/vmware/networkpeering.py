@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import uuid
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
@@ -40,25 +39,28 @@ class NetworkPeeringClient(util.VmwareClientBase):
     response = self.service.Get(request)
     return response
 
-  def Create(self,
-             resource,
-             description=None,
-             vmware_engine_network_id=None,
-             peer_network_id=None,
-             peer_network_type=None,
-             peer_project=None,
-             peer_mtu=None,
-             export_custom_routes=True,
-             import_custom_routes=True,
-             export_custom_routes_with_public_ip=True,
-             import_custom_routes_with_public_ip=True,
-             exchange_subnet_routes=True):
+  def Create(
+      self,
+      resource,
+      vmware_engine_network_id,
+      peer_network_id,
+      peer_network_type,
+      description=None,
+      peer_project=None,
+      peer_mtu=None,
+      export_custom_routes=True,
+      import_custom_routes=True,
+      export_custom_routes_with_public_ip=True,
+      import_custom_routes_with_public_ip=True,
+      exchange_subnet_routes=True,
+  ):
     project = resource.Parent().Name()
     if peer_project is None:
       peer_project = project
 
     parent = '/'.join(resource.RelativeName().split('/')[:-2])
     peering_id = resource.Name()
+    # TODO(b/265135446) : pass the values as arguments into the constructor
     peering = self.messages.NetworkPeering(description=description)
     peer_network_type_enum = arg_utils.ChoiceEnumMapper(
         arg_name='peer-network-type',
@@ -67,16 +69,21 @@ class NetworkPeeringClient(util.VmwareClientBase):
         include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
             arg_utils.EnumNameToChoice(peer_network_type))
     peering.peerNetworkType = peer_network_type_enum
-    if vmware_engine_network_id is not None:
-      ven = self.networks_client.GetByID(project, vmware_engine_network_id)
-      peering.vmwareEngineNetwork = ven.name
-    if peer_network_id is not None:
-      if peer_network_type_enum == self.messages.NetworkPeering.PeerNetworkTypeValueValuesEnum.VMWARE_ENGINE_NETWORK:
-        peering.peerNetwork = 'projects/{project}/locations/global/vmwareEngineNetworks/{network_id}'.format(
-            project=peer_project, network_id=peer_network_id)
-      else:
-        peering.peerNetwork = 'projects/{project}/global/networks/{network_id}'.format(
-            project=peer_project, network_id=peer_network_id)
+    ven = self.networks_client.GetByID(project, vmware_engine_network_id)
+    peering.vmwareEngineNetwork = ven.name
+    if (
+        peer_network_type_enum
+        == self.messages.NetworkPeering.PeerNetworkTypeValueValuesEnum.VMWARE_ENGINE_NETWORK
+    ):
+      peering.peerNetwork = 'projects/{project}/locations/global/vmwareEngineNetworks/{network_id}'.format(
+          project=peer_project, network_id=peer_network_id
+      )
+    else:
+      peering.peerNetwork = (
+          'projects/{project}/global/networks/{network_id}'.format(
+              project=peer_project, network_id=peer_network_id
+          )
+      )
     if peer_mtu:
       peering.peer_mtu = peer_mtu
     peering.exportCustomRoutes = export_custom_routes
@@ -85,47 +92,37 @@ class NetworkPeeringClient(util.VmwareClientBase):
     peering.importCustomRoutesWithPublicIp = import_custom_routes_with_public_ip
     peering.exchangeSubnetRoutes = exchange_subnet_routes
     request = self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest(
-        parent=parent,
-        networkPeering=peering,
-        networkPeeringId=peering_id,
-        requestId=uuid.uuid4().hex)
+        parent=parent, networkPeering=peering, networkPeeringId=peering_id
+    )
 
     return self.service.Create(request)
 
-  def Update(self, resource, description=None):
+  def Update(self, resource, description):
     peering = self.Get(resource)
     update_mask = []
-    if description is not None:
-      peering.description = description
-      update_mask.append('description')
+    peering.description = description
+    update_mask.append('description')
     request = self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(
         networkPeering=peering,
         name=resource.RelativeName(),
         updateMask=','.join(update_mask),
-        requestId=uuid.uuid4().hex)
+    )
     return self.service.Patch(request)
 
   def Delete(self, resource, delay_hours=None):
     return self.service.Delete(
-        self.messages
-        .VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(
-            name=resource.RelativeName(), requestId=uuid.uuid4().hex))
+        self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(
+            name=resource.RelativeName()
+        )
+    )
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, location_resource):
     location = location_resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(
-        parent=location, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=location
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='networkPeerings')

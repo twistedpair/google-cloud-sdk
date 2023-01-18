@@ -310,6 +310,33 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MarkDismissed(self, request, global_params=None):
+      r"""Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkDismissedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkDismissed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkDismissed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed',
+        http_method='POST',
+        method_id='recommender.billingAccounts.locations.recommenders.recommendations.markDismissed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markDismissed',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkDismissedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
     def MarkFailed(self, request, global_params=None):
       r"""Marks the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
 
@@ -640,6 +667,33 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MarkDismissed(self, request, global_params=None):
+      r"""Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderFoldersLocationsRecommendersRecommendationsMarkDismissedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkDismissed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkDismissed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed',
+        http_method='POST',
+        method_id='recommender.folders.locations.recommenders.recommendations.markDismissed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markDismissed',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest',
+        request_type_name='RecommenderFoldersLocationsRecommendersRecommendationsMarkDismissedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
     def MarkFailed(self, request, global_params=None):
       r"""Marks the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
 
@@ -966,6 +1020,33 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:markClaimed',
         request_field='googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest',
         request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkDismissed(self, request, global_params=None):
+      r"""Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersRecommendationsMarkDismissedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkDismissed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkDismissed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed',
+        http_method='POST',
+        method_id='recommender.organizations.locations.recommenders.recommendations.markDismissed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markDismissed',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersRecommendationsMarkDismissedRequest',
         response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
         supports_download=False,
     )
@@ -1350,6 +1431,33 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:markClaimed',
         request_field='googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest',
         request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkDismissed(self, request, global_params=None):
+      r"""Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkDismissedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkDismissed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkDismissed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed',
+        http_method='POST',
+        method_id='recommender.projects.locations.recommenders.recommendations.markDismissed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markDismissed',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest',
+        request_type_name='RecommenderProjectsLocationsRecommendersRecommendationsMarkDismissedRequest',
         response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
         supports_download=False,
     )

@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import abc
 import re
 
+from googlecloudsdk.api_lib.run.integrations import types_utils
+
 
 class TypeKit(object):
   """An abstract class that represents a typekit."""
@@ -31,31 +33,45 @@ class TypeKit(object):
 
   @property
   def integration_type(self):
-    return self._type_metadata.get('integration_type')
+    return self._type_metadata.integration_type
 
   @property
   def resource_type(self):
-    return self._type_metadata.get('resource_type')
+    return self._type_metadata.resource_type
 
   @property
   def is_singleton(self):
-    return self._type_metadata.get('singleton', False)
+    return self._type_metadata.singleton_name is not None
 
   @property
   def singleton_name(self):
-    return self._type_metadata.get('singleton_name')
+    return self._type_metadata.singleton_name
 
   @property
   def is_backing_service(self):
-    return self._type_metadata.get('backing_service', False)
+    return self._type_metadata.service_type == types_utils.ServiceType.BACKING
 
   @property
   def is_ingress_service(self):
-    return not self._type_metadata.get('backing_service', False)
+    return self._type_metadata.service_type == types_utils.ServiceType.INGRESS
 
   @abc.abstractmethod
   def GetAllReferences(self, resource_config):
     return []
+
+  @abc.abstractmethod
+  def GetDeployMessage(self, create=False):
+    """Message that is shown to the user upon starting the deployment.
+
+    Each TypeKit should override this method to at least tell the user how
+    long the deployment is expected to take.
+
+    Args:
+      create: bool, denotes if the command was a create deployment.
+
+    Returns:
+      str, the message displayed to the user.
+    """
 
   @abc.abstractmethod
   def UpdateResourceConfig(self, parameters, resource_config):

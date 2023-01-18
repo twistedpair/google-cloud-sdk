@@ -3365,16 +3365,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1beta1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.transcoder.v1beta1',
-                    client_classpath='transcoder_v1beta1_client.TranscoderV1beta1',
-                    base_url='https://transcoder.googleapis.com/',
-                    messages_modulepath='transcoder_v1beta1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
     },
     'translate': {
         'v3':

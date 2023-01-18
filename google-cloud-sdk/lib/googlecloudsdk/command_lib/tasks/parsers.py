@@ -607,15 +607,16 @@ def _ParseUriOverride(messages,
   scheme = (
       messages.UriOverride.SchemeValueValuesEnum(scheme.upper())
       if scheme else None)
+  port = int(port) if port else None
   uri_override_enforce_mode = (
       messages.UriOverride.UriOverrideEnforceModeValueValuesEnum(mode.upper())
       if mode else None)
   return messages.UriOverride(
       scheme=scheme,
       host=host,
-      port=int(port),
-      path=path,
-      query=query,
+      port=port,
+      pathOverride=messages.PathOverride(path=path),
+      queryOverride=messages.QueryOverride(queryParams=query),
       uriOverrideEnforceMode=uri_override_enforce_mode)
 
 

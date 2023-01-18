@@ -180,14 +180,14 @@ class DataplexProjectsLocationsDataScansCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansCreateRequest object.
 
   Fields:
-    dataScanId: Required. DataScan identifier. * Must contain only lowercase
-      letters, numbers and hyphens. * Must start with a letter. * Must end
-      with a number or a letter. * Must be between 1-63 characters. * Must be
-      unique within the customer project / location.
+    dataScanId: Required. DataScan identifier. Must contain only lowercase
+      letters, numbers and hyphens. Must start with a letter. Must end with a
+      number or a letter. Must be between 1-63 characters. Must be unique
+      within the customer project / location.
     googleCloudDataplexV1DataScan: A GoogleCloudDataplexV1DataScan resource to
       be passed as the request body.
     parent: Required. The resource name of the parent location:
-      projects/{project}/locations/{location_id} where {project} refers to a
+      projects/{project}/locations/{location_id} where project refers to a
       project_id or project_number and location_id refers to a GCP region.
   """
 
@@ -202,7 +202,7 @@ class DataplexProjectsLocationsDataScansDeleteRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the dataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
-      where {project} refers to a project_id or project_number and location_id
+      where project refers to a project_id or project_number and location_id
       refers to a GCP region.
   """
 
@@ -237,21 +237,19 @@ class DataplexProjectsLocationsDataScansGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. Used to select the subset of DataScan
-      information to return. Defaults to BASIC.
+    ViewValueValuesEnum: Optional. Select the DataScan view to return.
+      Defaults to BASIC.
 
   Fields:
     name: Required. The resource name of the dataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
-      where {project} refers to a project_id or project_number and location_id
+      where project refers to a project_id or project_number and location_id
       refers to a GCP region.
-    view: Optional. Used to select the subset of DataScan information to
-      return. Defaults to BASIC.
+    view: Optional. Select the DataScan view to return. Defaults to BASIC.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. Used to select the subset of DataScan information to return.
-    Defaults to BASIC.
+    r"""Optional. Select the DataScan view to return. Defaults to BASIC.
 
     Values:
       DATA_SCAN_VIEW_UNSPECIFIED: The API will default to the BASIC view.
@@ -270,21 +268,19 @@ class DataplexProjectsLocationsDataScansJobsGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansJobsGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. Used to select the subset of DataScan
-      information to return. Defaults to BASIC.
+    ViewValueValuesEnum: Optional. Select the DataScanJob view to return.
+      Defaults to BASIC.
 
   Fields:
     name: Required. The resource name of the DataScanJob: projects/{project}/l
       ocations/{location_id}/dataScans/{data_scan_id}/dataScanJobs/{data_scan_
-      job_id} where {project} refers to a project_id or project_number and
+      job_id} where project refers to a project_id or project_number and
       location_id refers to a GCP region.
-    view: Optional. Used to select the subset of DataScan information to
-      return. Defaults to BASIC.
+    view: Optional. Select the DataScanJob view to return. Defaults to BASIC.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. Used to select the subset of DataScan information to return.
-    Defaults to BASIC.
+    r"""Optional. Select the DataScanJob view to return. Defaults to BASIC.
 
     Values:
       DATA_SCAN_JOB_VIEW_UNSPECIFIED: The API will default to the BASIC view.
@@ -313,7 +309,7 @@ class DataplexProjectsLocationsDataScansJobsListRequest(_messages.Message):
       provided the page token.
     parent: Required. The resource name of the parent environment:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
-      where {project} refers to a project_id or project_number and location_id
+      where project refers to a project_id or project_number and location_id
       refers to a GCP region.
   """
 
@@ -337,9 +333,9 @@ class DataplexProjectsLocationsDataScansListRequest(_messages.Message):
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to ListDataScans must match the call that
       provided the page token.
-    parent: Required. projects/{project}/locations/{location_id} where
-      {project} refers to a project_id or project_number and location_id
-      refers to a GCP region.
+    parent: Required. The resource name of the parent location:
+      projects/{project}/locations/{location_id} where project refers to a
+      project_id or project_number and location_id refers to a GCP region.
   """
 
   filter = _messages.StringField(1)
@@ -356,8 +352,8 @@ class DataplexProjectsLocationsDataScansPatchRequest(_messages.Message):
     googleCloudDataplexV1DataScan: A GoogleCloudDataplexV1DataScan resource to
       be passed as the request body.
     name: Output only. The relative resource name of the scan, of the form:
-      projects/{project}/locations/{location_id}/dataScans/{datascan_id}.
-      where {project} refers to a project_id or project_number and location_id
+      projects/{project}/locations/{location_id}/dataScans/{datascan_id},
+      where project refers to a project_id or project_number and location_id
       refers to a GCP region.
     updateMask: Required. Mask of fields to update.
   """
@@ -376,8 +372,8 @@ class DataplexProjectsLocationsDataScansRunRequest(_messages.Message):
       request body.
     name: Required. The resource name of the DataScan:
       projects/{project}/locations/{location_id}/dataScans/{data_scan_id}.
-      where {project} refers to a project_id or project_number and location_id
-      refers to a GCP region. Only on-demand DataScans are allowed.
+      where project refers to a project_id or project_number and location_id
+      refers to a GCP region.Only OnDemand data scans are allowed.
   """
 
   googleCloudDataplexV1RunDataScanRequest = _messages.MessageField('GoogleCloudDataplexV1RunDataScanRequest', 1)
@@ -1540,6 +1536,20 @@ class DataplexProjectsLocationsLakesTasksPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class DataplexProjectsLocationsLakesTasksRunRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksRunRequest object.
+
+  Fields:
+    googleCloudDataplexV1RunTaskRequest: A GoogleCloudDataplexV1RunTaskRequest
+      resource to be passed as the request body.
+    name: Required. The resource name of the task: projects/{project_number}/l
+      ocations/{location_id}/lakes/{lake_id}/tasks/{task_id}.
+  """
+
+  googleCloudDataplexV1RunTaskRequest = _messages.MessageField('GoogleCloudDataplexV1RunTaskRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsLakesTasksSetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesTasksSetIamPolicyRequest object.
 
@@ -2539,8 +2549,8 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       discovery every 60 minutes. To explicitly set a timezone to the cron
       tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
-      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
-      * * *", or "TZ=America/New_York 1 * * * *".
+      from IANA time zone database. For example, CRON_TZ=America/New_York 1 *
+      * * *, or TZ=America/New_York 1 * * * *.
   """
 
   csvOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions', 1)
@@ -2646,6 +2656,9 @@ class GoogleCloudDataplexV1AssetResourceSpec(_messages.Message):
   r"""Identifies the cloud resource that is referenced by this asset.
 
   Enums:
+    ReadAccessModeValueValuesEnum: Optional. Determines how read permissions
+      are handled for each asset and their associated tables. Only available
+      to storage buckets assets.
     TypeValueValuesEnum: Required. Immutable. Type of resource.
 
   Fields:
@@ -2653,8 +2666,25 @@ class GoogleCloudDataplexV1AssetResourceSpec(_messages.Message):
       data that is being managed within a lake. For example:
       projects/{project_number}/buckets/{bucket_id}
       projects/{project_number}/datasets/{dataset_id}
+    readAccessMode: Optional. Determines how read permissions are handled for
+      each asset and their associated tables. Only available to storage
+      buckets assets.
     type: Required. Immutable. Type of resource.
   """
+
+  class ReadAccessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines how read permissions are handled for each asset
+    and their associated tables. Only available to storage buckets assets.
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: Access mode unspecified.
+      DIRECT: Default. Data is accessed directly using storage APIs.
+      MANAGED: Data is accessed through a managed interface using BigQuery
+        APIs.
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    DIRECT = 1
+    MANAGED = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Immutable. Type of resource.
@@ -2669,7 +2699,8 @@ class GoogleCloudDataplexV1AssetResourceSpec(_messages.Message):
     BIGQUERY_DATASET = 2
 
   name = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  readAccessMode = _messages.EnumField('ReadAccessModeValueValuesEnum', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class GoogleCloudDataplexV1AssetResourceStatus(_messages.Message):
@@ -3053,10 +3084,9 @@ class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
   the table will have field type specific profile result.
 
   Fields:
-    profile: This represents the profile information per field.
-    rowCount: The count of all rows in the sampled data. Return 0, if zero
-      rows.
-    scannedData: The data scanned for this profile.
+    profile: The profile information per field.
+    rowCount: The count of rows scanned.
+    scannedData: The data scanned for this result.
   """
 
   profile = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfile', 1)
@@ -3065,25 +3095,25 @@ class GoogleCloudDataplexV1DataProfileResult(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataProfileResultProfile(_messages.Message):
-  r"""Profile information describing the structure and layout of the data and
-  contains the profile info.
+  r"""Contains name, type, mode and field type specific profile information.
 
   Fields:
-    fields: The sequence of fields describing data in table entities.
+    fields: List of fields with structural and profile information for each
+      field.
   """
 
   fields = _messages.MessageField('GoogleCloudDataplexV1DataProfileResultProfileField', 1, repeated=True)
 
 
 class GoogleCloudDataplexV1DataProfileResultProfileField(_messages.Message):
-  r"""Represents a column field within a table schema.
+  r"""A field within a table.
 
   Fields:
-    mode: The mode of the field. Its value will be: REQUIRED, if it is a
+    mode: The mode of the field. Possible values include: REQUIRED, if it is a
       required field. NULLABLE, if it is an optional field. REPEATED, if it is
       a repeated field.
     name: The name of the field.
-    profile: The profile information for the corresponding field.
+    profile: Profile information for the corresponding field.
     type: The field data type. Possible values include: STRING BYTE INT64
       INT32 INT16 DOUBLE FLOAT DECIMAL BOOLEAN BINARY TIMESTAMP DATE TIME NULL
       RECORD
@@ -3096,19 +3126,20 @@ class GoogleCloudDataplexV1DataProfileResultProfileField(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo(_messages.Message):
-  r"""ProfileInfo defines the profile information for each schema field type.
+  r"""The profile information for each field type.
 
   Fields:
-    distinctRatio: The ratio of rows that are distinct against the rows in the
-      sampled data.
-    doubleProfile: The corresponding double field profile.
-    integerProfile: The corresponding integer field profile.
-    nullRatio: The ratio of null rows against the rows in the sampled data.
-    stringProfile: The corresponding string field profile.
-    topNValues: The array of top N values of the field in the sampled data.
-      Currently N is set as 10 or equal to distinct values in the field,
-      whichever is smaller. This will be optional for complex non-groupable
-      data-types such as JSON, ARRAY, JSON, STRUCT.
+    distinctRatio: Ratio of rows with distinct values against total scanned
+      rows. Not available for complex non-groupable field type RECORD and
+      fields with REPEATABLE mode.
+    doubleProfile: Double type field information.
+    integerProfile: Integer type field information.
+    nullRatio: Ratio of rows with null value against total scanned rows.
+    stringProfile: String type field information.
+    topNValues: The list of top N non-null values and number of times they
+      occur in the scanned data. N is 10 or equal to the number of distinct
+      values in the field, whichever is smaller. Not available for complex
+      non-groupable field type RECORD and fields with REPEATABLE mode.
   """
 
   distinctRatio = _messages.FloatField(1)
@@ -3120,29 +3151,28 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfo(_messages.Me
 
 
 class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoDoubleFieldInfo(_messages.Message):
-  r"""DoubleFieldInfo defines output for any double type field.
+  r"""The profile information for a double type field.
 
   Fields:
-    average: The average of non-null values of double field in the sampled
-      data. Return NaN, if the field has a NaN. Optional if zero non-null
-      rows.
-    max: The maximum value of a double field in the sampled data. Return NaN,
-      if the field has a NaN. Optional if zero non-null rows.
-    min: The minimum value of a double field in the sampled data. Return NaN,
-      if the field has a NaN. Optional if zero non-null rows.
-    quartiles: A quartile divide the numebr of data points into four parts, or
-      quarters, of more-or-less equal size. Three main quartiles used are: The
-      first quartile (Q1) splits off the lowest 25% of data from the highest
-      75%. It is also known as the lower or 25th empirical quartile, as 25% of
-      the data is below this point. The second quartile (Q2) is the median of
-      a data set. So, 50% of the data lies below this point. The third
-      quartile (Q3) splits off the highest 25% of data from the lowest 75%. It
-      is known as the upper or 75th empirical quartile, as 75% of the data
-      lies below this point. So, here the quartiles is provided as an ordered
-      list of quartile values, occurring in order Q1, median, Q3.
-    standardDeviation: The standard deviation of non-null of double field in
-      the sampled data. Return NaN, if the field has a NaN. Optional if zero
-      non-null rows.
+    average: Average of non-null values in the scanned data. NaN, if the field
+      has a NaN.
+    max: Maximum of non-null values in the scanned data. NaN, if the field has
+      a NaN.
+    min: Minimum of non-null values in the scanned data. NaN, if the field has
+      a NaN.
+    quartiles: A quartile divides the number of data points into four parts,
+      or quarters, of more-or-less equal size. Three main quartiles used are:
+      The first quartile (Q1) splits off the lowest 25% of data from the
+      highest 75%. It is also known as the lower or 25th empirical quartile,
+      as 25% of the data is below this point. The second quartile (Q2) is the
+      median of a data set. So, 50% of the data lies below this point. The
+      third quartile (Q3) splits off the highest 25% of data from the lowest
+      75%. It is known as the upper or 75th empirical quartile, as 75% of the
+      data lies below this point. Here, the quartiles is provided as an
+      ordered list of quartile values for the scanned data, occurring in order
+      Q1, median, Q3.
+    standardDeviation: Standard deviation of non-null values in the scanned
+      data. NaN, if the field has a NaN.
   """
 
   average = _messages.FloatField(1)
@@ -3153,29 +3183,28 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoDoubleFieldIn
 
 
 class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoIntegerFieldInfo(_messages.Message):
-  r"""IntegerFieldInfo defines output for any integer type field.
+  r"""The profile information for an integer type field.
 
   Fields:
-    average: The average of non-null values of integer field in the sampled
-      data. Return NaN, if the field has a NaN. Optional if zero non-null
-      rows.
-    max: The maximum value of an integer field in the sampled data. Return
-      NaN, if the field has a NaN. Optional if zero non-null rows.
-    min: The minimum value of an integer field in the sampled data. Return
-      NaN, if the field has a NaN. Optional if zero non-null rows.
-    quartiles: A quartile divide the number of data points into four parts, or
-      quarters, of more-or-less equal size. Three main quartiles used are: The
-      first quartile (Q1) splits off the lowest 25% of data from the highest
-      75%. It is also known as the lower or 25th empirical quartile, as 25% of
-      the data is below this point. The second quartile (Q2) is the median of
-      a data set. So, 50% of the data lies below this point. The third
-      quartile (Q3) splits off the highest 25% of data from the lowest 75%. It
-      is known as the upper or 75th empirical quartile, as 75% of the data
-      lies below this point. So, here the quartiles is provided as an ordered
-      list of quartile values, occurring in order Q1, median, Q3.
-    standardDeviation: The standard deviation of non-null of integer field in
-      the sampled data. Return NaN, if the field has a NaN. Optional if zero
-      non-null rows.
+    average: Average of non-null values in the scanned data. NaN, if the field
+      has a NaN.
+    max: Maximum of non-null values in the scanned data. NaN, if the field has
+      a NaN.
+    min: Minimum of non-null values in the scanned data. NaN, if the field has
+      a NaN.
+    quartiles: A quartile divides the number of data points into four parts,
+      or quarters, of more-or-less equal size. Three main quartiles used are:
+      The first quartile (Q1) splits off the lowest 25% of data from the
+      highest 75%. It is also known as the lower or 25th empirical quartile,
+      as 25% of the data is below this point. The second quartile (Q2) is the
+      median of a data set. So, 50% of the data lies below this point. The
+      third quartile (Q3) splits off the highest 25% of data from the lowest
+      75%. It is known as the upper or 75th empirical quartile, as 75% of the
+      data lies below this point. Here, the quartiles is provided as an
+      ordered list of quartile values for the scanned data, occurring in order
+      Q1, median, Q3.
+    standardDeviation: Standard deviation of non-null values in the scanned
+      data. NaN, if the field has a NaN.
   """
 
   average = _messages.FloatField(1)
@@ -3186,15 +3215,12 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoIntegerFieldI
 
 
 class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoStringFieldInfo(_messages.Message):
-  r"""StringFieldInfo defines output info for any string type field.
+  r"""The profile information for a string type field.
 
   Fields:
-    averageLength: The average length of a string field in the sampled data.
-      Optional if zero non-null rows.
-    maxLength: The maximum length of a string field in the sampled data.
-      Optional if zero non-null rows.
-    minLength: The minimum length of the string field in the sampled data.
-      Optional if zero non-null rows.
+    averageLength: Average length of non-null values in the scanned data.
+    maxLength: Maximum length of non-null values in the scanned data.
+    minLength: Minimum length of non-null values in the scanned data.
   """
 
   averageLength = _messages.FloatField(1)
@@ -3203,12 +3229,11 @@ class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoStringFieldIn
 
 
 class GoogleCloudDataplexV1DataProfileResultProfileFieldProfileInfoTopNValue(_messages.Message):
-  r"""The TopNValue defines the structure of output of top N values of a
-  field.
+  r"""Top N non-null values in the scanned data.
 
   Fields:
-    count: The frequency count of the corresponding value in the field.
-    value: The value is the string value of the actual value from the field.
+    count: Count of the corresponding value in the scanned data.
+    value: String value of a top N non-null value.
   """
 
   count = _messages.IntegerField(1)
@@ -3220,8 +3245,8 @@ class GoogleCloudDataplexV1DataProfileSpec(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
-  r"""DataQualityDimensionResult provides a more detailed, per-dimension level
-  view of the results.
+  r"""DataQualityDimensionResult provides a more detailed, per-dimension view
+  of the results.
 
   Fields:
     passed: Whether the dimension passed or failed.
@@ -3234,7 +3259,7 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
   r"""The output of a DataQualityScan.
 
   Fields:
-    dimensions: A list of results at the dimension-level.
+    dimensions: A list of results at the dimension level.
     passed: Overall data quality result -- true if all rules passed.
     rowCount: The count of rows processed.
     rules: A list of all the rules in a job, and their results.
@@ -3255,12 +3280,12 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
     column: Optional. The unnested column which this rule is evaluated
       against.
     dimension: Required. The dimension a rule belongs to. Results are also
-      aggregated at the dimension-level. Supported dimensions are
+      aggregated at the dimension level. Supported dimensions are
       "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
       "INTEGRITY"
     ignoreNull: Optional. Rows with null values will automatically fail a
       rule, unless ignore_null is true. In that case, such null rows are
-      trivially considered passing. Only applicable to ColumnMap rules.
+      trivially considered passing.Only applicable to ColumnMap rules.
     nonNullExpectation: ColumnMap rule which evaluates whether each column
       value is null.
     rangeExpectation: ColumnMap rule which evaluates whether each column value
@@ -3276,8 +3301,8 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
     tableConditionExpectation: Table rule which evaluates whether the provided
       expression is true.
     threshold: Optional. The minimum ratio of passing_rows / total_rows
-      required to pass this rule, with a range of 0.0, 1.00 indicates default
-      value (i.e. 1.0)
+      required to pass this rule, with a range of 0.0, 1.0.0 indicates default
+      value (i.e. 1.0).
     uniquenessExpectation: ColumnAggregate rule which evaluates whether the
       column has duplicates.
   """
@@ -3311,10 +3336,10 @@ class GoogleCloudDataplexV1DataQualityRuleRangeExpectation(_messages.Message):
       this validation. At least one of min_value and max_value need to be
       provided.
     strictMaxEnabled: Optional. Whether each value needs to be strictly lesser
-      than ('<') the maximum, or if equality is allowed. Only relevant if a
+      than ('<') the maximum, or if equality is allowed.Only relevant if a
       max_value has been defined. Default = false.
     strictMinEnabled: Optional. Whether each value needs to be strictly
-      greater than ('>') the minimum, or if equality is allowed. Only relevant
+      greater than ('>') the minimum, or if equality is allowed.Only relevant
       if a min_value has been defined. Default = false.
   """
 
@@ -3328,22 +3353,22 @@ class GoogleCloudDataplexV1DataQualityRuleRegexExpectation(_messages.Message):
   r"""Evaluates whether each column value matches a specified regex.
 
   Fields:
-    regex: A string attribute.
+    regex: A regular expression the column value is expected to match.
   """
 
   regex = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
-  r"""DataQualityRuleResult provides a more detailed, per-rule level view of
-  the results.
+  r"""DataQualityRuleResult provides a more detailed, per-rule view of the
+  results.
 
   Fields:
     evaluatedCount: The number of rows a rule was evaluated against. This
-      field is only valid for ColumnMap type rules. Evaluated count can be
-      configured to either (1) include all rows (default) - with null rows
-      automatically failing rule evaluation OR (2) exclude null rows from the
-      evaluated_count, by setting ignore_nulls = true
+      field is only valid for ColumnMap type rules.Evaluated count can be
+      configured to either include all rows (default) - with null rows
+      automatically failing rule evaluation, or exclude null rows from the
+      evaluated_count, by setting ignore_nulls = true.
     failingRowsQuery: The query to find rows that did not pass this rule. Only
       applies to ColumnMap and RowCondition rules.
     nullCount: The number of rows with null values in the specified column.
@@ -3365,12 +3390,12 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation(_messages.Message):
-  r"""Evaluates whether each row passes the specified condition. The SQL
+  r"""Evaluates whether each row passes the specified condition.The SQL
   expression needs to use BigQuery standard SQL syntax and should produce a
-  boolean per row as the result. Example: col1 >= 0 AND col2 < 10
+  boolean value per row as the result.Example: col1 >= 0 AND col2 < 10
 
   Fields:
-    sqlExpression: A string attribute.
+    sqlExpression: The SQL expression.
   """
 
   sqlExpression = _messages.StringField(1)
@@ -3380,7 +3405,7 @@ class GoogleCloudDataplexV1DataQualityRuleSetExpectation(_messages.Message):
   r"""Evaluates whether each column value is contained by a specified set.
 
   Fields:
-    values: A string attribute.
+    values: Expected values for the column value.
   """
 
   values = _messages.StringField(1, repeated=True)
@@ -3395,17 +3420,17 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
 
   Fields:
     maxValue: The maximum column statistic value allowed for a row to pass
-      this validation. At least one of min_value and max_value need to be
+      this validation.At least one of min_value and max_value need to be
       provided.
     minValue: The minimum column statistic value allowed for a row to pass
-      this validation. At least one of min_value and max_value need to be
+      this validation.At least one of min_value and max_value need to be
       provided.
     statistic: A StatisticValueValuesEnum attribute.
     strictMaxEnabled: Whether column statistic needs to be strictly lesser
-      than ('<') the maximum, or if equality is allowed. Only relevant if a
+      than ('<') the maximum, or if equality is allowed.Only relevant if a
       max_value has been defined. Default = false.
     strictMinEnabled: Whether column statistic needs to be strictly greater
-      than ('>') the minimum, or if equality is allowed. Only relevant if a
+      than ('>') the minimum, or if equality is allowed.Only relevant if a
       min_value has been defined. Default = false.
   """
 
@@ -3431,12 +3456,12 @@ class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Me
 
 
 class GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation(_messages.Message):
-  r"""Evaluates whether the provided expression is true. The SQL expression
+  r"""Evaluates whether the provided expression is true.The SQL expression
   needs to use BigQuery standard SQL syntax and should produce a scalar
-  boolean result. Example: MIN(col1) >= 0
+  boolean result.Example: MIN(col1) >= 0
 
   Fields:
-    sqlExpression: A string attribute.
+    sqlExpression: The SQL expression.
   """
 
   sqlExpression = _messages.StringField(1)
@@ -3459,9 +3484,9 @@ class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):
 
 class GoogleCloudDataplexV1DataScan(_messages.Message):
   r"""Represents a user-visible job which provides the insights for the
-  related data source. For examples: - Data Quality: generates queries based
-  on the rules and run against the data to get data quality check results. -
-  Data Profile: analyzes the data in table(s) and generates insights about the
+  related data source.For example: Data Quality: generates queries based on
+  the rules and runs against the data to get data quality check results. Data
+  Profile: analyzes the data in table(s) and generates insights about the
   structure, content and relationships (such as null percent, cardinality,
   min/max/mean, etc).
 
@@ -3479,17 +3504,17 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
     dataProfileSpec: DataProfileScan related setting.
     dataQualityResult: Output only. The result of the data quality scan.
     dataQualitySpec: DataQualityScan related setting.
-    description: Optional. Description of the scan. * Must be between 1-1024
+    description: Optional. Description of the scan. Must be between 1-1024
       characters.
-    displayName: Optional. User friendly display name. * Must be between 1-256
+    displayName: Optional. User friendly display name. Must be between 1-256
       characters.
-    executionSpec: Optional. DataScan execution settings. If not specified,
-      the fields under it will use their default values.
+    executionSpec: Optional. DataScan execution settings.If not specified, the
+      fields in it will use their default values.
     executionStatus: Output only. Status of the data scan execution.
     labels: Optional. User-defined labels for the scan.
     name: Output only. The relative resource name of the scan, of the form:
-      projects/{project}/locations/{location_id}/dataScans/{datascan_id}.
-      where {project} refers to a project_id or project_number and location_id
+      projects/{project}/locations/{location_id}/dataScans/{datascan_id},
+      where project refers to a project_id or project_number and location_id
       refers to a GCP region.
     state: Output only. Current state of the DataScan.
     type: Output only. The type of DataScan.
@@ -3519,9 +3544,9 @@ class GoogleCloudDataplexV1DataScan(_messages.Message):
     r"""Output only. The type of DataScan.
 
     Values:
-      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan Type is unspecified.
-      DATA_QUALITY: Data Quality Scan.
-      DATA_PROFILE: Data Profile Scan.
+      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan type is unspecified.
+      DATA_QUALITY: Data Quality scan.
+      DATA_PROFILE: Data Profile scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
@@ -3723,10 +3748,11 @@ class GoogleCloudDataplexV1DataScanExecutionSpec(_messages.Message):
   r"""DataScan execution settings.
 
   Fields:
-    field: Immutable. The unnested field (Date or Timestamp) that contains
-      values that monotonically increase over time.
+    field: Immutable. The unnested field (of type Date or Timestamp) that
+      contains values which monotonically increase over time.If not specified,
+      a data scan will run for all data in the table.
     trigger: Optional. Spec related to how often and when a scan should be
-      triggered. If not specified, the default is OnDemand, which means the
+      triggered.If not specified, the default is OnDemand, which means the
       scan will not run until the user calls RunDataScan API.
   """
 
@@ -3747,7 +3773,7 @@ class GoogleCloudDataplexV1DataScanExecutionStatus(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataScanJob(_messages.Message):
-  r"""A DataScanJob represents an instance of a data scan.
+  r"""A DataScanJob represents an instance of DataScan execution.
 
   Enums:
     StateValueValuesEnum: Output only. Execution state for the DataScanJob.
@@ -3762,7 +3788,7 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     message: Output only. Additional information about the current state.
     name: Output only. The relative resource name of the DataScanJob, of the
       form: projects/{project}/locations/{location_id}/dataScans/{datascan_id}
-      /jobs/{job_id}. where {project} refers to a project_id or project_number
+      /jobs/{job_id}, where project refers to a project_id or project_number
       and location_id refers to a GCP region.
     startTime: Output only. The time when the DataScanJob was started.
     state: Output only. Execution state for the DataScanJob.
@@ -3794,9 +3820,9 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     r"""Output only. The type of the parent DataScan.
 
     Values:
-      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan Type is unspecified.
-      DATA_QUALITY: Data Quality Scan.
-      DATA_PROFILE: Data Profile Scan.
+      DATA_SCAN_TYPE_UNSPECIFIED: The DataScan type is unspecified.
+      DATA_QUALITY: Data Quality scan.
+      DATA_PROFILE: Data Profile scan.
     """
     DATA_SCAN_TYPE_UNSPECIFIED = 0
     DATA_QUALITY = 1
@@ -3819,9 +3845,10 @@ class GoogleCloudDataplexV1DataSource(_messages.Message):
   r"""The data source for DataScan.
 
   Fields:
-    entity: Immutable. The dataplex entity that contains the data for
-      DataScan, of the form: projects/{project_number}/locations/{location_id}
-      /lakes/{lake_id}/zones/{zone_id}/entities/{entity_id}.
+    entity: Immutable. The Dataplex entity that represents the data source
+      (e.g. BigQuery table) for DataScan, of the form: projects/{project_numbe
+      r}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{ent
+      ity_id}.
   """
 
   entity = _messages.StringField(1)
@@ -4065,6 +4092,8 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     TypeValueValuesEnum: Required. Immutable. The type of entity.
 
   Fields:
+    access: Output only. Identifies the access mechanism to the entity. Not
+      user settable.
     asset: Required. Immutable. The ID of the asset associated with the
       storage location containing the entity data. The entity must be with in
       the same zone with the asset.
@@ -4103,6 +4132,8 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     system: Required. Immutable. Identifies the storage system of the entity
       data.
     type: Required. Immutable. The type of entity.
+    uid: Output only. System generated unique ID for the Entity. This ID will
+      be different if the Entity is deleted and re-created with the same name.
     updateTime: Output only. The time when the entity was last updated.
   """
 
@@ -4131,22 +4162,24 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     TABLE = 1
     FILESET = 2
 
-  asset = _messages.StringField(1)
-  catalogEntry = _messages.StringField(2)
-  compatibility = _messages.MessageField('GoogleCloudDataplexV1EntityCompatibilityStatus', 3)
-  createTime = _messages.StringField(4)
-  dataPath = _messages.StringField(5)
-  dataPathPattern = _messages.StringField(6)
-  description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  format = _messages.MessageField('GoogleCloudDataplexV1StorageFormat', 10)
-  id = _messages.StringField(11)
-  name = _messages.StringField(12)
-  schema = _messages.MessageField('GoogleCloudDataplexV1Schema', 13)
-  system = _messages.EnumField('SystemValueValuesEnum', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
+  access = _messages.MessageField('GoogleCloudDataplexV1StorageAccess', 1)
+  asset = _messages.StringField(2)
+  catalogEntry = _messages.StringField(3)
+  compatibility = _messages.MessageField('GoogleCloudDataplexV1EntityCompatibilityStatus', 4)
+  createTime = _messages.StringField(5)
+  dataPath = _messages.StringField(6)
+  dataPathPattern = _messages.StringField(7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  format = _messages.MessageField('GoogleCloudDataplexV1StorageFormat', 11)
+  id = _messages.StringField(12)
+  name = _messages.StringField(13)
+  schema = _messages.MessageField('GoogleCloudDataplexV1Schema', 14)
+  system = _messages.EnumField('SystemValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class GoogleCloudDataplexV1EntityCompatibilityStatus(_messages.Message):
@@ -4738,7 +4771,7 @@ class GoogleCloudDataplexV1ListDataScanJobsResponse(_messages.Message):
   r"""List DataScanJobs response.
 
   Fields:
-    dataScanJobs: DataScanJobs (metadata only) under a given dataScan.
+    dataScanJobs: DataScanJobs (BASIC view only) under a given dataScan.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
   """
@@ -4751,7 +4784,7 @@ class GoogleCloudDataplexV1ListDataScansResponse(_messages.Message):
   r"""List dataScans response.
 
   Fields:
-    dataScans: DataScans (metadata only) under the given parent location.
+    dataScans: DataScans (BASIC view only) under the given parent location.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
     unreachable: Locations that could not be reached.
@@ -4964,10 +4997,24 @@ class GoogleCloudDataplexV1RunDataScanResponse(_messages.Message):
   r"""Run DataScan Response.
 
   Fields:
-    job: DataScanJob created by RunDataScan API.
+    job: DataScanJob created by RunDataScan request.
   """
 
   job = _messages.MessageField('GoogleCloudDataplexV1DataScanJob', 1)
+
+
+class GoogleCloudDataplexV1RunTaskRequest(_messages.Message):
+  r"""A GoogleCloudDataplexV1RunTaskRequest object."""
+
+
+class GoogleCloudDataplexV1RunTaskResponse(_messages.Message):
+  r"""A GoogleCloudDataplexV1RunTaskResponse object.
+
+  Fields:
+    job: Jobs created by RunTask API.
+  """
+
+  job = _messages.MessageField('GoogleCloudDataplexV1Job', 1)
 
 
 class GoogleCloudDataplexV1ScannedData(_messages.Message):
@@ -4984,10 +5031,10 @@ class GoogleCloudDataplexV1ScannedDataIncrementalField(_messages.Message):
   r"""A data range denoted by a pair of start/end values of a field.
 
   Fields:
-    end: Value that marks the end of the range
+    end: Value that marks the end of the range.
     field: The field that contains values which monotonically increases over
-      time (e.g. timestamp).
-    start: Value that marks the start of the range
+      time (e.g. a timestamp column).
+    start: Value that marks the start of the range.
   """
 
   end = _messages.StringField(1)
@@ -5296,6 +5343,35 @@ class GoogleCloudDataplexV1SessionEventQueryDetail(_messages.Message):
   queryId = _messages.StringField(4)
   queryText = _messages.StringField(5)
   resultSizeBytes = _messages.IntegerField(6)
+
+
+class GoogleCloudDataplexV1StorageAccess(_messages.Message):
+  r"""Describes the access mechanism of the data within its storage location.
+
+  Enums:
+    ReadValueValuesEnum: Output only. Describes the read access mechanism of
+      the data. Not user settable.
+
+  Fields:
+    read: Output only. Describes the read access mechanism of the data. Not
+      user settable.
+  """
+
+  class ReadValueValuesEnum(_messages.Enum):
+    r"""Output only. Describes the read access mechanism of the data. Not user
+    settable.
+
+    Values:
+      ACCESS_MODE_UNSPECIFIED: Access mode unspecified.
+      DIRECT: Default. Data is accessed directly using storage APIs.
+      MANAGED: Data is accessed through a managed interface using BigQuery
+        APIs.
+    """
+    ACCESS_MODE_UNSPECIFIED = 0
+    DIRECT = 1
+    MANAGED = 2
+
+  read = _messages.EnumField('ReadValueValuesEnum', 1)
 
 
 class GoogleCloudDataplexV1StorageFormat(_messages.Message):
@@ -5783,8 +5859,8 @@ class GoogleCloudDataplexV1TaskTriggerSpec(_messages.Message):
       running tasks periodically. To explicitly set a timezone to the cron
       tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
-      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
-      * * *", or "TZ=America/New_York 1 * * * *". This field is required for
+      from IANA time zone database. For example, CRON_TZ=America/New_York 1 *
+      * * *, or TZ=America/New_York 1 * * * *. This field is required for
       RECURRING tasks.
     startTime: Optional. The first run of the task will be after this time. If
       not specified, the task will run shortly after being submitted if
@@ -5815,7 +5891,7 @@ class GoogleCloudDataplexV1Trigger(_messages.Message):
   r"""DataScan scheduling and trigger settings.
 
   Fields:
-    onDemand: The scan runs one-time shortly after DataScan Creation.
+    onDemand: The scan runs once via RunDataScan API.
     schedule: The scan is scheduled to run periodically.
   """
 
@@ -5824,20 +5900,21 @@ class GoogleCloudDataplexV1Trigger(_messages.Message):
 
 
 class GoogleCloudDataplexV1TriggerOnDemand(_messages.Message):
-  r"""The scan runs one-time via RunDataScan API."""
+  r"""The scan runs once via RunDataScan API."""
 
 
 class GoogleCloudDataplexV1TriggerSchedule(_messages.Message):
   r"""The scan is scheduled to run periodically.
 
   Fields:
-    cron: Required. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
-      running scans periodically. To explicitly set a timezone to the cron
-      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+    cron: Required. Cron (https://en.wikipedia.org/wiki/Cron) schedule for
+      running scans periodically.To explicitly set a timezone in the cron tab,
+      apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
-      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
-      * * *", or "TZ=America/New_York 1 * * * *". This field is required for
-      Schedule scans.
+      from IANA time zone database (wikipedia
+      (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)).
+      For example, CRON_TZ=America/New_York 1 * * * *, or TZ=America/New_York
+      1 * * * *.This field is required for Schedule scans.
   """
 
   cron = _messages.StringField(1)
@@ -5971,8 +6048,8 @@ class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
       discovery every 60 minutes. To explicitly set a timezone to the cron
       tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
-      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
-      * * *", or "TZ=America/New_York 1 * * * *".
+      from IANA time zone database. For example, CRON_TZ=America/New_York 1 *
+      * * *, or TZ=America/New_York 1 * * * *.
   """
 
   csvOptions = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecCsvOptions', 1)

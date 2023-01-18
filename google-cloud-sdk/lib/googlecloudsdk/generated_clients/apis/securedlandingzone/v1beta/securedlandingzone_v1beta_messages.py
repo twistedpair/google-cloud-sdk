@@ -17,25 +17,6 @@ class GoogleCloudSecuredlandingzoneV1betaActivateOverwatchRequest(_messages.Mess
   r"""The request message for activating an Overwatch resource."""
 
 
-class GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest(_messages.Message):
-  r"""The request message for enabling Overwatch service for an organization
-  in a region.
-  """
-
-
-
-class GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse(_messages.Message):
-  r"""The response message for enabling Overwatch on an organization in a
-  region.
-
-  Fields:
-    serviceAccount: Required. The service account created to grant the
-      required permissions for the Overwatch service to remediate drifts.
-  """
-
-  serviceAccount = _messages.StringField(1)
-
-
 class GoogleCloudSecuredlandingzoneV1betaListOverwatchesResponse(_messages.Message):
   r"""The response message for ListOverwatch.
 
@@ -268,21 +249,6 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest(_messages.Message):
-  r"""A SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest object.
-
-  Fields:
-    googleCloudSecuredlandingzoneV1betaEnableOverwatchRequest: A
-      GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest resource to be
-      passed as the request body.
-    organization: Required. Organization for which Overwatch service has to be
-      enabled. The format is organizations/{org_id}/locations/{location_id}.
-  """
-
-  googleCloudSecuredlandingzoneV1betaEnableOverwatchRequest = _messages.MessageField('GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest', 1)
-  organization = _messages.StringField(2, required=True)
 
 
 class SecuredlandingzoneOrganizationsLocationsOperationsGetRequest(_messages.Message):

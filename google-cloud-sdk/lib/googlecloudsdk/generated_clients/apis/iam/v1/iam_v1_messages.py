@@ -1682,11 +1682,18 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the service account in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
-      a wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: Required. The resource name of the service account. Use one of the
+      following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1698,11 +1705,17 @@ class IamProjectsServiceAccountsDisableRequest(_messages.Message):
   Fields:
     disableServiceAccountRequest: A DisableServiceAccountRequest resource to
       be passed as the request body.
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: The resource name of the service account. Use one of the following
+      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   disableServiceAccountRequest = _messages.MessageField('DisableServiceAccountRequest', 1)
@@ -1715,11 +1728,17 @@ class IamProjectsServiceAccountsEnableRequest(_messages.Message):
   Fields:
     enableServiceAccountRequest: A EnableServiceAccountRequest resource to be
       passed as the request body.
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: The resource name of the service account. Use one of the following
+      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   enableServiceAccountRequest = _messages.MessageField('EnableServiceAccountRequest', 1)
@@ -1756,11 +1775,18 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the service account in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
-      a wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: Required. The resource name of the service account. Use one of the
+      following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1773,11 +1799,17 @@ class IamProjectsServiceAccountsIdentityBindingsCreateRequest(_messages.Message)
     createServiceAccountIdentityBindingRequest: A
       CreateServiceAccountIdentityBindingRequest resource to be passed as the
       request body.
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: The resource name of the service account. Use one of the following
+      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   createServiceAccountIdentityBindingRequest = _messages.MessageField('CreateServiceAccountIdentityBindingRequest', 1)
@@ -1788,11 +1820,19 @@ class IamProjectsServiceAccountsIdentityBindingsDeleteRequest(_messages.Message)
   r"""A IamProjectsServiceAccountsIdentityBindingsDeleteRequest object.
 
   Fields:
-    name: The resource name of the service account identity binding in the
-      following format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/identi
-      tyBindings/{BINDING}`. Using `-` as a wildcard for the `PROJECT_ID` will
-      infer the project from the account. The `ACCOUNT` value can be the
-      `email` address or the `unique_id` of the service account.
+    name: The resource name of the service account identity binding. Use one
+      of the following formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAI
+      L_ADDRESS}/identityBindings/{BINDING}` * `projects/{PROJECT_ID}/serviceA
+      ccounts/{UNIQUE_ID}/identityBindings/{BINDING}` As an alternative, you
+      can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}/identityBindings/{BINDING}`
+      * `projects/-/serviceAccounts/{UNIQUE_ID}/identityBindings/{BINDING}`
+      When possible, avoid using the `-` wildcard character, because it can
+      cause response messages to contain misleading error codes. For example,
+      if you try to access the service account identity binding
+      `projects/-/serviceAccounts/fake@example.com/identityBindings/fake-
+      binding`, which does not exist, the response contains an HTTP `403
+      Forbidden` error instead of a `404 Not Found` error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1802,11 +1842,19 @@ class IamProjectsServiceAccountsIdentityBindingsGetRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsIdentityBindingsGetRequest object.
 
   Fields:
-    name: The resource name of the service account identity binding in the
-      following format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/identi
-      tyBindings/{BINDING}`. Using `-` as a wildcard for the `PROJECT_ID` will
-      infer the project from the account. The `ACCOUNT` value can be the
-      `email` address or the `unique_id` of the service account.
+    name: The resource name of the service account identity binding. Use one
+      of the following formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAI
+      L_ADDRESS}/identityBindings/{BINDING}` * `projects/{PROJECT_ID}/serviceA
+      ccounts/{UNIQUE_ID}/identityBindings/{BINDING}` As an alternative, you
+      can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}/identityBindings/{BINDING}`
+      * `projects/-/serviceAccounts/{UNIQUE_ID}/identityBindings/{BINDING}`
+      When possible, avoid using the `-` wildcard character, because it can
+      cause response messages to contain misleading error codes. For example,
+      if you try to access the service account identity binding
+      `projects/-/serviceAccounts/fake@example.com/identityBindings/fake-
+      binding`, which does not exist, the response contains an HTTP `403
+      Forbidden` error instead of a `404 Not Found` error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1816,11 +1864,17 @@ class IamProjectsServiceAccountsIdentityBindingsListRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsIdentityBindingsListRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID`, will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: The resource name of the service account. Use one of the following
+      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1832,11 +1886,18 @@ class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
   Fields:
     createServiceAccountKeyRequest: A CreateServiceAccountKeyRequest resource
       to be passed as the request body.
-    name: Required. The resource name of the service account in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
-      a wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: Required. The resource name of the service account. Use one of the
+      following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   createServiceAccountKeyRequest = _messages.MessageField('CreateServiceAccountKeyRequest', 1)
@@ -1847,12 +1908,19 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsKeysDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the service account key in the
-      following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      account. The `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.
+    name: Required. The resource name of the service account key. Use one of
+      the following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` As an
+      alternative, you can use the `-` wildcard character instead of the
+      project ID: * `projects/-/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}`
+      * `projects/-/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` When possible,
+      avoid using the `-` wildcard character, because it can cause response
+      messages to contain misleading error codes. For example, if you try to
+      access the service account key
+      `projects/-/serviceAccounts/fake@example.com/keys/fake-key`, which does
+      not exist, the response contains an HTTP `403 Forbidden` error instead
+      of a `404 Not Found` error.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1864,12 +1932,19 @@ class IamProjectsServiceAccountsKeysDisableRequest(_messages.Message):
   Fields:
     disableServiceAccountKeyRequest: A DisableServiceAccountKeyRequest
       resource to be passed as the request body.
-    name: Required. The resource name of the service account key in the
-      following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      account. The `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.
+    name: Required. The resource name of the service account key. Use one of
+      the following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` As an
+      alternative, you can use the `-` wildcard character instead of the
+      project ID: * `projects/-/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}`
+      * `projects/-/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` When possible,
+      avoid using the `-` wildcard character, because it can cause response
+      messages to contain misleading error codes. For example, if you try to
+      access the service account key
+      `projects/-/serviceAccounts/fake@example.com/keys/fake-key`, which does
+      not exist, the response contains an HTTP `403 Forbidden` error instead
+      of a `404 Not Found` error.
   """
 
   disableServiceAccountKeyRequest = _messages.MessageField('DisableServiceAccountKeyRequest', 1)
@@ -1882,12 +1957,19 @@ class IamProjectsServiceAccountsKeysEnableRequest(_messages.Message):
   Fields:
     enableServiceAccountKeyRequest: A EnableServiceAccountKeyRequest resource
       to be passed as the request body.
-    name: Required. The resource name of the service account key in the
-      following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      account. The `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.
+    name: Required. The resource name of the service account key. Use one of
+      the following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` As an
+      alternative, you can use the `-` wildcard character instead of the
+      project ID: * `projects/-/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}`
+      * `projects/-/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` When possible,
+      avoid using the `-` wildcard character, because it can cause response
+      messages to contain misleading error codes. For example, if you try to
+      access the service account key
+      `projects/-/serviceAccounts/fake@example.com/keys/fake-key`, which does
+      not exist, the response contains an HTTP `403 Forbidden` error instead
+      of a `404 Not Found` error.
   """
 
   enableServiceAccountKeyRequest = _messages.MessageField('EnableServiceAccountKeyRequest', 1)
@@ -1903,12 +1985,19 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
       returned.
 
   Fields:
-    name: Required. The resource name of the service account key in the
-      following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      account. The `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.
+    name: Required. The resource name of the service account key. Use one of
+      the following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` As an
+      alternative, you can use the `-` wildcard character instead of the
+      project ID: * `projects/-/serviceAccounts/{EMAIL_ADDRESS}/keys/{KEY_ID}`
+      * `projects/-/serviceAccounts/{UNIQUE_ID}/keys/{KEY_ID}` When possible,
+      avoid using the `-` wildcard character, because it can cause response
+      messages to contain misleading error codes. For example, if you try to
+      access the service account key
+      `projects/-/serviceAccounts/fake@example.com/keys/fake-key`, which does
+      not exist, the response contains an HTTP `403 Forbidden` error instead
+      of a `404 Not Found` error.
     publicKeyType: Optional. The output format of the public key. The default
       is `TYPE_NONE`, which means that the public key is not returned.
   """
@@ -1942,11 +2031,18 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
     keyTypes: Filters the types of keys the user wants to include in the list
       response. Duplicate key types are not allowed. If no key type is
       provided, all keys are returned.
-    name: Required. The resource name of the service account in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
-      a wildcard for the `PROJECT_ID`, will infer the project from the
-      account. The `ACCOUNT` value can be the `email` address or the
-      `unique_id` of the service account.
+    name: Required. The resource name of the service account. Use one of the
+      following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
   """
 
   class KeyTypesValueValuesEnum(_messages.Enum):
@@ -1972,11 +2068,18 @@ class IamProjectsServiceAccountsKeysUploadRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsKeysUploadRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: The resource name of the service account key. Use one of the
+      following formats: *
+      `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
     uploadServiceAccountKeyRequest: A UploadServiceAccountKeyRequest resource
       to be passed as the request body.
   """
@@ -2015,7 +2118,7 @@ class IamProjectsServiceAccountsPatchRequest(_messages.Message):
       `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
       `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
       `-` wildcard character, because it can cause response messages to
-      contain misleading error codes. For example, if you try to get the
+      contain misleading error codes. For example, if you try to access the
       service account `projects/-/serviceAccounts/fake@example.com`, which
       does not exist, the response contains an HTTP `403 Forbidden` error
       instead of a `404 Not Found` error.
@@ -2049,11 +2152,17 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   Fields:
     name: Required. Deprecated. [Migrate to Service Account Credentials
       API](https://cloud.google.com/iam/help/credentials/migrate-api). The
-      resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+      resource name of the service account. Use one of the following formats:
+      * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
     signBlobRequest: A SignBlobRequest resource to be passed as the request
       body.
   """
@@ -2068,11 +2177,17 @@ class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
   Fields:
     name: Required. Deprecated. [Migrate to Service Account Credentials
       API](https://cloud.google.com/iam/help/credentials/migrate-api). The
-      resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+      resource name of the service account. Use one of the following formats:
+      * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
     signJwtRequest: A SignJwtRequest resource to be passed as the request
       body.
   """
@@ -2101,10 +2216,17 @@ class IamProjectsServiceAccountsUndeleteRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsUndeleteRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT_UNIQUE_ID}`. Using `-`
-      as a wildcard for the `PROJECT_ID` will infer the project from the
-      account.
+    name: The resource name of the service account. Use one of the following
+      formats: * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/{PROJECT_ID}/serviceAccounts/{UNIQUE_ID}` As an alternative,
+      you can use the `-` wildcard character instead of the project ID: *
+      `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
+      `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
+      `-` wildcard character, because it can cause response messages to
+      contain misleading error codes. For example, if you try to access the
+      service account `projects/-/serviceAccounts/fake@example.com`, which
+      does not exist, the response contains an HTTP `403 Forbidden` error
+      instead of a `404 Not Found` error.
     undeleteServiceAccountRequest: A UndeleteServiceAccountRequest resource to
       be passed as the request body.
   """
@@ -2275,12 +2397,11 @@ class LintPolicyRequest(_messages.Message):
   Fields:
     condition: google.iam.v1.Binding.condition object to be linted.
     fullResourceName: The full resource name of the policy this lint request
-      is about. The name follows the Google Cloud Platform (GCP) resource
-      format. For example, a GCP project with ID `my-project` will be named
+      is about. The name follows the Google Cloud format for full resource
+      names. For example, a Cloud project with ID `my-project` will be named
       `//cloudresourcemanager.googleapis.com/projects/my-project`. The
-      resource name is not used to read the policy instance from the Cloud IAM
-      database. The candidate policy for lint has to be provided in the same
-      request object.
+      resource name is not used to read a policy from IAM. Only the data in
+      the request object is linted.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -3017,7 +3138,7 @@ class ServiceAccount(_messages.Message):
       `projects/-/serviceAccounts/{EMAIL_ADDRESS}` *
       `projects/-/serviceAccounts/{UNIQUE_ID}` When possible, avoid using the
       `-` wildcard character, because it can cause response messages to
-      contain misleading error codes. For example, if you try to get the
+      contain misleading error codes. For example, if you try to access the
       service account `projects/-/serviceAccounts/fake@example.com`, which
       does not exist, the response contains an HTTP `403 Forbidden` error
       instead of a `404 Not Found` error.

@@ -317,6 +317,11 @@
           "readOnly": true,
           "type": "string"
         },
+        "airflowByoidUri": {
+          "description": "Output only. The 'bring your own identity' variant of the URI of the Apache Airflow Web UI hosted within this environment, to be accessed with third-party identity credentials (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
+          "readOnly": true,
+          "type": "string"
+        },
         "encryptionConfig": {
           "description": "Optional. The encryption options for the Cloud Composer environment and its dependencies. Cannot be updated.",
           "$ref": "EncryptionConfig"

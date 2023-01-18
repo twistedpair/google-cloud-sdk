@@ -554,21 +554,19 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 -  ``folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
 
                 Projects listed in the ``project_ids`` field are added
-                to this list.
+                to this list. A maximum of 100 resources may be
+                specified in a single request.
 
                 This corresponds to the ``resource_names`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             filter (:class:`str`):
-                Optional. A filter that chooses which log entries to
-                return. See `Advanced Logs
-                Queries <https://cloud.google.com/logging/docs/view/advanced-queries>`__.
-                Only log entries that match the filter are returned. An
-                empty filter matches all log entries in the resources
-                listed in ``resource_names``. Referencing a parent
-                resource that is not listed in ``resource_names`` will
-                cause the filter to return no results. The maximum
-                length of the filter is 20000 characters.
+                Optional. Only log entries that match the filter are
+                returned. An empty filter matches all log entries in the
+                resources listed in ``resource_names``. Referencing a
+                parent resource that is not listed in ``resource_names``
+                will cause the filter to return no results. The maximum
+                length of a filter is 20,000 characters.
 
                 This corresponds to the ``filter`` field
                 on the ``request`` instance; if ``request`` is provided, this

@@ -273,7 +273,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached. For example, ['us-west1-a', 'us-central1-b']. A ListInstancesResponse will only contain either instances or unreachables,",
+          "description": "Locations that could not be reached. For example, `['us-west1-a', 'us-central1-b']`. A ListInstancesResponse will only contain either instances or unreachables,",
           "type": "array",
           "items": {
             "type": "string"
@@ -300,7 +300,7 @@
           "$ref": "ContainerImage"
         },
         "postStartupScript": {
-          "description": "Path to a Bash script that automatically runs after a notebook instance fully boots up. The path must be a URL or Cloud Storage path (gs:\/\/path-to-file\/file-name).",
+          "description": "Path to a Bash script that automatically runs after a notebook instance fully boots up. The path must be a URL or Cloud Storage path (`gs:\/\/path-to-file\/file-name`).",
           "type": "string"
         },
         "proxyUri": {
@@ -320,11 +320,11 @@
           "type": "string"
         },
         "machineType": {
-          "description": "Required. The [Compute Engine machine type](\/compute\/docs\/machine-types) of this instance.",
+          "description": "Required. The [Compute Engine machine type](https:\/\/cloud.google.com\/compute\/docs\/machine-types) of this instance.",
           "type": "string"
         },
         "acceleratorConfig": {
-          "description": "The hardware accelerator used on this instance. If you use accelerators, make sure that your configuration has [enough vCPUs and memory to support the `machine_type` you have selected](\/compute\/docs\/gpus\/#gpus-list).",
+          "description": "The hardware accelerator used on this instance. If you use accelerators, make sure that your configuration has [enough vCPUs and memory to support the `machine_type` you have selected](https:\/\/cloud.google.com\/compute\/docs\/gpus\/#gpus-list).",
           "$ref": "AcceleratorConfig"
         },
         "state": {
@@ -429,7 +429,7 @@
           ]
         },
         "kmsKey": {
-          "description": "Input only. The KMS key used to encrypt the disks, only applicable if disk_encryption is CMEK. Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}` Learn more about [using your own encryption keys](\/kms\/docs\/quickstart).",
+          "description": "Input only. The KMS key used to encrypt the disks, only applicable if disk_encryption is CMEK. Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}` Learn more about [using your own encryption keys](https:\/\/cloud.google.com\/kms\/docs\/quickstart).",
           "type": "string"
         },
         "noPublicIp": {
@@ -534,7 +534,7 @@
     },
     "AcceleratorConfig": {
       "id": "AcceleratorConfig",
-      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
+      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](https:\/\/cloud.google.com\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
       "type": "object",
       "properties": {
         "type": {

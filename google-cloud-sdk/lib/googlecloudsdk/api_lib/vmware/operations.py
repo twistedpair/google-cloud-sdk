@@ -29,27 +29,18 @@ class OperationsClient(util.VmwareClientBase):
     super(OperationsClient, self).__init__()
     self.service = self.client.projects_locations_operations
 
-  def List(self,
-           location_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, location_resource):
     location = location_resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsOperationsListRequest(
-        name=location, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        name=location
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='operations')
 
   def Get(self, resource):
     request = self.messages.VmwareengineProjectsLocationsOperationsGetRequest(
         name=resource.RelativeName())
     return self.service.Get(request)
-

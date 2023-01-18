@@ -116,3 +116,18 @@ def CreateValidateVPCHook(ref, args, request):
           _PEERING_VALIDATION_ERROR.format(args.network))
 
   return request
+
+
+def ListTopologiesResponseHook(response, args):
+  """Reformat to extract topologies and sort by acceleratorType."""
+  del args
+  results = []
+  for accelerator_type in response:
+    for accelerator_config in accelerator_type.acceleratorConfigs:
+      results += [{
+          'topology': accelerator_config.topology,
+          'type': accelerator_config.type,
+          'acceleratorType': accelerator_type.type
+      }]
+  results.sort(key=lambda x: (int(x['acceleratorType'].split('-')[1])))
+  return results

@@ -335,6 +335,33 @@ class LookerV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Export instance.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:export',
+        request_field='exportInstanceRequest',
+        request_type_name='LookerProjectsLocationsInstancesExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Instance.
 
@@ -386,6 +413,60 @@ class LookerV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='LookerProjectsLocationsInstancesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Import instance.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.import',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:import',
+        request_field='importInstanceRequest',
+        request_type_name='LookerProjectsLocationsInstancesImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def IssueRedirectTicketInternal(self, request, global_params=None):
+      r"""THIS METHOD IS FOR INTERNAL USE ONLY.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IssueRedirectTicketInternalResponse) The response message.
+      """
+      config = self.GetMethodConfig('IssueRedirectTicketInternal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    IssueRedirectTicketInternal.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:issueRedirectTicketInternal',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.issueRedirectTicketInternal',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v1alpha1/{+instance}:issueRedirectTicketInternal',
+        request_field='issueRedirectTicketInternalRequest',
+        request_type_name='LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest',
+        response_type_name='IssueRedirectTicketInternalResponse',
         supports_download=False,
     )
 

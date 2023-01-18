@@ -6657,6 +6657,19 @@ class Step(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 3)
 
 
+class Straggler(_messages.Message):
+  r"""Information for a straggler.
+
+  Fields:
+    batchStraggler: Batch straggler identification and debugging information.
+    streamingStraggler: Streaming straggler identification and debugging
+      information.
+  """
+
+  batchStraggler = _messages.MessageField('StragglerInfo', 1)
+  streamingStraggler = _messages.MessageField('StreamingStragglerInfo', 2)
+
+
 class StragglerDebuggingInfo(_messages.Message):
   r"""Information useful for debugging a straggler. Each type will provide
   specialized debugging information relevant for a particular cause. The
@@ -6722,6 +6735,7 @@ class StragglerSummary(_messages.Message):
       the string representation of the StragglerCause enum.
 
   Fields:
+    recentStragglers: The most recent stragglers.
     stragglerCauseCount: Aggregated counts of straggler causes, keyed by the
       string representation of the StragglerCause enum.
     totalStragglerCount: The total count of stragglers.
@@ -6754,8 +6768,9 @@ class StragglerSummary(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  stragglerCauseCount = _messages.MessageField('StragglerCauseCountValue', 1)
-  totalStragglerCount = _messages.IntegerField(2)
+  recentStragglers = _messages.MessageField('Straggler', 1, repeated=True)
+  stragglerCauseCount = _messages.MessageField('StragglerCauseCountValue', 2)
+  totalStragglerCount = _messages.IntegerField(3)
 
 
 class StreamLocation(_messages.Message):
@@ -6993,6 +7008,26 @@ class StreamingStageLocation(_messages.Message):
   """
 
   streamId = _messages.StringField(1)
+
+
+class StreamingStragglerInfo(_messages.Message):
+  r"""Information useful for streaming straggler identification and debugging.
+
+  Fields:
+    dataWatermarkLag: The event-time watermark lag at the time of the
+      straggler detection.
+    endTime: End time of this straggler.
+    startTime: Start time of this straggler.
+    systemWatermarkLag: The system watermark lag at the time of the straggler
+      detection.
+    workerName: Name of the worker where the straggler was detected.
+  """
+
+  dataWatermarkLag = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  systemWatermarkLag = _messages.StringField(4)
+  workerName = _messages.StringField(5)
 
 
 class StringList(_messages.Message):

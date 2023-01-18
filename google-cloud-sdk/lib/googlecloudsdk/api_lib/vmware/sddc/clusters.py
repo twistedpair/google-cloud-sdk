@@ -55,23 +55,17 @@ class ClustersClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Delete(request)
 
-  def List(self,
-           cluster_group_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, cluster_group_resource):
     cluster_group = cluster_group_resource.RelativeName()
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersListRequest(
-        parent=cluster_group, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+    request = (
+        self.messages.SddcProjectsLocationsClusterGroupsClustersListRequest(
+            parent=cluster_group
+        )
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='clusters')
 
   def AddNodes(self, resource, node_count):

@@ -1297,20 +1297,21 @@ To revert your CLI to the previously installed version, you may run:
           'The following components are not currently installed [{components}]'
           .format(components=', '.join(not_installed)))
 
-    required_components = set(
-        c_id for c_id, component in six.iteritems(snapshot.components)
-        if c_id in id_set and component.is_required)
-    if required_components:
-      raise InvalidComponentError(
-          ('The following components are required and cannot be removed '
-           '[{components}]')
-          .format(components=', '.join(required_components)))
-
     to_remove = snapshot.ConsumerClosureForComponents(
         ids, platform_filter=self.__platform_filter)
     if self._EnableFallback():
       to_remove |= snapshot.ConsumerClosureForComponents(
           ids, platform_filter=self.DARWIN_X86_64)
+
+    required_components_removed = set(
+        c_id for c_id, component in six.iteritems(snapshot.components)
+        if c_id in to_remove and component.is_required)
+    if required_components_removed:
+      raise InvalidComponentError(
+          ('The following required components are included in or depend on the '
+           'given components and cannot be removed [{components}]')
+          .format(components=', '.join(required_components_removed)))
+
     if not to_remove:
       self.__Write(log.status, 'No components to remove.\n')
       return

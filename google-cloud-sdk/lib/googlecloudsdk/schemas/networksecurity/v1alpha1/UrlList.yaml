@@ -4,7 +4,6 @@ title: networksecurity v1alpha1 UrlList export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
 required:
-- description
 - name
 - values
 additionalProperties: false

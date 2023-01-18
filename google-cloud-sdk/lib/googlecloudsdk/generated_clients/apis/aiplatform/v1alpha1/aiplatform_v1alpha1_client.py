@@ -7512,7 +7512,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def BatchRead(self, request, global_params=None):
-      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data will be returned. Otherwise, that limit number of data points will be randomly selected from this time series and returned.
+      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data is returned. Otherwise, the number limit of data points is randomly selected from this time series and returned.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest) input message
@@ -7701,7 +7701,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Read(self, request, global_params=None):
-      r"""Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k.
+      r"""Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data is returned. Otherwise, 1000 data points is randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest) input message
@@ -7927,7 +7927,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      r"""Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned.
+      r"""Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error is returned.
 
       Args:
         request: (GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest) input message
@@ -8099,7 +8099,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      r"""Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error will be returned.
+      r"""Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error is returned.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsWriteRequest) input message

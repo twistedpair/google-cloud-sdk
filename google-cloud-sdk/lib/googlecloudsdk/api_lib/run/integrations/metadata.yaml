@@ -1,10 +1,10 @@
 integrations:
 - integration_type: custom-domains
   resource_type: router
-  singleton: true
   singleton_name: custom-domains
   required_field: domains
   visible: true
+  service_type: ingress
   description: Configure custom domains for Cloud Run services with Google Cloud Load Balancer.
   example_command: |-
     Create the integration to add the first domain mapping:
@@ -12,18 +12,18 @@ integrations:
     Update the integration to add subsequent mappings:
       $ gcloud {track} run integrations update custom-domains --parameters='set-mapping=anotherexample.com/*:[SERVICE]'
   parameters:
-    set-mapping:
-      description: 'Set a route mapping from a path to a service. Format: set-mapping=[DOMAIN]/[PATH]:[SERVICE]'
-      required: true
-      type: domain-path-service
-    remove-mapping:
-      description: 'Remove a route mapping. Format: remove-mapping=[DOMAIN]/[PATH]'
-      type: domain-path
-      create_allowed: false
-    remove-domain:
-      description: To remove a domain an all of its route mappings.
-      type: domain
-      create_allowed: false
+  - name: set-mapping
+    description: 'Set a route mapping from a path to a service. Format: set-mapping=[DOMAIN]/[PATH]:[SERVICE]'
+    required: true
+    data_type: domain-path-service
+  - name: remove-mapping
+    description: 'Remove a route mapping. Format: remove-mapping=[DOMAIN]/[PATH]'
+    data_type: domain-path
+    create_allowed: false
+  - name: remove-domain
+    description: To remove a domain an all of its route mappings.
+    data_type: domain
+    create_allowed: false
   update_exclusive_groups:
   - params:
     - set-mapping
@@ -38,26 +38,26 @@ integrations:
   description: Configure a Redis instance (Cloud Memorystore) and connect it to a Cloud Run Service.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=redis --parameters=memory-size-gb=2
-  backing_service: true
+  service_type: backing
   visible: true
   parameters:
-    memory-size-gb:
-      description: Memory capacity of the Redis instance.
-      type: int
-      default: 1
-    tier:
-      description: >
-        The service tier of the instance. Supported options include BASIC for standalone
-        instance and STANDARD_HA for highly available primary/replica instances.
-      type: string
-      hidden: true
-    version:
-      description: >
-        The version of Redis software. If not provided, latest supported version will be used.
-        Supported values include: REDIS_6_X, REDIS_5_0, REDIS_4_0 and REDIS_3_2.
-      type: string
-      update_allowed: false
-      hidden: true
+  - name: memory-size-gb
+    description: Memory capacity of the Redis instance.
+    data_type: int
+    default: 1
+  - name: tier
+    description: >
+      The service tier of the instance. Supported options include BASIC for standalone
+      instance and STANDARD_HA for highly available primary/replica instances.
+    data_type: string
+    hidden: true
+  - name: version
+    description: >
+      The version of Redis software. If not provided, latest supported version will be used.
+      Supported values include: REDIS_6_X, REDIS_5_0, REDIS_4_0 and REDIS_3_2.
+    data_type: string
+    update_allowed: false
+    hidden: true
   required_apis:
   - redis.googleapis.com
   - vpcaccess.googleapis.com
@@ -67,21 +67,21 @@ integrations:
   description: Configure a CloudSQL database instance and connect it to a Cloud Run Service.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro
-  backing_service: true
+  service_type: backing
   visible: false
   parameters:
-    tier:
-      description: 'The service tier of the instance. For example: db-f1-micro or db-g1-small.'
-      type: string
-      update_allowed: false
-      required: true
-    version:
-      description: >-
-        The version of CloudSQL software. For example: MYSQL_8_0, POSTGRES_14, or SQLSERVER_2019_STANDARD.
-        See https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/SqlDatabaseVersion for more details.
-      type: string
-      update_allowed: false
-      required: true
+  - name: tier
+    description: 'The service tier of the instance. For example: db-f1-micro or db-g1-small.'
+    data_type: string
+    update_allowed: false
+    required: true
+  - name: version
+    description: >-
+      The version of CloudSQL software. For example: MYSQL_8_0, POSTGRES_14, or SQLSERVER_2019_STANDARD.
+      See https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/SqlDatabaseVersion for more details.
+    data_type: string
+    update_allowed: false
+    required: true
   required_apis:
   - sqladmin.googleapis.com
   - cloudresourcemanager.googleapis.com

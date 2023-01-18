@@ -158,7 +158,8 @@ class CmekSettings(_messages.Message):
       ring/cryptoKeys/my-key/cryptoKeyVersions/1"This is a read-only field
       used to convey the specific configured CryptoKeyVersion of kms_key that
       has been configured. It will be populated in cases where the CMEK
-      settings are bound to a single key version.
+      settings are bound to a single key version.If this field is populated,
+      the kms_key is tied to a specific CryptoKeyVersion.
     name: Output only. The resource name of the CMEK settings.
     serviceAccountId: Output only. The service account that will be used by
       the Log Router to access your Cloud KMS key.Before enabling CMEK for Log
@@ -279,7 +280,7 @@ class CreateLinkRequest(_messages.Message):
   Fields:
     link: Required. The new link.
     linkId: Required. The ID to use for the link. The link_id can have up to
-      1,024 characters. A valid link_id must only have alphanumeric characters
+      100 characters. A valid link_id must only have alphanumeric characters
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
@@ -509,7 +510,7 @@ class Link(_messages.Message):
     description: Describes this link.The maximum length of the description is
       8000 characters.
     lifecycleState: Output only. The resource lifecycle state.
-    name: The resource name of the link. The name can have up to 1,024
+    name: The resource name of the link. The name can have up to 100
       characters. A valid link id (at the end of the link name) must only have
       alphanumeric characters and underscores within it. "projects/[PROJECT_ID
       ]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organiza
@@ -659,14 +660,11 @@ class ListLogEntriesRequest(_messages.Message):
   r"""The parameters to ListLogEntries.
 
   Fields:
-    filter: Optional. A filter that chooses which log entries to return. See
-      Advanced Logs Queries
-      (https://cloud.google.com/logging/docs/view/advanced-queries). Only log
-      entries that match the filter are returned. An empty filter matches all
-      log entries in the resources listed in resource_names. Referencing a
-      parent resource that is not listed in resource_names will cause the
-      filter to return no results. The maximum length of the filter is 20000
-      characters.
+    filter: Optional. Only log entries that match the filter are returned. An
+      empty filter matches all log entries in the resources listed in
+      resource_names. Referencing a parent resource that is not listed in
+      resource_names will cause the filter to return no results. The maximum
+      length of a filter is 20,000 characters.
     orderBy: Optional. How the results should be sorted. Presently, the only
       permitted values are "timestamp asc" (default) and "timestamp desc". The
       first option returns entries in order of increasing values of
@@ -693,7 +691,8 @@ class ListLogEntriesRequest(_messages.Message):
       /views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATIO
       N_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/
       [LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Projects listed in the
-      project_ids field are added to this list.
+      project_ids field are added to this list. A maximum of 100 resources may
+      be specified in a single request.
   """
 
   filter = _messages.StringField(1)
@@ -925,12 +924,14 @@ class LogBucket(_messages.Message):
     linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
       log bucket is linked to.For
       example:bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]
+      DEPRECATED: Do not use this field. Use the Link API instead.
     locked: Whether the bucket is locked.The retention period on a locked
       bucket cannot be changed. Locked buckets may only be deleted if they are
       empty.
     logLink: Configures a linked dataset in BigQuery corresponding to this log
       bucket.Requires analytics_enabled to be true. A log link can only be
       enabled by updating an existing bucket with analytics enabled.
+      DEPRECATED: Do not use this field. Use the link API instead.
     name: Output only. The resource name of the bucket.For
       example:projects/my-project/locations/global/buckets/my-bucketFor a list
       of supported locations, see Supported Regions
@@ -1440,10 +1441,7 @@ class LogLine(_messages.Message):
 
 
 class LogLink(_messages.Message):
-  r"""This is used to link logs managed by Cloud Logging with a customer's
-  dataset in BigQuery. Once linked, authorized views are created in the
-  destination dataset that give read-access to the log data.WARNING: LogLinks
-  are still experimental, and may change their behavior in the future.
+  r"""DEPRECATED: Use the Link API to create Log Links.
 
   Fields:
     enabled: Enables a log link, and creates a BigQuery dataset in the same
@@ -1953,7 +1951,7 @@ class LoggingBillingAccountsLocationsBucketsLinksCreateRequest(_messages.Message
   Fields:
     link: A Link resource to be passed as the request body.
     linkId: Required. The ID to use for the link. The link_id can have up to
-      1,024 characters. A valid link_id must only have alphanumeric characters
+      100 characters. A valid link_id must only have alphanumeric characters
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
@@ -2771,7 +2769,7 @@ class LoggingFoldersLocationsBucketsLinksCreateRequest(_messages.Message):
   Fields:
     link: A Link resource to be passed as the request body.
     linkId: Required. The ID to use for the link. The link_id can have up to
-      1,024 characters. A valid link_id must only have alphanumeric characters
+      100 characters. A valid link_id must only have alphanumeric characters
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
@@ -3431,7 +3429,7 @@ class LoggingLocationsBucketsLinksCreateRequest(_messages.Message):
   Fields:
     link: A Link resource to be passed as the request body.
     linkId: Required. The ID to use for the link. The link_id can have up to
-      1,024 characters. A valid link_id must only have alphanumeric characters
+      100 characters. A valid link_id must only have alphanumeric characters
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
@@ -3971,7 +3969,7 @@ class LoggingOrganizationsLocationsBucketsLinksCreateRequest(_messages.Message):
   Fields:
     link: A Link resource to be passed as the request body.
     linkId: Required. The ID to use for the link. The link_id can have up to
-      1,024 characters. A valid link_id must only have alphanumeric characters
+      100 characters. A valid link_id must only have alphanumeric characters
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
@@ -4746,7 +4744,7 @@ class LoggingProjectsLocationsBucketsLinksCreateRequest(_messages.Message):
   Fields:
     link: A Link resource to be passed as the request body.
     linkId: Required. The ID to use for the link. The link_id can have up to
-      1,024 characters. A valid link_id must only have alphanumeric characters
+      100 characters. A valid link_id must only have alphanumeric characters
       and underscores within it.
     parent: Required. The full resource name of the bucket to create a link
       for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
@@ -6217,6 +6215,8 @@ class QueryLogEntriesRequest(_messages.Message):
   r"""The parameters to QueryLogEntries.
 
   Fields:
+    disableQueryCaching: Optional. If set to false turns off all query caching
+      on log analytics and bigquery side.
     pageSize: Optional. The maximum number of rows to return in the results.
       Responses are limited to 10 MB in size.By default, there is no maximum
       row count, and only the byte limit applies. When the byte limit is
@@ -6245,12 +6245,13 @@ class QueryLogEntriesRequest(_messages.Message):
       error returns. The default value is false.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
-  resourceNames = _messages.StringField(4, repeated=True)
-  resultReference = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  disableQueryCaching = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  query = _messages.StringField(4)
+  resourceNames = _messages.StringField(5, repeated=True)
+  resultReference = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class QueryResults(_messages.Message):
@@ -6690,13 +6691,11 @@ class TailLogEntriesRequest(_messages.Message):
       server before being returned to prevent out of order results due to late
       arriving log entries. Valid values are between 0-60000 milliseconds.
       Defaults to 2000 milliseconds.
-    filter: Optional. A filter that chooses which log entries to return. See
-      Advanced Logs Filters
-      (https://cloud.google.com/logging/docs/view/advanced_filters). Only log
-      entries that match the filter are returned. An empty filter matches all
-      log entries in the resources listed in resource_names. Referencing a
-      parent resource that is not in resource_names will cause the filter to
-      return no results. The maximum length of the filter is 20000 characters.
+    filter: Optional. Only log entries that match the filter are returned. An
+      empty filter matches all log entries in the resources listed in
+      resource_names. Referencing a parent resource that is not listed in
+      resource_names will cause the filter to return no results. The maximum
+      length of a filter is 20,000 characters.
     resourceNames: Required. Name of a parent resource from which to retrieve
       log entries: projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]May

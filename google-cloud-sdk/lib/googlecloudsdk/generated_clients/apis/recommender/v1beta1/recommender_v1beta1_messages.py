@@ -494,6 +494,16 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest(_messages.Me
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
 
 
+class GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest(_messages.Message):
+  r"""Request for the `MarkRecommendationDismissed` Method.
+
+  Fields:
+    etag: Fingerprint of the Recommendation. Provides optimistic locking.
+  """
+
+  etag = _messages.StringField(1)
+
+
 class GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest(_messages.Message):
   r"""Request for the `MarkRecommendationFailed` Method.
 
@@ -1388,6 +1398,21 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedR
   name = _messages.StringField(2, required=True)
 
 
+class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkDismissedRequest(_messages.Message):
+  r"""A RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkDism
+  issedRequest object.
+
+  Fields:
+    googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest: A
+      GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest resource
+      to be passed as the request body.
+    name: Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest(_messages.Message):
   r"""A RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFail
   edRequest object.
@@ -1563,6 +1588,22 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest(_
   """
 
   googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RecommenderFoldersLocationsRecommendersRecommendationsMarkDismissedRequest(_messages.Message):
+  r"""A
+  RecommenderFoldersLocationsRecommendersRecommendationsMarkDismissedRequest
+  object.
+
+  Fields:
+    googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest: A
+      GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest resource
+      to be passed as the request body.
+    name: Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1778,6 +1819,21 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedReq
   """
 
   googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkDismissedRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsRecommendersRecommendationsMarkDismis
+  sedRequest object.
+
+  Fields:
+    googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest: A
+      GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest resource
+      to be passed as the request body.
+    name: Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -2008,6 +2064,22 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
   """
 
   googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RecommenderProjectsLocationsRecommendersRecommendationsMarkDismissedRequest(_messages.Message):
+  r"""A
+  RecommenderProjectsLocationsRecommendersRecommendationsMarkDismissedRequest
+  object.
+
+  Fields:
+    googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest: A
+      GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest resource
+      to be passed as the request body.
+    name: Name of the recommendation.
+  """
+
+  googleCloudRecommenderV1beta1MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest', 1)
   name = _messages.StringField(2, required=True)
 
 

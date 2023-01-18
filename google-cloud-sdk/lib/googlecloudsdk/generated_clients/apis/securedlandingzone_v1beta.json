@@ -172,24 +172,6 @@
         }
       }
     },
-    "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest": {
-      "id": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest",
-      "description": "The request message for enabling Overwatch service for an organization in a region.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse": {
-      "id": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse",
-      "description": "The response message for enabling Overwatch on an organization in a region.",
-      "type": "object",
-      "properties": {
-        "serviceAccount": {
-          "description": "Required. The service account created to grant the required permissions for the Overwatch service to remediate drifts.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudSecuredlandingzoneV1betaOverwatch": {
       "id": "GoogleCloudSecuredlandingzoneV1betaOverwatch",
       "description": "The Overwatch resource which holds all metadata related to an Overwatch instance.",
@@ -282,37 +264,6 @@
     "organizations": {
       "resources": {
         "locations": {
-          "methods": {
-            "enableOverwatch": {
-              "id": "securedlandingzone.organizations.locations.enableOverwatch",
-              "path": "v1beta/{+organization}:enableOverwatch",
-              "flatPath": "v1beta/organizations/{organizationsId}/locations/{locationsId}:enableOverwatch",
-              "httpMethod": "POST",
-              "parameters": {
-                "organization": {
-                  "description": "Required. Organization for which Overwatch service has to be enabled. The format is organizations\/{org_id}\/locations\/{location_id}.",
-                  "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "organization"
-              ],
-              "request": {
-                "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchRequest"
-              },
-              "response": {
-                "$ref": "GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Enables the Secured Landing Zone Overwatch service for an organization in a region."
-            }
-          }
-          ,
           "resources": {
             "operations": {
               "methods": {

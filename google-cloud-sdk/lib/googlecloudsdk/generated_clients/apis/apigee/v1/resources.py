@@ -403,6 +403,28 @@ class Collections(enum.Enum):
       ['parent', 'type', 'name'],
       True
   )
+  ORGANIZATIONS_ENVIRONMENTS_SECURITYACTIONS = (
+      'organizations.environments.securityActions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'securityActions/{securityActionsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_ENVIRONMENTS_SECURITYINCIDENTS = (
+      'organizations.environments.securityIncidents',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'securityIncidents/{securityIncidentsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVIRONMENTS_SECURITYREPORTS = (
       'organizations.environments.securityReports',
       '{+name}',

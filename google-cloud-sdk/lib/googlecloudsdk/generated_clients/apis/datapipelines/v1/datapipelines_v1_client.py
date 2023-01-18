@@ -172,6 +172,33 @@ class DatapipelinesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists pipelines. Returns a "FORBIDDEN" error if the caller doesn't have permission to access it.
+
+      Args:
+        request: (DatapipelinesProjectsLocationsPipelinesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatapipelinesV1ListPipelinesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelines',
+        http_method='GET',
+        method_id='datapipelines.projects.locations.pipelines.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/pipelines',
+        request_field='',
+        request_type_name='DatapipelinesProjectsLocationsPipelinesListRequest',
+        response_type_name='GoogleCloudDatapipelinesV1ListPipelinesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a pipeline. If successful, the updated Pipeline is returned. Returns `NOT_FOUND` if the pipeline doesn't exist. If UpdatePipeline does not return successfully, you can retry the UpdatePipeline request until you receive a successful response.
 
@@ -262,33 +289,6 @@ class DatapipelinesV1(base_api.BaseApiClient):
       super(DatapipelinesV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def ListPipelines(self, request, global_params=None):
-      r"""Lists pipelines. Returns a "FORBIDDEN" error if the caller doesn't have permission to access it.
-
-      Args:
-        request: (DatapipelinesProjectsLocationsListPipelinesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDatapipelinesV1ListPipelinesResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListPipelines')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListPipelines.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}',
-        http_method='GET',
-        method_id='datapipelines.projects.locations.listPipelines',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+parent}',
-        request_field='',
-        request_type_name='DatapipelinesProjectsLocationsListPipelinesRequest',
-        response_type_name='GoogleCloudDatapipelinesV1ListPipelinesResponse',
-        supports_download=False,
-    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

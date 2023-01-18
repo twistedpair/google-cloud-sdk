@@ -65,7 +65,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
           }
 
     def AddItems(self, request, global_params=None):
-      r"""Add items to the AddressGroup.
+      r"""Adds items to an address group.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest) input message
@@ -92,7 +92,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def CloneItems(self, request, global_params=None):
-      r"""Clone items to the AddressGroup from another address group.
+      r"""Clones items from one address group to another.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest) input message
@@ -119,7 +119,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new AddressGroup in a given project and location.
+      r"""Creates a new address group in a given project and location.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest) input message
@@ -146,7 +146,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single AddressGroup.
+      r"""Deletes an address group.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest) input message
@@ -173,7 +173,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single AddressGroup.
+      r"""Gets details of a single address group.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsGetRequest) input message
@@ -200,7 +200,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists AddressGroups in a given project and location.
+      r"""Lists address groups in a given project and location.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsListRequest) input message
@@ -227,7 +227,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def ListReferences(self, request, global_params=None):
-      r"""Lists references of the AddressGroup.
+      r"""Lists references of an address group.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest) input message
@@ -254,7 +254,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single AddressGroup.
+      r"""Updates parameters of an address group.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest) input message
@@ -281,7 +281,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def RemoveItems(self, request, global_params=None):
-      r"""Remove items from the AddressGroup.
+      r"""Removes items from an address group.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest) input message
@@ -456,7 +456,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
           }
 
     def AddItems(self, request, global_params=None):
-      r"""Add items to the AddressGroup.
+      r"""Adds items to an address group.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest) input message
@@ -483,7 +483,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def CloneItems(self, request, global_params=None):
-      r"""Clone items to the AddressGroup from another address group.
+      r"""Clones items from one address group to another.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest) input message
@@ -510,7 +510,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new AddressGroup in a given project and location.
+      r"""Creates a new address group in a given project and location.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsCreateRequest) input message
@@ -537,7 +537,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single AddressGroup.
+      r"""Deletes a single address group.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsDeleteRequest) input message
@@ -564,7 +564,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single AddressGroup.
+      r"""Gets details of a single address group.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsGetRequest) input message
@@ -618,7 +618,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists AddressGroups in a given project and location.
+      r"""Lists address groups in a given project and location.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsListRequest) input message
@@ -645,7 +645,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def ListReferences(self, request, global_params=None):
-      r"""Lists references of the AddressGroup.
+      r"""Lists references of an address group.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest) input message
@@ -672,7 +672,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single AddressGroup.
+      r"""Updates the parameters of a single address group.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsPatchRequest) input message
@@ -699,7 +699,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def RemoveItems(self, request, global_params=None):
-      r"""Remove items from the AddressGroup.
+      r"""Removes items from an address group.
 
       Args:
         request: (NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest) input message

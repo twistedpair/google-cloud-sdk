@@ -35,6 +35,7 @@ class _AzureClientBase(client.ClientBase):
         'annotations': self._Annotations(args, cluster_type),
         'authorization': self._Authorization(args),
         'azureClient': azure_client,
+        'azureServicesAuthentication': self._AzureServicesAuthentication(args),
         'azureRegion': flags.GetAzureRegion(args),
         'controlPlane': self._ControlPlane(args),
         'description': flags.GetDescription(args),
@@ -46,6 +47,14 @@ class _AzureClientBase(client.ClientBase):
         'resourceGroupId': flags.GetResourceGroupId(args),
     }
     return self._messages.GoogleCloudGkemulticloudV1AzureCluster(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _AzureServicesAuthentication(self, args):
+    kwargs = {
+        'applicationId': flags.GetAzureApplicationID(args),
+        'tenantId': flags.GetAzureTenantID(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureServicesAuthentication(
         **kwargs) if any(kwargs.values()) else None
 
   def _Client(self, client_ref, args):

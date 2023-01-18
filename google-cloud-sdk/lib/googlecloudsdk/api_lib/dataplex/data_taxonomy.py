@@ -24,6 +24,7 @@ import os
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 import six
@@ -129,7 +130,8 @@ def GenerateDataAttributeForCreateRequest(data_attribute_ref, args):
   request = module.GoogleCloudDataplexV1DataAttribute(
       description=args.description,
       displayName=args.display_name,
-      # parentId is parent attribute which is associated with the defined attribute.
+      # parentId is parent attribute which is associated
+      # with the defined attribute.
       parentId=ResolveParentId(data_attribute_ref, args),
       resourceAccessSpec=GenerateResourceAccessSpec(args),
       dataAccessSpec=GenerateDataAccessSpec(args),
@@ -140,7 +142,8 @@ def GenerateDataAttributeForCreateRequest(data_attribute_ref, args):
 
 def ResolveParentId(data_attribute_ref, args):
   if (args.IsSpecified('parent') and args.parent.find('/') == -1):
-    return data_attribute_ref.RelativeName().rsplit('/', 1)[0] + '/' + args.parent
+    return data_attribute_ref.RelativeName(
+        ).rsplit('/', 1)[0] + '/' + args.parent
   else:
     return args.parent
 
@@ -163,7 +166,8 @@ def GenerateDataAttributeForUpdateRequest(data_attribute_ref, args):
 def GenerateAttributeBindingPath(args):
   """Generate Data Attribute Binding Path."""
   if args.IsSpecified('path_file_name'):
-    return GenerateAttributeBindingPathFromFile(args.path_file_name, args.path_file_format)
+    return GenerateAttributeBindingPathFromFile(
+        args.path_file_name, args.path_file_format)
   else:
     return GenerateAttributeBindingPathFromParam(args)
 
@@ -206,7 +210,8 @@ def ConvertPathFileToProto(path_file_path, path_file_format):
 
   Args:
     path_file_path: Path to the JSON or YAML file.
-    path_file_format: Format for the file provided. If file format will not be provided by default it will be json.
+    path_file_format: Format for the file provided.
+    If file format will not be provided by default it will be json.
 
   Returns:
     a protorpc.Message of type GoogleCloudDataplexV1DataAttributeBindingPath
@@ -224,7 +229,8 @@ def ConvertPathFileToProto(path_file_path, path_file_format):
       raise exceptions.BadFileException('Error parsing JSON: {0}'.format(
           six.text_type(e)))
 
-  path_message = dataplex_api.GetMessageModule().GoogleCloudDataplexV1DataAttributeBindingPath
+  path_message = dataplex_api.GetMessageModule(
+      ).GoogleCloudDataplexV1DataAttributeBindingPath
   attribute_binding_path = []
   for path in parsed_path['paths']:
     attribute_binding_path.append(encoding.PyValueToMessage(path_message, path))
@@ -264,3 +270,138 @@ def WaitForOperation(operation):
   return dataplex_api.WaitForOperation(
       operation,
       dataplex_api.GetClientInstance().projects_locations_dataTaxonomies)
+
+
+def DataTaxonomySetIamPolicy(taxonomy_ref, policy):
+  """Set Iam Policy request."""
+  set_iam_policy_req = dataplex_api.GetMessageModule(
+  ).DataplexProjectsLocationsDataTaxonomiesSetIamPolicyRequest(
+      resource=taxonomy_ref.RelativeName(),
+      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule()
+      .GoogleIamV1SetIamPolicyRequest(policy=policy))
+  return dataplex_api.GetClientInstance(
+  ).projects_locations_dataTaxonomies.SetIamPolicy(set_iam_policy_req)
+
+
+def DataTaxonomyGetIamPolicy(taxonomy_ref):
+  """Get Iam Policy request."""
+  get_iam_policy_req = dataplex_api.GetMessageModule(
+  ).DataplexProjectsLocationsDataTaxonomiesGetIamPolicyRequest(
+      resource=taxonomy_ref.RelativeName())
+  return dataplex_api.GetClientInstance(
+  ).projects_locations_dataTaxonomies.GetIamPolicy(get_iam_policy_req)
+
+
+def DataTaxonomyAddIamPolicyBinding(taxonomy_ref, member, role):
+  """Add IAM policy binding request."""
+  policy = DataTaxonomyGetIamPolicy(taxonomy_ref)
+  iam_util.AddBindingToIamPolicy(
+      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role)
+  return DataTaxonomySetIamPolicy(taxonomy_ref, policy)
+
+
+def DataTaxonomyRemoveIamPolicyBinding(taxonomy_ref, member, role):
+  """Remove IAM policy binding request."""
+  policy = DataTaxonomyGetIamPolicy(taxonomy_ref)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return DataTaxonomySetIamPolicy(taxonomy_ref, policy)
+
+
+def DataTaxonomySetIamPolicyFromFile(taxonomy_ref, policy_file):
+  """Set IAM policy binding request from file."""
+  policy = iam_util.ParsePolicyFile(
+      policy_file,
+      dataplex_api.GetMessageModule().GoogleIamV1Policy)
+  return DataTaxonomySetIamPolicy(taxonomy_ref, policy)
+
+
+def DataAttributeSetIamPolicy(data_attribute_ref, policy):
+  """Set Iam Policy request."""
+  set_iam_policy_req = dataplex_api.GetMessageModule(
+  ).DataplexProjectsLocationsDataTaxonomiesAttributesSetIamPolicyRequest(
+      resource=data_attribute_ref.RelativeName(),
+      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule()
+      .GoogleIamV1SetIamPolicyRequest(policy=policy))
+  return dataplex_api.GetClientInstance(
+  ).projects_locations_dataTaxonomies_attributes.SetIamPolicy(
+      set_iam_policy_req)
+
+
+def DataAttributeGetIamPolicy(data_attribute_ref):
+  """Get Iam Policy request."""
+  get_iam_policy_req = dataplex_api.GetMessageModule(
+  ).DataplexProjectsLocationsDataTaxonomiesAttributesGetIamPolicyRequest(
+      resource=data_attribute_ref.RelativeName())
+  return dataplex_api.GetClientInstance(
+  ).projects_locations_dataTaxonomies_attributes.GetIamPolicy(
+      get_iam_policy_req)
+
+
+def DataAttributeAddIamPolicyBinding(data_attribute_ref, member, role):
+  """Add IAM policy binding request."""
+  policy = DataAttributeGetIamPolicy(data_attribute_ref)
+  iam_util.AddBindingToIamPolicy(
+      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role)
+  return DataAttributeSetIamPolicy(data_attribute_ref, policy)
+
+
+def DataAttributeRemoveIamPolicyBinding(data_attribute_ref, member, role):
+  """Remove IAM policy binding request."""
+  policy = DataAttributeGetIamPolicy(data_attribute_ref)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return DataAttributeSetIamPolicy(data_attribute_ref, policy)
+
+
+def DataAttributeSetIamPolicyFromFile(data_attribute_ref, policy_file):
+  """Set IAM policy binding request from file."""
+  policy = iam_util.ParsePolicyFile(
+      policy_file,
+      dataplex_api.GetMessageModule().GoogleIamV1Policy)
+  return DataAttributeSetIamPolicy(data_attribute_ref, policy)
+
+
+def DataAttributeBindingSetIamPolicy(attribute_binding_ref, policy):
+  """Set Iam Policy request."""
+  set_iam_policy_req = dataplex_api.GetMessageModule(
+  ).DataplexProjectsLocationsDataAttributeBindingsSetIamPolicyRequest(
+      resource=attribute_binding_ref.RelativeName(),
+      googleIamV1SetIamPolicyRequest=dataplex_api.GetMessageModule()
+      .GoogleIamV1SetIamPolicyRequest(policy=policy))
+  return dataplex_api.GetClientInstance(
+  ).projects_locations_dataAttributeBindings.SetIamPolicy(set_iam_policy_req)
+
+
+def DataAttributeBindingGetIamPolicy(attribute_binding_ref):
+  """Get Iam Policy request."""
+  get_iam_policy_req = dataplex_api.GetMessageModule(
+  ).DataplexProjectsLocationsDataAttributeBindingsGetIamPolicyRequest(
+      resource=attribute_binding_ref.RelativeName())
+  return dataplex_api.GetClientInstance(
+  ).projects_locations_dataAttributeBindings.GetIamPolicy(get_iam_policy_req)
+
+
+def DataAttributeBindingAddIamPolicyBinding(
+    attribute_binding_ref, member, role):
+  """Add IAM policy binding request."""
+  policy = DataAttributeGetIamPolicy(attribute_binding_ref)
+  iam_util.AddBindingToIamPolicy(
+      dataplex_api.GetMessageModule().GoogleIamV1Binding, policy, member, role)
+  return DataAttributeSetIamPolicy(attribute_binding_ref, policy)
+
+
+def DataAttributeBindingRemoveIamPolicyBinding(
+    attribute_binding_ref, member, role):
+  """Remove IAM policy binding request."""
+  policy = DataAttributeGetIamPolicy(attribute_binding_ref)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return DataAttributeSetIamPolicy(attribute_binding_ref, policy)
+
+
+def DataAttributeBindingSetIamPolicyFromFile(
+    attribute_binding_ref, policy_file):
+  """Set IAM policy binding request from file."""
+  policy = iam_util.ParsePolicyFile(
+      policy_file,
+      dataplex_api.GetMessageModule().GoogleIamV1Policy)
+  return DataAttributeSetIamPolicy(attribute_binding_ref, policy)
+

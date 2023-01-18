@@ -30,21 +30,21 @@ from googlecloudsdk.core.console import console_io
 
 def GetIntegrationValidator(integration_type):
   """Gets the integration validator based on the integration type."""
-  integration = types_utils.GetIntegration(integration_type)
+  type_metadata = types_utils.GetTypeMetadata(integration_type)
 
-  if integration is None:
+  if type_metadata is None:
     raise ValueError(
         'Integration type: [{}] has not been defined in types_utils'
         .format(integration_type))
 
-  return Validator(integration)
+  return Validator(type_metadata)
 
 
 class Validator:
   """Validates an integration is setup correctly for deployment."""
 
-  def __init__(self, integration):
-    self.integration = integration
+  def __init__(self, type_metadata):
+    self.type_metadata = type_metadata
 
   def ValidateEnabledGcpApis(self):
     """Validates user has all GCP APIs enabled for an integration.
@@ -85,7 +85,7 @@ class Validator:
     Returns:
       A list of strings.  Each item is a GCP API that is not enabled.
     """
-    required_apis = set(self.integration['required_apis']).union(
+    required_apis = set(self.type_metadata.required_apis).union(
         types_utils.BASELINE_APIS)
     project_id = properties.VALUES.core.project.Get()
     apis_not_enabled = [
@@ -135,10 +135,9 @@ class Validator:
   def _CheckForInvalidCreateParameters(self, user_provided_params):
     """Raises an exception that lists the parameters that can't be changed."""
     invalid_params = []
-    for param_name, param in self.integration['parameters'].items():
-      allowed = param.get('create_allowed', True)
-      if not allowed and param_name in user_provided_params:
-        invalid_params.append(param_name)
+    for param in self.type_metadata.parameters:
+      if not param.create_allowed and param.name in user_provided_params:
+        invalid_params.append(param.name)
 
     if invalid_params:
       raise exceptions.ArgumentError(
@@ -149,10 +148,9 @@ class Validator:
   def _CheckForInvalidUpdateParameters(self, user_provided_params):
     """Raises an exception that lists the parameters that can't be changed."""
     invalid_params = []
-    for param_name, param in self.integration['parameters'].items():
-      update_allowed = param.get('update_allowed', True)
-      if not update_allowed and param_name in user_provided_params:
-        invalid_params.append(param_name)
+    for param in self.type_metadata.parameters:
+      if not param.update_allowed and param.name in user_provided_params:
+        invalid_params.append(param.name)
 
     if invalid_params:
       raise exceptions.ArgumentError(
@@ -161,9 +159,9 @@ class Validator:
           .format(self._RemoveEncoding(invalid_params))
       )
 
-    for exclusive_groups in self.integration.get('update_exclusive_groups', []):
+    for exclusive_groups in self.type_metadata.update_exclusive_groups:
       found = 0
-      group_params = set(exclusive_groups.get('params'))
+      group_params = set(exclusive_groups.params)
       # Generate a stable order list of the param for output.
       params_list_str = ', '.join(sorted(group_params))
       for param_name in group_params:
@@ -171,10 +169,9 @@ class Validator:
           found += 1
       if found > 1:
         raise exceptions.ArgumentError(
-            ('At most one of these parameters can be specified: {}')
-            .format(params_list_str)
-        )
-      if exclusive_groups.get('required') and found == 0:
+            ('At most one of these parameters can be specified: {}'
+            ).format(params_list_str))
+      if exclusive_groups.required and found == 0:
         raise exceptions.ArgumentError(
             ('At least one of these parameters must be specified: {}')
             .format(params_list_str)
@@ -182,11 +179,11 @@ class Validator:
 
   def _CheckServiceFlag(self, service, required=False):
     """Raises an exception that lists the parameters that can't be changed."""
-    disable_service_flags = self.integration.get('disable_service_flags')
+    disable_service_flags = self.type_metadata.disable_service_flags
     if disable_service_flags and service:
       raise exceptions.ArgumentError(
           ('--service not allowed for integration type [{}]'.format(
-              self.integration['integration_type'])))
+              self.type_metadata.integration_type)))
     if not disable_service_flags and not service and required:
       raise exceptions.ArgumentError(('--service is required'))
 
@@ -194,7 +191,7 @@ class Validator:
     """Checks that the user provided parameters exist in the mapping."""
     invalid_params = []
     for param in user_provided_params:
-      if param not in self.integration['parameters']:
+      if param not in [param.name for param in self.type_metadata.parameters]:
         invalid_params.append(param)
 
     if invalid_params:
@@ -206,20 +203,16 @@ class Validator:
   def _ValidateRequiredParams(self, user_provided_params):
     """Checks that required parameters are provided by the user."""
     missing_required_params = []
-    for param_name, param in self.integration['parameters'].items():
-      required = param.get('required', False)
-
-      if required and param_name not in user_provided_params:
-        missing_required_params.append(param_name)
+    for param in self.type_metadata.parameters:
+      if param.required and param.name not in user_provided_params:
+        missing_required_params.append(param.name)
 
     if missing_required_params:
       raise exceptions.ArgumentError(
           ('The following parameters: {} are required to create an ' +
-           'integration of type [{}]')
-          .format(
-              self._RemoveEncoding(missing_required_params),
-              self.integration['integration_type'])
-      )
+           'integration of type [{}]').format(
+               self._RemoveEncoding(missing_required_params),
+               self.type_metadata.integration_type))
 
   def _RemoveEncoding(self, elements):
     """Removes encoding for each element in the list.
@@ -237,7 +230,6 @@ class Validator:
 
   def _SetupDefaultParams(self, user_provided_params):
     """Ensures that default parameters have a value if not set."""
-    for param_name, param in self.integration['parameters'].items():
-      if ('default' in param and
-          param_name not in user_provided_params):
-        user_provided_params[param_name] = param['default']
+    for param in self.type_metadata.parameters:
+      if param.default and param.name not in user_provided_params:
+        user_provided_params[param.name] = param.default

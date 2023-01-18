@@ -700,6 +700,10 @@ class EnvironmentConfig(_messages.Message):
       environments in versions composer-2.0.32-airflow-*.*.* and newer.
 
   Fields:
+    airflowByoidUri: Output only. The 'bring your own identity' variant of the
+      URI of the Apache Airflow Web UI hosted within this environment, to be
+      accessed with third-party identity credentials (see [Airflow web
+      interface](/composer/docs/how-to/accessing/airflow-web-interface)).
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
       to/accessing/airflow-web-interface)).
@@ -790,24 +794,25 @@ class EnvironmentConfig(_messages.Message):
     RESILIENCE_MODE_UNSPECIFIED = 0
     HIGH_RESILIENCE = 1
 
-  airflowUri = _messages.StringField(1)
-  dagGcsPrefix = _messages.StringField(2)
-  dataRetentionConfig = _messages.MessageField('DataRetentionConfig', 3)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
-  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 6)
-  gkeCluster = _messages.StringField(7)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
-  nodeConfig = _messages.MessageField('NodeConfig', 10)
-  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 12)
-  recoveryConfig = _messages.MessageField('RecoveryConfig', 13)
-  resilienceMode = _messages.EnumField('ResilienceModeValueValuesEnum', 14)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
-  webServerConfig = _messages.MessageField('WebServerConfig', 16)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 17)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 18)
+  airflowByoidUri = _messages.StringField(1)
+  airflowUri = _messages.StringField(2)
+  dagGcsPrefix = _messages.StringField(3)
+  dataRetentionConfig = _messages.MessageField('DataRetentionConfig', 4)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
+  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 7)
+  gkeCluster = _messages.StringField(8)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 9)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 10)
+  nodeConfig = _messages.MessageField('NodeConfig', 11)
+  nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 13)
+  recoveryConfig = _messages.MessageField('RecoveryConfig', 14)
+  resilienceMode = _messages.EnumField('ResilienceModeValueValuesEnum', 15)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 16)
+  webServerConfig = _messages.MessageField('WebServerConfig', 17)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 18)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 19)
 
 
 class ExecuteAirflowCommandRequest(_messages.Message):

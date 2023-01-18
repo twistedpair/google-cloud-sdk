@@ -234,13 +234,15 @@ def AddOperationResourceArg(parser, verb):
       required=True).AddToParser(parser)
 
 
-def AddAzureClusterAndClientResourceArgs(parser, update=False):
+def AddAzureClusterAndClientResourceArgs(parser, auth_config_group,
+                                         update=False):
   """Adds resource arguments for both Azure cluster and client.
 
   This is used for the create and update command.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
+    auth_config_group: The Authentication Configuration argument group.
     update: bool, whether the resources are used in update command.
   """
   arg_parser = concept_parsers.ConceptParser(
@@ -255,8 +257,9 @@ def AddAzureClusterAndClientResourceArgs(parser, update=False):
               GetAzureClientResourceSpec(use_project_number=True),
               'Azure client to use for cluster {}.'.format(
                   'update' if update else 'creation'),
-              required=(not update),
-              flag_name_overrides={'location': ''})
+              required=False,
+              flag_name_overrides={'location': ''},
+              group=auth_config_group)
       ],
       command_level_fallthroughs={'--client.location': ['cluster.location']})
   arg_parser.AddToParser(parser)

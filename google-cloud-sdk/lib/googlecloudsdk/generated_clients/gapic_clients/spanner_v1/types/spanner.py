@@ -615,7 +615,6 @@ class ExecuteBatchDmlRequest(proto.Message):
             each request idempotent such that if the request
             is received multiple times, at most one will
             succeed.
-
             The sequence number must be monotonically
             increasing within the transaction. If a request
             arrives for the first time with an out-of-order

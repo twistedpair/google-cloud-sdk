@@ -40,12 +40,12 @@ def GetTypeKit(integration_type):
   """
   if integration_type == 'custom-domains':
     return domain_routing_typekit.DomainRoutingTypeKit(
-        types_utils.GetIntegration('custom-domains'))
+        types_utils.GetTypeMetadata('custom-domains'))
   if integration_type == 'redis':
-    return redis_typekit.RedisTypeKit(types_utils.GetIntegration('redis'))
+    return redis_typekit.RedisTypeKit(types_utils.GetTypeMetadata('redis'))
   if integration_type == 'cloudsql':
     return cloudsql_typekit.CloudSqlTypeKit(
-        types_utils.GetIntegration('cloudsql'))
+        types_utils.GetTypeMetadata('cloudsql'))
   raise exceptions.ArgumentError(
       'Integration of type {} is not supported'.format(integration_type))
 
@@ -66,5 +66,5 @@ def GetTypeKitByResource(resource):
   if type_metadata is None:
     raise exceptions.ArgumentError(
         'Integration of resource {} is not recognized'.format(resource))
-  integration_type = type_metadata[types_utils.INTEGRATION_TYPE]
+  integration_type = type_metadata.integration_type
   return GetTypeKit(integration_type)

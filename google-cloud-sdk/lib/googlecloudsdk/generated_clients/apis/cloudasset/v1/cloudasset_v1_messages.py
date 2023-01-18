@@ -32,7 +32,7 @@ class AccessSelector(_messages.Message):
 
 class AnalyzeIamPolicyLongrunningMetadata(_messages.Message):
   r"""Represents the metadata of the longrunning operation for the
-  AnalyzeIamPolicyLongrunning rpc.
+  AnalyzeIamPolicyLongrunning RPC.
 
   Fields:
     createTime: Output only. The time the operation was created.
@@ -95,8 +95,8 @@ class AnalyzeMoveResponse(_messages.Message):
 
   Fields:
     moveAnalysis: The list of analyses returned from performing the intended
-      resource move analysis. The analysis is grouped by different Cloud
-      services.
+      resource move analysis. The analysis is grouped by different Google
+      Cloud services.
   """
 
   moveAnalysis = _messages.MessageField('MoveAnalysis', 1, repeated=True)
@@ -167,8 +167,8 @@ class AnalyzeOrgPolicyGovernedResourcesResponse(_messages.Message):
 
 class AnalyzerOrgPolicy(_messages.Message):
   r"""This organization policy message is a modified version of the one
-  defined in the OrgPolicy system. This message contains several fields
-  defined in the original organization policy with some new fields for
+  defined in the Organization Policy system. This message contains several
+  fields defined in the original organization policy with some new fields for
   analysis purpose.
 
   Fields:
@@ -218,8 +218,8 @@ class Asset(_messages.Message):
   Cloud [resource hierarchy](https://cloud.google.com/resource-
   manager/docs/cloud-platform-resource-hierarchy), a resource outside the
   Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters
-  and objects), or a policy (e.g. Cloud IAM policy), or a relationship (e.g.
-  an INSTANCE_TO_INSTANCEGROUP relationship). See [Supported asset
+  and objects), or a policy (e.g. IAM policy), or a relationship (e.g. an
+  INSTANCE_TO_INSTANCEGROUP relationship). See [Supported asset
   types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
   for more information.
 
@@ -240,13 +240,13 @@ class Asset(_messages.Message):
     assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
       See [Supported asset types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types) for more information.
-    iamPolicy: A representation of the Cloud IAM policy set on a Google Cloud
-      resource. There can be a maximum of one Cloud IAM policy set on any
-      given resource. In addition, Cloud IAM policies inherit their granted
-      access scope from any policies set on parent resources in the resource
-      hierarchy. Therefore, the effectively policy is the union of both the
-      policy set on this resource and each policy set on all of the resource's
-      ancestry resource levels in the hierarchy. See [this
+    iamPolicy: A representation of the IAM policy set on a Google Cloud
+      resource. There can be a maximum of one IAM policy set on any given
+      resource. In addition, IAM policies inherit their granted access scope
+      from any policies set on parent resources in the resource hierarchy.
+      Therefore, the effectively policy is the union of both the policy set on
+      this resource and each policy set on all of the resource's ancestry
+      resource levels in the hierarchy. See [this
       topic](https://cloud.google.com/iam/help/allow-policies/inheritance) for
       more information.
     name: The full name of the asset. Example: `//compute.googleapis.com/proje
@@ -565,20 +565,22 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       true, the response will include access analysis from identities to
       resources via service account impersonation. This is a very expensive
       operation, because many derived queries will be executed. We highly
-      recommend you use AssetService.AnalyzeIamPolicyLongrunning rpc instead.
+      recommend you use AssetService.AnalyzeIamPolicyLongrunning RPC instead.
       For example, if the request analyzes for which resources user A has
       permission P, and there's an IAM policy states user A has
       iam.serviceAccounts.getAccessToken permission to a service account SA,
       and there's another IAM policy states service account SA has permission
-      P to a GCP folder F, then user A potentially has access to the GCP
-      folder F. And those advanced analysis results will be included in
+      P to a Google Cloud folder F, then user A potentially has access to the
+      Google Cloud folder F. And those advanced analysis results will be
+      included in
       AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Another
-      example, if the request analyzes for who has permission P to a GCP
-      folder F, and there's an IAM policy states user A has
+      example, if the request analyzes for who has permission P to a Google
+      Cloud folder F, and there's an IAM policy states user A has
       iam.serviceAccounts.actAs permission to a service account SA, and
       there's another IAM policy states service account SA has permission P to
-      the GCP folder F, then user A potentially has access to the GCP folder
-      F. And those advanced analysis results will be included in
+      the Google Cloud folder F, then user A potentially has access to the
+      Google Cloud folder F. And those advanced analysis results will be
+      included in
       AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Only
       the following permissions are considered in this analysis: *
       `iam.serviceAccounts.actAs` * `iam.serviceAccounts.signBlob` *
@@ -597,17 +599,17 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       section of the result will expand any resource attached to an IAM policy
       to include resources lower in the resource hierarchy. For example, if
       the request analyzes for which resources user A has permission P, and
-      the results include an IAM policy with P on a GCP folder, the results
-      will also include resources in that folder with permission P. If true
-      and IamPolicyAnalysisQuery.resource_selector is specified, the resource
-      section of the result will expand the specified resource to include
-      resources lower in the resource hierarchy. Only project or lower
-      resources are supported. Folder and organization resource cannot be used
-      together with this option. For example, if the request analyzes for
-      which users have permission P on a GCP project with this option enabled,
-      the results will include all users who have permission P on that project
-      or any lower resource. If true, the default max expansion per resource
-      is 1000 for AssetService.AnalyzeIamPolicy][] and 100000 for
+      the results include an IAM policy with P on a Google Cloud folder, the
+      results will also include resources in that folder with permission P. If
+      true and IamPolicyAnalysisQuery.resource_selector is specified, the
+      resource section of the result will expand the specified resource to
+      include resources lower in the resource hierarchy. Only project or lower
+      resources are supported. Folder and organization resources cannot be
+      used together with this option. For example, if the request analyzes for
+      which users have permission P on a Google Cloud project with this option
+      enabled, the results will include all users who have permission P on
+      that project or any lower resource. If true, the default max expansion
+      per resource is 1000 for AssetService.AnalyzeIamPolicy][] and 100000 for
       AssetService.AnalyzeIamPolicyLongrunning][]. Default is false.
     analysisQuery_options_expandRoles: Optional. If true, the access section
       of result will expand any roles appearing in IAM policy bindings to
@@ -684,15 +686,15 @@ class CloudassetAnalyzeMoveRequest(_messages.Message):
       FULL.
 
   Fields:
-    destinationParent: Required. Name of the GCP Folder or Organization to
-      reparent the target resource. The analysis will be performed against
-      hypothetically moving the resource to this specified desitination
-      parent. This can only be a Folder number (such as "folders/123") or an
-      Organization number (such as "organizations/123").
+    destinationParent: Required. Name of the Google Cloud folder or
+      organization to reparent the target resource. The analysis will be
+      performed against hypothetically moving the resource to this specified
+      desitination parent. This can only be a folder number (such as
+      "folders/123") or an organization number (such as "organizations/123").
     resource: Required. Name of the resource to perform the analysis against.
-      Only GCP Project are supported as of today. Hence, this can only be
-      Project ID (such as "projects/my-project-id") or a Project Number (such
-      as "projects/12345").
+      Only Google Cloud projects are supported as of today. Hence, this can
+      only be a project ID (such as "projects/my-project-id") or a project
+      number (such as "projects/12345").
     view: Analysis view indicating what information should be included in the
       analysis response. If unspecified, the default view is FULL.
   """
@@ -901,8 +903,8 @@ class CloudassetAssetsListRequest(_messages.Message):
       CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
       RESOURCE: Resource metadata.
       IAM_POLICY: The actual IAM policy set on a resource.
-      ORG_POLICY: The Cloud Organization Policy set on an asset.
-      ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      ORG_POLICY: The organization policy set on an asset.
+      ACCESS_POLICY: The Access Context Manager policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
       RELATIONSHIP: The related resources.
     """
@@ -964,8 +966,8 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
       CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
       RESOURCE: Resource metadata.
       IAM_POLICY: The actual IAM policy set on a resource.
-      ORG_POLICY: The Cloud Organization Policy set on an asset.
-      ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      ORG_POLICY: The organization policy set on an asset.
+      ACCESS_POLICY: The Access Context Manager policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
       RELATIONSHIP: The related resources.
     """
@@ -1140,7 +1142,7 @@ class CloudassetSavedQueriesCreateRequest(_messages.Message):
     savedQueryId: Required. The ID to use for the saved query, which must be
       unique in the specified parent. It will become the final component of
       the saved query's resource name. This value should be 4-63 characters,
-      and valid characters are /a-z-/. Notice that this field is required in
+      and valid characters are `a-z-`. Notice that this field is required in
       the saved query creation, and the `name` field of the `saved_query` will
       be ignored.
   """
@@ -1260,10 +1262,9 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       policies#how_to_construct_a_query) for more information. If not
       specified or empty, it will search all the IAM policies within the
       specified `scope`. Note that the query string is compared against each
-      Cloud IAM policy binding, including its principals, roles, and Cloud IAM
-      conditions. The returned Cloud IAM policies will only contain the
-      bindings that match your query. To learn more about the IAM policy
-      structure, see the [IAM policy
+      IAM policy binding, including its principals, roles, and IAM conditions.
+      The returned IAM policies will only contain the bindings that match your
+      query. To learn more about the IAM policy structure, see the [IAM policy
       documentation](https://cloud.google.com/iam/help/allow-
       policies/structure). Examples: * `policy:amy@gmail.com` to find IAM
       policy bindings that specify user "amy@gmail.com". *
@@ -1348,43 +1349,44 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       query](https://cloud.google.com/asset-inventory/docs/searching-
       resources#how_to_construct_a_query) for more information. If not
       specified or empty, it will search all the resources within the
-      specified `scope`. Examples: * `name:Important` to find Cloud resources
-      whose name contains "Important" as a word. * `name=Important` to find
-      the Cloud resource whose name is exactly "Important". *
-      `displayName:Impor*` to find Cloud resources whose display name contains
-      "Impor" as a prefix of any word in the field. * `location:us-west*` to
-      find Cloud resources whose location contains both "us" and "west" as
-      prefixes. * `labels:prod` to find Cloud resources whose labels contain
-      "prod" as a key or value. * `labels.env:prod` to find Cloud resources
-      that have a label "env" and its value is "prod". * `labels.env:*` to
-      find Cloud resources that have a label "env". * `kmsKey:key` to find
-      Cloud resources encrypted with a customer-managed encryption key whose
-      name contains "key" as a word. This field is deprecated. Please use the
-      `kmsKeys` field to retrieve KMS key information. * `kmsKeys:key` to find
-      Cloud resources encrypted with customer-managed encryption keys whose
-      name contains the word "key". * `relationships:instance-group-1` to find
-      Cloud resources that have relationships with "instance-group-1" in the
-      related resource name. * `relationships:INSTANCE_TO_INSTANCEGROUP` to
-      find compute instances that have relationships of type
-      "INSTANCE_TO_INSTANCEGROUP". *
+      specified `scope`. Examples: * `name:Important` to find Google Cloud
+      resources whose name contains "Important" as a word. * `name=Important`
+      to find the Google Cloud resource whose name is exactly "Important". *
+      `displayName:Impor*` to find Google Cloud resources whose display name
+      contains "Impor" as a prefix of any word in the field. * `location:us-
+      west*` to find Google Cloud resources whose location contains both "us"
+      and "west" as prefixes. * `labels:prod` to find Google Cloud resources
+      whose labels contain "prod" as a key or value. * `labels.env:prod` to
+      find Google Cloud resources that have a label "env" and its value is
+      "prod". * `labels.env:*` to find Google Cloud resources that have a
+      label "env". * `kmsKey:key` to find Google Cloud resources encrypted
+      with a customer-managed encryption key whose name contains "key" as a
+      word. This field is deprecated. Please use the `kmsKeys` field to
+      retrieve Cloud KMS key information. * `kmsKeys:key` to find Google Cloud
+      resources encrypted with customer-managed encryption keys whose name
+      contains the word "key". * `relationships:instance-group-1` to find
+      Google Cloud resources that have relationships with "instance-group-1"
+      in the related resource name. *
+      `relationships:INSTANCE_TO_INSTANCEGROUP` to find Compute Engine
+      instances that have relationships of type "INSTANCE_TO_INSTANCEGROUP". *
       `relationships.INSTANCE_TO_INSTANCEGROUP:instance-group-1` to find
-      compute instances that have relationships with "instance-group-1" in the
-      compute instance group resource name, for relationship type
-      "INSTANCE_TO_INSTANCEGROUP". * `state:ACTIVE` to find Cloud resources
-      whose state contains "ACTIVE" as a word. * `NOT state:ACTIVE` to find
-      Cloud resources whose state doesn't contain "ACTIVE" as a word. *
-      `createTime<1609459200` to find Cloud resources that were created before
-      "2021-01-01 00:00:00 UTC". 1609459200 is the epoch timestamp of
-      "2021-01-01 00:00:00 UTC" in seconds. * `updateTime>1609459200` to find
-      Cloud resources that were updated after "2021-01-01 00:00:00 UTC".
-      1609459200 is the epoch timestamp of "2021-01-01 00:00:00 UTC" in
-      seconds. * `Important` to find Cloud resources that contain "Important"
-      as a word in any of the searchable fields. * `Impor*` to find Cloud
-      resources that contain "Impor" as a prefix of any word in any of the
-      searchable fields. * `Important location:(us-west1 OR global)` to find
-      Cloud resources that contain "Important" as a word in any of the
-      searchable fields and are also located in the "us-west1" region or the
-      "global" location.
+      Compute Engine instances that have relationships with "instance-group-1"
+      in the Compute Engine instance group resource name, for relationship
+      type "INSTANCE_TO_INSTANCEGROUP". * `state:ACTIVE` to find Google Cloud
+      resources whose state contains "ACTIVE" as a word. * `NOT state:ACTIVE`
+      to find Google Cloud resources whose state doesn't contain "ACTIVE" as a
+      word. * `createTime<1609459200` to find Google Cloud resources that were
+      created before "2021-01-01 00:00:00 UTC". 1609459200 is the epoch
+      timestamp of "2021-01-01 00:00:00 UTC" in seconds. *
+      `updateTime>1609459200` to find Google Cloud resources that were updated
+      after "2021-01-01 00:00:00 UTC". 1609459200 is the epoch timestamp of
+      "2021-01-01 00:00:00 UTC" in seconds. * `Important` to find Google Cloud
+      resources that contain "Important" as a word in any of the searchable
+      fields. * `Impor*` to find Google Cloud resources that contain "Impor"
+      as a prefix of any word in any of the searchable fields. * `Important
+      location:(us-west1 OR global)` to find Google Cloud resources that
+      contain "Important" as a word in any of the searchable fields and are
+      also located in the "us-west1" region or the "global" location.
     readMask: Optional. A comma-separated list of fields specifying which
       fields to be returned in ResourceSearchResult. Only '*' or combination
       of top level fields can be specified. Field names of both snake_case and
@@ -1394,8 +1396,8 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       supported): * name * assetType * project * displayName * description *
       location * tagKeys * tagValues * tagValueIds * labels * networkTags *
       kmsKey (This field is deprecated. Please use the `kmsKeys` field to
-      retrieve KMS key information.) * kmsKeys * createTime * updateTime *
-      state * additionalAttributes * versionedResources If read_mask is not
+      retrieve Cloud KMS key information.) * kmsKeys * createTime * updateTime
+      * state * additionalAttributes * versionedResources If read_mask is not
       specified, all fields except versionedResources will be returned. If
       only '*' is specified, all fields including versionedResources will be
       returned. Any invalid field path will trigger INVALID_ARGUMENT error.
@@ -1648,8 +1650,8 @@ class ExportAssetsRequest(_messages.Message):
       CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
       RESOURCE: Resource metadata.
       IAM_POLICY: The actual IAM policy set on a resource.
-      ORG_POLICY: The Cloud Organization Policy set on an asset.
-      ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      ORG_POLICY: The organization policy set on an asset.
+      ACCESS_POLICY: The Access Context Manager policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
       RELATIONSHIP: The related resources.
     """
@@ -1770,8 +1772,8 @@ class Feed(_messages.Message):
       CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
       RESOURCE: Resource metadata.
       IAM_POLICY: The actual IAM policy set on a resource.
-      ORG_POLICY: The Cloud Organization Policy set on an asset.
-      ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      ORG_POLICY: The organization policy set on an asset.
+      ACCESS_POLICY: The Access Context Manager policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
       RELATIONSHIP: The related resources.
     """
@@ -1806,15 +1808,15 @@ class GcsDestination(_messages.Message):
   r"""A Cloud Storage location.
 
   Fields:
-    uri: The uri of the Cloud Storage object. It's the same uri that is used
+    uri: The URI of the Cloud Storage object. It's the same URI that is used
       by gsutil. Example: "gs://bucket_name/object_name". See [Viewing and
       Editing Object Metadata](https://cloud.google.com/storage/docs/viewing-
       editing-metadata) for more information. If the specified Cloud Storage
       object already exists and there is no
       [hold](https://cloud.google.com/storage/docs/object-holds), it will be
       overwritten with the exported result.
-    uriPrefix: The uri prefix of all generated Cloud Storage objects. Example:
-      "gs://bucket_name/object_name_prefix". Each object uri is in format:
+    uriPrefix: The URI prefix of all generated Cloud Storage objects. Example:
+      "gs://bucket_name/object_name_prefix". Each object URI is in format:
       "gs://bucket_name/object_name_prefix// and only contains assets for that
       type. starts from 0. Example:
       "gs://bucket_name/object_name_prefix/compute.googleapis.com/Disk/0" is
@@ -1878,7 +1880,7 @@ class GoogleCloudAssetV1AccessControlList(_messages.Message):
 
 
 class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset(_messages.Message):
-  r"""Represents a GCP asset(resource or IAM policy) governed by the
+  r"""Represents a Google Cloud asset(resource or IAM policy) governed by the
   organization policies of the
   AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
 
@@ -1891,8 +1893,8 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedAsset(_mes
       policy/understanding-hierarchy).
     governedIamPolicy: An IAM policy governed by the organization policies of
       the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
-    governedResource: A GCP resource governed by the organization policies of
-      the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
+    governedResource: A Google Cloud resource governed by the organization
+      policies of the AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
     policyBundle: The ordered list of all organization policies from the Analy
       zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
       rce to the scope specified in the request. If the constraint is defined
@@ -1935,7 +1937,7 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy(
 
 
 class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_messages.Message):
-  r"""The GCP resources governed by the organization policies of the
+  r"""The Google Cloud resources governed by the organization policies of the
   AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
 
   Fields:
@@ -1944,7 +1946,7 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_
       belongs(directly or cascadingly) to one or more folders.
     fullResourceName: The [full resource name]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
-      the GCP resource.
+      the Google Cloud resource.
     organization: The organization that this resource belongs to, in the form
       of organizations/{ORGANIZATION_NUMBER}. This field is available when the
       resource belongs(directly or cascadingly) to an organization.
@@ -2075,7 +2077,7 @@ class GoogleCloudAssetV1CustomConstraint(_messages.Message):
 
   Fields:
     actionType: Allow or deny type.
-    condition: Organization policy condition/expression. For example:
+    condition: Organization Policy condition/expression. For example:
       `resource.instanceName.matches("[production|test]_.*_(\d)+")'` or,
       `resource.management.auto_upgrade == true`
     description: Detailed information about this custom policy constraint.
@@ -2143,7 +2145,7 @@ class GoogleCloudAssetV1GcsDestination(_messages.Message):
   r"""A Cloud Storage location.
 
   Fields:
-    uri: Required. The uri of the Cloud Storage object. It's the same uri that
+    uri: Required. The URI of the Cloud Storage object. It's the same URI that
       is used by gsutil. Example: "gs://bucket_name/object_name". See [Viewing
       and Editing Object
       Metadata](https://cloud.google.com/storage/docs/viewing-editing-
@@ -2186,7 +2188,7 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
 
 
 class GoogleCloudAssetV1GovernedResource(_messages.Message):
-  r"""The GCP resources governed by the organization policies of the
+  r"""The Google Cloud resources governed by the organization policies of the
   AnalyzeOrgPolicyGovernedResourcesRequest.constraint.
 
   Fields:
@@ -2201,7 +2203,7 @@ class GoogleCloudAssetV1GovernedResource(_messages.Message):
       belongs(directly or cascadingly) to one or more folders.
     fullResourceName: The [full resource name]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
-      the GCP resource.
+      the Google Cloud resource.
     organization: The organization that this resource belongs to, in the form
       of organizations/{ORGANIZATION_NUMBER}. This field is available when the
       resource belongs(directly or cascadingly) to an organization.
@@ -2263,7 +2265,7 @@ class GoogleCloudAssetV1IdentityList(_messages.Message):
 
 class GoogleCloudAssetV1ListConstraint(_messages.Message):
   r"""A `Constraint` that allows or disallows a list of string values, which
-  are configured by an Organization's policy administrator with a `Policy`.
+  are configured by an organization's policy administrator with a `Policy`.
 
   Fields:
     supportsIn: Indicates whether values grouped into categories can be used
@@ -2356,7 +2358,7 @@ class GoogleCloudAssetV1p7beta1Asset(_messages.Message):
   Cloud [resource hierarchy](https://cloud.google.com/resource-
   manager/docs/cloud-platform-resource-hierarchy), a resource outside the
   Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters
-  and objects), or a policy (e.g. Cloud IAM policy). See [Supported asset
+  and objects), or a policy (e.g. IAM policy). See [Supported asset
   types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
   for more information.
 
@@ -2377,13 +2379,13 @@ class GoogleCloudAssetV1p7beta1Asset(_messages.Message):
     assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
       See [Supported asset types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types) for more information.
-    iamPolicy: A representation of the Cloud IAM policy set on a Google Cloud
-      resource. There can be a maximum of one Cloud IAM policy set on any
-      given resource. In addition, Cloud IAM policies inherit their granted
-      access scope from any policies set on parent resources in the resource
-      hierarchy. Therefore, the effectively policy is the union of both the
-      policy set on this resource and each policy set on all of the resource's
-      ancestry resource levels in the hierarchy. See [this
+    iamPolicy: A representation of the IAM policy set on a Google Cloud
+      resource. There can be a maximum of one IAM policy set on any given
+      resource. In addition, IAM policies inherit their granted access scope
+      from any policies set on parent resources in the resource hierarchy.
+      Therefore, the effectively policy is the union of both the policy set on
+      this resource and each policy set on all of the resource's ancestry
+      resource levels in the hierarchy. See [this
       topic](https://cloud.google.com/iam/help/allow-policies/inheritance) for
       more information.
     name: The full name of the asset. Example: `//compute.googleapis.com/proje
@@ -2422,9 +2424,8 @@ class GoogleCloudAssetV1p7beta1RelatedAsset(_messages.Message):
   hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-
   resource-hierarchy), a resource outside the Google Cloud resource hierarchy
   (such as Google Kubernetes Engine clusters and objects), or a policy (e.g.
-  Cloud IAM policy). See [Supported asset
-  types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
-  for more information.
+  IAM policy). See [Supported asset types](https://cloud.google.com/asset-
+  inventory/docs/supported-asset-types) for more information.
 
   Fields:
     ancestors: The ancestors of an asset in Google Cloud [resource
@@ -2503,7 +2504,7 @@ class GoogleCloudAssetV1p7beta1Resource(_messages.Message):
     parent: The full name of the immediate parent of this resource. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names#ful
       l_resource_name) for more information. For Google Cloud assets, this
-      value is the parent resource defined in the [Cloud IAM policy
+      value is the parent resource defined in the [IAM policy
       hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
       Example: `//cloudresourcemanager.googleapis.com/projects/my_project_123`
       For third-party assets, this field may be set differently.
@@ -3185,11 +3186,12 @@ class GoogleIdentityAccesscontextmanagerV1IngressSource(_messages.Message):
       specified for `access_level`, then all IngressSources will be allowed.
     resource: A Google Cloud resource that is allowed to ingress the
       perimeter. Requests from these resources will be allowed to access
-      perimeter data. Currently only projects are allowed. Format:
-      `projects/{project_number}` The project may be in any Google Cloud
-      organization, not just the organization that the perimeter is defined
-      in. `*` is not allowed, the case of allowing all Google Cloud resources
-      only is not supported.
+      perimeter data. Currently only projects and VPCs are allowed. Project
+      format: `projects/{project_number}` VPC format:
+      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`.
+      The project may be in any Google Cloud organization, not just the
+      organization that the perimeter is defined in. `*` is not allowed, the
+      case of allowing all Google Cloud resources only is not supported.
   """
 
   accessLevel = _messages.StringField(1)
@@ -3375,8 +3377,9 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Messa
       separately. Access is granted if any Ingress Policy grants it. Must be
       empty for a perimeter bridge.
     resources: A list of Google Cloud resources that are inside of the service
-      perimeter. Currently only projects are allowed. Format:
-      `projects/{project_number}`
+      perimeter. Currently only projects and VPCs are allowed. Project format:
+      `projects/{project_number}` VPC format:
+      `//compute.googleapis.com/projects/{PROJECT_ID}/global/networks/{NAME}`.
     restrictedServices: Google Cloud services that are subject to the Service
       Perimeter restrictions. For example, if `storage.googleapis.com` is
       specified, access to the storage buckets inside the perimeter must meet
@@ -3486,7 +3489,7 @@ class IamPolicyAnalysisResult(_messages.Message):
       format) of the resource to which the iam_binding policy attaches.
     fullyExplored: Represents whether all analyses on the iam_binding have
       successfully finished.
-    iamBinding: The Cloud IAM policy binding under analysis.
+    iamBinding: The IAM policy binding under analysis.
     identityList: The identity list derived from members of the iam_binding
       that match or potentially match identity selector specified in the
       request.
@@ -3665,13 +3668,13 @@ class IamPolicySearchResult(_messages.Message):
       `policy:roles/compute.admin` - query by the policy contained roles'
       included permissions. Example:
       `policy.role.permissions:compute.instances.create`
-    project: The project that the associated GCP resource belongs to, in the
-      form of projects/{PROJECT_NUMBER}. If an IAM policy is set on a resource
-      (like VM instance, Cloud Storage bucket), the project field will
-      indicate the project that contains the resource. If an IAM policy is set
-      on a folder or orgnization, this field will be empty. To search against
-      the `project`: * specify the `scope` field as this project in your
-      search request.
+    project: The project that the associated Google Cloud resource belongs to,
+      in the form of projects/{PROJECT_NUMBER}. If an IAM policy is set on a
+      resource (like VM instance, Cloud Storage bucket), the project field
+      will indicate the project that contains the resource. If an IAM policy
+      is set on a folder or orgnization, this field will be empty. To search
+      against the `project`: * specify the `scope` field as this project in
+      your search request.
     resource: The full resource name of the resource associated with this IAM
       policy. Example: `//compute.googleapis.com/projects/my_project_123/zones
       /zone1/instances/instance1`. See [Cloud Asset Inventory Resource Name
@@ -3863,7 +3866,7 @@ class MoveAnalysis(_messages.Message):
   Fields:
     analysis: Analysis result of moving the target resource.
     displayName: The user friendly display name of the analysis. E.g. IAM,
-      Organization Policy etc.
+      organization policy etc.
     error: Description of error encountered when performing the analysis.
   """
 
@@ -4014,20 +4017,22 @@ class Options(_messages.Message):
       include access analysis from identities to resources via service account
       impersonation. This is a very expensive operation, because many derived
       queries will be executed. We highly recommend you use
-      AssetService.AnalyzeIamPolicyLongrunning rpc instead. For example, if
+      AssetService.AnalyzeIamPolicyLongrunning RPC instead. For example, if
       the request analyzes for which resources user A has permission P, and
       there's an IAM policy states user A has
       iam.serviceAccounts.getAccessToken permission to a service account SA,
       and there's another IAM policy states service account SA has permission
-      P to a GCP folder F, then user A potentially has access to the GCP
-      folder F. And those advanced analysis results will be included in
+      P to a Google Cloud folder F, then user A potentially has access to the
+      Google Cloud folder F. And those advanced analysis results will be
+      included in
       AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Another
-      example, if the request analyzes for who has permission P to a GCP
-      folder F, and there's an IAM policy states user A has
+      example, if the request analyzes for who has permission P to a Google
+      Cloud folder F, and there's an IAM policy states user A has
       iam.serviceAccounts.actAs permission to a service account SA, and
       there's another IAM policy states service account SA has permission P to
-      the GCP folder F, then user A potentially has access to the GCP folder
-      F. And those advanced analysis results will be included in
+      the Google Cloud folder F, then user A potentially has access to the
+      Google Cloud folder F. And those advanced analysis results will be
+      included in
       AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Only
       the following permissions are considered in this analysis: *
       `iam.serviceAccounts.actAs` * `iam.serviceAccounts.signBlob` *
@@ -4045,17 +4050,17 @@ class Options(_messages.Message):
       section of the result will expand any resource attached to an IAM policy
       to include resources lower in the resource hierarchy. For example, if
       the request analyzes for which resources user A has permission P, and
-      the results include an IAM policy with P on a GCP folder, the results
-      will also include resources in that folder with permission P. If true
-      and IamPolicyAnalysisQuery.resource_selector is specified, the resource
-      section of the result will expand the specified resource to include
-      resources lower in the resource hierarchy. Only project or lower
-      resources are supported. Folder and organization resource cannot be used
-      together with this option. For example, if the request analyzes for
-      which users have permission P on a GCP project with this option enabled,
-      the results will include all users who have permission P on that project
-      or any lower resource. If true, the default max expansion per resource
-      is 1000 for AssetService.AnalyzeIamPolicy][] and 100000 for
+      the results include an IAM policy with P on a Google Cloud folder, the
+      results will also include resources in that folder with permission P. If
+      true and IamPolicyAnalysisQuery.resource_selector is specified, the
+      resource section of the result will expand the specified resource to
+      include resources lower in the resource hierarchy. Only project or lower
+      resources are supported. Folder and organization resources cannot be
+      used together with this option. For example, if the request analyzes for
+      which users have permission P on a Google Cloud project with this option
+      enabled, the results will include all users who have permission P on
+      that project or any lower resource. If true, the default max expansion
+      per resource is 1000 for AssetService.AnalyzeIamPolicy][] and 100000 for
       AssetService.AnalyzeIamPolicyLongrunning][]. Default is false.
     expandRoles: Optional. If true, the access section of result will expand
       any roles appearing in IAM policy bindings to include their permissions.
@@ -4374,8 +4379,8 @@ class QueryContent(_messages.Message):
 
   Fields:
     iamPolicyAnalysisQuery: An IAM Policy Analysis query, which could be used
-      in the AssetService.AnalyzeIamPolicy rpc or the
-      AssetService.AnalyzeIamPolicyLongrunning rpc.
+      in the AssetService.AnalyzeIamPolicy RPC or the
+      AssetService.AnalyzeIamPolicyLongrunning RPC.
   """
 
   iamPolicyAnalysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
@@ -4433,9 +4438,8 @@ class RelatedAsset(_messages.Message):
   hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-
   resource-hierarchy), a resource outside the Google Cloud resource hierarchy
   (such as Google Kubernetes Engine clusters and objects), or a policy (e.g.
-  Cloud IAM policy). See [Supported asset
-  types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
-  for more information.
+  IAM policy). See [Supported asset types](https://cloud.google.com/asset-
+  inventory/docs/supported-asset-types) for more information.
 
   Fields:
     ancestors: The ancestors of an asset in Google Cloud [resource
@@ -4546,7 +4550,7 @@ class Resource(_messages.Message):
     parent: The full name of the immediate parent of this resource. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names#ful
       l_resource_name) for more information. For Google Cloud assets, this
-      value is the parent resource defined in the [Cloud IAM policy
+      value is the parent resource defined in the [IAM policy
       hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
       Example: `//cloudresourcemanager.googleapis.com/projects/my_project_123`
       For third-party assets, this field may be set differently.
@@ -4600,19 +4604,19 @@ class ResourceSearchResult(_messages.Message):
       resource. The attributes may vary from one resource type to another.
       Examples: `projectId` for Project, `dnsName` for DNS ManagedZone. This
       field contains a subset of the resource metadata fields that are
-      returned by the List or Get APIs provided by the corresponding GCP
-      service (e.g., Compute Engine). see [API references and supported
+      returned by the List or Get APIs provided by the corresponding Google
+      Cloud service (e.g., Compute Engine). see [API references and supported
       searchable attributes](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#searchable_asset_types) to see
       which fields are included. You can search values of these fields through
       free text search. However, you should not consume the field
-      programically as the field names and values may change as the GCP
-      service updates to a new incompatible API version. To search against the
-      `additional_attributes`: * Use a free text query to match the attributes
-      values. Example: to search `additional_attributes = { dnsName: "foobar"
-      }`, you can issue a query `foobar`.
+      programically as the field names and values may change as the Google
+      Cloud service updates to a new incompatible API version. To search
+      against the `additional_attributes`: * Use a free text query to match
+      the attributes values. Example: to search `additional_attributes = {
+      dnsName: "foobar" }`, you can issue a query `foobar`.
     LabelsValue: Labels associated with this resource. See [Labelling and
-      grouping GCP
+      grouping Google Cloud
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.
       This field is available only when the resource's Protobuf contains it.
@@ -4632,17 +4636,17 @@ class ResourceSearchResult(_messages.Message):
       resource. The attributes may vary from one resource type to another.
       Examples: `projectId` for Project, `dnsName` for DNS ManagedZone. This
       field contains a subset of the resource metadata fields that are
-      returned by the List or Get APIs provided by the corresponding GCP
-      service (e.g., Compute Engine). see [API references and supported
+      returned by the List or Get APIs provided by the corresponding Google
+      Cloud service (e.g., Compute Engine). see [API references and supported
       searchable attributes](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#searchable_asset_types) to see
       which fields are included. You can search values of these fields through
       free text search. However, you should not consume the field
-      programically as the field names and values may change as the GCP
-      service updates to a new incompatible API version. To search against the
-      `additional_attributes`: * Use a free text query to match the attributes
-      values. Example: to search `additional_attributes = { dnsName: "foobar"
-      }`, you can issue a query `foobar`.
+      programically as the field names and values may change as the Google
+      Cloud service updates to a new incompatible API version. To search
+      against the `additional_attributes`: * Use a free text query to match
+      the attributes values. Example: to search `additional_attributes = {
+      dnsName: "foobar" }`, you can issue a query `foobar`.
     assetType: The type of this resource. Example:
       `compute.googleapis.com/Disk`. To search against the `asset_type`: *
       Specify the `asset_type` field in your search request.
@@ -4679,7 +4683,7 @@ class ResourceSearchResult(_messages.Message):
       rsion](https://cloud.google.com/kms/docs/reference/rest/v1/projects.loca
       tions.keyRings.cryptoKeys.cryptoKeyVersions) name. This field only
       presents for the purpose of backward compatibility. Please use the
-      `kms_keys` field to retrieve KMS key information. This field is
+      `kms_keys` field to retrieve Cloud KMS key information. This field is
       available only when the resource's Protobuf contains it and will only be
       populated for [these resource types](https://cloud.google.com/asset-
       inventory/docs/legacy-field-
@@ -4695,7 +4699,8 @@ class ResourceSearchResult(_messages.Message):
       against the `kms_keys`: * Use a field query. Example: `kmsKeys:key` *
       Use a free text query. Example: `key`
     labels: Labels associated with this resource. See [Labelling and grouping
-      GCP resources](https://cloud.google.com/blog/products/gcp/labelling-and-
+      Google Cloud
+      resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.
       This field is available only when the resource's Protobuf contains it.
       To search against the `labels`: * Use a field query: - query on any
@@ -4715,8 +4720,8 @@ class ResourceSearchResult(_messages.Message):
       field query. Example: `name:instance1` * Use a free text query. Example:
       `instance1`
     networkTags: Network tags associated with this resource. Like labels,
-      network tags are a type of annotations used to group GCP resources. See
-      [Labelling GCP
+      network tags are a type of annotations used to group Google Cloud
+      resources. See [Labelling Google Cloud
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.
       This field is available only when the resource's Protobuf contains it.
@@ -4756,7 +4761,7 @@ class ResourceSearchResult(_messages.Message):
       STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED, REPAIRING, and
       TERMINATED. See `status` definition in [API Reference](https://cloud.goo
       gle.com/compute/docs/reference/rest/v1/instances). If the resource is a
-      project provided by Cloud Resource Manager, its state will include
+      project provided by Resource Manager, its state will include
       LIFECYCLE_STATE_UNSPECIFIED, ACTIVE, DELETE_REQUESTED and
       DELETE_IN_PROGRESS. See `lifecycleState` definition in [API
       Reference](https://cloud.google.com/resource-
@@ -4800,16 +4805,17 @@ class ResourceSearchResult(_messages.Message):
     may vary from one resource type to another. Examples: `projectId` for
     Project, `dnsName` for DNS ManagedZone. This field contains a subset of
     the resource metadata fields that are returned by the List or Get APIs
-    provided by the corresponding GCP service (e.g., Compute Engine). see [API
-    references and supported searchable
+    provided by the corresponding Google Cloud service (e.g., Compute Engine).
+    see [API references and supported searchable
     attributes](https://cloud.google.com/asset-inventory/docs/supported-asset-
     types#searchable_asset_types) to see which fields are included. You can
     search values of these fields through free text search. However, you
     should not consume the field programically as the field names and values
-    may change as the GCP service updates to a new incompatible API version.
-    To search against the `additional_attributes`: * Use a free text query to
-    match the attributes values. Example: to search `additional_attributes = {
-    dnsName: "foobar" }`, you can issue a query `foobar`.
+    may change as the Google Cloud service updates to a new incompatible API
+    version. To search against the `additional_attributes`: * Use a free text
+    query to match the attributes values. Example: to search
+    `additional_attributes = { dnsName: "foobar" }`, you can issue a query
+    `foobar`.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -4834,7 +4840,8 @@ class ResourceSearchResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels associated with this resource. See [Labelling and grouping GCP
+    r"""Labels associated with this resource. See [Labelling and grouping
+    Google Cloud
     resources](https://cloud.google.com/blog/products/gcp/labelling-and-
     grouping-your-google-cloud-platform-resources) for more information. This
     field is available only when the resource's Protobuf contains it. To
@@ -5004,7 +5011,7 @@ class SearchAllIamPoliciesResponse(_messages.Message):
     nextPageToken: Set if there are more results than those appearing in this
       response; to get the next set of results, call this method again, using
       this value as the `page_token`.
-    results: A list of IamPolicy that match the search query. Related
+    results: A list of IAM policies that match the search query. Related
       information such as the associated resource is returned along with the
       policy.
   """

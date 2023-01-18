@@ -544,7 +544,7 @@ def _ReplicaPlacementStrToObject(replicaplacement):
     replicaplacement: Replica placement.
 
   Returns:
-    An GoogleCloudGkemulticloudV1ReplicaPlacement instance.
+    A GoogleCloudGkemulticloudV1ReplicaPlacement instance.
 
   Raises:
     ArgumentError: If the Replica placement format is invalid.
@@ -825,6 +825,26 @@ def AddEndpointSubnetId(parser):
 
 def GetEndpointSubnetId(args):
   return getattr(args, 'endpoint_subnet_id', None)
+
+
+def AddAzureServicesAuthentication(auth_config_group, create=True):
+  group = auth_config_group.add_argument_group('Azure services authentication')
+  group.add_argument(
+      '--azure-tenant-id',
+      required=create,
+      help=('ID of the Azure Tenant to manage Azure resources.'))
+  group.add_argument(
+      '--azure-application-id',
+      required=create,
+      help=('ID of the Azure Application to manage Azure resources.'))
+
+
+def GetAzureTenantID(args):
+  return getattr(args, 'azure_tenant_id', None)
+
+
+def GetAzureApplicationID(args):
+  return getattr(args, 'azure_application_id', None)
 
 
 def AddMonitoringConfig(parser, for_create=False):

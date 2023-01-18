@@ -30,6 +30,10 @@ class AlterMetadataResourceLocationRequest(_messages.Message):
   resourceName = _messages.StringField(2)
 
 
+class AlterMetadataResourceLocationResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.AlterMetadataResourceLocation."""
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -2054,6 +2058,10 @@ class MoveTableToDatabaseRequest(_messages.Message):
   dbName = _messages.StringField(1)
   destinationDbName = _messages.StringField(2)
   tableName = _messages.StringField(3)
+
+
+class MoveTableToDatabaseResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.MoveTableToDatabase."""
 
 
 class NetworkConfig(_messages.Message):

@@ -273,7 +273,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached. For example, ['us-west1', 'us-central1']. A ListRuntimesResponse will only contain either runtimes or unreachables,",
+          "description": "Locations that could not be reached. For example, `['us-west1', 'us-central1']`. A ListRuntimesResponse will only contain either runtimes or unreachables,",
           "type": "array",
           "items": {
             "type": "string"
@@ -365,6 +365,13 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. The labels to associate with this Managed Notebook or Runtime. Label **keys** must contain 1 to 63 characters, and must conform to [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label **values** may be empty, but, if present, must contain 1 to 63 characters, and must conform to [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). No more than 32 labels can be associated with a cluster.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -522,7 +529,7 @@
           "type": "boolean"
         },
         "deviceName": {
-          "description": "Optional. Output only. Specifies a unique device name of your choice that is reflected into the \/dev\/disk\/by-id\/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks.",
+          "description": "Optional. Output only. Specifies a unique device name of your choice that is reflected into the `\/dev\/disk\/by-id\/google-*` tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks.",
           "readOnly": true,
           "type": "string"
         },
@@ -545,7 +552,7 @@
           "$ref": "LocalDiskInitializeParams"
         },
         "interface": {
-          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: * NVME * SCSI",
+          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: * `NVME` * `SCSI`",
           "type": "string"
         },
         "kind": {
@@ -562,7 +569,7 @@
           }
         },
         "mode": {
-          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: * READ_ONLY * READ_WRITE",
+          "description": "The mode in which to attach this disk, either `READ_WRITE` or `READ_ONLY`. If not specified, the default is to attach the disk in `READ_WRITE` mode. Valid values: * `READ_ONLY` * `READ_WRITE`",
           "type": "string"
         },
         "source": {
@@ -570,7 +577,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. Valid values: * PERSISTENT * SCRATCH",
+          "description": "Specifies the type of the disk, either `SCRATCH` or `PERSISTENT`. If not specified, the default is `PERSISTENT`. Valid values: * `PERSISTENT` * `SCRATCH`",
           "type": "string"
         }
       }
@@ -581,7 +588,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The ID of a supported feature. Read [Enabling guest operating system features](https:\/\/cloud.google.com\/compute\/docs\/images\/create-delete-deprecate-private-images#guest-os-features) to see a list of available options. Valid values: * FEATURE_TYPE_UNSPECIFIED * MULTI_IP_SUBNET * SECURE_BOOT * UEFI_COMPATIBLE * VIRTIO_SCSI_MULTIQUEUE * WINDOWS",
+          "description": "The ID of a supported feature. Read [Enabling guest operating system features](https:\/\/cloud.google.com\/compute\/docs\/images\/create-delete-deprecate-private-images#guest-os-features) to see a list of available options. Valid values: * `FEATURE_TYPE_UNSPECIFIED` * `MULTI_IP_SUBNET` * `SECURE_BOOT` * `UEFI_COMPATIBLE` * `VIRTIO_SCSI_MULTIQUEUE` * `WINDOWS`",
           "type": "string"
         }
       }
@@ -1026,7 +1033,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached. For example, ['us-west1-a', 'us-central1-b']. A ListInstancesResponse will only contain either instances or unreachables,",
+          "description": "Locations that could not be reached. For example, `['us-west1-a', 'us-central1-b']`. A ListInstancesResponse will only contain either instances or unreachables,",
           "type": "array",
           "items": {
             "type": "string"
@@ -1080,11 +1087,11 @@
           }
         },
         "machineType": {
-          "description": "Required. The [Compute Engine machine type](\/compute\/docs\/machine-types) of this instance.",
+          "description": "Required. The [Compute Engine machine type](https:\/\/cloud.google.com\/compute\/docs\/machine-types) of this instance.",
           "type": "string"
         },
         "acceleratorConfig": {
-          "description": "The hardware accelerator used on this instance. If you use accelerators, make sure that your configuration has [enough vCPUs and memory to support the `machine_type` you have selected](\/compute\/docs\/gpus\/#gpus-list).",
+          "description": "The hardware accelerator used on this instance. If you use accelerators, make sure that your configuration has [enough vCPUs and memory to support the `machine_type` you have selected](https:\/\/cloud.google.com\/compute\/docs\/gpus\/#gpus-list).",
           "$ref": "AcceleratorConfig"
         },
         "state": {
@@ -1314,7 +1321,7 @@
     },
     "AcceleratorConfig": {
       "id": "AcceleratorConfig",
-      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
+      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](https:\/\/cloud.google.com\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
       "type": "object",
       "properties": {
         "type": {
@@ -1370,7 +1377,7 @@
           "type": "boolean"
         },
         "deviceName": {
-          "description": "Indicates a unique device name of your choice that is reflected into the \/dev\/disk\/by-id\/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine.This field is only applicable for persistent disks.",
+          "description": "Indicates a unique device name of your choice that is reflected into the `\/dev\/disk\/by-id\/google-*` tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine.This field is only applicable for persistent disks.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -1391,7 +1398,7 @@
           "format": "int64"
         },
         "interface": {
-          "description": "Indicates the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: * NVME * SCSI",
+          "description": "Indicates the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: * `NVME` * `SCSI`",
           "type": "string"
         },
         "kind": {
@@ -1406,7 +1413,7 @@
           }
         },
         "mode": {
-          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: * READ_ONLY * READ_WRITE",
+          "description": "The mode in which to attach this disk, either `READ_WRITE` or `READ_ONLY`. If not specified, the default is to attach the disk in `READ_WRITE` mode. Valid values: * `READ_ONLY` * `READ_WRITE`",
           "type": "string"
         },
         "source": {
@@ -1414,7 +1421,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Indicates the type of the disk, either SCRATCH or PERSISTENT. Valid values: * PERSISTENT * SCRATCH",
+          "description": "Indicates the type of the disk, either `SCRATCH` or `PERSISTENT`. Valid values: * `PERSISTENT` * `SCRATCH`",
           "type": "string"
         }
       }
@@ -1425,14 +1432,14 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. Valid values: * FEATURE_TYPE_UNSPECIFIED * MULTI_IP_SUBNET * SECURE_BOOT * UEFI_COMPATIBLE * VIRTIO_SCSI_MULTIQUEUE * WINDOWS",
+          "description": "The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. Valid values: * `FEATURE_TYPE_UNSPECIFIED` * `MULTI_IP_SUBNET` * `SECURE_BOOT` * `UEFI_COMPATIBLE` * `VIRTIO_SCSI_MULTIQUEUE` * `WINDOWS`",
           "type": "string"
         }
       }
     },
     "ShieldedInstanceConfig": {
       "id": "ShieldedInstanceConfig",
-      "description": "A set of Shielded Instance options. Check [Images using supported Shielded VM features] Not all combinations are valid.",
+      "description": "A set of Shielded Instance options. Check [Images using supported Shielded VM features](https:\/\/cloud.google.com\/compute\/docs\/instances\/modifying-shielded-vm). Not all combinations are valid.",
       "type": "object",
       "properties": {
         "enableSecureBoot": {
@@ -1496,7 +1503,7 @@
           "format": "google-datetime"
         },
         "targetImage": {
-          "description": "Target VM Image. Format: ainotebooks-vm\/project\/image-name\/name.",
+          "description": "Target VM Image. Format: `ainotebooks-vm\/project\/image-name\/name`.",
           "type": "string"
         },
         "action": {
@@ -1825,7 +1832,7 @@
       "type": "object",
       "properties": {
         "targetSnapshot": {
-          "description": "Required. The snapshot for rollback. Example: \"projects\/test-project\/global\/snapshots\/krwlzipynril\".",
+          "description": "Required. The snapshot for rollback. Example: `projects\/test-project\/global\/snapshots\/krwlzipynril`.",
           "type": "string"
         }
       }
@@ -1969,7 +1976,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Output only. Display name used for UI purposes. Name can only contain alphanumeric characters, hyphens '-', and underscores '_'.",
+          "description": "Output only. Display name used for UI purposes. Name can only contain alphanumeric characters, hyphens `-`, and underscores `_`.",
           "readOnly": true,
           "type": "string"
         },
@@ -1999,7 +2006,7 @@
           ]
         },
         "cronSchedule": {
-          "description": "Cron-tab formatted schedule by which the job will execute. Format: minute, hour, day of month, month, day of week, e.g. 0 0 * * WED = every Wednesday More examples: https:\/\/crontab.guru\/examples.html",
+          "description": "Cron-tab formatted schedule by which the job will execute. Format: minute, hour, day of month, month, day of week, e.g. `0 0 * * WED` = every Wednesday More examples: https:\/\/crontab.guru\/examples.html",
           "type": "string"
         },
         "timeZone": {
@@ -2185,11 +2192,11 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
+          "description": "The full name of the Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where `{project}` is a project number, as in `12345`, and `{network}` is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "env": {
-          "description": "Environment variables. At most 100 environment variables can be specified and unique. Example: GCP_BUCKET=gs:\/\/my-bucket\/samples\/",
+          "description": "Environment variables. At most 100 environment variables can be specified and unique. Example: `GCP_BUCKET=gs:\/\/my-bucket\/samples\/`",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -2766,7 +2773,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Specifies the path, relative to `Runtime`, of the field to update. For example, to change the software configuration kernels, the `update_mask` parameter would be specified as `software_config.kernels`, and the `PATCH` request body would specify the new value, as follows: { \"software_config\":{ \"kernels\": [{ 'repository': 'gcr.io\/deeplearning-platform-release\/pytorch-gpu', 'tag': 'latest' }], } } Currently, only the following fields can be updated: - software_config.kernels - software_config.post_startup_script - software_config.custom_gpu_driver_path - software_config.idle_shutdown - software_config.idle_shutdown_timeout - software_config.disable_terminal",
+                      "description": "Required. Specifies the path, relative to `Runtime`, of the field to update. For example, to change the software configuration kernels, the `update_mask` parameter would be specified as `software_config.kernels`, and the `PATCH` request body would specify the new value, as follows: { \"software_config\":{ \"kernels\": [{ 'repository': 'gcr.io\/deeplearning-platform-release\/pytorch-gpu', 'tag': 'latest' }], } } Currently, only the following fields can be updated: - `software_config.kernels` - `software_config.post_startup_script` - `software_config.custom_gpu_driver_path` - `software_config.idle_shutdown` - `software_config.idle_shutdown_timeout` - `software_config.disable_terminal` - `labels`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -4144,7 +4151,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filter applied to resulting executions. Currently only supports filtering executions by a specified schedule_id. Format: `schedule_id=`",
+                      "description": "Filter applied to resulting executions. Currently only supports filtering executions by a specified `schedule_id`. Format: `schedule_id=`",
                       "location": "query",
                       "type": "string"
                     },

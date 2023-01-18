@@ -228,17 +228,26 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
         vmCount=args.vm_count,
         availabilityDomainCount=availability_domain_count,
         collocation=collocation,
-        scope=scope)
+        scope=scope,
+    )
   elif track == base.ReleaseTrack.ALPHA and args.IsSpecified('tpu_topology'):
     placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
         vmCount=args.vm_count,
         collocation=collocation,
-        tpuTopology=args.tpu_topology)
+        tpuTopology=args.tpu_topology,
+    )
+  elif track == base.ReleaseTrack.ALPHA and args.IsSpecified('max_distance'):
+    placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
+        vmCount=args.vm_count,
+        collocation=collocation,
+        maxDistance=args.max_distance,
+    )
   else:
     placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
         vmCount=args.vm_count,
         availabilityDomainCount=availability_domain_count,
-        collocation=collocation)
+        collocation=collocation,
+    )
 
   return messages.ResourcePolicy(
       name=policy_ref.Name(),

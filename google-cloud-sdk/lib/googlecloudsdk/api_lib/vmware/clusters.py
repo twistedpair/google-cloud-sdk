@@ -34,7 +34,7 @@ class ClustersClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def Create(self, resource, nodes_configs=None):
+  def Create(self, resource, nodes_configs):
     parent = resource.Parent().RelativeName()
     cluster_id = resource.Name()
 
@@ -54,26 +54,18 @@ class ClustersClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Delete(request)
 
-  def List(self,
-           private_cloud_resource,
-           filter_expression=None,
-           limit=None,
-           page_size=None,
-           sort_by=None):
+  def List(self, private_cloud_resource):
     private_cloud = private_cloud_resource.RelativeName()
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(
-        parent=private_cloud, filter=filter_expression)
-    if page_size:
-      request.page_size = page_size
+        parent=private_cloud
+    )
     return list_pager.YieldFromList(
         self.service,
         request,
-        limit=limit,
         batch_size_attribute='pageSize',
-        batch_size=page_size,
         field='clusters')
 
-  def Update(self, resource, nodes_configs=None):
+  def Update(self, resource, nodes_configs):
     node_type_configs = util.ConstructNodeParameterConfigMessage(
         self.messages.Cluster.NodeTypeConfigsValue,
         self.messages.NodeTypeConfig, nodes_configs)

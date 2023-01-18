@@ -319,7 +319,10 @@ class Container(_messages.Message):
     command: Entrypoint array. Not executed within a shell. The docker image's
       ENTRYPOINT is used if this is not provided. Variable references are not
       supported in Cloud Run.
-    env: List of environment variables to set in the container.
+    env: List of environment variables to set in the container. EnvVar with
+      duplicate names are generally allowed; if referencing a secret, the name
+      must be unique for the container. For non-secret EnvVar names, the
+      Container will only get the last-declared one.
     envFrom: Not supported by Cloud Run.
     image: Required. URL of the Container image in Google Container Registry
       or Google Artifact Registry. More info:
@@ -332,9 +335,8 @@ class Container(_messages.Message):
       restarted if the probe fails. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    name: Name of the container specified as a DNS_LABEL. Currently unused in
-      Cloud Run. More info:
-      https://kubernetes.io/docs/concepts/overview/working-with-
+    name: Name of the container specified as a DNS_LABEL (RFC 1123). More
+      info: https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#dns-label-names
     ports: List of ports to expose from the container. Only a single port can
       be specified. The specified ports must be listening on all interfaces

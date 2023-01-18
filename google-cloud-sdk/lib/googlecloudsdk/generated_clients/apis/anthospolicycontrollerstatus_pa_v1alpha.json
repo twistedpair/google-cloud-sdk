@@ -760,7 +760,7 @@
             "INSTALLING",
             "ACTIVE",
             "UPDATING",
-            "DECOMISSIONING",
+            "DECOMMISSIONING",
             "CLUSTER_ERROR",
             "HUB_ERROR",
             "SUSPENDED"

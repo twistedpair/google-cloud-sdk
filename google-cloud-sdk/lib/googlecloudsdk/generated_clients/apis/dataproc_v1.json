@@ -841,7 +841,12 @@
           "type": "string"
         },
         "idleTtl": {
-          "description": "Optional. The duration to keep the session alive while it's idling. Passing this threshold will cause the session to be terminated. Minimum value is 10 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)). Defaults to 4 hours if not set.",
+          "description": "Optional. The duration to keep the session alive while it's idling. Passing this threshold will cause the session to be terminated. Minimum value is 10 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)). Defaults to 4 hours if not set. If both ttl and idle_ttl are specified, the conditions are treated as and OR: the workload will be terminated when it has been idle for idle_ttl or when the ttl has passed, whichever comes first.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "ttl": {
+          "description": "Optional. The duration after which the workload will be terminated. When the workload passes this ttl, it will be unconditionally killed without waiting for ongoing work to finish. Minimum value is 10 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)). If both ttl and idle_ttl are specified, the conditions are treated as and OR: the workload will be terminated when it has been idle for idle_ttl or when the ttl has passed, whichever comes first. If ttl is not specified for a session, it defaults to 24h.",
           "type": "string",
           "format": "google-duration"
         }
@@ -1052,13 +1057,6 @@
         "gkeClusterConfig": {
           "description": "Optional. BETA. The Kubernetes Engine config for Dataproc clusters deployed to The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. These config settings are mutually exclusive with Compute Engine-based options, such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
           "$ref": "GkeClusterConfig"
-        },
-        "auxiliaryGceNodePools": {
-          "description": "Optional. Deprecated: The Compute Engine configuration settings for cluster node pools.",
-          "type": "array",
-          "items": {
-            "$ref": "AuxiliaryGceNodePool"
-          }
         },
         "dataprocMetricConfig": {
           "description": "Optional. The config for Dataproc metrics.",
@@ -1838,64 +1836,6 @@
         }
       }
     },
-    "AuxiliaryGceNodePool": {
-      "id": "AuxiliaryGceNodePool",
-      "description": "Deprecated: Dataproc Compute Engine node pool identification and configuration information.",
-      "type": "object",
-      "properties": {
-        "gceNodePool": {
-          "description": "Required. Dataproc Compute Engine node pool configuration.",
-          "$ref": "GceNodePool"
-        },
-        "gceNodePoolId": {
-          "description": "Optional. An optional Compute Engine node pool id. Generated if not specified.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 33 characters.",
-          "type": "string"
-        }
-      }
-    },
-    "GceNodePool": {
-      "id": "GceNodePool",
-      "description": "Deprecated: Dataproc Compute Engine node pool.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The Compute Engine node pool resource name (https:\/\/aip.dev\/122).",
-          "type": "string"
-        },
-        "roles": {
-          "description": "Required. Compute Engine node pool roles.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enumDescriptions": [
-              "Required unspecified role.",
-              "Job drivers will run on the node pool.",
-              "Master nodes",
-              "Primary workers",
-              "Secondary workers"
-            ],
-            "enum": [
-              "ROLE_UNSPECIFIED",
-              "DRIVER",
-              "MASTER",
-              "PRIMARY_WORKER",
-              "SECONDARY_WORKER"
-            ]
-          }
-        },
-        "nodePoolConfig": {
-          "description": "Optional. The Compute Engine node pool instance group configuration.",
-          "$ref": "InstanceGroupConfig"
-        },
-        "labels": {
-          "description": "Optional. Compute Engine node pool labels. Label keys must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values can be empty. If specified, they must consist of 1 to 63 characters and conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). The Compute Engine node pool can have no more than 32 labels.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "DataprocMetricConfig": {
       "id": "DataprocMetricConfig",
       "description": "Dataproc metric config.",
@@ -1925,7 +1865,8 @@
             "Spark metric source.",
             "YARN metric source.",
             "Spark History Server metric source.",
-            "Hiveserver2 metric source."
+            "Hiveserver2 metric source.",
+            "hivemetastore metric source"
           ],
           "enum": [
             "METRIC_SOURCE_UNSPECIFIED",
@@ -1934,7 +1875,8 @@
             "SPARK",
             "YARN",
             "SPARK_HISTORY_SERVER",
-            "HIVESERVER2"
+            "HIVESERVER2",
+            "HIVEMETASTORE"
           ]
         },
         "metricOverrides": {
@@ -2224,7 +2166,7 @@
           }
         },
         "gracefulDecommissionTimeout": {
-          "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning facilitates the removal of cluster nodes without interrupting jobs in progress. The timeout specifies the amount of time to wait for jobs finish before forcefully removing nodes. The default timeout is 0 for forceful decommissioning, and the maximum timeout period is 1 day. (see JSON Mapping\u2014Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).graceful_decommission_timeout is supported in Dataproc image versions 1.2+.",
+          "description": "Optional. Timeout for graceful YARN decommissioning. Graceful decommissioning facilitates the removal of cluster nodes without interrupting jobs in progress. The timeout specifies the amount of time to wait for jobs finish before forcefully removing nodes. The default timeout is 0 for forceful decommissioning, and the maximum timeout period is 1 day. (see JSON Mapping\u2014Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).graceful_decommission_timeout is supported in Dataproc image versions 1.2+.",
           "type": "string",
           "format": "google-duration"
         },
@@ -2310,15 +2252,29 @@
           "$ref": "Interval"
         },
         "job": {
-          "description": "Optional. Specifies the job on which diagnosis is to be performed. Format: projects\/{project}\/regions\/{region}\/jobs\/{job}",
+          "description": "Optional. DEPRECATED Specifies the job on which diagnosis is to be performed. Format: projects\/{project}\/regions\/{region}\/jobs\/{job}",
           "type": "string"
         },
         "yarnApplicationId": {
-          "description": "Optional. Specifies the yarn application on which diagnosis is to be performed.",
+          "description": "Optional. DEPRECATED Specifies the yarn application on which diagnosis is to be performed.",
           "type": "string"
         },
         "workers": {
           "description": "Optional. A list of workers in the cluster to run the diagnostic script on.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jobs": {
+          "description": "Optional. Specifies a list of jobs on which diagnosis is to be performed. Format: projects\/{project}\/regions\/{region}\/jobs\/{job}",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "yarnApplicationIds": {
+          "description": "Optional. Specifies a list of yarn applications on which diagnosis is to be performed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3702,45 +3658,6 @@
         "nextPageToken": {
           "description": "Output only. This token is included in the response if there are more results to fetch. To fetch additional results, provide this value as the page_token in a subsequent ListWorkflowTemplatesRequest.",
           "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "ResizeGceNodePoolRequest": {
-      "id": "ResizeGceNodePoolRequest",
-      "description": "Deprecated: a request to resize a Compute Engine node pool.",
-      "type": "object",
-      "properties": {
-        "size": {
-          "description": "Required. The number of running instances that the node pool should maintain at any given time. The group automatically adds or removes instances to maintain the number of instances specified by this parameter.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "requestId": {
-          "description": "Optional. A unique ID used to identify the request. If the server receives two ResizeGceNodePoolRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.ResizeGceNodePoolRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
-          "type": "string"
-        },
-        "gracefulDecommissionTimeout": {
-          "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the Compute Engine timeout without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "ListGceNodePoolsResponse": {
-      "id": "ListGceNodePoolsResponse",
-      "description": "Deprecated: a response to list the Compute Engine node pools in a given cluster.",
-      "type": "object",
-      "properties": {
-        "gceNodePools": {
-          "description": "The node pools from the specified cluster.",
-          "type": "array",
-          "items": {
-            "$ref": "GceNodePool"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
@@ -5932,7 +5849,7 @@
                       "type": "string"
                     },
                     "gracefulDecommissionTimeout": {
-                      "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the cluster without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
+                      "description": "Optional. Timeout for graceful YARN decommissioning. Graceful decommissioning allows removing nodes from the cluster without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day. (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).Only supported on Dataproc image versions 1.2 and higher.",
                       "location": "query",
                       "type": "string",
                       "format": "google-duration"
@@ -6431,167 +6348,6 @@
               }
               ,
               "resources": {
-                "gceNodePools": {
-                  "methods": {
-                    "create": {
-                      "id": "dataproc.projects.regions.clusters.gceNodePools.create",
-                      "path": "v1/{+parent}/gceNodePools",
-                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The parent resource where this Compute Engine node pool will be created. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}",
-                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "gceNodePoolId": {
-                          "description": "Optional. An optional Compute Engine node pool id. Generated if not specified.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 33 characters.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. A unique ID used to identify the request. If the server receives two CreateGceNodePoolRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateGceNodePoolRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "GceNodePool"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deprecated: creates a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
-                    },
-                    "resize": {
-                      "id": "dataproc.projects.regions.clusters.gceNodePools.resize",
-                      "path": "v1/{+name}:resize",
-                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools/{gceNodePoolsId}:resize",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the Compute Engine node pool to resize. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/gceNodePools\/{gceNodePool}",
-                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+\/gceNodePools\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "ResizeGceNodePoolRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deprecated: resizes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
-                    },
-                    "delete": {
-                      "id": "dataproc.projects.regions.clusters.gceNodePools.delete",
-                      "path": "v1/{+name}",
-                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/gceNodePools/{gceNodePoolsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the Compute Engine node pool to delete. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/gceNodePools\/{gceNodePool}",
-                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/gceNodePools\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. A unique ID used to identify the request. If the server receives two DeleteGceNodePoolRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.DeleteGceNodePoolRequest)s with the same id, then the second request will be ignored and the first google.longrunning.Operation created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deprecated: Deletes a Compute Engine node pool in a cluster. The returned Operation.metadata will be GceNodePoolOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#gcenodepooloperationmetadata)."
-                    },
-                    "get": {
-                      "id": "dataproc.projects.regions.clusters.gceNodePools.get",
-                      "path": "v1/{+name}",
-                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools/{gceNodePoolsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the Compute Engine node pool to retrieve. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}\/gceNodePools\/{gceNodePool}",
-                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+\/gceNodePools\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GceNodePool"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deprecated: Gets the resource representation for a Compute Engine node pool in a cluster."
-                    },
-                    "list": {
-                      "id": "dataproc.projects.regions.clusters.gceNodePools.list",
-                      "path": "v1/{+parent}/gceNodePools",
-                      "flatPath": "v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/gceNodePools",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The parent, which owns this collection of Compute Engine node pools. Format: projects\/{project}\/regions\/{region}\/clusters\/{cluster}",
-                          "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of node pools to return. The service may return fewer than this value. If unspecified, at most 50 node pools will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A page token, received from a previous ListGceNodePools call. Provide this to retrieve the subsequent page.When paginating, all other parameters provided to ListGceNodePools must match the call that provided the page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListGceNodePoolsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deprecated: Lists all Compute Engine node pools in a given cluster."
-                    }
-                  }
-                },
                 "nodeGroups": {
                   "methods": {
                     "create": {

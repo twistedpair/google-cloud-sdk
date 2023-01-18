@@ -77,9 +77,8 @@ def AddTypeArg(parser):
   """Adds the --type argument."""
   help_text = 'Type of the NAT Gateway. Defaults to PUBLIC if not specified.'
   choices = {
-      'PUBLIC':
-          'Used for private-to-public NAT translations. Allows VMs to '
-          'communicate with the Internet.',
+      'PUBLIC': 'Used for private-to-public NAT translations. Allows VMs to '
+                'communicate with the Internet.',
       'PRIVATE':
           'Used for priate-to-private NAT translations. Allows communication '
           'between VPC Networks.'
@@ -91,9 +90,14 @@ def AddTypeArg(parser):
       help=help_text)
 
 
-def AddCommonNatArgs(parser, for_create=False, with_private_nat=False,
-                     with_subnet_all=False):
+def AddCommonNatArgs(parser,
+                     for_create=False,
+                     with_private_nat=False,
+                     with_subnet_all=False,
+                     with_auto_network_tier=False):
   """Adds common arguments for creating and updating NATs."""
+  if with_auto_network_tier:
+    _AddAutoNetworkTier(parser)
   _AddIpAllocationArgs(parser, for_create, with_private_nat)
   _AddSubnetworkArgs(parser, for_create, with_subnet_all)
   _AddTimeoutsArgs(parser, for_create)
@@ -119,6 +123,26 @@ def _AddRulesArg(parser):
           See [API Discovery docs](https://www.googleapis.com/discovery/v1/apis/compute/alpha/rest)
           for reference."""),
       required=False)
+
+
+def _AddAutoNetworkTier(parser):
+  choices = {
+      'PREMIUM':
+          'High quality, Google-grade network tier, support for all networking'
+          ' products.',
+      'STANDARD':
+          'Public internet quality, only limited support for other networking '
+          'products.',
+  }
+  parser.add_argument(
+      '--auto-network-tier',
+      help=textwrap.dedent("""\
+          The network tier to use when automatically reserving IP addresses.
+
+          Must be one of: PREMIUM, STANDARD."""),
+      choices=choices,
+      required=False,
+      hidden=True)
 
 
 def _AddIpAllocationArgs(parser, for_create, with_private_nat):
@@ -193,8 +217,7 @@ def _AddSubnetworkArgs(parser, for_create, with_subnet_all):
       type=arg_parsers.ArgList(min_length=1))
 
 
-def _AddTimeoutsArgs(parser,
-                     for_create=False):
+def _AddTimeoutsArgs(parser, for_create=False):
   """Adds arguments to specify connection timeouts."""
   _AddClearableArgument(
       parser, for_create, 'udp-idle-timeout', arg_parsers.Duration(),
@@ -244,13 +267,9 @@ def _AddMinPortsPerVmArg(parser, for_create=False):
   If Dynamic Port Allocation is enabled, this defaults to 32 and must be set
   to a power of 2 that is at least 32 and lower than maxPortsPerVm.
   """)
-  _AddClearableArgument(
-      parser,
-      for_create,
-      'min-ports-per-vm',
-      arg_parsers.BoundedInt(lower_bound=2),
-      help_text,
-      'Clear minimum ports to be allocated to a VM')
+  _AddClearableArgument(parser, for_create, 'min-ports-per-vm',
+                        arg_parsers.BoundedInt(lower_bound=2), help_text,
+                        'Clear minimum ports to be allocated to a VM')
 
 
 def _AddDynamicPortAllocationArgs(parser, for_create=False):

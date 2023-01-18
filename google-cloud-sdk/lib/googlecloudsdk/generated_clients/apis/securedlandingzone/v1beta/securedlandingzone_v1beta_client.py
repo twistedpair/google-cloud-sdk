@@ -290,33 +290,6 @@ class SecuredlandingzoneV1beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def EnableOverwatch(self, request, global_params=None):
-      r"""Enables the Secured Landing Zone Overwatch service for an organization in a region.
-
-      Args:
-        request: (SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse) The response message.
-      """
-      config = self.GetMethodConfig('EnableOverwatch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    EnableOverwatch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}:enableOverwatch',
-        http_method='POST',
-        method_id='securedlandingzone.organizations.locations.enableOverwatch',
-        ordered_params=['organization'],
-        path_params=['organization'],
-        query_params=[],
-        relative_path='v1beta/{+organization}:enableOverwatch',
-        request_field='googleCloudSecuredlandingzoneV1betaEnableOverwatchRequest',
-        request_type_name='SecuredlandingzoneOrganizationsLocationsEnableOverwatchRequest',
-        response_type_name='GoogleCloudSecuredlandingzoneV1betaEnableOverwatchResponse',
-        supports_download=False,
-    )
-
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 

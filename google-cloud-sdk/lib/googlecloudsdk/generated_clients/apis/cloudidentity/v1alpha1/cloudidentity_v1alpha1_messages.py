@@ -695,19 +695,20 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous search
       request, if any.
-    query: Required. The search query. Must be specified in [Common Expression
-      Language](https://opensource.google/projects/cel). Must contain equality
-      operators on the parent, e.g. `parent == 'customers/{customer_id}'`. The
-      `customer_id` must begin with "C" (for example, 'C046psxkn'). [Find your
-      customer ID.] (https://support.google.com/cloudidentity/answer/10070793)
-      Can contain optionally inclusion operators on label. e.g.
-      `cloudidentity.googleapis.com/groups.discussion_forum' in labels`). Can
-      contain optional either equality operator on domain_name or
-      startsWith/contains/equality operator on group key, e.g. `domain_name ==
-      'abc.com'`, `group_key.startsWith('dev')` , `group_key.contains('dev') ,
-      group_key == 'dev@abc.com'` Can contain optionally
-      startsWith/contains/equality operator on display name, e.g.
-      `display_name.startsWith('dev')` , `display_name.contains('dev')`,
+    query: Required. The search query. * Must be specified in [Common
+      Expression Language](https://opensource.google/projects/cel). * Must
+      contain equality operators on the parent, e.g. `parent ==
+      'customers/{customer_id}'`. The `customer_id` must begin with "C" (for
+      example, 'C046psxkn'). [Find your customer ID.]
+      (https://support.google.com/cloudidentity/answer/10070793) * Can contain
+      optional inclusion operators on `labels` such as
+      `cloudidentity.googleapis.com/groups.discussion_forum' in labels`). *
+      Can contain an optional equality operator on `domain_name` or
+      `startsWith/contains/equality` operator on `group_key`, e.g.
+      `domain_name == 'abc.com'`, `group_key.startsWith('dev')`,
+      `group_key.contains('dev'), group_key == 'dev@abc.com'` * Can contain an
+      optional `startsWith/contains/equality` operator on `display_name`, such
+      as `display_name.startsWith('dev')` , `display_name.contains('dev')`,
       `display_name == 'dev'`
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
@@ -1803,10 +1804,10 @@ class Group(_messages.Message):
       `Group`. Shall be of the form `groups/{group_id}`.
     parent: Required. Immutable. The resource name of the entity under which
       this `Group` resides in the Cloud Identity resource hierarchy. Must be
-      of the form `identitysources/{identity_source_id}` for external-
-      identity-mapped groups or `customers/{customer_id}` for Google Groups.
-      The `customer_id` must begin with "C" (for example, 'C046psxkn'). [Find
-      your customer ID.]
+      of the form `identitysources/{identity_source}` for external [identity-
+      mapped groups](https://support.google.com/a/answer/9039510) or
+      `customers/{customer_id}` for Google Groups. The `customer_id` must
+      begin with "C" (for example, 'C046psxkn'). [Find your customer ID.]
       (https://support.google.com/cloudidentity/answer/10070793)
     posixGroups: The POSIX groups associated with the `Group`.
     updateTime: Output only. The time when the `Group` was last updated.

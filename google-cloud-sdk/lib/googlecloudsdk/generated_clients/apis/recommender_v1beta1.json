@@ -673,6 +673,17 @@
         }
       }
     },
+    "GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest": {
+      "id": "GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest",
+      "description": "Request for the `MarkRecommendationDismissed` Method.",
+      "type": "object",
+      "properties": {
+        "etag": {
+          "description": "Fingerprint of the Recommendation. Provides optimistic locking.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest": {
       "id": "GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest",
       "description": "Request for the `MarkRecommendationClaimed` Method.",
@@ -979,6 +990,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender."
+                    },
+                    "markDismissed": {
+                      "id": "recommender.projects.locations.recommenders.recommendations.markDismissed",
+                      "path": "v1beta1/{+name}:markDismissed",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1beta1Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender."
                     },
                     "markClaimed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markClaimed",
@@ -1381,6 +1420,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender."
+                    },
+                    "markDismissed": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.markDismissed",
+                      "path": "v1beta1/{+name}:markDismissed",
+                      "flatPath": "v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1beta1Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender."
                     },
                     "markClaimed": {
                       "id": "recommender.billingAccounts.locations.recommenders.recommendations.markClaimed",
@@ -1819,6 +1886,34 @@
                       ],
                       "description": "Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender."
                     },
+                    "markDismissed": {
+                      "id": "recommender.folders.locations.recommenders.recommendations.markDismissed",
+                      "path": "v1beta1/{+name}:markDismissed",
+                      "flatPath": "v1beta1/folders/{foldersId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1beta1Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender."
+                    },
                     "markClaimed": {
                       "id": "recommender.folders.locations.recommenders.recommendations.markClaimed",
                       "path": "v1beta1/{+name}:markClaimed",
@@ -2051,6 +2146,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender."
+                    },
+                    "markDismissed": {
+                      "id": "recommender.organizations.locations.recommenders.recommendations.markDismissed",
+                      "path": "v1beta1/{+name}:markDismissed",
+                      "flatPath": "v1beta1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1beta1MarkRecommendationDismissedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1beta1Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Recommendation State as Dismissed. Users can use this method to indicate to the Recommender API that an ACTIVE recommendation has to be marked back as DISMISSED. MarkRecommendationDismissed can be applied to recommendations in ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender."
                     },
                     "markClaimed": {
                       "id": "recommender.organizations.locations.recommenders.recommendations.markClaimed",

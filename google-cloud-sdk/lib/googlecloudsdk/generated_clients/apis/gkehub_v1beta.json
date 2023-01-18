@@ -1046,7 +1046,7 @@
           "$ref": "ConfigManagementOciConfig"
         },
         "allowVerticalScale": {
-          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling.",
+          "description": "Set to true to allow the vertical scaling. Defaults to false which disallows vertical scaling. This field is deprecated.",
           "type": "boolean"
         }
       }
@@ -1489,6 +1489,10 @@
         "monitoring": {
           "description": "Monitoring specifies the configuration of monitoring.",
           "$ref": "PolicyControllerMonitoringConfig"
+        },
+        "policyContent": {
+          "description": "Specifies the desired policy content on the cluster",
+          "$ref": "PolicyControllerPolicyContentSpec"
         }
       }
     },
@@ -1523,6 +1527,46 @@
               "PROMETHEUS",
               "CLOUD_MONITORING"
             ]
+          }
+        }
+      }
+    },
+    "PolicyControllerPolicyContentSpec": {
+      "id": "PolicyControllerPolicyContentSpec",
+      "description": "PolicyContentSpec defines the user's desired content configuration on the cluster.",
+      "type": "object",
+      "properties": {
+        "bundles": {
+          "description": "map of bundle name to BundleInstallSpec. The bundle name maps to the `bundleName` key in the `policycontroller.gke.io\/constraintData` annotation on a constraint.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PolicyControllerBundleInstallSpec"
+          }
+        }
+      }
+    },
+    "PolicyControllerBundleInstallSpec": {
+      "id": "PolicyControllerBundleInstallSpec",
+      "description": "BundleInstallSpec is the specification configuration for a single managed bundle.",
+      "type": "object",
+      "properties": {
+        "management": {
+          "description": "Management specifies how the bundle will be managed by the controller.",
+          "type": "string",
+          "enumDescriptions": [
+            "No Management strategy has been specified.",
+            "The entity should be insistently reconciled by the Hub controller"
+          ],
+          "enum": [
+            "MANAGEMENT_UNSPECIFIED",
+            "INSTALLED"
+          ]
+        },
+        "exemptedNamespaces": {
+          "description": "the set of namespaces to be exempted from the bundle",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -2420,7 +2464,7 @@
       "type": "object",
       "properties": {
         "componentStates": {
-          "description": "Currently these include (also serving as map keys): 1. \"admission\" 2. \"audit\" 3. \"mutation\" 4. \"constraint template library\"",
+          "description": "Currently these include (also serving as map keys): 1. \"admission\" 2. \"audit\" 3. \"mutation\"",
           "type": "object",
           "additionalProperties": {
             "$ref": "PolicyControllerOnClusterState"
@@ -2451,6 +2495,13 @@
             "HUB_ERROR",
             "SUSPENDED"
           ]
+        },
+        "contentStates": {
+          "description": "The state of the template library and any bundles included in the chosen version of the manifest",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PolicyControllerOnClusterState"
+          }
         }
       }
     },
@@ -2503,6 +2554,10 @@
       "description": "CommonFleetDefaultMemberConfigSpec contains default configuration information for memberships of a fleet",
       "type": "object",
       "properties": {
+        "helloworld": {
+          "description": "Hello World-specific spec.",
+          "$ref": "HelloWorldMembershipSpec"
+        },
         "identityservice": {
           "description": "Identity Service-specific spec.",
           "$ref": "IdentityServiceMembershipSpec"

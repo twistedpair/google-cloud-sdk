@@ -429,6 +429,13 @@
             "type": "string"
           }
         },
+        "savedQueries": {
+          "description": "All SavedQueries belong to the Dataset will be returned in List\/Get Dataset response. The annotation_specs field will not be populated except for UI cases which will only use annotation_spec_count. In CreateDataset request, a SavedQuery is created together if this field is set, up to one SavedQuery can be set in CreateDatasetRequest. The SavedQuery should not contain any AnnotationSpec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SavedQuery"
+          }
+        },
         "encryptionSpec": {
           "description": "Customer-managed encryption key spec for a Dataset. If set, this Dataset and all sub-resources of this Dataset will be secured by this key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
@@ -437,6 +444,62 @@
           "description": "Output only. The resource name of the Artifact that was created in MetadataStore when creating the Dataset. The Artifact resource name pattern is `projects\/{project}\/locations\/{location}\/metadataStores\/{metadata_store}\/artifacts\/{artifact}`.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SavedQuery": {
+      "id": "GoogleCloudAiplatformV1beta1SavedQuery",
+      "description": "A SavedQuery is a view of the dataset. It references a subset of annotations by problem type and filters.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the SavedQuery.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the SavedQuery. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Some additional information about the SavedQuery.",
+          "type": "any"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this SavedQuery was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when SavedQuery was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "annotationFilter": {
+          "description": "Output only. Filters on the Annotations in the dataset.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "problemType": {
+          "description": "Required. Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING",
+          "type": "string"
+        },
+        "annotationSpecCount": {
+          "description": "Output only. Number of AnnotationSpecs in the context of the SavedQuery.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "etag": {
+          "description": "Used to perform a consistent read-modify-write update. If not set, a blind \"overwrite\" update happens.",
+          "type": "string"
+        },
+        "supportAutomlTraining": {
+          "description": "Output only. If the Annotations belonging to the SavedQuery can be used for AutoML training.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -771,62 +834,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1SavedQuery": {
-      "id": "GoogleCloudAiplatformV1beta1SavedQuery",
-      "description": "A SavedQuery is a view of the dataset. It references a subset of annotations by problem type and filters.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. Resource name of the SavedQuery.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Required. The user-defined name of the SavedQuery. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Some additional information about the SavedQuery.",
-          "type": "any"
-        },
-        "createTime": {
-          "description": "Output only. Timestamp when this SavedQuery was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Timestamp when SavedQuery was last updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "annotationFilter": {
-          "description": "Output only. Filters on the Annotations in the dataset.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "problemType": {
-          "description": "Required. Problem type of the SavedQuery. Allowed values: * IMAGE_CLASSIFICATION_SINGLE_LABEL * IMAGE_CLASSIFICATION_MULTI_LABEL * IMAGE_BOUNDING_POLY * IMAGE_BOUNDING_BOX * TEXT_CLASSIFICATION_SINGLE_LABEL * TEXT_CLASSIFICATION_MULTI_LABEL * TEXT_EXTRACTION * TEXT_SENTIMENT * VIDEO_CLASSIFICATION * VIDEO_OBJECT_TRACKING",
-          "type": "string"
-        },
-        "annotationSpecCount": {
-          "description": "Output only. Number of AnnotationSpecs in the context of the SavedQuery.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "etag": {
-          "description": "Used to perform a consistent read-modify-write update. If not set, a blind \"overwrite\" update happens.",
-          "type": "string"
-        },
-        "supportAutomlTraining": {
-          "description": "Output only. If the Annotations belonging to the SavedQuery can be used for AutoML training.",
-          "readOnly": true,
-          "type": "boolean"
-        }
-      }
-    },
     "GoogleCloudAiplatformV1beta1AnnotationSpec": {
       "id": "GoogleCloudAiplatformV1beta1AnnotationSpec",
       "description": "Identifies a concept with which DataItems may be annotated with.",
@@ -1108,7 +1115,7 @@
           "type": "boolean"
         },
         "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         },
         "privateEndpoints": {
@@ -3325,7 +3332,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "enableAccessLogging": {
@@ -3582,6 +3589,10 @@
         },
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
         }
       }
@@ -4313,6 +4324,10 @@
         },
         "useElapsedDuration": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        },
+        "updateAllStoppedTrials": {
+          "description": "ConvexAutomatedStoppingSpec by default only updates the trials that needs to be early stopped using a newly trained auto-regressive model. When this flag is set to True, all stopped trials from the beginning are potentially updated in terms of their `final_measurement`. Also, note that the training logic of autoregressive models is different in this case. Enabling this option has shown better results and this may be the default option in the future.",
           "type": "boolean"
         }
       }
@@ -6785,6 +6800,10 @@
         "model": {
           "description": "Required. The Model to create.",
           "$ref": "GoogleCloudAiplatformV1beta1Model"
+        },
+        "serviceAccount": {
+          "description": "Optional. The user-provided custom service account to use to do the model upload. If empty, [Vertex AI Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) will be used. Users uploading the Model must have the `iam.serviceAccounts.actAs` permission on this service account. Also, this account must belong to the project specified in the `parent` field and have all necessary read permissions.",
+          "type": "string"
         }
       }
     },
@@ -8604,6 +8623,50 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse",
+      "description": "Response message for TensorboardService.GetTensorboardUsage.",
+      "type": "object",
+      "properties": {
+        "monthlyUsageData": {
+          "description": "Maps year-month (YYYYMM) string to per month usage data.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerMonthUsageData"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerMonthUsageData": {
+      "id": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerMonthUsageData",
+      "description": "Per month usage data",
+      "type": "object",
+      "properties": {
+        "userUsageData": {
+          "description": "Usage data for each user in the given month.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerUserUsageData"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerUserUsageData": {
+      "id": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerUserUsageData",
+      "description": "Per user usage data.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "User's username",
+          "type": "string"
+        },
+        "viewCount": {
+          "description": "Number of times the user has read data within the Tensorboard.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ListTensorboardsResponse": {
       "id": "GoogleCloudAiplatformV1beta1ListTensorboardsResponse",
       "description": "Response message for TensorboardService.ListTensorboards.",
@@ -8758,7 +8821,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
         },
         "tensorboardRunId": {
-          "description": "Required. The ID to use for the Tensorboard run, which will become the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+          "description": "Required. The ID to use for the Tensorboard run, which becomes the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
           "type": "string"
         }
       }
@@ -8819,7 +8882,7 @@
           "type": "string"
         },
         "tensorboardTimeSeriesId": {
-          "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
+          "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which becomes the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
           "type": "string"
         },
         "tensorboardTimeSeries": {
@@ -9169,7 +9232,7 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "The maximum number of data points to return per page. The default page_size will be 1000. Values must be between 1 and 10000. Values above 10000 will be coerced to 10000.",
+          "description": "The maximum number of data points to return per page. The default page_size is 1000. Values must be between 1 and 10000. Values above 10000 are coerced to 10000.",
           "type": "integer",
           "format": "int32"
         },
@@ -9178,7 +9241,7 @@
           "type": "string"
         },
         "orderBy": {
-          "description": "Field to use to sort the TensorboardTimeSeries' data. By default, TensorboardTimeSeries' data will be returned in a pseudo random order.",
+          "description": "Field to use to sort the TensorboardTimeSeries' data. By default, TensorboardTimeSeries' data is returned in a pseudo random order.",
           "type": "string"
         }
       }
@@ -10060,6 +10123,10 @@
         },
         "disableContainerLogging": {
           "description": "For custom-trained Models and AutoML Tabular Models, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging by default. Please note that the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing). User can disable container logging by setting this flag to true.",
+          "type": "boolean"
+        },
+        "enableAccessLogging": {
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         }
       }
@@ -13267,7 +13334,7 @@
           "type": "boolean"
         },
         "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         },
         "privateEndpoints": {
@@ -14170,7 +14237,7 @@
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformUiDedicatedResources"
         },
         "enableAccessLogging": {
@@ -16161,6 +16228,10 @@
         },
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
         }
       }
@@ -24161,7 +24232,7 @@
           "type": "boolean"
         },
         "enableAccessLogging": {
-          "description": "These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "description": "If true, online prediction access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each prediction request. Note that Stackdriver logs may incur a cost, especially if your project receives prediction requests at a high queries per second rate (QPS). Estimate your costs before enabling this option.",
           "type": "boolean"
         },
         "privateEndpoints": {
@@ -24771,7 +24842,7 @@
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformV1DedicatedResources"
         },
         "enableAccessLogging": {
@@ -27205,6 +27276,10 @@
         "enableWebAccess": {
           "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
+        },
+        "enableDashboardAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable access to the customized dashboard in training chief container. If set to `true`, you can access the dashboard at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
         }
       }
     },
@@ -27579,6 +27654,10 @@
         },
         "useElapsedDuration": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        },
+        "updateAllStoppedTrials": {
+          "description": "ConvexAutomatedStoppingSpec by default only updates the trials that needs to be early stopped using a newly trained auto-regressive model. When this flag is set to True, all stopped trials from the beginning are potentially updated in terms of their `final_measurement`. Also, note that the training logic of autoregressive models is different in this case. Enabling this option has shown better results and this may be the default option in the future.",
           "type": "boolean"
         }
       }
@@ -36590,6 +36669,11 @@
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
+                    },
+                    "orderBy": {
+                      "description": "A comma-separated list of fields to order by, sorted in ascending order. Use \"desc\" after a field name for descending. Supported fields: * `create_time` * `update_time` Example: `update_time asc, create_time desc`.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -38321,6 +38405,31 @@
                   ],
                   "description": "Gets a Tensorboard."
                 },
+                "readUsage": {
+                  "id": "aiplatform.projects.locations.tensorboards.readUsage",
+                  "path": "v1beta1/{+tensorboard}:readUsage",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}:readUsage",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "tensorboard": {
+                      "description": "Required. The name of the Tensorboard resource. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "tensorboard"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns a list of monthly active users for a given TensorBoard instance."
+                },
                 "patch": {
                   "id": "aiplatform.projects.locations.tensorboards.patch",
                   "path": "v1beta1/{+name}",
@@ -38335,7 +38444,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Tensorboard resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Tensorboard resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -38374,7 +38483,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 100 Tensorboards will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 100 Tensorboards are returned. The maximum value is 100; values above 100 are coerced to 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -38602,7 +38711,7 @@
                           "type": "string"
                         },
                         "tensorboardExperimentId": {
-                          "description": "Required. The ID to use for the Tensorboard experiment, which will become the final component of the Tensorboard experiment's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+                          "description": "Required. The ID to use for the Tensorboard experiment, which becomes the final component of the Tensorboard experiment's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
                           "location": "query",
                           "type": "string"
                         }
@@ -38660,7 +38769,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardExperiment resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardExperiment resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -38699,7 +38808,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of TensorboardExperiments to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardExperiments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "description": "The maximum number of TensorboardExperiments to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardExperiments are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -38783,7 +38892,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error will be returned."
+                      "description": "Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error is returned."
                     }
                   }
                   ,
@@ -38955,7 +39064,7 @@
                               "type": "string"
                             },
                             "tensorboardRunId": {
-                              "description": "Required. The ID to use for the Tensorboard run, which will become the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+                              "description": "Required. The ID to use for the Tensorboard run, which becomes the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
                               "location": "query",
                               "type": "string"
                             }
@@ -39041,7 +39150,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardRun resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                              "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardRun resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"
@@ -39080,7 +39189,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "The maximum number of TensorboardRuns to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardRuns will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "description": "The maximum number of TensorboardRuns to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardRuns are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -39164,7 +39273,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned."
+                          "description": "Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error is returned."
                         }
                       }
                       ,
@@ -39370,7 +39479,7 @@
                                   "type": "string"
                                 },
                                 "tensorboardTimeSeriesId": {
-                                  "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
+                                  "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which becomes the final component of the TensorboardTimeSeries's resource name. This value should match \"a-z0-9{0, 127}\"",
                                   "location": "query",
                                   "type": "string"
                                 }
@@ -39428,7 +39537,7 @@
                                   "type": "string"
                                 },
                                 "updateMask": {
-                                  "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardTimeSeries resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten if new values are specified.",
+                                  "description": "Required. Field mask is used to specify the fields to be overwritten in the TensorboardTimeSeries resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field is overwritten if it's in the mask. If the user does not provide a mask then all fields are overwritten if new values are specified.",
                                   "location": "query",
                                   "type": "string",
                                   "format": "google-fieldmask"
@@ -39467,7 +39576,7 @@
                                   "type": "string"
                                 },
                                 "pageSize": {
-                                  "description": "The maximum number of TensorboardTimeSeries to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardTimeSeries will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                                  "description": "The maximum number of TensorboardTimeSeries to return. The service may return fewer than this value. If unspecified, at most 50 TensorboardTimeSeries are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                                   "location": "query",
                                   "type": "integer",
                                   "format": "int32"
@@ -39566,7 +39675,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data will be returned. Otherwise, that limit number of data points will be randomly selected from this time series and returned."
+                              "description": "Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data is returned. Otherwise, the number limit of data points is randomly selected from this time series and returned."
                             },
                             "read": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.read",
@@ -39602,7 +39711,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k."
+                              "description": "Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data is returned. Otherwise, 1000 data points is randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k."
                             },
                             "readBlobData": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.readBlobData",

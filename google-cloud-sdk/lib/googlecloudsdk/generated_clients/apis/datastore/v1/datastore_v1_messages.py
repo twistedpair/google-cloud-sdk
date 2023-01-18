@@ -604,6 +604,9 @@ class EntityResult(_messages.Message):
   r"""The result of fetching an entity from Datastore.
 
   Fields:
+    createTime: The time at which the entity was created. This field is set
+      for `FULL` entity results. If this entity is missing, this field will
+      not be set.
     cursor: A cursor that points to the position after the result entity. Set
       only when the `EntityResult` is part of a `QueryResultBatch` message.
     entity: The resulting entity.
@@ -617,10 +620,11 @@ class EntityResult(_messages.Message):
       and it is always set except for eventually consistent reads.
   """
 
-  cursor = _messages.BytesField(1)
-  entity = _messages.MessageField('Entity', 2)
-  updateTime = _messages.StringField(3)
-  version = _messages.IntegerField(4)
+  createTime = _messages.StringField(1)
+  cursor = _messages.BytesField(2)
+  entity = _messages.MessageField('Entity', 3)
+  updateTime = _messages.StringField(4)
+  version = _messages.IntegerField(5)
 
 
 class Filter(_messages.Message):
@@ -1772,6 +1776,8 @@ class MutationResult(_messages.Message):
     conflictDetected: Whether a conflict was detected for this mutation.
       Always false when a conflict detection strategy field is not set in the
       mutation.
+    createTime: The create time of the entity. This field will not be set
+      after a 'delete'.
     key: The automatically allocated key. Set only when the mutation allocated
       a key.
     updateTime: The update time of the entity on the server after processing
@@ -1786,9 +1792,10 @@ class MutationResult(_messages.Message):
   """
 
   conflictDetected = _messages.BooleanField(1)
-  key = _messages.MessageField('Key', 2)
-  updateTime = _messages.StringField(3)
-  version = _messages.IntegerField(4)
+  createTime = _messages.StringField(2)
+  key = _messages.MessageField('Key', 3)
+  updateTime = _messages.StringField(4)
+  version = _messages.IntegerField(5)
 
 
 class PartitionId(_messages.Message):

@@ -1570,6 +1570,64 @@ class AliasIpRange(_messages.Message):
   subnetworkRangeName = _messages.StringField(2)
 
 
+class AllocationAggregateReservation(_messages.Message):
+  r"""This reservation type is specified by total resource amounts (e.g. total
+  count of CPUs) and can account for multiple instance SKUs. In other words,
+  one can create instances of varying shapes against this reservation.
+
+  Enums:
+    VmFamilyValueValuesEnum: The VM family that all instances scheduled
+      against this reservation must belong to.
+
+  Fields:
+    inUseResources: [Output only] List of resources currently in use.
+    reservedResources: List of reserved resources (CPUs, memory,
+      accelerators).
+    vmFamily: The VM family that all instances scheduled against this
+      reservation must belong to.
+  """
+
+  class VmFamilyValueValuesEnum(_messages.Enum):
+    r"""The VM family that all instances scheduled against this reservation
+    must belong to.
+
+    Values:
+      VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P: <no description>
+      VM_FAMILY_GENERAL_PURPOSE_T2D: <no description>
+      VM_FAMILY_MEMORY_OPTIMIZED_M3: <no description>
+    """
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 0
+    VM_FAMILY_GENERAL_PURPOSE_T2D = 1
+    VM_FAMILY_MEMORY_OPTIMIZED_M3 = 2
+
+  inUseResources = _messages.MessageField('AllocationAggregateReservationReservedResourceInfo', 1, repeated=True)
+  reservedResources = _messages.MessageField('AllocationAggregateReservationReservedResourceInfo', 2, repeated=True)
+  vmFamily = _messages.EnumField('VmFamilyValueValuesEnum', 3)
+
+
+class AllocationAggregateReservationReservedResourceInfo(_messages.Message):
+  r"""A AllocationAggregateReservationReservedResourceInfo object.
+
+  Fields:
+    accelerator: Properties of accelerator resources in this reservation.
+  """
+
+  accelerator = _messages.MessageField('AllocationAggregateReservationReservedResourceInfoAccelerator', 1)
+
+
+class AllocationAggregateReservationReservedResourceInfoAccelerator(_messages.Message):
+  r"""A AllocationAggregateReservationReservedResourceInfoAccelerator object.
+
+  Fields:
+    acceleratorCount: Number of accelerators of specified type.
+    acceleratorType: Full or partial URL to accelerator type. e.g.
+      "projects/{PROJECT}/zones/{ZONE}/acceleratorTypes/ct4l"
+  """
+
+  acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acceleratorType = _messages.StringField(2)
+
+
 class AllocationResourceStatus(_messages.Message):
   r"""[Output Only] Contains output only fields.
 
@@ -1685,8 +1743,15 @@ class AllocationSpecificSKUReservation(_messages.Message):
     count: Specifies the number of resources that are allocated.
     inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
-    sourceInstanceTemplate: Specific URL of the instance template used in the
-      reservation
+    sourceInstanceTemplate: Specifies the instance template to create the
+      reservation. If you use this field, you must exclude the
+      instanceProperties field. This field is optional, and it can be a full
+      or partial URL. For example, the following are all valid URLs to an
+      instance template: -
+      https://www.googleapis.com/compute/v1/projects/project
+      /global/instanceTemplates/instanceTemplate -
+      projects/project/global/instanceTemplates/instanceTemplate -
+      global/instanceTemplates/instanceTemplate
   """
 
   assuredCount = _messages.IntegerField(1)
@@ -13972,6 +14037,80 @@ class ComputeInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
+  r"""A ComputeInstanceTemplatesAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
   r"""A ComputeInstanceTemplatesDeleteRequest object.
 
@@ -24583,6 +24722,38 @@ class ComputeRegionInstantSnapshotsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group where you are
+      attaching network endpoints to. It should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where you want to create the network
+      endpoint group. It should comply with RFC1035.
+    regionNetworkEndpointGroupsAttachEndpointsRequest: A
+      RegionNetworkEndpointGroupsAttachEndpointsRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionNetworkEndpointGroupsAttachEndpointsRequest = _messages.MessageField('RegionNetworkEndpointGroupsAttachEndpointsRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
 
@@ -24608,6 +24779,39 @@ class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group you are
+      detaching network endpoints from. It should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    regionNetworkEndpointGroupsDetachEndpointsRequest: A
+      RegionNetworkEndpointGroupsDetachEndpointsRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000). end_interface:
+      MixerMutationRequestBuilder
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionNetworkEndpointGroupsDetachEndpointsRequest = _messages.MessageField('RegionNetworkEndpointGroupsDetachEndpointsRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionNetworkEndpointGroupsGetRequest(_messages.Message):
@@ -24651,6 +24855,79 @@ class ComputeRegionNetworkEndpointGroupsInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    networkEndpointGroup: The name of the network endpoint group from which
+      you want to generate a list of included network endpoints. It should
+      comply with RFC1035.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  networkEndpointGroup = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
 
 
 class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
@@ -27532,6 +27809,7 @@ class ComputeResourcePoliciesPatchRequest(_messages.Message):
   r"""A ComputeResourcePoliciesPatchRequest object.
 
   Fields:
+    paths: A string attribute.
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -27551,12 +27829,13 @@ class ComputeResourcePoliciesPatchRequest(_messages.Message):
       request.
   """
 
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  resourcePolicy = _messages.StringField(4, required=True)
-  resourcePolicyResource = _messages.MessageField('ResourcePolicy', 5)
-  updateMask = _messages.StringField(6)
+  paths = _messages.StringField(1, repeated=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  resourcePolicy = _messages.StringField(5, required=True)
+  resourcePolicyResource = _messages.MessageField('ResourcePolicy', 6)
+  updateMask = _messages.StringField(7)
 
 
 class ComputeResourcePoliciesSetIamPolicyRequest(_messages.Message):
@@ -36990,8 +37269,7 @@ class FirewallPolicyRule(_messages.Message):
 
   Fields:
     action: The Action to perform when the client connection triggers the
-      rule. Can currently be either "allow" or "deny()" where valid values for
-      status are 403, 404, and 502.
+      rule. Valid actions are "allow", "deny" and "goto_next".
     description: An optional description for this resource.
     direction: The direction in which this rule applies.
     disabled: Denotes whether the firewall policy rule is disabled. When set
@@ -39650,6 +39928,17 @@ class HealthCheck(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    sourceRegions: The list of cloud regions from which health checks are
+      performed. If any regions are specified, then exactly 3 regions should
+      be specified. The region names must be valid names of GCP regions. This
+      can only be set for global health check. If this list is non-empty, then
+      there are restrictions on what other health check fields are supported
+      and what other resources can use this health check: - SSL, HTTP2, and
+      GRPC protocols are not supported. - The TCP request field is not
+      supported. - The proxyHeader field for HTTP, HTTPS, and TCP is not
+      supported. - The checkIntervalSec field must be at least 30. - The
+      health check cannot be used with BackendService nor with managed
+      instance group auto-healing.
     sslHealthCheck: A SSLHealthCheck attribute.
     tcpHealthCheck: A TCPHealthCheck attribute.
     timeoutSec: How long (in seconds) to wait before claiming failure. The
@@ -39702,12 +39991,13 @@ class HealthCheck(_messages.Message):
   region = _messages.StringField(13)
   selfLink = _messages.StringField(14)
   selfLinkWithId = _messages.StringField(15)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 16)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 17)
-  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 20)
-  unhealthyThreshold = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  sourceRegions = _messages.StringField(16, repeated=True)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 17)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 18)
+  timeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 21)
+  unhealthyThreshold = _messages.IntegerField(22, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -42585,6 +42875,9 @@ class Instance(_messages.Message):
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
       by the setLabels method.
+    ServiceIntegrationSpecsValue: Mapping of user-defined keys to
+      specifications for service integrations. Currently only a single key-
+      value pair is supported.
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
@@ -42704,6 +42997,9 @@ class Instance(_messages.Message):
       is supported. Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    serviceIntegrationSpecs: Mapping of user-defined keys to specifications
+      for service integrations. Currently only a single key-value pair is
+      supported.
     shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
       attribute.
@@ -42839,6 +43135,33 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceIntegrationSpecsValue(_messages.Message):
+    r"""Mapping of user-defined keys to specifications for service
+    integrations. Currently only a single key-value pair is supported.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ServiceIntegrationSpecsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ServiceIntegrationSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceIntegrationSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ServiceIntegrationSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ServiceIntegrationSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 1)
   canIpForward = _messages.BooleanField(2)
   confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
@@ -42880,18 +43203,19 @@ class Instance(_messages.Message):
   selfLink = _messages.StringField(39)
   selfLinkWithId = _messages.StringField(40)
   serviceAccounts = _messages.MessageField('ServiceAccount', 41, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 42)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 43)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 44)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 45)
-  sourceMachineImage = _messages.StringField(46)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 47)
-  startRestricted = _messages.BooleanField(48)
-  status = _messages.EnumField('StatusValueValuesEnum', 49)
-  statusMessage = _messages.StringField(50)
-  tags = _messages.MessageField('Tags', 51)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 52)
-  zone = _messages.StringField(53)
+  serviceIntegrationSpecs = _messages.MessageField('ServiceIntegrationSpecsValue', 42)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 43)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 44)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 45)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 46)
+  sourceMachineImage = _messages.StringField(47)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 48)
+  startRestricted = _messages.BooleanField(49)
+  status = _messages.EnumField('StatusValueValuesEnum', 50)
+  statusMessage = _messages.StringField(51)
+  tags = _messages.MessageField('Tags', 52)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 53)
+  zone = _messages.StringField(54)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -46467,6 +46791,8 @@ class InstanceProperties(_messages.Message):
       manager tags. Keys must be in the format `tagKeys/{tag_key_id}`, and
       values are in the format `tagValues/456`. The field is ignored (both PUT
       & PATCH) when empty.
+    ServiceIntegrationSpecsValue: Mapping of user defined keys to
+      ServiceIntegrationSpec.
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
@@ -46531,6 +46857,8 @@ class InstanceProperties(_messages.Message):
       tokens for these service accounts are available to the instances that
       are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
+    serviceIntegrationSpecs: Mapping of user defined keys to
+      ServiceIntegrationSpec.
     shieldedInstanceConfig: Note that for MachineImage, this is not supported
       yet.
     shieldedVmConfig: Specifies the Shielded VM options for the instances that
@@ -46642,6 +46970,32 @@ class InstanceProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceIntegrationSpecsValue(_messages.Message):
+    r"""Mapping of user defined keys to ServiceIntegrationSpec.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ServiceIntegrationSpecsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ServiceIntegrationSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceIntegrationSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ServiceIntegrationSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ServiceIntegrationSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 1)
   canIpForward = _messages.BooleanField(2)
   confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
@@ -46664,9 +47018,10 @@ class InstanceProperties(_messages.Message):
   scheduling = _messages.MessageField('Scheduling', 20)
   secureTags = _messages.StringField(21, repeated=True)
   serviceAccounts = _messages.MessageField('ServiceAccount', 22, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 24)
-  tags = _messages.MessageField('Tags', 25)
+  serviceIntegrationSpecs = _messages.MessageField('ServiceIntegrationSpecsValue', 23)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 25)
+  tags = _messages.MessageField('Tags', 26)
 
 
 class InstancePropertiesPatch(_messages.Message):
@@ -46797,6 +47152,190 @@ class InstanceTemplate(_messages.Message):
   selfLinkWithId = _messages.StringField(9)
   sourceInstance = _messages.StringField(10)
   sourceInstanceParams = _messages.MessageField('SourceInstanceParams', 11)
+
+
+class InstanceTemplateAggregatedList(_messages.Message):
+  r"""Contains a list of InstanceTemplatesScopedList.
+
+  Messages:
+    ItemsValue: A list of InstanceTemplatesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceTemplatesScopedList resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of InstanceTemplatesScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: The name of the scope that contains this set of
+        instance templates.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A InstanceTemplatesScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InstanceTemplatesScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default='compute#instanceTemplateAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceTemplateList(_messages.Message):
@@ -46956,6 +47495,155 @@ class InstanceTemplateList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class InstanceTemplatesScopedList(_messages.Message):
+  r"""A InstanceTemplatesScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] An informational warning that replaces the
+      list of instance templates when the list is empty.
+
+  Fields:
+    instanceTemplates: [Output Only] A list of instance templates that are
+      contained within the specified project and zone.
+    warning: [Output Only] An informational warning that replaces the list of
+      instance templates when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] An informational warning that replaces the list of
+    instance templates when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  instanceTemplates = _messages.MessageField('InstanceTemplate', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class InstanceWithNamedPorts(_messages.Message):
@@ -55490,6 +56178,8 @@ class NetworkInterface(_messages.Message):
       is assigned by the system.
     nicType: The type of vNIC to be used on this interface. This may be gVNIC
       or VirtioNet.
+    parentNicName: Name of the parent network interface of a VLAN based nic.
+      If this field is specified, vlan must be set.
     queueCount: The networking queue count that's specified by users for the
       network interface. Both Rx and Tx queues will be set to this number.
       It'll be empty if not specified by the users.
@@ -55510,6 +56200,9 @@ class NetworkInterface(_messages.Message):
       full or partial URL. For example, the following are all valid URLs: -
       https://www.googleapis.com/compute/v1/projects/project/regions/region
       /subnetworks/subnetwork - regions/region/subnetworks/subnetwork
+    vlan: VLAN tag of a VLAN based network interface, must be in range from 2
+      to 4094 inclusively. This field is mandatory if the parent network
+      interface name is set.
   """
 
   class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
@@ -55563,10 +56256,12 @@ class NetworkInterface(_messages.Message):
   networkAttachment = _messages.StringField(11)
   networkIP = _messages.StringField(12)
   nicType = _messages.EnumField('NicTypeValueValuesEnum', 13)
-  queueCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 15)
-  subinterfaces = _messages.MessageField('NetworkInterfaceSubInterface', 16, repeated=True)
-  subnetwork = _messages.StringField(17)
+  parentNicName = _messages.StringField(14)
+  queueCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 16)
+  subinterfaces = _messages.MessageField('NetworkInterfaceSubInterface', 17, repeated=True)
+  subnetwork = _messages.StringField(18)
+  vlan = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class NetworkInterfaceSubInterface(_messages.Message):
@@ -64925,6 +65620,26 @@ class RegionList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RegionNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
+  r"""A RegionNetworkEndpointGroupsAttachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be attached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class RegionNetworkEndpointGroupsDetachEndpointsRequest(_messages.Message):
+  r"""A RegionNetworkEndpointGroupsDetachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be detached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
 class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse(_messages.Message):
   r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse object.
 
@@ -65090,6 +65805,8 @@ class Reservation(_messages.Message):
       is to define placement policy with reservation.
 
   Fields:
+    aggregateReservation: Reservation for aggregated resources, providing
+      shape flexibility.
     commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -65175,22 +65892,23 @@ class Reservation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  commitment = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#reservation')
-  name = _messages.StringField(6)
-  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 7)
-  resourceStatus = _messages.MessageField('AllocationResourceStatus', 8)
-  satisfiesPzs = _messages.BooleanField(9)
-  selfLink = _messages.StringField(10)
-  selfLinkWithId = _messages.StringField(11)
-  shareSettings = _messages.MessageField('ShareSettings', 12)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 13)
-  specificReservationRequired = _messages.BooleanField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  zone = _messages.StringField(16)
+  aggregateReservation = _messages.MessageField('AllocationAggregateReservation', 1)
+  commitment = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#reservation')
+  name = _messages.StringField(7)
+  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 8)
+  resourceStatus = _messages.MessageField('AllocationResourceStatus', 9)
+  satisfiesPzs = _messages.BooleanField(10)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+  shareSettings = _messages.MessageField('ShareSettings', 13)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 14)
+  specificReservationRequired = _messages.BooleanField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  zone = _messages.StringField(17)
 
 
 class ReservationAffinity(_messages.Message):
@@ -66788,16 +67506,52 @@ class ResourceStatus(_messages.Message):
   on Instance attributes as compared to the value requested by the user
   (intent) in their instance CRUD calls.
 
+  Messages:
+    ServiceIntegrationStatusesValue: [Output Only] Represents the status of
+      the service integration specs defined by the user in
+      instance.serviceIntegrationSpecs.
+
   Fields:
     physicalHost: [Output Only] An opaque ID of the host on which the VM is
       running.
     scheduling: A ResourceStatusScheduling attribute.
+    serviceIntegrationStatuses: [Output Only] Represents the status of the
+      service integration specs defined by the user in
+      instance.serviceIntegrationSpecs.
     upcomingMaintenance: A ResourceStatusUpcomingMaintenance attribute.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceIntegrationStatusesValue(_messages.Message):
+    r"""[Output Only] Represents the status of the service integration specs
+    defined by the user in instance.serviceIntegrationSpecs.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ServiceIntegrationStatusesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ServiceIntegrationStatusesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceIntegrationStatusesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ResourceStatusServiceIntegrationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ResourceStatusServiceIntegrationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   physicalHost = _messages.StringField(1)
   scheduling = _messages.MessageField('ResourceStatusScheduling', 2)
-  upcomingMaintenance = _messages.MessageField('ResourceStatusUpcomingMaintenance', 3)
+  serviceIntegrationStatuses = _messages.MessageField('ServiceIntegrationStatusesValue', 3)
+  upcomingMaintenance = _messages.MessageField('ResourceStatusUpcomingMaintenance', 4)
 
 
 class ResourceStatusScheduling(_messages.Message):
@@ -66816,6 +67570,60 @@ class ResourceStatusScheduling(_messages.Message):
 
   availabilityDomain = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   terminationTimestamp = _messages.StringField(2)
+
+
+class ResourceStatusServiceIntegrationStatus(_messages.Message):
+  r"""Represents the status of integration between instance and another
+  service. See go/gce-backupdr-design for more details.
+
+  Fields:
+    backupDr: A ResourceStatusServiceIntegrationStatusBackupDRStatus
+      attribute.
+  """
+
+  backupDr = _messages.MessageField('ResourceStatusServiceIntegrationStatusBackupDRStatus', 1)
+
+
+class ResourceStatusServiceIntegrationStatusBackupDRStatus(_messages.Message):
+  r"""Message defining compute perspective of the result of integration with
+  Backup and DR. FAILED status indicates that the operation specified did not
+  complete correctly and should be retried with the same value.
+
+  Enums:
+    StateValueValuesEnum: Enum representing the registration state of a Backup
+      and DR backup plan for the instance.
+
+  Fields:
+    integrationDetails: The PlanReference object created by Backup and DR to
+      maintain the actual status of backups. May still be present if removing
+      the backup plan fails.
+    state: Enum representing the registration state of a Backup and DR backup
+      plan for the instance.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Enum representing the registration state of a Backup and DR backup
+    plan for the instance.
+
+    Values:
+      ACTIVE: The operation was successful and Backup and DR is trying to
+        protect the instance with the specified backup plan. Check resource
+        pointed to in integration_details for more information.
+      CREATING: GCE is trying to attach the backup plan to the instance.
+      DELETING: GCE is trying to remove the backup plan from the instance.
+      FAILED: The operation failed, specifying the same value in
+        BackupDrSpec.plan again (including null for delete) will attempt to
+        repair the integration
+      STATE_UNSPECIFIED: Default value, should not be found on instances.
+    """
+    ACTIVE = 0
+    CREATING = 1
+    DELETING = 2
+    FAILED = 3
+    STATE_UNSPECIFIED = 4
+
+  integrationDetails = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class ResourceStatusUpcomingMaintenance(_messages.Message):
@@ -70421,7 +71229,8 @@ class SecurityPolicyRule(_messages.Message):
     DirectionValueValuesEnum: The direction in which this rule applies. This
       field may only be specified when versioned_expr is set to FIREWALL.
     RuleManagedProtectionTierValueValuesEnum: [Output Only] The minimum
-      managed protection tier required for this rule.
+      managed protection tier required for this rule. [Deprecated] Use
+      requiredManagedProtectionTiers instead.
 
   Fields:
     action: The Action to perform when the rule is matched. The following are
@@ -70489,7 +71298,8 @@ class SecurityPolicyRule(_messages.Message):
     redirectTarget: This must be specified for redirect actions. Cannot be
       specified for any other actions.
     ruleManagedProtectionTier: [Output Only] The minimum managed protection
-      tier required for this rule.
+      tier required for this rule. [Deprecated] Use
+      requiredManagedProtectionTiers instead.
     ruleNumber: Identifier for the rule. This is only unique within the given
       security policy. This can only be set during rule creation, if rule
       number is not specified it will be generated by the server.
@@ -70517,16 +71327,14 @@ class SecurityPolicyRule(_messages.Message):
 
   class RuleManagedProtectionTierValueValuesEnum(_messages.Enum):
     r"""[Output Only] The minimum managed protection tier required for this
-    rule.
+    rule. [Deprecated] Use requiredManagedProtectionTiers instead.
 
     Values:
-      CAMP_PLUS: Plus tier protection.
-      CAMP_PREMIUM: Premium tier protection.
-      CAMP_STANDARD: Standard tier protection.
+      NONE: Standard protection.
+      PLUS: Plus tier protection.
     """
-    CAMP_PLUS = 0
-    CAMP_PREMIUM = 1
-    CAMP_STANDARD = 2
+    NONE = 0
+    PLUS = 1
 
   action = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -71950,6 +72758,29 @@ class ServiceAttachmentsScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class ServiceIntegrationSpec(_messages.Message):
+  r"""Specifies the parameters to configure an integration with instances.
+
+  Fields:
+    backupDr: A ServiceIntegrationSpecBackupDRSpec attribute.
+  """
+
+  backupDr = _messages.MessageField('ServiceIntegrationSpecBackupDRSpec', 1)
+
+
+class ServiceIntegrationSpecBackupDRSpec(_messages.Message):
+  r"""Specifies parameters to Backup and DR to attach a BackupPlan to a
+  compute instance for managed VM backup.
+
+  Fields:
+    plan: The BackupPlan resource to attach to the instance. Specified as a
+      resource reference in instances, and regional instance templates, and as
+      just the plan name in global instance templates
+  """
+
+  plan = _messages.StringField(1)
+
+
 class ShareSettings(_messages.Message):
   r"""The share setting for reservations and sole tenancy node groups.
 
@@ -72642,8 +73473,8 @@ class SourceInstanceParams(_messages.Message):
 
   Fields:
     diskConfigs: Attached disks configuration. If not provided, defaults are
-      applied: For boot disk and any other R/W disks, new custom images will
-      be created from each disk. For read-only disks, they will be attached in
+      applied: For boot disk and any other R/W disks, the source images for
+      each disk will be used. For read-only disks, they will be attached in
       read-only mode. Local SSD disks will be created as blank volumes.
   """
 

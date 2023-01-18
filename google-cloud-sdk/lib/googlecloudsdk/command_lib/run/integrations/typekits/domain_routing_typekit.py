@@ -26,6 +26,13 @@ from googlecloudsdk.command_lib.run.integrations.typekits import base
 class DomainRoutingTypeKit(base.TypeKit):
   """The domain routing integration typekit."""
 
+  def GetDeployMessage(self, create=False):
+    message = 'This might take up to 5 minutes.'
+
+    if create:
+      message += ' Manual DNS configuration will be required after completion.'
+    return message
+
   def UpdateResourceConfig(self, parameters, resource_config):
     """Updates the resource config according to the parameters.
 

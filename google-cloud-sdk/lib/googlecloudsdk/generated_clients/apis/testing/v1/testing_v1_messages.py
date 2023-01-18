@@ -1009,7 +1009,7 @@ class ManualSharding(_messages.Message):
       least one shard if this field is present. When you select one or more
       physical devices, the number of repeated test_targets_for_shard must be
       <= 50. When you select one or more ARM virtual devices, it must be <=
-      50. When you select only x86 virtual devices, it must be <= 500.
+      100. When you select only x86 virtual devices, it must be <= 500.
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
@@ -2031,7 +2031,7 @@ class UniformSharding(_messages.Message):
       always be a positive number that is no greater than the total number of
       test cases. When you select one or more physical devices, the number of
       shards must be <= 50. When you select one or more ARM virtual devices,
-      it must be <= 50. When you select only x86 virtual devices, it must be
+      it must be <= 100. When you select only x86 virtual devices, it must be
       <= 500.
   """
 

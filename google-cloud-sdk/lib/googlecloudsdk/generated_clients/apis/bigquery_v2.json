@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20221205",
+ "revision": "20230106",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -110,12 +110,12 @@
     "code": {
      "type": "string",
      "description": "[Output-only] High-level BI Engine reason for partial or disabled acceleration.",
-     "default": "$(reason.code)"
+     "default": ""
     },
     "message": {
      "type": "string",
      "description": "[Output-only] Free form human-readable reason for partial or disabled acceleration.",
-     "default": "$(reason.message)"
+     "default": ""
     }
    }
   },
@@ -123,10 +123,15 @@
    "id": "BiEngineStatistics",
    "type": "object",
    "properties": {
+    "accelerationMode": {
+     "type": "string",
+     "description": "[Output-only] Specifies which mode of BI Engine acceleration was performed (if any).",
+     "default": ""
+    },
     "biEngineMode": {
      "type": "string",
      "description": "[Output-only] Specifies which mode of BI Engine acceleration was performed (if any).",
-     "default": "$(stats.bi_engine_mode)"
+     "default": ""
     },
     "biEngineReasons": {
      "type": "array",
