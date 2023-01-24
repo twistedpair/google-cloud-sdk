@@ -83,7 +83,11 @@ def AddListResourcesFlags(parser):
 
 def AddResourceTypeFlags(parser):
   """Add resource-type flag to parser."""
-  group = parser.add_group(mutex=True, required=False)
+  group = parser.add_group(
+      mutex=True,
+      required=False,
+      help='`RESOURCE TYPE FILTERS` - specify resource types to export.',
+  )
   group.add_argument(
       '--resource-types',
       type=arg_parsers.ArgList(),
@@ -110,13 +114,25 @@ def AddBulkExportArgs(parser):
   AddOnErrorFlag(parser)
   AddPathFlag(parser)
   AddFormatFlag(parser)
-  AddResourceTypeFlags(parser)
-  parser.add_argument(
+  # Make a Mutex Group Here!!!!!
+  resource_storage_mutex = parser.add_group(
+      mutex=True,
+      help=(
+          'Select `storage-path` if you want to specify the Google Cloud'
+          ' Storage bucket bulk-export should use for Cloud Asset Inventory'
+          ' Export. Alternatively, you can provide a `RESOURCE TYPE FILTER` to'
+          ' filter resources. Filtering resources _does not_ use Google Cloud'
+          ' Storage to export resources.'
+      ),
+  )
+  AddResourceTypeFlags(resource_storage_mutex)
+  resource_storage_mutex.add_argument(
       '--storage-path',
       required=False,
       help=('Google Cloud Storage path where a Cloud Asset Inventory export '
             'will be stored, example: '
             '`gs://your-bucket-name/your/prefix/path`'))
+
   _GetBulkExportParentGroup(parser)
 
 
@@ -124,16 +140,38 @@ def ValidateAllPathArgs(args):
   if args.IsSpecified('all'):
     if args.IsSpecified('path') and not os.path.isdir(args.path):
       raise declarative_client_base.ClientException(
-          'Error executing export: "{}" must be a directory when --all is specified.'
-          .format(args.path))
+          'Error executing export: "{}" must be a directory when --all is'
+          ' specified.'.format(args.path)
+      )
 
 
-def _GetBulkExportParentGroup(parser,
-                              required=False,
-                              project_help='Project ID',
-                              org_help='Organization ID',
-                              folder_help='Folder ID'):
-  group = parser.add_group(mutex=True, required=required)
+def _GetBulkExportParentGroup(
+    parser,
+    required=False,
+    project_help='Project ID',
+    org_help='Organization ID',
+    folder_help='Folder ID',
+):
+  """Creates parent flags for resource export.
+
+  Args:
+    parser:
+    required:
+    project_help:
+    org_help:
+    folder_help:
+
+  Returns:
+    Mutext group for resource export parent.
+  """
+  group = parser.add_group(
+      mutex=True,
+      required=required,
+      help=(
+          '`RESOURCE PARENT FLAG` - specify one of the following to determine'
+          ' the scope of exported resources.'
+      ),
+  )
   group.add_argument('--organization', type=str, help=org_help)
   group.add_argument('--project', help=project_help)
   group.add_argument('--folder', type=str, help=folder_help)
@@ -155,23 +193,36 @@ def AddTerraformGenerateImportArgs(parser):
       help='Specify the destination of the generated script.')
 
   file_spec_group = calliope_base.ArgumentGroup(
-      help='Specify the exact filenames for the output import script and module files.'
+      help=(
+          'Specify the exact filenames for the output import script and module'
+          ' files.'
+      )
   )
 
-  file_spec_group.AddArgument(calliope_base.Argument(
-      '--output-script-file',
-      required=False,
-      type=files.ExpandHomeAndVars,
-      help=('Specify the full path path for generated import script. If '
-            'not set, a default filename of the form '
-            '`terraform_import_YYYYMMDD-HH-MM-SS.sh|cmd` will be generated.')))
-  file_spec_group.AddArgument(calliope_base.Argument(
-      '--output-module-file',
-      required=False,
-      type=files.ExpandHomeAndVars,
-      help=('Specify the full path path for generated terraform module file. If '
-            'not set, a default filename of '
-            '`gcloud-export-modules.tf` will be generated.')))
+  file_spec_group.AddArgument(
+      calliope_base.Argument(
+          '--output-script-file',
+          required=False,
+          type=files.ExpandHomeAndVars,
+          help=(
+              'Specify the full path path for generated import script. If '
+              'not set, a default filename of the form '
+              '`terraform_import_YYYYMMDD-HH-MM-SS.sh|cmd` will be generated.'
+          ),
+      )
+  )
+  file_spec_group.AddArgument(
+      calliope_base.Argument(
+          '--output-module-file',
+          required=False,
+          type=files.ExpandHomeAndVars,
+          help=(
+              'Specify the full path path for generated terraform module file.'
+              ' If not set, a default filename of `gcloud-export-modules.tf`'
+              ' will be generated.'
+          ),
+      )
+  )
   output_args.AddArgument(file_spec_group)
   output_args.AddArgument(calliope_base.Argument(
       '--output-dir',

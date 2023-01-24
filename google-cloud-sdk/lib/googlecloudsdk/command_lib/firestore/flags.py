@@ -20,8 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 
-_DEFAULT_DATABASE = '(default)'
-
 
 def AddCollectionIdsFlag(parser):
   """Adds flag for collection ids to the given parser."""
@@ -30,10 +28,10 @@ def AddCollectionIdsFlag(parser):
       metavar='COLLECTION_IDS',
       type=arg_parsers.ArgList(),
       help="""
-      A list specifying which collections will be included in the operation.
+      List specifying which collections will be included in the operation.
       When omitted, all collections are included.
 
-      For example, to operate on only the 'customers' and 'orders'
+      For example, to operate on only the `customers` and `orders`
       collections:
 
         $ {command} --collection-ids='customers','orders'
@@ -41,34 +39,34 @@ def AddCollectionIdsFlag(parser):
 
 
 def AddDatabaseIdFlag(parser):
-  """Adds flag for collection ids to the given parser."""
+  """Adds flag for database id to the given parser."""
   parser.add_argument(
       '--database',
       metavar='DATABASE',
       type=str,
-      default=_DEFAULT_DATABASE,
+      default='(default)',
       help="""
-      The database to operate on. The default value is (default).
+      The database to operate on. The default value is `(default)`.
 
-      For example, to operate on database foo:
+      For example, to operate on database `foo`:
 
         $ {command} --database='foo'
       """)
 
 
 def AddNamespaceIdsFlag(parser):
-  """Adds flag for collection ids to the given parser."""
+  """Adds flag for namespace ids to the given parser."""
   parser.add_argument(
       '--namespace-ids',
       metavar='NAMESPACE_IDS',
       type=arg_parsers.ArgList(),
       help="""
-      A list specifying which namespaces will be included in the operation.
+      List specifying which namespaces will be included in the operation.
       When omitted, all namespaces are included.
 
       This is only supported for Datastore Mode databases.
 
-      For example, to operate on only the 'customers' and 'orders' namespaces:
+      For example, to operate on only the `customers` and `orders` namespaces:
 
         $ {command} --namespaces-ids='customers','orders'
       """)

@@ -515,6 +515,7 @@ class CreateClusterOptions(object):
       preemptible=None,
       spot=None,
       placement_type=None,
+      enable_queued_provisioning=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -692,6 +693,7 @@ class CreateClusterOptions(object):
     self.preemptible = preemptible
     self.spot = spot
     self.placement_type = placement_type
+    self.enable_queued_provisioning = enable_queued_provisioning
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -1109,6 +1111,7 @@ class CreateNodePoolOptions(object):
                preemptible=None,
                spot=None,
                placement_type=None,
+               enable_queued_provisioning=None,
                enable_autorepair=None,
                enable_autoupgrade=None,
                service_account=None,
@@ -1179,6 +1182,7 @@ class CreateNodePoolOptions(object):
     self.preemptible = preemptible
     self.spot = spot
     self.placement_type = placement_type
+    self.enable_queued_provisioning = enable_queued_provisioning
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -2078,6 +2082,9 @@ class APIAdapter(object):
       if options.placement_type == 'COMPACT':
         pool.placementPolicy = self.messages.PlacementPolicy()
         pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+      if options.enable_queued_provisioning:
+        pool.queuedProvisioning = self.messages.QueuedPolicy()
+        pool.queuedProvisioning.enabled = True
       pools.append(pool)
       to_add -= nodes
     return pools
@@ -3016,21 +3023,27 @@ class APIAdapter(object):
     if options.logging_variant is not None:
       logging_config = self.messages.NodePoolLoggingConfig()
       logging_config.variantConfig = self.messages.LoggingVariantConfig(
-          variant=VariantConfigEnumFromString(self.messages,
-                                              options.logging_variant))
+          variant=VariantConfigEnumFromString(
+              self.messages, options.logging_variant
+          )
+      )
       update = self.messages.ClusterUpdate(
-          desiredNodePoolLoggingConfig=logging_config)
+          desiredNodePoolLoggingConfig=logging_config
+      )
 
-    if options.additional_pod_ipv4_ranges:
-      additional_pod_ranges = self.messages.AdditionalPodRangesConfig(
-          podRangeNames=options.additional_pod_ipv4_ranges)
-      update = self.messages.ClusterUpdate(
-          additionalPodRangesConfig=additional_pod_ranges)
-    if options.removed_additional_pod_ipv4_ranges:
-      removed_additional_pod_ranges = self.messages.AdditionalPodRangesConfig(
-          podRangeNames=options.removed_additional_pod_ipv4_ranges)
-      update = self.messages.ClusterUpdate(
-          removedAdditionalPodRangesConfig=removed_additional_pod_ranges)
+    if (
+        options.additional_pod_ipv4_ranges
+        or options.removed_additional_pod_ipv4_ranges
+    ):
+      update = self.messages.ClusterUpdate()
+      if options.additional_pod_ipv4_ranges:
+        update.additionalPodRangesConfig = (
+            self.messages.AdditionalPodRangesConfig(
+                podRangeNames=options.additional_pod_ipv4_ranges))
+      if options.removed_additional_pod_ipv4_ranges:
+        update.removedAdditionalPodRangesConfig = (
+            self.messages.AdditionalPodRangesConfig(
+                podRangeNames=options.removed_additional_pod_ipv4_ranges))
 
     if options.stack_type is not None:
       update = self.messages.ClusterUpdate(
@@ -3575,6 +3588,10 @@ class APIAdapter(object):
     if options.placement_type == 'COMPACT':
       pool.placementPolicy = self.messages.PlacementPolicy()
       pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+
+    if options.enable_queued_provisioning:
+      pool.queuedProvisioning = self.messages.QueuedProvisioning()
+      pool.queuedProvisioning.enabled = True
 
     return pool
 
@@ -5446,6 +5463,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       if options.placement_type == 'COMPACT':
         pool.placementPolicy = self.messages.PlacementPolicy()
         pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+      if options.enable_queued_provisioning:
+        pool.queuedProvisioning = self.messages.QueuedPolicy()
+        pool.queuedProvisioning.enabled = True
       pools.append(pool)
       to_add -= nodes
     return pools

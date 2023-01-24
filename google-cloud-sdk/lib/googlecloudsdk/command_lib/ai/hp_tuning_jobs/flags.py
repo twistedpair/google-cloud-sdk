@@ -93,6 +93,7 @@ def AddCreateHpTuningJobFlags(parser, algorithm_enum):
   flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
   flags.NETWORK.AddToParser(parser)
   flags.ENABLE_WEB_ACCESS.AddToParser(parser)
+  flags.ENABLE_DASHBOARD_ACCESS.AddToParser(parser)
   flags.AddKmsKeyResourceArg(parser, 'hyperparameter tuning job')
 
   arg_utils.ChoiceEnumMapper(

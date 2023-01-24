@@ -25913,7 +25913,7 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
       s/{location}/modelDeploymentMonitoringJobs/{model_deployment_monitoring_
       job}`
     name: Output only. The resource name of the Endpoint.
-    network: The full name of the Google Compute Engine
+    network: Optional. The full name of the Google Compute Engine
       [network](https://cloud.google.com//compute/docs/networks-and-
       firewalls#networks) to which the Endpoint should be peered. Private
       services access must already be configured for the network. If left
@@ -31756,10 +31756,13 @@ class GoogleCloudAiplatformV1beta1PipelineTaskExecutorDetailCustomJobDetail(_mes
   r"""The detailed info for a custom job executor.
 
   Fields:
+    failedJobs: Output only. The names of the previously failed CustomJob. The
+      list includes the all attempts in chronological order.
     job: Output only. The name of the CustomJob.
   """
 
-  job = _messages.StringField(1)
+  failedJobs = _messages.StringField(1, repeated=True)
+  job = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTemplateMetadata(_messages.Message):

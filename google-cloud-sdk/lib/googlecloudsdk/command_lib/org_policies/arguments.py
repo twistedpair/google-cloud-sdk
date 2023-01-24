@@ -115,10 +115,9 @@ def AddUpdateMaskArgToParser(parser):
   """
   parser.add_argument(
       '--update-mask',
-      hidden=True,
       metavar='UPDATE_MASK',
       help=('Field mask used to specify the fields to be overwritten in the '
             'policy by the set. The fields specified in the update_mask are '
             'relative to the policy, not the full request. The update-mask '
-            'flag can be empty, or have values "policy.spec", '
-            '"policy.dry_run_spec" or "*"'))
+            'flag can be empty, or have values `policy.spec`, '
+            '`policy.dry_run_spec` or `*`'))

@@ -146,6 +146,22 @@ Refer to the syntax under `--request-cookie-to-exclude`.
 This flag can be repeated to specify multiple request URIs.
 """
 
+_RATE_LIMIT_ENFORCE_ON_KEY_TYPES_DESCRIPTION = """
+      - ``ip'': each client IP address has this limit enforced separately
+      - ``all'': a single limit is applied to all requests matching this rule
+      - ``http-header'': key type takes the value of the HTTP header configured
+                         in enforce-on-key-name as the key value
+      - ``xff-ip'': takes the original IP address specified in the X-Forwarded-For
+                    header as the key
+      - ``http-cookie'': key type takes the value of the HTTP cookie configured
+                         in enforce-on-key-name as the key value
+      - ``http-path'': key type takes the value of the URL path in the request
+      - ``sni'': key type takes the value of the server name indication from the
+                  TLS session of the HTTPS request
+      - ``region-code'': key type takes the value of the region code from which
+                         the request originates
+"""
+
 
 class SecurityPolicyRulesCompleter(compute_completers.ListCommandCompleter):
 
@@ -277,10 +293,13 @@ def AddRedirectOptions(parser):
       """)
 
 
-def AddRateLimitOptions(parser,
-                        support_tcp_ssl=False,
-                        support_exceed_redirect=True,
-                        support_fairshare=False):
+def AddRateLimitOptions(
+    parser,
+    support_tcp_ssl=False,
+    support_exceed_redirect=True,
+    support_fairshare=False,
+    support_multiple_rate_limit_keys=False,
+):
   """Adds rate limiting related arguments to the argparse."""
   parser.add_argument(
       '--rate-limit-threshold-count',
@@ -344,21 +363,9 @@ def AddRateLimitOptions(parser,
       choices=enforce_on_key,
       type=lambda x: x.lower(),
       help="""\
-      Different key types available to enforce the rate limit threshold limit on:
-      - ``ip'': each client IP address has this limit enforced separately
-      - ``all'': a single limit is applied to all requests matching this rule
-      - ``http-header'': key type takes the value of the HTTP header configured
-                         in enforce-on-key-name as the key value
-      - ``xff-ip'': takes the original IP address specified in the X-Forwarded-For
-                    header as the key
-      - ``http-cookie'': key type takes the value of the HTTP cookie configured
-                         in enforce-on-key-name as the key value
-      - ``http-path'': key type takes the value of the URL path in the request
-      - ``sni'': key type takes the value of the server name indication from the
-                  TLS session of the HTTPS request
-      - ``region-code'': key type takes the value of the region code from which
-                         the request originates
-      """)
+      Different key types available to enforce the rate limit threshold limit on:"""
+      + _RATE_LIMIT_ENFORCE_ON_KEY_TYPES_DESCRIPTION,
+  )
 
   parser.add_argument(
       '--enforce-on-key-name',
@@ -370,6 +377,32 @@ def AddRateLimitOptions(parser,
       - http-cookie: The name of the HTTP cookie whose value is taken as the key
       value.
       """)
+
+  if support_multiple_rate_limit_keys:
+    parser.add_argument(
+        '--enforce-on-key-configs',
+        type=arg_parsers.ArgDict(
+            spec={key: str for key in enforce_on_key},
+            min_length=1,
+            max_length=3,
+            allow_key_only=True,
+        ),
+        # The default renders as follows:
+        # [all=ALL],[http-cookie=HTTP-COOKIE],
+        # [http-header=HTTP-HEADER],[http-path=HTTP-PATH],
+        # [ip=IP],[region-code=REGION-CODE],[sni=SNI],[xff-ip=XFF-IP]]
+        metavar='[[all],[ip],[xff-ip],[http-cookie=HTTP_COOKIE],[http-header=HTTP_HEADER],[http-path],[sni],[region-code]]',
+        help="""\
+        Specify up to 3 key type/name pairs to rate limit.
+        Valid key types are:
+        """
+        + _RATE_LIMIT_ENFORCE_ON_KEY_TYPES_DESCRIPTION
+        + """
+      Key names are only applicable to the following key types:
+      - http-header: The name of the HTTP header whose value is taken as the key value.
+      - http-cookie: The name of the HTTP cookie whose value is taken as the key value.
+      """,
+    )
 
   parser.add_argument(
       '--ban-threshold-count',

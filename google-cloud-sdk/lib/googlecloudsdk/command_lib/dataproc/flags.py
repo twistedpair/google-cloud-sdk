@@ -529,21 +529,20 @@ def AddParametersFlag(parser):
       dest='parameters')
 
 
-def AddMinCpuPlatformArgs(parser):
+def AddMinCpuPlatformArgs(parser, include_driver_pool_args=False):
   """Add mininum CPU platform flags for both master and worker instances."""
   help_text = """\
-      When specified, the VM will be scheduled on host with specified CPU
-      architecture or a newer one. To list available CPU platforms in given
-      zone, run:
+      When specified, the VM is scheduled on the host with a specified CPU
+      architecture or a more recent CPU platform that's available in that
+      zone. To list available CPU platforms in a zone, run:
 
           $ gcloud compute zones describe ZONE
 
-      CPU platform selection is available only in selected zones; zones that
-      allow CPU platform selection will have an `availableCpuPlatforms` field
-      that contains the list of available CPU platforms for that zone.
-
-      You can find more information online:
-      https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform
+      CPU platform selection may not be available in a zone. Zones
+      that support CPU platform selection provide an `availableCpuPlatforms`
+      field, which contains the list of available CPU platforms in the zone
+      (see [Availability of CPU platforms](/compute/docs/instances/specify-min-cpu-platform#availablezones)
+      for more information).
       """
   parser.add_argument(
       '--master-min-cpu-platform',
@@ -555,12 +554,12 @@ def AddMinCpuPlatformArgs(parser):
       metavar='PLATFORM',
       required=False,
       help=help_text)
-  parser.add_argument(
-      '--driver-pool-min-cpu-platform',
-      metavar='PLATFORM',
-      hidden=True,
-      required=False,
-      help=help_text)
+  if include_driver_pool_args:
+    parser.add_argument(
+        '--driver-pool-min-cpu-platform',
+        metavar='PLATFORM',
+        required=False,
+        help=help_text)
 
 
 def AddComponentFlag(parser):
@@ -817,9 +816,8 @@ def AddDriverPoolId(parser):
   parser.add_argument(
       '--driver-pool-id',
       help=("""
-            Custom identifier for the DRIVER Node Group being created. If this
-            is not provided a random string will be used.
+            Custom identifier for the DRIVER Node Group being created. If not
+            provided, a random string is generated.
             """),
-      hidden=True,
       required=False,
       default=None)

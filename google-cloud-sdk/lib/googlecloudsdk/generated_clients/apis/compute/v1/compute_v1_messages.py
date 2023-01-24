@@ -3812,12 +3812,15 @@ class BackendService(_messages.Message):
     loadBalancingScheme: Specifies the load balancer type. A backend service
       created for one type of load balancer cannot be used with another. For
       more information, refer to Choosing a load balancer.
-    localityLbPolicies: A list of locality load balancing policies to be used
-      in order of preference. Either the policy or the customPolicy field
-      should be set. Overrides any value set in the localityLbPolicy field.
-      localityLbPolicies is only supported when the BackendService is
-      referenced by a URL Map that is referenced by a target gRPC proxy that
-      has the validateForProxyless field set to true.
+    localityLbPolicies: A list of locality load-balancing policies to be used
+      in order of preference. When you use localityLbPolicies, you must set at
+      least one value for either the localityLbPolicies[].policy or the
+      localityLbPolicies[].customPolicy field. localityLbPolicies overrides
+      any value set in the localityLbPolicy field. For an example of how to
+      use this field, see Define a list of preferred policies. Caution: This
+      field and its children are intended for use in a service mesh that
+      includes gRPC clients only. Envoy proxies can't use backend services
+      that have this configuration.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are: - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -4927,12 +4930,13 @@ class BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy(_messages.Mess
   Fields:
     data: An optional, arbitrary JSON object with configuration data,
       understood by a locally installed custom policy implementation.
-    name: Identifies the custom policy. The value should match the type the
-      custom implementation is registered with on the gRPC clients. It should
-      follow protocol buffer message naming conventions and include the full
-      path (e.g. myorg.CustomLbPolicy). The maximum length is 256 characters.
-      Note that specifying the same custom policy more than once for a backend
-      is not a valid configuration and will be rejected.
+    name: Identifies the custom policy. The value should match the name of a
+      custom implementation registered on the gRPC clients. It should follow
+      protocol buffer message naming conventions and include the full path
+      (for example, myorg.CustomLbPolicy). The maximum length is 256
+      characters. Do not specify the same custom policy more than once for a
+      backend. If you do, the configuration is rejected. For an example of how
+      to use this field, see Use a custom policy.
   """
 
   data = _messages.StringField(1)
@@ -4943,29 +4947,26 @@ class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
   r"""The configuration for a built-in load balancing policy.
 
   Enums:
-    NameValueValuesEnum: The name of a locality load balancer policy to be
-      used. The value should be one of the predefined ones as supported by
-      localityLbPolicy, although at the moment only ROUND_ROBIN is supported.
-      This field should only be populated when the customPolicy field is not
-      used. Note that specifying the same policy more than once for a backend
-      is not a valid configuration and will be rejected.
+    NameValueValuesEnum: The name of a locality load-balancing policy. Valid
+      values include ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For
+      information about these values, see the description of localityLbPolicy.
+      Do not specify the same policy more than once for a backend. If you do,
+      the configuration is rejected.
 
   Fields:
-    name: The name of a locality load balancer policy to be used. The value
-      should be one of the predefined ones as supported by localityLbPolicy,
-      although at the moment only ROUND_ROBIN is supported. This field should
-      only be populated when the customPolicy field is not used. Note that
-      specifying the same policy more than once for a backend is not a valid
-      configuration and will be rejected.
+    name: The name of a locality load-balancing policy. Valid values include
+      ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For information about
+      these values, see the description of localityLbPolicy. Do not specify
+      the same policy more than once for a backend. If you do, the
+      configuration is rejected.
   """
 
   class NameValueValuesEnum(_messages.Enum):
-    r"""The name of a locality load balancer policy to be used. The value
-    should be one of the predefined ones as supported by localityLbPolicy,
-    although at the moment only ROUND_ROBIN is supported. This field should
-    only be populated when the customPolicy field is not used. Note that
-    specifying the same policy more than once for a backend is not a valid
-    configuration and will be rejected.
+    r"""The name of a locality load-balancing policy. Valid values include
+    ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For information about
+    these values, see the description of localityLbPolicy. Do not specify the
+    same policy more than once for a backend. If you do, the configuration is
+    rejected.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -5003,9 +5004,26 @@ class BackendServiceLogConfig(_messages.Message):
   r"""The available logging options for the load balancer traffic served by
   this backend service.
 
+  Enums:
+    OptionalModeValueValuesEnum: This field can only be specified if logging
+      is enabled for this backend service. Configures whether all, none or a
+      subset of optional fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
+
   Fields:
     enable: Denotes whether to enable logging for the load balancer traffic
       served by this backend service. The default value is false.
+    optionalFields: This field can only be specified if logging is enabled for
+      this backend service and "logConfig.optionalMode" was set to CUSTOM.
+      Contains a list of optional fields you want to include in the logs. For
+      example: serverInstance, serverGkeDetails.cluster,
+      serverGkeDetails.pod.podNamespace
+    optionalMode: This field can only be specified if logging is enabled for
+      this backend service. Configures whether all, none or a subset of
+      optional fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
     sampleRate: This field can only be specified if logging is enabled for
       this backend service. The value of the field must be in [0, 1]. This
       configures the sampling rate of requests to the load balancer where 1.0
@@ -5013,8 +5031,25 @@ class BackendServiceLogConfig(_messages.Message):
       are reported. The default value is 1.0.
   """
 
+  class OptionalModeValueValuesEnum(_messages.Enum):
+    r"""This field can only be specified if logging is enabled for this
+    backend service. Configures whether all, none or a subset of optional
+    fields should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
+    EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
+
+    Values:
+      CUSTOM: A subset of optional fields.
+      EXCLUDE_ALL_OPTIONAL: None optional fields.
+      INCLUDE_ALL_OPTIONAL: All optional fields.
+    """
+    CUSTOM = 0
+    EXCLUDE_ALL_OPTIONAL = 1
+    INCLUDE_ALL_OPTIONAL = 2
+
   enable = _messages.BooleanField(1)
-  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  optionalFields = _messages.StringField(2, repeated=True)
+  optionalMode = _messages.EnumField('OptionalModeValueValuesEnum', 3)
+  sampleRate = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -40261,7 +40296,7 @@ class InterconnectAttachment(_messages.Message):
       created by the customer. - PARTNER_PROVIDER: an attachment to a Partner
       Interconnect, created by the partner.
     vlanTag8021q: The IEEE 802.1Q VLAN tag for this attachment, in the range
-      2-4094. Only specified at creation time.
+      2-4093. Only specified at creation time.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -51821,6 +51856,7 @@ class Quota(_messages.Message):
       N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
+      NETWORK_ATTACHMENTS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
       NETWORK_FIREWALL_POLICIES: <no description>
       NODE_GROUPS: <no description>
@@ -51963,74 +51999,75 @@ class Quota(_messages.Message):
     N2D_CPUS = 70
     N2_CPUS = 71
     NETWORKS = 72
-    NETWORK_ENDPOINT_GROUPS = 73
-    NETWORK_FIREWALL_POLICIES = 74
-    NODE_GROUPS = 75
-    NODE_TEMPLATES = 76
-    NVIDIA_A100_80GB_GPUS = 77
-    NVIDIA_A100_GPUS = 78
-    NVIDIA_K80_GPUS = 79
-    NVIDIA_P100_GPUS = 80
-    NVIDIA_P100_VWS_GPUS = 81
-    NVIDIA_P4_GPUS = 82
-    NVIDIA_P4_VWS_GPUS = 83
-    NVIDIA_T4_GPUS = 84
-    NVIDIA_T4_VWS_GPUS = 85
-    NVIDIA_V100_GPUS = 86
-    PACKET_MIRRORINGS = 87
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 88
-    PREEMPTIBLE_CPUS = 89
-    PREEMPTIBLE_LOCAL_SSD_GB = 90
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 91
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 92
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 96
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 98
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 99
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 100
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 101
-    PSC_INTERNAL_LB_FORWARDING_RULES = 102
-    PUBLIC_ADVERTISED_PREFIXES = 103
-    PUBLIC_DELEGATED_PREFIXES = 104
-    REGIONAL_AUTOSCALERS = 105
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 106
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 107
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 108
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 109
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 110
-    RESERVATIONS = 111
-    RESOURCE_POLICIES = 112
-    ROUTERS = 113
-    ROUTES = 114
-    SECURITY_POLICIES = 115
-    SECURITY_POLICIES_PER_REGION = 116
-    SECURITY_POLICY_CEVAL_RULES = 117
-    SECURITY_POLICY_RULES = 118
-    SECURITY_POLICY_RULES_PER_REGION = 119
-    SERVICE_ATTACHMENTS = 120
-    SNAPSHOTS = 121
-    SSD_TOTAL_GB = 122
-    SSL_CERTIFICATES = 123
-    STATIC_ADDRESSES = 124
-    STATIC_BYOIP_ADDRESSES = 125
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 126
-    SUBNETWORKS = 127
-    T2A_CPUS = 128
-    T2D_CPUS = 129
-    TARGET_HTTPS_PROXIES = 130
-    TARGET_HTTP_PROXIES = 131
-    TARGET_INSTANCES = 132
-    TARGET_POOLS = 133
-    TARGET_SSL_PROXIES = 134
-    TARGET_TCP_PROXIES = 135
-    TARGET_VPN_GATEWAYS = 136
-    URL_MAPS = 137
-    VPN_GATEWAYS = 138
-    VPN_TUNNELS = 139
-    XPN_SERVICE_PROJECTS = 140
+    NETWORK_ATTACHMENTS = 73
+    NETWORK_ENDPOINT_GROUPS = 74
+    NETWORK_FIREWALL_POLICIES = 75
+    NODE_GROUPS = 76
+    NODE_TEMPLATES = 77
+    NVIDIA_A100_80GB_GPUS = 78
+    NVIDIA_A100_GPUS = 79
+    NVIDIA_K80_GPUS = 80
+    NVIDIA_P100_GPUS = 81
+    NVIDIA_P100_VWS_GPUS = 82
+    NVIDIA_P4_GPUS = 83
+    NVIDIA_P4_VWS_GPUS = 84
+    NVIDIA_T4_GPUS = 85
+    NVIDIA_T4_VWS_GPUS = 86
+    NVIDIA_V100_GPUS = 87
+    PACKET_MIRRORINGS = 88
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 89
+    PREEMPTIBLE_CPUS = 90
+    PREEMPTIBLE_LOCAL_SSD_GB = 91
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 92
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 93
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 94
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 95
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 96
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 97
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 98
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 99
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 100
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 101
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 102
+    PSC_INTERNAL_LB_FORWARDING_RULES = 103
+    PUBLIC_ADVERTISED_PREFIXES = 104
+    PUBLIC_DELEGATED_PREFIXES = 105
+    REGIONAL_AUTOSCALERS = 106
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 107
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 108
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 109
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 110
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 111
+    RESERVATIONS = 112
+    RESOURCE_POLICIES = 113
+    ROUTERS = 114
+    ROUTES = 115
+    SECURITY_POLICIES = 116
+    SECURITY_POLICIES_PER_REGION = 117
+    SECURITY_POLICY_CEVAL_RULES = 118
+    SECURITY_POLICY_RULES = 119
+    SECURITY_POLICY_RULES_PER_REGION = 120
+    SERVICE_ATTACHMENTS = 121
+    SNAPSHOTS = 122
+    SSD_TOTAL_GB = 123
+    SSL_CERTIFICATES = 124
+    STATIC_ADDRESSES = 125
+    STATIC_BYOIP_ADDRESSES = 126
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 127
+    SUBNETWORKS = 128
+    T2A_CPUS = 129
+    T2D_CPUS = 130
+    TARGET_HTTPS_PROXIES = 131
+    TARGET_HTTP_PROXIES = 132
+    TARGET_INSTANCES = 133
+    TARGET_POOLS = 134
+    TARGET_SSL_PROXIES = 135
+    TARGET_TCP_PROXIES = 136
+    TARGET_VPN_GATEWAYS = 137
+    URL_MAPS = 138
+    VPN_GATEWAYS = 139
+    VPN_TUNNELS = 140
+    XPN_SERVICE_PROJECTS = 141
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -58435,18 +58472,18 @@ class SecurityPolicyRule(_messages.Message):
 
   Fields:
     action: The Action to perform when the rule is matched. The following are
-      the valid actions: - allow: allow access to target. - deny(): deny
-      access to target, returns the HTTP response code specified (valid values
-      are 403, 404, and 502). - rate_based_ban: limit client traffic to the
-      configured threshold and ban the client if the traffic exceeds the
-      threshold. Configure parameters for this action in RateLimitOptions.
-      Requires rate_limit_options to be set. - redirect: redirect to a
-      different target. This can either be an internal reCAPTCHA redirect, or
-      an external URL-based redirect via a 302 response. Parameters for this
-      action can be configured via redirectOptions. - throttle: limit client
-      traffic to the configured threshold. Configure parameters for this
-      action in rateLimitOptions. Requires rate_limit_options to be set for
-      this.
+      the valid actions: - allow: allow access to target. - deny(STATUS): deny
+      access to target, returns the HTTP response code specified. Valid values
+      for `STATUS` are 403, 404, and 502. - rate_based_ban: limit client
+      traffic to the configured threshold and ban the client if the traffic
+      exceeds the threshold. Configure parameters for this action in
+      RateLimitOptions. Requires rate_limit_options to be set. - redirect:
+      redirect to a different target. This can either be an internal reCAPTCHA
+      redirect, or an external URL-based redirect via a 302 response.
+      Parameters for this action can be configured via redirectOptions. -
+      throttle: limit client traffic to the configured threshold. Configure
+      parameters for this action in rateLimitOptions. Requires
+      rate_limit_options to be set for this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     headerAction: Optional, additional actions that are performed on headers.
@@ -58615,9 +58652,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     exceedAction: Action to take for requests that are above the configured
       rate limit threshold, to either deny with a specified HTTP response
       code, or redirect to a different endpoint. Valid options are
-      "deny(status)", where valid values for status are 403, 404, 429, and
-      502, and "redirect" where the redirect parameters come from
-      exceedRedirectOptions below.
+      `deny(STATUS)`, where valid values for `STATUS` are 403, 404, 429, and
+      502, and `redirect`, where the redirect parameters come from
+      `exceedRedirectOptions` below.
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
       not redirect.
@@ -68231,7 +68268,7 @@ class VpnGateway(_messages.Message):
       must always provide an up-to-date fingerprint hash in order to update or
       change labels, otherwise the request will fail with error 412
       conditionNotMet. To see the latest fingerprint, make a get() request to
-      retrieve an VpnGateway.
+      retrieve a VpnGateway.
     labels: Labels for this resource. These can only be added or modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
@@ -69646,9 +69683,13 @@ class WafExpressionSetExpression(_messages.Message):
       2.9.1 rule id 973337. The ID could be used to determine the individual
       attack definition that has been detected. It could also be used to
       exclude it from the policy in case of false positive. required
+    sensitivity: The sensitivity value associated with the WAF rule ID. This
+      corresponds to the ModSecurity paranoia level, ranging from 1 to 4. 0 is
+      reserved for opt-in only rules.
   """
 
   id = _messages.StringField(1)
+  sensitivity = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class WeightedBackendService(_messages.Message):

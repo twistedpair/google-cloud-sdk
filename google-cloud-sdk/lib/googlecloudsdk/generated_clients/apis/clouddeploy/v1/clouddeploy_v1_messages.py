@@ -680,6 +680,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
       (00000000-0000-0000-0000-000000000000).
     rollout: A Rollout resource to be passed as the request body.
     rolloutId: Required. ID of the `Rollout`.
+    startingPhaseId: Optional. The starting phase ID for the `Rollout`. If
+      empty the `Rollout` will start at the first phase.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -689,7 +691,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
   requestId = _messages.StringField(3)
   rollout = _messages.MessageField('Rollout', 4)
   rolloutId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  startingPhaseId = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_messages.Message):
@@ -1931,6 +1934,7 @@ class Job(_messages.Message):
       FAILED: The Job failed.
       ABORTED: The Job was aborted.
       SKIPPED: The Job was skipped.
+      IGNORED: The Job was ignored.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1940,6 +1944,7 @@ class Job(_messages.Message):
     FAILED = 5
     ABORTED = 6
     SKIPPED = 7
+    IGNORED = 8
 
   advanceChildRolloutJob = _messages.MessageField('AdvanceChildRolloutJob', 1)
   createChildRolloutJob = _messages.MessageField('CreateChildRolloutJob', 2)
@@ -3185,6 +3190,8 @@ class Rollout(_messages.Message):
         on this `Target`.
       PENDING_RELEASE: The `Rollout` is waiting for the `Release` to be fully
         rendered.
+      CANCELLING: The `Rollout` is in the process of being cancelled.
+      CANCELLED: The `Rollout` has been cancelled.
     """
     STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
@@ -3194,6 +3201,8 @@ class Rollout(_messages.Message):
     APPROVAL_REJECTED = 5
     PENDING = 6
     PENDING_RELEASE = 7
+    CANCELLING = 8
+    CANCELLED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

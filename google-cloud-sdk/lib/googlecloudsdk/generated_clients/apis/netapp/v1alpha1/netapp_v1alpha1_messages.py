@@ -43,7 +43,8 @@ class ActiveDirectory(_messages.Message):
     name: Output only. The resource name of the active directory. Format: `pro
       jects/{project_number}/locations/{location_id}/activeDirectories/{active
       _directory_id}`.
-    netBios: Required. NetBIOS name of the server.
+    netBiosPrefix: Required. NetBIOSPrefix is used as a prefix for SMB server
+      name.
     nfsUsersWithLdap: If enabled, will allow access to local users and LDAP
       users. If access is needed for only LDAP users, it has to be disabled.
     organizationalUnit: The Organizational Unit (OU) within the Windows Active
@@ -113,7 +114,7 @@ class ActiveDirectory(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   ldapSigning = _messages.BooleanField(11)
   name = _messages.StringField(12)
-  netBios = _messages.StringField(13)
+  netBiosPrefix = _messages.StringField(13)
   nfsUsersWithLdap = _messages.BooleanField(14)
   organizationalUnit = _messages.StringField(15)
   password = _messages.StringField(16)

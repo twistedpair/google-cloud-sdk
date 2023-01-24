@@ -24,15 +24,14 @@ from googlecloudsdk.command_lib.pubsub.util import InvalidArgumentError
 
 def NoRevisionIdSpecified():
   return InvalidArgumentError(
-      'The schema name must include a revision-id of the format: SCHEMA_NAME@REVISION_ID.'
+      'The schema name must include a revision-id of the format:'
+      ' SCHEMA_NAME@REVISION_ID.'
   )
 
 
-def GetRevisionIdFromSchemaPath(schema_ref):
+def CheckRevisionIdInSchemaPath(schema_ref):
   find_id = schema_ref.split('@')
-  if len(find_id) > 1:
-    return find_id[1]
-  raise NoRevisionIdSpecified()
+  return len(find_id) > 1
 
 
 def ParseSchemaType(messages, schema_type):
@@ -74,17 +73,20 @@ class SchemasClient(object):
     schema = self.messages.Schema(
         name=schema_ref,
         type=ParseSchemaType(self.messages, schema_type),
-        definition=schema_definition)
+        definition=schema_definition,
+    )
     commit_req = self.messages.PubsubProjectsSchemasCommitRequest(
         commitSchemaRequest=self.messages.CommitSchemaRequest(schema=schema),
-        name=schema_ref)
+        name=schema_ref,
+    )
     return self._service.Commit(commit_req)
 
-  def Rollback(self, schema_ref):
+  def Rollback(self, schema_ref, revision_id):
     """Rolls back to a previous schema revision.
 
     Args:
-      schema_ref: The path of the schema, with or without the revision_id.
+      schema_ref: The path of the schema to rollback.
+      revision_id: The revision_id to rollback to.
 
     Returns:
     Schema: the new schema revision you have rolled back to.
@@ -94,19 +96,27 @@ class SchemasClient(object):
     """
     rollback_req = self.messages.PubsubProjectsSchemasRollbackRequest(
         rollbackSchemaRequest=self.messages.RollbackSchemaRequest(
-            revisionId=GetRevisionIdFromSchemaPath(schema_ref)),
-        name=schema_ref)
+            revisionId=revision_id
+        ),
+        name=schema_ref,
+    )
     return self._service.Rollback(rollback_req)
 
   def DeleteRevision(self, schema_ref):
     """Deletes a schema revision.
 
     Args:
-      schema_ref: The path of the schema, with or without the revision_id.
+      schema_ref: The path of the schema, with the revision_id.
 
     Returns:
     Schema: the deleted schema revision.
     """
-    delete_revision_req = self.messages.PubsubProjectsSchemasDeleteRevisionRequest(
-        revisionId=GetRevisionIdFromSchemaPath(schema_ref), name=schema_ref)
+    if not CheckRevisionIdInSchemaPath(schema_ref):
+      raise NoRevisionIdSpecified()
+
+    delete_revision_req = (
+        self.messages.PubsubProjectsSchemasDeleteRevisionRequest(
+            name=schema_ref
+        )
+    )
     return self._service.DeleteRevision(delete_revision_req)

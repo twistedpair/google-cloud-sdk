@@ -96,7 +96,8 @@ class SecurityPolicy(object):
   def Describe(self, only_generate_request=False):
     requests = [self._MakeDescribeRequestTuple()]
     if not only_generate_request:
-      return self._compute_client.MakeRequests(requests)
+      return self._compute_client.MakeRequests(requests,
+                                               enable_single_request=True)
     return requests
 
   def Create(self, security_policy=None, only_generate_request=False):

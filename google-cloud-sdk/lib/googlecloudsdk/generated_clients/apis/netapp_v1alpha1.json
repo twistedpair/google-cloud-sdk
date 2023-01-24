@@ -1022,8 +1022,8 @@
           "description": "Required. Comma separated list of DNS server IP addresses for the Active Directory domain.",
           "type": "string"
         },
-        "netBios": {
-          "description": "Required. NetBIOS name of the server.",
+        "netBiosPrefix": {
+          "description": "Required. NetBIOSPrefix is used as a prefix for SMB server name.",
           "type": "string"
         },
         "organizationalUnit": {

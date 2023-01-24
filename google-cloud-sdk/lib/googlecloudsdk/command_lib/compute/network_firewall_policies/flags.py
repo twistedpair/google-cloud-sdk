@@ -403,8 +403,11 @@ def AddSrcThreatIntelligence(parser):
       required=False,
       help=(
           'Source Threat Intelligence lists to match for this rule. '
-          'Can only be specified if DIRECTION is `ingress`.'
-      ))
+          'Can only be specified if DIRECTION is `ingress`. '
+          'The available lists can be found here: '
+          'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
+      ),
+  )
 
 
 def AddDestThreatIntelligence(parser):
@@ -416,8 +419,11 @@ def AddDestThreatIntelligence(parser):
       required=False,
       help=(
           'Destination Threat Intelligence lists to match for this rule. '
-          'Can only be specified if DIRECTION is `egress`.'
-      ))
+          'Can only be specified if DIRECTION is `egress`. '
+          'The available lists can be found here: '
+          'https://cloud.google.com/vpc/docs/firewall-policies-rule-details#threat-intelligence-fw-policy.'
+      ),
+  )
 
 
 def AddSecurityProfileGroup(parser):

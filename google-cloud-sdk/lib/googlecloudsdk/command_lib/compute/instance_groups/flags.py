@@ -937,7 +937,7 @@ def AddMigStatefulUpdateInstanceFlag(parser):
           immediately refreshes the instance with the new configuration.""")
   parser.add_argument(
       '--instance-update-minimal-action',
-      choices=mig_flags.INSTANCE_ACTION_CHOICES_WITH_NONE,
+      choices=mig_flags.InstanceActionChoicesWithNone(),
       default='none',
       help="""
           Perform at least this action on the instance while updating, if

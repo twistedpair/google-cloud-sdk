@@ -179,15 +179,17 @@ def UpdateWorkerPoolSpecsIfLocalPackageRequired(worker_pool_specs, job_name,
       yield spec
 
 
-def ConstructCustomJobSpec(aiplatform_client,
-                           base_config=None,
-                           network=None,
-                           service_account=None,
-                           enable_web_access=None,
-                           worker_pool_specs=None,
-                           args=None,
-                           command=None,
-                           **kwargs):
+def ConstructCustomJobSpec(
+    aiplatform_client,
+    base_config=None,
+    network=None,
+    service_account=None,
+    enable_web_access=None,
+    enable_dashboard_access=None,
+    worker_pool_specs=None,
+    args=None,
+    command=None,
+    **kwargs):
   """Constructs the spec of a custom job to be used in job creation request.
 
   Args:
@@ -199,6 +201,8 @@ def ConstructCustomJobSpec(aiplatform_client,
     service_account: A service account (email address string) to use for the
       job.
     enable_web_access: Whether to enable the interactive shell for the job.
+    enable_dashboard_access: Whether to enable the access to the dashboard built
+      on the job.
     worker_pool_specs: A dict of worker pool specification, usually derived from
       the gcloud command argument values.
     args: A list of arguments to be passed to containers or python packge,
@@ -219,6 +223,8 @@ def ConstructCustomJobSpec(aiplatform_client,
 
   if enable_web_access:
     job_spec.enableWebAccess = enable_web_access
+  if enable_dashboard_access:
+    job_spec.enableDashboardAccess = enable_dashboard_access
 
   if worker_pool_specs:
     job_spec.workerPoolSpecs = _ConstructWorkerPoolSpecs(

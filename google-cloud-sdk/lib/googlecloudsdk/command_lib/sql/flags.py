@@ -132,14 +132,16 @@ def AddHost(parser):
   """Add the '--host' flag to the parser."""
   parser.add_argument(
       '--host',
-      help=('Cloud SQL user\'s host name expressed as a specific IP address'
-            ' or address range. `%` denotes an unrestricted host name. '
-            'Applicable flag for MySQL instances; ignored for all other '
-            'engines. Note, if you connect to your instance using IP '
-            'addresses, you must add your client IP address as an Authorized'
-            ' Address, even if your host name is unrestricted. For help on '
-            'how to do so, read: '
-            'https://cloud.google.com/sql/docs/mysql/configure-ip'))
+      help=(
+          "Cloud SQL user's hostname expressed as a specific IP address or"
+          ' address range. `%` denotes an unrestricted hostname. Applicable'
+          ' flag for MySQL instances; ignored for all other engines. Note, if'
+          ' you connect to your instance using IP addresses, you must add your'
+          ' client IP address as an authorized address, even if your hostname'
+          ' is unrestricted. For more information, see [Configure'
+          ' IP](https://cloud.google.com/sql/docs/mysql/configure-ip).'
+      ),
+  )
 
 
 def AddAvailabilityType(parser):

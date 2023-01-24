@@ -58,12 +58,12 @@ def AddActiveDirectoryDnsArg(parser, required=True):
 
 
 def AddActiveDirectoryNetBiosArg(parser, required=True):
-  """Adds a --net-bios arg to the given parser."""
+  """Adds a --net-bios-prefix arg to the given parser."""
   parser.add_argument(
-      '--net-bios',
+      '--net-bios-prefix',
       type=str,
       required=required,
-      help="""NetBIOS name of the server."""
+      help="""NetBIOS prefix name of the server."""
   )
 
 

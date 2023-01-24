@@ -428,6 +428,16 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
     add_inventory_reports_metadata_fields_flag(parser, require_create_flags)
 
 
+def add_raw_display_flag(parser):
+  parser.add_argument(
+      '--raw',
+      action='store_true',
+      hidden=True,
+      help='Shows metadata in the format returned by the API instead of'
+           ' standardizing it.',
+  )
+
+
 def add_recovery_point_objective_flag(parser):
   """Adds the recovery point objective flag for buckets commands.
 

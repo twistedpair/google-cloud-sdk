@@ -207,6 +207,7 @@ def AddCreateCustomJobFlags(parser):
   shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
   shared_flags.NETWORK.AddToParser(parser)
   shared_flags.ENABLE_WEB_ACCESS.AddToParser(parser)
+  shared_flags.ENABLE_DASHBOARD_ACCESS.AddToParser(parser)
   shared_flags.AddKmsKeyResourceArg(parser, 'custom job')
 
   labels_util.AddCreateLabelsFlags(parser)

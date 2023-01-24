@@ -445,11 +445,3 @@ def adds_or_removes_acls(user_request_args):
            user_request_args.resource_args, 'default_object_acl_grants_to_add',
            False) or getattr(user_request_args.resource_args,
                              'default_object_acl_grants_to_remove', False)))
-
-
-def modifies_full_acl_policy(user_request_args):
-  """Checks if UserRequestArgs has ACL field aside from predefined ACL."""
-  return bool(
-      user_request_args.resource_args and
-      (adds_or_removes_acls(user_request_args) or
-       user_request_args.resource_args.acl_file_path))

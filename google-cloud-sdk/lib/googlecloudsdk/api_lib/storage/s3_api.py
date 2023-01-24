@@ -93,6 +93,18 @@ def _add_additional_headers_to_request(request, **kwargs):
     request.headers.add_header(key, value)
 
 
+def _modifies_full_acl_policy(request_config):
+  """Checks if RequestConfig has ACL setting aside from predefined ACL."""
+  return bool(
+      request_config.resource_args
+      and (
+          request_config.resource_args.acl_grants_to_add
+          or request_config.resource_args.acl_grants_to_remove
+          or request_config.resource_args.acl_file_path
+      )
+  )
+
+
 # pylint:disable=abstract-method
 class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
@@ -229,10 +241,11 @@ class S3Api(cloud_api.CloudApi):
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     resource_args = request_config.resource_args
-    if request_config_factory.modifies_full_acl_policy(request_config) or (
-        request_config.predefined_acl_string):
+    if _modifies_full_acl_policy(request_config) or (
+        request_config.predefined_acl_string
+    ):
       put_acl_kwargs = {}
-      if request_config_factory.modifies_full_acl_policy(request_config):
+      if _modifies_full_acl_policy(request_config):
         if getattr(resource_args, 'acl_file_path', None):
           put_acl_kwargs['AccessControlPolicy'] = (
               s3_metadata_field_converters.process_acl_file(
@@ -320,7 +333,7 @@ class S3Api(cloud_api.CloudApi):
     """See super class."""
     del progress_callback  # TODO(b/161900052): Implement resumable copies.
 
-    if request_config_factory.modifies_full_acl_policy(request_config):
+    if _modifies_full_acl_policy(request_config):
       acl_file_path = getattr(request_config.resource_args, 'acl_file_path',
                               None)
       if acl_file_path:

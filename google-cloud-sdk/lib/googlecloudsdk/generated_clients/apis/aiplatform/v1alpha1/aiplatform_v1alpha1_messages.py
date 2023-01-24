@@ -20236,6 +20236,8 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
     inputConfig: Required. Input configuration of the instances on which
       predictions are performed. The schema of any single instance may be
       specified via the Model's PredictSchemata's instance_schema_uri.
+    instanceConfig: Configuration for how to convert batch prediction input
+      instances to the prediction instances that are sent to the Model.
     labels: The labels with user-defined metadata to organize
       BatchPredictionJobs. Label keys and values can be no longer than 64
       characters (Unicode codepoints), can only contain lowercase letters,
@@ -20366,23 +20368,24 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationSpec', 8)
   generateExplanation = _messages.BooleanField(9)
   inputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters', 12)
-  model = _messages.StringField(13)
-  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringConfig', 14)
-  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies', 15, repeated=True)
-  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 16)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 17)
-  name = _messages.StringField(18)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 19)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 20)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 21, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 22)
-  serviceAccount = _messages.StringField(23)
-  startTime = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 26)
-  updateTime = _messages.StringField(27)
+  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobInstanceConfig', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters', 13)
+  model = _messages.StringField(14)
+  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringConfig', 15)
+  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomalies', 16, repeated=True)
+  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 17)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 18)
+  name = _messages.StringField(19)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig', 20)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputInfo', 21)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 22, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1alpha1ResourcesConsumed', 23)
+  serviceAccount = _messages.StringField(24)
+  startTime = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1UnmanagedContainerModel', 27)
+  updateTime = _messages.StringField(28)
 
 
 class GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig(_messages.Message):
@@ -20403,6 +20406,64 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJobInputConfig(_messages.Messa
   bigquerySource = _messages.MessageField('GoogleCloudAiplatformV1alpha1BigQuerySource', 1)
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsSource', 2)
   instancesFormat = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1alpha1BatchPredictionJobInstanceConfig(_messages.Message):
+  r"""Configuration defining how to transform batch prediction input instances
+  to the instances that the Model accepts.
+
+  Fields:
+    excludedFields: Fields that will be excluded in the prediction instance
+      that is sent to the Model. Excluded will be attached to the batch
+      prediction output if key_field is not specified. When excluded_fields is
+      populated, included_fields must be empty. The input must be JSONL with
+      objects at each line, CSV, BigQuery or TfRecord.
+    includedFields: Fields that will be included in the prediction instance
+      that is sent to the Model. If instance_type is `array`, the order of
+      field names in included_fields also determines the order of the values
+      in the array. When included_fields is populated, excluded_fields must be
+      empty. The input must be JSONL with objects at each line, CSV, BigQuery
+      or TfRecord.
+    instanceType: The format of the instance that the Model accepts. Vertex AI
+      will convert compatible batch prediction input instance formats to the
+      specified format. Supported values are: * `object`: Each input is
+      converted to JSON object format. * For `bigquery`, each row is converted
+      to an object. * For `jsonl`, each line of the JSONL input must be an
+      object. * Does not apply to `csv`, `file-list`, `tf-record`, or `tf-
+      record-gzip`. * `array`: Each input is converted to JSON array format. *
+      For `bigquery`, each row is converted to an array. The order of columns
+      is determined by the BigQuery column order, unless included_fields is
+      populated. included_fields must be populated for specifying field
+      orders. * For `jsonl`, if each line of the JSONL input is an object,
+      included_fields must be populated for specifying field orders. * Does
+      not apply to `csv`, `file-list`, `tf-record`, or `tf-record-gzip`. If
+      not specified, Vertex AI converts the batch prediction input as follows:
+      * For `bigquery` and `csv`, the behavior is the same as `array`. The
+      order of columns is the same as defined in the file or table, unless
+      included_fields is populated. * For `jsonl`, the prediction instance
+      format is determined by each line of the input. * For `tf-record`/`tf-
+      record-gzip`, each record will be converted to an object in the format
+      of `{"b64": }`, where `` is the Base64-encoded string of the content of
+      the record. * For `file-list`, each file in the list will be converted
+      to an object in the format of `{"b64": }`, where `` is the
+      Base64-encoded string of the content of the file.
+    keyField: The name of the field that is considered as a key. The values
+      identified by the key field is not included in the transformed instances
+      that is sent to the Model. This is similar to specifying this name of
+      the field in excluded_fields. In addition, the batch prediction output
+      will not include the instances. Instead the output will only include the
+      value of the key field, in a field named `key` in the output: * For
+      `jsonl` output format, the output will have a `key` field instead of the
+      `instance` field. * For `csv`/`bigquery` output format, the output will
+      have have a `key` column instead of the instance feature columns. The
+      input must be JSONL with objects at each line, CSV, BigQuery or
+      TfRecord.
+  """
+
+  excludedFields = _messages.StringField(1, repeated=True)
+  includedFields = _messages.StringField(2, repeated=True)
+  instanceType = _messages.StringField(3)
+  keyField = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig(_messages.Message):
@@ -26023,10 +26084,13 @@ class GoogleCloudAiplatformV1alpha1PipelineTaskExecutorDetailCustomJobDetail(_me
   r"""The detailed info for a custom job executor.
 
   Fields:
+    failedJobs: Output only. The names of the previously failed CustomJob. The
+      list includes the all attempts in chronological order.
     job: Output only. The name of the CustomJob.
   """
 
-  job = _messages.StringField(1)
+  failedJobs = _messages.StringField(1, repeated=True)
+  job = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1alpha1PipelineTemplateMetadata(_messages.Message):

@@ -5,6 +5,93 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 415.0.0 (2023-01-24)
+
+### Google Cloud CLI
+
+* Global `--format` flag now respects the `core/default_format` property when
+   `--format=default`. If `core/default_format` is not set, then `default` format
+   is `yaml`.
+
+### AI
+
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+* Added `--enable-dashboard-access` flag to `gcloud ai custom-jobs create` and
+  `gcloud ai hp-tuning-jobs create` to allow the access to the dashboard specified in
+  custom container.
+
+### BigQuery
+
+* Added support for using the `auth/impersonate_service_account` property in
+`bq` commands.
+
+### Cloud Build
+
+* Added command groups for managing connections and repositories: `gcloud beta builds connections` and `gcloud beta builds repositories`.
+
+### Cloud Dataproc
+
+* Added `gcloud dataproc node-groups` group with commands: `describe` and `resize`.
+* Added `--driver-pool-${X}` flags to `gcloud dataproc clusters create`.
+
+### Cloud Firestore
+
+* Added `--database` flag to `gcloud firestore operations` to add database
+    support for Firestore operations.
+
+### Cloud On Demand Scanning
+
+*   Fixed issue with extracting packages from Go binaries built with newer
+    versions of to the Go toolchain.
+
+### Cloud Org Policy
+
+* Added `--update-mask` to `gcloud org-policies set-policy` to specify the fields to be overwritten in the policy.
+
+### Cloud Pub/Sub
+
+*   Added `gcloud pubsub schemas commit` to commit a revision for a Pub/Sub schema.
+*   Added `gcloud pubsub schemas rollback` to roll back a revision for a Pub/Sub schema.
+*   Added `gcloud pubsub schemas delete-revision` to delete a revision for a Pub/Sub schema.
+*   Added `gcloud pubsub schemas list-revisions` to list all revisions for a Pub/Sub schema.
+*   Added `--first-revision-id` and `--last-revision-id` flags to `gcloud pubsub topics create` to create schema settings for Pub/Sub topics.
+*   Added `--clear-schema-settings`, `--schema`, `--message-encoding`, `--first-revision-id` and `--last-revision-id` flags to `gcloud pubsub topics update` to update schema settings for a Pub/Sub topic.
+
+### Cloud SQL
+
+*   Promoted `gcloud sql users describe` command to beta.
+
+### Compute Engine
+
+* Added `--update-policy-<type|max-unavailable|max-surge|minimal-action|most-disrtuptive-action|replacement-method>` flags of `gcloud compute instance-groups managed <create|update>` to GA.
+* Added `--update-policy-min-ready` flag of `gcloud compute instance-groups managed <create|update>` to beta.
+*  Added `--enforce-on-key-configs` flag to `gcloud beta compute security-policies rules create` and `gcloud beta compute security-policies rules update`.
+
+### Dataproc Metastore
+
+* Promoted `gcloud metastore services import` flag `--dump-type` to GA.
+* Promoted `gcloud metastore services export` flag `--dump-type` to GA.
+
+### Declarative Workflows
+
+*  Make `--storage-path`,  `--resource-types`  and `--resource-types-file`
+   mutually exclusive in `gcloud beta resource-config bulk-export`.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.19 to v1.0.0-beta.24. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.24> and previous release notes for more details.
+
+### Recommender
+
+*   Added support for `gcloud recommender recommendations mark-dismissed`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 414.0.0 (2023-01-18)
 
 ### Anthos Multi-Cloud

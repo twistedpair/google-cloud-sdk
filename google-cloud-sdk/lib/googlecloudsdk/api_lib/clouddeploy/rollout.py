@@ -37,7 +37,9 @@ class RolloutClient(object):
     """
     self.client = client or client_util.GetClientInstance()
     self.messages = messages or client_util.GetMessagesModule(client)
-    self._service = self.client.projects_locations_deliveryPipelines_releases_rollouts
+    self._service = (
+        self.client.projects_locations_deliveryPipelines_releases_rollouts
+    )
 
   def Approve(self, name, approved):
     """Calls the approve API to approve or reject a rollout..
@@ -53,7 +55,9 @@ class RolloutClient(object):
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(
         name=name,
         approveRolloutRequest=self.messages.ApproveRolloutRequest(
-            approved=approved))
+            approved=approved
+        ),
+    )
     return self._service.Approve(request)
 
   def Get(self, name):
@@ -66,37 +70,42 @@ class RolloutClient(object):
       rollout message.
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(
-        name=name)
+        name=name
+    )
     return self._service.Get(request)
 
-  def List(self,
-           release_name,
-           filter_str=None,
-           order_by=None,
-           limit=None,
-           page_size=None):
+  def List(
+      self,
+      release_name,
+      filter_str=None,
+      order_by=None,
+      limit=None,
+      page_size=None,
+  ):
     """Lists rollout resources that belongs to a release.
 
     Args:
       release_name: str, name of the release.
       filter_str: optional[str], list filter.
       order_by: optional[str], field to sort by.
-      limit: optional[int], the maximum number of `Rollout` objects to
-        return.
-      page_size: optional[int], the number of `Rollout` objects to
-        return per request.
+      limit: optional[int], the maximum number of `Rollout` objects to return.
+      page_size: optional[int], the number of `Rollout` objects to return per
+        request.
+
     Returns:
       Rollout list response.
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(
-        parent=release_name, filter=filter_str, orderBy=order_by)
+        parent=release_name, filter=filter_str, orderBy=order_by
+    )
     return list_pager.YieldFromList(
         self._service,
         request,
         field='rollouts',
         limit=limit,
         batch_size=page_size,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def Create(self, rollout_ref, rollout_obj, annotations=None, labels=None):
     """Creates a rollout resource.
@@ -115,13 +124,18 @@ class RolloutClient(object):
       The operation message.
     """
     log.debug('Creating rollout: %r', rollout_obj)
-    deploy_util.SetMetadata(self.messages, rollout_obj,
-                            deploy_util.ResourceType.ROLLOUT, annotations,
-                            labels)
+    deploy_util.SetMetadata(
+        self.messages,
+        rollout_obj,
+        deploy_util.ResourceType.ROLLOUT,
+        annotations,
+        labels,
+    )
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest(
         parent=rollout_ref.Parent().RelativeName(),
         rollout=rollout_obj,
-        rolloutId=rollout_ref.Name())
+        rolloutId=rollout_ref.Name(),
+    )
 
     return self._service.Create(request)
 
@@ -139,7 +153,7 @@ class RolloutClient(object):
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest(
         rollout=name,
-        retryJobRequest=self.messages.RetryJobRequest(jobId=job, phaseId=phase)
+        retryJobRequest=self.messages.RetryJobRequest(jobId=job, phaseId=phase),
     )
 
     return self._service.RetryJob(request)
@@ -157,7 +171,46 @@ class RolloutClient(object):
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest(
         name=name,
-        advanceRolloutRequest=self.messages.AdvanceRolloutRequest(phaseId=phase)
+        advanceRolloutRequest=self.messages.AdvanceRolloutRequest(
+            phaseId=phase
+        ),
     )
 
     return self._service.Advance(request)
+
+  def CancelRollout(self, name):
+    """Calls the CancelRollout API to cancel a rollout.
+
+    Args:
+      name: Name of the Rollout. Format is
+        projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
+
+    Returns:
+      CancelRolloutResponse message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest(
+        name=name,
+    )
+
+    return self._service.Cancel(request)
+
+  def IgnoreJob(self, name, job, phase):
+    """Calls the IgnoreJob API to ignore a job on a rollout within a specified phase.
+
+    Args:
+      name: Name of the Rollout. Format is
+        projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
+      job: The job id on the rollout resource.
+      phase: The phase id on the rollout resource.
+
+    Returns:
+      IgnoreJobResponse message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJobRequest(
+        rollout=name,
+        ignoreJobRequest=self.messages.IgnoreJobRequest(
+            jobId=job, phaseId=phase
+        ),
+    )
+
+    return self._service.IgnoreJob(request)

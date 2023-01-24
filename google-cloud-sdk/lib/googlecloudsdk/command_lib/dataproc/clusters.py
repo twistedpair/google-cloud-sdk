@@ -52,7 +52,8 @@ def ArgsForClusterRef(parser,
                       beta=False,
                       include_deprecated=True,
                       include_ttl_config=False,
-                      include_gke_platform_args=False):
+                      include_gke_platform_args=False,
+                      include_driver_pool_args=False):
   """Register flags for creating a dataproc cluster.
 
   Args:
@@ -62,14 +63,13 @@ def ArgsForClusterRef(parser,
     include_deprecated: whether deprecated flags should be included
     include_ttl_config: whether to include Scheduled Delete(TTL) args
     include_gke_platform_args: whether to include GKE-based cluster args
+    include_driver_pool_args: whether to include driver pool cluster args
   """
   labels_util.AddCreateLabelsFlags(parser)
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
   flags.AddZoneFlag(parser, short_flags=include_deprecated)
   flags.AddComponentFlag(parser)
-
-  flags.AddDriverPoolId(parser)
 
   platform_group = parser.add_argument_group(mutex=True)
   gce_platform_group = platform_group.add_argument_group(help="""\
@@ -148,16 +148,6 @@ def ArgsForClusterRef(parser,
       hidden=True,
       help='Type of machine to use for secondary workers. Defaults to '
       'server-specified.')
-  parser.add_argument(
-      '--driver-pool-size',
-      type=int,
-      hidden=True,
-      help='The size of the driver pool in the cluster.')
-  parser.add_argument(
-      '--driver-pool-machine-type',
-      hidden=True,
-      help='The type of machine to use for the driver pools nodes. Defaults to '
-      'server-specified.')
   image_parser = parser.add_mutually_exclusive_group()
   # TODO(b/73291743): Add external doc link to --image
   image_parser.add_argument(
@@ -228,14 +218,6 @@ def ArgsForClusterRef(parser,
       a cluster.
       """)
   parser.add_argument(
-      '--num-driver-pool-local-ssds',
-      type=int,
-      hidden=True,
-      help="""\
-      The number of local SSDs to attach to each driver pool node in
-      a cluster.
-      """)
-  parser.add_argument(
       '--master-local-ssd-interface',
       help="""\
       Interface to use to attach local SSDs to master node(s) in a cluster.
@@ -250,12 +232,6 @@ def ArgsForClusterRef(parser,
       help="""\
       Interface to use to attach local SSDs to each secondary worker
       in a cluster.
-      """)
-  parser.add_argument(
-      '--driver-pool-local-ssd-interface',
-      hidden=True,
-      help="""\
-      Interface to use to attach local SSDs to driver pool node(s) in a cluster.
       """)
   parser.add_argument(
       '--initialization-actions',
@@ -353,9 +329,9 @@ If you want to enable all scopes use the 'cloud-platform' scope.
     scopes_help=compute_helpers.SCOPES_HELP))
 
   if include_deprecated:
-    _AddDiskArgsDeprecated(parser)
+    _AddDiskArgsDeprecated(parser, include_driver_pool_args)
   else:
-    _AddDiskArgs(parser)
+    _AddDiskArgs(parser, include_driver_pool_args)
 
   # --no-address is an exception to the no negative-flag style guildline to be
   # consistent with gcloud compute instances create --no-address
@@ -382,8 +358,8 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       """)
 
   boot_disk_type_detailed_help = """\
-      The type of the boot disk. The value must be ``pd-balanced'',
-      ``pd-ssd'', or ``pd-standard''.
+      The type of the boot disk. The value must be `pd-balanced`,
+      `pd-ssd`, or `pd-standard`.
       """
   parser.add_argument(
       '--master-boot-disk-type', help=boot_disk_type_detailed_help)
@@ -400,10 +376,32 @@ If you want to enable all scopes use the 'cloud-platform' scope.
                 'Use the `--secondary-worker-boot-disk-type` flag instead.')))
   secondary_worker_boot_disk_type.add_argument(
       '--secondary-worker-boot-disk-type', help=boot_disk_type_detailed_help)
-  parser.add_argument(
-      '--driver-pool-boot-disk-type',
-      hidden=True,
-      help=boot_disk_type_detailed_help)
+
+  if include_driver_pool_args:
+    flags.AddDriverPoolId(parser)
+    parser.add_argument(
+        '--driver-pool-boot-disk-type',
+        help=boot_disk_type_detailed_help)
+    parser.add_argument(
+        '--driver-pool-size',
+        type=int,
+        help='The size of the cluster driver pool.')
+    parser.add_argument(
+        '--driver-pool-machine-type',
+        help='The type of machine to use for the cluster driver pool nodes.'
+        ' Defaults to server-specified.')
+    parser.add_argument(
+        '--num-driver-pool-local-ssds',
+        type=int,
+        help="""\
+        The number of local SSDs to attach to each cluster driver pool node.
+        """)
+    parser.add_argument(
+        '--driver-pool-local-ssd-interface',
+        help="""\
+        Interface to use to attach local SSDs to cluster driver pool node(s).
+        """)
+
   parser.add_argument(
       '--enable-component-gateway',
       action='store_true',
@@ -498,9 +496,9 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   if not beta:
     AddSecureMultiTenancyGroup(parser)
 
-  flags.AddMinCpuPlatformArgs(parser)
+  flags.AddMinCpuPlatformArgs(parser, include_driver_pool_args)
 
-  _AddAcceleratorArgs(parser)
+  _AddAcceleratorArgs(parser, include_driver_pool_args)
 
   if not beta:
     _AddMetricConfigArgs(parser, dataproc)
@@ -571,20 +569,18 @@ def _AddMetricConfigArgs(parser, dataproc):
       """)
 
 
-def _AddAcceleratorArgs(parser):
+def _AddAcceleratorArgs(parser, include_driver_pool_args=False):
   """Adds accelerator related args to the parser."""
   accelerator_help_fmt = """\
-      Attaches accelerators (e.g. GPUs) to the {instance_type}
+      Attaches accelerators, such as GPUs, to the {instance_type}
       instance(s).
       """
   accelerator_help_fmt += """
-      *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla
-      K80) of accelerator to attach to the instances. Use 'gcloud compute
-      accelerator-types list' to learn about all available accelerator
-      types.
+      *type*::: The specific type of accelerator to attach to the instances,
+      such as `nvidia-tesla-k80` for NVIDIA Tesla K80. Use `gcloud compute
+      accelerator-types list` to display available accelerator types.
 
-      *count*::: The number of pieces of the accelerator to attach to each
-      of the instances. The default value is 1.
+      *count*::: The number of accelerators to attach to each instance. The default value is 1.
       """
 
   parser.add_argument(
@@ -629,26 +625,24 @@ def _AddAcceleratorArgs(parser):
           '--preemptible-worker-accelerator',
           warn=('The `--preemptible-worker-accelerator` flag is deprecated. '
                 'Use the `--secondary-worker-accelerator` flag instead.')))
+  if include_driver_pool_args:
+    parser.add_argument(
+        '--driver-pool-accelerator',
+        type=arg_parsers.ArgDict(spec={
+            'type': str,
+            'count': int,
+        }),
+        metavar='type=TYPE,[count=COUNT]',
+        help=accelerator_help_fmt.format(instance_type='driver-pool'))
 
-  parser.add_argument(
-      '--driver-pool-accelerator',
-      type=arg_parsers.ArgDict(spec={
-          'type': str,
-          'count': int,
-      }),
-      hidden=True,
-      metavar='type=TYPE,[count=COUNT]',
-      help=accelerator_help_fmt.format(instance_type='driver-pool'))
 
-
-def _AddDiskArgs(parser):
+def _AddDiskArgs(parser, include_driver_pool_args=False):
   """Adds disk related args to the parser."""
   boot_disk_size_detailed_help = """\
       The size of the boot disk. The value must be a
       whole number followed by a size unit of ``KB'' for kilobyte, ``MB''
       for megabyte, ``GB'' for gigabyte, or ``TB'' for terabyte. For example,
-      ``10GB'' will produce a 10 gigabyte disk. The minimum size a boot disk
-      can have is 10 GB. Disk size must be a multiple of 1 GB.
+      `10GB` will produce a 10 gigabyte disk. The minimum boot disk size is 10 GB. Boot disk size must be a multiple of 1 GB.
       """
   parser.add_argument(
       '--master-boot-disk-size',
@@ -656,11 +650,6 @@ def _AddDiskArgs(parser):
       help=boot_disk_size_detailed_help)
   parser.add_argument(
       '--worker-boot-disk-size',
-      type=arg_parsers.BinarySize(lower_bound='10GB'),
-      help=boot_disk_size_detailed_help)
-  parser.add_argument(
-      '--driver-pool-boot-disk-size',
-      hidden=True,
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
   secondary_worker_boot_disk_size = parser.add_argument_group(mutex=True)
@@ -677,9 +666,14 @@ def _AddDiskArgs(parser):
       '--secondary-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
+  if include_driver_pool_args:
+    parser.add_argument(
+        '--driver-pool-boot-disk-size',
+        type=arg_parsers.BinarySize(lower_bound='10GB'),
+        help=boot_disk_size_detailed_help)
 
 
-def _AddDiskArgsDeprecated(parser):
+def _AddDiskArgsDeprecated(parser, include_driver_pool_args=False):
   """Adds deprecated disk related args to the parser."""
   master_boot_disk_size = parser.add_mutually_exclusive_group()
   worker_boot_disk_size = parser.add_mutually_exclusive_group()
@@ -733,11 +727,11 @@ def _AddDiskArgsDeprecated(parser):
       '--secondary-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
-  parser.add_argument(
-      '--driver-pool-boot-disk-size',
-      hidden=True,
-      type=arg_parsers.BinarySize(lower_bound='10GB'),
-      help=boot_disk_size_detailed_help)
+  if include_driver_pool_args:
+    parser.add_argument(
+        '--driver-pool-boot-disk-size',
+        type=arg_parsers.BinarySize(lower_bound='10GB'),
+        help=boot_disk_size_detailed_help)
 
 
 # DEPRECATED Beta release track should no longer be used, Google Cloud
@@ -800,7 +794,7 @@ def GetClusterConfig(args,
     secondary_worker_accelerator_count = secondary_worker_accelerator.get(
         'count', 1)
 
-  if args.driver_pool_accelerator:
+  if hasattr(args, 'driver_pool_accelerator') and args.driver_pool_accelerator:
     if 'type' in args.driver_pool_accelerator.keys():
       driver_pool_accelerator_type = args.driver_pool_accelerator['type']
     else:
@@ -858,7 +852,8 @@ def GetClusterConfig(args,
                         args.preemptible_worker_boot_disk_size)))
 
   driver_pool_boot_disk_size_gb = None
-  if args.driver_pool_boot_disk_size:
+  if hasattr(args,
+             'driver_pool_boot_disk_size') and args.driver_pool_boot_disk_size:
     driver_pool_boot_disk_size_gb = (
         api_utils.BytesToGb(args.driver_pool_boot_disk_size))
 
@@ -1213,14 +1208,15 @@ def _SetDataprocMetricConfig(args, cluster_config, dataproc):
 
 
 def _AtLeastOneGceNodePoolSpecified(args, driver_pool_boot_disk_size_gb):
-  return (args.IsSpecified('driver_pool_size') or
-          args.IsSpecified('driver_pool_machine_type') or
-          args.IsSpecified('driver_pool_boot_disk_type') or
-          driver_pool_boot_disk_size_gb is not None or
-          args.IsSpecified('num_driver_pool_local_ssds') or
-          args.IsSpecified('driver_pool_local_ssd_interface') or
-          args.IsSpecified('driver_pool_min_cpu_platform') or
-          args.IsSpecified('driver_pool_id'))
+  return (hasattr(args, 'driver_pool_size') and
+          (args.IsSpecified('driver_pool_size') or
+           args.IsSpecified('driver_pool_machine_type') or
+           args.IsSpecified('driver_pool_boot_disk_type') or
+           driver_pool_boot_disk_size_gb is not None or
+           args.IsSpecified('num_driver_pool_local_ssds') or
+           args.IsSpecified('driver_pool_local_ssd_interface') or
+           args.IsSpecified('driver_pool_min_cpu_platform') or
+           args.IsSpecified('driver_pool_id')))
 
 
 def _FirstNonNone(first, second):

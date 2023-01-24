@@ -87,6 +87,20 @@ ENABLE_WEB_ACCESS = base.Argument(
       Trial.web_access_uris (within HyperparameterTuningJob.trials).
       """))
 
+ENABLE_DASHBOARD_ACCESS = base.Argument(
+    '--enable-dashboard-access',
+    action='store_true',
+    required=False,
+    default=False,
+    help=textwrap.dedent(
+        """\
+      Whether you want Vertex AI to enable dashboard built on the training containers. If set to ``true'', you can access
+      the dashboard at the URIs given by CustomJob.web_access_uris or
+      Trial.web_access_uris (within HyperparameterTuningJob.trials).
+      """
+    ),
+)
+
 
 def AddStreamLogsFlags(parser):
   _POLLING_INTERVAL_FLAG.AddToParser(parser)
@@ -680,8 +694,11 @@ inclusive.
   parser.add_argument(
       '--parent-model',
       type=str,
-      help='Resource name of the model into which to upload the version. Only specify this field when uploading a new version.'
-  )
+      help="""\
+Resource name of the model into which to upload the version. Only specify this field when uploading a new version.
+
+Value should be provided in format: projects/``PROJECT_ID''/locations/``REGION''/models/``PARENT_MODEL_ID''
+""")
   parser.add_argument(
       '--model-id',
       type=str,

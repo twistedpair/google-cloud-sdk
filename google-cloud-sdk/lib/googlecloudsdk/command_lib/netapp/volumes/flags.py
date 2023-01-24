@@ -184,14 +184,14 @@ def AddVolumeExportPolicyArg(parser):
         Export Policy of a Cloud NetApp Files Volume.
         This will be a field similar to network
         in which export policy fields can be specified as such:
-        --export-policy=allowed-clients=ALLOWED_CLIENTS_IP_ADDRESSES,
+        `--export-policy=allowed-clients=ALLOWED_CLIENTS_IP_ADDRESSES,
         has-root-access=HAS_ROOT_ACCESS_BOOL,access=ACCESS_TYPE,nfsv3=NFSV3,
         nfsv4=NFSV4,kerberos-5-read-only=KERBEROS_5_READ_ONLY,
         kerberos-5-read-write=KERBEROS_5_READ_WRITE,
         kerberos-5i-read-only=KERBEROS_5I_READ_ONLY,
         kerberos-5i-read-write=KERBEROS_5I_READ_WRITE,
         kerberos-5p-read-only=KERBEROS_5P_READ_ONLY,
-        kerberos-5p-read-write=KERBEROS_5P_READ_WRITE
+        kerberos-5p-read-write=KERBEROS_5P_READ_WRITE`
   """
   parser.add_argument(
       '--export-policy',
@@ -233,11 +233,11 @@ def AddVolumeSmbSettingsArg(parser):
       help="""List of settings specific to SMB protocol\
 for a Cloud NetApp Files Volume\
 Valid component values are:
-  `ENCRYPT_DATA`, `BROWSABLE`, `CHANGE_NOTIFY`, 'NON_BROWSABLE',
-  'OPLOCKS', 'SHOW_SNAPSHOT', 'SHOW_PREVIOUS_VERSIONS',
-  'ACCESS_BASED_ENUMERATION', 'CONTINUOUSLY_AVAILABLE'
+  `ENCRYPT_DATA`, `BROWSABLE`, `CHANGE_NOTIFY`, `NON_BROWSABLE`,
+  `OPLOCKS`, `SHOW_SNAPSHOT`, `SHOW_PREVIOUS_VERSIONS`,
+  `ACCESS_BASED_ENUMERATION`, `CONTINUOUSLY_AVAILABLE`
 
-            For more information, look at\
+            For more information, look at \
 https://cloud.google.com/netapp/docs/reference\
 /rest/v1alpha1/projects.locations.volumes#smbsettings.""")
 

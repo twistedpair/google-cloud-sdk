@@ -43,8 +43,10 @@ def AddTypeArg(parser):
   parser.add_argument(
       '--type',
       choices={
-          'opportunistic': 'Do not proactively replace instances. Create new '
-                           'instances and delete old on resizes of the group.',
+          'opportunistic':
+              'Do not proactively replace VMs. Create new VMs and delete old '
+              'ones on resizes of the group and when you target specific VMs '
+              'to be updated or recreated.',
           'proactive': 'Replace instances proactively.',
       },
       default='proactive',
@@ -97,10 +99,9 @@ def AddReplacementMethodFlag(parser):
               'Recreate instances and preserve the instance names. '
               'The instance IDs and creation timestamps might change.',
       },
-      help="Type of replacement method. Specifies what action will be taken "
-           "to update instances. Defaults to ``recreate'' if the managed "
-           "instance group has stateful configuration, or to ``substitute'' "
-           "otherwise.")
+      help='Type of replacement method. Specifies what action will be taken '
+      'to update instances. Defaults to ``recreate`` if the managed instance '
+      'group has stateful configuration, or to ``substitute`` otherwise.')
 
 
 def AddForceArg(parser):
@@ -111,16 +112,27 @@ def AddForceArg(parser):
             'configurations without validation.'))
 
 
-INSTANCE_ACTION_CHOICES_WITHOUT_NONE = collections.OrderedDict([
-    ('refresh', "Apply the new configuration without stopping instances, "
-                "if possible. For example, use ``refresh'' to apply changes "
-                "that only affect metadata or additional disks."),
-    ('restart', 'Apply the new configuration without replacing instances, '
-                'if possible. For example, stopping instances and starting '
-                'them again is sufficient to apply changes to machine type.'),
-    ('replace', "Replace old instances according to the "
-                "``--replacement-method'' flag.")
-])
+def InstanceActionChoicesWithoutNone(flag_prefix=''):
+  """Return possible instance action choices without NONE value."""
+  return collections.OrderedDict([
+      ('refresh',
+       ('Apply the new configuration without stopping VMs, if possible. For '
+        'example, use ``refresh`` to apply changes that only affect metadata '
+        'or additional disks.')),
+      ('restart',
+       ('Apply the new configuration without replacing VMs, if possible. For '
+        'example, stopping VMs and starting them again is sufficient to apply '
+        'changes to machine type.')),
+      ('replace', ('Replace old VMs according to the '
+                   '--{flag_prefix}replacement-method flag.').format(
+                       flag_prefix=flag_prefix))
+  ])
+
+
+def InstanceActionChoicesWithNone(flag_prefix=''):
+  """Return possible instance action choices with NONE value."""
+  return _CombineOrderedChoices({'none': 'No action'},
+                                InstanceActionChoicesWithoutNone(flag_prefix))
 
 
 def _CombineOrderedChoices(choices1, choices2):
@@ -130,13 +142,9 @@ def _CombineOrderedChoices(choices1, choices2):
   return merged
 
 
-INSTANCE_ACTION_CHOICES_WITH_NONE = _CombineOrderedChoices(
-    {'none': 'No action'}, INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
-
-
 def AddMinimalActionArg(parser, choices_with_none=True, default=None):
-  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if choices_with_none
-             else INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
+  choices = (InstanceActionChoicesWithNone() if choices_with_none
+             else InstanceActionChoicesWithoutNone())
   parser.add_argument(
       '--minimal-action',
       choices=choices,
@@ -152,8 +160,8 @@ def AddMinimalActionArg(parser, choices_with_none=True, default=None):
 
 
 def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
-  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if choices_with_none
-             else INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
+  choices = (InstanceActionChoicesWithNone() if choices_with_none
+             else InstanceActionChoicesWithoutNone())
   parser.add_argument(
       '--most-disruptive-allowed-action',
       choices=choices,
@@ -217,6 +225,118 @@ def GetCommonPerInstanceCommandOutputFormat(with_validation_error=False):
 
 
 INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
+
+
+def AddMigUpdatePolicyFlags(parser, support_min_ready_flag=False):
+  """Add flags required for setting update policy attributes."""
+  group = parser.add_group(
+      required=False,
+      mutex=False,
+      help='Parameters for setting update policy for this managed instance '
+           'group.'
+  )
+  _AddUpdatePolicyTypeFlag(group)
+  _AddUpdatePolicyMaxUnavailableFlag(group)
+  _AddUpdatePolicyMaxSurgeFlag(group)
+  _AddUpdatePolicyMinimalActionFlag(group)
+  _AddUpdatePolicyMostDisruptiveActionFlag(group)
+  _AddUpdatePolicyReplacementMethodFlag(group)
+  if support_min_ready_flag:
+    _AddUpdatePolicyMinReadyFlag(group)
+
+
+def _AddUpdatePolicyTypeFlag(group):
+  """Add --update-policy-type flag to the parser."""
+  help_text = ('Specifies the type of update process. You can specify either '
+               '``proactive`` so that the managed instance group proactively '
+               'executes actions in order to bring VMs to their target '
+               'versions or ``opportunistic`` so that no action is '
+               'proactively executed but the update will be performed as part '
+               'of other actions.')
+  choices = {
+      'opportunistic':
+          'Do not proactively replace VMs. Create new VMs and delete old ones '
+          'on resizes of the group and when you target specific VMs to be '
+          'updated or recreated.',
+      'proactive': 'Replace VMs proactively.',
+  }
+  group.add_argument(
+      '--update-policy-type',
+      metavar='UPDATE_TYPE',
+      type=lambda x: x.lower(),
+      choices=choices,
+      help=help_text)
+
+
+def _AddUpdatePolicyMaxUnavailableFlag(group):
+  group.add_argument(
+      '--update-policy-max-unavailable',
+      metavar='MAX_UNAVAILABLE',
+      type=str,
+      help=('Maximum number of VMs that can be unavailable during the update '
+            'process. This can be a fixed number (e.g. 5) or a percentage of '
+            'size to the managed instance group (e.g. 10%). Defaults to the '
+            'number of zones in which the managed instance group operates.'))
+
+
+def _AddUpdatePolicyMaxSurgeFlag(group):
+  group.add_argument(
+      '--update-policy-max-surge',
+      metavar='MAX_SURGE',
+      type=str,
+      help=(
+          'Maximum additional number of VMs that can be created during the '
+          'update process. This can be a fixed number (e.g. 5) or a percentage '
+          'of size to the managed instance group (e.g. 10%). Defaults to 0 if '
+          'the managed instance group has stateful configuration, or to the '
+          'number of zones in which it operates otherwise.'))
+
+
+def _AddUpdatePolicyMinReadyFlag(group):
+  group.add_argument(
+      '--update-policy-min-ready',
+      metavar='MIN_READY',
+      type=arg_parsers.Duration(lower_bound='0s'),
+      help=('Minimum time for which a newly created VM should be ready to be '
+            'considered available. For example `10s` for 10 seconds. See '
+            '$ gcloud topic datetimes for information on duration formats.'))
+
+
+def _AddUpdatePolicyMinimalActionFlag(group):
+  group.add_argument(
+      '--update-policy-minimal-action',
+      choices=InstanceActionChoicesWithNone(flag_prefix='update-policy-'),
+      help=('Use this flag to minimize disruption as much as possible or to '
+            'apply a more disruptive action than is strictly necessary. '
+            'The MIG performs at least this action on each VM while '
+            'updating. If the update requires a more disruptive action than '
+            'the one specified here, then the more disruptive action is '
+            'performed. '))
+
+
+def _AddUpdatePolicyMostDisruptiveActionFlag(group):
+  group.add_argument(
+      '--update-policy-most-disruptive-action',
+      choices=InstanceActionChoicesWithNone(flag_prefix='update-policy-'),
+      help=('Use this flag to prevent an update if it requires more disruption '
+            'than you can afford. At most, the MIG performs the specified '
+            'action on each VM while updating. If the update requires '
+            'a more disruptive action than the one specified here, then '
+            'the update fails and no changes are made.'))
+
+
+def _AddUpdatePolicyReplacementMethodFlag(group):
+  group.add_argument(
+      '--update-policy-replacement-method',
+      choices={
+          'substitute': 'Delete old VMs and create VMs with new names.',
+          'recreate': 'Recreate VMs and preserve the VM names. '
+                      'The VM IDs and creation timestamps might change.',
+      },
+      help=('Type of replacement method. Specifies what action will be taken '
+            'to update VMs. Defaults to ``recreate`` if the managed '
+            'instance group has stateful configuration, or to ``substitute`` '
+            'otherwise.'))
 
 
 def AddMigInstanceRedistributionTypeFlag(parser):

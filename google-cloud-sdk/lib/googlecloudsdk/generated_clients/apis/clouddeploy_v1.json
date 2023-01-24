@@ -1664,7 +1664,9 @@
             "The `Rollout` needs approval.",
             "An approver rejected the `Rollout`.",
             "The `Rollout` is waiting for an earlier Rollout(s) to complete on this `Target`.",
-            "The `Rollout` is waiting for the `Release` to be fully rendered."
+            "The `Rollout` is waiting for the `Release` to be fully rendered.",
+            "The `Rollout` is in the process of being cancelled.",
+            "The `Rollout` has been cancelled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1674,7 +1676,9 @@
             "PENDING_APPROVAL",
             "APPROVAL_REJECTED",
             "PENDING",
-            "PENDING_RELEASE"
+            "PENDING_RELEASE",
+            "CANCELLING",
+            "CANCELLED"
           ]
         },
         "failureReason": {
@@ -1825,7 +1829,8 @@
             "The Job succeeded.",
             "The Job failed.",
             "The Job was aborted.",
-            "The Job was skipped."
+            "The Job was skipped.",
+            "The Job was ignored."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1835,7 +1840,8 @@
             "SUCCEEDED",
             "FAILED",
             "ABORTED",
-            "SKIPPED"
+            "SKIPPED",
+            "IGNORED"
           ]
         },
         "skipMessage": {
@@ -3623,6 +3629,11 @@
                               "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
                               "location": "query",
                               "repeated": true,
+                              "type": "string"
+                            },
+                            "startingPhaseId": {
+                              "description": "Optional. The starting phase ID for the `Rollout`. If empty the `Rollout` will start at the first phase.",
+                              "location": "query",
                               "type": "string"
                             }
                           },

@@ -456,7 +456,9 @@ def CreateRecaptchaOptionsConfig(client, args,
   return recaptcha_options_config
 
 
-def CreateRateLimitOptions(client, args, support_fairshare):
+def CreateRateLimitOptions(
+    client, args, support_fairshare, support_multiple_rate_limit_keys
+):
   """Returns a SecurityPolicyRuleRateLimitOptions message."""
 
   messages = client.messages
@@ -499,6 +501,22 @@ def CreateRateLimitOptions(client, args, support_fairshare):
     is_updated = True
   if args.IsSpecified('enforce_on_key_name'):
     rate_limit_options.enforceOnKeyName = args.enforce_on_key_name
+    is_updated = True
+
+  if support_multiple_rate_limit_keys and args.IsSpecified(
+      'enforce_on_key_configs'
+  ):
+    enforce_on_key_configs = []
+    for k, v in args.enforce_on_key_configs.items():
+      enforce_on_key_configs.append(
+          messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(
+              enforceOnKeyType=messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig.EnforceOnKeyTypeValueValuesEnum(
+                  ConvertEnforceOnKey(k)
+              ),
+              enforceOnKeyName=v if v else None,
+          )
+      )
+    rate_limit_options.enforceOnKeyConfigs = enforce_on_key_configs
     is_updated = True
 
   if (args.IsSpecified('ban_threshold_count') or

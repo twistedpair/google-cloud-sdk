@@ -1605,6 +1605,22 @@ def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=False):
       hidden=hidden)
 
 
+def AddQueuedProvisioningFlag(parser, hidden=False):
+  """Adds a --enable-queued-provisioning flag to parser."""
+  parser.add_argument(
+      '--enable-queued-provisioning',
+      default=None,
+      help=textwrap.dedent("""\
+        Mark the newly created nodepool as Queued only. This means that all
+        new nodes can be obtained only through queuing via Cluster Autoscaler
+        ProvisioningRequest API.
+
+          $ {command} node-pool-1 --cluster=example-cluster --enable-queued-provisioning
+        """),
+      hidden=hidden,
+      action='store_true')
+
+
 def AddMaintenanceIntervalFlag(parser, for_node_pool=False, hidden=True):
   """Adds a --maintenance-interval flag to the given parser."""
   type_validator = arg_parsers.RegexpValidator(
@@ -2403,7 +2419,7 @@ Examples:
       help=help_text)
 
 
-def AddAdditionalPodIpv4RangesFlag(parser, hidden=True):
+def AddAdditionalPodIpv4RangesFlag(parser):
   """Adds additional pod IPv4 ranges flag to parser."""
 
   help_text = """\
@@ -2416,12 +2432,12 @@ Examples:
   parser.add_argument(
       '--additional-pod-ipv4-ranges',
       metavar='NAME',
-      hidden=hidden,
+      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       help=help_text)
 
 
-def AddRemoveAdditionalPodIpv4RangesFlag(parser, hidden=True):
+def AddRemoveAdditionalPodIpv4RangesFlag(parser):
   """Adds flag to remove additional pod IPv4 ranges to parser."""
 
   help_text = """\
@@ -2434,7 +2450,7 @@ Examples:
   parser.add_argument(
       '--remove-additional-pod-ipv4-ranges',
       metavar='NAME',
-      hidden=hidden,
+      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       help=help_text)
 

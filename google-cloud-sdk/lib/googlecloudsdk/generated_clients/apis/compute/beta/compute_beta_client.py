@@ -16223,6 +16223,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Modify the specified resource policy.
+
+      Args:
+        request: (ComputeResourcePoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.resourcePolicies.patch',
+        ordered_params=['project', 'region', 'resourcePolicy'],
+        path_params=['project', 'region', 'resourcePolicy'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+        request_field='resourcePolicyResource',
+        request_type_name='ComputeResourcePoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 

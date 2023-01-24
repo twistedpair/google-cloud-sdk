@@ -1721,8 +1721,15 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
         will take longer to receive an update than if it was configured for
         AS_NEEDED. Security updates will still be applied as soon as they are
         available.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
     """
     PERIODIC = 0
+    RECURRENT = 1
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
@@ -2034,9 +2041,11 @@ class AttachedDiskInitializeParams(_messages.Message):
     provisionedThroughput: Indicates how much throughput to provision for the
       disk. This sets the number of throughput mb per second that the disk can
       handle. Values must be between 1 and 7,124.
-    replicaZones: URLs of the zones where the disk should be replicated to.
-      Only applicable for regional resources. Replica zones must have 1 zone
-      same as the instance zone.
+    replicaZones: Required for each regional disk associated with the
+      instance. Specify the URLs of the zones where the disk should be
+      replicated to. You must provide exactly two replica zones, and one zone
+      must be the same as the instance zone. You can't use this option with
+      boot disks.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -4092,6 +4101,25 @@ class BackendService(_messages.Message):
   Enums:
     CompressionModeValueValuesEnum: Compress text responses using Brotli or
       gzip compression, based on the client's Accept-Encoding header.
+    IpAddressSelectionPolicyValueValuesEnum: Specifies preference of traffic
+      to the backend (from the proxy and from the client for proxyless gRPC).
+      The possible values are: - IPV4_ONLY: Only send IPv4 traffic to the
+      backends of the Backend Service (Instance Group, Managed Instance Group,
+      Network Endpoint Group) regardless of traffic from the client to the
+      proxy. Only IPv4 health-checks are used to check the health of the
+      backends. This is the default setting. - PREFER_IPV6: Prioritize the
+      connection to the endpoints IPv6 address over its IPv4 address (provided
+      there is a healthy IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to
+      the backends of the Backend Service (Instance Group, Managed Instance
+      Group, Network Endpoint Group) regardless of traffic from the client to
+      the proxy. Only IPv6 health-checks are used to check the health of the
+      backends. This field is applicable to either: - Advanced Global External
+      HTTPS Load Balancing (load balancing scheme EXTERNAL_MANAGED), -
+      Regional External HTTPS Load Balancing, - Internal TCP Proxy (load
+      balancing scheme INTERNAL_MANAGED), - Regional Internal HTTPS Load
+      Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic Director
+      with Envoy proxies and proxyless gRPC (load balancing scheme
+      INTERNAL_SELF_MANAGED).
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
       backend service created for one type of load balancer cannot be used
       with another. For more information, refer to Choosing a load balancer.
@@ -4213,17 +4241,39 @@ class BackendService(_messages.Message):
       Balancing.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipAddressSelectionPolicy: Specifies preference of traffic to the backend
+      (from the proxy and from the client for proxyless gRPC). The possible
+      values are: - IPV4_ONLY: Only send IPv4 traffic to the backends of the
+      Backend Service (Instance Group, Managed Instance Group, Network
+      Endpoint Group) regardless of traffic from the client to the proxy. Only
+      IPv4 health-checks are used to check the health of the backends. This is
+      the default setting. - PREFER_IPV6: Prioritize the connection to the
+      endpoints IPv6 address over its IPv4 address (provided there is a
+      healthy IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to the
+      backends of the Backend Service (Instance Group, Managed Instance Group,
+      Network Endpoint Group) regardless of traffic from the client to the
+      proxy. Only IPv6 health-checks are used to check the health of the
+      backends. This field is applicable to either: - Advanced Global External
+      HTTPS Load Balancing (load balancing scheme EXTERNAL_MANAGED), -
+      Regional External HTTPS Load Balancing, - Internal TCP Proxy (load
+      balancing scheme INTERNAL_MANAGED), - Regional Internal HTTPS Load
+      Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic Director
+      with Envoy proxies and proxyless gRPC (load balancing scheme
+      INTERNAL_SELF_MANAGED).
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
     loadBalancingScheme: Specifies the load balancer type. A backend service
       created for one type of load balancer cannot be used with another. For
       more information, refer to Choosing a load balancer.
-    localityLbPolicies: A list of locality load balancing policies to be used
-      in order of preference. Either the policy or the customPolicy field
-      should be set. Overrides any value set in the localityLbPolicy field.
-      localityLbPolicies is only supported when the BackendService is
-      referenced by a URL Map that is referenced by a target gRPC proxy that
-      has the validateForProxyless field set to true.
+    localityLbPolicies: A list of locality load-balancing policies to be used
+      in order of preference. When you use localityLbPolicies, you must set at
+      least one value for either the localityLbPolicies[].policy or the
+      localityLbPolicies[].customPolicy field. localityLbPolicies overrides
+      any value set in the localityLbPolicy field. For an example of how to
+      use this field, see Define a list of preferred policies. Caution: This
+      field and its children are intended for use in a service mesh that
+      includes gRPC clients only. Envoy proxies can't use backend services
+      that have this configuration.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are: - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -4352,6 +4402,46 @@ class BackendService(_messages.Message):
     """
     AUTOMATIC = 0
     DISABLED = 1
+
+  class IpAddressSelectionPolicyValueValuesEnum(_messages.Enum):
+    r"""Specifies preference of traffic to the backend (from the proxy and
+    from the client for proxyless gRPC). The possible values are: - IPV4_ONLY:
+    Only send IPv4 traffic to the backends of the Backend Service (Instance
+    Group, Managed Instance Group, Network Endpoint Group) regardless of
+    traffic from the client to the proxy. Only IPv4 health-checks are used to
+    check the health of the backends. This is the default setting. -
+    PREFER_IPV6: Prioritize the connection to the endpoints IPv6 address over
+    its IPv4 address (provided there is a healthy IPv6 address). - IPV6_ONLY:
+    Only send IPv6 traffic to the backends of the Backend Service (Instance
+    Group, Managed Instance Group, Network Endpoint Group) regardless of
+    traffic from the client to the proxy. Only IPv6 health-checks are used to
+    check the health of the backends. This field is applicable to either: -
+    Advanced Global External HTTPS Load Balancing (load balancing scheme
+    EXTERNAL_MANAGED), - Regional External HTTPS Load Balancing, - Internal
+    TCP Proxy (load balancing scheme INTERNAL_MANAGED), - Regional Internal
+    HTTPS Load Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic
+    Director with Envoy proxies and proxyless gRPC (load balancing scheme
+    INTERNAL_SELF_MANAGED).
+
+    Values:
+      IPV4_ONLY: Only send IPv4 traffic to the backends of the Backend Service
+        (Instance Group, Managed Instance Group, Network Endpoint Group)
+        regardless of traffic from the client to the proxy. Only IPv4 health-
+        checks are used to check the health of the backends. This is the
+        default setting.
+      IPV6_ONLY: Only send IPv6 traffic to the backends of the Backend Service
+        (Instance Group, Managed Instance Group, Network Endpoint Group)
+        regardless of traffic from the client to the proxy. Only IPv6 health-
+        checks are used to check the health of the backends.
+      IP_ADDRESS_SELECTION_POLICY_UNSPECIFIED: Unspecified IP address
+        selection policy.
+      PREFER_IPV6: Prioritize the connection to the endpoints IPv6 address
+        over its IPv4 address (provided there is a healthy IPv6 address).
+    """
+    IPV4_ONLY = 0
+    IPV6_ONLY = 1
+    IP_ADDRESS_SELECTION_POLICY_UNSPECIFIED = 2
+    PREFER_IPV6 = 3
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Specifies the load balancer type. A backend service created for one
@@ -4558,29 +4648,30 @@ class BackendService(_messages.Message):
   healthChecks = _messages.StringField(17, repeated=True)
   iap = _messages.MessageField('BackendServiceIAP', 18)
   id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(20, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
-  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 22, repeated=True)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
-  maxStreamDuration = _messages.MessageField('Duration', 25)
-  name = _messages.StringField(26)
-  network = _messages.StringField(27)
-  outlierDetection = _messages.MessageField('OutlierDetection', 28)
-  port = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(30)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 31)
-  region = _messages.StringField(32)
-  securityPolicy = _messages.StringField(33)
-  securitySettings = _messages.MessageField('SecuritySettings', 34)
-  selfLink = _messages.StringField(35)
-  selfLinkWithId = _messages.StringField(36)
-  serviceBindings = _messages.StringField(37, repeated=True)
-  serviceLbPolicy = _messages.StringField(38)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 39)
-  subsetting = _messages.MessageField('Subsetting', 40)
-  timeoutSec = _messages.IntegerField(41, variant=_messages.Variant.INT32)
-  vpcNetworkScope = _messages.EnumField('VpcNetworkScopeValueValuesEnum', 42)
+  ipAddressSelectionPolicy = _messages.EnumField('IpAddressSelectionPolicyValueValuesEnum', 20)
+  kind = _messages.StringField(21, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 22)
+  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 23, repeated=True)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 24)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 25)
+  maxStreamDuration = _messages.MessageField('Duration', 26)
+  name = _messages.StringField(27)
+  network = _messages.StringField(28)
+  outlierDetection = _messages.MessageField('OutlierDetection', 29)
+  port = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(31)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 32)
+  region = _messages.StringField(33)
+  securityPolicy = _messages.StringField(34)
+  securitySettings = _messages.MessageField('SecuritySettings', 35)
+  selfLink = _messages.StringField(36)
+  selfLinkWithId = _messages.StringField(37)
+  serviceBindings = _messages.StringField(38, repeated=True)
+  serviceLbPolicy = _messages.StringField(39)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 40)
+  subsetting = _messages.MessageField('Subsetting', 41)
+  timeoutSec = _messages.IntegerField(42, variant=_messages.Variant.INT32)
+  vpcNetworkScope = _messages.EnumField('VpcNetworkScopeValueValuesEnum', 43)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5403,12 +5494,13 @@ class BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy(_messages.Mess
   Fields:
     data: An optional, arbitrary JSON object with configuration data,
       understood by a locally installed custom policy implementation.
-    name: Identifies the custom policy. The value should match the type the
-      custom implementation is registered with on the gRPC clients. It should
-      follow protocol buffer message naming conventions and include the full
-      path (e.g. myorg.CustomLbPolicy). The maximum length is 256 characters.
-      Note that specifying the same custom policy more than once for a backend
-      is not a valid configuration and will be rejected.
+    name: Identifies the custom policy. The value should match the name of a
+      custom implementation registered on the gRPC clients. It should follow
+      protocol buffer message naming conventions and include the full path
+      (for example, myorg.CustomLbPolicy). The maximum length is 256
+      characters. Do not specify the same custom policy more than once for a
+      backend. If you do, the configuration is rejected. For an example of how
+      to use this field, see Use a custom policy.
   """
 
   data = _messages.StringField(1)
@@ -5419,29 +5511,26 @@ class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
   r"""The configuration for a built-in load balancing policy.
 
   Enums:
-    NameValueValuesEnum: The name of a locality load balancer policy to be
-      used. The value should be one of the predefined ones as supported by
-      localityLbPolicy, although at the moment only ROUND_ROBIN is supported.
-      This field should only be populated when the customPolicy field is not
-      used. Note that specifying the same policy more than once for a backend
-      is not a valid configuration and will be rejected.
+    NameValueValuesEnum: The name of a locality load-balancing policy. Valid
+      values include ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For
+      information about these values, see the description of localityLbPolicy.
+      Do not specify the same policy more than once for a backend. If you do,
+      the configuration is rejected.
 
   Fields:
-    name: The name of a locality load balancer policy to be used. The value
-      should be one of the predefined ones as supported by localityLbPolicy,
-      although at the moment only ROUND_ROBIN is supported. This field should
-      only be populated when the customPolicy field is not used. Note that
-      specifying the same policy more than once for a backend is not a valid
-      configuration and will be rejected.
+    name: The name of a locality load-balancing policy. Valid values include
+      ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For information about
+      these values, see the description of localityLbPolicy. Do not specify
+      the same policy more than once for a backend. If you do, the
+      configuration is rejected.
   """
 
   class NameValueValuesEnum(_messages.Enum):
-    r"""The name of a locality load balancer policy to be used. The value
-    should be one of the predefined ones as supported by localityLbPolicy,
-    although at the moment only ROUND_ROBIN is supported. This field should
-    only be populated when the customPolicy field is not used. Note that
-    specifying the same policy more than once for a backend is not a valid
-    configuration and will be rejected.
+    r"""The name of a locality load-balancing policy. Valid values include
+    ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For information about
+    these values, see the description of localityLbPolicy. Do not specify the
+    same policy more than once for a backend. If you do, the configuration is
+    rejected.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -6545,6 +6634,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
       GENERAL_PURPOSE_T2D: <no description>
+      GRAPHICS_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED_M3: <no description>
       TYPE_UNSPECIFIED: <no description>
@@ -6557,9 +6647,10 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_N2 = 5
     GENERAL_PURPOSE_N2D = 6
     GENERAL_PURPOSE_T2D = 7
-    MEMORY_OPTIMIZED = 8
-    MEMORY_OPTIMIZED_M3 = 9
-    TYPE_UNSPECIFIED = 10
+    GRAPHICS_OPTIMIZED = 8
+    MEMORY_OPTIMIZED = 9
+    MEMORY_OPTIMIZED_M3 = 10
+    TYPE_UNSPECIFIED = 11
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -36381,10 +36472,17 @@ class ExternalVpnGatewayInterface(_messages.Message):
       IPv4 is supported. This IP address can be either from your on-premise
       gateway or another Cloud provider's VPN gateway, it cannot be an IP
       address from Google Compute Engine.
+    ipv6Address: IPv6 address of the interface in the external VPN gateway.
+      This IPv6 address can be either from your on-premise gateway or another
+      Cloud provider's VPN gateway, it cannot be an IP address from Google
+      Compute Engine. Must specify an IPv6 address (not IPV4-mapped) using any
+      format described in RFC 4291 (e.g. 2001:db8:0:0:2d9:51:0:0). The output
+      format is RFC 5952 format (e.g. 2001:db8::2d9:51:0:0).
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
   ipAddress = _messages.StringField(2)
+  ipv6Address = _messages.StringField(3)
 
 
 class ExternalVpnGatewayList(_messages.Message):
@@ -49309,7 +49407,7 @@ class InterconnectAttachment(_messages.Message):
       created by the customer. - PARTNER_PROVIDER: an attachment to a Partner
       Interconnect, created by the partner.
     vlanTag8021q: The IEEE 802.1Q VLAN tag for this attachment, in the range
-      2-4094. Only specified at creation time.
+      2-4093. Only specified at creation time.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -51131,6 +51229,9 @@ class InterconnectRemoteLocation(_messages.Message):
     maxLagSize100Gbps: [Output Only] The maximum number of 100 Gbps ports
       supported in a link aggregation group (LAG). When linkType is 100 Gbps,
       requestedLinkCount cannot exceed max_lag_size_100_gbps.
+    maxLagSize10Gbps: [Output Only] The maximum number of 10 Gbps ports
+      supported in a link aggregation group (LAG). When linkType is 10 Gbps,
+      requestedLinkCount cannot exceed max_lag_size_10_gbps.
     name: [Output Only] Name of the resource.
     peeringdbFacilityId: [Output Only] The peeringdb identifier for this
       facility (corresponding with a netfac type in peeringdb).
@@ -51212,13 +51313,14 @@ class InterconnectRemoteLocation(_messages.Message):
   kind = _messages.StringField(11, default='compute#interconnectRemoteLocation')
   lacp = _messages.EnumField('LacpValueValuesEnum', 12)
   maxLagSize100Gbps = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  name = _messages.StringField(14)
-  peeringdbFacilityId = _messages.StringField(15)
-  permittedConnections = _messages.MessageField('InterconnectRemoteLocationPermittedConnections', 16, repeated=True)
-  remoteService = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  selfLinkWithId = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  maxLagSize10Gbps = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  name = _messages.StringField(15)
+  peeringdbFacilityId = _messages.StringField(16)
+  permittedConnections = _messages.MessageField('InterconnectRemoteLocationPermittedConnections', 17, repeated=True)
+  remoteService = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  selfLinkWithId = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
 
 
 class InterconnectRemoteLocationConstraints(_messages.Message):
@@ -63613,6 +63715,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_A100_80GB_GPUS: <no description>
       COMMITTED_NVIDIA_A100_GPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
+      COMMITTED_NVIDIA_L4_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
@@ -63662,6 +63765,7 @@ class Quota(_messages.Message):
       N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
+      NETWORK_ATTACHMENTS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
       NETWORK_FIREWALL_POLICIES: <no description>
       NODE_GROUPS: <no description>
@@ -63759,125 +63863,127 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_A100_80GB_GPUS = 23
     COMMITTED_NVIDIA_A100_GPUS = 24
     COMMITTED_NVIDIA_K80_GPUS = 25
-    COMMITTED_NVIDIA_P100_GPUS = 26
-    COMMITTED_NVIDIA_P4_GPUS = 27
-    COMMITTED_NVIDIA_T4_GPUS = 28
-    COMMITTED_NVIDIA_V100_GPUS = 29
-    COMMITTED_T2A_CPUS = 30
-    COMMITTED_T2D_CPUS = 31
-    CPUS = 32
-    CPUS_ALL_REGIONS = 33
-    DISKS_TOTAL_GB = 34
-    E2_CPUS = 35
-    EXTERNAL_MANAGED_FORWARDING_RULES = 36
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 37
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 38
-    EXTERNAL_VPN_GATEWAYS = 39
-    FIREWALLS = 40
-    FORWARDING_RULES = 41
-    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 42
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 43
-    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 44
-    GLOBAL_INTERNAL_ADDRESSES = 45
-    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 46
-    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 47
-    GPUS_ALL_REGIONS = 48
-    HEALTH_CHECKS = 49
-    IMAGES = 50
-    INSTANCES = 51
-    INSTANCE_GROUPS = 52
-    INSTANCE_GROUP_MANAGERS = 53
-    INSTANCE_TEMPLATES = 54
-    INTERCONNECTS = 55
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 56
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 57
-    INTERCONNECT_TOTAL_GBPS = 58
-    INTERNAL_ADDRESSES = 59
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 60
-    IN_PLACE_SNAPSHOTS = 61
-    IN_USE_ADDRESSES = 62
-    IN_USE_BACKUP_SCHEDULES = 63
-    IN_USE_MAINTENANCE_WINDOWS = 64
-    IN_USE_SNAPSHOT_SCHEDULES = 65
-    LOCAL_SSD_TOTAL_GB = 66
-    M1_CPUS = 67
-    M2_CPUS = 68
-    M3_CPUS = 69
-    MACHINE_IMAGES = 70
-    N2A_CPUS = 71
-    N2D_CPUS = 72
-    N2_CPUS = 73
-    NETWORKS = 74
-    NETWORK_ENDPOINT_GROUPS = 75
-    NETWORK_FIREWALL_POLICIES = 76
-    NODE_GROUPS = 77
-    NODE_TEMPLATES = 78
-    NVIDIA_A100_80GB_GPUS = 79
-    NVIDIA_A100_GPUS = 80
-    NVIDIA_K80_GPUS = 81
-    NVIDIA_P100_GPUS = 82
-    NVIDIA_P100_VWS_GPUS = 83
-    NVIDIA_P4_GPUS = 84
-    NVIDIA_P4_VWS_GPUS = 85
-    NVIDIA_T4_GPUS = 86
-    NVIDIA_T4_VWS_GPUS = 87
-    NVIDIA_V100_GPUS = 88
-    PACKET_MIRRORINGS = 89
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 90
-    PREEMPTIBLE_CPUS = 91
-    PREEMPTIBLE_LOCAL_SSD_GB = 92
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 93
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 94
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 96
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 98
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 99
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 100
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 101
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 102
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 103
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 104
-    PSC_INTERNAL_LB_FORWARDING_RULES = 105
-    PUBLIC_ADVERTISED_PREFIXES = 106
-    PUBLIC_DELEGATED_PREFIXES = 107
-    QUEUED_RESOURCES = 108
-    REGIONAL_AUTOSCALERS = 109
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 110
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 111
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 112
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 113
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 114
-    RESERVATIONS = 115
-    RESOURCE_POLICIES = 116
-    ROUTERS = 117
-    ROUTES = 118
-    SECURITY_POLICIES = 119
-    SECURITY_POLICIES_PER_REGION = 120
-    SECURITY_POLICY_CEVAL_RULES = 121
-    SECURITY_POLICY_RULES = 122
-    SECURITY_POLICY_RULES_PER_REGION = 123
-    SERVICE_ATTACHMENTS = 124
-    SNAPSHOTS = 125
-    SSD_TOTAL_GB = 126
-    SSL_CERTIFICATES = 127
-    STATIC_ADDRESSES = 128
-    STATIC_BYOIP_ADDRESSES = 129
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 130
-    SUBNETWORKS = 131
-    T2A_CPUS = 132
-    T2D_CPUS = 133
-    TARGET_HTTPS_PROXIES = 134
-    TARGET_HTTP_PROXIES = 135
-    TARGET_INSTANCES = 136
-    TARGET_POOLS = 137
-    TARGET_SSL_PROXIES = 138
-    TARGET_TCP_PROXIES = 139
-    TARGET_VPN_GATEWAYS = 140
-    URL_MAPS = 141
-    VPN_GATEWAYS = 142
-    VPN_TUNNELS = 143
-    XPN_SERVICE_PROJECTS = 144
+    COMMITTED_NVIDIA_L4_GPUS = 26
+    COMMITTED_NVIDIA_P100_GPUS = 27
+    COMMITTED_NVIDIA_P4_GPUS = 28
+    COMMITTED_NVIDIA_T4_GPUS = 29
+    COMMITTED_NVIDIA_V100_GPUS = 30
+    COMMITTED_T2A_CPUS = 31
+    COMMITTED_T2D_CPUS = 32
+    CPUS = 33
+    CPUS_ALL_REGIONS = 34
+    DISKS_TOTAL_GB = 35
+    E2_CPUS = 36
+    EXTERNAL_MANAGED_FORWARDING_RULES = 37
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 38
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 39
+    EXTERNAL_VPN_GATEWAYS = 40
+    FIREWALLS = 41
+    FORWARDING_RULES = 42
+    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 43
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 44
+    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 45
+    GLOBAL_INTERNAL_ADDRESSES = 46
+    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 47
+    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 48
+    GPUS_ALL_REGIONS = 49
+    HEALTH_CHECKS = 50
+    IMAGES = 51
+    INSTANCES = 52
+    INSTANCE_GROUPS = 53
+    INSTANCE_GROUP_MANAGERS = 54
+    INSTANCE_TEMPLATES = 55
+    INTERCONNECTS = 56
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 57
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 58
+    INTERCONNECT_TOTAL_GBPS = 59
+    INTERNAL_ADDRESSES = 60
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 61
+    IN_PLACE_SNAPSHOTS = 62
+    IN_USE_ADDRESSES = 63
+    IN_USE_BACKUP_SCHEDULES = 64
+    IN_USE_MAINTENANCE_WINDOWS = 65
+    IN_USE_SNAPSHOT_SCHEDULES = 66
+    LOCAL_SSD_TOTAL_GB = 67
+    M1_CPUS = 68
+    M2_CPUS = 69
+    M3_CPUS = 70
+    MACHINE_IMAGES = 71
+    N2A_CPUS = 72
+    N2D_CPUS = 73
+    N2_CPUS = 74
+    NETWORKS = 75
+    NETWORK_ATTACHMENTS = 76
+    NETWORK_ENDPOINT_GROUPS = 77
+    NETWORK_FIREWALL_POLICIES = 78
+    NODE_GROUPS = 79
+    NODE_TEMPLATES = 80
+    NVIDIA_A100_80GB_GPUS = 81
+    NVIDIA_A100_GPUS = 82
+    NVIDIA_K80_GPUS = 83
+    NVIDIA_P100_GPUS = 84
+    NVIDIA_P100_VWS_GPUS = 85
+    NVIDIA_P4_GPUS = 86
+    NVIDIA_P4_VWS_GPUS = 87
+    NVIDIA_T4_GPUS = 88
+    NVIDIA_T4_VWS_GPUS = 89
+    NVIDIA_V100_GPUS = 90
+    PACKET_MIRRORINGS = 91
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 92
+    PREEMPTIBLE_CPUS = 93
+    PREEMPTIBLE_LOCAL_SSD_GB = 94
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 95
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 96
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 97
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 98
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 99
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 100
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 101
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 102
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 103
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 104
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 105
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 106
+    PSC_INTERNAL_LB_FORWARDING_RULES = 107
+    PUBLIC_ADVERTISED_PREFIXES = 108
+    PUBLIC_DELEGATED_PREFIXES = 109
+    QUEUED_RESOURCES = 110
+    REGIONAL_AUTOSCALERS = 111
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 112
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 113
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 114
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 115
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 116
+    RESERVATIONS = 117
+    RESOURCE_POLICIES = 118
+    ROUTERS = 119
+    ROUTES = 120
+    SECURITY_POLICIES = 121
+    SECURITY_POLICIES_PER_REGION = 122
+    SECURITY_POLICY_CEVAL_RULES = 123
+    SECURITY_POLICY_RULES = 124
+    SECURITY_POLICY_RULES_PER_REGION = 125
+    SERVICE_ATTACHMENTS = 126
+    SNAPSHOTS = 127
+    SSD_TOTAL_GB = 128
+    SSL_CERTIFICATES = 129
+    STATIC_ADDRESSES = 130
+    STATIC_BYOIP_ADDRESSES = 131
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 132
+    SUBNETWORKS = 133
+    T2A_CPUS = 134
+    T2D_CPUS = 135
+    TARGET_HTTPS_PROXIES = 136
+    TARGET_HTTP_PROXIES = 137
+    TARGET_INSTANCES = 138
+    TARGET_POOLS = 139
+    TARGET_SSL_PROXIES = 140
+    TARGET_TCP_PROXIES = 141
+    TARGET_VPN_GATEWAYS = 142
+    URL_MAPS = 143
+    VPN_GATEWAYS = 144
+    VPN_TUNNELS = 145
+    XPN_SERVICE_PROJECTS = 146
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -68566,6 +68672,12 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
+    customLearnedIpRanges: User-defined Custom Learned Route IP range list for
+      a BGP session.
+    customLearnedRoutePriority: User-defined Custom Learned Route Priority for
+      a BGP session. This will be applied to all Custom Learned Route ranges
+      of the BGP session, if not given, google-managed priority of 100 is
+      used.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -68670,18 +68782,20 @@ class RouterBgpPeer(_messages.Message):
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
-  enable = _messages.EnumField('EnableValueValuesEnum', 6)
-  enableIpv6 = _messages.BooleanField(7)
-  interfaceName = _messages.StringField(8)
-  ipAddress = _messages.StringField(9)
-  ipv6NexthopAddress = _messages.StringField(10)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
-  md5AuthenticationKeyName = _messages.StringField(12)
-  name = _messages.StringField(13)
-  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(15)
-  peerIpv6NexthopAddress = _messages.StringField(16)
-  routerApplianceInstance = _messages.StringField(17)
+  customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
+  customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  enable = _messages.EnumField('EnableValueValuesEnum', 8)
+  enableIpv6 = _messages.BooleanField(9)
+  interfaceName = _messages.StringField(10)
+  ipAddress = _messages.StringField(11)
+  ipv6NexthopAddress = _messages.StringField(12)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
+  md5AuthenticationKeyName = _messages.StringField(14)
+  name = _messages.StringField(15)
+  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(17)
+  peerIpv6NexthopAddress = _messages.StringField(18)
+  routerApplianceInstance = _messages.StringField(19)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -68809,6 +68923,18 @@ class RouterBgpPeerBfd(_messages.Message):
   packetMode = _messages.EnumField('PacketModeValueValuesEnum', 5)
   sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 6)
   slowTimerInterval = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+
+
+class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
+  r"""A RouterBgpPeerCustomLearnedIpRange object.
+
+  Fields:
+    range: The Custom Learned Route IP range. Must be a valid CIDR-formatted
+      prefix. If an IP is provided without a subnet mask, it is interpreted as
+      a /32 singular IP range for IPv4, and /128 for IPv6.
+  """
+
+  range = _messages.StringField(1)
 
 
 class RouterInterface(_messages.Message):
@@ -70220,8 +70346,15 @@ class Scheduling(_messages.Message):
         will take longer to receive an update than if it was configured for
         AS_NEEDED. Security updates will still be applied as soon as they are
         available.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
     """
     PERIODIC = 0
+    RECURRENT = 1
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
     r"""Defines the maintenance behavior for this instance. For standard
@@ -71234,18 +71367,18 @@ class SecurityPolicyRule(_messages.Message):
 
   Fields:
     action: The Action to perform when the rule is matched. The following are
-      the valid actions: - allow: allow access to target. - deny(): deny
-      access to target, returns the HTTP response code specified (valid values
-      are 403, 404, and 502). - rate_based_ban: limit client traffic to the
-      configured threshold and ban the client if the traffic exceeds the
-      threshold. Configure parameters for this action in RateLimitOptions.
-      Requires rate_limit_options to be set. - redirect: redirect to a
-      different target. This can either be an internal reCAPTCHA redirect, or
-      an external URL-based redirect via a 302 response. Parameters for this
-      action can be configured via redirectOptions. - throttle: limit client
-      traffic to the configured threshold. Configure parameters for this
-      action in rateLimitOptions. Requires rate_limit_options to be set for
-      this.
+      the valid actions: - allow: allow access to target. - deny(STATUS): deny
+      access to target, returns the HTTP response code specified. Valid values
+      for `STATUS` are 403, 404, and 502. - rate_based_ban: limit client
+      traffic to the configured threshold and ban the client if the traffic
+      exceeds the threshold. Configure parameters for this action in
+      RateLimitOptions. Requires rate_limit_options to be set. - redirect:
+      redirect to a different target. This can either be an internal reCAPTCHA
+      redirect, or an external URL-based redirect via a 302 response.
+      Parameters for this action can be configured via redirectOptions. -
+      throttle: limit client traffic to the configured threshold. Configure
+      parameters for this action in rateLimitOptions. Requires
+      rate_limit_options to be set for this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     direction: The direction in which this rule applies. This field may only
@@ -71677,9 +71810,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     exceedAction: Action to take for requests that are above the configured
       rate limit threshold, to either deny with a specified HTTP response
       code, or redirect to a different endpoint. Valid options are
-      "deny(status)", where valid values for status are 403, 404, 429, and
-      502, and "redirect" where the redirect parameters come from
-      exceedRedirectOptions below.
+      `deny(STATUS)`, where valid values for `STATUS` are 403, 404, 429, and
+      502, and `redirect`, where the redirect parameters come from
+      `exceedRedirectOptions` below.
     exceedActionRpcStatus: Specified gRPC response status for proxyless gRPC
       requests that are above the configured rate limit threshold
     exceedRedirectOptions: Parameters defining the redirect action that is
@@ -82392,6 +82525,8 @@ class VpnGateway(_messages.Message):
   Cloud VPN topologies .
 
   Enums:
+    GatewayIpVersionValueValuesEnum: The IP family of the gateway IPs for the
+      HA-VPN gateway interfaces. If not specified, IPV4 will be used.
     StackTypeValueValuesEnum: The stack type for this VPN gateway to identify
       the IP protocols that are enabled. Possible values are: IPV4_ONLY,
       IPV4_IPV6. If not specified, IPV4_ONLY will be used.
@@ -82406,6 +82541,8 @@ class VpnGateway(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    gatewayIpVersion: The IP family of the gateway IPs for the HA-VPN gateway
+      interfaces. If not specified, IPV4 will be used.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#vpnGateway for VPN
@@ -82417,7 +82554,7 @@ class VpnGateway(_messages.Message):
       must always provide an up-to-date fingerprint hash in order to update or
       change labels, otherwise the request will fail with error 412
       conditionNotMet. To see the latest fingerprint, make a get() request to
-      retrieve an VpnGateway.
+      retrieve a VpnGateway.
     labels: Labels for this resource. These can only be added or modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
@@ -82438,6 +82575,17 @@ class VpnGateway(_messages.Message):
     vpnInterfaces: The list of VPN interfaces associated with this VPN
       gateway.
   """
+
+  class GatewayIpVersionValueValuesEnum(_messages.Enum):
+    r"""The IP family of the gateway IPs for the HA-VPN gateway interfaces. If
+    not specified, IPV4 will be used.
+
+    Values:
+      IPV4: Every HA-VPN gateway interface is configured with an IPv4 address.
+      IPV6: Every HA-VPN gateway interface is configured with an IPv6 address.
+    """
+    IPV4 = 0
+    IPV6 = 1
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this VPN gateway to identify the IP protocols that
@@ -82479,16 +82627,17 @@ class VpnGateway(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default='compute#vpnGateway')
-  labelFingerprint = _messages.BytesField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 11)
-  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 12, repeated=True)
+  gatewayIpVersion = _messages.EnumField('GatewayIpVersionValueValuesEnum', 3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#vpnGateway')
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
+  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 13, repeated=True)
 
 
 class VpnGatewayAggregatedList(_messages.Message):
@@ -82960,11 +83109,15 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
       addresses or regional external IP addresses. For regular (non HA VPN
       over Cloud Interconnect) HA VPN tunnels, the IP address must be a
       regional external IP address.
+    ipv6Address: [Output Only] IPv6 address for this VPN interface associated
+      with the VPN gateway. The IPv6 address must be a regional external IPv6
+      address. The format is RFC 5952 format (e.g. 2001:db8::2d9:51:0:0).
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
   interconnectAttachment = _messages.StringField(2)
   ipAddress = _messages.StringField(3)
+  ipv6Address = _messages.StringField(4)
 
 
 class VpnGatewaysGetStatusResponse(_messages.Message):
@@ -83876,9 +84029,13 @@ class WafExpressionSetExpression(_messages.Message):
       2.9.1 rule id 973337. The ID could be used to determine the individual
       attack definition that has been detected. It could also be used to
       exclude it from the policy in case of false positive. required
+    sensitivity: The sensitivity value associated with the WAF rule ID. This
+      corresponds to the ModSecurity paranoia level, ranging from 1 to 4. 0 is
+      reserved for opt-in only rules.
   """
 
   id = _messages.StringField(1)
+  sensitivity = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class WeightedBackendService(_messages.Message):

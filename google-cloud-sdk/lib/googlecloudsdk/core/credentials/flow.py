@@ -23,6 +23,7 @@ import abc
 import contextlib
 import select
 import socket
+import sys
 import webbrowser
 import wsgiref
 from google_auth_oauthlib import flow as google_auth_flow
@@ -324,11 +325,16 @@ class FullWebFlow(InstalledAppFlow):
     # OAuth 2.0 should only occur over https.
     authorization_response = self.app.last_request_uri.replace(
         'http:', 'https:')
+
+    # include_client_id should be set to True for 1P, and False for 3P.
+    include_client_id = self.client_config.get('3pi') is None
+
     # TODO(b/204953716): Remove verify=None
     self.fetch_token(
-        authorization_response=authorization_response, include_client_id=True,
-        verify=None)
-
+        authorization_response=authorization_response,
+        include_client_id=include_client_id,
+        verify=None,
+    )
     return self.credentials
 
 
@@ -529,6 +535,13 @@ class NoBrowserFlow(InstalledAppFlow):
         version=self._REQUIRED_GCLOUD_VERSION,
         command=command,
         partial_url=partial_url)
+    if '3pi' in self.client_config and sys.platform.startswith('dar'):
+      # Importing readline alters the built-in input() method
+      # to use the GNU readline interface.
+      # The basic OSX input() has an input limit of 1024 characters,
+      # which is sometimes not enough for us.
+      import readline  # pylint: disable=unused-import, g-import-not-at-top
+
     return PromptForAuthResponse(helper_msg, self._PROMPT_MSG)
 
   def _Run(self, **kwargs):

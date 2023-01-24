@@ -27,7 +27,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
 
@@ -730,18 +729,3 @@ def get_request_config(url,
                                              'system_posix_data', None)
 
   return request_config
-
-
-def modifies_full_acl_policy(request_config):
-  """Checks if RequestConfig has ACL field aside from predefined ACL.
-
-  A separate implementation for RequestConfig may be needed in the future
-  if the ACL keys differ from UserRequestArgs.
-
-  Args:
-    request_config: RequestConfig.
-
-  Returns:
-    Boolean of whether RequestConfig modifies full ACL policy.
-  """
-  return user_request_args_factory.modifies_full_acl_policy(request_config)

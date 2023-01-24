@@ -1894,6 +1894,9 @@ class AttachedDiskInitializeParams(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    provisionedThroughput: Indicates how much throughput to provision for the
+      disk. This sets the number of throughput mb per second that the disk can
+      handle. Values must be between 1 and 7,124.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -2027,12 +2030,13 @@ class AttachedDiskInitializeParams(_messages.Message):
   multiWriter = _messages.BooleanField(9)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 10)
   provisionedIops = _messages.IntegerField(11)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 12)
-  resourcePolicies = _messages.StringField(13, repeated=True)
-  sourceImage = _messages.StringField(14)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceSnapshot = _messages.StringField(16)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  provisionedThroughput = _messages.IntegerField(12)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 13)
+  resourcePolicies = _messages.StringField(14, repeated=True)
+  sourceImage = _messages.StringField(15)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceSnapshot = _messages.StringField(17)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
 
 
 class AuditConfig(_messages.Message):
@@ -3954,12 +3958,15 @@ class BackendService(_messages.Message):
     loadBalancingScheme: Specifies the load balancer type. A backend service
       created for one type of load balancer cannot be used with another. For
       more information, refer to Choosing a load balancer.
-    localityLbPolicies: A list of locality load balancing policies to be used
-      in order of preference. Either the policy or the customPolicy field
-      should be set. Overrides any value set in the localityLbPolicy field.
-      localityLbPolicies is only supported when the BackendService is
-      referenced by a URL Map that is referenced by a target gRPC proxy that
-      has the validateForProxyless field set to true.
+    localityLbPolicies: A list of locality load-balancing policies to be used
+      in order of preference. When you use localityLbPolicies, you must set at
+      least one value for either the localityLbPolicies[].policy or the
+      localityLbPolicies[].customPolicy field. localityLbPolicies overrides
+      any value set in the localityLbPolicy field. For an example of how to
+      use this field, see Define a list of preferred policies. Caution: This
+      field and its children are intended for use in a service mesh that
+      includes gRPC clients only. Envoy proxies can't use backend services
+      that have this configuration.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are: - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -5080,12 +5087,13 @@ class BackendServiceLocalityLoadBalancingPolicyConfigCustomPolicy(_messages.Mess
   Fields:
     data: An optional, arbitrary JSON object with configuration data,
       understood by a locally installed custom policy implementation.
-    name: Identifies the custom policy. The value should match the type the
-      custom implementation is registered with on the gRPC clients. It should
-      follow protocol buffer message naming conventions and include the full
-      path (e.g. myorg.CustomLbPolicy). The maximum length is 256 characters.
-      Note that specifying the same custom policy more than once for a backend
-      is not a valid configuration and will be rejected.
+    name: Identifies the custom policy. The value should match the name of a
+      custom implementation registered on the gRPC clients. It should follow
+      protocol buffer message naming conventions and include the full path
+      (for example, myorg.CustomLbPolicy). The maximum length is 256
+      characters. Do not specify the same custom policy more than once for a
+      backend. If you do, the configuration is rejected. For an example of how
+      to use this field, see Use a custom policy.
   """
 
   data = _messages.StringField(1)
@@ -5096,29 +5104,26 @@ class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
   r"""The configuration for a built-in load balancing policy.
 
   Enums:
-    NameValueValuesEnum: The name of a locality load balancer policy to be
-      used. The value should be one of the predefined ones as supported by
-      localityLbPolicy, although at the moment only ROUND_ROBIN is supported.
-      This field should only be populated when the customPolicy field is not
-      used. Note that specifying the same policy more than once for a backend
-      is not a valid configuration and will be rejected.
+    NameValueValuesEnum: The name of a locality load-balancing policy. Valid
+      values include ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For
+      information about these values, see the description of localityLbPolicy.
+      Do not specify the same policy more than once for a backend. If you do,
+      the configuration is rejected.
 
   Fields:
-    name: The name of a locality load balancer policy to be used. The value
-      should be one of the predefined ones as supported by localityLbPolicy,
-      although at the moment only ROUND_ROBIN is supported. This field should
-      only be populated when the customPolicy field is not used. Note that
-      specifying the same policy more than once for a backend is not a valid
-      configuration and will be rejected.
+    name: The name of a locality load-balancing policy. Valid values include
+      ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For information about
+      these values, see the description of localityLbPolicy. Do not specify
+      the same policy more than once for a backend. If you do, the
+      configuration is rejected.
   """
 
   class NameValueValuesEnum(_messages.Enum):
-    r"""The name of a locality load balancer policy to be used. The value
-    should be one of the predefined ones as supported by localityLbPolicy,
-    although at the moment only ROUND_ROBIN is supported. This field should
-    only be populated when the customPolicy field is not used. Note that
-    specifying the same policy more than once for a backend is not a valid
-    configuration and will be rejected.
+    r"""The name of a locality load-balancing policy. Valid values include
+    ROUND_ROBIN and, for Java clients, LEAST_REQUEST. For information about
+    these values, see the description of localityLbPolicy. Do not specify the
+    same policy more than once for a backend. If you do, the configuration is
+    rejected.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -5167,9 +5172,26 @@ class BackendServiceLogConfig(_messages.Message):
   r"""The available logging options for the load balancer traffic served by
   this backend service.
 
+  Enums:
+    OptionalModeValueValuesEnum: This field can only be specified if logging
+      is enabled for this backend service. Configures whether all, none or a
+      subset of optional fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
+
   Fields:
     enable: Denotes whether to enable logging for the load balancer traffic
       served by this backend service. The default value is false.
+    optionalFields: This field can only be specified if logging is enabled for
+      this backend service and "logConfig.optionalMode" was set to CUSTOM.
+      Contains a list of optional fields you want to include in the logs. For
+      example: serverInstance, serverGkeDetails.cluster,
+      serverGkeDetails.pod.podNamespace
+    optionalMode: This field can only be specified if logging is enabled for
+      this backend service. Configures whether all, none or a subset of
+      optional fields should be added to the reported logs. One of
+      [INCLUDE_ALL_OPTIONAL, EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is
+      EXCLUDE_ALL_OPTIONAL.
     sampleRate: This field can only be specified if logging is enabled for
       this backend service. The value of the field must be in [0, 1]. This
       configures the sampling rate of requests to the load balancer where 1.0
@@ -5177,8 +5199,25 @@ class BackendServiceLogConfig(_messages.Message):
       are reported. The default value is 1.0.
   """
 
+  class OptionalModeValueValuesEnum(_messages.Enum):
+    r"""This field can only be specified if logging is enabled for this
+    backend service. Configures whether all, none or a subset of optional
+    fields should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
+    EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
+
+    Values:
+      CUSTOM: A subset of optional fields.
+      EXCLUDE_ALL_OPTIONAL: None optional fields.
+      INCLUDE_ALL_OPTIONAL: All optional fields.
+    """
+    CUSTOM = 0
+    EXCLUDE_ALL_OPTIONAL = 1
+    INCLUDE_ALL_OPTIONAL = 2
+
   enable = _messages.BooleanField(1)
-  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  optionalFields = _messages.StringField(2, repeated=True)
+  optionalMode = _messages.EnumField('OptionalModeValueValuesEnum', 3)
+  sampleRate = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -24612,6 +24651,37 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeResourcePoliciesPatchRequest(_messages.Message):
+  r"""A ComputeResourcePoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resourcePolicy: Id of the resource policy to patch.
+    resourcePolicyResource: A ResourcePolicy resource to be passed as the
+      request body.
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resourcePolicy = _messages.StringField(4, required=True)
+  resourcePolicyResource = _messages.MessageField('ResourcePolicy', 5)
+  updateMask = _messages.StringField(6)
+
+
 class ComputeResourcePoliciesSetIamPolicyRequest(_messages.Message):
   r"""A ComputeResourcePoliciesSetIamPolicyRequest object.
 
@@ -30626,6 +30696,9 @@ class Disk(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    provisionedThroughput: Indicates how much throughput to provision for the
+      disk. This sets the number of throughput mb per second that the disk can
+      handle. Values must be between 1 and 7,124.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -30826,27 +30899,28 @@ class Disk(_messages.Message):
   params = _messages.MessageField('DiskParams', 21)
   physicalBlockSizeBytes = _messages.IntegerField(22)
   provisionedIops = _messages.IntegerField(23)
-  region = _messages.StringField(24)
-  replicaZones = _messages.StringField(25, repeated=True)
-  resourcePolicies = _messages.StringField(26, repeated=True)
-  satisfiesPzs = _messages.BooleanField(27)
-  selfLink = _messages.StringField(28)
-  sizeGb = _messages.IntegerField(29)
-  sourceDisk = _messages.StringField(30)
-  sourceDiskId = _messages.StringField(31)
-  sourceImage = _messages.StringField(32)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
-  sourceImageId = _messages.StringField(34)
-  sourceSnapshot = _messages.StringField(35)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
-  sourceSnapshotId = _messages.StringField(37)
-  sourceStorageObject = _messages.StringField(38)
-  status = _messages.EnumField('StatusValueValuesEnum', 39)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 40)
-  type = _messages.StringField(41)
-  userLicenses = _messages.StringField(42, repeated=True)
-  users = _messages.StringField(43, repeated=True)
-  zone = _messages.StringField(44)
+  provisionedThroughput = _messages.IntegerField(24)
+  region = _messages.StringField(25)
+  replicaZones = _messages.StringField(26, repeated=True)
+  resourcePolicies = _messages.StringField(27, repeated=True)
+  satisfiesPzs = _messages.BooleanField(28)
+  selfLink = _messages.StringField(29)
+  sizeGb = _messages.IntegerField(30)
+  sourceDisk = _messages.StringField(31)
+  sourceDiskId = _messages.StringField(32)
+  sourceImage = _messages.StringField(33)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 34)
+  sourceImageId = _messages.StringField(35)
+  sourceSnapshot = _messages.StringField(36)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
+  sourceSnapshotId = _messages.StringField(38)
+  sourceStorageObject = _messages.StringField(39)
+  status = _messages.EnumField('StatusValueValuesEnum', 40)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
+  type = _messages.StringField(42)
+  userLicenses = _messages.StringField(43, repeated=True)
+  users = _messages.StringField(44, repeated=True)
+  zone = _messages.StringField(45)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -42604,7 +42678,7 @@ class InterconnectAttachment(_messages.Message):
       created by the customer. - PARTNER_PROVIDER: an attachment to a Partner
       Interconnect, created by the partner.
     vlanTag8021q: The IEEE 802.1Q VLAN tag for this attachment, in the range
-      2-4094. Only specified at creation time.
+      2-4093. Only specified at creation time.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -54418,6 +54492,7 @@ class Quota(_messages.Message):
       N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
+      NETWORK_ATTACHMENTS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
       NETWORK_FIREWALL_POLICIES: <no description>
       NODE_GROUPS: <no description>
@@ -54561,75 +54636,76 @@ class Quota(_messages.Message):
     N2D_CPUS = 70
     N2_CPUS = 71
     NETWORKS = 72
-    NETWORK_ENDPOINT_GROUPS = 73
-    NETWORK_FIREWALL_POLICIES = 74
-    NODE_GROUPS = 75
-    NODE_TEMPLATES = 76
-    NVIDIA_A100_80GB_GPUS = 77
-    NVIDIA_A100_GPUS = 78
-    NVIDIA_K80_GPUS = 79
-    NVIDIA_P100_GPUS = 80
-    NVIDIA_P100_VWS_GPUS = 81
-    NVIDIA_P4_GPUS = 82
-    NVIDIA_P4_VWS_GPUS = 83
-    NVIDIA_T4_GPUS = 84
-    NVIDIA_T4_VWS_GPUS = 85
-    NVIDIA_V100_GPUS = 86
-    PACKET_MIRRORINGS = 87
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 88
-    PREEMPTIBLE_CPUS = 89
-    PREEMPTIBLE_LOCAL_SSD_GB = 90
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 91
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 92
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 96
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 98
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 99
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 100
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 101
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 102
-    PSC_INTERNAL_LB_FORWARDING_RULES = 103
-    PUBLIC_ADVERTISED_PREFIXES = 104
-    PUBLIC_DELEGATED_PREFIXES = 105
-    REGIONAL_AUTOSCALERS = 106
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 107
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 108
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 109
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 110
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 111
-    RESERVATIONS = 112
-    RESOURCE_POLICIES = 113
-    ROUTERS = 114
-    ROUTES = 115
-    SECURITY_POLICIES = 116
-    SECURITY_POLICIES_PER_REGION = 117
-    SECURITY_POLICY_CEVAL_RULES = 118
-    SECURITY_POLICY_RULES = 119
-    SECURITY_POLICY_RULES_PER_REGION = 120
-    SERVICE_ATTACHMENTS = 121
-    SNAPSHOTS = 122
-    SSD_TOTAL_GB = 123
-    SSL_CERTIFICATES = 124
-    STATIC_ADDRESSES = 125
-    STATIC_BYOIP_ADDRESSES = 126
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 127
-    SUBNETWORKS = 128
-    T2A_CPUS = 129
-    T2D_CPUS = 130
-    TARGET_HTTPS_PROXIES = 131
-    TARGET_HTTP_PROXIES = 132
-    TARGET_INSTANCES = 133
-    TARGET_POOLS = 134
-    TARGET_SSL_PROXIES = 135
-    TARGET_TCP_PROXIES = 136
-    TARGET_VPN_GATEWAYS = 137
-    URL_MAPS = 138
-    VPN_GATEWAYS = 139
-    VPN_TUNNELS = 140
-    XPN_SERVICE_PROJECTS = 141
+    NETWORK_ATTACHMENTS = 73
+    NETWORK_ENDPOINT_GROUPS = 74
+    NETWORK_FIREWALL_POLICIES = 75
+    NODE_GROUPS = 76
+    NODE_TEMPLATES = 77
+    NVIDIA_A100_80GB_GPUS = 78
+    NVIDIA_A100_GPUS = 79
+    NVIDIA_K80_GPUS = 80
+    NVIDIA_P100_GPUS = 81
+    NVIDIA_P100_VWS_GPUS = 82
+    NVIDIA_P4_GPUS = 83
+    NVIDIA_P4_VWS_GPUS = 84
+    NVIDIA_T4_GPUS = 85
+    NVIDIA_T4_VWS_GPUS = 86
+    NVIDIA_V100_GPUS = 87
+    PACKET_MIRRORINGS = 88
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 89
+    PREEMPTIBLE_CPUS = 90
+    PREEMPTIBLE_LOCAL_SSD_GB = 91
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 92
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 93
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 94
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 95
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 96
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 97
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 98
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 99
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 100
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 101
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 102
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 103
+    PSC_INTERNAL_LB_FORWARDING_RULES = 104
+    PUBLIC_ADVERTISED_PREFIXES = 105
+    PUBLIC_DELEGATED_PREFIXES = 106
+    REGIONAL_AUTOSCALERS = 107
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 108
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 109
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 110
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 111
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 112
+    RESERVATIONS = 113
+    RESOURCE_POLICIES = 114
+    ROUTERS = 115
+    ROUTES = 116
+    SECURITY_POLICIES = 117
+    SECURITY_POLICIES_PER_REGION = 118
+    SECURITY_POLICY_CEVAL_RULES = 119
+    SECURITY_POLICY_RULES = 120
+    SECURITY_POLICY_RULES_PER_REGION = 121
+    SERVICE_ATTACHMENTS = 122
+    SNAPSHOTS = 123
+    SSD_TOTAL_GB = 124
+    SSL_CERTIFICATES = 125
+    STATIC_ADDRESSES = 126
+    STATIC_BYOIP_ADDRESSES = 127
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 128
+    SUBNETWORKS = 129
+    T2A_CPUS = 130
+    T2D_CPUS = 131
+    TARGET_HTTPS_PROXIES = 132
+    TARGET_HTTP_PROXIES = 133
+    TARGET_INSTANCES = 134
+    TARGET_POOLS = 135
+    TARGET_SSL_PROXIES = 136
+    TARGET_TCP_PROXIES = 137
+    TARGET_VPN_GATEWAYS = 138
+    URL_MAPS = 139
+    VPN_GATEWAYS = 140
+    VPN_TUNNELS = 141
+    XPN_SERVICE_PROJECTS = 142
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -61338,18 +61414,18 @@ class SecurityPolicyRule(_messages.Message):
 
   Fields:
     action: The Action to perform when the rule is matched. The following are
-      the valid actions: - allow: allow access to target. - deny(): deny
-      access to target, returns the HTTP response code specified (valid values
-      are 403, 404, and 502). - rate_based_ban: limit client traffic to the
-      configured threshold and ban the client if the traffic exceeds the
-      threshold. Configure parameters for this action in RateLimitOptions.
-      Requires rate_limit_options to be set. - redirect: redirect to a
-      different target. This can either be an internal reCAPTCHA redirect, or
-      an external URL-based redirect via a 302 response. Parameters for this
-      action can be configured via redirectOptions. - throttle: limit client
-      traffic to the configured threshold. Configure parameters for this
-      action in rateLimitOptions. Requires rate_limit_options to be set for
-      this.
+      the valid actions: - allow: allow access to target. - deny(STATUS): deny
+      access to target, returns the HTTP response code specified. Valid values
+      for `STATUS` are 403, 404, and 502. - rate_based_ban: limit client
+      traffic to the configured threshold and ban the client if the traffic
+      exceeds the threshold. Configure parameters for this action in
+      RateLimitOptions. Requires rate_limit_options to be set. - redirect:
+      redirect to a different target. This can either be an internal reCAPTCHA
+      redirect, or an external URL-based redirect via a 302 response.
+      Parameters for this action can be configured via redirectOptions. -
+      throttle: limit client traffic to the configured threshold. Configure
+      parameters for this action in rateLimitOptions. Requires
+      rate_limit_options to be set for this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     direction: The direction in which this rule applies. This field may only
@@ -61668,9 +61744,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     exceedAction: Action to take for requests that are above the configured
       rate limit threshold, to either deny with a specified HTTP response
       code, or redirect to a different endpoint. Valid options are
-      "deny(status)", where valid values for status are 403, 404, 429, and
-      502, and "redirect" where the redirect parameters come from
-      exceedRedirectOptions below.
+      `deny(STATUS)`, where valid values for `STATUS` are 403, 404, 429, and
+      502, and `redirect`, where the redirect parameters come from
+      `exceedRedirectOptions` below.
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
       not redirect.
@@ -71835,7 +71911,7 @@ class VpnGateway(_messages.Message):
       must always provide an up-to-date fingerprint hash in order to update or
       change labels, otherwise the request will fail with error 412
       conditionNotMet. To see the latest fingerprint, make a get() request to
-      retrieve an VpnGateway.
+      retrieve a VpnGateway.
     labels: Labels for this resource. These can only be added or modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
@@ -73294,9 +73370,13 @@ class WafExpressionSetExpression(_messages.Message):
       2.9.1 rule id 973337. The ID could be used to determine the individual
       attack definition that has been detected. It could also be used to
       exclude it from the policy in case of false positive. required
+    sensitivity: The sensitivity value associated with the WAF rule ID. This
+      corresponds to the ModSecurity paranoia level, ranging from 1 to 4. 0 is
+      reserved for opt-in only rules.
   """
 
   id = _messages.StringField(1)
+  sensitivity = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class WeightedBackendService(_messages.Message):

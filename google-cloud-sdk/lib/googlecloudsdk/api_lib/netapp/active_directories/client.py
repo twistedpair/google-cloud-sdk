@@ -70,7 +70,7 @@ class ActiveDirectoriesClient(object):
                                  domain=None,
                                  site=None,
                                  dns=None,
-                                 net_bios=None,
+                                 net_bios_prefix=None,
                                  organizational_unit=None,
                                  aes_encryption=None,
                                  username=None,
@@ -91,7 +91,7 @@ class ActiveDirectoriesClient(object):
       domain: the domain name of the Active Directory
       site: the site of the Active Directory
       dns: the DNS server IP addresses for the Active Directory domain
-      net_bios: the NetBIOS name of the server
+      net_bios_prefix: the NetBIOS prefix name of the server
       organizational_unit: The organizational unit within the AD the user
         belongs to
       aes_encryption: Bool, if enabled, AES encryption will be enabled for
@@ -120,13 +120,17 @@ class ActiveDirectoriesClient(object):
     active_directory.domain = domain
     active_directory.site = site
     active_directory.dns = dns
-    active_directory.netBios = net_bios
+    active_directory.netBiosPrefix = net_bios_prefix
     active_directory.organizationalUnit = organizational_unit
     active_directory.aesEncryption = aes_encryption
     active_directory.username = username
     active_directory.password = password
-    active_directory.backupOperators = backup_operators if backup_operators else []
-    active_directory.securityOperators = security_operators if security_operators else []
+    active_directory.backupOperators = (
+        backup_operators if backup_operators else []
+    )
+    active_directory.securityOperators = (
+        security_operators if security_operators else []
+    )
     active_directory.nfsUsersWithLdap = nfs_users_with_ldap
     active_directory.kdcHostname = kdc_hostname
     active_directory.kdcIp = kdc_ip
@@ -138,10 +142,13 @@ class ActiveDirectoriesClient(object):
 
   def CreateActiveDirectory(self, activedirectory_ref, async_, config):
     """Create a Cloud NetApp Active Directory."""
-    request = self.messages.NetappProjectsLocationsActiveDirectoriesCreateRequest(
-        parent=activedirectory_ref.Parent().RelativeName(),
-        activeDirectoryId=activedirectory_ref.Name(),
-        activeDirectory=config)
+    request = (
+        self.messages.NetappProjectsLocationsActiveDirectoriesCreateRequest(
+            parent=activedirectory_ref.Parent().RelativeName(),
+            activeDirectoryId=activedirectory_ref.Name(),
+            activeDirectory=config,
+        )
+    )
     create_op = self.client.projects_locations_activeDirectories.Create(request)
     if async_:
       return create_op
@@ -182,8 +189,11 @@ class ActiveDirectoriesClient(object):
 
   def DeleteActiveDirectory(self, activedirectory_ref, async_):
     """Deletes an existing Cloud NetApp Active Directory."""
-    request = self.messages.NetappProjectsLocationsActiveDirectoriesDeleteRequest(
-        name=activedirectory_ref.RelativeName())
+    request = (
+        self.messages.NetappProjectsLocationsActiveDirectoriesDeleteRequest(
+            name=activedirectory_ref.RelativeName()
+        )
+    )
     return self._DeleteActiveDirectory(async_, request)
 
   def _DeleteActiveDirectory(self, async_, request):
@@ -199,7 +209,7 @@ class ActiveDirectoriesClient(object):
                                         domain=None,
                                         site=None,
                                         dns=None,
-                                        net_bios=None,
+                                        net_bios_prefix=None,
                                         organizational_unit=None,
                                         aes_encryption=None,
                                         username=None,
@@ -219,7 +229,7 @@ class ActiveDirectoriesClient(object):
         domain=domain,
         site=site,
         dns=dns,
-        net_bios=net_bios,
+        net_bios_prefix=net_bios_prefix,
         organizational_unit=organizational_unit,
         aes_encryption=aes_encryption,
         username=username,
@@ -272,7 +282,7 @@ class AlphaActiveDirectoriesAdapter(object):
                                         domain=None,
                                         site=None,
                                         dns=None,
-                                        net_bios=None,
+                                        net_bios_prefix=None,
                                         organizational_unit=None,
                                         aes_encryption=None,
                                         username=None,
@@ -293,8 +303,8 @@ class AlphaActiveDirectoriesAdapter(object):
       activedirectory_config.site = site
     if dns is not None:
       activedirectory_config.dns = dns
-    if net_bios is not None:
-      activedirectory_config.netBios = net_bios
+    if net_bios_prefix is not None:
+      activedirectory_config.netBiosPrefix = net_bios_prefix
     if organizational_unit is not None:
       activedirectory_config.organizationalUnit = organizational_unit
     if aes_encryption is not None:

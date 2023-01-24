@@ -63,18 +63,20 @@ class HpTuningJobsClient(object):
 
     return self._GetMessage('StudySpec').AlgorithmValueValuesEnum
 
-  def Create(self,
-             config_path,
-             display_name,
-             parent=None,
-             max_trial_count=None,
-             parallel_trial_count=None,
-             algorithm=None,
-             kms_key_name=None,
-             network=None,
-             service_account=None,
-             enable_web_access=False,
-             labels=None):
+  def Create(
+      self,
+      config_path,
+      display_name,
+      parent=None,
+      max_trial_count=None,
+      parallel_trial_count=None,
+      algorithm=None,
+      kms_key_name=None,
+      network=None,
+      service_account=None,
+      enable_web_access=False,
+      enable_dashboard_access=False,
+      labels=None):
     """Creates a hyperparameter tuning job with given parameters.
 
     Args:
@@ -98,6 +100,8 @@ class HpTuningJobsClient(object):
         the job.
       enable_web_access: bool, Whether to enable the interactive shell for the
         job.
+      enable_dashboard_access: bool, Whether to enable the dashboard defined for
+        the job.
       labels: LabelsValues, map-like user-defined metadata to organize the
         hp-tuning jobs.
 
@@ -123,6 +127,8 @@ class HpTuningJobsClient(object):
 
     if enable_web_access:
       job_spec.trialJobSpec.enableWebAccess = enable_web_access
+    if enable_dashboard_access:
+      job_spec.trialJobSpec.enableDashboardAccess = enable_dashboard_access
 
     if display_name:
       job_spec.displayName = display_name

@@ -183,7 +183,7 @@ def AddVlan(parser):
       '--vlan',
       type=int,
       help="""\
-      Desired VLAN for this attachment, in the range 2-4094. If not supplied,
+      Desired VLAN for this attachment, in the range 2-4093. If not supplied,
       Google will automatically select a VLAN.
       """)
 

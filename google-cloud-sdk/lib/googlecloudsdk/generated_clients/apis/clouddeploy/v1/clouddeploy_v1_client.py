@@ -223,7 +223,7 @@ class ClouddeployV1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['overrideDeployPolicy', 'requestId', 'rolloutId', 'validateOnly'],
+        query_params=['overrideDeployPolicy', 'requestId', 'rolloutId', 'startingPhaseId', 'validateOnly'],
         relative_path='v1/{+parent}/rollouts',
         request_field='rollout',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest',
