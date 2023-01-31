@@ -293,8 +293,8 @@ class CloudFunction(_messages.Message):
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
-      https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--runtime
-      ).
+      https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
+      runtime).
     secretEnvironmentVariables: Secret environment variables configuration.
     secretVolumes: Secret volumes configuration.
     serviceAccountEmail: The email of the function's service account. If

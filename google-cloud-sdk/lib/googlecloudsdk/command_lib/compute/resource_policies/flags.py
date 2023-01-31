@@ -72,7 +72,7 @@ def AddCycleFrequencyArgs(parser,
         Valid choices are 00:00, 04:00, 08:00, 12:00,
         16:00 and 20:00 UTC. For example, `--start-time="08:00"`."""
   freq_flags_group = freq_group.add_group(
-      'From flags:' if supports_weekly else '')
+      'Using command flags:' if supports_weekly else '')
   freq_flags_group.add_argument(
       '--start-time', required=True,
       type=arg_parsers.Datetime.ParseUtcTime,
@@ -101,18 +101,21 @@ def AddCycleFrequencyArgs(parser,
                  'saturday', 'sunday'],
         help_str='{} occurs weekly on WEEKLY_{} at START_TIME.'.format(
             cadence_help, flag_suffix.upper())).AddToParser(cadence_group)
-    freq_file_group = freq_group.add_group('From file:')
+    freq_file_group = freq_group.add_group('Using a file:')
     freq_file_group.add_argument(
         '--weekly-{}-from-file'.format(flag_suffix),
         dest='weekly_cycle_from_file',
         type=arg_parsers.FileContents(),
         help="""\
-        A JSON/YAML file which specifies a weekly schedule. It should be a
-        list of objects with the following fields:
+        A JSON/YAML file which specifies a weekly schedule. The file should
+        contain the following fields:
 
         day: Day of the week with the same choices as `--weekly-{}`.
-        startTime: Start time of the snapshot schedule with the same format
-            as --start-time.
+        startTime: Start time of the snapshot schedule with
+        the same format as --start-time.
+
+        For more information about using a file,
+        see https://cloud.google.com/compute/docs/disks/scheduled-snapshots#create_snapshot_schedule
         """.format(flag_suffix))
 
 
@@ -174,8 +177,11 @@ def AddSnapshotScheduleArgs(parser, messages):
 
 def AddSnapshotLabelArgs(parser):
   labels_util.GetCreateLabelsFlag(
-      extra_message='These will be added to the disk snapshots on creation.',
-      labels_name='snapshot-labels').AddToParser(parser)
+      extra_message=(
+          'The label is added to each snapshot created by the schedule.'
+      ),
+      labels_name='snapshot-labels',
+  ).AddToParser(parser)
 
 
 def AddGroupPlacementArgs(parser, messages, track):

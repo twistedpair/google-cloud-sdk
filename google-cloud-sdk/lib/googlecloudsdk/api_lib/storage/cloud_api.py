@@ -310,6 +310,45 @@ class CloudApi(object):
     """
     raise NotImplementedError('delete_hmac_key must be overridden.')
 
+  def get_hmac_key(self, access_id):
+    """Gets an HMAC key.
+
+    Args:
+      access_id (str): The access ID corresponding to the HMAC key.
+
+    Returns:
+      gcs_resource_reference.GcsHmacKeyResource. Provider-specific data type
+      is used for now because we currently support this feature only for the
+      JSON API.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('get_hmac_key must be overridden.')
+
+  def list_hmac_keys(self, service_account_email=None, show_deleted_keys=False,
+                     fields_scope=None):
+    """Lists HMAC keys.
+
+    Args:
+      service_account_email (str): Return HMAC keys for the given service
+        account email.
+      show_deleted_keys (bool): If True, include keys in the DELETED state.
+      fields_scope (FieldsScope): Determines which metadata keys
+        the API should return for each key.
+
+    Yields:
+      Iterator over gcs_resource_reference.GcsHmacKeyResource objects.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    pass
+
   def patch_hmac_key(self, access_id, etag, state):
     """Updates an HMAC key.
 
@@ -319,7 +358,9 @@ class CloudApi(object):
       state (HmacKeyState): The desired state of the HMAC key.
 
     Returns:
-      None
+      gcs_resource_reference.GcsHmacKeyResource. Provider-specific data type
+      is used for now because we currently support this feature only for the
+      JSON API.
 
     Raises:
       CloudApiError: API returned an error.

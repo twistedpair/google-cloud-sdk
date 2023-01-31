@@ -253,6 +253,7 @@ class FilestoreClient(object):
 
   def ParseFilestoreConfig(self,
                            tier=None,
+                           protocol=None,
                            description=None,
                            file_share=None,
                            network=None,
@@ -263,22 +264,28 @@ class FilestoreClient(object):
     """Parses the command line arguments for Create into a config.
 
     Args:
-      tier: the tier.
-      description: the description of the instance.
-      file_share: the config for the file share.
-      network: the network for the instance.
-      labels: the parsed labels value.
-      zone: the parsed zone of the instance.
-      nfs_export_options: the nfs export options for the file share.
-      kms_key_name: the kms key for instance encryption.
+      tier: The tier.
+      protocol: The protocol values are NFS_V3 (default) or NFS_V4_1.
+      description: The description of the instance.
+      file_share: The config for the file share.
+      network: The network for the instance.
+      labels: The parsed labels value.
+      zone: The parsed zone of the instance.
+      nfs_export_options: The nfs export options for the file share.
+      kms_key_name: The kms key for instance encryption.
 
     Returns:
-      the configuration that will be used as the request body for creating a
+      The configuration that will be used as the request body for creating a
       Cloud Filestore instance.
     """
     instance = self.messages.Instance()
 
     instance.tier = tier
+
+    # 'instance.protocol' is a member of 'instance' structure only in Beta API.
+    # In case of Beta API, protocol is never 'None' (the default is 'NFS_V3').
+    if protocol:
+      instance.protocol = protocol
     instance.labels = labels
 
     if kms_key_name:

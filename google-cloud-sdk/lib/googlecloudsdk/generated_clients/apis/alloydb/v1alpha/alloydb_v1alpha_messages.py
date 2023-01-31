@@ -863,10 +863,13 @@ class Backup(_messages.Message):
         not AUTOMATED).
       AUTOMATED: AUTOMATED backups triggered by the automated backups
         scheduler pursuant to an automated backup policy.
+      CONTINUOUS: CONTINUOUS backups triggered by the automated backups
+        scheduler due to a continuous backup policy.
     """
     TYPE_UNSPECIFIED = 0
     ON_DEMAND = 1
     AUTOMATED = 2
+    CONTINUOUS = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

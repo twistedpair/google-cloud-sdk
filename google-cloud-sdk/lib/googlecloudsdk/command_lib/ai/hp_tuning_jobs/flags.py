@@ -32,17 +32,20 @@ _HPTUNING_JOB_DISPLAY_NAME = base.Argument(
     '--display-name',
     required=True,
     help=('Display name of the hyperparameter tuning job to create.'))
+# The parameter max-trial-count and parallel-trial-count can be set through
+# command line or config.yaml file. Setting the values to be None to indicate
+# the value is not set through command line by the customers. If both command
+# line and config.yaml file don't set the field, we set it to be 1.
 _HPTUNING_MAX_TRIAL_COUNT = base.Argument(
     '--max-trial-count',
     type=int,
-    default=1,
-    help=('Desired total number of trials. The default value is 1.'))
+    default=None,
+    help='Desired total number of trials. The default value is 1.')
 _HPTUNING_PARALLEL_TRIAL_COUNT = base.Argument(
     '--parallel-trial-count',
     type=int,
-    default=1,
-    help=(
-        'Desired number of Trials to run in parallel. The default value is 1.'))
+    default=None,
+    help='Desired number of Trials to run in parallel. The default value is 1.')
 _HPTUNING_JOB_CONFIG = base.Argument(
     '--config',
     required=True,

@@ -305,7 +305,7 @@ def _ApplyBuildpackStackArgsToFunction(function, args, track):
 
 
 def _CreateBindPolicyCommand(function_ref):
-  template = ('gcloud alpha functions add-iam-policy-binding %s --region=%s '
+  template = ('gcloud functions add-iam-policy-binding %s --region=%s '
               '--member=allUsers --role=roles/cloudfunctions.invoker')
   return template % (function_ref.Name(), function_ref.locationsId)
 

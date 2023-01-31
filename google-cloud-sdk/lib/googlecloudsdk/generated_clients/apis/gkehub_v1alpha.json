@@ -843,6 +843,10 @@
         "workloadmigration": {
           "description": "The specification for WorkloadMigration feature.",
           "$ref": "WorkloadMigrationFeatureSpec"
+        },
+        "namespaceactuation": {
+          "description": "Namespace Actuation feature spec",
+          "$ref": "NamespaceActuationFeatureSpec"
         }
       }
     },
@@ -1083,6 +1087,13 @@
       "properties": {
       }
     },
+    "NamespaceActuationFeatureSpec": {
+      "id": "NamespaceActuationFeatureSpec",
+      "description": "An empty spec for actuation feature. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "MembershipFeatureSpec": {
       "id": "MembershipFeatureSpec",
       "description": "MembershipFeatureSpec contains configuration information for a single Membership.",
@@ -1127,6 +1138,10 @@
         "fleetobservability": {
           "description": "Fleet observability membership spec",
           "$ref": "FleetObservabilityMembershipSpec"
+        },
+        "namespaceactuation": {
+          "description": "FNS Actuation membership spec",
+          "$ref": "NamespaceActuationMembershipSpec"
         },
         "fleetInherited": {
           "description": "True if value of `feature_spec` was inherited from a fleet-level default.",
@@ -1774,6 +1789,13 @@
       "properties": {
       }
     },
+    "NamespaceActuationMembershipSpec": {
+      "id": "NamespaceActuationMembershipSpec",
+      "description": "**Namespace Actuation**: The membership-specific input for NamespaceActuation feature.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "CommonFeatureState": {
       "id": "CommonFeatureState",
       "description": "CommonFeatureState contains Hub-wide Feature status information.",
@@ -1798,6 +1820,10 @@
         "fleetobservability": {
           "description": "FleetObservability feature state.",
           "$ref": "FleetObservabilityFeatureState"
+        },
+        "namespaceactuation": {
+          "description": "Namespace Actuation feature state.",
+          "$ref": "NamespaceActuationFeatureState"
         },
         "state": {
           "description": "Output only. The \"running state\" of the Feature in this Hub.",
@@ -1956,6 +1982,13 @@
       "properties": {
       }
     },
+    "NamespaceActuationFeatureState": {
+      "id": "NamespaceActuationFeatureState",
+      "description": "NamespaceActuation Feature State.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the high-level state of a Feature. It may be used to describe a Feature's state at the environ-level, or per-membershop, depending on the context.",
@@ -2032,6 +2065,10 @@
         "fleetobservability": {
           "description": "Fleet observability membership state.",
           "$ref": "FleetObservabilityMembershipState"
+        },
+        "namespaceactuation": {
+          "description": "FNS Actuation membership state",
+          "$ref": "NamespaceActuationMembershipState"
         },
         "state": {
           "description": "The high-level state of this Feature for a single membership.",
@@ -2961,7 +2998,7 @@
             "INSTALLING",
             "ACTIVE",
             "UPDATING",
-            "DECOMISSIONING",
+            "DECOMMISSIONING",
             "CLUSTER_ERROR",
             "HUB_ERROR",
             "SUSPENDED"
@@ -3001,7 +3038,7 @@
             "INSTALLING",
             "ACTIVE",
             "UPDATING",
-            "DECOMISSIONING",
+            "DECOMMISSIONING",
             "CLUSTER_ERROR",
             "HUB_ERROR",
             "SUSPENDED"
@@ -3148,6 +3185,13 @@
     "FleetObservabilityMembershipState": {
       "id": "FleetObservabilityMembershipState",
       "description": "**FleetObservability**: An empty state left as an example membership-specific Feature state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "NamespaceActuationMembershipState": {
+      "id": "NamespaceActuationMembershipState",
+      "description": "**Namespace Actuation**: An empty state left as an example membership-specific Feature state.",
       "type": "object",
       "properties": {
       }
@@ -3528,6 +3572,9 @@
           "description": "Tenancy Project associated with the namespace",
           "type": "string",
           "format": "int64"
+        },
+        "scope": {
+          "type": "string"
         }
       }
     },
@@ -4660,6 +4707,135 @@
           "type": "string"
         }
       }
+    },
+    "Reference": {
+      "id": "Reference",
+      "description": "Represents a reference to a resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Relative resource name of the reference. Includes target resource as a parent and reference uid `{target_resource}\/references\/{reference_id}`. For example, `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. Type of the reference. A service might impose limits on number of references of a specific type. Note: It's recommended to use CAPITALS_WITH_UNDERSCORES style for a type name.",
+          "type": "string"
+        },
+        "sourceResource": {
+          "description": "Required. Full resource name of the resource which refers the target resource. For example: \/\/tpu.googleapis.com\/projects\/myproject\/nodes\/mynode",
+          "type": "string"
+        },
+        "details": {
+          "description": "Details of the reference type with no implied semantics. Cumulative size of the field must not be more than 1KiB. Note: For the Arcus Reference API, you must add the proto you store in this field to http:\/\/cs\/symbol:cloud.cluster.reference.ReferencePayload",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "targetUniqueId": {
+          "description": "Output only. The unique_id of the target resource. Example 1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811 unique_id format defined in go\/m11n-unique-id-as-resource-id Example 2: (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "CreateReferenceRequest": {
+      "id": "CreateReferenceRequest",
+      "description": "The CreateReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "type": "string"
+        },
+        "referenceId": {
+          "description": "The unique id of this resource. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future. It can be any arbitrary string, either GUID or any other string, however CLHs can use preprocess callbacks to perform a custom validation.",
+          "type": "string"
+        },
+        "reference": {
+          "description": "Required. The reference to be created.",
+          "$ref": "Reference"
+        },
+        "requestId": {
+          "description": "Optional. Request ID is an idempotency ID of the request. It must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "DeleteReferenceRequest": {
+      "id": "DeleteReferenceRequest",
+      "description": "The DeleteReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Full resource name of the reference, in the following format: `\/\/{targer_service}\/{target_resource}\/references\/{reference_id}`. For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. Request ID is an idempotency ID of the request. It must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "GetReferenceRequest": {
+      "id": "GetReferenceRequest",
+      "description": "The GetReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Full resource name of the reference, in the following format: `\/\/{target_service}\/{target_resource}\/references\/{reference_id}`. For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListReferencesRequest": {
+      "id": "ListReferencesRequest",
+      "description": "The ListResourceMetadataRequest request.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more References left to be queried.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "The next_page_token value returned from a previous List request, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "ListReferencesResponse": {
+      "id": "ListReferencesResponse",
+      "description": "The ListReferencesResponse response.",
+      "type": "object",
+      "properties": {
+        "references": {
+          "description": "The list of references.",
+          "type": "array",
+          "items": {
+            "$ref": "Reference"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -5084,6 +5260,11 @@
                       "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
+                    },
+                    "force": {
+                      "description": "Optional. If set to true, any subresource from this Membership will also be deleted. (Otherwise, the request will only work if the Membership has no subresource.) following go\/ccfe-nested-collections#cascading-deletion.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [

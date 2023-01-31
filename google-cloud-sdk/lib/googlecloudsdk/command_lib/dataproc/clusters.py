@@ -543,30 +543,59 @@ def _GetValidMetricSourceChoices(dataproc):
 
 def _AddMetricConfigArgs(parser, dataproc):
   """Adds DataprocMetricConfig related args to the parser."""
+  metric_overrides_detailed_help = """
+  List of metrics that override the default metrics enabled for the metric
+  sources. Any of the
+  [available OSS metrics](https://cloud.google.com/dataproc/docs/guides/monitoring#available_oss_metrics)
+  and all Spark metrics, can be listed for collection as a metric override.
+  Override metric values are case sensitive, and must be provided, if
+  appropriate, in CamelCase format, for example:
+
+  *sparkHistoryServer:JVM:Memory:NonHeapMemoryUsage.committed*
+  *hiveserver2:JVM:Memory:NonHeapMemoryUsage.used*
+
+  Only the specified overridden metrics will be collected from a given metric
+  source. For example, if one or more *spark:executive* metrics are listed as
+  metric overrides, other *SPARK* metrics will not be collected. The collection
+  of default OSS metrics from other metric sources is unaffected. For example,
+  if both *SPARK* and *YARN* metric sources are enabled, and overrides are
+  provided for Spark metrics only, all default YARN metrics will be collected.
+
+  The source of the specified metric override must be enabled. For example,
+  if one or more *spark:driver* metrics are provided as metric overrides,
+  the spark metric source must be enabled (*--metric-sources=spark*).
+  """
+
   metric_config_group = parser.add_group()
   metric_config_group.add_argument(
       '--metric-sources',
-      metavar='METRIC_SOURCES',
+      metavar='METRIC_SOURCE',
       type=arg_parsers.ArgList(
           arg_utils.ChoiceToEnumName,
-          choices=_GetValidMetricSourceChoices(dataproc)),
+          choices=_GetValidMetricSourceChoices(dataproc),
+      ),
       required=True,
-      help='Specifies a list of Metric Sources to collect custom '
-      'metrics from the cluster.')
+      help=(
+          'Specifies a list of cluster [Metric'
+          ' Sources](https://cloud.google.com/dataproc/docs/guides/monitoring#available_oss_metrics)'
+          ' to collect custom metrics.'
+      ),
+  )
   metric_overrides_group = metric_config_group.add_mutually_exclusive_group()
   metric_overrides_group.add_argument(
       '--metric-overrides',
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       metavar='METRIC_SOURCE:INSTANCE:GROUP:METRIC',
-      help='List of Metrics that override the default metrics enabled for the metric source'
+      help=metric_overrides_detailed_help,
   )
   metric_overrides_group.add_argument(
       '--metric-overrides-file',
       help="""\
-      Path to a file containing list of Metrics that override the default metrics enabled for the metric source.
+      Path to a file containing list of Metrics that override the default metrics enabled for the metric sources.
       The path can be a Cloud Storage URL (example: `gs://path/to/file`) or a local file system path.
-      """)
+      """,
+  )
 
 
 def _AddAcceleratorArgs(parser, include_driver_pool_args=False):

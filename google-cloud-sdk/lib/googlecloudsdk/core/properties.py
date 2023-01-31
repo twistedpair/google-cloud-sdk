@@ -1550,6 +1550,20 @@ class _SectionAuth(_Section):
         help_text='Sets the created login configuration file in '
         'auth/login_config_file. Calling `gcloud auth login` will automatically '
         'use this login configuration unless it is explicitly unset.')
+    self.service_account_use_self_signed_jwt = self._AddBool(
+        'service_account_use_self_signed_jwt',
+        default=False,
+        help_text=(
+            'If True, use self signed jwt flow to get service account'
+            ' credentials access token. This only applies to service account'
+            ' json file and not to the legacy .p12 file.'
+        ),
+    )
+    self.service_account_disable_id_token_refresh = self._AddBool(
+        'service_account_disable_id_token_refresh',
+        default=False,
+        help_text='If True, disable ID token refresh for service account.',
+    )
 
 
 class _SectionBatch(_Section):

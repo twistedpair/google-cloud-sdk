@@ -236,6 +236,10 @@ class CryptoKeyVersion(_messages.Message):
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
+      HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
+      HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
+      HMAC_SHA512: HMAC-SHA512 signing with a 512 bit key.
+      HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -263,7 +267,11 @@ class CryptoKeyVersion(_messages.Message):
     EC_SIGN_P384_SHA384 = 21
     EC_SIGN_SECP256K1_SHA256 = 22
     HMAC_SHA256 = 23
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
+    HMAC_SHA1 = 24
+    HMAC_SHA384 = 25
+    HMAC_SHA512 = 26
+    HMAC_SHA224 = 27
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -402,6 +410,10 @@ class CryptoKeyVersionTemplate(_messages.Message):
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
+      HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
+      HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
+      HMAC_SHA512: HMAC-SHA512 signing with a 512 bit key.
+      HMAC_SHA224: HMAC-SHA224 signing with a 224 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -429,7 +441,11 @@ class CryptoKeyVersionTemplate(_messages.Message):
     EC_SIGN_P384_SHA384 = 21
     EC_SIGN_SECP256K1_SHA256 = 22
     HMAC_SHA256 = 23
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
+    HMAC_SHA1 = 24
+    HMAC_SHA384 = 25
+    HMAC_SHA512 = 26
+    HMAC_SHA224 = 27
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 28
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -511,12 +527,11 @@ class KmsinventoryOrganizationsProtectedResourcesSearchRequest(_messages.Message
   r"""A KmsinventoryOrganizationsProtectedResourcesSearchRequest object.
 
   Fields:
-    cryptoKey: Required. The resource name of the CryptoKey or
-      CryptoKeyVersion.
+    cryptoKey: Required. The resource name of the CryptoKey.
     pageSize: The maximum number of resources to return. The service may
-      return fewer than this value. If unspecified, at most 50 resources will
-      be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      return fewer than this value. If unspecified, at most 500 resources will
+      be returned. The maximum value is 500; values above 500 will be coerced
+      to 500.
     pageToken: A page token, received from a previous
       KeyTrackingService.SearchProtectedResources call. Provide this to
       retrieve the subsequent page. When paginating, all other parameters
@@ -536,11 +551,14 @@ class KmsinventoryProjectsCryptoKeysListRequest(_messages.Message):
   r"""A KmsinventoryProjectsCryptoKeysListRequest object.
 
   Fields:
-    pageSize: Optional. Defaults to 1000.
+    pageSize: Optional. The maximum number of keys to return. The service may
+      return fewer than this value. If unspecified, at most 1000 keys will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
     pageToken: Optional. Pass this into a subsequent request in order to
       receive the next page of results.
-    parent: Required. The Cloud project for which to retrieve key metadata.
-      Format: "projects/[project-id]"
+    parent: Required. The Google Cloud project for which to retrieve key
+      metadata, in the format `projects/*`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -553,7 +571,7 @@ class KmsinventoryProjectsLocationsKeyRingsCryptoKeysGetProtectedResourcesSummar
   mmaryRequest object.
 
   Fields:
-    name: Required. The resource name of the CryptoKey or CryptoKeyVersion.
+    name: Required. The resource name of the CryptoKey.
   """
 
   name = _messages.StringField(1, required=True)
@@ -586,8 +604,16 @@ class ProtectedResource(_messages.Message):
     cryptoKeyVersion: The name of the Cloud KMS [CryptoKeyVersion](https://clo
       ud.google.com/kms/docs/reference/rest/v1/projects.locations.keyRings.cry
       ptoKeys.cryptoKeyVersions?hl=en) used to protect this resource via CMEK.
-      This field may be empty if the Cloud product owning the resource does
-      not provide key version data to Asset Inventory.
+      This field is empty if the Google Cloud product owning the resource does
+      not provide key version data to Asset Inventory. If there are multiple
+      key versions protecting the resource, then this is same value as the
+      first element of crypto_key_versions.
+    cryptoKeyVersions: The names of the Cloud KMS [CryptoKeyVersion](https://c
+      loud.google.com/kms/docs/reference/rest/v1/projects.locations.keyRings.c
+      ryptoKeys.cryptoKeyVersions?hl=en) used to protect this resource via
+      CMEK. This field is empty if the Google Cloud product owning the
+      resource does not provide key versions data to Asset Inventory. The
+      first element of this field is stored in crypto_key_version.
     labels: A key-value pair of the resource's labels (v1) to their values.
     location: Location can be `global`, regional like `us-east1`, or zonal
       like `us-west1-b`.
@@ -625,12 +651,13 @@ class ProtectedResource(_messages.Message):
   cloudProduct = _messages.StringField(1)
   createTime = _messages.StringField(2)
   cryptoKeyVersion = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  location = _messages.StringField(5)
-  name = _messages.StringField(6)
-  project = _messages.StringField(7)
-  projectId = _messages.StringField(8)
-  resourceType = _messages.StringField(9)
+  cryptoKeyVersions = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  location = _messages.StringField(6)
+  name = _messages.StringField(7)
+  project = _messages.StringField(8)
+  projectId = _messages.StringField(9)
+  resourceType = _messages.StringField(10)
 
 
 class ProtectedResourcesSummary(_messages.Message):

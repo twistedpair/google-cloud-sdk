@@ -1937,6 +1937,29 @@
         }
       }
     },
+    "GoogleCloudDocumentaiV1TrainProcessorVersionRequest": {
+      "id": "GoogleCloudDocumentaiV1TrainProcessorVersionRequest",
+      "description": "Request message for the create processor version method.",
+      "type": "object",
+      "properties": {
+        "processorVersion": {
+          "description": "Required. The processor version to be created.",
+          "$ref": "GoogleCloudDocumentaiV1ProcessorVersion"
+        },
+        "documentSchema": {
+          "description": "Optional. The schema the processor version will be trained with.",
+          "$ref": "GoogleCloudDocumentaiV1DocumentSchema"
+        },
+        "inputData": {
+          "description": "Optional. The input data used to train the `ProcessorVersion`.",
+          "$ref": "GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData"
+        },
+        "baseProcessorVersion": {
+          "description": "Optional. The processor version to use as a base for training. This processor version must be a child of `parent`. Format: `projects\/{project}\/locations\/{location}\/processors\/{processor}\/processorVersions\/{processorVersion}`.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDocumentaiV1ProcessorVersion": {
       "id": "GoogleCloudDocumentaiV1ProcessorVersion",
       "description": "A processor version is an implementation of a processor. Each processor can have multiple versions, pre-trained by Google internally or up-trained by the customer. At a time, a processor can only have one default version version. So the processor's behavior (when processing documents) is defined by a default version",
@@ -1982,6 +2005,10 @@
           "description": "The time the processor version was created.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "latestEvaluation": {
+          "description": "The most recently invoked evaluation for the processor version.",
+          "$ref": "GoogleCloudDocumentaiV1EvaluationReference"
         },
         "kmsKeyName": {
           "description": "The KMS key name used for encryption.",
@@ -2130,6 +2157,91 @@
         }
       }
     },
+    "GoogleCloudDocumentaiV1EvaluationReference": {
+      "id": "GoogleCloudDocumentaiV1EvaluationReference",
+      "description": "Gives a short summary of an evaluation, and links to the evaluation itself.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "The resource name of the Long Running Operation for the evaluation.",
+          "type": "string"
+        },
+        "evaluation": {
+          "description": "The resource name of the evaluation.",
+          "type": "string"
+        },
+        "aggregateMetrics": {
+          "description": "An aggregate of the statistics for the evaluation with fuzzy matching on.",
+          "$ref": "GoogleCloudDocumentaiV1EvaluationMetrics"
+        },
+        "aggregateMetricsExact": {
+          "description": "An aggregate of the statistics for the evaluation with fuzzy matching off.",
+          "$ref": "GoogleCloudDocumentaiV1EvaluationMetrics"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluationMetrics": {
+      "id": "GoogleCloudDocumentaiV1EvaluationMetrics",
+      "description": "Evaluation metrics, either in aggregate or about a specific entity.",
+      "type": "object",
+      "properties": {
+        "precision": {
+          "description": "The calculated precision.",
+          "type": "number",
+          "format": "float"
+        },
+        "recall": {
+          "description": "The calculated recall.",
+          "type": "number",
+          "format": "float"
+        },
+        "f1Score": {
+          "description": "The calculated f1 score.",
+          "type": "number",
+          "format": "float"
+        },
+        "predictedOccurrencesCount": {
+          "description": "The amount of occurrences in predicted documents.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "groundTruthOccurrencesCount": {
+          "description": "The amount of occurrences in ground truth documents.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "predictedDocumentCount": {
+          "description": "The amount of documents with a predicted occurrence.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "groundTruthDocumentCount": {
+          "description": "The amount of documents with a ground truth occurrence.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "truePositivesCount": {
+          "description": "The amount of true positives.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "falsePositivesCount": {
+          "description": "The amount of false positives.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "falseNegativesCount": {
+          "description": "The amount of false negatives.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalDocumentsCount": {
+          "description": "The amount of documents that had an occurrence of this label.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo": {
       "id": "GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo",
       "description": "Information about the upcoming deprecation of this processor version.",
@@ -2143,6 +2255,21 @@
         "replacementProcessorVersion": {
           "description": "If set, the processor version that will be used as a replacement.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData": {
+      "id": "GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData",
+      "description": "The input data used to train a new `ProcessorVersion`.",
+      "type": "object",
+      "properties": {
+        "trainingDocuments": {
+          "description": "The documents used for training the new version.",
+          "$ref": "GoogleCloudDocumentaiV1BatchDocumentsInputConfig"
+        },
+        "testDocuments": {
+          "description": "The documents used for testing the trained version.",
+          "$ref": "GoogleCloudDocumentaiV1BatchDocumentsInputConfig"
         }
       }
     },
@@ -2231,6 +2358,170 @@
         "documentSchema": {
           "description": "The document schema of the human review task.",
           "$ref": "GoogleCloudDocumentaiV1DocumentSchema"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest": {
+      "id": "GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest",
+      "description": "Evaluates the given ProcessorVersion against the supplied documents.",
+      "type": "object",
+      "properties": {
+        "evaluationDocuments": {
+          "description": "Optional. The documents used in the evaluation. If unspecified, use the processor's dataset as evaluation input.",
+          "$ref": "GoogleCloudDocumentaiV1BatchDocumentsInputConfig"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1Evaluation": {
+      "id": "GoogleCloudDocumentaiV1Evaluation",
+      "description": "An evaluation of a ProcessorVersion's performance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the evaluation. Format: `projects\/{project}\/locations\/{location}\/processors\/{processor}\/processorVersions\/{processor_version}\/evaluations\/{evaluation}`",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "The time that the evaluation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "documentCounters": {
+          "description": "Counters for the documents used in the evaluation.",
+          "$ref": "GoogleCloudDocumentaiV1EvaluationCounters"
+        },
+        "allEntitiesMetrics": {
+          "description": "Metrics for all the entities in aggregate.",
+          "$ref": "GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics"
+        },
+        "entityMetrics": {
+          "description": "Metrics across confidence levels, for different entities.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics"
+          }
+        },
+        "kmsKeyName": {
+          "description": "The KMS key name used for encryption.",
+          "type": "string"
+        },
+        "kmsKeyVersionName": {
+          "description": "The KMS key version with which data is encrypted.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluationCounters": {
+      "id": "GoogleCloudDocumentaiV1EvaluationCounters",
+      "description": "Evaluation counters for the documents that were used.",
+      "type": "object",
+      "properties": {
+        "inputDocumentsCount": {
+          "description": "How many documents were sent for evaluation.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "invalidDocumentsCount": {
+          "description": "How many documents were not included in the evaluation as they didn't pass validation.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "failedDocumentsCount": {
+          "description": "How many documents were not included in the evaluation as Document AI failed to process them.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "evaluatedDocumentsCount": {
+          "description": "How many documents were used in the evaluation.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics": {
+      "id": "GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics",
+      "description": "Metrics across multiple confidence levels.",
+      "type": "object",
+      "properties": {
+        "confidenceLevelMetrics": {
+          "description": "Metrics across confidence levels with fuzzy matching enabled.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics"
+          }
+        },
+        "confidenceLevelMetricsExact": {
+          "description": "Metrics across confidence levels with only exact matching.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics"
+          }
+        },
+        "auprc": {
+          "description": "The calculated area under the precision recall curve (AUPRC), computed by integrating over all confidence thresholds.",
+          "type": "number",
+          "format": "float"
+        },
+        "estimatedCalibrationError": {
+          "description": "The Estimated Calibration Error (ECE) of the confidence of the predicted entities.",
+          "type": "number",
+          "format": "float"
+        },
+        "auprcExact": {
+          "description": "The AUPRC for metrics with fuzzy matching disabled, i.e., exact matching only.",
+          "type": "number",
+          "format": "float"
+        },
+        "estimatedCalibrationErrorExact": {
+          "description": "The ECE for the predicted entities with fuzzy matching disabled, i.e., exact matching only.",
+          "type": "number",
+          "format": "float"
+        },
+        "metricsType": {
+          "description": "The metrics type for the label.",
+          "type": "string",
+          "enumDescriptions": [
+            "The metrics type is unspecified. By default, metrics without a particular specification are for leaf entity types (i.e., top-level entity types without child types, or child types which are not parent types themselves).",
+            "Indicates whether metrics for this particular label type represent an aggregate of metrics for other types instead of being based on actual TP\/FP\/FN values for the label type. Metrics for parent (i.e., non-leaf) entity types are an aggregate of metrics for their children."
+          ],
+          "enum": [
+            "METRICS_TYPE_UNSPECIFIED",
+            "AGGREGATE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics": {
+      "id": "GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics",
+      "description": "Evaluations metrics, at a specific confidence level.",
+      "type": "object",
+      "properties": {
+        "confidenceLevel": {
+          "description": "The confidence level.",
+          "type": "number",
+          "format": "float"
+        },
+        "metrics": {
+          "description": "The metrics at the specific confidence level.",
+          "$ref": "GoogleCloudDocumentaiV1EvaluationMetrics"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1ListEvaluationsResponse": {
+      "id": "GoogleCloudDocumentaiV1ListEvaluationsResponse",
+      "description": "The response from ListEvaluations.",
+      "type": "object",
+      "properties": {
+        "evaluations": {
+          "description": "The evaluations requested.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDocumentaiV1Evaluation"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
         }
       }
     },
@@ -2565,6 +2856,89 @@
       "description": "Response message for set default processor version method.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudDocumentaiV1TrainProcessorVersionMetadata": {
+      "id": "GoogleCloudDocumentaiV1TrainProcessorVersionMetadata",
+      "description": "The metadata that represents a processor version being created.",
+      "type": "object",
+      "properties": {
+        "commonMetadata": {
+          "description": "The basic metadata of the long running operation.",
+          "$ref": "GoogleCloudDocumentaiV1CommonOperationMetadata"
+        },
+        "trainingDatasetValidation": {
+          "description": "The training dataset validation information.",
+          "$ref": "GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation"
+        },
+        "testDatasetValidation": {
+          "description": "The test dataset validation information.",
+          "$ref": "GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation": {
+      "id": "GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation",
+      "description": "The dataset validation information. This includes any and all errors with documents and the dataset.",
+      "type": "object",
+      "properties": {
+        "documentErrorCount": {
+          "description": "The total number of document errors.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "datasetErrorCount": {
+          "description": "The total number of dataset errors.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "documentErrors": {
+          "description": "Error information pertaining to specific documents. A maximum of 10 document errors will be returned. Any document with errors will not be used throughout training.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        },
+        "datasetErrors": {
+          "description": "Error information for the dataset as a whole. A maximum of 10 dataset errors will be returned. A single dataset error is terminal for training.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1TrainProcessorVersionResponse": {
+      "id": "GoogleCloudDocumentaiV1TrainProcessorVersionResponse",
+      "description": "The response for the TrainProcessorVersion method.",
+      "type": "object",
+      "properties": {
+        "processorVersion": {
+          "description": "The resource name of the processor version produced by training.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluateProcessorVersionMetadata": {
+      "id": "GoogleCloudDocumentaiV1EvaluateProcessorVersionMetadata",
+      "description": "Metadata of the EvaluateProcessorVersion method.",
+      "type": "object",
+      "properties": {
+        "commonMetadata": {
+          "description": "The basic metadata of the long running operation.",
+          "$ref": "GoogleCloudDocumentaiV1CommonOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiV1EvaluateProcessorVersionResponse": {
+      "id": "GoogleCloudDocumentaiV1EvaluateProcessorVersionResponse",
+      "description": "Metadata of the EvaluateProcessorVersion method.",
+      "type": "object",
+      "properties": {
+        "evaluation": {
+          "description": "The resource name of the created evaluation.",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudDocumentaiV1beta1BatchProcessDocumentsResponse": {
@@ -5888,6 +6262,28 @@
         }
       }
     },
+    "GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionMetadata": {
+      "id": "GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionMetadata",
+      "description": "The long running operation metadata for the ImportProcessorVersion method.",
+      "type": "object",
+      "properties": {
+        "commonMetadata": {
+          "description": "The basic metadata for the long running operation.",
+          "$ref": "GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionResponse": {
+      "id": "GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionResponse",
+      "description": "The response message for the ImportProcessorVersion method.",
+      "type": "object",
+      "properties": {
+        "processorVersion": {
+          "description": "The destination processor version name.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDocumentaiUiv1beta3UpdateDatasetOperationMetadata": {
       "id": "GoogleCloudDocumentaiUiv1beta3UpdateDatasetOperationMetadata",
       "type": "object",
@@ -6051,6 +6447,10 @@
         "revisionReference": {
           "description": "Points to a specific revision of the document if set.",
           "$ref": "GoogleCloudDocumentaiUiv1beta3RevisionReference"
+        },
+        "revisionRef": {
+          "description": "Points to a specific revision of the document if set.",
+          "$ref": "GoogleCloudDocumentaiUiv1beta3RevisionRef"
         }
       }
     },
@@ -6078,7 +6478,7 @@
           "description": "Reads the revision by the predefined case.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified case, fallback to read the first (OCR) revision.",
+            "Unspecified case, fallback to read the LATEST_HUMAN_REVIEW.",
             "The latest revision made by a human.",
             "The latest revision based on timestamp."
           ],
@@ -6094,6 +6494,37 @@
         },
         "latestProcessorVersion": {
           "description": "Reads the revision generated by the processor version.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDocumentaiUiv1beta3RevisionRef": {
+      "id": "GoogleCloudDocumentaiUiv1beta3RevisionRef",
+      "description": "The revision reference specifies which revision on the document to read.",
+      "type": "object",
+      "properties": {
+        "revisionCase": {
+          "description": "Reads the revision by the predefined case.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified case, fallback to read the LATEST_HUMAN_REVIEW.",
+            "The latest revision made by a human.",
+            "The latest revision based on timestamp.",
+            "The first (OCR) revision."
+          ],
+          "enum": [
+            "REVISION_CASE_UNSPECIFIED",
+            "LATEST_HUMAN_REVIEW",
+            "LATEST_TIMESTAMP",
+            "BASE_OCR_REVISION"
+          ]
+        },
+        "revisionId": {
+          "description": "Reads the revision given by the id.",
+          "type": "string"
+        },
+        "latestProcessorVersion": {
+          "description": "Reads the revision generated by the processor version. The format takes the full resource name of processor version. `projects\/{project}\/locations\/{location}\/processors\/{processor}\/processorVersions\/{processorVersion}`",
           "type": "string"
         }
       }
@@ -6230,17 +6661,6 @@
         "status": {
           "description": "The status of resyncing the dataset with regards to the detected inconsistency. Empty if `validate_only` is true in the request.",
           "$ref": "GoogleRpcStatus"
-        }
-      }
-    },
-    "GoogleCloudDocumentaiUiv1beta3DeleteDataLabelingJobOperationMetadata": {
-      "id": "GoogleCloudDocumentaiUiv1beta3DeleteDataLabelingJobOperationMetadata",
-      "description": "The long running operation metadata for DeleteDataLabelingJob.",
-      "type": "object",
-      "properties": {
-        "commonMetadata": {
-          "description": "The basic metadata of the long running operation.",
-          "$ref": "GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata"
         }
       }
     },
@@ -6864,6 +7284,34 @@
                       ],
                       "description": "LRO endpoint to batch process many documents. The output is written to Cloud Storage as JSON in the [Document] format."
                     },
+                    "train": {
+                      "id": "documentai.projects.locations.processors.processorVersions.train",
+                      "path": "v1/{+parent}/processorVersions:train",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions:train",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent (project, location and processor) to create the new version for. Format: `projects\/{project}\/locations\/{location}\/processors\/{processor}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/processors\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDocumentaiV1TrainProcessorVersionRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Trains a new processor version. Operation metadata is returned as cloud_documentai_core.TrainProcessorVersionMetadata."
+                    },
                     "get": {
                       "id": "documentai.projects.locations.processors.processorVersions.get",
                       "path": "v1/{+name}",
@@ -7005,6 +7453,102 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Undeploys the processor version."
+                    },
+                    "evaluateProcessorVersion": {
+                      "id": "documentai.projects.locations.processors.processorVersions.evaluateProcessorVersion",
+                      "path": "v1/{+processorVersion}:evaluateProcessorVersion",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions/{processorVersionsId}:evaluateProcessorVersion",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "processorVersion": {
+                          "description": "Required. The resource name of the ProcessorVersion to evaluate. `projects\/{project}\/locations\/{location}\/processors\/{processor}\/processorVersions\/{processorVersion}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/processors\/[^\/]+\/processorVersions\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "processorVersion"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Evaluates a ProcessorVersion against annotated documents, producing an Evaluation."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "evaluations": {
+                      "methods": {
+                        "get": {
+                          "id": "documentai.projects.locations.processors.processorVersions.evaluations.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions/{processorVersionsId}/evaluations/{evaluationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the Evaluation to get. `projects\/{project}\/locations\/{location}\/processors\/{processor}\/processorVersions\/{processorVersion}\/evaluations\/{evaluation}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/processors\/[^\/]+\/processorVersions\/[^\/]+\/evaluations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDocumentaiV1Evaluation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Retrieves a specific evaluation."
+                        },
+                        "list": {
+                          "id": "documentai.projects.locations.processors.processorVersions.evaluations.list",
+                          "path": "v1/{+parent}/evaluations",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions/{processorVersionsId}/evaluations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the ProcessorVersion to list evaluations for. `projects\/{project}\/locations\/{location}\/processors\/{processor}\/processorVersions\/{processorVersion}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/processors\/[^\/]+\/processorVersions\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size. If unspecified, at most 5 evaluations will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous `ListEvaluations` call. Provide this to retrieve the subsequent page.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDocumentaiV1ListEvaluationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Retrieves a set of evaluations for a given processor version."
+                        }
+                      }
                     }
                   }
                 },

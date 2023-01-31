@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import copy
 import enum
 import functools
+import re
 
 from googlecloudsdk.api_lib.compute import filter_rewrite
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
@@ -39,6 +40,13 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.util import text
 import six
+
+_GLOBAL_RELATIVE_PATH_REGEX = 'projects/([^/]+)/global/([^/]+)/'
+
+_REGIONAL_RELATIVE_PATH_REGEX = 'projects/([^/]+)/regions/([^/]+)/'
+
+_ZONAL_RELATIVE_PATH_REGEX = 'projects/([^/]+)/zones/([^/]+)/'
+
 
 ZONE_PROPERTY_EXPLANATION = """\
 If not specified and the ``compute/zone'' property isn't set, you
@@ -258,6 +266,16 @@ class ResourceArgScopes(object):
       scope_value = getattr(args, resource_scope.flag_name, None)
       if scope_value is not None:
         return resource_scope, scope_value
+    return None, None
+
+  def SpecifiedByValue(self, value):
+    """Given resource value return selected scope and its value."""
+    if re.match(_GLOBAL_RELATIVE_PATH_REGEX, value):
+      return self.scopes[compute_scope.ScopeEnum.GLOBAL], 'global'
+    elif re.match(_REGIONAL_RELATIVE_PATH_REGEX, value):
+      return self.scopes[compute_scope.ScopeEnum.REGION], 'region'
+    elif re.match(_ZONAL_RELATIVE_PATH_REGEX, value):
+      return self.scopes[compute_scope.ScopeEnum.ZONE], 'zone'
     return None, None
 
   def GetImplicitScope(self, default_scope=None):
@@ -714,7 +732,7 @@ class ResourceArgument(object):
                                   GENERATE_DEDICATED_SCOPE_FLAGS, new scope
                                   flags will be created,
                                   DONT_USE_SCOPE_FLAGS to not generate
-                                  additional flags and use single argumant for
+                                  additional flags and use single argument for
                                   all scopes.
 
     Raises:
@@ -891,6 +909,11 @@ class ResourceArgument(object):
     """
     names = self._GetResourceNames(args)
     resource_scope, scope_value = self.scopes.SpecifiedByArgs(args)
+    if (
+        resource_scope is None
+        and self.scope_flags_usage == ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS
+    ):
+      resource_scope, scope_value = self.scopes.SpecifiedByValue(names[0])
     if resource_scope is not None:
       resource_scope = resource_scope.scope_enum
       # Complain if scope was specified without actual resource(s).

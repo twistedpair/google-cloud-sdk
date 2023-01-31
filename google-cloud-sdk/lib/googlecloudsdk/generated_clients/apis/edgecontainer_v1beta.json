@@ -297,6 +297,10 @@
           "description": "Output only. The lowest release version among all worker nodes. This field can be empty if the cluster does not have any worker nodes.",
           "readOnly": true,
           "type": "string"
+        },
+        "controlPlane": {
+          "description": "Optional. The configuration of the cluster control plane.",
+          "$ref": "ControlPlane"
         }
       }
     },
@@ -424,6 +428,48 @@
           "description": "The time that the window ends. The end time must take place after the start time.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "ControlPlane": {
+      "id": "ControlPlane",
+      "description": "Configuration of the cluster control plane.",
+      "type": "object",
+      "properties": {
+        "remote": {
+          "description": "Remote control plane configuration.",
+          "$ref": "Remote"
+        },
+        "local": {
+          "description": "Local control plane configuration.",
+          "$ref": "Local"
+        }
+      }
+    },
+    "Remote": {
+      "id": "Remote",
+      "description": "Configuration specific to clusters with a control plane hosted remotely.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Local": {
+      "id": "Local",
+      "description": "Configuration specific to clusters with a control plane hosted locally.",
+      "type": "object",
+      "properties": {
+        "nodeLocation": {
+          "description": "Name of the Google Distributed Cloud Edge zones where this node pool will be created. For example: `us-central1-edge-customer-a`.",
+          "type": "string"
+        },
+        "nodeCount": {
+          "description": "The number of nodes to serve as replicas of the Control Plane.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "machineFilter": {
+          "description": "Only machines matching this filter will be allowed to host control plane nodes. The filtering language accepts strings like \"name=\", and is documented here: [AIP-160](https:\/\/google.aip.dev\/160).",
+          "type": "string"
         }
       }
     },

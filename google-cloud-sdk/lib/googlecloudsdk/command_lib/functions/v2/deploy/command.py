@@ -1159,6 +1159,12 @@ def Run(args, release_track):
         'To skip this prompt, add `--runtime={}` to your command next time.\n'
         .format(args.runtime))
 
+  if (flags.ShouldUseGen2() and existing_function and
+      str(existing_function.environment) == 'GEN_1'):
+    raise exceptions.InvalidArgumentException(
+        '--gen2',
+        "Function already exist in 1st gen, can't change the environment.")
+
   if existing_function and existing_function.serviceConfig:
     has_all_traffic_on_latest_revision = existing_function.serviceConfig.allTrafficOnLatestRevision
     if (has_all_traffic_on_latest_revision is not None and

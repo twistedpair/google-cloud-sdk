@@ -24,11 +24,10 @@ class AcceleratorConfig(_messages.Message):
       to this instance.
     acceleratorTypeUri: Full URL, partial URI, or short name of the
       accelerator type resource to expose to this instance. See Compute Engine
-      AcceleratorTypes (https://cloud.google.com/compute/docs/reference/beta/a
-      cceleratorTypes).Examples:
-      https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
-      east1-a/acceleratorTypes/nvidia-tesla-k80
-      projects/[project_id]/zones/us-east1-a/acceleratorTypes/nvidia-tesla-k80
+      AcceleratorTypes (https://cloud.google.com/compute/docs/reference/v1/acc
+      eleratorTypes).Examples: https://www.googleapis.com/compute/v1/projects/
+      [project_id]/zones/[zone]/acceleratorTypes/nvidia-tesla-k80
+      projects/[project_id]/zones/[zone]/acceleratorTypes/nvidia-tesla-k80
       nvidia-tesla-k80Auto Zone Exception: If you are using the Dataproc Auto
       Zone Placement
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
@@ -526,10 +525,10 @@ class Cluster(_messages.Message):
       creating a Dataproc cluster that does not directly control the
       underlying compute resources, for example, when creating a Dataproc-on-
       GKE cluster
-      (https://cloud.google.com/dataproc/docs/guides/dpgke/dataproc-gke).
-      Dataproc may set default values, and values may change when clusters are
-      updated. Exactly one of config or virtual_cluster_config must be
-      specified.
+      (https://cloud.google.com/dataproc/docs/guides/dpgke/dataproc-gke-
+      overview). Dataproc may set default values, and values may change when
+      clusters are updated. Exactly one of config or virtual_cluster_config
+      must be specified.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1168,6 +1167,8 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
     filter: Optional. A filter constraining the batches to list. Filters are
       case sensitive and have the following syntax:field = value AND field =
       value ...
+    orderBy: Optional. Field(s) on which to sort the list of batches. See
+      https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. The maximum number of batches to return in each
       response. The service may return fewer than this value. The default page
       size is 20; the maximum page size is 1000.
@@ -1177,9 +1178,10 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DataprocProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1304,6 +1306,8 @@ class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
     filter: Optional. A filter constraining the sessions to list. Filters are
       case-sensitive and have the following syntax:[field = value] AND [field
       [= value]] ...
+    orderBy: Optional. Field(s) on which to sort the list of sessions. See
+      https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. The maximum number of sessions to return in each
       response. The service may return fewer than this value.
     pageToken: Optional. A page token received from a previous ListSessions
@@ -1312,9 +1316,10 @@ class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DataprocProjectsLocationsSessionsTerminateRequest(_messages.Message):
@@ -2753,6 +2758,14 @@ class ExecutionConfig(_messages.Message):
     networkUri: Optional. Network URI to connect workload to.
     performanceTier: Optional. Performance tier for workload execution.
     serviceAccount: Optional. Service account that used to execute workload.
+    stagingBucket: Optional. A Cloud Storage bucket used to stage workload
+      dependencies, config files, and store workload output and other
+      ephemeral data, such as Spark history files. If you do not specify a
+      staging bucket, Cloud Dataproc will determine a Cloud Storage location
+      according to the region where your workload is running, and then create
+      and manage project-level, per-location staging and temporary buckets.
+      This field requires a Cloud Storage bucket name, not a gs://... URI to a
+      Cloud Storage bucket.
     subnetworkUri: Optional. Subnetwork URI to connect workload to.
     ttl: Optional. The duration after which the workload will be terminated.
       When the workload passes this ttl, it will be unconditionally killed
@@ -2785,8 +2798,9 @@ class ExecutionConfig(_messages.Message):
   networkUri = _messages.StringField(4)
   performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 5)
   serviceAccount = _messages.StringField(6)
-  subnetworkUri = _messages.StringField(7)
-  ttl = _messages.StringField(8)
+  stagingBucket = _messages.StringField(7)
+  subnetworkUri = _messages.StringField(8)
+  ttl = _messages.StringField(9)
 
 
 class Expr(_messages.Message):
@@ -2861,8 +2875,8 @@ class GceClusterConfig(_messages.Message):
       (see Using Subnetworks
       (https://cloud.google.com/compute/docs/subnetworks) for more
       information).A full URL, partial URI, or short name are valid. Examples:
-      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/glob
-      al/default projects/[project_id]/regions/global/default default
+      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/[reg
+      ion]/default projects/[project_id]/regions/[region]/default default
     nodeGroupAffinity: Optional. Node Group Affinity for sole-tenant clusters.
     privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
@@ -2893,21 +2907,18 @@ class GceClusterConfig(_messages.Message):
       (https://cloud.google.com/security/shielded-cloud/shielded-vm).
     subnetworkUri: Optional. The Compute Engine subnetwork to be used for
       machine communications. Cannot be specified with network_uri.A full URL,
-      partial URI, or short name are valid. Examples:
-      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
-      east1/subnetworks/sub0 projects/[project_id]/regions/us-
-      east1/subnetworks/sub0 sub0
+      partial URI, or short name are valid. Examples: https://www.googleapis.c
+      om/compute/v1/projects/[project_id]/regions/[region]/subnetworks/sub0
+      projects/[project_id]/regions/[region]/subnetworks/sub0 sub0
     tags: The Compute Engine tags to add to all instances (see Tagging
       instances (https://cloud.google.com/compute/docs/label-or-tag-
       resources#tags)).
-    zoneUri: Optional. The zone where the Compute Engine cluster will be
-      located. On a create request, it is required in the "global" region. If
-      omitted in a non-global Dataproc region, the service will pick a zone in
-      the corresponding Compute Engine region. On a get request, zone will
-      always be present.A full URL, partial URI, or short name are valid.
-      Examples:
+    zoneUri: Optional. The Compute Engine zone where the Dataproc cluster will
+      be located. If omitted, the service will pick a zone in the cluster's
+      Compute Engine region. On a get request, zone will always be present.A
+      full URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
-      projects/[project_id]/zones/[zone] us-central1-f
+      projects/[project_id]/zones/[zone] [zone]
   """
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
@@ -3500,11 +3511,11 @@ class InstanceGroupConfig(_messages.Message):
     diskConfig: Optional. Disk option config settings.
     imageUri: Optional. The Compute Engine image resource used for cluster
       instances.The URI can represent an image or image family.Image examples:
-      https://www.googleapis.com/compute/beta/projects/[project_id]/global/ima
-      ges/[image-id] projects/[project_id]/global/images/[image-id] image-
+      https://www.googleapis.com/compute/v1/projects/[project_id]/global/image
+      s/[image-id] projects/[project_id]/global/images/[image-id] image-
       idImage family examples. Dataproc will use the most recent image from
-      the family: https://www.googleapis.com/compute/beta/projects/[project_id
-      ]/global/images/family/[custom-image-family-name]
+      the family: https://www.googleapis.com/compute/v1/projects/[project_id]/
+      global/images/family/[custom-image-family-name]
       projects/[project_id]/global/images/family/[custom-image-family-name]If
       the URI is unspecified, it will be inferred from
       SoftwareConfig.image_version or the system default.
@@ -3515,11 +3526,12 @@ class InstanceGroupConfig(_messages.Message):
     isPreemptible: Output only. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster
-      instances.A full URL, partial URI, or short name are valid. Examples:
-      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
-      east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
-      east1-a/machineTypes/n1-standard-2 n1-standard-2Auto Zone Exception: If
-      you are using the Dataproc Auto Zone Placement
+      instances.A full URL, partial URI, or short name are valid. Examples: ht
+      tps://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]/m
+      achineTypes/n1-standard-2
+      projects/[project_id]/zones/[zone]/machineTypes/n1-standard-2
+      n1-standard-2Auto Zone Exception: If you are using the Dataproc Auto
+      Zone Placement
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/auto-zone#using_auto_zone_placement) feature, you must use the
       short name of the machine type resource, for example, n1-standard-2.
@@ -4643,10 +4655,9 @@ class NodeGroupAffinity(_messages.Message):
     nodeGroupUri: Required. The URI of a sole-tenant node group resource
       (https://cloud.google.com/compute/docs/reference/rest/v1/nodeGroups)
       that the cluster will be created on.A full URL, partial URI, or node
-      group name are valid. Examples:
-      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
-      central1-a/nodeGroups/node-group-1 projects/[project_id]/zones/us-
-      central1-a/nodeGroups/node-group-1 node-group-1
+      group name are valid. Examples: https://www.googleapis.com/compute/v1/pr
+      ojects/[project_id]/zones/[zone]/nodeGroups/node-group-1
+      projects/[project_id]/zones/[zone]/nodeGroups/node-group-1 node-group-1
   """
 
   nodeGroupUri = _messages.StringField(1)
@@ -6747,7 +6758,7 @@ class ValueValidation(_messages.Message):
 class VirtualClusterConfig(_messages.Message):
   r"""The Dataproc cluster config for a cluster that does not directly control
   the underlying compute resources, such as a Dataproc-on-GKE cluster
-  (https://cloud.google.com/dataproc/docs/guides/dpgke/dataproc-gke).
+  (https://cloud.google.com/dataproc/docs/guides/dpgke/dataproc-gke-overview).
 
   Fields:
     auxiliaryServicesConfig: Optional. Configuration of auxiliary services

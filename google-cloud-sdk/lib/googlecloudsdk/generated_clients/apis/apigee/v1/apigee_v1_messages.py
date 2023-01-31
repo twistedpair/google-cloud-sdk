@@ -562,6 +562,245 @@ class ApigeeOrganizationsApisRevisionsUpdateApiProxyRevisionRequest(_messages.Me
   validate = _messages.BooleanField(3)
 
 
+class ApigeeOrganizationsAppgroupsAppsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1AppGroupApp: A GoogleCloudApigeeV1AppGroupApp resource
+      to be passed as the request body.
+    parent: Required. Name of the appgroup. Use the following structure in
+      your request: `organizations/{org}/appgroups/{app_group_name}`
+  """
+
+  googleCloudApigeeV1AppGroupApp = _messages.MessageField('GoogleCloudApigeeV1AppGroupApp', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the appgroup app. Use the following structure in
+      your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsGetRequest object.
+
+  Fields:
+    name: Required. Name of the appgroup app. Use the following structure in
+      your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsKeysApiproductsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsKeysApiproductsDeleteRequest object.
+
+  Fields:
+    name: Required. Parent of the AppGroup app key. Use the following
+      structure in your request: `organizations/{org}/appgroups/{app_group_nam
+      e}/apps/{app}/keys/{key}/apiproducts/{apiproduct}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsKeysApiproductsUpdateAppGroupAppKeyApiProductRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsKeysApiproductsUpdateAppGroupAppKeyApi
+  ProductRequest object.
+
+  Fields:
+    action: Approve or revoke the consumer key by setting this value to
+      `approve` or `revoke` respectively. The `Content-Type` header, if set,
+      must be set to `application/octet-stream`, with empty body.
+    name: Required. Name of the API product in the developer app key in the
+      following format: `organizations/{org}/appgroups/{app_group_name}/apps/{
+      app}/keys/{key}/apiproducts/{apiproduct}`
+  """
+
+  action = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsKeysCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsKeysCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1AppGroupAppKey: A GoogleCloudApigeeV1AppGroupAppKey
+      resource to be passed as the request body.
+    parent: Required. Parent of the AppGroup app key. Use the following
+      structure in your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}/keys`
+  """
+
+  googleCloudApigeeV1AppGroupAppKey = _messages.MessageField('GoogleCloudApigeeV1AppGroupAppKey', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsKeysDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsKeysDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the AppGroup app key. Use the following structure
+      in your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}/keys/{key}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsKeysGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsKeysGetRequest object.
+
+  Fields:
+    name: Required. Name of the AppGroup app key. Use the following structure
+      in your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}/keys/{key}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsKeysUpdateAppGroupAppKeyRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsKeysUpdateAppGroupAppKeyRequest
+  object.
+
+  Fields:
+    action: Approve or revoke the consumer key by setting this value to
+      `approve` or `revoke` respectively. The `Content-Type` header, if set,
+      must be set to `application/octet-stream`, with empty body.
+    googleCloudApigeeV1AppGroupAppKey: A GoogleCloudApigeeV1AppGroupAppKey
+      resource to be passed as the request body.
+    name: Required. Name of the AppGroup app key. Use the following structure
+      in your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}/keys/{key}`
+  """
+
+  action = _messages.StringField(1)
+  googleCloudApigeeV1AppGroupAppKey = _messages.MessageField('GoogleCloudApigeeV1AppGroupAppKey', 2)
+  name = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number entries to return. If unspecified, at
+      most 1000 entries will be returned.
+    pageToken: Optional. Page token. If provides, must be a valid appgroup app
+      returned from a previous call that can be used to retrieve the next
+      page.
+    parent: Required. Name of the appgroup. Use the following structure in
+      your request: `organizations/{org}/appgroups/{app_group_name}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsAppgroupsAppsUpdateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsAppsUpdateRequest object.
+
+  Fields:
+    action: Approve or revoke the consumer key by setting this value to
+      `approve` or `revoke`. The `Content-Type` header must be set to
+      `application/octet-stream`, with empty body.
+    googleCloudApigeeV1AppGroupApp: A GoogleCloudApigeeV1AppGroupApp resource
+      to be passed as the request body.
+    name: Required. Name of the appgroup app. Use the following structure in
+      your request:
+      `organizations/{org}/appgroups/{app_group_name}/apps/{app}`
+  """
+
+  action = _messages.StringField(1)
+  googleCloudApigeeV1AppGroupApp = _messages.MessageField('GoogleCloudApigeeV1AppGroupApp', 2)
+  name = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsAppgroupsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1AppGroup: A GoogleCloudApigeeV1AppGroup resource to be
+      passed as the request body.
+    parent: Required. Name of the Apigee organization in which the appgroup is
+      created. Use the following structure in your request:
+      `organizations/{org}`.
+  """
+
+  googleCloudApigeeV1AppGroup = _messages.MessageField('GoogleCloudApigeeV1AppGroup', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsAppgroupsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the appgroup. Use the following structure in your
+      request: `organizations/{org}/appgroups/{app_group_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the appgroup. Use the following structure in your
+      request: `organizations/{org}/appgroups/{app_group_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsAppgroupsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsListRequest object.
+
+  Fields:
+    filter: The filter expression to be used to get the list of appgroups,
+      where filtering can be done on name, correlationID or channelID of the
+      app group. Example: filter = "name = foobar"
+    pageSize: Count of appgroups a single page can have in the response. If
+      unspecified, at most 1000 appgroups will be returned. The maximum value
+      is 1000; values above 1000 will be coerced to 1000.
+    pageToken: The starting index record for listing the appgroups.
+    parent: Required. Name of the Apigee organization. Use the following
+      structure in your request: `organizations/{org}`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ApigeeOrganizationsAppgroupsUpdateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsAppgroupsUpdateRequest object.
+
+  Fields:
+    action: Activate or de-activate the appGroup by setting the action as
+      `active` or `inactive`. The `Content-Type` header must be set to
+      `application/octet-stream`, with empty body.
+    googleCloudApigeeV1AppGroup: A GoogleCloudApigeeV1AppGroup resource to be
+      passed as the request body.
+    name: Required. Name of the appgroup. Use the following structure in your
+      request: `organizations/{org}/appgroups/{app_group_name}`
+  """
+
+  action = _messages.StringField(1)
+  googleCloudApigeeV1AppGroup = _messages.MessageField('GoogleCloudApigeeV1AppGroup', 2)
+  name = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsAppsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppsGetRequest object.
 
@@ -2737,8 +2976,8 @@ class ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest(_messages.Messa
   Fields:
     name: Required. Security incident in the following format: `organizations/
       {org}/environments/{environment}/securityIncidents/{incident}'. Example:
-      organizations/testOrg/environments/testEnv/securityIncident/1234-4567-89
-      0-111
+      organizations/testOrg/environments/testEnv/securityIncident/1234-4567-
+      890-111
   """
 
   name = _messages.StringField(1, required=True)
@@ -4148,6 +4387,32 @@ class ApigeeOrganizationsSecurityProfilesListRevisionsRequest(_messages.Message)
   pageToken = _messages.StringField(3)
 
 
+class ApigeeOrganizationsSecurityincidentenvironmentsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityincidentenvironmentsListRequest object.
+
+  Fields:
+    filter: Filter list security incident stats per environment by time range
+      "first_detected_time >", "last_detected_time <"
+    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
+      more details. If not specified, the results will be sorted in the
+      default order.
+    pageSize: The maximum number of environments to return. The service may
+      return fewer than this value. If unspecified, at most 50 environments
+      will be returned.
+    pageToken: A page token, received from a previous
+      `ListSecurityIncidentEnvironments` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. For a specific organization, list all environments with
+      security incidents stats. Format: `organizations/{org}}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ApigeeOrganizationsSetAddonsRequest(_messages.Message):
   r"""A ApigeeOrganizationsSetAddonsRequest object.
 
@@ -4500,6 +4765,20 @@ class GoogleApiHttpBody(_messages.Message):
   contentType = _messages.StringField(1)
   data = _messages.BytesField(2)
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
+class GoogleCloudApigeeV1APIProductStatus(_messages.Message):
+  r"""APIProductStatus has the API product and its administrative state
+  association.
+
+  Fields:
+    apiproduct: API product to be associated with the credential.
+    status: The API product credential associated status. Valid values are
+      `approved` or `revoked`.
+  """
+
+  apiproduct = _messages.StringField(1)
+  status = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1Access(_messages.Message):
@@ -5191,6 +5470,120 @@ class GoogleCloudApigeeV1App(_messages.Message):
   name = _messages.StringField(13)
   scopes = _messages.StringField(14, repeated=True)
   status = _messages.StringField(15)
+
+
+class GoogleCloudApigeeV1AppGroup(_messages.Message):
+  r"""AppGroup contains the request/response fields representing the logical
+  grouping of apps. Note that appgroup_id, create_time and update_time cannot
+  be changed by the user, and gets updated by the system. The name and the
+  organization once provided cannot be edited subsequently.
+
+  Fields:
+    appGroupId: Output only. Internal identifier that cannot be edited
+    attributes: A list of attributes
+    channelId: channel identifier identifies the owner maintaing this
+      grouping.
+    correlationId: correlation id, is an opaque identifier that can be used by
+      the caller to tag this AppGroup.
+    createdAt: Output only. Created time as milliseconds since epoch.
+    displayName: app group name displayed in the UI
+    lastModifiedAt: Output only. Modified time as milliseconds since epoch.
+    name: Immutable. Name of the AppGroup. Characters you can use in the name
+      are restricted to: A-Z0-9._\-$ %.
+    organization: Immutable. the org the app group is created
+    status: Valid values are `active` or `inactive`. Note that the status of
+      the AppGroup should be updated via UpdateAppGroupRequest by setting the
+      action as `active` or `inactive`.
+  """
+
+  appGroupId = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  channelId = _messages.StringField(3)
+  correlationId = _messages.StringField(4)
+  createdAt = _messages.IntegerField(5)
+  displayName = _messages.StringField(6)
+  lastModifiedAt = _messages.IntegerField(7)
+  name = _messages.StringField(8)
+  organization = _messages.StringField(9)
+  status = _messages.StringField(10)
+
+
+class GoogleCloudApigeeV1AppGroupApp(_messages.Message):
+  r"""Response for [GetAppGroupApp].[AppGroupApps.GetAppGroupApp],
+  [CreateAppGroupAppRequest].[AppGroupApp.CreateAppGroupAppRequest] and
+  [DeleteAppGroupApp].[AppGroupApp.DeleteAppGroupApp]
+
+  Fields:
+    apiProducts: List of API products associated with the appgroup app.
+    appId: Immutable. ID of the appgroup app.
+    attributes: List of attributes for the appgroup app.
+    callbackUrl: Callback URL used by OAuth 2.0 authorization servers to
+      communicate authorization codes back to appgroup apps.
+    createdAt: Output only. Time the appgroup app was created in milliseconds
+      since epoch.
+    credentials: Output only. Set of credentials for the appgroup app
+      consisting of the consumer key/secret pairs associated with the API
+      products.
+    keyExpiresIn: Immutable. Expiration time, in seconds, for the consumer key
+      that is generated for the appgroup app. If not set or left to the
+      default value of `-1`, the API key never expires. The expiration time
+      can't be updated after it is set.
+    lastModifiedAt: Output only. Time the appgroup app was modified in
+      milliseconds since epoch.
+    name: Immutable. Name of the appgroup app.
+    scopes: Scopes to apply to the appgroup app. The specified scopes must
+      already exist for the API product that you associate with the appgroup
+      app.
+    status: Status of the App. Valid values include `approved` or `revoked`.
+  """
+
+  apiProducts = _messages.StringField(1, repeated=True)
+  appId = _messages.StringField(2)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 3, repeated=True)
+  callbackUrl = _messages.StringField(4)
+  createdAt = _messages.IntegerField(5)
+  credentials = _messages.MessageField('GoogleCloudApigeeV1Credential', 6, repeated=True)
+  keyExpiresIn = _messages.IntegerField(7)
+  lastModifiedAt = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  scopes = _messages.StringField(10, repeated=True)
+  status = _messages.StringField(11)
+
+
+class GoogleCloudApigeeV1AppGroupAppKey(_messages.Message):
+  r"""AppGroupAppKey contains all the information associated with the
+  credentials.
+
+  Fields:
+    apiProducts: Output only. List of API products and its status for which
+      the credential can be used. **Note**: Use
+      UpdateAppGroupAppKeyApiProductRequest API to make the association after
+      the consumer key and secret are created.
+    attributes: List of attributes associated with the credential.
+    consumerKey: Immutable. Consumer key.
+    consumerSecret: Secret key.
+    expiresAt: Output only. Time the AppGroup app expires in milliseconds
+      since epoch.
+    expiresInSeconds: Immutable. Expiration time, in seconds, for the consumer
+      key. If not set or left to the default value of `-1`, the API key never
+      expires. The expiration time can't be updated after it is set.
+    issuedAt: Output only. Time the AppGroup app was created in milliseconds
+      since epoch.
+    scopes: Scopes to apply to the app. The specified scope names must already
+      be defined for the API product that you associate with the app.
+    status: Status of the credential. Valid values include `approved` or
+      `revoked`.
+  """
+
+  apiProducts = _messages.MessageField('GoogleCloudApigeeV1APIProductStatus', 1, repeated=True)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  consumerKey = _messages.StringField(3)
+  consumerSecret = _messages.StringField(4)
+  expiresAt = _messages.IntegerField(5)
+  expiresInSeconds = _messages.IntegerField(6)
+  issuedAt = _messages.IntegerField(7)
+  scopes = _messages.StringField(8, repeated=True)
+  status = _messages.StringField(9)
 
 
 class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
@@ -7568,6 +7961,35 @@ class GoogleCloudApigeeV1ListApiProxiesResponse(_messages.Message):
   proxies = _messages.MessageField('GoogleCloudApigeeV1ApiProxy', 1, repeated=True)
 
 
+class GoogleCloudApigeeV1ListAppGroupAppsResponse(_messages.Message):
+  r"""Response for ListAppGroupApps
+
+  Fields:
+    appGroupApps: List of appgroup apps and their credentials.
+    nextPageToken: Token that can be sent as `next_page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  appGroupApps = _messages.MessageField('GoogleCloudApigeeV1AppGroupApp', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListAppGroupsResponse(_messages.Message):
+  r"""ListAppGroupsResponse contains the 0 or more AppGroups, along with the
+  optional page token and the total count of apps.
+
+  Fields:
+    appGroups: List of appgroups.
+    nextPageToken: Token that can be sent as `next_page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalSize: Total count of AppGroups.
+  """
+
+  appGroups = _messages.MessageField('GoogleCloudApigeeV1AppGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudApigeeV1ListAppsResponse(_messages.Message):
   r"""A GoogleCloudApigeeV1ListAppsResponse object.
 
@@ -7871,6 +8293,21 @@ class GoogleCloudApigeeV1ListSecurityActionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   securityActions = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityIncidentEnvironmentsResponse(_messages.Message):
+  r"""Response for ListEnvironmentSecurityIncident.
+
+  Fields:
+    nextPageToken: Output only. A token that can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    securityIncidentEnvironments: List of environments with security incident
+      stats.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityIncidentEnvironments = _messages.MessageField('GoogleCloudApigeeV1SecurityIncidentEnvironment', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSecurityIncidentsResponse(_messages.Message):
@@ -9892,7 +10329,7 @@ class GoogleCloudApigeeV1SecurityActionsConfig(_messages.Message):
 
   Fields:
     enabled: The flag that controls whether this feature is enabled. This is
-      `false` by default. When this flag is `false`, even if individual rules
+      `unset` by default. When this flag is `false`, even if individual rules
       are enabled, no SecurityActions will be enforced.
     name: This is a singleton resource, the name will always be set by
       SecurityActions and any user input will be ignored. The name is always:
@@ -9930,6 +10367,18 @@ class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
   lastDetectedTime = _messages.StringField(4)
   name = _messages.StringField(5)
   trafficCount = _messages.IntegerField(6)
+
+
+class GoogleCloudApigeeV1SecurityIncidentEnvironment(_messages.Message):
+  r"""Represents an SecurityIncidentEnvironment resource.
+
+  Fields:
+    environment: Output only. Name of the environment
+    totalIncidents: Output only. Total incidents count for a given environment
+  """
+
+  environment = _messages.StringField(1)
+  totalIncidents = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1SecurityProfile(_messages.Message):
@@ -10156,9 +10605,10 @@ class GoogleCloudApigeeV1SecurityReportResultMetadata(_messages.Message):
       Query result will be unaccessable after this time. Example:
       "2021-05-04T13:38:52-07:00"
     self: Self link of the query results. Example: `/organizations/myorg/envir
-      onments/myenv/securityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/resul
-      t` or following format if query is running at host level: `/organization
-      s/myorg/hostSecurityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result`
+      onments/myenv/securityReports/9cfc0d85-0f30-46d6-ae6f-
+      318d0cb961bd/result` or following format if query is running at host
+      level: `/organizations/myorg/hostSecurityReports/9cfc0d85-0f30-46d6-
+      ae6f-318d0cb961bd/result`
   """
 
   expires = _messages.StringField(1)
@@ -10452,11 +10902,16 @@ class GoogleCloudApigeeV1TargetServer(_messages.Message):
       PROTOCOL_UNSPECIFIED: UNSPECIFIED defaults to HTTP for backwards
         compatibility.
       HTTP: The TargetServer uses HTTP.
+      HTTP2: The TargetSever uses HTTP2
       GRPC: The TargetServer uses GRPC.
+      EXTERNAL_CALLOUT: The TargetServer is to be used in the ExternalCallout
+        Policy
     """
     PROTOCOL_UNSPECIFIED = 0
     HTTP = 1
-    GRPC = 2
+    HTTP2 = 2
+    GRPC = 3
+    EXTERNAL_CALLOUT = 4
 
   description = _messages.StringField(1)
   host = _messages.StringField(2)
@@ -10491,11 +10946,16 @@ class GoogleCloudApigeeV1TargetServerConfig(_messages.Message):
       PROTOCOL_UNSPECIFIED: UNSPECIFIED defaults to HTTP for backwards
         compatibility.
       HTTP: The TargetServer uses HTTP.
+      HTTP2: The TargetSever uses HTTP2
       GRPC: The TargetServer uses GRPC.
+      EXTERNAL_CALLOUT: The TargetServer is to be used in the ExternalCallout
+        Policy
     """
     PROTOCOL_UNSPECIFIED = 0
     HTTP = 1
-    GRPC = 2
+    HTTP2 = 2
+    GRPC = 3
+    EXTERNAL_CALLOUT = 4
 
   enabled = _messages.BooleanField(1)
   host = _messages.StringField(2)

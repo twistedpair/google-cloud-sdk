@@ -54,7 +54,6 @@ class DataflowV1b3(base_api.BaseApiClient):
     self.projects_locations_jobs_workItems = self.ProjectsLocationsJobsWorkItemsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_snapshots = self.ProjectsLocationsSnapshotsService(self)
-    self.projects_locations_sql = self.ProjectsLocationsSqlService(self)
     self.projects_locations_templates = self.ProjectsLocationsTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_snapshots = self.ProjectsSnapshotsService(self)
@@ -1340,42 +1339,6 @@ class DataflowV1b3(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataflowProjectsLocationsSnapshotsListRequest',
         response_type_name='ListSnapshotsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsSqlService(base_api.BaseApiService):
-    """Service class for the projects_locations_sql resource."""
-
-    _NAME = 'projects_locations_sql'
-
-    def __init__(self, client):
-      super(DataflowV1b3.ProjectsLocationsSqlService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Validate(self, request, global_params=None):
-      r"""Validates a GoogleSQL query for Cloud Dataflow syntax. Will always confirm the given query parses correctly, and if able to look up schema information from DataCatalog, will validate that the query analyzes properly as well.
-
-      Args:
-        request: (DataflowProjectsLocationsSqlValidateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ValidateResponse) The response message.
-      """
-      config = self.GetMethodConfig('Validate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Validate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='dataflow.projects.locations.sql.validate',
-        ordered_params=['projectId', 'location'],
-        path_params=['location', 'projectId'],
-        query_params=['query'],
-        relative_path='v1b3/projects/{projectId}/locations/{location}/sql:validate',
-        request_field='',
-        request_type_name='DataflowProjectsLocationsSqlValidateRequest',
-        response_type_name='ValidateResponse',
         supports_download=False,
     )
 

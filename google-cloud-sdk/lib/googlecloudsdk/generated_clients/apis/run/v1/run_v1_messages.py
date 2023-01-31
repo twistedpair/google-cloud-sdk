@@ -324,8 +324,9 @@ class Container(_messages.Message):
       must be unique for the container. For non-secret EnvVar names, the
       Container will only get the last-declared one.
     envFrom: Not supported by Cloud Run.
-    image: Required. URL of the Container image in Google Container Registry
-      or Google Artifact Registry. More info:
+    image: Required. Name of the container image in Dockerhub, Google Artifact
+      Registry, or Google Container Registry. If the host is not provided,
+      Dockerhub is assumed. More info:
       https://kubernetes.io/docs/concepts/containers/images
     imagePullPolicy: Image pull policy. One of Always, Never, IfNotPresent.
       Defaults to Always if :latest tag is specified, or IfNotPresent
@@ -859,13 +860,16 @@ class HTTPGetAction(_messages.Message):
     httpHeaders: Custom headers to set in the request. HTTP allows repeated
       headers.
     path: Path to access on the HTTP server.
+    port: Port number to access on the container. Number must be in the range
+      1 to 65535.
     scheme: Not supported by Cloud Run.
   """
 
   host = _messages.StringField(1)
   httpHeaders = _messages.MessageField('HTTPHeader', 2, repeated=True)
   path = _messages.StringField(3)
-  scheme = _messages.StringField(4)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  scheme = _messages.StringField(5)
 
 
 class HTTPHeader(_messages.Message):

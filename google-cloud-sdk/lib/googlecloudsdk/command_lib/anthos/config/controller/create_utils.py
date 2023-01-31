@@ -61,8 +61,7 @@ def CreateUpdateRequest(release_track, ref, args):
   man_blocks = messages.MasterAuthorizedNetworksConfig(
       cidrBlocks=multiple_cidr_blocks)
 
-  # The full-management flag is only available on the alpha command.
-  if release_track == base.ReleaseTrack.ALPHA and args.full_management:
+  if args.full_management:
     full_mgmt_config = messages.FullManagementConfig(
         clusterCidrBlock=args.cluster_ipv4_cidr_block,
         clusterNamedRange=args.cluster_named_range,

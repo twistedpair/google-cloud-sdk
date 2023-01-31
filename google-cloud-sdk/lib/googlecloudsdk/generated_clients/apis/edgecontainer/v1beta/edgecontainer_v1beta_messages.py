@@ -61,6 +61,7 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneVersion: Output only. The control plane release version
     createTime: Output only. The time when the cluster was created.
     defaultMaxPodsPerNode: Optional. The default maximum number of pods per
@@ -106,17 +107,18 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlaneVersion = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  defaultMaxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(6)
-  fleet = _messages.MessageField('Fleet', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 9)
-  name = _messages.StringField(10)
-  networking = _messages.MessageField('ClusterNetworking', 11)
-  nodeVersion = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  controlPlane = _messages.MessageField('ControlPlane', 3)
+  controlPlaneVersion = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  defaultMaxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(7)
+  fleet = _messages.MessageField('Fleet', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
+  name = _messages.StringField(11)
+  networking = _messages.MessageField('ClusterNetworking', 12)
+  nodeVersion = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class ClusterNetworking(_messages.Message):
@@ -153,6 +155,18 @@ class ClusterUser(_messages.Message):
   """
 
   username = _messages.StringField(1)
+
+
+class ControlPlane(_messages.Message):
+  r"""Configuration of the cluster control plane.
+
+  Fields:
+    local: Local control plane configuration.
+    remote: Remote control plane configuration.
+  """
+
+  local = _messages.MessageField('Local', 1)
+  remote = _messages.MessageField('Remote', 2)
 
 
 class Details(_messages.Message):
@@ -659,6 +673,23 @@ class ListVpnConnectionsResponse(_messages.Message):
   vpnConnections = _messages.MessageField('VpnConnection', 3, repeated=True)
 
 
+class Local(_messages.Message):
+  r"""Configuration specific to clusters with a control plane hosted locally.
+
+  Fields:
+    machineFilter: Only machines matching this filter will be allowed to host
+      control plane nodes. The filtering language accepts strings like
+      "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
+    nodeCount: The number of nodes to serve as replicas of the Control Plane.
+    nodeLocation: Name of the Google Distributed Cloud Edge zones where this
+      node pool will be created. For example: `us-central1-edge-customer-a`.
+  """
+
+  machineFilter = _messages.StringField(1)
+  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(3)
+
+
 class LocalDiskEncryption(_messages.Message):
   r"""Configuration for CMEK support for edge machine local disk encryption.
 
@@ -1132,6 +1163,12 @@ class RecurringTimeWindow(_messages.Message):
 
   recurrence = _messages.StringField(1)
   window = _messages.MessageField('TimeWindow', 2)
+
+
+class Remote(_messages.Message):
+  r"""Configuration specific to clusters with a control plane hosted remotely.
+  """
+
 
 
 class StandardQueryParameters(_messages.Message):

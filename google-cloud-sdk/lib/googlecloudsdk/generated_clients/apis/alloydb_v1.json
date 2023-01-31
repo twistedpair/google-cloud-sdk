@@ -1099,12 +1099,14 @@
           "enumDescriptions": [
             "Backup Type is unknown.",
             "ON_DEMAND backups that were triggered by the customer (e.g., not AUTOMATED).",
-            "AUTOMATED backups triggered by the automated backups scheduler pursuant to an automated backup policy."
+            "AUTOMATED backups triggered by the automated backups scheduler pursuant to an automated backup policy.",
+            "CONTINUOUS backups triggered by the automated backups scheduler due to a continuous backup policy."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "ON_DEMAND",
-            "AUTOMATED"
+            "AUTOMATED",
+            "CONTINUOUS"
           ]
         },
         "description": {

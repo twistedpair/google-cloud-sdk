@@ -1822,8 +1822,8 @@ class HotTablet(_messages.Message):
     endKey: Tablet End Key (inclusive).
     endTime: Output only. The end time of the hot tablet.
     name: The unique name of the hot tablet. Values are of the form `projects/
-      {project}/instances/{instance}/clusters/{cluster}/hotTablets/[a-zA-Z0-9_
-      -]*`.
+      {project}/instances/{instance}/clusters/{cluster}/hotTablets/[a-zA-Z0-
+      9_-]*`.
     nodeCpuUsagePercent: Output only. The average CPU usage spent by a node on
       this tablet over the start_time to end_time time range. The percentage
       is the amount of CPU used by the node to serve the tablet, from 0%

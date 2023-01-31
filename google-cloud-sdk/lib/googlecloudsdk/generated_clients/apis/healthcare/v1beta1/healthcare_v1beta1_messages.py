@@ -1428,8 +1428,8 @@ class DicomTagConfig(_messages.Message):
       DEIDENTIFY_TAG_CONTENTS: Inspect tag contents and replace sensitive
         text. The process can be configured using the TextConfig. Applies to
         all tags with the following [Value Representations] (http://dicom.nema
-        .org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1
-        ): AE, LO, LT, PN, SH, ST, UC, UT, DA, DT, AS
+        .org/medical/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-
+        1): AE, LO, LT, PN, SH, ST, UC, UT, DA, DT, AS
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     MINIMAL_KEEP_LIST_PROFILE = 1
@@ -1835,18 +1835,20 @@ class ExportMessagesRequest(_messages.Message):
 
   Fields:
     endTime: The end of the range in `send_time` (MSH.7, https://www.hl7.org/d
-      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/conf/HL
-      7MSH.htm) to process. If not specified, the time when the export is
-      scheduled is used. This value has to come after the `start_time` defined
-      below. Only messages whose `send_time` lies in the range `start_time`
-      (inclusive) to `end_time` (exclusive) are exported.
+      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-
+      0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
+      time when the export is scheduled is used. This value has to come after
+      the `start_time` defined below. Only messages whose `send_time` lies in
+      the range `start_time` (inclusive) to `end_time` (exclusive) are
+      exported.
     gcsDestination: Export to a Cloud Storage destination.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
-      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/con
-      f/HL7MSH.htm) to process. If not specified, the UNIX epoch
-      (1970-01-01T00:00:00Z) is used. This value has to come before the
-      `end_time` defined below. Only messages whose `send_time` lies in the
-      range `start_time` (inclusive) to `end_time` (exclusive) are exported.
+      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-
+      0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
+      UNIX epoch (1970-01-01T00:00:00Z) is used. This value has to come before
+      the `end_time` defined below. Only messages whose `send_time` lies in
+      the range `start_time` (inclusive) to `end_time` (exclusive) are
+      exported.
   """
 
   endTime = _messages.StringField(1)

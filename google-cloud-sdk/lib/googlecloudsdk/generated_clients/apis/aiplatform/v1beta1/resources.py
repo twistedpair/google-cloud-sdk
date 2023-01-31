@@ -556,6 +556,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NASJOBS = (
+      'projects.locations.nasJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/nasJobs/'
+              '{nasJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NASJOBS_NASTRIALDETAILS = (
+      'projects.locations.nasJobs.nasTrialDetails',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/nasJobs/'
+              '{nasJobsId}/nasTrialDetails/{nasTrialDetailsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

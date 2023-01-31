@@ -910,7 +910,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.databases.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'freeId', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='FirestoreProjectsDatabasesDeleteRequest',

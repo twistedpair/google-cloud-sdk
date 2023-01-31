@@ -473,6 +473,49 @@ class GcsApi(cloud_api.CloudApi):
     self.client.projects_hmacKeys.Delete(request)
 
   @gcs_error_util.catch_http_error_raise_gcs_api_error()
+  def get_hmac_key(self, access_id):
+    """See super class."""
+
+    request = self.messages.StorageProjectsHmacKeysGetRequest(
+        projectId=properties.VALUES.core.project.GetOrFail(),
+        accessId=access_id)
+    response = self.client.projects_hmacKeys.Get(request)
+    return gcs_resource_reference.GcsHmacKeyResource(response)
+
+  def list_hmac_keys(self, service_account_email=None, show_deleted_keys=False,
+                     fields_scope=cloud_api.FieldsScope.SHORT):
+    """See super class."""
+
+    if fields_scope == cloud_api.FieldsScope.NO_ACL:
+      raise command_errors.Error(
+          'HMAC keys do not have ACLs.')
+    if fields_scope == cloud_api.FieldsScope.FULL:
+      global_params = None
+    else:
+      global_params = self.messages.StandardQueryParameters(
+          fields='items(accessId,state,serviceAccountEmail),nextPageToken')
+
+    request = self.messages.StorageProjectsHmacKeysListRequest(
+        serviceAccountEmail=service_account_email,
+        showDeletedKeys=show_deleted_keys,
+        projectId=properties.VALUES.core.project.GetOrFail(),
+    )
+
+    hmac_iter = list_pager.YieldFromList(
+        global_params=global_params,
+        service=self.client.projects_hmacKeys,
+        request=request,
+        batch_size=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
+    )
+
+    try:
+      for hmac_key in hmac_iter:
+        yield gcs_resource_reference.GcsHmacKeyResource(hmac_key)
+    except apitools_exceptions.HttpError as e:
+      core_exceptions.reraise(
+          cloud_errors.translate_error(e, gcs_error_util.ERROR_TRANSLATION))
+
+  @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def patch_hmac_key(self, access_id, etag, state):
     """See super class."""
     updated_metadata = self.messages.HmacKeyMetadata(state=state.value)

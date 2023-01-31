@@ -47,9 +47,9 @@ class CheckUpgradeRequest(_messages.Message):
     imageVersion: The version of the software running in the environment. This
       encapsulates both the version of Cloud Composer functionality and the
       version of Apache Airflow. It must match the regular expression `compose
-      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-9]+(
-      \.[0-9]+(\.[0-9]+)?)?)`. When used as input, the server also checks if
-      the provided version is supported and denies the request for an
+      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-
+      9]+(\.[0-9]+(\.[0-9]+)?)?)`. When used as input, the server also checks
+      if the provided version is supported and denies the request for an
       unsupported version. The Cloud Composer portion of the image version is
       a full [semantic version](https://semver.org), or an alias in the form
       of major version number or `latest`. When an alias is provided, the
@@ -1560,9 +1560,7 @@ class NodeConfig(_messages.Message):
     tags: Optional. The list of instance tags applied to all node VMs. Tags
       are used to identify valid sources or targets for network firewalls.
       Each tag within the list must comply with
-      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Cannot be updated. This
-      field is supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*.
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Cannot be updated.
   """
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2017,9 +2015,9 @@ class SoftwareConfig(_messages.Message):
     imageVersion: The version of the software running in the environment. This
       encapsulates both the version of Cloud Composer functionality and the
       version of Apache Airflow. It must match the regular expression `compose
-      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-9]+(
-      \.[0-9]+(\.[0-9]+)?)?)`. When used as input, the server also checks if
-      the provided version is supported and denies the request for an
+      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-
+      9]+(\.[0-9]+(\.[0-9]+)?)?)`. When used as input, the server also checks
+      if the provided version is supported and denies the request for an
       unsupported version. The Cloud Composer portion of the image version is
       a full [semantic version](https://semver.org), or an alias in the form
       of major version number or `latest`. When an alias is provided, the

@@ -104,23 +104,6 @@ class CloudResource(Resource):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
 
-  def get_full_metadata_string(self,
-                               formatter,
-                               show_acl=True,
-                               show_version_in_url=False):
-    """Returns a string representing the ls -L formatted output.
-
-    Args:
-      formatter (full_resource_formatter.FullResourceFormatter): A formatter
-        instance that defines how the Resource metadata should be formatted.
-      show_acl (bool): Include ACLs list in resource display.
-      show_version_in_url (bool): Display extended URL with versioning info.
-
-    Returns:
-      A formatted string representing the Resource metadata.
-    """
-    raise NotImplementedError
-
 
 class BucketResource(CloudResource):
   """Class representing a bucket.
@@ -246,15 +229,6 @@ class BucketResource(CloudResource):
 
   def is_container(self):
     return True
-
-  def get_full_metadata_string(self,
-                               formatter,
-                               show_acl=True,
-                               show_version_in_url=False):
-    """See parent class."""
-    # TODO(b/249280177): Move this logic to caller.
-    del show_acl, show_version_in_url  # Unused.
-    return formatter.format_bucket(self.storage_url, self)
 
 
 class ObjectResource(CloudResource):
@@ -409,18 +383,6 @@ class ObjectResource(CloudResource):
   def get_displayable_object_data(self):
     """To be overridden by child classes."""
     raise NotImplementedError
-
-  def get_full_metadata_string(self,
-                               formatter,
-                               show_acl=True,
-                               show_version_in_url=False):
-    """See parent class."""
-    # TODO(b/249280177): Move this logic to caller.
-    return formatter.format_object(
-        self.storage_url,
-        self,
-        show_acl=show_acl,
-        show_version_in_url=show_version_in_url)
 
 
 class PrefixResource(Resource):

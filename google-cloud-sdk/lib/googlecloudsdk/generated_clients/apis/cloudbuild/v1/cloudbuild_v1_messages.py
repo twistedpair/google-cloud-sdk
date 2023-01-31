@@ -466,7 +466,7 @@ class Build(_messages.Message):
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
       will cease and the build status will be `TIMEOUT`. `timeout` starts
-      ticking from `startTime`. Default time is ten minutes.
+      ticking from `startTime`. Default time is 60 minutes.
     timing: Output only. Stores timing information for phases of the build.
       Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
       to push all artifacts including docker images and non docker artifacts.
@@ -2858,6 +2858,10 @@ class GitFileSource(_messages.Message):
       `projects/{project}/githubEnterpriseConfigs/{id}`.
     path: The path of the file, with the repo root as the root of the path.
     repoType: See RepoType above.
+    repository: The fully qualified resource name of the Repo API repository.
+      Either uri or repository can be specified. If unspecified, the repo from
+      which the trigger invocation originated is assumed to be the repo from
+      which to read the specified path.
     revision: The branch, tag, arbitrary ref, or SHA version of the repo to
       use when resolving the filename (optional). This field respects the same
       syntax/resolution as described here: https://git-
@@ -2879,18 +2883,21 @@ class GitFileSource(_messages.Message):
       GITHUB: A GitHub-hosted repo not necessarily on "github.com" (i.e.
         GitHub Enterprise).
       BITBUCKET_SERVER: A Bitbucket Server-hosted repo.
+      GITLAB: A GitLab-hosted repo.
     """
     UNKNOWN = 0
     CLOUD_SOURCE_REPOSITORIES = 1
     GITHUB = 2
     BITBUCKET_SERVER = 3
+    GITLAB = 4
 
   bitbucketServerConfig = _messages.StringField(1)
   githubEnterpriseConfig = _messages.StringField(2)
   path = _messages.StringField(3)
   repoType = _messages.EnumField('RepoTypeValueValuesEnum', 4)
-  revision = _messages.StringField(5)
-  uri = _messages.StringField(6)
+  repository = _messages.StringField(5)
+  revision = _messages.StringField(6)
+  uri = _messages.StringField(7)
 
 
 class GitHubEnterpriseApp(_messages.Message):
@@ -3189,6 +3196,8 @@ class GitRepoSource(_messages.Message):
       `projects/{project}/githubEnterpriseConfigs/{id}`.
     ref: The branch or tag to use. Must start with "refs/" (required).
     repoType: See RepoType below.
+    repository: The qualified resource name of the Repo API repository Either
+      uri or repository can be specified and is required.
     uri: The URI of the repo. Either uri or repository can be specified and is
       required.
   """
@@ -3203,17 +3212,20 @@ class GitRepoSource(_messages.Message):
       GITHUB: A GitHub-hosted repo not necessarily on "github.com" (i.e.
         GitHub Enterprise).
       BITBUCKET_SERVER: A Bitbucket Server-hosted repo.
+      GITLAB: A GitLab-hosted repo.
     """
     UNKNOWN = 0
     CLOUD_SOURCE_REPOSITORIES = 1
     GITHUB = 2
     BITBUCKET_SERVER = 3
+    GITLAB = 4
 
   bitbucketServerConfig = _messages.StringField(1)
   githubEnterpriseConfig = _messages.StringField(2)
   ref = _messages.StringField(3)
   repoType = _messages.EnumField('RepoTypeValueValuesEnum', 4)
-  uri = _messages.StringField(5)
+  repository = _messages.StringField(5)
+  uri = _messages.StringField(6)
 
 
 class GitSource(_messages.Message):
@@ -3319,16 +3331,6 @@ class GoogleDevtoolsCloudbuildV1ScalingConfig(_messages.Message):
 
   maxWorkersPerZone = _messages.IntegerField(1)
   readyWorkers = _messages.IntegerField(2)
-
-
-class HTTPDelivery(_messages.Message):
-  r"""HTTPDelivery is the delivery configuration for an HTTP notification.
-
-  Fields:
-    uri: The URI to which JSON-containing HTTP POST requests should be sent.
-  """
-
-  uri = _messages.StringField(1)
 
 
 class Hash(_messages.Message):
@@ -3758,130 +3760,6 @@ class NetworkConfig(_messages.Message):
   egressOption = _messages.EnumField('EgressOptionValueValuesEnum', 1)
   peeredNetwork = _messages.StringField(2)
   peeredNetworkIpRange = _messages.StringField(3)
-
-
-class Notification(_messages.Message):
-  r"""Notification is the container which holds the data that is relevant to
-  this particular notification.
-
-  Messages:
-    StructDeliveryValue: Escape hatch for users to supply custom delivery
-      configs.
-
-  Fields:
-    filter: The filter string to use for notification filtering. Currently,
-      this is assumed to be a CEL program. See
-      https://opensource.google/projects/cel for more.
-    httpDelivery: Configuration for HTTP delivery.
-    slackDelivery: Configuration for Slack delivery.
-    smtpDelivery: Configuration for SMTP (email) delivery.
-    structDelivery: Escape hatch for users to supply custom delivery configs.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StructDeliveryValue(_messages.Message):
-    r"""Escape hatch for users to supply custom delivery configs.
-
-    Messages:
-      AdditionalProperty: An additional property for a StructDeliveryValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StructDeliveryValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  filter = _messages.StringField(1)
-  httpDelivery = _messages.MessageField('HTTPDelivery', 2)
-  slackDelivery = _messages.MessageField('SlackDelivery', 3)
-  smtpDelivery = _messages.MessageField('SMTPDelivery', 4)
-  structDelivery = _messages.MessageField('StructDeliveryValue', 5)
-
-
-class NotifierConfig(_messages.Message):
-  r"""NotifierConfig is the top-level configuration message.
-
-  Fields:
-    apiVersion: The API version of this configuration format.
-    kind: The type of notifier to use (e.g. SMTPNotifier).
-    metadata: Metadata for referring to/handling/deploying this notifier.
-    spec: The actual configuration for this notifier.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  metadata = _messages.MessageField('NotifierMetadata', 3)
-  spec = _messages.MessageField('NotifierSpec', 4)
-
-
-class NotifierMetadata(_messages.Message):
-  r"""NotifierMetadata contains the data which can be used to reference or
-  describe this notifier.
-
-  Fields:
-    name: The human-readable and user-given name for the notifier. For
-      example: "repo-merge-email-notifier".
-    notifier: The string representing the name and version of notifier to
-      deploy. Expected to be of the form of "/:". For example: "gcr.io/my-
-      project/notifiers/smtp:1.2.34".
-  """
-
-  name = _messages.StringField(1)
-  notifier = _messages.StringField(2)
-
-
-class NotifierSecret(_messages.Message):
-  r"""NotifierSecret is the container that maps a secret name (reference) to
-  its Google Cloud Secret Manager resource path.
-
-  Fields:
-    name: Name is the local name of the secret, such as the verbatim string
-      "my-smtp-password".
-    value: Value is interpreted to be a resource path for fetching the actual
-      (versioned) secret data for this secret. For example, this would be a
-      Google Cloud Secret Manager secret version resource path like:
-      "projects/my-project/secrets/my-secret/versions/latest".
-  """
-
-  name = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class NotifierSecretRef(_messages.Message):
-  r"""NotifierSecretRef contains the reference to a secret stored in the
-  corresponding NotifierSpec.
-
-  Fields:
-    secretRef: The value of `secret_ref` should be a `name` that is registered
-      in a `Secret` in the `secrets` list of the `Spec`.
-  """
-
-  secretRef = _messages.StringField(1)
-
-
-class NotifierSpec(_messages.Message):
-  r"""NotifierSpec is the configuration container for notifications.
-
-  Fields:
-    notification: The configuration of this particular notifier.
-    secrets: Configurations for secret resources used by this particular
-      notifier.
-  """
-
-  notification = _messages.MessageField('Notification', 1)
-  secrets = _messages.MessageField('NotifierSecret', 2, repeated=True)
 
 
 class OAuthRegistrationURI(_messages.Message):
@@ -4468,30 +4346,6 @@ class RunBuildTriggerRequest(_messages.Message):
   triggerId = _messages.StringField(3)
 
 
-class SMTPDelivery(_messages.Message):
-  r"""SMTPDelivery is the delivery configuration for an SMTP (email)
-  notification.
-
-  Fields:
-    fromAddress: This is the SMTP account/email that appears in the `From:` of
-      the email. If empty, it is assumed to be sender.
-    password: The SMTP sender's password.
-    port: The SMTP port of the server.
-    recipientAddresses: This is the list of addresses to which we send the
-      email (i.e. in the `To:` of the email).
-    senderAddress: This is the SMTP account/email that is used to send the
-      message.
-    server: The address of the SMTP server.
-  """
-
-  fromAddress = _messages.StringField(1)
-  password = _messages.MessageField('NotifierSecretRef', 2)
-  port = _messages.StringField(3)
-  recipientAddresses = _messages.StringField(4, repeated=True)
-  senderAddress = _messages.StringField(5)
-  server = _messages.StringField(6)
-
-
 class Secret(_messages.Message):
   r"""Pairs a set of secret environment variables containing encrypted values
   with the Cloud KMS key to use to decrypt the value. Note: Use `kmsKeyName`
@@ -4591,19 +4445,6 @@ class ServiceDirectoryConfig(_messages.Message):
   """
 
   service = _messages.StringField(1)
-
-
-class SlackDelivery(_messages.Message):
-  r"""SlackDelivery is the delivery configuration for delivering Slack
-  messages via webhooks. See Slack webhook documentation at:
-  https://api.slack.com/messaging/webhooks.
-
-  Fields:
-    webhookUri: The secret reference for the Slack webhook URI for sending
-      messages to a channel.
-  """
-
-  webhookUri = _messages.MessageField('NotifierSecretRef', 1)
 
 
 class Source(_messages.Message):

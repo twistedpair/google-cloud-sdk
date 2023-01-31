@@ -521,6 +521,10 @@
             "GENERIC",
             "HANA"
           ]
+        },
+        "storageAggregatePool": {
+          "description": "Input only. Name of the storage aggregate pool to allocate the volume in. Can be used only for VOLUME_PERFORMANCE_TIER_ASSIGNED volumes.",
+          "type": "string"
         }
       }
     },
@@ -1101,6 +1105,13 @@
           "type": "integer",
           "format": "int32"
         }
+      }
+    },
+    "EvictVolumeRequest": {
+      "id": "EvictVolumeRequest",
+      "description": "Request for skip volume cooloff and delete it.",
+      "type": "object",
+      "properties": {
       }
     },
     "AllocateLunsRequest": {
@@ -2150,6 +2161,10 @@
             "VOLUME_PERFORMANCE_TIER_ASSIGNED",
             "VOLUME_PERFORMANCE_TIER_HT"
           ]
+        },
+        "storageAggregatePool": {
+          "description": "Input only. Name of the storage aggregate pool to allocate the volume in. Can be used only for VOLUME_PERFORMANCE_TIER_ASSIGNED volumes.",
+          "type": "string"
         }
       }
     },
@@ -2378,50 +2393,6 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
-        }
-      }
-    },
-    "OperationMetadata": {
-      "id": "OperationMetadata",
-      "description": "Represents the metadata from a long-running operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "verb": {
-          "description": "Output only. Name of the action executed by the operation.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "requestedCancellation": {
-          "description": "Output only. Identifies whether the user requested the cancellation of the operation. Operations that have been successfully cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "apiVersion": {
-          "description": "Output only. API version used with the operation.",
-          "readOnly": true,
-          "type": "string"
         }
       }
     }
@@ -3124,6 +3095,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "force": {
+                      "description": "If true, will put into cooloff all volume's luns as well. Luns must not be attached to any Instances. If false operation will fail if a volume has active (not in cooloff) luns.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -3136,6 +3112,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a volume. Volume shouldn't have any Luns."
+                },
+                "evict": {
+                  "id": "baremetalsolution.projects.locations.volumes.evict",
+                  "path": "v2/{+name}:evict",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:evict",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Volume.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "EvictVolumeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Skips volume's cooloff and deletes it now. Volume must be in cooloff state."
                 },
                 "allocateLuns": {
                   "id": "baremetalsolution.projects.locations.volumes.allocateLuns",

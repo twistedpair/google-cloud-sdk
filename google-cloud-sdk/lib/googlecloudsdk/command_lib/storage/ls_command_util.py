@@ -195,8 +195,9 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
     if self._display_detail == DisplayDetail.FULL and (
         isinstance(self.resource, resource_reference.BucketResource) or
         isinstance(self.resource, resource_reference.ObjectResource)):
-      return self.resource.get_full_metadata_string(
-          self._full_formatter, show_version_in_url=self._all_versions)
+      return self._full_formatter.format(
+          self.resource, show_version_in_url=self._all_versions
+      )
     if self._display_detail == DisplayDetail.JSON:
       return self.resource.get_json_dump()
     if self._all_versions:

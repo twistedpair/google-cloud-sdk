@@ -610,6 +610,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
         create production workloads.
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel
+      CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -625,6 +626,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     AU_REGIONS_AND_US_SUPPORT = 11
     ASSURED_WORKLOADS_FOR_PARTNERS = 12
     ISR_REGIONS = 13
+    CA_PROTECTED_B = 14
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

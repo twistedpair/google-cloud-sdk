@@ -117,6 +117,38 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_APPGROUPS = (
+      'organizations.appgroups',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/appgroups/{appgroupsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_APPGROUPS_APPS = (
+      'organizations.appgroups.apps',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/appgroups/{appgroupsId}/apps/'
+              '{appsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_APPGROUPS_APPS_KEYS = (
+      'organizations.appgroups.apps.keys',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/appgroups/{appgroupsId}/apps/'
+              '{appsId}/keys/{keysId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_APPS = (
       'organizations.apps',
       '{+name}',

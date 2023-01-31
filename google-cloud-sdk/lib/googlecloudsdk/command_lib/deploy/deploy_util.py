@@ -27,7 +27,6 @@ class ResourceType(enum.Enum):
   DELIVERY_PIPELINE = 'DeliveryPipeline'
   TARGET = 'Target'
   RELEASE = 'Release'
-  PROMOTE = 'PromoteReleaseRequest'
   ROLLOUT = 'Rollout'
 
 

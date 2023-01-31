@@ -3379,11 +3379,12 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
-      VERY_UNLIKELY: Few matching elements.
-      UNLIKELY: <no description>
-      POSSIBLE: Some matching elements.
-      LIKELY: <no description>
-      VERY_LIKELY: Many matching elements.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
     """
     LIKELIHOOD_UNSPECIFIED = 0
     VERY_UNLIKELY = 1
@@ -4297,11 +4298,12 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
-      VERY_UNLIKELY: Few matching elements.
-      UNLIKELY: <no description>
-      POSSIBLE: Some matching elements.
-      LIKELY: <no description>
-      VERY_LIKELY: Many matching elements.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
     """
     LIKELIHOOD_UNSPECIFIED = 0
     VERY_UNLIKELY = 1
@@ -5056,11 +5058,12 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
-      VERY_UNLIKELY: Few matching elements.
-      UNLIKELY: <no description>
-      POSSIBLE: Some matching elements.
-      LIKELY: <no description>
-      VERY_LIKELY: Many matching elements.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
     """
     LIKELIHOOD_UNSPECIFIED = 0
     VERY_UNLIKELY = 1
@@ -5611,11 +5614,12 @@ class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
-      VERY_UNLIKELY: Few matching elements.
-      UNLIKELY: <no description>
-      POSSIBLE: Some matching elements.
-      LIKELY: <no description>
-      VERY_LIKELY: Many matching elements.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
     """
     LIKELIHOOD_UNSPECIFIED = 0
     VERY_UNLIKELY = 1

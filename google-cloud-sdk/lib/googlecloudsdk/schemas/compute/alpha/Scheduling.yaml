@@ -89,6 +89,7 @@ properties:
     type: string
     enum:
     - PERIODIC
+    - RECURRENT
   maxRunDuration:
     description: |-
       Specifies the max run duration for the given instance. If specified, the

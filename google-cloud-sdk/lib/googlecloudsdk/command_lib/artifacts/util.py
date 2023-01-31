@@ -655,15 +655,27 @@ def EscapeTagNameHook(ref, unused_args, req):
 
 def EscapeVersionNameHook(ref, unused_args, req):
   """Escapes slashes and pluses from request names."""
-  tag = resources.REGISTRY.Create(
+  version = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.versions",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
       packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"),
-      versionsId=ref.versionsId.replace("/", "%2F").replace("+", "%2B"))
-  req.name = tag.RelativeName()
+      versionsId=ref.versionsId.replace("/", "%2F").replace("+", "%2B"),
+  )
+  req.name = version.RelativeName()
   return req
+
+
+def EscapeFileNameName(ref):
+  """Escapes slashes and pluses from request names."""
+  return resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.files",
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      repositoriesId=ref.repositoriesId,
+      filesId=ref.filesId.replace("/", "%2F").replace("+", "%2B"),
+  )
 
 
 def GetRedirectionEnablementReport(project):

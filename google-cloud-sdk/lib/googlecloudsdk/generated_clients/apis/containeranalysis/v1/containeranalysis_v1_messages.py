@@ -1220,7 +1220,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
     timeout: Amount of time that this build should be allowed to run, to
       second granularity. If this amount of time elapses, work on the build
       will cease and the build status will be `TIMEOUT`. `timeout` starts
-      ticking from `startTime`. Default time is ten minutes.
+      ticking from `startTime`. Default time is 60 minutes.
     timing: Output only. Stores timing information for phases of the build.
       Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
       to push all artifacts including docker images and non docker artifacts.

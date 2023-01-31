@@ -5,6 +5,85 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 416.0.0 (2023-01-31)
+
+### Breaking Changes
+
+*   **(Cloud Datalab)** Removed `gcloud datalab` component (Originally removed in release 413.0.0).
+
+
+### AI
+
+* Fixed an issue in `gcloud ai hp-tuning-jobs` that the values of `--max-trial-count`
+  and `--max-parallel-trial-count` are not passed in the config.yaml file.
+
+### AlloyDB
+
+*   Updated `gcloud beta alloydb clusters create` and `gcloud beta alloydb clusters update` to support enabling continuous backups via new `--enable-continuous-backup` and `--continuous-backup-recovery-window-days` and `--continuous-backup-encryption-key` flags.
+
+### Anthos Identity Service
+
+* Added `--fleet-default-member-config` flag to the following commands:
+  * `gcloud beta container fleet identity-service enable`
+  * `gcloud beta container fleet identity-service delete`
+
+      These will make it possible to configure and delete fleet
+      default membership configurations.
+
+### App Engine
+
+*   Added the `--tunnel-through-iap` flag to `gcloud beta app instances scp`.
+    Using this flag lets you use an Identity-Aware Proxy (IAP) tunnel when
+    attempting to SCP to/from an App Engine flexible environment instance
+    without an external IP address.
+
+### Cloud IAM
+
+* Added `jwk-keys-path` to existing `gcloud iam workload-identity-pools providers create-oidc|update-oidc` to allow customer upload jwks.
+
+### Cloud Run
+
+* Promotes `gcloud beta run jobs logs read` to beta, which reads logs from a selected resource.
+* Promotes `gcloud beta run jobs logs tail` to beta, which tail logs from a selected resource.
+
+### Cloud SQL
+
+*   Promoted `gcloud sql users describe` command to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.19.
+  * Fixed an issue causing parallel transfer commands to require elevated permissions.
+
+### Compute Engine
+
+* Modified `gcloud compute instance-groups managed update` to support relative path for regional health check.
+* Added `--allow-psc-global-access` flag of `gcloud compute forwarding-rules <create|update>` to beta.
+* Promoted `gcloud compute resource-policies update snapshot-schedule` to beta.
+
+### Config Controller
+
+*   Fixed issue where `--full-management` flag doesn't take effect.
+
+### Immersive Stream
+
+* Promoted `gcloud immersive-stream xr` to GA.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.24.9 to 1.24.10.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.16)
+  * kubectl.1.24 (1.24.10)
+  * kubectl.1.25 (1.25.6)
+  * kubectl.1.26 (1.26.1)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 415.0.0 (2023-01-24)
 
 ### Google Cloud CLI
@@ -267,6 +346,10 @@ model monitoring jobs regions.
   environments update` to disable Cloud Data Lineage integration.
 * Enabled `db clean` and `db check` Airflow commands executable via `gcloud
  composer environments run` for environments with Airflow 2.3 or newer.
+
+### Cloud Datalab
+
+* Removed `gcloud datalab` component.
 
 ### Cloud Run
 

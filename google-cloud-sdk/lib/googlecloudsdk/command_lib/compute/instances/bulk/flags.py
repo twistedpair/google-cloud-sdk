@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.calliope import arg_parsers
@@ -128,7 +130,9 @@ def AddDistributionTargetShapeArgs(parser):
       """)
 
 
-def AddBulkCreateArgs(parser, add_zone_region_flags):
+def AddBulkCreateArgs(
+    parser, add_zone_region_flags, support_max_count_per_zone
+):
   """Adds bulk creation specific arguments to parser."""
   parser.add_argument(
       '--count',
@@ -208,14 +212,31 @@ def AddBulkCreateArgs(parser, add_zone_region_flags):
         Policy for which zones to include or exclude during bulk instance creation
         within a region. Policy is defined as a list of key-value pairs, with the
         key being the zone name, and value being the applied policy. Available
-        policies are `allow` and `deny`. Default for zones left unspecified is `allow`.
+        policies are `allow` and `deny`. Default for zones if left unspecified is `allow`.
 
         Example:
 
           gcloud compute instances bulk create --name-pattern=example-###
             --count=5 --region=us-east1
             --location-policy=us-east1-b=allow,us-east1-c=deny
-      """)
+      """,
+  )
+  if support_max_count_per_zone:
+    parser.add_argument(
+        '--max-count-per-zone',
+        metavar='ZONE=MAX_COUNT_PER_ZONE',
+        type=arg_parsers.ArgDict(),
+        help="""
+          Maximum number of instances per zone specified as key-value pairs. The zone name is the key and the max count per zone
+          is the value in that zone.
+
+          Example:
+
+            gcloud compute instances bulk create --name-pattern=example-###
+              --count=5 --region=us-east1
+              --max-count-per-zone=us-east1-b=2,us-east-1-c=1
+        """,
+    )
 
 
 def AddBulkCreateNetworkingArgs(parser, support_no_address=False):
@@ -277,23 +298,26 @@ def AddBulkCreateNetworkingArgs(parser, support_no_address=False):
       help=network_interface_help)
 
 
-def AddCommonBulkInsertArgs(parser,
-                            release_track,
-                            deprecate_maintenance_policy=False,
-                            support_min_node_cpu=False,
-                            support_erase_vss=False,
-                            snapshot_csek=False,
-                            image_csek=False,
-                            support_display_device=False,
-                            support_local_ssd_size=False,
-                            support_numa_node_count=False,
-                            support_visible_core_count=False,
-                            support_max_run_duration=False,
-                            support_enable_target_shape=False,
-                            add_zone_region_flags=True,
-                            support_confidential_compute_type=False,
-                            support_provisioned_throughput=False,
-                            support_no_address_in_networking=False):
+def AddCommonBulkInsertArgs(
+    parser,
+    release_track,
+    deprecate_maintenance_policy=False,
+    support_min_node_cpu=False,
+    support_erase_vss=False,
+    snapshot_csek=False,
+    image_csek=False,
+    support_display_device=False,
+    support_local_ssd_size=False,
+    support_numa_node_count=False,
+    support_visible_core_count=False,
+    support_max_run_duration=False,
+    support_enable_target_shape=False,
+    add_zone_region_flags=True,
+    support_confidential_compute_type=False,
+    support_provisioned_throughput=False,
+    support_no_address_in_networking=False,
+    support_max_count_per_zone=False,
+):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
   AddDiskArgsForBulk(parser)
@@ -391,7 +415,7 @@ def AddCommonBulkInsertArgs(parser,
   instances_flags.AddConfidentialComputeArgs(parser,
                                              support_confidential_compute_type)
   instances_flags.AddPostKeyRevocationActionTypeArgs(parser)
-  AddBulkCreateArgs(parser, add_zone_region_flags)
+  AddBulkCreateArgs(parser, add_zone_region_flags, support_max_count_per_zone)
 
 
 def ValidateBulkCreateArgs(args):
@@ -436,14 +460,48 @@ def ValidateLocationPolicyArgs(args):
             'Value [{}] must be one of [allow, deny]'.format(policy))
 
 
-def ValidateBulkInsertArgs(args, support_enable_target_shape,
-                           support_source_snapshot_csek, support_image_csek,
-                           support_max_run_duration):
+def ValidateMaxCountPerZoneArgs(args):
+  """Validates args supplied to --max-count-per-zone ."""
+  if args.IsKnownAndSpecified('max_count_per_zone'):
+    for zone, count in args.max_count_per_zone.items():
+      if not ValidateZone(zone):
+        raise exceptions.InvalidArgumentException(
+            '--max-count-per-zone', 'Key [{}] must be a zone.'.format(zone)
+        )
+      if not ValidateNaturalCount(count):
+        raise exceptions.InvalidArgumentException(
+            '--max-count-per-zone',
+            'Value [{}] must be a positive natural number.'.format(count),
+        )
+
+
+def ValidateZone(zone):
+  """Validates if zone is valid."""
+  return (
+      len(zone) < 64 and re.compile(r'^\w+-\w+\d+-\w+').match(zone) is not None
+  )
+
+
+def ValidateNaturalCount(count):
+  """Validates if count is positive natural number."""
+  return re.compile(r'^[1-9]\d*').match(count) is not None
+
+
+def ValidateBulkInsertArgs(
+    args,
+    support_enable_target_shape,
+    support_source_snapshot_csek,
+    support_image_csek,
+    support_max_run_duration,
+    support_max_count_per_zone,
+):
   """Validates all bulk and instance args."""
   ValidateBulkCreateArgs(args)
   if support_enable_target_shape:
     ValidateBulkTargetShapeArgs(args)
   ValidateLocationPolicyArgs(args)
+  if support_max_count_per_zone:
+    ValidateMaxCountPerZoneArgs(args)
   ValidateBulkDiskFlags(
       args,
       enable_source_snapshot_csek=support_source_snapshot_csek,

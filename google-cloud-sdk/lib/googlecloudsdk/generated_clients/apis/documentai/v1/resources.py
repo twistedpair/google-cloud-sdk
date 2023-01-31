@@ -93,6 +93,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PROCESSORS_PROCESSORVERSIONS_EVALUATIONS = (
+      'projects.locations.processors.processorVersions.evaluations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/processors/'
+              '{processorsId}/processorVersions/{processorVersionsId}/'
+              'evaluations/{evaluationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_OPERATIONS = (
       'projects.operations',
       '{+name}',

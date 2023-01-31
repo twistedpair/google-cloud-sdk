@@ -32,29 +32,32 @@ import six
 class SupportedFeatures:
   """Simple dataclass to hold status of supported features in Bulk."""
 
-  def __init__(self,
-               support_nvdimm,
-               support_public_dns,
-               support_erase_vss,
-               support_min_node_cpu,
-               support_source_snapshot_csek,
-               support_image_csek,
-               support_confidential_compute,
-               support_post_key_revocation_action_type,
-               support_rsa_encrypted,
-               deprecate_maintenance_policy,
-               support_create_disk_snapshots,
-               support_boot_snapshot_uri,
-               support_display_device,
-               support_local_ssd_size,
-               support_secure_tags,
-               support_host_error_timeout_seconds,
-               support_numa_node_count,
-               support_visible_core_count,
-               support_max_run_duration,
-               support_enable_target_shape,
-               support_confidential_compute_type,
-               support_provisioned_throughput=False):
+  def __init__(
+      self,
+      support_nvdimm,
+      support_public_dns,
+      support_erase_vss,
+      support_min_node_cpu,
+      support_source_snapshot_csek,
+      support_image_csek,
+      support_confidential_compute,
+      support_post_key_revocation_action_type,
+      support_rsa_encrypted,
+      deprecate_maintenance_policy,
+      support_create_disk_snapshots,
+      support_boot_snapshot_uri,
+      support_display_device,
+      support_local_ssd_size,
+      support_secure_tags,
+      support_host_error_timeout_seconds,
+      support_numa_node_count,
+      support_visible_core_count,
+      support_max_run_duration,
+      support_enable_target_shape,
+      support_confidential_compute_type,
+      support_provisioned_throughput=False,
+      support_max_count_per_zone=True,
+  ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
     self.support_erase_vss = support_erase_vss
@@ -77,6 +80,7 @@ class SupportedFeatures:
     self.support_enable_target_shape = support_enable_target_shape
     self.support_confidential_compute_type = support_confidential_compute_type
     self.support_provisioned_throughput = support_provisioned_throughput
+    self.support_max_count_per_zone = support_max_count_per_zone
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -87,26 +91,48 @@ def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
   return ref.SelfLink()
 
 
-def _GetLocationPolicy(args, messages, target_shape_enabled):
+def _GetLocationPolicy(
+    args, messages, target_shape_enabled, max_count_per_zone_enabled
+):
   """Get locationPolicy value as required by API."""
-  if not args.IsSpecified('location_policy') and (
-      not target_shape_enabled or
-      not args.IsSpecified('target_distribution_shape')):
+  if not (
+      args.IsKnownAndSpecified('location_policy')
+      or args.IsKnownAndSpecified('max_count_per_zone')
+  ) and (
+      not target_shape_enabled
+      or not (args.IsKnownAndSpecified('target_distribution_shape'))
+  ):
     return None
 
   location_policy = messages.LocationPolicy()
-  if args.IsSpecified('location_policy'):
-    location_policy.locations = _GetLocationPolicyLocations(args, messages)
 
-  if target_shape_enabled and args.IsSpecified('target_distribution_shape'):
+  if args.IsKnownAndSpecified('location_policy') or args.IsKnownAndSpecified(
+      'max_count'
+  ):
+    if max_count_per_zone_enabled:
+      location_policy.locations = (
+          _GetLocationPolicyLocationsMaxCountPerZoneFeatureEnabled(
+              args, messages
+          )
+      )
+    else:
+      location_policy.locations = (
+          _GetLocationPolicyLocationsMaxCountPerZoneFeatureDisabled(
+              args, messages
+          )
+      )
+
+  if target_shape_enabled and args.IsKnownAndSpecified(
+      'target_distribution_shape'
+  ):
     location_policy.targetShape = arg_utils.ChoiceToEnum(
         args.target_distribution_shape,
         messages.LocationPolicy.TargetShapeValueValuesEnum)
-
   return location_policy
 
 
-def _GetLocationPolicyLocations(args, messages):
+def _GetLocationPolicyLocationsMaxCountPerZoneFeatureDisabled(args, messages):
+  """Helper function for getting location for location policy."""
   locations = []
   for zone, policy in args.location_policy.items():
     zone_policy = arg_utils.ChoiceToEnum(
@@ -115,6 +141,60 @@ def _GetLocationPolicyLocations(args, messages):
         messages.LocationPolicy.LocationsValue.AdditionalProperty(
             key='zones/{}'.format(zone),
             value=messages.LocationPolicyLocation(preference=zone_policy)))
+
+  return messages.LocationPolicy.LocationsValue(additionalProperties=locations)
+
+
+def _GetLocationPolicyLocationsMaxCountPerZoneFeatureEnabled(args, messages):
+  """Helper function for getting location for location policy."""
+  locations = []
+  # list including only zones listed in location policy flag.
+  if args.location_policy:
+    for zone, policy in args.location_policy.items():
+      zone_policy = arg_utils.ChoiceToEnum(
+          policy, messages.LocationPolicyLocation.PreferenceValueValuesEnum
+      )
+      if args.max_count_per_zone and zone in args.max_count_per_zone:
+        locations.append(
+            messages.LocationPolicy.LocationsValue.AdditionalProperty(
+                key='zones/{}'.format(zone),
+                value=messages.LocationPolicyLocation(
+                    preference=zone_policy,
+                    constraints=messages.LocationPolicyLocationConstraints(
+                        maxCount=int(args.max_count_per_zone[zone])
+                    ),
+                ),
+            )
+        )
+      else:
+        locations.append(
+            messages.LocationPolicy.LocationsValue.AdditionalProperty(
+                key='zones/{}'.format(zone),
+                value=messages.LocationPolicyLocation(preference=zone_policy),
+            )
+        )
+
+  zone_policy_allowed_preference = arg_utils.ChoiceToEnum(
+      'allow', messages.LocationPolicyLocation.PreferenceValueValuesEnum
+  )
+  # list including zones not listed in location policy flag.
+  if args.max_count_per_zone:
+    for zone, count in args.max_count_per_zone.items():
+      if (args.location_policy and zone not in args.location_policy) or (
+          not args.location_policy
+      ):
+        locations.append(
+            messages.LocationPolicy.LocationsValue.AdditionalProperty(
+                key='zones/{}'.format(zone),
+                value=messages.LocationPolicyLocation(
+                    preference=zone_policy_allowed_preference,
+                    constraints=messages.LocationPolicyLocationConstraints(
+                        maxCount=int(count)
+                    ),
+                ),
+            )
+        )
+
   return messages.LocationPolicy.LocationsValue(additionalProperties=locations)
 
 
@@ -137,8 +217,11 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
       .BulkInsertInstanceResource.PerInstancePropertiesValue)
 
   location_policy = _GetLocationPolicy(
-      args, compute_client.messages,
-      supported_features.support_enable_target_shape)
+      args,
+      compute_client.messages,
+      supported_features.support_enable_target_shape,
+      supported_features.support_max_count_per_zone,
+  )
 
   instance_min_count = instance_count
   if args.IsSpecified('min_count'):

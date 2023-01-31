@@ -232,6 +232,36 @@ workload_identity_pool_provider:
     arg_name: issuer-uri
     help_text: |-
       The OIDC issuer URL.
+
+  oidc_jwks_json_path:
+    api_field: workloadIdentityPoolProvider.oidc.jwksJson
+    type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+    ALPHA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.jwksJson
+    BETA:
+      api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.jwksJson
+    arg_name: jwk-json-path
+    help_text: |-
+      Optional file containing jwk public keys. The file format must follow
+      [jwk specifications](https://www.rfc-editor.org/rfc/rfc7517#section-4). Example file format:
+      ```
+      {
+        "keys": [
+           {
+                "kty": "RSA/EC",
+                "alg": "<algorithm>",
+                "use": "sig",
+                "kid": "<key-id>",
+                "n": "",
+                "e": ""
+                "x": ""
+                "y": ""
+                "crv": ""
+           }
+        ]
+      }
+      ```
+
   oidc_allowed_audiences:
     api_field: workloadIdentityPoolProvider.oidc.allowedAudiences
     ALPHA:

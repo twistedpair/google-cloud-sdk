@@ -373,7 +373,7 @@ FORMAT_FLAG = Argument(
         Sets the format for printing command output resources. The default is a
         command-specific human-friendly output format. If both `core/format` and
         `--format` are specified, `--format` takes precedence. `--format`
-        and `core/format` both take precedence over `core/default_format. The
+        and `core/format` both take precedence over `core/default_format`. The
         supported formats are limited to: `{0}`. For more details run $ gcloud
         topic formats. Run `$ gcloud config set --help` to see more information
         about `core/format`""".format(

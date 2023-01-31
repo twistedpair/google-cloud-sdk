@@ -849,6 +849,8 @@ class FirestoreProjectsDatabasesDeleteRequest(_messages.Message):
     etag: The current etag of the Database. If an etag is provided and does
       not match the current etag of the database, deletion will be blocked and
       a FAILED_PRECONDITION error will be returned.
+    freeId: If set, will free the database_id associated with this database.
+      uid will be used as the resource id to identify this deleted database.
     name: Required. A name of the form
       `projects/{project_id}/databases/{database_id}`
     validateOnly: If set, validate the request and preview the response, but
@@ -857,8 +859,9 @@ class FirestoreProjectsDatabasesDeleteRequest(_messages.Message):
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  freeId = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
@@ -1463,8 +1466,9 @@ class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
     collectionIds: Which collection ids are being exported.
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
+    namespaceIds: Which namespace ids are being exported.
     operationState: The state of the export operation.
-    outputUriPrefix: Where the entities are being exported to.
+    outputUriPrefix: Where the documents are being exported to.
     progressBytes: The progress, in bytes, of this operation.
     progressDocuments: The progress, in documents, of this operation.
     startTime: The time this operation started.
@@ -1496,11 +1500,12 @@ class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
 
   collectionIds = _messages.StringField(1, repeated=True)
   endTime = _messages.StringField(2)
-  operationState = _messages.EnumField('OperationStateValueValuesEnum', 3)
-  outputUriPrefix = _messages.StringField(4)
-  progressBytes = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
-  progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 6)
-  startTime = _messages.StringField(7)
+  namespaceIds = _messages.StringField(3, repeated=True)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
+  outputUriPrefix = _messages.StringField(5)
+  progressBytes = _messages.MessageField('GoogleFirestoreAdminV1Progress', 6)
+  progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 7)
+  startTime = _messages.StringField(8)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsRequest(_messages.Message):
@@ -1647,6 +1652,7 @@ class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):
     endTime: The time this operation completed. Will be unset if operation
       still in progress.
     inputUriPrefix: The location of the documents being imported.
+    namespaceIds: Which namespace ids are being imported.
     operationState: The state of the import operation.
     progressBytes: The progress, in bytes, of this operation.
     progressDocuments: The progress, in documents, of this operation.
@@ -1680,10 +1686,11 @@ class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):
   collectionIds = _messages.StringField(1, repeated=True)
   endTime = _messages.StringField(2)
   inputUriPrefix = _messages.StringField(3)
-  operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
-  progressBytes = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
-  progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 6)
-  startTime = _messages.StringField(7)
+  namespaceIds = _messages.StringField(4, repeated=True)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 5)
+  progressBytes = _messages.MessageField('GoogleFirestoreAdminV1Progress', 6)
+  progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 7)
+  startTime = _messages.StringField(8)
 
 
 class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):

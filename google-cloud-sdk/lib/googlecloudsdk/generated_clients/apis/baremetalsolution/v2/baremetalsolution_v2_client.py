@@ -1576,10 +1576,37 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.volumes.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v2/{+name}',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsVolumesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Evict(self, request, global_params=None):
+      r"""Skips volume's cooloff and deletes it now. Volume must be in cooloff state.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesEvictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Evict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Evict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:evict',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.evict',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:evict',
+        request_field='evictVolumeRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesEvictRequest',
         response_type_name='Operation',
         supports_download=False,
     )

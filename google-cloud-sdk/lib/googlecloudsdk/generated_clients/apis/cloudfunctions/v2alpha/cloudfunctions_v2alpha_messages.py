@@ -188,8 +188,8 @@ class BuildConfig(_messages.Message):
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
-      https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--runtime
-      ).
+      https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
+      runtime).
     source: The location of the function source code.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     workerPool: Name of the Cloud Build Custom Worker Pool that should be used

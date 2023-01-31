@@ -326,6 +326,29 @@ class _BaseInstances(object):
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
 
+      if args.IsKnownAndSpecified('enable_private_service_connect'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        if not settings.ipConfiguration.pscConfig:
+          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+        settings.ipConfiguration.pscConfig.pscEnabled = (
+            args.enable_private_service_connect)
+
+      if args.IsSpecified('allowed_psc_projects'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        if not settings.ipConfiguration.pscConfig:
+          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+        settings.ipConfiguration.pscConfig.allowedConsumerProjects = (
+            args.allowed_psc_projects)
+
+      if args.IsKnownAndSpecified('clear_allowed_psc_projects'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        if not settings.ipConfiguration.pscConfig:
+          settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
+        settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
+
     if _IsAlpha(release_track):
       if args.IsSpecified('workload_tier'):
         settings.workloadTier = _ParseWorkloadTier(sql_messages,

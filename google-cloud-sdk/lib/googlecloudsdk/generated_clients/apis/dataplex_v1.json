@@ -610,7 +610,7 @@
           "type": "string"
         },
         "resource": {
-          "description": "Optional. Immutable. The resource name of the resource that is binded to attributes. Must belong in the same project and region as the attribute binding, and there can only exist one active binding for a resource.",
+          "description": "Optional. Immutable. The resource name of the resource that is binded to attributes. Presently, only entity resource is supported in the form: projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/entities\/{entity_id} Must belong in the same project and region as the attribute binding, and there can only exist one active binding for a resource.",
           "type": "string"
         },
         "attributes": {
@@ -715,7 +715,7 @@
           }
         },
         "parentId": {
-          "description": "Optional. The ID of the parent DataAttribute resource, should belong to the same data taxonomy. Circular dependency in parent chain is not valid.",
+          "description": "Optional. The ID of the parent DataAttribute resource, should belong to the same data taxonomy. Circular dependency in parent chain is not valid. Maximum depth of the hierarchy allowed is 4. a -> b -> c -> d -> e, depth = 4",
           "type": "string"
         },
         "attributeCount": {
@@ -768,7 +768,7 @@
     },
     "GoogleCloudDataplexV1DataAccessSpec": {
       "id": "GoogleCloudDataplexV1DataAccessSpec",
-      "description": "DataAccessSpec holds the access control configuration to be enforced on data stored within resources (eg: rows, columns in BigQuery Tables). When associated with data,the data is only accessible to principles explicitly granted access through the DataAttribute. Principals with access to the containing resource are not implicitly granted access.",
+      "description": "DataAccessSpec holds the access control configuration to be enforced on data stored within resources (eg: rows, columns in BigQuery Tables). When associated with data,the data is only accessible to principals explicitly granted access through the DataAttribute. Principals with access to the containing resource are not implicitly granted access.",
       "type": "object",
       "properties": {
         "readers": {

@@ -171,6 +171,22 @@ def GetEffectiveTokenUri(cred_json, key='token_uri'):
   return properties.VALUES.auth.DEFAULT_TOKEN_HOST
 
 
+def UseSelfSignedJwt(creds):
+  # Only use self signed jwt for google-auth service account creds and when
+  # service_account_use_self_signed_jwt property is true
+  cred_type = CredentialTypeGoogleAuth.FromCredentials(creds)
+  return (
+      cred_type == CredentialTypeGoogleAuth.SERVICE_ACCOUNT
+      and properties.VALUES.auth.service_account_use_self_signed_jwt.GetBool()
+  )
+
+
+def EnableSelfSignedJwtIfApplicable(creds):
+  if UseSelfSignedJwt(creds):
+    creds._always_use_jwt_access = True  # pylint: disable=protected-access
+    creds._create_self_signed_jwt(None)  # pylint: disable=protected-access
+
+
 @six.add_metaclass(abc.ABCMeta)
 class CredentialStore(object):
   """Abstract definition of credential store."""
@@ -429,9 +445,16 @@ class AccessTokenStoreGoogleAuth(object):
     token_data = self._access_token_cache.Load(self._account_id)
     if token_data:
       access_token, token_expiry, rapt_token, id_token = token_data
-      self._credentials.token = access_token
-      self._credentials.expiry = token_expiry
-      self._credentials._rapt_token = rapt_token  # pylint: disable=protected-access
+      if UseSelfSignedJwt(self._credentials):
+        # For self signed jwt flow we only use the loaded id_token. Access token
+        # will be generated; rapt token is always None for service account.
+        self._credentials.token = None
+        self._credentials.expiry = None
+        self._credentials._rapt_token = None  # pylint: disable=protected-access
+      else:
+        self._credentials.token = access_token
+        self._credentials.expiry = token_expiry
+        self._credentials._rapt_token = rapt_token  # pylint: disable=protected-access
       # The id_token in cache and in google-auth creds is encoded. However,
       # the id_token of oauth2client creds is decoded and it adds another field
       # 'id_tokenb64' to store the encoded copy. To keep google-auth creds
@@ -446,8 +469,26 @@ class AccessTokenStoreGoogleAuth(object):
         self._credentials, 'id_token', None)
     expiry = getattr(self._credentials, 'expiry', None)
     rapt_token = getattr(self._credentials, 'rapt_token', None)
-    self._access_token_cache.Store(self._account_id, self._credentials.token,
-                                   expiry, rapt_token, id_token)
+    access_token = getattr(self._credentials, 'token', None)
+    if UseSelfSignedJwt(self._credentials):
+      # For self signed jwt, we only write the new ID token value into the
+      # cache. For access token, expiry and rapt token we still use the
+      # existing values in the cache. We reserve the cache for two-step refresh
+      # flow (with token endpoint) so when users switch from one-step self
+      # signed jwt flow they can still use the two-step flow tokens.
+      # We first clear the access_token/expiry/rapt_token values obtained from
+      # self._credentials, then set these values to those from the access token
+      # cache, so when we write these values back to the access token cache,
+      # they don't change in the cache.
+      access_token = None
+      expiry = None
+      rapt_token = None
+      token_data = self._access_token_cache.Load(self._account_id)
+      if token_data:
+        access_token, expiry, rapt_token, _ = token_data
+    self._access_token_cache.Store(
+        self._account_id, access_token, expiry, rapt_token, id_token
+    )
 
   def Delete(self):
     """Removes the tokens of the account from the internal cache."""
@@ -1059,6 +1100,8 @@ def FromJsonGoogleAuth(json_value):
     cred.private_key = json_key.get('private_key')
     cred.private_key_id = json_key.get('private_key_id')
     cred.client_id = json_key.get('client_id')
+    # Enable self signed jwt if applicable for the cred created from cred store.
+    EnableSelfSignedJwtIfApplicable(cred)
     return cred
   if cred_type == CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT:
     json_key['token_uri'] = GetEffectiveTokenUri(json_key)

@@ -43,3 +43,11 @@ def UpdateTotalMemorySizeGb(unused_instance_ref, args, patch_request):
     patch_request.cluster.totalMemorySizeGb = args.total_memory_size_gb
     patch_request = AddFieldToUpdateMask('total_memory_size_gb', patch_request)
   return patch_request
+
+
+def UpdateReplicaCount(unused_instance_ref, args, patch_request):
+  """Hook to add replica count to the redis cluster update request."""
+  if args.IsSpecified('replica_count'):
+    patch_request.cluster.replicaCount = args.replica_count
+    patch_request = AddFieldToUpdateMask('replica_count', patch_request)
+  return patch_request

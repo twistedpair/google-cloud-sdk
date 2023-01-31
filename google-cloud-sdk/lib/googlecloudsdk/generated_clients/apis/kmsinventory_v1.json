@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "kmsinventory:v1",
   "name": "kmsinventory",
+  "canonicalName": "KMS Inventory",
   "version": "v1",
   "revision": "0",
   "title": "KMS Inventory API",
@@ -274,6 +275,10 @@
             "ECDSA on the NIST P-384 curve with a SHA384 digest.",
             "ECDSA on the non-NIST secp256k1 curve. This curve is only supported for HSM protection level.",
             "HMAC-SHA256 signing with a 256 bit key.",
+            "HMAC-SHA1 signing with a 160 bit key.",
+            "HMAC-SHA384 signing with a 384 bit key.",
+            "HMAC-SHA512 signing with a 512 bit key.",
+            "HMAC-SHA224 signing with a 224 bit key.",
             "Algorithm representing symmetric encryption by an external key manager."
           ],
           "enum": [
@@ -301,6 +306,10 @@
             "EC_SIGN_P384_SHA384",
             "EC_SIGN_SECP256K1_SHA256",
             "HMAC_SHA256",
+            "HMAC_SHA1",
+            "HMAC_SHA384",
+            "HMAC_SHA512",
+            "HMAC_SHA224",
             "EXTERNAL_SYMMETRIC_ENCRYPTION"
           ]
         },
@@ -487,6 +496,10 @@
             "ECDSA on the NIST P-384 curve with a SHA384 digest.",
             "ECDSA on the non-NIST secp256k1 curve. This curve is only supported for HSM protection level.",
             "HMAC-SHA256 signing with a 256 bit key.",
+            "HMAC-SHA1 signing with a 160 bit key.",
+            "HMAC-SHA384 signing with a 384 bit key.",
+            "HMAC-SHA512 signing with a 512 bit key.",
+            "HMAC-SHA224 signing with a 224 bit key.",
             "Algorithm representing symmetric encryption by an external key manager."
           ],
           "enum": [
@@ -514,6 +527,10 @@
             "EC_SIGN_P384_SHA384",
             "EC_SIGN_SECP256K1_SHA256",
             "HMAC_SHA256",
+            "HMAC_SHA1",
+            "HMAC_SHA384",
+            "HMAC_SHA512",
+            "HMAC_SHA224",
             "EXTERNAL_SYMMETRIC_ENCRYPTION"
           ]
         }
@@ -619,8 +636,15 @@
           }
         },
         "cryptoKeyVersion": {
-          "description": "The name of the Cloud KMS [CryptoKeyVersion](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys.cryptoKeyVersions?hl=en) used to protect this resource via CMEK. This field may be empty if the Cloud product owning the resource does not provide key version data to Asset Inventory.",
+          "description": "The name of the Cloud KMS [CryptoKeyVersion](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys.cryptoKeyVersions?hl=en) used to protect this resource via CMEK. This field is empty if the Google Cloud product owning the resource does not provide key version data to Asset Inventory. If there are multiple key versions protecting the resource, then this is same value as the first element of crypto_key_versions.",
           "type": "string"
+        },
+        "cryptoKeyVersions": {
+          "description": "The names of the Cloud KMS [CryptoKeyVersion](https:\/\/cloud.google.com\/kms\/docs\/reference\/rest\/v1\/projects.locations.keyRings.cryptoKeys.cryptoKeyVersions?hl=en) used to protect this resource via CMEK. This field is empty if the Google Cloud product owning the resource does not provide key versions data to Asset Inventory. The first element of this field is stored in crypto_key_version.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "createTime": {
           "description": "Output only. The time at which this resource was created. The granularity is in seconds. Timestamp.nanos will always be 0.",
@@ -643,14 +667,14 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The Cloud project for which to retrieve key metadata. Format: \"projects\/[project-id]\"",
+                  "description": "Required. The Google Cloud project for which to retrieve key metadata, in the format `projects\/*`",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Optional. Defaults to 1000.",
+                  "description": "Optional. The maximum number of keys to return. The service may return fewer than this value. If unspecified, at most 1000 keys will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -684,7 +708,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the CryptoKey or CryptoKeyVersion.",
+                          "description": "Required. The resource name of the CryptoKey.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.*$",
                           "location": "path",
                           "required": true,
@@ -697,7 +721,7 @@
                       "response": {
                         "$ref": "ProtectedResourcesSummary"
                       },
-                      "description": "Returns aggregate information about the resources protected by the given Cloud KMS CryptoKey or CryptoKeyVersion. Only resources within the same Cloud organization as the key will be returned. The project that holds the key must be part of an organization in order for this call to succeed."
+                      "description": "Returns aggregate information about the resources protected by the given Cloud KMS CryptoKey. Only resources within the same Cloud organization as the key will be returned. The project that holds the key must be part of an organization in order for this call to succeed."
                     }
                   }
                 }
@@ -725,12 +749,12 @@
                   "type": "string"
                 },
                 "cryptoKey": {
-                  "description": "Required. The resource name of the CryptoKey or CryptoKeyVersion.",
+                  "description": "Required. The resource name of the CryptoKey.",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of resources to return. The service may return fewer than this value. If unspecified, at most 50 resources will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                  "description": "The maximum number of resources to return. The service may return fewer than this value. If unspecified, at most 500 resources will be returned. The maximum value is 500; values above 500 will be coerced to 500.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -747,7 +771,7 @@
               "response": {
                 "$ref": "SearchProtectedResourcesResponse"
               },
-              "description": "Returns metadata about the resources protected by the given Cloud KMS key. Only resources within the same Cloud organization as the key will be returned. The project that holds the key must be part of an organization in order for this call to succeed."
+              "description": "Returns metadata about the resources protected by the given Cloud KMS CryptoKey in the given Cloud organization."
             }
           }
         }

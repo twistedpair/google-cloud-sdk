@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20230119",
+  "revision": "20230120",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -4450,11 +4450,6 @@
         },
         "machineType": {
           "description": "Full or partial URL of the machine type resource to use for this instance, in the format: zones\/zone\/machineTypes\/machine-type. This is provided by the client when the instance is created. For example, the following is a valid partial url to a predefined machine type: zones\/us-central1-f\/machineTypes\/n1-standard-1 To create a custom machine type, provide a URL to a machine type in the following format, where CPUS is 1 or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY is the total memory for this instance. Memory must be a multiple of 256 MB and must be supplied in MB (e.g. 5 GB of memory is 5120 MB): zones\/zone\/machineTypes\/custom-CPUS-MEMORY For example: zones\/us-central1-f\/machineTypes\/custom-4-5120 For a full list of restrictions, read the Specifications for custom machine types.",
-          "annotations": {
-            "required": [
-              "compute.instances.insert"
-            ]
-          },
           "type": "string"
         },
         "status": {

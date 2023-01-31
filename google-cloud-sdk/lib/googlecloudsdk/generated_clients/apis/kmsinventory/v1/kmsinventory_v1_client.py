@@ -58,7 +58,7 @@ class KmsinventoryV1(base_api.BaseApiClient):
           }
 
     def Search(self, request, global_params=None):
-      r"""Returns metadata about the resources protected by the given Cloud KMS key. Only resources within the same Cloud organization as the key will be returned. The project that holds the key must be part of an organization in order for this call to succeed.
+      r"""Returns metadata about the resources protected by the given Cloud KMS CryptoKey in the given Cloud organization.
 
       Args:
         request: (KmsinventoryOrganizationsProtectedResourcesSearchRequest) input message
@@ -142,7 +142,7 @@ class KmsinventoryV1(base_api.BaseApiClient):
           }
 
     def GetProtectedResourcesSummary(self, request, global_params=None):
-      r"""Returns aggregate information about the resources protected by the given Cloud KMS CryptoKey or CryptoKeyVersion. Only resources within the same Cloud organization as the key will be returned. The project that holds the key must be part of an organization in order for this call to succeed.
+      r"""Returns aggregate information about the resources protected by the given Cloud KMS CryptoKey. Only resources within the same Cloud organization as the key will be returned. The project that holds the key must be part of an organization in order for this call to succeed.
 
       Args:
         request: (KmsinventoryProjectsLocationsKeyRingsCryptoKeysGetProtectedResourcesSummaryRequest) input message

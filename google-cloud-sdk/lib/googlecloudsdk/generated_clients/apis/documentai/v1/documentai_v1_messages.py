@@ -314,6 +314,58 @@ class DocumentaiProjectsLocationsProcessorsProcessorVersionsDeployRequest(_messa
   name = _messages.StringField(2, required=True)
 
 
+class DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluateProcessorVersionRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluateProcesso
+  rVersionRequest object.
+
+  Fields:
+    googleCloudDocumentaiV1EvaluateProcessorVersionRequest: A
+      GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest resource to be
+      passed as the request body.
+    processorVersion: Required. The resource name of the ProcessorVersion to
+      evaluate. `projects/{project}/locations/{location}/processors/{processor
+      }/processorVersions/{processorVersion}`
+  """
+
+  googleCloudDocumentaiV1EvaluateProcessorVersionRequest = _messages.MessageField('GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest', 1)
+  processorVersion = _messages.StringField(2, required=True)
+
+
+class DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsGetRequest(_messages.Message):
+  r"""A
+  DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Evaluation to get. `projects/{pro
+      ject}/locations/{location}/processors/{processor}/processorVersions/{pro
+      cessorVersion}/evaluations/{evaluation}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsListRequest(_messages.Message):
+  r"""A
+  DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsListRequest
+  object.
+
+  Fields:
+    pageSize: The standard list page size. If unspecified, at most 5
+      evaluations will be returned. The maximum value is 100; values above 100
+      will be coerced to 100.
+    pageToken: A page token, received from a previous `ListEvaluations` call.
+      Provide this to retrieve the subsequent page.
+    parent: Required. The resource name of the ProcessorVersion to list
+      evaluations for. `projects/{project}/locations/{location}/processors/{pr
+      ocessor}/processorVersions/{processorVersion}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DocumentaiProjectsLocationsProcessorsProcessorVersionsGetRequest(_messages.Message):
   r"""A DocumentaiProjectsLocationsProcessorsProcessorVersionsGetRequest
   object.
@@ -363,6 +415,23 @@ class DocumentaiProjectsLocationsProcessorsProcessorVersionsProcessRequest(_mess
 
   googleCloudDocumentaiV1ProcessRequest = _messages.MessageField('GoogleCloudDocumentaiV1ProcessRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class DocumentaiProjectsLocationsProcessorsProcessorVersionsTrainRequest(_messages.Message):
+  r"""A DocumentaiProjectsLocationsProcessorsProcessorVersionsTrainRequest
+  object.
+
+  Fields:
+    googleCloudDocumentaiV1TrainProcessorVersionRequest: A
+      GoogleCloudDocumentaiV1TrainProcessorVersionRequest resource to be
+      passed as the request body.
+    parent: Required. The parent (project, location and processor) to create
+      the new version for. Format:
+      `projects/{project}/locations/{location}/processors/{processor}`.
+  """
+
+  googleCloudDocumentaiV1TrainProcessorVersionRequest = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class DocumentaiProjectsLocationsProcessorsProcessorVersionsUndeployRequest(_messages.Message):
@@ -557,16 +626,6 @@ class GoogleCloudDocumentaiUiv1beta3CreateLabelerPoolOperationMetadata(_messages
   commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
 
 
-class GoogleCloudDocumentaiUiv1beta3DeleteDataLabelingJobOperationMetadata(_messages.Message):
-  r"""The long running operation metadata for DeleteDataLabelingJob.
-
-  Fields:
-    commonMetadata: The basic metadata of the long running operation.
-  """
-
-  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
-
-
 class GoogleCloudDocumentaiUiv1beta3DeleteLabelerPoolOperationMetadata(_messages.Message):
   r"""The long running operation metadata for DeleteLabelerPool.
 
@@ -634,11 +693,13 @@ class GoogleCloudDocumentaiUiv1beta3DocumentId(_messages.Message):
   Fields:
     gcsManagedDocId: A
       GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId attribute.
+    revisionRef: Points to a specific revision of the document if set.
     revisionReference: Points to a specific revision of the document if set.
   """
 
   gcsManagedDocId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId', 1)
-  revisionReference = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3RevisionReference', 2)
+  revisionRef = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3RevisionRef', 2)
+  revisionReference = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3RevisionReference', 3)
 
 
 class GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId(_messages.Message):
@@ -828,6 +889,27 @@ class GoogleCloudDocumentaiUiv1beta3ImportDocumentsResponse(_messages.Message):
   r"""Response of the import document operation."""
 
 
+class GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionMetadata(_messages.Message):
+  r"""The long running operation metadata for the ImportProcessorVersion
+  method.
+
+  Fields:
+    commonMetadata: The basic metadata for the long running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
+
+
+class GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionResponse(_messages.Message):
+  r"""The response message for the ImportProcessorVersion method.
+
+  Fields:
+    processorVersion: The destination processor version name.
+  """
+
+  processorVersion = _messages.StringField(1)
+
+
 class GoogleCloudDocumentaiUiv1beta3ResyncDatasetMetadata(_messages.Message):
   r"""The metadata proto of ResyncDataset method.
 
@@ -914,6 +996,41 @@ class GoogleCloudDocumentaiUiv1beta3ResyncDatasetResponse(_messages.Message):
   r"""The response proto of ResyncDataset method."""
 
 
+class GoogleCloudDocumentaiUiv1beta3RevisionRef(_messages.Message):
+  r"""The revision reference specifies which revision on the document to read.
+
+  Enums:
+    RevisionCaseValueValuesEnum: Reads the revision by the predefined case.
+
+  Fields:
+    latestProcessorVersion: Reads the revision generated by the processor
+      version. The format takes the full resource name of processor version. `
+      projects/{project}/locations/{location}/processors/{processor}/processor
+      Versions/{processorVersion}`
+    revisionCase: Reads the revision by the predefined case.
+    revisionId: Reads the revision given by the id.
+  """
+
+  class RevisionCaseValueValuesEnum(_messages.Enum):
+    r"""Reads the revision by the predefined case.
+
+    Values:
+      REVISION_CASE_UNSPECIFIED: Unspecified case, fallback to read the
+        LATEST_HUMAN_REVIEW.
+      LATEST_HUMAN_REVIEW: The latest revision made by a human.
+      LATEST_TIMESTAMP: The latest revision based on timestamp.
+      BASE_OCR_REVISION: The first (OCR) revision.
+    """
+    REVISION_CASE_UNSPECIFIED = 0
+    LATEST_HUMAN_REVIEW = 1
+    LATEST_TIMESTAMP = 2
+    BASE_OCR_REVISION = 3
+
+  latestProcessorVersion = _messages.StringField(1)
+  revisionCase = _messages.EnumField('RevisionCaseValueValuesEnum', 2)
+  revisionId = _messages.StringField(3)
+
+
 class GoogleCloudDocumentaiUiv1beta3RevisionReference(_messages.Message):
   r"""The revision reference specifies which revision on the document to read.
 
@@ -931,8 +1048,8 @@ class GoogleCloudDocumentaiUiv1beta3RevisionReference(_messages.Message):
     r"""Reads the revision by the predefined case.
 
     Values:
-      REVISION_CASE_UNSPECIFIED: Unspecified case, fallback to read the first
-        (OCR) revision.
+      REVISION_CASE_UNSPECIFIED: Unspecified case, fallback to read the
+        LATEST_HUMAN_REVIEW.
       LATEST_HUMAN_REVIEW: The latest revision made by a human.
       LATEST_TIMESTAMP: The latest revision based on timestamp.
     """
@@ -2269,6 +2386,224 @@ class GoogleCloudDocumentaiV1EnableProcessorResponse(_messages.Message):
 
 
 
+class GoogleCloudDocumentaiV1EvaluateProcessorVersionMetadata(_messages.Message):
+  r"""Metadata of the EvaluateProcessorVersion method.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
+
+
+class GoogleCloudDocumentaiV1EvaluateProcessorVersionRequest(_messages.Message):
+  r"""Evaluates the given ProcessorVersion against the supplied documents.
+
+  Fields:
+    evaluationDocuments: Optional. The documents used in the evaluation. If
+      unspecified, use the processor's dataset as evaluation input.
+  """
+
+  evaluationDocuments = _messages.MessageField('GoogleCloudDocumentaiV1BatchDocumentsInputConfig', 1)
+
+
+class GoogleCloudDocumentaiV1EvaluateProcessorVersionResponse(_messages.Message):
+  r"""Metadata of the EvaluateProcessorVersion method.
+
+  Fields:
+    evaluation: The resource name of the created evaluation.
+  """
+
+  evaluation = _messages.StringField(1)
+
+
+class GoogleCloudDocumentaiV1Evaluation(_messages.Message):
+  r"""An evaluation of a ProcessorVersion's performance.
+
+  Messages:
+    EntityMetricsValue: Metrics across confidence levels, for different
+      entities.
+
+  Fields:
+    allEntitiesMetrics: Metrics for all the entities in aggregate.
+    createTime: The time that the evaluation was created.
+    documentCounters: Counters for the documents used in the evaluation.
+    entityMetrics: Metrics across confidence levels, for different entities.
+    kmsKeyName: The KMS key name used for encryption.
+    kmsKeyVersionName: The KMS key version with which data is encrypted.
+    name: The resource name of the evaluation. Format: `projects/{project}/loc
+      ations/{location}/processors/{processor}/processorVersions/{processor_ve
+      rsion}/evaluations/{evaluation}`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EntityMetricsValue(_messages.Message):
+    r"""Metrics across confidence levels, for different entities.
+
+    Messages:
+      AdditionalProperty: An additional property for a EntityMetricsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EntityMetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EntityMetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allEntitiesMetrics = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics', 1)
+  createTime = _messages.StringField(2)
+  documentCounters = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationCounters', 3)
+  entityMetrics = _messages.MessageField('EntityMetricsValue', 4)
+  kmsKeyName = _messages.StringField(5)
+  kmsKeyVersionName = _messages.StringField(6)
+  name = _messages.StringField(7)
+
+
+class GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics(_messages.Message):
+  r"""Evaluations metrics, at a specific confidence level.
+
+  Fields:
+    confidenceLevel: The confidence level.
+    metrics: The metrics at the specific confidence level.
+  """
+
+  confidenceLevel = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  metrics = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMetrics', 2)
+
+
+class GoogleCloudDocumentaiV1EvaluationCounters(_messages.Message):
+  r"""Evaluation counters for the documents that were used.
+
+  Fields:
+    evaluatedDocumentsCount: How many documents were used in the evaluation.
+    failedDocumentsCount: How many documents were not included in the
+      evaluation as Document AI failed to process them.
+    inputDocumentsCount: How many documents were sent for evaluation.
+    invalidDocumentsCount: How many documents were not included in the
+      evaluation as they didn't pass validation.
+  """
+
+  evaluatedDocumentsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  failedDocumentsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  inputDocumentsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  invalidDocumentsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiV1EvaluationMetrics(_messages.Message):
+  r"""Evaluation metrics, either in aggregate or about a specific entity.
+
+  Fields:
+    f1Score: The calculated f1 score.
+    falseNegativesCount: The amount of false negatives.
+    falsePositivesCount: The amount of false positives.
+    groundTruthDocumentCount: The amount of documents with a ground truth
+      occurrence.
+    groundTruthOccurrencesCount: The amount of occurrences in ground truth
+      documents.
+    precision: The calculated precision.
+    predictedDocumentCount: The amount of documents with a predicted
+      occurrence.
+    predictedOccurrencesCount: The amount of occurrences in predicted
+      documents.
+    recall: The calculated recall.
+    totalDocumentsCount: The amount of documents that had an occurrence of
+      this label.
+    truePositivesCount: The amount of true positives.
+  """
+
+  f1Score = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  falseNegativesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  falsePositivesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  groundTruthDocumentCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  groundTruthOccurrencesCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  precision = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictedDocumentCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  predictedOccurrencesCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  recall = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  totalDocumentsCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  truePositivesCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics(_messages.Message):
+  r"""Metrics across multiple confidence levels.
+
+  Enums:
+    MetricsTypeValueValuesEnum: The metrics type for the label.
+
+  Fields:
+    auprc: The calculated area under the precision recall curve (AUPRC),
+      computed by integrating over all confidence thresholds.
+    auprcExact: The AUPRC for metrics with fuzzy matching disabled, i.e.,
+      exact matching only.
+    confidenceLevelMetrics: Metrics across confidence levels with fuzzy
+      matching enabled.
+    confidenceLevelMetricsExact: Metrics across confidence levels with only
+      exact matching.
+    estimatedCalibrationError: The Estimated Calibration Error (ECE) of the
+      confidence of the predicted entities.
+    estimatedCalibrationErrorExact: The ECE for the predicted entities with
+      fuzzy matching disabled, i.e., exact matching only.
+    metricsType: The metrics type for the label.
+  """
+
+  class MetricsTypeValueValuesEnum(_messages.Enum):
+    r"""The metrics type for the label.
+
+    Values:
+      METRICS_TYPE_UNSPECIFIED: The metrics type is unspecified. By default,
+        metrics without a particular specification are for leaf entity types
+        (i.e., top-level entity types without child types, or child types
+        which are not parent types themselves).
+      AGGREGATE: Indicates whether metrics for this particular label type
+        represent an aggregate of metrics for other types instead of being
+        based on actual TP/FP/FN values for the label type. Metrics for parent
+        (i.e., non-leaf) entity types are an aggregate of metrics for their
+        children.
+    """
+    METRICS_TYPE_UNSPECIFIED = 0
+    AGGREGATE = 1
+
+  auprc = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  auprcExact = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  confidenceLevelMetrics = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics', 3, repeated=True)
+  confidenceLevelMetricsExact = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics', 4, repeated=True)
+  estimatedCalibrationError = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  estimatedCalibrationErrorExact = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  metricsType = _messages.EnumField('MetricsTypeValueValuesEnum', 7)
+
+
+class GoogleCloudDocumentaiV1EvaluationReference(_messages.Message):
+  r"""Gives a short summary of an evaluation, and links to the evaluation
+  itself.
+
+  Fields:
+    aggregateMetrics: An aggregate of the statistics for the evaluation with
+      fuzzy matching on.
+    aggregateMetricsExact: An aggregate of the statistics for the evaluation
+      with fuzzy matching off.
+    evaluation: The resource name of the evaluation.
+    operation: The resource name of the Long Running Operation for the
+      evaluation.
+  """
+
+  aggregateMetrics = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMetrics', 1)
+  aggregateMetricsExact = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMetrics', 2)
+  evaluation = _messages.StringField(3)
+  operation = _messages.StringField(4)
+
+
 class GoogleCloudDocumentaiV1FetchProcessorTypesResponse(_messages.Message):
   r"""Response message for fetch processor types.
 
@@ -2352,6 +2687,19 @@ class GoogleCloudDocumentaiV1HumanReviewStatus(_messages.Message):
   humanReviewOperation = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateMessage = _messages.StringField(3)
+
+
+class GoogleCloudDocumentaiV1ListEvaluationsResponse(_messages.Message):
+  r"""The response from ListEvaluations.
+
+  Fields:
+    evaluations: The evaluations requested.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  evaluations = _messages.MessageField('GoogleCloudDocumentaiV1Evaluation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudDocumentaiV1ListProcessorTypesResponse(_messages.Message):
@@ -2602,6 +2950,8 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
     googleManaged: Denotes that this ProcessorVersion is managed by google.
     kmsKeyName: The KMS key name used for encryption.
     kmsKeyVersionName: The KMS key version with which data is encrypted.
+    latestEvaluation: The most recently invoked evaluation for the processor
+      version.
     name: The resource name of the processor version. Format: `projects/{proje
       ct}/locations/{location}/processors/{processor}/processorVersions/{proce
       ssor_version}`
@@ -2639,8 +2989,9 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   googleManaged = _messages.BooleanField(5)
   kmsKeyName = _messages.StringField(6)
   kmsKeyVersionName = _messages.StringField(7)
-  name = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  latestEvaluation = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationReference', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo(_messages.Message):
@@ -2770,6 +3121,84 @@ class GoogleCloudDocumentaiV1SetDefaultProcessorVersionRequest(_messages.Message
 
 class GoogleCloudDocumentaiV1SetDefaultProcessorVersionResponse(_messages.Message):
   r"""Response message for set default processor version method."""
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionMetadata(_messages.Message):
+  r"""The metadata that represents a processor version being created.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+    testDatasetValidation: The test dataset validation information.
+    trainingDatasetValidation: The training dataset validation information.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1CommonOperationMetadata', 1)
+  testDatasetValidation = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation', 2)
+  trainingDatasetValidation = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation', 3)
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionMetadataDatasetValidation(_messages.Message):
+  r"""The dataset validation information. This includes any and all errors
+  with documents and the dataset.
+
+  Fields:
+    datasetErrorCount: The total number of dataset errors.
+    datasetErrors: Error information for the dataset as a whole. A maximum of
+      10 dataset errors will be returned. A single dataset error is terminal
+      for training.
+    documentErrorCount: The total number of document errors.
+    documentErrors: Error information pertaining to specific documents. A
+      maximum of 10 document errors will be returned. Any document with errors
+      will not be used throughout training.
+  """
+
+  datasetErrorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  datasetErrors = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
+  documentErrorCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  documentErrors = _messages.MessageField('GoogleRpcStatus', 4, repeated=True)
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
+  r"""Request message for the create processor version method.
+
+  Fields:
+    baseProcessorVersion: Optional. The processor version to use as a base for
+      training. This processor version must be a child of `parent`. Format: `p
+      rojects/{project}/locations/{location}/processors/{processor}/processorV
+      ersions/{processorVersion}`.
+    documentSchema: Optional. The schema the processor version will be trained
+      with.
+    inputData: Optional. The input data used to train the `ProcessorVersion`.
+    processorVersion: Required. The processor version to be created.
+  """
+
+  baseProcessorVersion = _messages.StringField(1)
+  documentSchema = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 2)
+  inputData = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData', 3)
+  processorVersion = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersion', 4)
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData(_messages.Message):
+  r"""The input data used to train a new `ProcessorVersion`.
+
+  Fields:
+    testDocuments: The documents used for testing the trained version.
+    trainingDocuments: The documents used for training the new version.
+  """
+
+  testDocuments = _messages.MessageField('GoogleCloudDocumentaiV1BatchDocumentsInputConfig', 1)
+  trainingDocuments = _messages.MessageField('GoogleCloudDocumentaiV1BatchDocumentsInputConfig', 2)
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionResponse(_messages.Message):
+  r"""The response for the TrainProcessorVersion method.
+
+  Fields:
+    processorVersion: The resource name of the processor version produced by
+      training.
+  """
+
+  processorVersion = _messages.StringField(1)
 
 
 class GoogleCloudDocumentaiV1UndeployProcessorVersionMetadata(_messages.Message):

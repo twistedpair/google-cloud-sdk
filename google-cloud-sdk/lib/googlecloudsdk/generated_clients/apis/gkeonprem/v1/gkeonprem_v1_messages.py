@@ -4711,11 +4711,15 @@ class VmwareVersionInfo(_messages.Message):
     hasDependencies: If set, the cluster dependencies (e.g. the admin cluster,
       other user clusters managed by the same admin cluster) must be upgraded
       before this version can be installed or upgraded to.
+    isInstalled: If set, the version is installed in the admin cluster.
+      Otherwise, the version bundle must be downloaded and installed before a
+      user cluster can be created at or upgraded to this version.
     version: Version number e.g. 1.13.1-gke.1000.
   """
 
   hasDependencies = _messages.BooleanField(1)
-  version = _messages.StringField(2)
+  isInstalled = _messages.BooleanField(2)
+  version = _messages.StringField(3)
 
 
 class VmwareVipConfig(_messages.Message):

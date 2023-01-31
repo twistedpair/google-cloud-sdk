@@ -137,29 +137,29 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = (
 class GsutilFullResourceFormatter(base.FullResourceFormatter):
   """Format a resource as per gsutil Storage style for ls -L output."""
 
-  def format_bucket(self, url, bucket_resource):
+  def format_bucket(self, bucket_resource):
     """See super class."""
     shim_format_util.replace_autoclass_value_with_prefixed_time(
         bucket_resource, use_gsutil_time_style=True)
     shim_format_util.replace_time_values_with_gsutil_style_strings(
         bucket_resource)
     shim_format_util.replace_bucket_values_with_present_string(bucket_resource)
-    return base.get_formatted_string(url, bucket_resource,
-                                     _BUCKET_DISPLAY_TITLES_AND_DEFAULTS)
+    return base.get_formatted_string(
+        bucket_resource, _BUCKET_DISPLAY_TITLES_AND_DEFAULTS
+    )
 
-  def format_object(self,
-                    url,
-                    object_resource,
-                    show_acl=True,
-                    show_version_in_url=False):
+  def format_object(
+      self, object_resource, show_acl=True, show_version_in_url=False, **kwargs
+  ):
     """See super class."""
+    del kwargs  # Unused.
+
     shim_format_util.replace_time_values_with_gsutil_style_strings(
         object_resource)
     shim_format_util.replace_object_values_with_encryption_string(
         object_resource, 'encrypted')
     shim_format_util.reformat_custom_fields_for_gsutil(object_resource)
     return base.get_formatted_string(
-        url,
         object_resource,
         _OBJECT_DISPLAY_TITLES_AND_DEFAULTS,
         show_acl=show_acl,

@@ -603,7 +603,7 @@ def AddAllowPscGlobalAccess(parser):
       action='store_true',
       default=None,
       help="""\
-      If specified, then clients from all regions can access this Private
+      If specified, clients from all regions can access this Private
       Service Connect forwarding rule. This can only be specified if the
       forwarding rule's target is a service attachment
       (--target-service-attachment).

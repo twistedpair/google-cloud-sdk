@@ -437,6 +437,58 @@ def ParseMembershipArg(args, membership_flag='MEMBERSHIP_NAME'):
       membership_flag, 'membership is required for this command.')
 
 
+def _DefaultToGlobalLocationAtributeConfig(help_text=''):
+  """Create basic attributes that fallthrough location to global in resource argument.
+
+  Args:
+    help_text: If set, overrides default help text
+
+  Returns:
+    Resource argument parameter config
+  """
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      fallthroughs=[
+          deps.Fallthrough(
+              function=cmd_util.DefaultToGlobal,
+              hint='global is the only supported location',
+          )
+      ],
+      help_text=help_text if help_text else ('Name of the {resource}.'),
+  )
+
+
+def AddScopeResourceArg(
+    parser,
+    flag_name='NAME',
+    api_version='v1',
+    scope_help='',
+    required=False,
+    group=None,
+):
+  """Add resource arg for projects/{}/locations/{}/scopes/{}."""
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.scopes',
+      api_version=api_version,
+      resource_name='scope',
+      plural_name='scopes',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_DefaultToGlobalLocationAtributeConfig(),
+      scopesId=_BasicAttributeConfig('scope', scope_help),
+  )
+  concept_parsers.ConceptParser.ForResource(
+      flag_name,
+      spec,
+      'The group of arguments defining the Fleet Scope.',
+      plural=False,
+      required=required,
+      group=group,
+      # This hides the location flag as we only allow global scope.
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)
+
+
 def AddRBACResourceArg(parser, api_version='v1', rbacrb_help=''):
   """Add resource arg for projects/{}/locations/{}/memberships/{}."""
   # Flags without '--' prefix are automatically positional

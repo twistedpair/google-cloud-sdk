@@ -57,11 +57,18 @@ def _ConstructAutomatedBackupPolicy(alloydb_messages, args):
 def _ConstructContinuousBackupConfig(alloydb_messages, args):
   """Returns the continuous backup config based on args."""
   continuous_backup_config = alloydb_messages.ContinuousBackupConfig()
-  if args.disable_continuous_backup:
-    continuous_backup_config.enabled = False
-  elif args.continuous_backup_recovery_window_days:
+
+  flags.ValidateContinuousBackupFlags(args)
+  if args.enable_continuous_backup:
     continuous_backup_config.enabled = True
-    continuous_backup_config.recoveryWindowDays = args.continuous_backup_recovery_window_days
+  elif args.enable_continuous_backup is False:  # pylint: disable=g-bool-id-comparison
+    continuous_backup_config.enabled = False
+    return continuous_backup_config
+
+  if args.continuous_backup_recovery_window_days:
+    continuous_backup_config.recoveryWindowDays = (
+        args.continuous_backup_recovery_window_days
+    )
   kms_key = flags.GetAndValidateKmsKeyName(
       args, flag_overrides=flags.GetContinuousBackupKmsFlagOverrides())
 
@@ -95,7 +102,11 @@ def _ConstructClusterForCreateRequestAlphaBeta(alloydb_messages, args):
   """Returns the cluster for alpha or beta create request based on args."""
   cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
 
-  if args.continuous_backup_recovery_window_days or args.disable_continuous_backup:
+  if (
+      args.enable_continuous_backup is not None
+      or args.continuous_backup_recovery_window_days
+      or args.continuous_backup_encryption_key
+  ):
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
         alloydb_messages, args)
 
@@ -174,7 +185,7 @@ def ConstructRestoreRequestFromArgsAlphaBeta(alloydb_messages, location_ref,
   cluster_resource = _ConstructClusterResourceForRestoreRequest(
       alloydb_messages, args)
 
-  backup_source, pitr_source = None, None
+  backup_source, continuous_backup_source = None, None
   if args.backup:
     backup_source = _ConstructBackupSourceForRestoreRequest(
         alloydb_messages, resource_parser, args)
@@ -184,15 +195,16 @@ def ConstructRestoreRequestFromArgsAlphaBeta(alloydb_messages, location_ref,
         projectsId=properties.VALUES.core.project.GetOrFail,
         locationsId=args.region,
         clustersId=args.source_cluster)
-    pitr_source = alloydb_messages.PitrSource(
+    continuous_backup_source = alloydb_messages.ContinuousBackupSource(
         cluster=cluster_ref.RelativeName(),
-        pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+        pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+    )
 
   return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
       parent=location_ref.RelativeName(),
       restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
           backupSource=backup_source,
-          pitrSource=pitr_source,
+          continuousBackupSource=continuous_backup_source,
           clusterId=args.cluster,
           cluster=cluster_resource,
       ))
@@ -211,12 +223,34 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
 
 
 def _ConstructClusterAndMaskForPatchRequestAlphaBeta(alloydb_messages, args):
+  """Returns the cluster patch request for Alpha/Beta track based on args."""
   cluster, update_masks = _ConstructClusterAndMaskForPatchRequestGA(
       alloydb_messages, args)
-  if args.disable_continuous_backup or args.continuous_backup_recovery_window_days:
+  continuous_backup_update_masks = []
+
+  if args.enable_continuous_backup:
+    continuous_backup_update_masks.append('continuous_backup_config.enabled')
+  elif args.enable_continuous_backup is False:  # pylint: disable=g-bool-id-comparison
+    # We apply the continuous_backup_config mask to clear the entire
+    # configuration when disabling continuous backups
+    update_masks.append('continuous_backup_config')
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
         alloydb_messages, args)
-    update_masks.append('continuous_backup_config')
+    return cluster, update_masks
+
+  if args.continuous_backup_recovery_window_days:
+    continuous_backup_update_masks.append(
+        'continuous_backup_config.recovery_window_days'
+    )
+  if args.continuous_backup_encryption_key:
+    continuous_backup_update_masks.append(
+        'continuous_backup_config.encryption_config'
+    )
+
+  update_masks.extend(continuous_backup_update_masks)
+  if continuous_backup_update_masks:
+    cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
+        alloydb_messages, args)
   return cluster, update_masks
 
 

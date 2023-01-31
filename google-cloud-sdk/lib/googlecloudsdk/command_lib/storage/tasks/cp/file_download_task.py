@@ -45,7 +45,6 @@ from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 
 
@@ -172,12 +171,6 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     temporary_resource = copy.deepcopy(self._destination_resource)
     temporary_resource.storage_url.object_name += (
         storage_url.TEMPORARY_FILE_SUFFIX)
-    if ((properties.VALUES.storage.convert_incompatible_windows_path_characters
-         .GetBool()) and platforms.OperatingSystem.Current()
-        == platforms.OperatingSystem.WINDOWS):
-      temporary_resource.storage_url.object_name = (
-          platforms.MakePathWindowsCompatible(
-              temporary_resource.storage_url.object_name))
     return temporary_resource
 
   def _get_sliced_download_tasks(self):

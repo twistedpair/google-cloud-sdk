@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Cloud Asset API",
-  "description": "The cloud asset API manages the history and inventory of cloud resources.",
+  "description": "The Cloud Asset API manages the history and inventory of Google Cloud resources.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

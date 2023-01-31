@@ -46,6 +46,7 @@ INSTANCES_LIST_FORMAT_BETA = """\
       name.basename():label=INSTANCE_NAME:sort=1,
       name.segment(3):label=LOCATION,
       tier,
+      protocol,
       capacityGb:label=CAPACITY_GB,
       fileShares[0].name.yesno(no="N/A"):label=FILE_SHARE_NAME,
       networks[0].ipAddresses[0]:label=IP_ADDRESS,
@@ -181,6 +182,32 @@ def GetTierArg(messages):
           },
           default='BASIC_HDD'))
   return tier_arg
+
+
+def GetProtocolArg(messages):
+  """Creates a --protocol flag spec for the arg parser.
+
+  Args:
+    messages: The messages module.
+
+  Returns:
+    The chosen protocol arg.
+  """
+  protocol_arg = (
+      arg_utils.ChoiceEnumMapper(
+          '--protocol',
+          messages.Instance.ProtocolValueValuesEnum,
+          help_str='The service protocol for the Cloud Filestore instance.',
+          custom_mappings={
+              'NFS_V3':
+                  ('nfs-v3',
+                   'NFSv3 protocol.'),
+              'NFS_V4_1':
+                  ('nfs-v4-1',
+                   'NFSv4.1 protocol.'),
+          },
+          default='NFS_V3'))
+  return protocol_arg
 
 
 def AddNetworkArg(parser):
@@ -382,6 +409,8 @@ def AddInstanceCreateArgs(parser, api_version):
   AddNetworkArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
   GetTierArg(messages).choice_arg.AddToParser(parser)
+  if api_version == filestore_client.BETA_API_VERSION:
+    GetProtocolArg(messages).choice_arg.AddToParser(parser)
   AddFileShareArg(
       parser,
       api_version,

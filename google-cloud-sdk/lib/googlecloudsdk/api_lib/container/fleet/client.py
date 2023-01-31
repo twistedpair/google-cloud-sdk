@@ -344,11 +344,12 @@ class FleetClient(object):
         name=util.NamespaceResourceName(project, name))
     return self.client.projects_locations_namespaces.Get(req)
 
-  def CreateNamespace(self, name, project):
+  def CreateNamespace(self, name, scope, project):
     """Creates a namespace resource from the GKEHub API.
 
     Args:
       name: the namespace name.
+      scope: the scope containing the namespace.
       project: the project containing the namespace.
 
     Returns:
@@ -358,7 +359,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     namespace = self.messages.Namespace(
-        name=util.NamespaceResourceName(project, name))
+        name=util.NamespaceResourceName(project, name), scope=scope
+    )
     req = self.messages.GkehubProjectsLocationsNamespacesCreateRequest(
         namespace=namespace,
         namespaceId=name,

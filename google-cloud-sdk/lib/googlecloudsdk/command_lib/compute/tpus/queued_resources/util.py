@@ -35,20 +35,33 @@ def CreateNodeSpec(ref, args, request):
     request.queuedResource.tpu = tpu_messages.Tpu()
 
   request.queuedResource.tpu.nodeSpec = []
-  for node_id in args.node_id:
-    node_spec = tpu_messages.NodeSpec()
-    node_spec.nodeId = node_id
-    node_spec.parent = ref.Parent().RelativeName()
+  node_spec = tpu_messages.NodeSpec()
+  node_spec.parent = ref.Parent().RelativeName()
 
-    node_spec.node = tpu_messages.Node()
-    node_spec.node.acceleratorType = args.accelerator_type
-    node_spec.node.runtimeVersion = args.runtime_version
+  node_spec.node = tpu_messages.Node()
+  node_spec.node.acceleratorType = args.accelerator_type
+  node_spec.node.runtimeVersion = args.runtime_version
 
-    node_spec.node.networkConfig = tpu_messages.NetworkConfig()
-    node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
+  node_spec.node.networkConfig = tpu_messages.NetworkConfig()
+  node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
-    request.queuedResource.tpu.nodeSpec.append(node_spec)
+  if args.node_id:
+    node_spec.nodeId = args.node_id
+  elif args.node_prefix and args.node_count:
+    node_spec.multiNodeParams = tpu_messages.MultiNodeParams()
+    node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
+    node_spec.multiNodeParams.nodeCount = args.node_count
+  request.queuedResource.tpu.nodeSpec = [node_spec]
 
+  return request
+
+
+def VerifyNodeCount(ref, args, request):
+  del ref  # unused
+  if args.node_count and args.node_count <= 1:
+    raise exceptions.InvalidArgumentException(
+        '--node-count', 'Node count must be greater than 1'
+    )
   return request
 
 
@@ -81,10 +94,12 @@ def SetGuaranteed(ref, args, request):
 def SetValidInterval(ref, args, request):
   """Combine multiple timing constraints into a valid_interval."""
   del ref  # unused
-  if ((args.valid_after_duration and args.valid_after_time) or
-      (args.valid_until_duration and args.valid_until_time)):
+  if (args.valid_after_duration and args.valid_after_time) or (
+      args.valid_until_duration and args.valid_until_time
+  ):
     raise exceptions.ConflictingArgumentsException(
-        'Only one timing constraint for each of (start, end) time is permitted')
+        'Only one timing constraint for each of (start, end) time is permitted'
+    )
   tpu_messages = GetMessagesModule()
   current_time = times.Now()
 
@@ -111,4 +126,3 @@ def SetValidInterval(ref, args, request):
     request.queuedResource.queueingPolicy = tpu_messages.QueueingPolicy()
     request.queuedResource.queueingPolicy.validInterval = valid_interval
   return request
-

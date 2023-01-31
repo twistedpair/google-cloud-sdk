@@ -27,8 +27,7 @@ def AddSshTunnelArgs(parser):
       '--tunnel-through-iap',
       action='store_true',
       help="""\
-      Tunnel the ssh connection through Cloud Identity-Aware Proxy for TCP
-      forwarding.
+      Tunnel the ssh connection through Identity-Aware Proxy for TCP forwarding.
 
       To learn more, see the
       [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).

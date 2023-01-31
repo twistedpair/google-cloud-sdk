@@ -1417,6 +1417,274 @@
         }
       }
     },
+    "InboundSamlSsoProfile": {
+      "id": "InboundSamlSsoProfile",
+      "description": "A [SAML 2.0](https:\/\/www.oasis-open.org\/standards#samlv2.0) federation between a Google enterprise customer and a SAML identity provider.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the SAML SSO profile.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "customer": {
+          "description": "Immutable. The customer. For example: `customers\/C0123abc`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Human-readable name of the SAML SSO profile.",
+          "type": "string"
+        },
+        "idpConfig": {
+          "description": "SAML identity provider configuration.",
+          "$ref": "SamlIdpConfig"
+        },
+        "spConfig": {
+          "description": "SAML service provider configuration for this SAML SSO profile. These are the service provider details provided by Google that should be configured on the corresponding identity provider.",
+          "$ref": "SamlSpConfig"
+        }
+      }
+    },
+    "SamlIdpConfig": {
+      "id": "SamlIdpConfig",
+      "description": "SAML IDP (identity provider) configuration.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Required. The SAML **Entity ID** of the identity provider.",
+          "type": "string"
+        },
+        "singleSignOnServiceUri": {
+          "description": "Required. The `SingleSignOnService` endpoint location (sign-in page URL) of the identity provider. This is the URL where the `AuthnRequest` will be sent. Must use `HTTPS`. Currently assumed to accept the `HTTP-Redirect` binding.",
+          "type": "string"
+        },
+        "logoutRedirectUri": {
+          "description": "The **Logout Redirect URL** (sign-out page URL) of the identity provider. When a user clicks the sign-out link on a Google page, they will be redirected to this URL. This is a pure redirect with no attached SAML `LogoutRequest` i.e. SAML single logout is currently not supported. Must use `HTTPS`.",
+          "type": "string"
+        },
+        "changePasswordUri": {
+          "description": "The **Change Password URL** of the identity provider. Users will be sent to this URL when changing their passwords at `myaccount.google.com`. This takes precedence over the change password URL configured at customer-level. Must use `HTTPS`.",
+          "type": "string"
+        }
+      }
+    },
+    "SamlSpConfig": {
+      "id": "SamlSpConfig",
+      "description": "SAML SP (service provider) configuration.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Output only. The SAML **Entity ID** for this service provider.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "assertionConsumerServiceUri": {
+          "description": "Output only. The SAML **Assertion Consumer Service (ACS) URL** to be used for the IDP-initiated login. Currently assumed to accept response messages via the `HTTP-POST` binding.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListInboundSamlSsoProfilesResponse": {
+      "id": "ListInboundSamlSsoProfilesResponse",
+      "description": "Response of the InboundSamlSsoProfilesService.ListInboundSamlSsoProfiles method.",
+      "type": "object",
+      "properties": {
+        "inboundSamlSsoProfiles": {
+          "description": "List of InboundSamlSsoProfiles.",
+          "type": "array",
+          "items": {
+            "$ref": "InboundSamlSsoProfile"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "IdpCredential": {
+      "id": "IdpCredential",
+      "description": "Credential for verifying signatures produced by the Identity Provider.",
+      "type": "object",
+      "properties": {
+        "rsaKeyInfo": {
+          "description": "Output only. Information of a RSA public key.",
+          "readOnly": true,
+          "$ref": "RsaPublicKeyInfo"
+        },
+        "dsaKeyInfo": {
+          "description": "Output only. Information of a DSA public key.",
+          "readOnly": true,
+          "$ref": "DsaPublicKeyInfo"
+        },
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the credential.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the `IdpCredential` was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "RsaPublicKeyInfo": {
+      "id": "RsaPublicKeyInfo",
+      "description": "Information of a RSA public key.",
+      "type": "object",
+      "properties": {
+        "keySize": {
+          "description": "Key size in bits (size of the modulus).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DsaPublicKeyInfo": {
+      "id": "DsaPublicKeyInfo",
+      "description": "Information of a DSA public key.",
+      "type": "object",
+      "properties": {
+        "keySize": {
+          "description": "Key size in bits (size of parameter P).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListIdpCredentialsResponse": {
+      "id": "ListIdpCredentialsResponse",
+      "description": "Response of the InboundSamlSsoProfilesService.ListIdpCredentials method.",
+      "type": "object",
+      "properties": {
+        "idpCredentials": {
+          "description": "The IdpCredentials from the specified InboundSamlSsoProfile.",
+          "type": "array",
+          "items": {
+            "$ref": "IdpCredential"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "AddIdpCredentialRequest": {
+      "id": "AddIdpCredentialRequest",
+      "description": "The request for creating an IdpCredential with its associated payload. An InboundSamlSsoProfile can own up to 2 credentials.",
+      "type": "object",
+      "properties": {
+        "pemData": {
+          "description": "PEM encoded x509 certificate containing the public key for verifying IdP signatures.",
+          "type": "string"
+        }
+      }
+    },
+    "InboundSsoAssignment": {
+      "id": "InboundSsoAssignment",
+      "description": "Targets with \"set\" SSO assignments and their respective assignments.",
+      "type": "object",
+      "properties": {
+        "targetGroup": {
+          "description": "Immutable. Must be of the form `groups\/{group}`.",
+          "type": "string"
+        },
+        "targetOrgUnit": {
+          "description": "Immutable. Must be of the form `orgUnits\/{org_unit}`.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Inbound SSO Assignment.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "customer": {
+          "description": "Immutable. The customer. For example: `customers\/C0123abc`.",
+          "type": "string"
+        },
+        "rank": {
+          "description": "Must be zero (which is the default value so it can be omitted) for assignments with `target_org_unit` set and must be greater-than-or-equal-to one for assignments with `target_group` set.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "ssoMode": {
+          "description": "Inbound SSO behavior.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not allowed.",
+            "Disable SSO for the targeted users.",
+            "Use an external SAML Identity Provider for SSO for the targeted users.",
+            "Use the domain-wide SAML Identity Provider for the targeted users if one is configured; otherwise, this is equivalent to `SSO_OFF`. Note that this will also be equivalent to `SSO_OFF` if\/when support for domain-wide SAML is removed. Google may disallow this mode at that point and existing assignments with this mode may be automatically changed to `SSO_OFF`."
+          ],
+          "enum": [
+            "SSO_MODE_UNSPECIFIED",
+            "SSO_OFF",
+            "SAML_SSO",
+            "DOMAIN_WIDE_SAML_IF_ENABLED"
+          ]
+        },
+        "samlSsoInfo": {
+          "description": "SAML SSO details. Must be set if and only if `sso_mode` is set to `SAML_SSO`.",
+          "$ref": "SamlSsoInfo"
+        },
+        "signInBehavior": {
+          "description": "Assertions about users assigned to an IdP will always be accepted from that IdP. This controls whether\/when Google should redirect a user to the IdP. Unset (defaults) is the recommended configuration.",
+          "$ref": "SignInBehavior"
+        }
+      }
+    },
+    "SamlSsoInfo": {
+      "id": "SamlSsoInfo",
+      "description": "Details that are applicable when `sso_mode` == `SAML_SSO`.",
+      "type": "object",
+      "properties": {
+        "inboundSamlSsoProfile": {
+          "description": "Required. Name of the `InboundSamlSsoProfile` to use. Must be of the form `inboundSamlSsoProfiles\/{inbound_saml_sso_profile}`. ",
+          "type": "string"
+        }
+      }
+    },
+    "SignInBehavior": {
+      "id": "SignInBehavior",
+      "description": "Controls sign-in behavior.",
+      "type": "object",
+      "properties": {
+        "redirectCondition": {
+          "description": "When to redirect sign-ins to the IdP.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default and means \"always\"",
+            "Sign-in flows where the user is prompted for their identity will not redirect to the IdP (so the user will most likely be prompted by Google for a password), but special flows like IdP-initiated SAML and sign-in following automatic redirection to the IdP by domain-specific service URLs will accept the IdP's assertion of the user's identity."
+          ],
+          "enum": [
+            "REDIRECT_CONDITION_UNSPECIFIED",
+            "NEVER"
+          ]
+        }
+      }
+    },
+    "ListInboundSsoAssignmentsResponse": {
+      "id": "ListInboundSsoAssignmentsResponse",
+      "description": "Response of the InboundSsoAssignmentsService.ListInboundSsoAssignments method.",
+      "type": "object",
+      "properties": {
+        "inboundSsoAssignments": {
+          "description": "The assignments.",
+          "type": "array",
+          "items": {
+            "$ref": "InboundSsoAssignment"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
     "UserInvitation": {
       "id": "UserInvitation",
       "description": "The `UserInvitation` resource represents an email that can be sent to an unmanaged user account inviting them to join the customer's Google Workspace or Cloud Identity account. An unmanaged account shares an email address domain with the Google Workspace or Cloud Identity account but is not managed by it yet. If the user accepts the `UserInvitation`, the user account will become managed.",
@@ -1740,6 +2008,62 @@
     "GetMembershipGraphMetadata": {
       "id": "GetMembershipGraphMetadata",
       "description": "Metadata of GetMembershipGraphResponse LRO. This is currently empty to permit future extensibility.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AddIdpCredentialOperationMetadata": {
+      "id": "AddIdpCredentialOperationMetadata",
+      "description": "LRO response metadata for InboundSamlSsoProfilesService.AddIdpCredential.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CreateInboundSamlSsoProfileOperationMetadata": {
+      "id": "CreateInboundSamlSsoProfileOperationMetadata",
+      "description": "LRO response metadata for InboundSamlSsoProfilesService.CreateInboundSamlSsoProfile.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteIdpCredentialOperationMetadata": {
+      "id": "DeleteIdpCredentialOperationMetadata",
+      "description": "LRO response metadata for InboundSamlSsoProfilesService.DeleteIdpCredential.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteInboundSamlSsoProfileOperationMetadata": {
+      "id": "DeleteInboundSamlSsoProfileOperationMetadata",
+      "description": "LRO response metadata for InboundSamlSsoProfilesService.DeleteInboundSamlSsoProfile.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UpdateInboundSamlSsoProfileOperationMetadata": {
+      "id": "UpdateInboundSamlSsoProfileOperationMetadata",
+      "description": "LRO response metadata for InboundSamlSsoProfilesService.UpdateInboundSamlSsoProfile.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CreateInboundSsoAssignmentOperationMetadata": {
+      "id": "CreateInboundSsoAssignmentOperationMetadata",
+      "description": "LRO response metadata for InboundSsoAssignmentsService.CreateInboundSsoAssignment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteInboundSsoAssignmentOperationMetadata": {
+      "id": "DeleteInboundSsoAssignmentOperationMetadata",
+      "description": "LRO response metadata for InboundSsoAssignmentsService.DeleteInboundSsoAssignment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UpdateInboundSsoAssignmentOperationMetadata": {
+      "id": "UpdateInboundSsoAssignmentOperationMetadata",
+      "description": "LRO response metadata for InboundSsoAssignmentsService.UpdateInboundSsoAssignment.",
       "type": "object",
       "properties": {
       }
@@ -3032,6 +3356,409 @@
               "description": "Get a membership graph of just a member or both a member and a group. **Note:** This feature is only available to Google Workspace Enterprise Standard, Enterprise Plus, and Enterprise for Education; and Cloud Identity Premium accounts. If the account of the member is not one of these, a 403 (PERMISSION_DENIED) HTTP status code will be returned. Given a member, the response will contain all membership paths from the member. Given both a group and a member, the response will contain all membership paths between the group and the member."
             }
           }
+        }
+      }
+    },
+    "inboundSamlSsoProfiles": {
+      "methods": {
+        "create": {
+          "id": "cloudidentity.inboundSamlSsoProfiles.create",
+          "path": "v1/inboundSamlSsoProfiles",
+          "flatPath": "v1/inboundSamlSsoProfiles",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "InboundSamlSsoProfile"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Creates an InboundSamlSsoProfile for a customer."
+        },
+        "patch": {
+          "id": "cloudidentity.inboundSamlSsoProfiles.patch",
+          "path": "v1/{+name}",
+          "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the SAML SSO profile.",
+              "pattern": "^inboundSamlSsoProfiles\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "InboundSamlSsoProfile"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates an InboundSamlSsoProfile."
+        },
+        "delete": {
+          "id": "cloudidentity.inboundSamlSsoProfiles.delete",
+          "path": "v1/{+name}",
+          "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "name": {
+              "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the InboundSamlSsoProfile to delete. Format: `inboundSamlSsoProfiles\/{sso_profile_id}`",
+              "pattern": "^inboundSamlSsoProfiles\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Deletes an InboundSamlSsoProfile."
+        },
+        "get": {
+          "id": "cloudidentity.inboundSamlSsoProfiles.get",
+          "path": "v1/{+name}",
+          "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the InboundSamlSsoProfile to get. Format: `inboundSamlSsoProfiles\/{sso_profile_id}`",
+              "pattern": "^inboundSamlSsoProfiles\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "InboundSamlSsoProfile"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets an InboundSamlSsoProfile."
+        },
+        "list": {
+          "id": "cloudidentity.inboundSamlSsoProfiles.list",
+          "path": "v1/inboundSamlSsoProfiles",
+          "flatPath": "v1/inboundSamlSsoProfiles",
+          "httpMethod": "GET",
+          "parameters": {
+            "filter": {
+              "description": "A [Common Expression Language](https:\/\/github.com\/google\/cel-spec) expression to filter the results. The only currently-supported filter is filtering by customer. For example: `customer==\"customers\/C0123abc\"`. Omitting the filter or specifying a filter of `customer==\"customers\/my_customer\"` will return the profiles for the customer that the caller (authenticated user) belongs to.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of InboundSamlSsoProfiles to return. The service may return fewer than this value. If omitted (or defaulted to zero) the server will use a sensible default. This default may change over time. The maximum allowed value is 100. Requests with page_size greater than that will be silently interpreted as having this maximum value.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "A page token, received from a previous `ListInboundSamlSsoProfiles` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListInboundSamlSsoProfiles` must match the call that provided the page token.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListInboundSamlSsoProfilesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists InboundSamlSsoProfiles for a customer."
+        }
+      }
+      ,
+      "resources": {
+        "idpCredentials": {
+          "methods": {
+            "delete": {
+              "id": "cloudidentity.inboundSamlSsoProfiles.idpCredentials.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}/idpCredentials/{idpCredentialsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the IdpCredential to delete. Format: `inboundSamlSsoProfiles\/{sso_profile_id}\/idpCredentials\/{idp_credential_id}`",
+                  "pattern": "^inboundSamlSsoProfiles\/[^\/]+\/idpCredentials\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes an IdpCredential."
+            },
+            "get": {
+              "id": "cloudidentity.inboundSamlSsoProfiles.idpCredentials.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}/idpCredentials/{idpCredentialsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the IdpCredential to retrieve. Format: `inboundSamlSsoProfiles\/{sso_profile_id}\/idpCredentials\/{idp_credential_id}`",
+                  "pattern": "^inboundSamlSsoProfiles\/[^\/]+\/idpCredentials\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "IdpCredential"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets an IdpCredential."
+            },
+            "list": {
+              "id": "cloudidentity.inboundSamlSsoProfiles.idpCredentials.list",
+              "path": "v1/{+parent}/idpCredentials",
+              "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}/idpCredentials",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The parent, which owns this collection of `IdpCredential`s. Format: `inboundSamlSsoProfiles\/{sso_profile_id}`",
+                  "pattern": "^inboundSamlSsoProfiles\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of `IdpCredential`s to return. The service may return fewer than this value.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous `ListIdpCredentials` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListIdpCredentials` must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListIdpCredentialsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns a list of IdpCredentials in an InboundSamlSsoProfile."
+            },
+            "add": {
+              "id": "cloudidentity.inboundSamlSsoProfiles.idpCredentials.add",
+              "path": "v1/{+parent}/idpCredentials:add",
+              "flatPath": "v1/inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}/idpCredentials:add",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The InboundSamlSsoProfile that owns the IdpCredential. Format: `inboundSamlSsoProfiles\/{sso_profile_id}`",
+                  "pattern": "^inboundSamlSsoProfiles\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "AddIdpCredentialRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Adds an IdpCredential. Up to 2 credentials are allowed."
+            }
+          }
+        }
+      }
+    },
+    "inboundSsoAssignments": {
+      "methods": {
+        "get": {
+          "id": "cloudidentity.inboundSsoAssignments.get",
+          "path": "v1/{+name}",
+          "flatPath": "v1/inboundSsoAssignments/{inboundSsoAssignmentsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the InboundSsoAssignment to fetch. Format: `inboundSsoAssignments\/{assignment}`",
+              "pattern": "^inboundSsoAssignments\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "InboundSsoAssignment"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets an InboundSsoAssignment."
+        },
+        "create": {
+          "id": "cloudidentity.inboundSsoAssignments.create",
+          "path": "v1/inboundSsoAssignments",
+          "flatPath": "v1/inboundSsoAssignments",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "InboundSsoAssignment"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Creates an InboundSsoAssignment for users and devices in a `Customer` under a given `Group` or `OrgUnit`."
+        },
+        "patch": {
+          "id": "cloudidentity.inboundSsoAssignments.patch",
+          "path": "v1/{+name}",
+          "flatPath": "v1/inboundSsoAssignments/{inboundSsoAssignmentsId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Inbound SSO Assignment.",
+              "pattern": "^inboundSsoAssignments\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "InboundSsoAssignment"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates an InboundSsoAssignment. The body of this request is the `inbound_sso_assignment` field and the `update_mask` is relative to that. For example: a PATCH to `\/v1\/inboundSsoAssignments\/0abcdefg1234567&update_mask=rank` with a body of `{ \"rank\": 1 }` moves that (presumably group-targeted) SSO assignment to the highest priority and shifts any other group-targeted assignments down in priority."
+        },
+        "delete": {
+          "id": "cloudidentity.inboundSsoAssignments.delete",
+          "path": "v1/{+name}",
+          "flatPath": "v1/inboundSsoAssignments/{inboundSsoAssignmentsId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "name": {
+              "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the InboundSsoAssignment to delete. Format: `inboundSsoAssignments\/{assignment}`",
+              "pattern": "^inboundSsoAssignments\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Deletes an InboundSsoAssignment. To disable SSO, Create (or Update) an assignment that has `sso_mode` == `SSO_OFF`."
+        },
+        "list": {
+          "id": "cloudidentity.inboundSsoAssignments.list",
+          "path": "v1/inboundSsoAssignments",
+          "flatPath": "v1/inboundSsoAssignments",
+          "httpMethod": "GET",
+          "parameters": {
+            "filter": {
+              "description": "A CEL expression to filter the results. The only currently-supported filter is filtering by customer. For example: `customer==customers\/C0123abc`. Omitting the filter or specifying a filter of `customer==customers\/my_customer` will return the assignments for the customer that the caller (authenticated user) belongs to.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of assignments to return. The service may return fewer than this value. If omitted (or defaulted to zero) the server will use a sensible default. This default may change over time. The maximum allowed value is 100, though requests with page_size greater than that will be silently interpreted as having this maximum value. This may increase in the futue.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "A page token, received from a previous `ListInboundSsoAssignments` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListInboundSsoAssignments` must match the call that provided the page token.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListInboundSsoAssignmentsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists the InboundSsoAssignments for a `Customer`."
         }
       }
     },

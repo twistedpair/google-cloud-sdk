@@ -1557,7 +1557,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
         method_id='datacatalog.projects.locations.taxonomies.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+parent}/taxonomies',
         request_field='',
         request_type_name='DatacatalogProjectsLocationsTaxonomiesListRequest',

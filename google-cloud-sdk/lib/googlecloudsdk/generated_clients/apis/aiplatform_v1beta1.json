@@ -105,6 +105,9 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud services and see the email address of your Google Account"
         }
       }
     }
@@ -4354,6 +4357,27 @@
             "MAXIMIZE",
             "MINIMIZE"
           ]
+        },
+        "safetyConfig": {
+          "description": "Used for safe search. In the case, the metric will be a safety metric. You must provide a separate metric for objective metric.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig",
+      "description": "Used in safe optimization to specify threshold levels and risk tolerance.",
+      "type": "object",
+      "properties": {
+        "safetyThreshold": {
+          "description": "Safety threshold (boundary value between safe and unsafe). NOTE that if you leave SafetyMetricConfig unset, a default value of 0 will be used.",
+          "type": "number",
+          "format": "double"
+        },
+        "desiredMinSafeTrialsFraction": {
+          "description": "Desired minimum fraction of safe trials (over total number of trials) that should be targeted by the algorithm at any time during the study (best effort). This should be between 0.0 and 1.0 and a value of 0.0 means that there is no minimum and an algorithm proceeds without targeting any specific fraction. A value of 1.0 means that the algorithm attempts to only Suggest safe Trials.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -4754,6 +4778,378 @@
       "description": "Request message for JobService.CancelHyperparameterTuningJob.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJob": {
+      "id": "GoogleCloudAiplatformV1beta1NasJob",
+      "description": "Represents a Neural Architecture Search (NAS) job.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the NasJob.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The display name of the NasJob. The name can be up to 128 characters long and can consist of any UTF-8 characters.",
+          "type": "string"
+        },
+        "nasJobSpec": {
+          "description": "Required. The specification of a NasJob.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobSpec"
+        },
+        "nasJobOutput": {
+          "description": "Output only. Output of the NasJob.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobOutput"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The job state is unspecified.",
+            "The job has been just created or resumed and processing has not yet begun.",
+            "The service is preparing to run the job.",
+            "The job is in progress.",
+            "The job completed successfully.",
+            "The job failed.",
+            "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
+            "The job has been cancelled.",
+            "The job has been stopped, and can be resumed.",
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+          ],
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "JOB_STATE_QUEUED",
+            "JOB_STATE_PENDING",
+            "JOB_STATE_RUNNING",
+            "JOB_STATE_SUCCEEDED",
+            "JOB_STATE_FAILED",
+            "JOB_STATE_CANCELLING",
+            "JOB_STATE_CANCELLED",
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Time when the NasJob was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "Output only. Time when the NasJob for the first time entered the `JOB_STATE_RUNNING` state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the NasJob entered any of the following states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`, `JOB_STATE_CANCELLED`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the NasJob was most recently updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "error": {
+          "description": "Output only. Only populated when job's state is JOB_STATE_FAILED or JOB_STATE_CANCELLED.",
+          "readOnly": true,
+          "$ref": "GoogleRpcStatus"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize NasJobs. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key options for a NasJob. If this is set, then all resources created by the NasJob will be encrypted with the provided encryption key.",
+          "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobSpec": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobSpec",
+      "description": "Represents the spec of a NasJob.",
+      "type": "object",
+      "properties": {
+        "multiTrialAlgorithmSpec": {
+          "description": "The spec of multi-trial algorithms.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpec"
+        },
+        "resumeNasJobId": {
+          "description": "The ID of the existing NasJob in the same Project and Location which will be used to resume search. search_space_spec and nas_algorithm_spec are obtained from previous NasJob hence should not provide them again for this NasJob.",
+          "type": "string"
+        },
+        "searchSpaceSpec": {
+          "description": "It defines the search space for Neural Architecture Search (NAS).",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpec": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpec",
+      "description": "The spec of multi-trial Neural Architecture Search (NAS).",
+      "type": "object",
+      "properties": {
+        "multiTrialAlgorithm": {
+          "description": "The multi-trial Neural Architecture Search (NAS) algorithm type. Defaults to `REINFORCEMENT_LEARNING`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Defaults to `REINFORCEMENT_LEARNING`.",
+            "The Reinforcement Learning Algorithm for Multi-trial Neural Architecture Search (NAS).",
+            "The Grid Search Algorithm for Multi-trial Neural Architecture Search (NAS)."
+          ],
+          "enum": [
+            "MULTI_TRIAL_ALGORITHM_UNSPECIFIED",
+            "REINFORCEMENT_LEARNING",
+            "GRID_SEARCH"
+          ]
+        },
+        "metric": {
+          "description": "Metric specs for the NAS job. Validation for this field is done at `multi_trial_algorithm_spec` field.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecMetricSpec"
+        },
+        "searchTrialSpec": {
+          "description": "Required. Spec for search trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecSearchTrialSpec"
+        },
+        "trainTrialSpec": {
+          "description": "Spec for train trials. Top N [TrainTrialSpec.max_parallel_trial_count] search trials will be trained for every M [TrainTrialSpec.frequency] trials searched.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecTrainTrialSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecMetricSpec": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecMetricSpec",
+      "description": "Represents a metric to optimize.",
+      "type": "object",
+      "properties": {
+        "metricId": {
+          "description": "Required. The ID of the metric. Must not contain whitespaces.",
+          "type": "string"
+        },
+        "goal": {
+          "description": "Required. The optimization goal of the metric.",
+          "type": "string",
+          "enumDescriptions": [
+            "Goal Type will default to maximize.",
+            "Maximize the goal metric.",
+            "Minimize the goal metric."
+          ],
+          "enum": [
+            "GOAL_TYPE_UNSPECIFIED",
+            "MAXIMIZE",
+            "MINIMIZE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecSearchTrialSpec": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecSearchTrialSpec",
+      "description": "Represent spec for search trials.",
+      "type": "object",
+      "properties": {
+        "searchTrialJobSpec": {
+          "description": "Required. The spec of a search trial job. The same spec applies to all search trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1CustomJobSpec"
+        },
+        "maxTrialCount": {
+          "description": "Required. The maximum number of Neural Architecture Search (NAS) trials to run.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxParallelTrialCount": {
+          "description": "Required. The maximum number of trials to run in parallel.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxFailedTrialCount": {
+          "description": "The number of failed trials that need to be seen before failing the NasJob. If set to 0, Vertex AI decides how many trials must fail before the whole job fails.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecTrainTrialSpec": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecTrainTrialSpec",
+      "description": "Represent spec for train trials.",
+      "type": "object",
+      "properties": {
+        "trainTrialJobSpec": {
+          "description": "Required. The spec of a train trial job. The same spec applies to all train trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1CustomJobSpec"
+        },
+        "maxParallelTrialCount": {
+          "description": "Required. The maximum number of trials to run in parallel.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "frequency": {
+          "description": "Required. Frequency of search trials to start train stage. Top N [TrainTrialSpec.max_parallel_trial_count] search trials will be trained for every M [TrainTrialSpec.frequency] trials searched.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobOutput": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobOutput",
+      "description": "Represents a uCAIP NasJob output.",
+      "type": "object",
+      "properties": {
+        "multiTrialJobOutput": {
+          "description": "Output only. The output of this multi-trial Neural Architecture Search (NAS) job.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1NasJobOutputMultiTrialJobOutput"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasJobOutputMultiTrialJobOutput": {
+      "id": "GoogleCloudAiplatformV1beta1NasJobOutputMultiTrialJobOutput",
+      "description": "The output of a multi-trial Neural Architecture Search (NAS) jobs.",
+      "type": "object",
+      "properties": {
+        "searchTrials": {
+          "description": "Output only. List of NasTrials that were started as part of search stage.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NasTrial"
+          }
+        },
+        "trainTrials": {
+          "description": "Output only. List of NasTrials that were started as part of train stage.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NasTrial"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasTrial": {
+      "id": "GoogleCloudAiplatformV1beta1NasTrial",
+      "description": "Represents a uCAIP NasJob trial.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Output only. The identifier of the NasTrial assigned by the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the NasTrial.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The NasTrial state is unspecified.",
+            "Indicates that a specific NasTrial has been requested, but it has not yet been suggested by the service.",
+            "Indicates that the NasTrial has been suggested.",
+            "Indicates that the NasTrial should stop according to the service.",
+            "Indicates that the NasTrial is completed successfully.",
+            "Indicates that the NasTrial should not be attempted again. The service will set a NasTrial to INFEASIBLE when it's done but missing the final_measurement."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "REQUESTED",
+            "ACTIVE",
+            "STOPPING",
+            "SUCCEEDED",
+            "INFEASIBLE"
+          ]
+        },
+        "finalMeasurement": {
+          "description": "Output only. The final measurement containing the objective value.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1Measurement"
+        },
+        "startTime": {
+          "description": "Output only. Time when the NasTrial was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the NasTrial's status changed to `SUCCEEDED` or `INFEASIBLE`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListNasJobsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListNasJobsResponse",
+      "description": "Response message for JobService.ListNasJobs",
+      "type": "object",
+      "properties": {
+        "nasJobs": {
+          "description": "List of NasJobs in the requested page. NasJob.nas_job_output of the jobs will not be returned.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NasJob"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve the next page of results. Pass to ListNasJobsRequest.page_token to obtain that page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CancelNasJobRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CancelNasJobRequest",
+      "description": "Request message for JobService.CancelNasJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NasTrialDetail": {
+      "id": "GoogleCloudAiplatformV1beta1NasTrialDetail",
+      "description": "Represents a NasTrial details along with it's parameters. If there is a corresponding train NasTrial, the train NasTrial is also returned.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the NasTrialDetail.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "parameters": {
+          "description": "The parameters for the NasJob NasTrial.",
+          "type": "string"
+        },
+        "searchTrial": {
+          "description": "The requested search NasTrial.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasTrial"
+        },
+        "trainTrial": {
+          "description": "The train NasTrial corresponding to search_trial. Only populated if search_trial is used for training.",
+          "$ref": "GoogleCloudAiplatformV1beta1NasTrial"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListNasTrialDetailsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListNasTrialDetailsResponse",
+      "description": "Response message for JobService.ListNasTrialDetails",
+      "type": "object",
+      "properties": {
+        "nasTrialDetails": {
+          "description": "List of top NasTrials in the requested page.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NasTrialDetail"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve the next page of results. Pass to ListNasTrialDetailsRequest.page_token to obtain that page.",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1BatchPredictionJob": {
@@ -16634,6 +17030,27 @@
             "MAXIMIZE",
             "MINIMIZE"
           ]
+        },
+        "safetyConfig": {
+          "description": "Used for safe search. In the case, the metric will be a safety metric. You must provide a separate metric for objective metric.",
+          "$ref": "GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig": {
+      "id": "GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig",
+      "description": "Used in safe optimization to specify threshold levels and risk tolerance.",
+      "type": "object",
+      "properties": {
+        "safetyThreshold": {
+          "description": "Safety threshold (boundary value between safe and unsafe). NOTE that if you leave SafetyMetricConfig unset, a default value of 0 will be used.",
+          "type": "number",
+          "format": "double"
+        },
+        "desiredMinSafeTrialsFraction": {
+          "description": "Desired minimum fraction of safe trials (over total number of trials) that should be targeted by the algorithm at any time during the study (best effort). This should be between 0.0 and 1.0 and a value of 0.0 means that there is no minimum and an algorithm proceeds without targeting any specific fraction. A value of 1.0 means that the algorithm attempts to only Suggest safe Trials.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -27692,6 +28109,27 @@
             "MAXIMIZE",
             "MINIMIZE"
           ]
+        },
+        "safetyConfig": {
+          "description": "Used for safe search. In the case, the metric will be a safety metric. You must provide a separate metric for objective metric.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig": {
+      "id": "GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig",
+      "description": "Used in safe optimization to specify threshold levels and risk tolerance.",
+      "type": "object",
+      "properties": {
+        "safetyThreshold": {
+          "description": "Safety threshold (boundary value between safe and unsafe). NOTE that if you leave SafetyMetricConfig unset, a default value of 0 will be used.",
+          "type": "number",
+          "format": "double"
+        },
+        "desiredMinSafeTrialsFraction": {
+          "description": "Desired minimum fraction of safe trials (over total number of trials) that should be targeted by the algorithm at any time during the study (best effort). This should be between 0.0 and 1.0 and a value of 0.0 means that there is no minimum and an algorithm proceeds without targeting any specific fraction. A value of 1.0 means that the algorithm attempts to only Suggest safe Trials.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -34712,6 +35150,232 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                }
+              }
+            },
+            "nasJobs": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.nasJobs.create",
+                  "path": "v1beta1/{+parent}/nasJobs",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to create the NasJob in. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1NasJob"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1NasJob"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a NasJob"
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.nasJobs.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the NasJob resource. Format: `projects\/{project}\/locations\/{location}\/nasJobs\/{nas_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nasJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1NasJob"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets a NasJob"
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.nasJobs.list",
+                  "path": "v1beta1/{+parent}/nasJobs",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to list the NasJobs from. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter. Supported fields: * `display_name` supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels` supports general map functions that is: `labels.key=value` - key:value equality `labels.key:* - key existence Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name:\"my_job_*\"` * `state!=\"JOB_STATE_FAILED\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `create_time>\"2021-05-18T00:00:00Z\"` * `labels.keyA=valueA` * `labels.keyB:*`",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token. Typically obtained via ListNasJobsResponse.next_page_token of the previous JobService.ListNasJobs call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ListNasJobsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists NasJobs in a Location."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.nasJobs.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the NasJob resource to be deleted. Format: `projects\/{project}\/locations\/{location}\/nasJobs\/{nas_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nasJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a NasJob."
+                },
+                "cancel": {
+                  "id": "aiplatform.projects.locations.nasJobs.cancel",
+                  "path": "v1beta1/{+name}:cancel",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the NasJob to cancel. Format: `projects\/{project}\/locations\/{location}\/nasJobs\/{nas_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nasJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1CancelNasJobRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Cancels a NasJob. Starts asynchronous cancellation on the NasJob. The server makes a best effort to cancel the job, but success is not guaranteed. Clients can use JobService.GetNasJob or other methods to check whether the cancellation succeeded or whether the job completed despite cancellation. On successful cancellation, the NasJob is not deleted; instead it becomes a job with a NasJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and NasJob.state is set to `CANCELLED`."
+                }
+              }
+              ,
+              "resources": {
+                "nasTrialDetails": {
+                  "methods": {
+                    "get": {
+                      "id": "aiplatform.projects.locations.nasJobs.nasTrialDetails.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}/nasTrialDetails/{nasTrialDetailsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the NasTrialDetail resource. Format: `projects\/{project}\/locations\/{location}\/nasJobs\/{nas_job}\/nasTrialDetails\/{nas_trial_detail}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nasJobs\/[^\/]+\/nasTrialDetails\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1NasTrialDetail"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets a NasTrialDetail."
+                    },
+                    "list": {
+                      "id": "aiplatform.projects.locations.nasJobs.nasTrialDetails.list",
+                      "path": "v1beta1/{+parent}/nasTrialDetails",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}/nasTrialDetails",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the NasJob resource. Format: `projects\/{project}\/locations\/{location}\/nasJobs\/{nas_job}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nasJobs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token. Typically obtained via ListNasTrialDetailsResponse.next_page_token of the previous JobService.ListNasTrialDetails call.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ListNasTrialDetailsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List top NasTrialDetails of a NasJob."
                     }
                   }
                 }

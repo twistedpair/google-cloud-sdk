@@ -353,12 +353,14 @@
           "enumDescriptions": [
             "",
             "The ethereum Mainnet.",
-            "Ethereum Testnet based on Goerli protocol."
+            "Ethereum Testnet based on Goerli protocol.",
+            "Ethereum Testnet based on Sepolia\/Bepolia protocol."
           ],
           "enum": [
             "NETWORK_UNSPECIFIED",
             "MAINNET",
-            "TESTNET_GOERLI_PRATER"
+            "TESTNET_GOERLI_PRATER",
+            "TESTNET_SEPOLIA"
           ]
         },
         "nodeType": {

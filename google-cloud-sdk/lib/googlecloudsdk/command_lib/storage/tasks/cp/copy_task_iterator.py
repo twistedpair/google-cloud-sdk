@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import os
 
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -35,6 +36,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import platforms
 
 _ONE_TB_IN_BYTES = 1099511627776
 _RELATIVE_PATH_SYMBOLS = frozenset(['.', '..'])
@@ -192,6 +194,33 @@ def _is_expanded_url_valid_parent_dir(expanded_url):
           expanded_url.scheme.value + '://' + symbol
           for symbol in _RELATIVE_PATH_SYMBOLS
       ])
+
+
+def _sanitize_destination_resource_if_needed(destination_resource):
+  """Returns the destination resource with invalid characters replaced.
+
+  The invalid characters are only replaced if the destination URL is a FileUrl
+  and the platform is Windows. This is required because Cloud URLs may have
+  certain characters that are not allowed in file paths on Windows.
+
+  Args:
+    destination_resource (Resource): The destination resource.
+
+  Returns:
+    The destination resource with invalid characters replaced from the
+    destination path.
+  """
+  if (
+      isinstance(destination_resource.storage_url, storage_url.FileUrl)
+      and properties.VALUES.storage.convert_incompatible_windows_path_characters.GetBool()
+      and platforms.OperatingSystem.IsWindows()
+  ):
+    sanitized_destination_resource = copy.deepcopy(destination_resource)
+    sanitized_destination_resource.storage_url.object_name = (
+        platforms.MakePathWindowsCompatible(
+            sanitized_destination_resource.storage_url.object_name))
+    return sanitized_destination_resource
+  return destination_resource
 
 
 class CopyTaskIterator:
@@ -422,9 +451,13 @@ class CopyTaskIterator:
           source.expanded_url.is_stdio):
         raise errors.Error(
             'Destination object name needed when source is stdin.')
-      return self._complete_destination(raw_destination, source)
+      destination_resource = self._complete_destination(raw_destination, source)
     else:
-      return raw_destination
+      destination_resource = raw_destination
+
+    sanitized_destination_resource = _sanitize_destination_resource_if_needed(
+        destination_resource)
+    return sanitized_destination_resource
 
   def _complete_destination(self, destination_container, source):
     """Gets a valid copy destination incorporating part of the source's name.

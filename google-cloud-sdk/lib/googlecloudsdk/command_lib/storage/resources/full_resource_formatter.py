@@ -132,19 +132,20 @@ def _get_formatted_line(display_name, value, default_value=None):
   return None
 
 
-def get_formatted_string(url,
-                         resource,
-                         display_titles_and_defaults,
-                         show_acl=True,
-                         show_version_in_url=False):
+def get_formatted_string(
+    resource,
+    display_titles_and_defaults,
+    show_acl=True,
+    show_version_in_url=False,
+):
   """Returns the formatted string representing the resource.
 
   Args:
-    url (StorageUrl): URL representing the resource.
-    resource (resource_reference.ObjectResource):
-      Object holding resource metadata that needs to be displayed.
-    display_titles_and_defaults (ObjectDisplayTitlesAndDefaults): Holds the
-      display titles and default values for each field present in the Resource.
+    resource (resource_reference.Resource): Object holding resource metadata
+      that needs to be displayed.
+    display_titles_and_defaults ([Bucket|Object]DisplayTitlesAndDefaults): Holds
+      the display titles and default values for each field present in the
+      Resource.
     show_acl (bool): Include ACLs list in resource display.
     show_version_in_url (bool): Display extended URL with versioning info.
 
@@ -176,9 +177,9 @@ def get_formatted_string(url,
       lines.append(line)
 
   if show_version_in_url:
-    url_string = url.url_string
+    url_string = resource.storage_url.url_string
   else:
-    url_string = url.versionless_url_string
+    url_string = resource.storage_url.versionless_url_string
   return ('{url_string}:\n'
           '{fields}').format(
               url_string=url_string,
@@ -191,33 +192,40 @@ class FullResourceFormatter(six.with_metaclass(abc.ABCMeta, object)):
   This FullResourceFormatter is specifically used for ls -L output formatting.
   """
 
-  def format_bucket(self, url, bucket_resource):
+  def format_bucket(self, bucket_resource):
     """Returns a formatted string representing the BucketResource.
 
     Args:
-      url (StorageUrl): URL representing the object.
-      bucket_resource (resource_reference.BucketResource): A
-        BucketResource instance.
+      bucket_resource (resource_reference.BucketResource): A BucketResource
+        instance.
 
     Returns:
       Formatted multi-line string representing the BucketResource.
     """
     raise NotImplementedError('format_bucket must be overridden.')
 
-  def format_object(self,
-                    url,
-                    object_resource,
-                    show_acl=True,
-                    show_version_in_url=False):
+  def format_object(
+      self, object_resource, show_acl=True, show_version_in_url=False, **kwargs
+  ):
     """Returns a formatted string representing the ObjectResource.
 
     Args:
-      url (StorageUrl): URL representing the object.
       object_resource (resource_reference.Resource): A Resource instance.
       show_acl (bool): Include ACLs list in resource display.
       show_version_in_url (bool): Display extended URL with versioning info.
+      **kwargs (dict): Unused. May apply to other resource format functions.
 
     Returns:
       Formatted multi-line string represnting the ObjectResource.
     """
     raise NotImplementedError('format_object must be overridden.')
+
+  def format(self, resource, **kwargs):
+    """Type-checks resource and returns a formatted metadata string."""
+    if isinstance(resource, resource_reference.BucketResource):
+      return self.format_bucket(resource)
+    if isinstance(resource, resource_reference.ObjectResource):
+      return self.format_object(resource, **kwargs)
+    raise NotImplementedError(
+        '{} does not support {}'.format(self.__class__, type(resource))
+    )

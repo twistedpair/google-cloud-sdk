@@ -408,6 +408,7 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
     """Unenrolls an Anthos on bare metal admin cluster."""
     kwargs = {
         'name': self._admin_cluster_name(args),
+        'allowMissing': getattr(args, 'allow_missing', None),
     }
     req = (
         self._messages

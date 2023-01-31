@@ -15,13 +15,29 @@
 node_id:
   arg_name: node-id
   required: true
-  type: arg_list
   help_text: |
-    The unqualified Node identifier, used to identify the TPU in the Nodes
-    collection once provisioned.
+    Unqualified node identifier used to identify the node in the project once provisioned.
 
-    To request a resource with multiple nodes, enter multiple, unique, unqualified Node identifiers
-    as a comma delimited list.
+    To request a resource with multiple nodes, use `--node-prefix` to specify the prefix for each node
+    and `--node-count` to specify the number of nodes in place of `--node-id`.
+
+node_prefix:
+  arg_name: node-prefix
+  required: true
+  help_text: |
+    Node prefix used to generate the qualified name of each node the multislice node provision.
+
+    Must also specify `--node-count`.
+
+node_count:
+  arg_name: node-count
+  required: true
+  type: int
+  help_text: |
+    The number of nodes in a multislice provision, also used to generate the qualified name for
+    nodes in the provision. Value must be greater than 1.
+
+    Must also specify `--node-prefix`.
 
 accelerator_type:
   arg_name: accelerator-type

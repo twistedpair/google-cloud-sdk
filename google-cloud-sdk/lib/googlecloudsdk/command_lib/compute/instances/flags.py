@@ -343,16 +343,29 @@ def AddMaintenanceInterval():
       '--maintenance-interval',
       type=lambda x: x.upper(),
       choices={
-          'PERIODIC': 'VMs receive infrastructure and hypervisor updates '
-                      'on a periodic basis, minimizing the number of'
-                      ' maintenance operations (live migrations or '
-                      'terminations) on an individual VM. Security updates'
-                      ' will still be applied as soon as they are '
-                      'available.'
+          'PERIODIC': (
+              'VMs receive infrastructure and hypervisor updates '
+              'on a periodic basis, minimizing the number of'
+              ' maintenance operations (live migrations or '
+              'terminations) on an individual VM. Security updates'
+              ' will still be applied as soon as they are '
+              'available.'
+          ),
+          'RECURRENT': (
+              'VMs receive infrastructure and hypervisor updates on a periodic'
+              ' basis, minimizing the number of maintenance operations (live'
+              ' migrations or terminations) on an individual VM.  This may mean'
+              ' a VM will take longer to receive an update than if it was'
+              ' configured for AS_NEEDED.  Security updates will'
+              ' still be applied as soonas they are available.'
+              ' RECURRENT is used for GEN3 and Sliceof Hardware'
+              ' VMs.'
+          ),
       },
       help="""
       Specifies how infrastructure upgrades should be applied to the VM.
-      """)
+      """,
+  )
 
 
 def AddMaintenanceFreezeDuration():
@@ -861,13 +874,13 @@ def AddCreateDiskArgs(parser,
 
   if support_replica_zones:
     disk_help += """
-      *replica-zones*::: If specified, the created disk is regional.
-      Only one zone can be specified and it has to be different from
-      the zone of the instance, the other replica zone will be inferred from
-      the instance zone. The disk will be replicated to the specified replica zone
-      and the zone of the newly created instance.
-      """
-    spec['replica-zones'] = arg_parsers.ArgList(max_length=1)
+      *replica-zones*::: Required for each regional disk associated with the
+      instance. Specify the URLs of the zones where the disk should be
+      replicated to. You must provide exactly two replica zones, and one zone
+      must be the same as the instance zone. You can't use this option with boot
+      disks.
+    """
+    spec['replica-zones'] = arg_parsers.ArgList(max_length=2)
 
   if support_provisioned_throughput:
     spec['provisioned-throughput'] = int

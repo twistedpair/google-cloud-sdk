@@ -2060,6 +2060,36 @@
               "FINE_GRAINED_ACCESS_CONTROL"
             ]
           }
+        },
+        "service": {
+          "description": "Output only. Identity of the service which owns the Taxonomy. This field is only populated when the taxonomy is created by a GCP service. Currently only 'DATAPLEX' is supported.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1TaxonomyService"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1TaxonomyService": {
+      "id": "GoogleCloudDatacatalogV1TaxonomyService",
+      "description": "The source system of the Taxonomy.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The GCP service name.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Dataplex.",
+            "Other"
+          ],
+          "enum": [
+            "MANAGING_SYSTEM_UNSPECIFIED",
+            "MANAGING_SYSTEM_DATAPLEX",
+            "MANAGING_SYSTEM_OTHER"
+          ]
+        },
+        "identity": {
+          "description": "P4SA Identity of the service.",
+          "type": "string"
         }
       }
     },
@@ -3837,6 +3867,11 @@
                     },
                     "pageToken": {
                       "description": "The pagination token of the next results page. If not set, the first page is returned. The token is returned in the response to a previous list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Supported field for filter is 'service' and value is 'dataplex'. Eg: service=dataplex.",
                       "location": "query",
                       "type": "string"
                     }

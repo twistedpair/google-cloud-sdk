@@ -4306,6 +4306,116 @@ class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsNasJobsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsCancelRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1CancelNasJobRequest: A
+      GoogleCloudAiplatformV1beta1CancelNasJobRequest resource to be passed as
+      the request body.
+    name: Required. The name of the NasJob to cancel. Format:
+      `projects/{project}/locations/{location}/nasJobs/{nas_job}`
+  """
+
+  googleCloudAiplatformV1beta1CancelNasJobRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1CancelNasJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsNasJobsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1NasJob: A GoogleCloudAiplatformV1beta1NasJob
+      resource to be passed as the request body.
+    parent: Required. The resource name of the Location to create the NasJob
+      in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1NasJob = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJob', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsNasJobsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the NasJob resource to be deleted. Format:
+      `projects/{project}/locations/{location}/nasJobs/{nas_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNasJobsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the NasJob resource. Format:
+      `projects/{project}/locations/{location}/nasJobs/{nas_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNasJobsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsListRequest object.
+
+  Fields:
+    filter: The standard list filter. Supported fields: * `display_name`
+      supports `=`, `!=` comparisons, and `:` wildcard. * `state` supports
+      `=`, `!=` comparisons. * `create_time` supports `=`, `!=`,`<`, `<=`,`>`,
+      `>=` comparisons. `create_time` must be in RFC 3339 format. * `labels`
+      supports general map functions that is: `labels.key=value` - key:value
+      equality `labels.key:* - key existence Some examples of using the filter
+      are: * `state="JOB_STATE_SUCCEEDED" AND display_name:"my_job_*"` *
+      `state!="JOB_STATE_FAILED" OR display_name="my_job"` * `NOT
+      display_name="my_job"` * `create_time>"2021-05-18T00:00:00Z"` *
+      `labels.keyA=valueA` * `labels.keyB:*`
+    pageSize: The standard list page size.
+    pageToken: The standard list page token. Typically obtained via
+      ListNasJobsResponse.next_page_token of the previous
+      JobService.ListNasJobs call.
+    parent: Required. The resource name of the Location to list the NasJobs
+      from. Format: `projects/{project}/locations/{location}`
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsNasJobsNasTrialDetailsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsNasTrialDetailsGetRequest object.
+
+  Fields:
+    name: Required. The name of the NasTrialDetail resource. Format: `projects
+      /{project}/locations/{location}/nasJobs/{nas_job}/nasTrialDetails/{nas_t
+      rial_detail}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNasJobsNasTrialDetailsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNasJobsNasTrialDetailsListRequest object.
+
+  Fields:
+    pageSize: The standard list page size.
+    pageToken: The standard list page token. Typically obtained via
+      ListNasTrialDetailsResponse.next_page_token of the previous
+      JobService.ListNasTrialDetails call.
+    parent: Required. The name of the NasJob resource. Format:
+      `projects/{project}/locations/{location}/nasJobs/{nas_job}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AiplatformProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsOperationsCancelRequest object.
 
@@ -14501,6 +14611,8 @@ class GoogleCloudAiplatformUiStudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -14517,6 +14629,27 @@ class GoogleCloudAiplatformUiStudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformUiStudySpecParameterSpec(_messages.Message):
@@ -20472,6 +20605,8 @@ class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -20488,6 +20623,27 @@ class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1StudySpecParameterSpec(_messages.Message):
@@ -24201,6 +24357,10 @@ class GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest(_messages.Message
 
 class GoogleCloudAiplatformV1beta1CancelHyperparameterTuningJobRequest(_messages.Message):
   r"""Request message for JobService.CancelHyperparameterTuningJob."""
+
+
+class GoogleCloudAiplatformV1beta1CancelNasJobRequest(_messages.Message):
+  r"""Request message for JobService.CancelNasJob."""
 
 
 class GoogleCloudAiplatformV1beta1CancelPipelineJobRequest(_messages.Message):
@@ -29190,6 +29350,33 @@ class GoogleCloudAiplatformV1beta1ListModelsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1ListNasJobsResponse(_messages.Message):
+  r"""Response message for JobService.ListNasJobs
+
+  Fields:
+    nasJobs: List of NasJobs in the requested page. NasJob.nas_job_output of
+      the jobs will not be returned.
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListNasJobsRequest.page_token to obtain that page.
+  """
+
+  nasJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJob', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ListNasTrialDetailsResponse(_messages.Message):
+  r"""Response message for JobService.ListNasTrialDetails
+
+  Fields:
+    nasTrialDetails: List of top NasTrials in the requested page.
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListNasTrialDetailsRequest.page_token to obtain that page.
+  """
+
+  nasTrialDetails = _messages.MessageField('GoogleCloudAiplatformV1beta1NasTrialDetail', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1ListOptimalTrialsRequest(_messages.Message):
   r"""Request message for VizierService.ListOptimalTrials."""
 
@@ -31050,6 +31237,334 @@ class GoogleCloudAiplatformV1beta1MutateDeployedIndexResponse(_messages.Message)
   """
 
   deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 1)
+
+
+class GoogleCloudAiplatformV1beta1NasJob(_messages.Message):
+  r"""Represents a Neural Architecture Search (NAS) job.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the job.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize NasJobs.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. See
+      https://goo.gl/xmQnxf for more information and examples of labels.
+
+  Fields:
+    createTime: Output only. Time when the NasJob was created.
+    displayName: Required. The display name of the NasJob. The name can be up
+      to 128 characters long and can consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key options for a NasJob. If
+      this is set, then all resources created by the NasJob will be encrypted
+      with the provided encryption key.
+    endTime: Output only. Time when the NasJob entered any of the following
+      states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`,
+      `JOB_STATE_CANCELLED`.
+    error: Output only. Only populated when job's state is JOB_STATE_FAILED or
+      JOB_STATE_CANCELLED.
+    labels: The labels with user-defined metadata to organize NasJobs. Label
+      keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. See
+      https://goo.gl/xmQnxf for more information and examples of labels.
+    name: Output only. Resource name of the NasJob.
+    nasJobOutput: Output only. Output of the NasJob.
+    nasJobSpec: Required. The specification of a NasJob.
+    startTime: Output only. Time when the NasJob for the first time entered
+      the `JOB_STATE_RUNNING` state.
+    state: Output only. The detailed state of the job.
+    updateTime: Output only. Time when the NasJob was most recently updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the job.
+
+    Values:
+      JOB_STATE_UNSPECIFIED: The job state is unspecified.
+      JOB_STATE_QUEUED: The job has been just created or resumed and
+        processing has not yet begun.
+      JOB_STATE_PENDING: The service is preparing to run the job.
+      JOB_STATE_RUNNING: The job is in progress.
+      JOB_STATE_SUCCEEDED: The job completed successfully.
+      JOB_STATE_FAILED: The job failed.
+      JOB_STATE_CANCELLING: The job is being cancelled. From this state the
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
+      JOB_STATE_CANCELLED: The job has been cancelled.
+      JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
+    """
+    JOB_STATE_UNSPECIFIED = 0
+    JOB_STATE_QUEUED = 1
+    JOB_STATE_PENDING = 2
+    JOB_STATE_RUNNING = 3
+    JOB_STATE_SUCCEEDED = 4
+    JOB_STATE_FAILED = 5
+    JOB_STATE_CANCELLING = 6
+    JOB_STATE_CANCELLED = 7
+    JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize NasJobs. Label keys
+    and values can be no longer than 64 characters (Unicode codepoints), can
+    only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. See https://goo.gl/xmQnxf
+    for more information and examples of labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('GoogleRpcStatus', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  nasJobOutput = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobOutput', 8)
+  nasJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobSpec', 9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+
+
+class GoogleCloudAiplatformV1beta1NasJobOutput(_messages.Message):
+  r"""Represents a uCAIP NasJob output.
+
+  Fields:
+    multiTrialJobOutput: Output only. The output of this multi-trial Neural
+      Architecture Search (NAS) job.
+  """
+
+  multiTrialJobOutput = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobOutputMultiTrialJobOutput', 1)
+
+
+class GoogleCloudAiplatformV1beta1NasJobOutputMultiTrialJobOutput(_messages.Message):
+  r"""The output of a multi-trial Neural Architecture Search (NAS) jobs.
+
+  Fields:
+    searchTrials: Output only. List of NasTrials that were started as part of
+      search stage.
+    trainTrials: Output only. List of NasTrials that were started as part of
+      train stage.
+  """
+
+  searchTrials = _messages.MessageField('GoogleCloudAiplatformV1beta1NasTrial', 1, repeated=True)
+  trainTrials = _messages.MessageField('GoogleCloudAiplatformV1beta1NasTrial', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1NasJobSpec(_messages.Message):
+  r"""Represents the spec of a NasJob.
+
+  Fields:
+    multiTrialAlgorithmSpec: The spec of multi-trial algorithms.
+    resumeNasJobId: The ID of the existing NasJob in the same Project and
+      Location which will be used to resume search. search_space_spec and
+      nas_algorithm_spec are obtained from previous NasJob hence should not
+      provide them again for this NasJob.
+    searchSpaceSpec: It defines the search space for Neural Architecture
+      Search (NAS).
+  """
+
+  multiTrialAlgorithmSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpec', 1)
+  resumeNasJobId = _messages.StringField(2)
+  searchSpaceSpec = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpec(_messages.Message):
+  r"""The spec of multi-trial Neural Architecture Search (NAS).
+
+  Enums:
+    MultiTrialAlgorithmValueValuesEnum: The multi-trial Neural Architecture
+      Search (NAS) algorithm type. Defaults to `REINFORCEMENT_LEARNING`.
+
+  Fields:
+    metric: Metric specs for the NAS job. Validation for this field is done at
+      `multi_trial_algorithm_spec` field.
+    multiTrialAlgorithm: The multi-trial Neural Architecture Search (NAS)
+      algorithm type. Defaults to `REINFORCEMENT_LEARNING`.
+    searchTrialSpec: Required. Spec for search trials.
+    trainTrialSpec: Spec for train trials. Top N
+      [TrainTrialSpec.max_parallel_trial_count] search trials will be trained
+      for every M [TrainTrialSpec.frequency] trials searched.
+  """
+
+  class MultiTrialAlgorithmValueValuesEnum(_messages.Enum):
+    r"""The multi-trial Neural Architecture Search (NAS) algorithm type.
+    Defaults to `REINFORCEMENT_LEARNING`.
+
+    Values:
+      MULTI_TRIAL_ALGORITHM_UNSPECIFIED: Defaults to `REINFORCEMENT_LEARNING`.
+      REINFORCEMENT_LEARNING: The Reinforcement Learning Algorithm for Multi-
+        trial Neural Architecture Search (NAS).
+      GRID_SEARCH: The Grid Search Algorithm for Multi-trial Neural
+        Architecture Search (NAS).
+    """
+    MULTI_TRIAL_ALGORITHM_UNSPECIFIED = 0
+    REINFORCEMENT_LEARNING = 1
+    GRID_SEARCH = 2
+
+  metric = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecMetricSpec', 1)
+  multiTrialAlgorithm = _messages.EnumField('MultiTrialAlgorithmValueValuesEnum', 2)
+  searchTrialSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecSearchTrialSpec', 3)
+  trainTrialSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecTrainTrialSpec', 4)
+
+
+class GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecMetricSpec(_messages.Message):
+  r"""Represents a metric to optimize.
+
+  Enums:
+    GoalValueValuesEnum: Required. The optimization goal of the metric.
+
+  Fields:
+    goal: Required. The optimization goal of the metric.
+    metricId: Required. The ID of the metric. Must not contain whitespaces.
+  """
+
+  class GoalValueValuesEnum(_messages.Enum):
+    r"""Required. The optimization goal of the metric.
+
+    Values:
+      GOAL_TYPE_UNSPECIFIED: Goal Type will default to maximize.
+      MAXIMIZE: Maximize the goal metric.
+      MINIMIZE: Minimize the goal metric.
+    """
+    GOAL_TYPE_UNSPECIFIED = 0
+    MAXIMIZE = 1
+    MINIMIZE = 2
+
+  goal = _messages.EnumField('GoalValueValuesEnum', 1)
+  metricId = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecSearchTrialSpec(_messages.Message):
+  r"""Represent spec for search trials.
+
+  Fields:
+    maxFailedTrialCount: The number of failed trials that need to be seen
+      before failing the NasJob. If set to 0, Vertex AI decides how many
+      trials must fail before the whole job fails.
+    maxParallelTrialCount: Required. The maximum number of trials to run in
+      parallel.
+    maxTrialCount: Required. The maximum number of Neural Architecture Search
+      (NAS) trials to run.
+    searchTrialJobSpec: Required. The spec of a search trial job. The same
+      spec applies to all search trials.
+  """
+
+  maxFailedTrialCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxParallelTrialCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxTrialCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  searchTrialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 4)
+
+
+class GoogleCloudAiplatformV1beta1NasJobSpecMultiTrialAlgorithmSpecTrainTrialSpec(_messages.Message):
+  r"""Represent spec for train trials.
+
+  Fields:
+    frequency: Required. Frequency of search trials to start train stage. Top
+      N [TrainTrialSpec.max_parallel_trial_count] search trials will be
+      trained for every M [TrainTrialSpec.frequency] trials searched.
+    maxParallelTrialCount: Required. The maximum number of trials to run in
+      parallel.
+    trainTrialJobSpec: Required. The spec of a train trial job. The same spec
+      applies to all train trials.
+  """
+
+  frequency = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxParallelTrialCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  trainTrialJobSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1CustomJobSpec', 3)
+
+
+class GoogleCloudAiplatformV1beta1NasTrial(_messages.Message):
+  r"""Represents a uCAIP NasJob trial.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the NasTrial.
+
+  Fields:
+    endTime: Output only. Time when the NasTrial's status changed to
+      `SUCCEEDED` or `INFEASIBLE`.
+    finalMeasurement: Output only. The final measurement containing the
+      objective value.
+    id: Output only. The identifier of the NasTrial assigned by the service.
+    startTime: Output only. Time when the NasTrial was started.
+    state: Output only. The detailed state of the NasTrial.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the NasTrial.
+
+    Values:
+      STATE_UNSPECIFIED: The NasTrial state is unspecified.
+      REQUESTED: Indicates that a specific NasTrial has been requested, but it
+        has not yet been suggested by the service.
+      ACTIVE: Indicates that the NasTrial has been suggested.
+      STOPPING: Indicates that the NasTrial should stop according to the
+        service.
+      SUCCEEDED: Indicates that the NasTrial is completed successfully.
+      INFEASIBLE: Indicates that the NasTrial should not be attempted again.
+        The service will set a NasTrial to INFEASIBLE when it's done but
+        missing the final_measurement.
+    """
+    STATE_UNSPECIFIED = 0
+    REQUESTED = 1
+    ACTIVE = 2
+    STOPPING = 3
+    SUCCEEDED = 4
+    INFEASIBLE = 5
+
+  endTime = _messages.StringField(1)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1beta1Measurement', 2)
+  id = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class GoogleCloudAiplatformV1beta1NasTrialDetail(_messages.Message):
+  r"""Represents a NasTrial details along with it's parameters. If there is a
+  corresponding train NasTrial, the train NasTrial is also returned.
+
+  Fields:
+    name: Output only. Resource name of the NasTrialDetail.
+    parameters: The parameters for the NasJob NasTrial.
+    searchTrial: The requested search NasTrial.
+    trainTrial: The train NasTrial corresponding to search_trial. Only
+      populated if search_trial is used for training.
+  """
+
+  name = _messages.StringField(1)
+  parameters = _messages.StringField(2)
+  searchTrial = _messages.MessageField('GoogleCloudAiplatformV1beta1NasTrial', 3)
+  trainTrial = _messages.MessageField('GoogleCloudAiplatformV1beta1NasTrial', 4)
 
 
 class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata(_messages.Message):
@@ -35870,6 +36385,8 @@ class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -35886,6 +36403,27 @@ class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpec(_messages.Message):

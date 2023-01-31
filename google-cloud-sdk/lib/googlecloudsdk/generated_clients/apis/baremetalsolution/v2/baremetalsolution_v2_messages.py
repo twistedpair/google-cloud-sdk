@@ -732,10 +732,27 @@ class BaremetalsolutionProjectsLocationsVolumesDeleteRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsVolumesDeleteRequest object.
 
   Fields:
+    force: If true, will put into cooloff all volume's luns as well. Luns must
+      not be attached to any Instances. If false operation will fail if a
+      volume has active (not in cooloff) luns.
     name: Required. The name of the Volume to delete.
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesEvictRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesEvictRequest object.
+
+  Fields:
+    evictVolumeRequest: A EvictVolumeRequest resource to be passed as the
+      request body.
+    name: Required. The name of the Volume.
+  """
+
+  evictVolumeRequest = _messages.MessageField('EvictVolumeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class BaremetalsolutionProjectsLocationsVolumesGetRequest(_messages.Message):
@@ -957,6 +974,10 @@ class Empty(_messages.Message):
 
 class EnableInteractiveSerialConsoleRequest(_messages.Message):
   r"""Message for enabling the interactive serial console on an instance."""
+
+
+class EvictVolumeRequest(_messages.Message):
+  r"""Request for skip volume cooloff and delete it."""
 
 
 class FetchInstanceProvisioningSettingsResponse(_messages.Message):
@@ -2160,33 +2181,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OperationMetadata(_messages.Message):
-  r"""Represents the metadata from a long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used with the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user requested
-      the cancellation of the operation. Operations that have been
-      successfully cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the action executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class ProvisioningConfig(_messages.Message):
   r"""A provisioning configuration.
 
@@ -2734,6 +2728,9 @@ class Volume(_messages.Message):
     snapshotSchedulePolicy: The name of the snapshot schedule policy in use
       for this volume, if any.
     state: The state of this storage volume.
+    storageAggregatePool: Input only. Name of the storage aggregate pool to
+      allocate the volume in. Can be used only for
+      VOLUME_PERFORMANCE_TIER_ASSIGNED volumes.
     storageType: The storage type for this volume.
     workloadProfile: The workload profile for the volume.
   """
@@ -2865,8 +2862,9 @@ class Volume(_messages.Message):
   snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 18)
   snapshotSchedulePolicy = _messages.StringField(19)
   state = _messages.EnumField('StateValueValuesEnum', 20)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 21)
-  workloadProfile = _messages.EnumField('WorkloadProfileValueValuesEnum', 22)
+  storageAggregatePool = _messages.StringField(21)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 22)
+  workloadProfile = _messages.EnumField('WorkloadProfileValueValuesEnum', 23)
 
 
 class VolumeConfig(_messages.Message):
@@ -2893,6 +2891,9 @@ class VolumeConfig(_messages.Message):
     protocol: Volume protocol.
     sizeGb: The requested size of this volume, in GB.
     snapshotsEnabled: Whether snapshots should be enabled.
+    storageAggregatePool: Input only. Name of the storage aggregate pool to
+      allocate the volume in. Can be used only for
+      VOLUME_PERFORMANCE_TIER_ASSIGNED volumes.
     type: The type of this Volume.
     userNote: User note field, it can be used by customers to add additional
       information for the BMS Ops team .
@@ -2946,8 +2947,9 @@ class VolumeConfig(_messages.Message):
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 8)
   sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   snapshotsEnabled = _messages.BooleanField(10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  userNote = _messages.StringField(12)
+  storageAggregatePool = _messages.StringField(11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  userNote = _messages.StringField(13)
 
 
 class VolumeLunRange(_messages.Message):

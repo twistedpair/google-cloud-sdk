@@ -43,6 +43,7 @@ class DocumentaiV1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_processorTypes = self.ProjectsLocationsProcessorTypesService(self)
     self.projects_locations_processors_humanReviewConfig = self.ProjectsLocationsProcessorsHumanReviewConfigService(self)
+    self.projects_locations_processors_processorVersions_evaluations = self.ProjectsLocationsProcessorsProcessorVersionsEvaluationsService(self)
     self.projects_locations_processors_processorVersions = self.ProjectsLocationsProcessorsProcessorVersionsService(self)
     self.projects_locations_processors = self.ProjectsLocationsProcessorsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -278,6 +279,70 @@ class DocumentaiV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsProcessorsProcessorVersionsEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_processors_processorVersions_evaluations resource."""
+
+    _NAME = 'projects_locations_processors_processorVersions_evaluations'
+
+    def __init__(self, client):
+      super(DocumentaiV1.ProjectsLocationsProcessorsProcessorVersionsEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specific evaluation.
+
+      Args:
+        request: (DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1Evaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions/{processorVersionsId}/evaluations/{evaluationsId}',
+        http_method='GET',
+        method_id='documentai.projects.locations.processors.processorVersions.evaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsGetRequest',
+        response_type_name='GoogleCloudDocumentaiV1Evaluation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a set of evaluations for a given processor version.
+
+      Args:
+        request: (DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDocumentaiV1ListEvaluationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions/{processorVersionsId}/evaluations',
+        http_method='GET',
+        method_id='documentai.projects.locations.processors.processorVersions.evaluations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/evaluations',
+        request_field='',
+        request_type_name='DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluationsListRequest',
+        response_type_name='GoogleCloudDocumentaiV1ListEvaluationsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsProcessorsProcessorVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_processors_processorVersions resource."""
 
@@ -369,6 +434,33 @@ class DocumentaiV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EvaluateProcessorVersion(self, request, global_params=None):
+      r"""Evaluates a ProcessorVersion against annotated documents, producing an Evaluation.
+
+      Args:
+        request: (DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluateProcessorVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('EvaluateProcessorVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EvaluateProcessorVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions/{processorVersionsId}:evaluateProcessorVersion',
+        http_method='POST',
+        method_id='documentai.projects.locations.processors.processorVersions.evaluateProcessorVersion',
+        ordered_params=['processorVersion'],
+        path_params=['processorVersion'],
+        query_params=[],
+        relative_path='v1/{+processorVersion}:evaluateProcessorVersion',
+        request_field='googleCloudDocumentaiV1EvaluateProcessorVersionRequest',
+        request_type_name='DocumentaiProjectsLocationsProcessorsProcessorVersionsEvaluateProcessorVersionRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a processor version detail.
 
@@ -447,6 +539,33 @@ class DocumentaiV1(base_api.BaseApiClient):
         request_field='googleCloudDocumentaiV1ProcessRequest',
         request_type_name='DocumentaiProjectsLocationsProcessorsProcessorVersionsProcessRequest',
         response_type_name='GoogleCloudDocumentaiV1ProcessResponse',
+        supports_download=False,
+    )
+
+    def Train(self, request, global_params=None):
+      r"""Trains a new processor version. Operation metadata is returned as cloud_documentai_core.TrainProcessorVersionMetadata.
+
+      Args:
+        request: (DocumentaiProjectsLocationsProcessorsProcessorVersionsTrainRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Train')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Train.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/processors/{processorsId}/processorVersions:train',
+        http_method='POST',
+        method_id='documentai.projects.locations.processors.processorVersions.train',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/processorVersions:train',
+        request_field='googleCloudDocumentaiV1TrainProcessorVersionRequest',
+        request_type_name='DocumentaiProjectsLocationsProcessorsProcessorVersionsTrainRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

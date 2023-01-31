@@ -136,6 +136,33 @@ class RedisV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetCertificateAuthority(self, request, global_params=None):
+      r"""Gets the details of certificate authority information for Redis cluster.
+
+      Args:
+        request: (RedisProjectsLocationsClustersGetCertificateAuthorityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CertificateAuthority) The response message.
+      """
+      config = self.GetMethodConfig('GetCertificateAuthority')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCertificateAuthority.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/certificateAuthority',
+        http_method='GET',
+        method_id='redis.projects.locations.clusters.getCertificateAuthority',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}/certificateAuthority',
+        request_field='',
+        request_type_name='RedisProjectsLocationsClustersGetCertificateAuthorityRequest',
+        response_type_name='CertificateAuthority',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all Redis clusters owned by a project in either the specified location (region) or all locations. The location should have the following format: * `projects/{project_id}/locations/{location_id}` If `location_id` is specified as `-` (wildcard), then all regions available to the project are queried, and the results are aggregated.
 

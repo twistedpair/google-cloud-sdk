@@ -93,7 +93,7 @@ SCHEMA = s.Message(
             error_code=s.Value(converter=c.EnumConverter('ERROR_CODE')),
             file=s.Value('static_file', converter=c.ToJsonString),
             mime_type=s.Value(converter=c.ToJsonString))),
-    flexible_runtime_settings=s.Message(
+    runtime_config=s.Message('flexible_runtime_settings',
         operating_system=s.Value(converter=c.ToJsonString),
         runtime_version=s.Value(converter=c.ToJsonString),
     ),

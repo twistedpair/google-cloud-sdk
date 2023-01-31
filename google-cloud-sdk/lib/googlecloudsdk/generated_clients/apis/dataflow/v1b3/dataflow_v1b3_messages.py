@@ -1963,23 +1963,6 @@ class DataflowProjectsLocationsSnapshotsListRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
-class DataflowProjectsLocationsSqlValidateRequest(_messages.Message):
-  r"""A DataflowProjectsLocationsSqlValidateRequest object.
-
-  Fields:
-    location: The [regional endpoint]
-      (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints) to
-      which to direct the request.
-    projectId: Required. The ID of the Cloud Platform project that the job
-      belongs to.
-    query: The sql query to validate.
-  """
-
-  location = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  query = _messages.StringField(3)
-
-
 class DataflowProjectsLocationsTemplatesCreateRequest(_messages.Message):
   r"""A DataflowProjectsLocationsTemplatesCreateRequest object.
 
@@ -3922,9 +3905,11 @@ class JobMetadata(_messages.Message):
 class JobMetrics(_messages.Message):
   r"""JobMetrics contains a collection of metrics describing the detailed
   progress of a Dataflow job. Metrics correspond to user-defined and system-
-  defined metrics in the job. This resource captures only the most recent
-  values of each metric; time-series data can be queried for them (under the
-  same metric names) from Cloud Monitoring.
+  defined metrics in the job. For more information, see [Dataflow job metrics]
+  (https://cloud.google.com/dataflow/docs/guides/using-monitoring-intf). This
+  resource captures only the most recent values of each metric; time-series
+  data can be queried for them (under the same metric names) from Cloud
+  Monitoring.
 
   Fields:
     metricTime: Timestamp as of which metric values are current.
@@ -5247,31 +5232,6 @@ class PubsubSnapshotMetadata(_messages.Message):
   topicName = _messages.StringField(3)
 
 
-class QueryInfo(_messages.Message):
-  r"""Information about a validated query.
-
-  Enums:
-    QueryPropertyValueListEntryValuesEnum:
-
-  Fields:
-    queryProperty: Includes an entry for each satisfied QueryProperty.
-  """
-
-  class QueryPropertyValueListEntryValuesEnum(_messages.Enum):
-    r"""QueryPropertyValueListEntryValuesEnum enum type.
-
-    Values:
-      QUERY_PROPERTY_UNSPECIFIED: The query property is unknown or
-        unspecified.
-      HAS_UNBOUNDED_SOURCE: Indicates this query reads from >= 1 unbounded
-        source.
-    """
-    QUERY_PROPERTY_UNSPECIFIED = 0
-    HAS_UNBOUNDED_SOURCE = 1
-
-  queryProperty = _messages.EnumField('QueryPropertyValueListEntryValuesEnum', 1, repeated=True)
-
-
 class ReadInstruction(_messages.Message):
   r"""An instruction that reads records. Takes no inputs, produces one output.
 
@@ -5481,67 +5441,70 @@ class RuntimeEnvironment(_messages.Message):
   r"""The environment values to set at runtime.
 
   Enums:
-    IpConfigurationValueValuesEnum: Configuration for VM IPs.
+    IpConfigurationValueValuesEnum: Optional. Configuration for VM IPs.
 
   Messages:
-    AdditionalUserLabelsValue: Additional user labels to be specified for the
-      job. Keys and values should follow the restrictions specified in the
-      [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
+    AdditionalUserLabelsValue: Optional. Additional user labels to be
+      specified for the job. Keys and values should follow the restrictions
+      specified in the [labeling
+      restrictions](https://cloud.google.com/compute/docs/labeling-
       resources#restrictions) page. An object containing a list of "key":
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
 
   Fields:
-    additionalExperiments: Additional experiment flags for the job, specified
-      with the `--experiments` option.
-    additionalUserLabels: Additional user labels to be specified for the job.
-      Keys and values should follow the restrictions specified in the
+    additionalExperiments: Optional. Additional experiment flags for the job,
+      specified with the `--experiments` option.
+    additionalUserLabels: Optional. Additional user labels to be specified for
+      the job. Keys and values should follow the restrictions specified in the
       [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
       resources#restrictions) page. An object containing a list of "key":
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
-    bypassTempDirValidation: Whether to bypass the safety checks for the job's
-      temporary directory. Use with caution.
-    enableStreamingEngine: Whether to enable Streaming Engine for the job.
-    ipConfiguration: Configuration for VM IPs.
-    kmsKeyName: Name for the Cloud KMS key for the job. Key format is:
-      projects//locations//keyRings//cryptoKeys/
-    machineType: The machine type to use for the job. Defaults to the value
-      from the template if not specified.
-    maxWorkers: The maximum number of Google Compute Engine instances to be
-      made available to your pipeline during execution, from 1 to 1000.
-    network: Network to which VMs will be assigned. If empty or unspecified,
-      the service will use the network "default".
-    numWorkers: The initial number of Google Compute Engine instances for the
-      job.
-    serviceAccountEmail: The email address of the service account to run the
-      job as.
-    subnetwork: Subnetwork to which VMs will be assigned, if desired. You can
-      specify a subnetwork using either a complete URL or an abbreviated path.
-      Expected to be of the form "https://www.googleapis.com/compute/v1/projec
-      ts/HOST_PROJECT_ID/regions/REGION/subnetworks/SUBNETWORK" or
-      "regions/REGION/subnetworks/SUBNETWORK". If the subnetwork is located in
-      a Shared VPC network, you must use the complete URL.
-    tempLocation: The Cloud Storage path to use for temporary files. Must be a
-      valid Cloud Storage URL, beginning with `gs://`.
-    workerRegion: The Compute Engine region
+    bypassTempDirValidation: Optional. Whether to bypass the safety checks for
+      the job's temporary directory. Use with caution.
+    enableStreamingEngine: Optional. Whether to enable Streaming Engine for
+      the job.
+    ipConfiguration: Optional. Configuration for VM IPs.
+    kmsKeyName: Optional. Name for the Cloud KMS key for the job. Key format
+      is: projects//locations//keyRings//cryptoKeys/
+    machineType: Optional. The machine type to use for the job. Defaults to
+      the value from the template if not specified.
+    maxWorkers: Optional. The maximum number of Google Compute Engine
+      instances to be made available to your pipeline during execution, from 1
+      to 1000. The default value is 1.
+    network: Optional. Network to which VMs will be assigned. If empty or
+      unspecified, the service will use the network "default".
+    numWorkers: Optional. The initial number of Google Compute Engine
+      instances for the job. The default value is 11.
+    serviceAccountEmail: Optional. The email address of the service account to
+      run the job as.
+    subnetwork: Optional. Subnetwork to which VMs will be assigned, if
+      desired. You can specify a subnetwork using either a complete URL or an
+      abbreviated path. Expected to be of the form "https://www.googleapis.com
+      /compute/v1/projects/HOST_PROJECT_ID/regions/REGION/subnetworks/SUBNETWO
+      RK" or "regions/REGION/subnetworks/SUBNETWORK". If the subnetwork is
+      located in a Shared VPC network, you must use the complete URL.
+    tempLocation: Required. The Cloud Storage path to use for temporary files.
+      Must be a valid Cloud Storage URL, beginning with `gs://`.
+    workerRegion: Required. The Compute Engine region
       (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
       which worker processing should occur, e.g. "us-west1". Mutually
       exclusive with worker_zone. If neither worker_region nor worker_zone is
       specified, default to the control plane's region.
-    workerZone: The Compute Engine zone
+    workerZone: Optional. The Compute Engine zone
       (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
       which worker processing should occur, e.g. "us-west1-a". Mutually
       exclusive with worker_region. If neither worker_region nor worker_zone
       is specified, a zone in the control plane's region is chosen based on
       available capacity. If both `worker_zone` and `zone` are set,
       `worker_zone` takes precedence.
-    zone: The Compute Engine [availability
+    zone: Optional. The Compute Engine [availability
       zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones)
       for launching worker instances to run your pipeline. In the future,
       worker_zone will take precedence.
   """
 
   class IpConfigurationValueValuesEnum(_messages.Enum):
-    r"""Configuration for VM IPs.
+    r"""Optional. Configuration for VM IPs.
 
     Values:
       WORKER_IP_UNSPECIFIED: The configuration is unknown, or unspecified.
@@ -5554,8 +5517,8 @@ class RuntimeEnvironment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalUserLabelsValue(_messages.Message):
-    r"""Additional user labels to be specified for the job. Keys and values
-    should follow the restrictions specified in the [labeling
+    r"""Optional. Additional user labels to be specified for the job. Keys and
+    values should follow the restrictions specified in the [labeling
     restrictions](https://cloud.google.com/compute/docs/labeling-
     resources#restrictions) page. An object containing a list of "key": value
     pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
@@ -7315,19 +7278,6 @@ class TransformSummary(_messages.Message):
   kind = _messages.EnumField('KindValueValuesEnum', 4)
   name = _messages.StringField(5)
   outputCollectionName = _messages.StringField(6, repeated=True)
-
-
-class ValidateResponse(_messages.Message):
-  r"""Response to the validation request.
-
-  Fields:
-    errorMessage: Will be empty if validation succeeds.
-    queryInfo: Information about the validated query. Not defined if
-      validation fails.
-  """
-
-  errorMessage = _messages.StringField(1)
-  queryInfo = _messages.MessageField('QueryInfo', 2)
 
 
 class WorkItem(_messages.Message):

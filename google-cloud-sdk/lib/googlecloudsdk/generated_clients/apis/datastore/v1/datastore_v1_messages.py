@@ -225,6 +225,9 @@ class CommitRequest(_messages.Message):
       followed by `insert` - `upsert` followed by `insert` - `delete` followed
       by `update` When mode is `NON_TRANSACTIONAL`, no two mutations may
       affect a single entity.
+    singleUseTransaction: Options for beginning a new transaction for this
+      request. The transaction is committed when the request completes. If
+      specified, TransactionOptions.mode must be TransactionOptions.ReadWrite.
     transaction: The identifier of the transaction associated with the commit.
       A transaction identifier is returned by a call to
       Datastore.BeginTransaction.
@@ -248,7 +251,8 @@ class CommitRequest(_messages.Message):
   databaseId = _messages.StringField(1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   mutations = _messages.MessageField('Mutation', 3, repeated=True)
-  transaction = _messages.BytesField(4)
+  singleUseTransaction = _messages.MessageField('TransactionOptions', 4)
+  transaction = _messages.BytesField(5)
 
 
 class CommitResponse(_messages.Message):
@@ -1733,12 +1737,16 @@ class LookupResponse(_messages.Message):
       of results in this field is undefined and has no relation to the order
       of the keys in the input.
     readTime: The time at which these entities were read or found missing.
+    transaction: The identifier of the transaction that was started as part of
+      this Lookup request. Set only when ReadOptions.begin_transaction was set
+      in LookupRequest.read_options.
   """
 
   deferred = _messages.MessageField('Key', 1, repeated=True)
   found = _messages.MessageField('EntityResult', 2, repeated=True)
   missing = _messages.MessageField('EntityResult', 3, repeated=True)
   readTime = _messages.StringField(4)
+  transaction = _messages.BytesField(5)
 
 
 class Mutation(_messages.Message):
@@ -1892,7 +1900,8 @@ class PropertyFilter(_messages.Message):
         Requires: * No other `NOT_EQUAL` or `NOT_IN` is in the same query. *
         That `property` comes first in the `order_by`.
       HAS_ANCESTOR: Limit the result set to the given entity and its
-        descendants. Requires: * That `value` is an entity key.
+        descendants. Requires: * That `value` is an entity key. * No other
+        `HAS_ANCESTOR` is in the same query.
       NOT_IN: The value of the `property` is not in the given array. Requires:
         * That `value` is a non-empty `ArrayValue` with at most 10 values. *
         No other `IN`, `NOT_IN`, `NOT_EQUAL` is in the same query. * That
@@ -2091,6 +2100,10 @@ class ReadOptions(_messages.Message):
       use.
 
   Fields:
+    newTransaction: Options for beginning a new transaction for this request.
+      The new transaction identifier will be returned in the corresponding
+      response as either LookupResponse.transaction or
+      RunQueryResponse.transaction.
     readConsistency: The non-transactional read consistency to use.
     readTime: Reads entities as they were at the given time. This may not be
       older than 270 seconds. This value is only supported for Cloud Firestore
@@ -2112,9 +2125,10 @@ class ReadOptions(_messages.Message):
     STRONG = 1
     EVENTUAL = 2
 
-  readConsistency = _messages.EnumField('ReadConsistencyValueValuesEnum', 1)
-  readTime = _messages.StringField(2)
-  transaction = _messages.BytesField(3)
+  newTransaction = _messages.MessageField('TransactionOptions', 1)
+  readConsistency = _messages.EnumField('ReadConsistencyValueValuesEnum', 2)
+  readTime = _messages.StringField(3)
+  transaction = _messages.BytesField(4)
 
 
 class ReadWrite(_messages.Message):
@@ -2194,10 +2208,15 @@ class RunAggregationQueryResponse(_messages.Message):
   Fields:
     batch: A batch of aggregation results. Always present.
     query: The parsed form of the `GqlQuery` from the request, if it was set.
+    transaction: The identifier of the transaction that was started as part of
+      this RunAggregationQuery request. Set only when
+      ReadOptions.begin_transaction was set in
+      RunAggregationQueryRequest.read_options.
   """
 
   batch = _messages.MessageField('AggregationResultBatch', 1)
   query = _messages.MessageField('AggregationQuery', 2)
+  transaction = _messages.BytesField(3)
 
 
 class RunQueryRequest(_messages.Message):
@@ -2229,10 +2248,14 @@ class RunQueryResponse(_messages.Message):
   Fields:
     batch: A batch of query results (always present).
     query: The parsed form of the `GqlQuery` from the request, if it was set.
+    transaction: The identifier of the transaction that was started as part of
+      this RunQuery request. Set only when ReadOptions.begin_transaction was
+      set in RunQueryRequest.read_options.
   """
 
   batch = _messages.MessageField('QueryResultBatch', 1)
   query = _messages.MessageField('Query', 2)
+  transaction = _messages.BytesField(3)
 
 
 class StandardQueryParameters(_messages.Message):

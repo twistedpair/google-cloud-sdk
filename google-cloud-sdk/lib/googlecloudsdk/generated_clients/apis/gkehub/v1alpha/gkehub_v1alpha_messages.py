@@ -624,6 +624,7 @@ class CommonFeatureSpec(_messages.Message):
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
+    namespaceactuation: Namespace Actuation feature spec
     rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
     workloadcertificate: Workload Certificate spec.
     workloadmigration: The specification for WorkloadMigration feature.
@@ -635,9 +636,10 @@ class CommonFeatureSpec(_messages.Message):
   fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
   helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 7)
-  workloadcertificate = _messages.MessageField('FeatureSpec', 8)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 9)
+  namespaceactuation = _messages.MessageField('NamespaceActuationFeatureSpec', 7)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 8)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 9)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 10)
 
 
 class CommonFeatureState(_messages.Message):
@@ -647,6 +649,7 @@ class CommonFeatureState(_messages.Message):
     appdevexperience: Appdevexperience specific state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
+    namespaceactuation: Namespace Actuation feature state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     servicemesh: Service Mesh-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
@@ -655,9 +658,10 @@ class CommonFeatureState(_messages.Message):
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
   fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 2)
   helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 4)
-  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 5)
-  state = _messages.MessageField('FeatureState', 6)
+  namespaceactuation = _messages.MessageField('NamespaceActuationFeatureState', 4)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 5)
+  servicemesh = _messages.MessageField('ServiceMeshFeatureState', 6)
+  state = _messages.MessageField('FeatureState', 7)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -1554,6 +1558,33 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(3)
 
 
+class CreateReferenceRequest(_messages.Message):
+  r"""The CreateReferenceRequest request.
+
+  Fields:
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+    reference: Required. The reference to be created.
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
+      field is currently required but id auto generation might be added in the
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  parent = _messages.StringField(1)
+  reference = _messages.MessageField('Reference', 2)
+  referenceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
 class CustomField(_messages.Message):
   r"""Custom fields. These can be used to create a counter with arbitrary
   field/value pairs. See: go/rpcsp-custom-fields.
@@ -1601,6 +1632,24 @@ class DataAccessOptions(_messages.Message):
     LOG_FAIL_CLOSED = 1
 
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class DeleteReferenceRequest(_messages.Message):
+  r"""The DeleteReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class EdgeCluster(_messages.Message):
@@ -2148,6 +2197,20 @@ class GenerateConnectManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GetReferenceRequest(_messages.Message):
+  r"""The GetReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+  """
+
+  name = _messages.StringField(1)
+
+
 class GkeCluster(_messages.Message):
   r"""GkeCluster contains information specific to GKE clusters.
 
@@ -2581,6 +2644,10 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any subresource from this Membership will
+      also be deleted. (Otherwise, the request will only work if the
+      Membership has no subresource.) following go/ccfe-nested-
+      collections#cascading-deletion.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -2596,8 +2663,9 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
@@ -3982,6 +4050,39 @@ class ListRBACRoleBindingsResponse(_messages.Message):
   rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
 
 
+class ListReferencesRequest(_messages.Message):
+  r"""The ListResourceMetadataRequest request.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more References left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class ListReferencesResponse(_messages.Message):
+  r"""The ListReferencesResponse response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    references: The list of references.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
+
+
 class ListScopesForMembershipResponse(_messages.Message):
   r"""List of paginated scopes for a membership.
 
@@ -4362,6 +4463,7 @@ class MembershipFeatureSpec(_messages.Message):
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
+    namespaceactuation: FNS Actuation membership spec
     policycontroller: Policy Controller spec.
     rbacrolebindingactuation: RBAC Role Binding Actuation membership spec
     workloadcertificate: Workload Certificate spec.
@@ -4375,9 +4477,10 @@ class MembershipFeatureSpec(_messages.Message):
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 6)
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 7)
   mesh = _messages.MessageField('ServiceMeshMembershipSpec', 8)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 9)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 10)
-  workloadcertificate = _messages.MessageField('MembershipSpec', 11)
+  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipSpec', 9)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 10)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipSpec', 11)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 12)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -4392,6 +4495,7 @@ class MembershipFeatureState(_messages.Message):
     helloworld: Hello World-specific state.
     identityservice: Identity Service-specific state.
     metering: Metering-specific state.
+    namespaceactuation: FNS Actuation membership state
     policycontroller: Policycontroller-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation membership state
     servicemesh: Service Mesh-specific state.
@@ -4405,10 +4509,11 @@ class MembershipFeatureState(_messages.Message):
   helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
   identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
   metering = _messages.MessageField('MeteringMembershipState', 7)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 8)
-  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 9)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 10)
-  state = _messages.MessageField('FeatureState', 11)
+  namespaceactuation = _messages.MessageField('NamespaceActuationMembershipState', 8)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 9)
+  rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationMembershipState', 10)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 11)
+  state = _messages.MessageField('FeatureState', 12)
 
 
 class MembershipSpec(_messages.Message):
@@ -4547,6 +4652,7 @@ class Namespace(_messages.Message):
     deleteTime: Output only. When the namespace was deleted.
     name: The resource name for the namespace
       `projects/{project}/locations/{location}/namespaces/{namespace}`
+    scope: A string attribute.
     state: Output only. State of the namespace resource.
     tenancyProject: Tenancy Project associated with the namespace
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -4558,10 +4664,36 @@ class Namespace(_messages.Message):
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   name = _messages.StringField(3)
-  state = _messages.MessageField('NamespaceLifecycleState', 4)
-  tenancyProject = _messages.IntegerField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  scope = _messages.StringField(4)
+  state = _messages.MessageField('NamespaceLifecycleState', 5)
+  tenancyProject = _messages.IntegerField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class NamespaceActuationFeatureSpec(_messages.Message):
+  r"""An empty spec for actuation feature. This is required since Feature
+  proto requires a spec.
+  """
+
+
+
+class NamespaceActuationFeatureState(_messages.Message):
+  r"""NamespaceActuation Feature State."""
+
+
+class NamespaceActuationMembershipSpec(_messages.Message):
+  r"""**Namespace Actuation**: The membership-specific input for
+  NamespaceActuation feature.
+  """
+
+
+
+class NamespaceActuationMembershipState(_messages.Message):
+  r"""**Namespace Actuation**: An empty state left as an example membership-
+  specific Feature state.
+  """
+
 
 
 class NamespaceBinding(_messages.Message):
@@ -5029,7 +5161,7 @@ class PolicyControllerMembershipState(_messages.Message):
         the cluster. The PCH has a Membership, is aware of the version the
         cluster should be running in, but has not confirmed for itself that
         the PC is running with that version.
-      DECOMISSIONING: The PC may have resources on the cluster, but the PCH
+      DECOMMISSIONING: The PC may have resources on the cluster, but the PCH
         wishes to remove the Membership. The Membership still exists.
       CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
         to make it operational. Entering a CLUSTER_ERROR state happens
@@ -5052,7 +5184,7 @@ class PolicyControllerMembershipState(_messages.Message):
     INSTALLING = 2
     ACTIVE = 3
     UPDATING = 4
-    DECOMISSIONING = 5
+    DECOMMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
@@ -5178,7 +5310,7 @@ class PolicyControllerOnClusterState(_messages.Message):
         the cluster. The PCH has a Membership, is aware of the version the
         cluster should be running in, but has not confirmed for itself that
         the PC is running with that version.
-      DECOMISSIONING: The PC may have resources on the cluster, but the PCH
+      DECOMMISSIONING: The PC may have resources on the cluster, but the PCH
         wishes to remove the Membership. The Membership still exists.
       CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
         to make it operational. Entering a CLUSTER_ERROR state happens
@@ -5201,7 +5333,7 @@ class PolicyControllerOnClusterState(_messages.Message):
     INSTALLING = 2
     ACTIVE = 3
     UPDATING = 4
-    DECOMISSIONING = 5
+    DECOMMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
@@ -5383,6 +5515,69 @@ class RBACRoleBindingLifecycleState(_messages.Message):
     UPDATING = 4
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class Reference(_messages.Message):
+  r"""Represents a reference to a resource.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    createTime: Output only. The creation time.
+    details: Details of the reference type with no implied semantics.
+      Cumulative size of the field must not be more than 1KiB. Note: For the
+      Arcus Reference API, you must add the proto you store in this field to
+      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+    name: Output only. Relative resource name of the reference. Includes
+      target resource as a parent and reference uid
+      `{target_resource}/references/{reference_id}`. For example,
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    sourceResource: Required. Full resource name of the resource which refers
+      the target resource. For example:
+      //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
+    type: Required. Type of the reference. A service might impose limits on
+      number of references of a specific type. Note: It's recommended to use
+      CAPITALS_WITH_UNDERSCORES style for a type name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceResource = _messages.StringField(4)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class ResourceManifest(_messages.Message):

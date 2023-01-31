@@ -438,20 +438,16 @@ def AddRestoreClusterSourceFlags(parser):
   backup_source_group.add_argument(
       '--backup', required=True, type=str, help='AlloyDB backup ID')
 
-  # PITR RestoreCluster not available to external customers yet
-  pitr_source_group = group.add_group(
-      hidden=True,
+  continuous_backup_source_group = group.add_group(
       help='Restore a cluster from a source cluster at a given point in time.')
-  pitr_source_group.add_argument(
+  continuous_backup_source_group.add_argument(
       '--source-cluster',
       required=True,
-      hidden=True,
       help=('Source cluster name.'))
-  pitr_source_group.add_argument(
+  continuous_backup_source_group.add_argument(
       '--point-in-time',
       type=arg_parsers.Datetime.Parse,
       required=True,
-      hidden=True,
       help=('Point in time to restore to, in RFC 3339 format. For example, '
             '2012-11-15T16:19:00.094Z.'))
 
@@ -462,30 +458,28 @@ def AddContinuousBackupConfigFlags(parser):
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
   """
-  group = parser.add_group(
-      mutex=True, hidden=True, help='Continuous Backup configuration.')
-  enable_config_group = group.add_group(
-      help='Enable continuous backup configuration.')
-  # TODO(b/258257161): Consider changing 'disable-continuous-backup' to
-  # 'enable-continuous-backup' and 'store_false' instead
+  group = parser.add_group(mutex=False, help='Continuous Backup configuration.')
   group.add_argument(
-      '--disable-continuous-backup',
-      hidden=True,
+      '--enable-continuous-backup',
       action='store_true',
-      help='Disables Continuous Backups on the cluster.')
-  enable_config_group.add_argument(
+      default=None,
+      help='Enables Continuous Backups on the cluster.')
+  group.add_argument(
       '--continuous-backup-recovery-window-days',
-      hidden=True,
       metavar='RECOVERY_PERIOD',
       type=int,
       help=('Recovery window of the log files and backups saved to support '
             'Continuous Backups.'))
   kms_resource_args.AddKmsKeyResourceArg(
-      enable_config_group,
+      group,
       'continuous backup',
       flag_overrides=GetContinuousBackupKmsFlagOverrides(),
-      permission_info="The 'AlloyDB Service Agent' service account must hold permission 'Cloud KMS CryptoKey Encrypter/Decrypter'",
-      name='--continuous-backup-encryption-key')
+      permission_info=(
+          "The 'AlloyDB Service Agent's service account must hold permission"
+          " 'Cloud KMS CryptoKey Encrypter/Decrypter'"
+      ),
+      name='--continuous-backup-encryption-key',
+  )
 
 
 def KmsKeyAttributeConfig():
@@ -548,6 +542,21 @@ def GetAndValidateKmsKeyName(args, flag_overrides=None):
                                  kms_flags['kms-keyring'], kms_flags['kms-key'])
         raise exceptions.InvalidArgumentException(parameter_name, message)
     return None  # User didn't specify KMS key
+
+
+# LINT.IfChange(validate_continuous_backup_flags)
+def ValidateContinuousBackupFlags(args):
+  """Validate the arguments for continuous backup, ensure the correct set of flags are passed."""
+  if args.enable_continuous_backup is False and (  # pylint: disable=g-bool-id-comparison
+      args.continuous_backup_recovery_window_days
+      or args.continuous_backup_encryption_key
+  ):
+    raise exceptions.ConflictingArgumentsException(
+        '--no-enable-continuous-backup',
+        '--continuous-backup-recovery-days',
+        '--continuous-backup-encryption-key',
+    )
+# LINT.ThenChange()
 
 
 def GetAutomatedBackupKmsFlagOverrides():

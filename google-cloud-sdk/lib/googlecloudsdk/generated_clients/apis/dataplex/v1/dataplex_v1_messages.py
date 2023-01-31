@@ -2901,7 +2901,7 @@ class GoogleCloudDataplexV1ContentSqlScript(_messages.Message):
 class GoogleCloudDataplexV1DataAccessSpec(_messages.Message):
   r"""DataAccessSpec holds the access control configuration to be enforced on
   data stored within resources (eg: rows, columns in BigQuery Tables). When
-  associated with data,the data is only accessible to principles explicitly
+  associated with data,the data is only accessible to principals explicitly
   granted access through the DataAttribute. Principals with access to the
   containing resource are not implicitly granted access.
 
@@ -2942,7 +2942,8 @@ class GoogleCloudDataplexV1DataAttribute(_messages.Message):
       dataTaxonomy}/attributes/{data_attribute_id}.
     parentId: Optional. The ID of the parent DataAttribute resource, should
       belong to the same data taxonomy. Circular dependency in parent chain is
-      not valid.
+      not valid. Maximum depth of the hierarchy allowed is 4. a -> b -> c -> d
+      -> e, depth = 4
     resourceAccessSpec: Optional. Specified when applied to a resource (eg:
       Cloud Storage bucket, BigQuery dataset, BigQuery table).
     uid: Output only. System generated globally unique ID for the
@@ -3016,8 +3017,10 @@ class GoogleCloudDataplexV1DataAttributeBinding(_messages.Message):
     paths: Optional. The list of paths for items within the associated
       resource (eg. columns within a table) along with attribute bindings.
     resource: Optional. Immutable. The resource name of the resource that is
-      binded to attributes. Must belong in the same project and region as the
-      attribute binding, and there can only exist one active binding for a
+      binded to attributes. Presently, only entity resource is supported in
+      the form: projects/{project}/locations/{location}/lakes/{lake}/zones/{zo
+      ne}/entities/{entity_id} Must belong in the same project and region as
+      the attribute binding, and there can only exist one active binding for a
       resource.
     uid: Output only. System generated globally unique ID for the
       DataAttributeBinding. This ID will be different if the

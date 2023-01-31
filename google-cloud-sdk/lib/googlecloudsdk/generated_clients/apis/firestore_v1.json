@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20230106",
+  "revision": "20230120",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -2150,8 +2150,15 @@
           }
         },
         "outputUriPrefix": {
-          "description": "Where the entities are being exported to.",
+          "description": "Where the documents are being exported to.",
           "type": "string"
+        },
+        "namespaceIds": {
+          "description": "Which namespace ids are being exported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2212,6 +2219,13 @@
         "inputUriPrefix": {
           "description": "The location of the documents being imported.",
           "type": "string"
+        },
+        "namespaceIds": {
+          "description": "Which namespace ids are being imported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2515,6 +2529,11 @@
                 },
                 "allowMissing": {
                   "description": "If set to true and the Database is not found, the request will succeed but no action will be taken.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "freeId": {
+                  "description": "If set, will free the database_id associated with this database. uid will be used as the resource id to identify this deleted database.",
                   "location": "query",
                   "type": "boolean"
                 }

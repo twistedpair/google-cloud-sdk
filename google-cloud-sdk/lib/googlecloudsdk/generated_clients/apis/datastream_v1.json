@@ -976,6 +976,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "maxConcurrentBackfillTasks": {
+          "description": "Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
+          "type": "integer",
+          "format": "int32"
+        },
         "dropLargeObjects": {
           "description": "Drop large object values.",
           "$ref": "DropLargeObjects"
@@ -1017,6 +1022,11 @@
           "description": "Maximum number of concurrent CDC tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
           "type": "integer",
           "format": "int32"
+        },
+        "maxConcurrentBackfillTasks": {
+          "description": "Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1040,6 +1050,11 @@
         "publication": {
           "description": "Required. The name of the publication that includes the set of all tables that are defined in the stream's include_objects.",
           "type": "string"
+        },
+        "maxConcurrentBackfillTasks": {
+          "description": "Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

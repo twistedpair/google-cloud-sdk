@@ -116,8 +116,15 @@ class HpTuningJobsClient(object):
         job_spec = messages_util.DictToMessageWithErrorCheck(
             data, self.HyperparameterTuningJobMessage())
 
-    job_spec.maxTrialCount = max_trial_count
-    job_spec.parallelTrialCount = parallel_trial_count
+    if not job_spec.maxTrialCount and not max_trial_count:
+      job_spec.maxTrialCount = 1
+    elif max_trial_count:
+      job_spec.maxTrialCount = max_trial_count
+
+    if not job_spec.parallelTrialCount and not parallel_trial_count:
+      job_spec.parallelTrialCount = 1
+    elif parallel_trial_count:
+      job_spec.parallelTrialCount = parallel_trial_count
 
     if network:
       job_spec.trialJobSpec.network = network

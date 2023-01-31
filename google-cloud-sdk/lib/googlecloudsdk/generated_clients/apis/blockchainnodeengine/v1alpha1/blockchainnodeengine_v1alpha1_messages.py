@@ -362,10 +362,12 @@ class EthereumDetails(_messages.Message):
       NETWORK_UNSPECIFIED: <no description>
       MAINNET: The ethereum Mainnet.
       TESTNET_GOERLI_PRATER: Ethereum Testnet based on Goerli protocol.
+      TESTNET_SEPOLIA: Ethereum Testnet based on Sepolia/Bepolia protocol.
     """
     NETWORK_UNSPECIFIED = 0
     MAINNET = 1
     TESTNET_GOERLI_PRATER = 2
+    TESTNET_SEPOLIA = 3
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of Ethereum node.

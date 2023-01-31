@@ -92,6 +92,37 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  INBOUNDSAMLSSOPROFILES = (
+      'inboundSamlSsoProfiles',
+      '{+name}',
+      {
+          '':
+              'inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}',
+      },
+      ['name'],
+      True
+  )
+  INBOUNDSAMLSSOPROFILES_IDPCREDENTIALS = (
+      'inboundSamlSsoProfiles.idpCredentials',
+      '{+name}',
+      {
+          '':
+              'inboundSamlSsoProfiles/{inboundSamlSsoProfilesId}/'
+              'idpCredentials/{idpCredentialsId}',
+      },
+      ['name'],
+      True
+  )
+  INBOUNDSSOASSIGNMENTS = (
+      'inboundSsoAssignments',
+      '{+name}',
+      {
+          '':
+              'inboundSsoAssignments/{inboundSsoAssignmentsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

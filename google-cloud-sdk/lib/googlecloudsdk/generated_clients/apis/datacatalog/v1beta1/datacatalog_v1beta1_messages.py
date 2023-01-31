@@ -814,6 +814,8 @@ class DatacatalogProjectsLocationsTaxonomiesListRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTaxonomiesListRequest object.
 
   Fields:
+    filter: Supported field for filter is 'service' and value is 'dataplex'.
+      Eg: service=dataplex.
     pageSize: The maximum number of items to return. Must be a value between 1
       and 1000. If not set, defaults to 50.
     pageToken: The next_page_token value returned from a previous list
@@ -821,9 +823,10 @@ class DatacatalogProjectsLocationsTaxonomiesListRequest(_messages.Message):
     parent: Required. Resource name of the project to list the taxonomies of.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DatacatalogProjectsLocationsTaxonomiesPatchRequest(_messages.Message):
@@ -2082,6 +2085,9 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
       "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
     policyTagCount: Output only. Number of policy tags contained in this
       taxonomy.
+    service: Output only. Identity of the service which owns the Taxonomy.
+      This field is only populated when the taxonomy is created by a GCP
+      service. Currently only 'DATAPLEX' is supported.
     taxonomyTimestamps: Output only. Timestamps about this taxonomy. Only
       create_time and update_time are used.
   """
@@ -2102,7 +2108,35 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
   policyTagCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  taxonomyTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 6)
+  service = _messages.MessageField('GoogleCloudDatacatalogV1beta1TaxonomyService', 6)
+  taxonomyTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 7)
+
+
+class GoogleCloudDatacatalogV1beta1TaxonomyService(_messages.Message):
+  r"""The source system of the Taxonomy.
+
+  Enums:
+    NameValueValuesEnum: The GCP service name.
+
+  Fields:
+    identity: P4SA Identity of the service.
+    name: The GCP service name.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""The GCP service name.
+
+    Values:
+      MANAGING_SYSTEM_UNSPECIFIED: Default value
+      MANAGING_SYSTEM_DATAPLEX: Dataplex.
+      MANAGING_SYSTEM_OTHER: Other
+    """
+    MANAGING_SYSTEM_UNSPECIFIED = 0
+    MANAGING_SYSTEM_DATAPLEX = 1
+    MANAGING_SYSTEM_OTHER = 2
+
+  identity = _messages.StringField(1)
+  name = _messages.EnumField('NameValueValuesEnum', 2)
 
 
 class GoogleCloudDatacatalogV1beta1UsageSignal(_messages.Message):

@@ -515,11 +515,11 @@
       "type": "object",
       "properties": {
         "path": {
-          "description": "Script file path on the host VM.",
+          "description": "Script file path on the host VM. To specify an interpreter, please add a `#!`(also known as [shebang line](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix))) as the first line of the file.(For example, to execute the script using bash, `#!\/bin\/bash` should be the first line of the file. To execute the script using`Python3`, `#!\/usr\/bin\/env python3` should be the first line of the file.) Otherwise, the file will by default be excuted by `\/bin\/sh`.",
           "type": "string"
         },
         "text": {
-          "description": "Shell script text.",
+          "description": "Shell script text. To specify an interpreter, please add a `#!\\n` at the beginning of the text.(For example, to execute the script using bash, `#!\/bin\/bash\\n` should be added. To execute the script using`Python3`, `#!\/usr\/bin\/env python3\\n` should be added.) Otherwise, the script will by default be excuted by `\/bin\/sh`.",
           "type": "string"
         }
       }
@@ -1098,6 +1098,26 @@
         "taskExecution": {
           "description": "Task Execution",
           "$ref": "TaskExecution"
+        },
+        "taskState": {
+          "description": "Task State",
+          "type": "string",
+          "enumDescriptions": [
+            "unknown state",
+            "The Task is created and waiting for resources.",
+            "The Task is assigned to at least one VM.",
+            "The Task is running.",
+            "The Task has failed.",
+            "The Task has succeeded."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "ASSIGNED",
+            "RUNNING",
+            "FAILED",
+            "SUCCEEDED"
+          ]
         }
       }
     },
@@ -1164,6 +1184,10 @@
           "description": "The max number of tasks can be assigned to this instance type.",
           "type": "string",
           "format": "int64"
+        },
+        "bootDisk": {
+          "description": "The VM boot disk.",
+          "$ref": "Disk"
         }
       }
     },

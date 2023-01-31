@@ -656,6 +656,8 @@ class Cluster(_messages.Message):
       related Google Compute Engine resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
       Resource usage export is disabled when this config is unspecified.
+    securityPostureConfig: Enable/Disable Security Posture API features for
+      the cluster.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in
@@ -792,16 +794,17 @@ class Cluster(_messages.Message):
   releaseChannel = _messages.MessageField('ReleaseChannel', 54)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 55)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 56)
-  selfLink = _messages.StringField(57)
-  servicesIpv4Cidr = _messages.StringField(58)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 59)
-  status = _messages.EnumField('StatusValueValuesEnum', 60)
-  statusMessage = _messages.StringField(61)
-  subnetwork = _messages.StringField(62)
-  tpuIpv4CidrBlock = _messages.StringField(63)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 64)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 65)
-  zone = _messages.StringField(66)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 57)
+  selfLink = _messages.StringField(58)
+  servicesIpv4Cidr = _messages.StringField(59)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 60)
+  status = _messages.EnumField('StatusValueValuesEnum', 61)
+  statusMessage = _messages.StringField(62)
+  subnetwork = _messages.StringField(63)
+  tpuIpv4CidrBlock = _messages.StringField(64)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 65)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 66)
+  zone = _messages.StringField(67)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -842,6 +845,49 @@ class ClusterAutoscaling(_messages.Message):
   autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 3)
   enableNodeAutoprovisioning = _messages.BooleanField(4)
   resourceLimits = _messages.MessageField('ResourceLimit', 5, repeated=True)
+
+
+class ClusterNetworkPerformanceConfig(_messages.Message):
+  r"""Configuration of network bandwidth tiers
+
+  Enums:
+    ExternalIpEgressBandwidthTierValueValuesEnum: Specifies the network
+      bandwidth tier for NodePools in this cluster for traffic to
+      external/public IP addresses.
+    TotalEgressBandwidthTierValueValuesEnum: Specifies the total network
+      bandwidth tier for NodePools in the cluster.
+
+  Fields:
+    externalIpEgressBandwidthTier: Specifies the network bandwidth tier for
+      NodePools in this cluster for traffic to external/public IP addresses.
+    totalEgressBandwidthTier: Specifies the total network bandwidth tier for
+      NodePools in the cluster.
+  """
+
+  class ExternalIpEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the network bandwidth tier for NodePools in this cluster for
+    traffic to external/public IP addresses.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the total network bandwidth tier for NodePools in the
+    cluster.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  externalIpEgressBandwidthTier = _messages.EnumField('ExternalIpEgressBandwidthTierValueValuesEnum', 1)
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 2)
 
 
 class ClusterUpdate(_messages.Message):
@@ -963,6 +1009,8 @@ class ClusterUpdate(_messages.Message):
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredSecurityPostureConfig: Enable/Disable Security Posture API features
+      for the cluster.
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
       config for the use of Services with ExternalIPs field.
     desiredShieldedNodes: Configuration for Shielded Nodes.
@@ -1073,13 +1121,14 @@ class ClusterUpdate(_messages.Message):
   desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 39)
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 40)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 41)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 42)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 43)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 44)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 45)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 46)
-  etag = _messages.StringField(47)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 48)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 42)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 43)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 44)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 45)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 46)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 47)
+  etag = _messages.StringField(48)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 49)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2853,6 +2902,12 @@ class MonitoringComponentConfig(_messages.Message):
       APISERVER: kube-apiserver
       SCHEDULER: kube-scheduler
       CONTROLLER_MANAGER: kube-controller-manager
+      STORAGE: Storage
+      HPA: Horizontal Pod Autoscaling
+      POD: Pod
+      DAEMONSET: DaemonSet
+      DEPLOYMENT: Deployment
+      STATEFULSET: Statefulset
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -2860,6 +2915,12 @@ class MonitoringComponentConfig(_messages.Message):
     APISERVER = 3
     SCHEDULER = 4
     CONTROLLER_MANAGER = 5
+    STORAGE = 6
+    HPA = 7
+    POD = 8
+    DAEMONSET = 9
+    DEPLOYMENT = 10
+    STATEFULSET = 11
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -2909,6 +2970,7 @@ class NetworkConfig(_messages.Message):
       network(https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. Example:
       projects/my-project/global/networks/my-network
+    networkPerformanceConfig: Network bandwidth tier configuration.
     privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
       Services. By default, no private IPv6 access to or from Google Services
       (all access will be via IPv4)
@@ -2969,9 +3031,10 @@ class NetworkConfig(_messages.Message):
   enableMultiNetworking = _messages.BooleanField(6)
   gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 7)
   network = _messages.StringField(8)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 9)
-  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 10)
-  subnetwork = _messages.StringField(11)
+  networkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 9)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 10)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 11)
+  subnetwork = _messages.StringField(12)
 
 
 class NetworkPerformanceConfig(_messages.Message):
@@ -4317,6 +4380,32 @@ class SecurityBulletinEvent(_messages.Message):
   resourceTypeAffected = _messages.StringField(8)
   severity = _messages.StringField(9)
   suggestedUpgradeTarget = _messages.StringField(10)
+
+
+class SecurityPostureConfig(_messages.Message):
+  r"""SecurityPostureConfig defines the flags needed to enable/disable
+  features for the Security Posture API.
+
+  Enums:
+    ModeValueValuesEnum: Sets which mode to use for Security Posture features.
+
+  Fields:
+    mode: Sets which mode to use for Security Posture features.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for Security Posture features.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Security Posture features on the cluster.
+      BASIC: Applies basic Security Posture features on the cluster.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class ServerConfig(_messages.Message):

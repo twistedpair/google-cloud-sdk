@@ -13052,6 +13052,8 @@ class GoogleCloudAiplatformUiStudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -13068,6 +13070,27 @@ class GoogleCloudAiplatformUiStudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformUiStudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformUiStudySpecParameterSpec(_messages.Message):
@@ -19023,6 +19046,8 @@ class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -19039,6 +19064,27 @@ class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformV1StudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1StudySpecParameterSpec(_messages.Message):
@@ -27547,6 +27593,8 @@ class GoogleCloudAiplatformV1alpha1StudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -27563,6 +27611,27 @@ class GoogleCloudAiplatformV1alpha1StudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1StudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformV1alpha1StudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1alpha1StudySpecParameterSpec(_messages.Message):
@@ -34391,6 +34460,8 @@ class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
     goal: Required. The optimization goal of the metric.
     metricId: Required. The ID of the metric. Must not contain whitespaces and
       must be unique amongst all MetricSpecs.
+    safetyConfig: Used for safe search. In the case, the metric will be a
+      safety metric. You must provide a separate metric for objective metric.
   """
 
   class GoalValueValuesEnum(_messages.Enum):
@@ -34407,6 +34478,27 @@ class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
 
   goal = _messages.EnumField('GoalValueValuesEnum', 1)
   metricId = _messages.StringField(2)
+  safetyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig', 3)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecMetricSpecSafetyMetricConfig(_messages.Message):
+  r"""Used in safe optimization to specify threshold levels and risk
+  tolerance.
+
+  Fields:
+    desiredMinSafeTrialsFraction: Desired minimum fraction of safe trials
+      (over total number of trials) that should be targeted by the algorithm
+      at any time during the study (best effort). This should be between 0.0
+      and 1.0 and a value of 0.0 means that there is no minimum and an
+      algorithm proceeds without targeting any specific fraction. A value of
+      1.0 means that the algorithm attempts to only Suggest safe Trials.
+    safetyThreshold: Safety threshold (boundary value between safe and
+      unsafe). NOTE that if you leave SafetyMetricConfig unset, a default
+      value of 0 will be used.
+  """
+
+  desiredMinSafeTrialsFraction = _messages.FloatField(1)
+  safetyThreshold = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpec(_messages.Message):

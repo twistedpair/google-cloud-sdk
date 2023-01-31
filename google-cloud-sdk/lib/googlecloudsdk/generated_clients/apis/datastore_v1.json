@@ -414,8 +414,51 @@
           "type": "string",
           "format": "byte"
         },
+        "newTransaction": {
+          "description": "Options for beginning a new transaction for this request. The new transaction identifier will be returned in the corresponding response as either LookupResponse.transaction or RunQueryResponse.transaction.",
+          "$ref": "TransactionOptions"
+        },
         "readTime": {
           "description": "Reads entities as they were at the given time. This may not be older than 270 seconds. This value is only supported for Cloud Firestore in Datastore mode.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TransactionOptions": {
+      "id": "TransactionOptions",
+      "description": "Options for beginning a new transaction. Transactions can be created explicitly with calls to Datastore.BeginTransaction or implicitly by setting ReadOptions.new_transaction in read requests.",
+      "type": "object",
+      "properties": {
+        "readWrite": {
+          "description": "The transaction should allow both reads and writes.",
+          "$ref": "ReadWrite"
+        },
+        "readOnly": {
+          "description": "The transaction should only allow reads.",
+          "$ref": "ReadOnly"
+        }
+      }
+    },
+    "ReadWrite": {
+      "id": "ReadWrite",
+      "description": "Options specific to read \/ write transactions.",
+      "type": "object",
+      "properties": {
+        "previousTransaction": {
+          "description": "The transaction identifier of the transaction being retried.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ReadOnly": {
+      "id": "ReadOnly",
+      "description": "Options specific to read-only transactions.",
+      "type": "object",
+      "properties": {
+        "readTime": {
+          "description": "Reads entities at the given time. This may not be older than 60 seconds.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -503,6 +546,11 @@
           "items": {
             "$ref": "Key"
           }
+        },
+        "transaction": {
+          "description": "The identifier of the transaction that was started as part of this Lookup request. Set only when ReadOptions.begin_transaction was set in LookupRequest.read_options.",
+          "type": "string",
+          "format": "byte"
         },
         "readTime": {
           "description": "The time at which these entities were read or found missing.",
@@ -842,7 +890,7 @@
             "The given `property` is equal to the given `value`.",
             "The given `property` is equal to at least one value in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `NOT_IN` is in the same query.",
             "The given `property` is not equal to the given `value`. Requires: * No other `NOT_EQUAL` or `NOT_IN` is in the same query. * That `property` comes first in the `order_by`.",
-            "Limit the result set to the given entity and its descendants. Requires: * That `value` is an entity key.",
+            "Limit the result set to the given entity and its descendants. Requires: * That `value` is an entity key. * No other `HAS_ANCESTOR` is in the same query.",
             "The value of the `property` is not in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN`, `NOT_IN`, `NOT_EQUAL` is in the same query. * That `field` comes first in the `order_by`."
           ],
           "enum": [
@@ -946,6 +994,11 @@
         "query": {
           "description": "The parsed form of the `GqlQuery` from the request, if it was set.",
           "$ref": "Query"
+        },
+        "transaction": {
+          "description": "The identifier of the transaction that was started as part of this RunQuery request. Set only when ReadOptions.begin_transaction was set in RunQueryRequest.read_options.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -1106,6 +1159,11 @@
         "query": {
           "description": "The parsed form of the `GqlQuery` from the request, if it was set.",
           "$ref": "AggregationQuery"
+        },
+        "transaction": {
+          "description": "The identifier of the transaction that was started as part of this RunAggregationQuery request. Set only when ReadOptions.begin_transaction was set in RunAggregationQueryRequest.read_options.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -1175,45 +1233,6 @@
         }
       }
     },
-    "TransactionOptions": {
-      "id": "TransactionOptions",
-      "description": "Options for beginning a new transaction. Transactions can be created explicitly with calls to Datastore.BeginTransaction or implicitly by setting ReadOptions.new_transaction in read requests.",
-      "type": "object",
-      "properties": {
-        "readWrite": {
-          "description": "The transaction should allow both reads and writes.",
-          "$ref": "ReadWrite"
-        },
-        "readOnly": {
-          "description": "The transaction should only allow reads.",
-          "$ref": "ReadOnly"
-        }
-      }
-    },
-    "ReadWrite": {
-      "id": "ReadWrite",
-      "description": "Options specific to read \/ write transactions.",
-      "type": "object",
-      "properties": {
-        "previousTransaction": {
-          "description": "The transaction identifier of the transaction being retried.",
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
-    "ReadOnly": {
-      "id": "ReadOnly",
-      "description": "Options specific to read-only transactions.",
-      "type": "object",
-      "properties": {
-        "readTime": {
-          "description": "Reads entities at the given time. This may not be older than 60 seconds.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "BeginTransactionResponse": {
       "id": "BeginTransactionResponse",
       "description": "The response for Datastore.BeginTransaction.",
@@ -1253,6 +1272,10 @@
           "description": "The identifier of the transaction associated with the commit. A transaction identifier is returned by a call to Datastore.BeginTransaction.",
           "type": "string",
           "format": "byte"
+        },
+        "singleUseTransaction": {
+          "description": "Options for beginning a new transaction for this request. The transaction is committed when the request completes. If specified, TransactionOptions.mode must be TransactionOptions.ReadWrite.",
+          "$ref": "TransactionOptions"
         },
         "mutations": {
           "description": "The mutations to perform. When mode is `TRANSACTIONAL`, mutations affecting a single entity are applied in order. The following sequences of mutations affecting a single entity are not permitted in a single `Commit` request: - `insert` followed by `insert` - `update` followed by `insert` - `upsert` followed by `insert` - `delete` followed by `update` When mode is `NON_TRANSACTIONAL`, no two mutations may affect a single entity.",

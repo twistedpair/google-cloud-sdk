@@ -23,7 +23,22 @@ import collections
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
+
+INSTANCE_TEMPLATE_ARG = compute_flags.ResourceArgument(
+    '--template',
+    resource_name='instance template',
+    required=True,
+    plural=False,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS,
+    global_collection='compute.instanceTemplates',
+    regional_collection='compute.regionInstanceTemplates',
+    short_help="""
+    Specifies the instance template to use when creating new instances.
+    An instance template is either a global or regional resource.
+    """,
+)
 
 DEFAULT_CREATE_OR_LIST_FORMAT = """\
     table(

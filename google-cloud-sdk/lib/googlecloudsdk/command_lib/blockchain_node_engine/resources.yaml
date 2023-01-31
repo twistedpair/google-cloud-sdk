@@ -21,3 +21,16 @@ location:
     help: |
       Location of the blockchain node resource.
     property: web3/location
+
+node:
+  name: node
+  collection: blockchainnodeengine.projects.locations.blockchainNodes
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &node
+    parameter_name: blockchainNodesId
+    attribute_name: node_name
+    help: |
+      Name of the blockchain node resource.

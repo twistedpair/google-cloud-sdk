@@ -1072,7 +1072,45 @@
           "type": "string"
         },
         "totalMemorySizeGb": {
-          "description": "Optional. Redis memory size in GiB for the entire cluster.",
+          "description": "Optional. Redis memory size in GB for the entire cluster.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "replicaCount": {
+          "description": "Optional. The number of replica nodes per shard.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorizationMode": {
+          "description": "The authorization mode of the Redis cluster. If not provided, auth feature is disabled for the cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "IAM basic authorization mode",
+            "Authorization disabled mode"
+          ],
+          "enum": [
+            "AUTH_MODE_UNSPECIFIED",
+            "AUTH_MODE_IAM_AUTH",
+            "AUTH_MODE_DISABLED"
+          ]
+        },
+        "transitEncryptionMode": {
+          "description": "Optional. The in-transit encryption for the Redis cluster. If not provided, encryption is disabled for the cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "In-transit encryption not set.",
+            "In-transit encryption disabled.",
+            "Use server managed encryption for in-transit encryption."
+          ],
+          "enum": [
+            "TRANSIT_ENCRYPTION_MODE_UNSPECIFIED",
+            "TRANSIT_ENCRYPTION_MODE_DISABLED",
+            "TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION"
+          ]
+        },
+        "sizeGb": {
+          "description": "Optional. Redis memory size in GB for the entire cluster. See b\/257175558 for comments in naming the field. Use unit GB to follow GCE conventions: https:\/\/cloud.google.com\/compute\/docs\/instances\/creating-instance-with-custom-machine-type#memory_units.",
           "type": "integer",
           "format": "int32"
         }
@@ -1087,6 +1125,42 @@
           "description": "Output only. The address of the Private Service Connect (PSC) service that the customer can use to connect this instance to their local network.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "CertificateAuthority": {
+      "id": "CertificateAuthority",
+      "description": "Redis cluster certificate authority",
+      "type": "object",
+      "properties": {
+        "managedServerCa": {
+          "$ref": "ManagedCertificateAuthority"
+        }
+      }
+    },
+    "ManagedCertificateAuthority": {
+      "id": "ManagedCertificateAuthority",
+      "type": "object",
+      "properties": {
+        "caCerts": {
+          "description": "The PEM encoded CA certificate chains for redis managed server authentication",
+          "type": "array",
+          "items": {
+            "$ref": "CertChain"
+          }
+        }
+      }
+    },
+    "CertChain": {
+      "id": "CertChain",
+      "type": "object",
+      "properties": {
+        "certificates": {
+          "description": "The certificates that form the CA chain, from leaf to root order.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1959,6 +2033,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a Redis cluster based on the specified tier and memory size. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the Redis cluster will be fully functional. The completed longrunning.Operation will contain the new cluster object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                },
+                "getCertificateAuthority": {
+                  "id": "redis.projects.locations.clusters.getCertificateAuthority",
+                  "path": "v1alpha1/{+name}/certificateAuthority",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/certificateAuthority",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis cluster certificate authority resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}\/certificateAuthority` where `location_id` refers to a GCP region.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "CertificateAuthority"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the details of certificate authority information for Redis cluster."
                 }
               }
             }

@@ -578,8 +578,8 @@ class CloudidentityDevicesDeviceUsersClientStatesGetRequest(_messages.Message):
       Context-Aware Access. You may use `my_customer` instead of the customer
       ID for devices managed by your own organization. You may specify `-` in
       place of the `{device_id}`, so the ClientState resource name can be: `de
-      vices/-/deviceUsers/{device_user_resource_id}/clientStates/{partner_id}`
-      .
+      vices/-
+      /deviceUsers/{device_user_resource_id}/clientStates/{partner_id}`.
   """
 
   customer = _messages.StringField(1)

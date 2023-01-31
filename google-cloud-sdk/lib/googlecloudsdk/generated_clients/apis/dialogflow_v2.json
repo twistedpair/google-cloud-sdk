@@ -4972,6 +4972,10 @@
         "telephonyTransferCall": {
           "description": "A signal that the client should transfer the phone call connected to this agent to a third-party endpoint.",
           "$ref": "GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall"
+        },
+        "channel": {
+          "description": "The channel which the response is associated with. Clients can specify the channel via QueryParameters.channel, and only associated channel response will be returned.",
+          "type": "string"
         }
       }
     },
@@ -6832,6 +6836,10 @@
         "telephonyTransferCall": {
           "description": "A signal that the client should transfer the phone call connected to this agent to a third-party endpoint.",
           "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall"
+        },
+        "channel": {
+          "description": "The channel which the response is associated with. Clients can specify the channel via QueryParameters.channel, and only associated channel response will be returned.",
+          "type": "string"
         }
       }
     },

@@ -651,6 +651,10 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
       cred._token_uri = token_uri_override
       # pylint: enable=protected-access
 
+    # Enable self signed jwt if applicable for the cred created from the file
+    # override.
+    c_creds.EnableSelfSignedJwtIfApplicable(cred)
+
     # The credential override is not stored in credential store, but we still
     # want to cache access tokens between invocations.
     cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
@@ -886,6 +890,20 @@ def _RefreshGoogleAuth(credentials,
   # pylint: enable=g-import-not-at-top
   request_client = requests.GoogleAuthRequest()
   with HandleGoogleAuthCredentialsRefreshError():
+    # If this cred is a service account cred, we may need to enable self signed
+    # jwt if applicable. Depending on how this cred is created:
+    # 1) if it's created using Load method (via cred store or file override),
+    # then the cred has self signed jwt enabled if applicable.
+    # 2) if not (e.g. `gcloud auth activate-service-account` creates the cred
+    # directly), then the cred doesn't have self signed jwt enabled even if it's
+    # applicable.
+    #
+    # In order to cover all cred sources, let's enable self signed jwt here
+    # (again for case 1). It doesn't matter if we enable it more than once. The
+    # best way to solve the issue is to refactor the code to have a unified
+    # place to create creds so we just need to enable it there once.
+    c_creds.EnableSelfSignedJwtIfApplicable(credentials)
+
     credentials.refresh(request_client)
 
     id_token = None
@@ -1010,6 +1028,9 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
   Returns:
     str, The id_token if refresh was successful. Otherwise None.
   """
+  if properties.VALUES.auth.service_account_disable_id_token_refresh.GetBool():
+    return None
+
   # Import only when necessary to decrease the startup time. Move it to
   # global once google-auth is ready to replace oauth2client.
   # pylint: disable=g-import-not-at-top

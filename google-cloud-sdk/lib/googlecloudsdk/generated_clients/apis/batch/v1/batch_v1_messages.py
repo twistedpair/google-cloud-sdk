@@ -802,6 +802,7 @@ class InstanceStatus(_messages.Message):
     ProvisioningModelValueValuesEnum: The VM instance provisioning model.
 
   Fields:
+    bootDisk: The VM boot disk.
     machineType: The Compute Engine machine type.
     provisioningModel: The VM instance provisioning model.
     taskPack: The max number of tasks can be assigned to this instance type.
@@ -825,9 +826,10 @@ class InstanceStatus(_messages.Message):
     SPOT = 2
     PREEMPTIBLE = 3
 
-  machineType = _messages.StringField(1)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 2)
-  taskPack = _messages.IntegerField(3)
+  bootDisk = _messages.MessageField('Disk', 1)
+  machineType = _messages.StringField(2)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 3)
+  taskPack = _messages.IntegerField(4)
 
 
 class Job(_messages.Message):
@@ -1609,8 +1611,19 @@ class Script(_messages.Message):
   r"""Script runnable.
 
   Fields:
-    path: Script file path on the host VM.
-    text: Shell script text.
+    path: Script file path on the host VM. To specify an interpreter, please
+      add a `#!`(also known as [shebang
+      line](https://en.wikipedia.org/wiki/Shebang_(Unix))) as the first line
+      of the file.(For example, to execute the script using bash,
+      `#!/bin/bash` should be the first line of the file. To execute the
+      script using`Python3`, `#!/usr/bin/env python3` should be the first line
+      of the file.) Otherwise, the file will by default be excuted by
+      `/bin/sh`.
+    text: Shell script text. To specify an interpreter, please add a `#!\n` at
+      the beginning of the text.(For example, to execute the script using
+      bash, `#!/bin/bash\n` should be added. To execute the script
+      using`Python3`, `#!/usr/bin/env python3\n` should be added.) Otherwise,
+      the script will by default be excuted by `/bin/sh`.
   """
 
   path = _messages.StringField(1)
@@ -1625,9 +1638,13 @@ class ServiceAccount(_messages.Message):
       Compute Engine service account for the project will be used. If instance
       template is being used, the service account has to be specified in the
       instance template and it has to match the email field here.
+    scopes: List of scopes to be enabled for this service account on the VM,
+      in addition to the cloud-platform API scope that will be added by
+      default.
   """
 
   email = _messages.StringField(1)
+  scopes = _messages.StringField(2, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1764,17 +1781,40 @@ class Status(_messages.Message):
 class StatusEvent(_messages.Message):
   r"""Status event
 
+  Enums:
+    TaskStateValueValuesEnum: Task State
+
   Fields:
     description: Description of the event.
     eventTime: The time this event occurred.
     taskExecution: Task Execution
+    taskState: Task State
     type: Type of the event.
   """
+
+  class TaskStateValueValuesEnum(_messages.Enum):
+    r"""Task State
+
+    Values:
+      STATE_UNSPECIFIED: unknown state
+      PENDING: The Task is created and waiting for resources.
+      ASSIGNED: The Task is assigned to at least one VM.
+      RUNNING: The Task is running.
+      FAILED: The Task has failed.
+      SUCCEEDED: The Task has succeeded.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    ASSIGNED = 2
+    RUNNING = 3
+    FAILED = 4
+    SUCCEEDED = 5
 
   description = _messages.StringField(1)
   eventTime = _messages.StringField(2)
   taskExecution = _messages.MessageField('TaskExecution', 3)
-  type = _messages.StringField(4)
+  taskState = _messages.EnumField('TaskStateValueValuesEnum', 4)
+  type = _messages.StringField(5)
 
 
 class Task(_messages.Message):

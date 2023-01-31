@@ -435,6 +435,10 @@
         "concurrentOpsConfig": {
           "description": "Allows enabling concurrent ops for supported operations on this cluster. This flag is for EAP users only. Concurrent ops will become the only option, and thus having an opt in\/out is only applicable pre-GA. Once the feature is GA, \"disabling\" concurrent ops will have no effect and the flag will be removed in the future.",
           "$ref": "ConcurrentOpsConfig"
+        },
+        "securityPostureConfig": {
+          "description": "Enable\/Disable Security Posture API features for the cluster.",
+          "$ref": "SecurityPostureConfig"
         }
       }
     },
@@ -2292,6 +2296,10 @@
         "enableMultiNetworking": {
           "description": "Whether multi-networking is enabled for this cluster.",
           "type": "boolean"
+        },
+        "networkPerformanceConfig": {
+          "description": "Network bandwidth tier configuration.",
+          "$ref": "ClusterNetworkPerformanceConfig"
         }
       }
     },
@@ -2375,6 +2383,37 @@
             "CHANNEL_DISABLED",
             "CHANNEL_EXPERIMENTAL",
             "CHANNEL_STANDARD"
+          ]
+        }
+      }
+    },
+    "ClusterNetworkPerformanceConfig": {
+      "id": "ClusterNetworkPerformanceConfig",
+      "description": "Configuration of network bandwidth tiers",
+      "type": "object",
+      "properties": {
+        "totalEgressBandwidthTier": {
+          "description": "Specifies the total network bandwidth tier for NodePools in the cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Higher bandwidth, actual values based on VM size."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "TIER_1"
+          ]
+        },
+        "externalIpEgressBandwidthTier": {
+          "description": "Specifies the network bandwidth tier for NodePools in this cluster for traffic to external\/public IP addresses.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Higher bandwidth, actual values based on VM size."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "TIER_1"
           ]
         }
       }
@@ -2766,7 +2805,13 @@
               "workloads",
               "kube-apiserver",
               "kube-scheduler",
-              "kube-controller-manager"
+              "kube-controller-manager",
+              "Storage",
+              "Horizontal Pod Autoscaling",
+              "Pod",
+              "DaemonSet",
+              "Deployment",
+              "Statefulset"
             ],
             "enum": [
               "COMPONENT_UNSPECIFIED",
@@ -2774,7 +2819,13 @@
               "WORKLOADS",
               "APISERVER",
               "SCHEDULER",
-              "CONTROLLER_MANAGER"
+              "CONTROLLER_MANAGER",
+              "STORAGE",
+              "HPA",
+              "POD",
+              "DAEMONSET",
+              "DEPLOYMENT",
+              "STATEFULSET"
             ]
           }
         }
@@ -2876,6 +2927,27 @@
         "enableConcurrentRollbackNodePool": {
           "description": "Enables concurrent ops for supported RollbackNodePool cases. Some fields may still use legacy ops.",
           "type": "boolean"
+        }
+      }
+    },
+    "SecurityPostureConfig": {
+      "id": "SecurityPostureConfig",
+      "description": "SecurityPostureConfig defines the flags needed to enable\/disable features for the Security Posture API.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Sets which mode to use for Security Posture features.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value not specified.",
+            "Disables Security Posture features on the cluster.",
+            "Applies basic Security Posture features on the cluster."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "DISABLED",
+            "BASIC"
+          ]
         }
       }
     },
@@ -3386,6 +3458,10 @@
         "desiredConcurrentOpsConfig": {
           "description": "Desired value for the cluster's concurrent_ops_config.",
           "$ref": "ConcurrentOpsConfig"
+        },
+        "desiredSecurityPostureConfig": {
+          "description": "Enable\/Disable Security Posture API features for the cluster.",
+          "$ref": "SecurityPostureConfig"
         }
       }
     },
