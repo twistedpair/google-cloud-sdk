@@ -65,16 +65,31 @@ def AddConnectivityGroupFlag(parser, api_type, required=False):
   """Adds connectivity flag group to the given parser."""
   if api_type == ApiType.CREATE:
     connectivity_group = parser.add_group(
-        'The connectivity method used by the migration job. If a connectivity method isn\'t specified, then it isn\'t added to the migration job.',
-        mutex=True)
+        (
+            'The connectivity method used by the migration job. If a'
+            " connectivity method isn't specified, then it isn't added to the"
+            ' migration job.'
+        ),
+        mutex=True,
+    )
   elif api_type == ApiType.UPDATE:
     connectivity_group = parser.add_group(
-        'The connectivity method used by the migration job. If a connectivity method isn\'t specified, then it isn\'t updated for the migration job.',
-        mutex=True)
+        (
+            'The connectivity method used by the migration job. If a'
+            " connectivity method isn't specified, then it isn't updated for"
+            ' the migration job.'
+        ),
+        mutex=True,
+    )
   connectivity_group.add_argument(
       '--static-ip',
       action='store_true',
-      help='Use the default IP allowlist method. This method creates a public IP that will be used with the destination Cloud SQL database. The method works by configuring the source database server to accept connections from the outgoing IP of the Cloud SQL instance.'
+      help=(
+          'Use the default IP allowlist method. This method creates a public IP'
+          ' that will be used with the destination Cloud SQL database. The'
+          ' method works by configuring the source database server to accept'
+          ' connections from the outgoing IP of the Cloud SQL instance.'
+      ),
   )
   connectivity_group.add_argument(
       '--peer-vpc',
@@ -94,4 +109,20 @@ def AddConnectivityGroupFlag(parser, api_type, required=False):
   reverse_ssh_group.add_argument(
       '--vpc',
       help='Name of the VPC network where the VM is hosted.',
-      required=required)
+      required=required,
+  )
+
+
+def AddFilterFlag(parser):
+  """Adds a --filter flag to the given parser."""
+  help_text = 'Filter the entities based on AIP-160 standard.'
+  parser.add_argument('--filter', help=help_text, hidden=True)
+
+
+def AddCommitIdFlag(parser):
+  """Adds a --commit-id flag to the given parser."""
+  help_text = (
+      'Commit id for the conversion workspace to use for creating the migration'
+      ' job. If not specified, the latest commit id will be used by default.'
+  )
+  parser.add_argument('--commit-id', help=help_text, hidden=True)

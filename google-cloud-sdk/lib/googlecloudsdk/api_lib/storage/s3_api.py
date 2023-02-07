@@ -76,14 +76,19 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
 def _create_client(resource_location=None):
   disable_ssl_validation = (
       properties.VALUES.auth.disable_ssl_validation.GetBool())
+  if disable_ssl_validation:
+    verify_ssl = False
+  else:
+    # Setting to None so that AWS_CA_BUNDLE env variable
+    #  can be used. See b/266098045.
+    verify_ssl = None
   # Using a lock since the boto3.client creation is not thread-safe.
   with BOTO3_CLIENT_LOCK:
     return boto3.client(
         storage_url.ProviderPrefix.S3.value,
         region_name=resource_location,
         endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get(),
-        verify=not disable_ssl_validation
-        if disable_ssl_validation is not None else True)
+        verify=verify_ssl)
 
 
 def _add_additional_headers_to_request(request, **kwargs):

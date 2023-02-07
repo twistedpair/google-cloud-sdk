@@ -102,6 +102,37 @@ def AddAutoCommitFlag(parser):
 
 
 def AddFilterFlag(parser):
-  """Adds a --filter-string flag to the given parser."""
+  """Adds a --filter flag to the given parser."""
   help_text = 'Filter the entities based on AIP-160 standard.'
-  parser.add_argument('--filter-string', help=help_text)
+  parser.add_argument('--filter', help=help_text)
+
+
+def AddTreeTypeFlag(parser, required=True):
+  """Adds the --tree-type flag to the given parser."""
+  help_text = """\
+    Tree type for database entities.
+    """
+  choices = ['SOURCE', 'DRAFT']
+
+  parser.add_argument(
+      '--tree-type', help=help_text, choices=choices, required=required
+  )
+
+
+def AddUncomittedFlag(parser):
+  """Adds a --uncommitted flag to the given parser."""
+  help_text = (
+      'Whether to retrieve the latest committed version of the entities or the'
+      ' latest version. This field is ignored if a specific commit_id is'
+      ' specified.'
+  )
+  parser.add_argument('--uncommitted', action='store_true', help=help_text)
+
+
+def AddCommitIdFlag(parser):
+  """Adds a --commit-id flag to the given parser."""
+  help_text = (
+      'Request a specific commit id. If not specified, the entities from the'
+      ' latest commit are returned.'
+  )
+  parser.add_argument('--commit-id', help=help_text)

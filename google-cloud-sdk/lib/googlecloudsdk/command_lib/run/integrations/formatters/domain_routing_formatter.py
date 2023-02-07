@@ -32,12 +32,12 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     """Print the config of the integration.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       The printed output.
     """
-    res_config = record.get('config', {}).get('router', {})
+    res_config = record.config.get('router', {})
     labeled = []
     for domain_config in res_config.get('domains') or []:
       domain = domain_config.get('domain') or ''
@@ -51,20 +51,19 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     """Print the component status of the integration.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       The printed output.
     """
-    resource_config = record.get('config', {})
-    resource_status = record.get('status', {})
+    resource_status = record.status
     resource_components = resource_status.get('resourceComponentStatuses', {})
     details = resource_status.get('routerDetails', {})
     components = [
         ('Console link', resource_status.get('consoleLink', 'n/a')),
         ('Frontend', details.get('ipAddress', 'n/a')),
     ]
-    for component in self._GetSSLStatuses(resource_components, resource_config):
+    for component in self._GetSSLStatuses(resource_components, record.config):
       name, status = component
       components.append(('SSL Certificate [{}]'.format(name), status))
 
@@ -80,16 +79,13 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     """Call to action to configure IP for the domain.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       A formatted string of the call to action message,
       or None if no call to action is required.
     """
-    resource_config = record.get('config', {})
-    resource_status = record.get('status')
-    if not resource_status:
-      return None
+    resource_status = record.status
 
     resource_components = resource_status.get('resourceComponentStatuses', {})
     ip = resource_status.get('routerDetails', {}).get('ipAddress')
@@ -100,7 +96,7 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     missing_domains = []
     max_domain_length = 0
     for domain, status in self._GetSSLStatuses(resource_components,
-                                               resource_config):
+                                               record.config):
       if status != states.ACTIVE:
         missing_domains.append(domain)
         max_domain_length = max(max_domain_length, len(domain))

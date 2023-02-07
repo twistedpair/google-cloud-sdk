@@ -517,17 +517,23 @@ class Projector(object):
       if hasattr(obj, 'MakeSerializable'):
         obj = obj.MakeSerializable()
       return self._Project(obj, self._projection.Tree(), flag)
-    obj = self._Project(obj, self._projection.GetEmpty(),
-                        self._projection.PROJECT)
+    obj_serialized = self._Project(
+        obj, self._projection.GetEmpty(), self._projection.PROJECT
+    )
     if self._transforms_enabled_attribute is None:
       # By-column formats enable transforms by default.
       self._transforms_enabled = not self._ignore_default_transforms
     columns = []
     for column in self._columns:
-      val = resource_property.Get(obj, column.key) if column.key else obj
-      if (column.attribute.transform and
-          self._TransformIsEnabled(column.attribute.transform)):
-        val = column.attribute.transform.Evaluate(val)
+      val = (
+          resource_property.Get(obj_serialized, column.key)
+          if column.key
+          else obj_serialized
+      )
+      if column.attribute.transform and self._TransformIsEnabled(
+          column.attribute.transform
+      ):
+        val = column.attribute.transform.Evaluate(val, obj)
       columns.append(val)
     return columns
 

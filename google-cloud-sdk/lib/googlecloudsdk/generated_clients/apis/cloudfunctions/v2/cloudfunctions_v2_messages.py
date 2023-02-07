@@ -108,7 +108,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -125,9 +127,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -184,8 +184,8 @@ class BuildConfig(_messages.Message):
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
-      https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--runtime
-      ).
+      https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--
+      runtime).
     source: The location of the function source code.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     workerPool: Name of the Cloud Build Custom Worker Pool that should be used
@@ -618,7 +618,8 @@ class Function(_messages.Message):
   response to an event. It encapsulates function and trigger configurations.
 
   Enums:
-    EnvironmentValueValuesEnum: Describe whether the function is gen1 or gen2.
+    EnvironmentValueValuesEnum: Describe whether the function is 1st Gen or
+      2nd Gen.
     StateValueValuesEnum: Output only. State of the function.
 
   Messages:
@@ -631,7 +632,7 @@ class Function(_messages.Message):
       base images (for building and runtime) that include a curated set of
       pre-installed packages.
     description: User-provided description of a function.
-    environment: Describe whether the function is gen1 or gen2.
+    environment: Describe whether the function is 1st Gen or 2nd Gen.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
       fires events in response to a condition in another service.
     kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
@@ -649,7 +650,7 @@ class Function(_messages.Message):
   """
 
   class EnvironmentValueValuesEnum(_messages.Enum):
-    r"""Describe whether the function is gen1 or gen2.
+    r"""Describe whether the function is 1st Gen or 2nd Gen.
 
     Values:
       ENVIRONMENT_UNSPECIFIED: Unspecified
@@ -734,7 +735,24 @@ class GenerateDownloadUrlResponse(_messages.Message):
 
 
 class GenerateUploadUrlRequest(_messages.Message):
-  r"""Request of `GenerateSourceUploadUrl` method."""
+  r"""Request of `GenerateSourceUploadUrl` method.
+
+  Fields:
+    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
+      to encrypt/decrypt function source code objects in intermediate Cloud
+      Storage buckets. When you generate an upload url and upload your source
+      code, it gets copied to an intermediate Cloud Storage bucket. The source
+      code is then copied to a versioned directory in the sources bucket in
+      the consumer project during the function deployment. It must match the
+      pattern `projects/{project}/locations/{location}/keyRings/{key_ring}/cry
+      ptoKeys/{crypto_key}`. The Google Cloud Functions service account
+      (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) must
+      be granted the role 'Cloud KMS CryptoKey Encrypter/Decrypter
+      (roles/cloudkms.cryptoKeyEncrypterDecrypter)' on the
+      Key/KeyRing/Project/Organization (least access preferred).
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class GenerateUploadUrlResponse(_messages.Message):

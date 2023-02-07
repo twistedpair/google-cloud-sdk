@@ -691,7 +691,7 @@ def AddMatrixArgs(parser):
       metavar='MODEL_ID',
       help='The list of MODEL_IDs to test against (default: one device model '
       'determined by the Firebase Test Lab device catalog; see TAGS listed '
-      'by the `$ {parent_command} devices list` command).')
+      'by the `$ {parent_command} models list` command).')
   parser.add_argument(
       '--os-version-ids',
       '-v',

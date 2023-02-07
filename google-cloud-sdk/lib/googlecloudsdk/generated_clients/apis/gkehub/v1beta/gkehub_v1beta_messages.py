@@ -198,7 +198,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -215,9 +217,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -878,6 +878,33 @@ class ConfigManagementPolicyController(_messages.Message):
   templateLibraryInstalled = _messages.BooleanField(8)
 
 
+class ConfigManagementPolicyControllerMigration(_messages.Message):
+  r"""State for the migration of PolicyController from ACM -> PoCo Hub.
+
+  Enums:
+    StageValueValuesEnum: Stage of the migration.
+
+  Fields:
+    stage: Stage of the migration.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""Stage of the migration.
+
+    Values:
+      STAGE_UNSPECIFIED: Unknown state of migration.
+      ACM_MANAGED: ACM Hub/Operator manages policycontroller. No migration yet
+        completed.
+      POCO_MANAGED: All migrations steps complete; Poco Hub now manages
+        policycontroller.
+    """
+    STAGE_UNSPECIFIED = 0
+    ACM_MANAGED = 1
+    POCO_MANAGED = 2
+
+  stage = _messages.EnumField('StageValueValuesEnum', 1)
+
+
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
   r"""PolicyControllerMonitoring specifies the backends Policy Controller
   should export metrics to. For example, to specify metrics should be exported
@@ -912,11 +939,13 @@ class ConfigManagementPolicyControllerState(_messages.Message):
 
   Fields:
     deploymentState: The state about the policy controller installation.
+    migration: Record state of ACM -> PoCo Hub migration for this feature.
     version: The version of Gatekeeper Policy Controller deployed.
   """
 
   deploymentState = _messages.MessageField('ConfigManagementGatekeeperDeploymentState', 1)
-  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 2)
+  migration = _messages.MessageField('ConfigManagementPolicyControllerMigration', 2)
+  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 3)
 
 
 class ConfigManagementPolicyControllerVersion(_messages.Message):
@@ -1784,6 +1813,10 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any subresource from this Membership will
+      also be deleted. (Otherwise, the request will only work if the
+      Membership has no subresource.) following go/ccfe-nested-
+      collections#cascading-deletion.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1799,8 +1832,9 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
@@ -1897,6 +1931,7 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
       the resources.
     parent: Required. The parent (project and location) where the Memberships
       will be listed. Specified in the format `projects/*/locations/*`.
+      `projects/*/locations/-` list memberships in all the regions.
   """
 
   filter = _messages.StringField(1)
@@ -3328,10 +3363,19 @@ class PolicyControllerHubConfig(_messages.Message):
       spec, not the lifecycle state of the feature observed by the Hub feature
       controller that is reported in the feature state.
 
+  Messages:
+    DeploymentConfigsValue: Map of deployment configs to deployments
+      ("admission", "audit", "mutation").
+
   Fields:
     auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
       (in seconds). When set to 0, this disables audit functionality
       altogether.
+    constraintViolationLimit: The maximum number of audit violations to be
+      stored in a constraint. If not set, the internal default (currently 20)
+      will be used.
+    deploymentConfigs: Map of deployment configs to deployments ("admission",
+      "audit", "mutation").
     exemptableNamespaces: The set of namespaces that are excluded from Policy
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
@@ -3370,15 +3414,44 @@ class PolicyControllerHubConfig(_messages.Message):
     INSTALL_SPEC_ENABLED = 2
     INSTALL_SPEC_SUSPENDED = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeploymentConfigsValue(_messages.Message):
+    r"""Map of deployment configs to deployments ("admission", "audit",
+    "mutation").
+
+    Messages:
+      AdditionalProperty: An additional property for a DeploymentConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeploymentConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeploymentConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerPolicyControllerDeploymentConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerPolicyControllerDeploymentConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   auditIntervalSeconds = _messages.IntegerField(1)
-  exemptableNamespaces = _messages.StringField(2, repeated=True)
-  installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 3)
-  logDeniesEnabled = _messages.BooleanField(4)
-  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 5)
-  mutationEnabled = _messages.BooleanField(6)
-  policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 7)
-  referentialRulesEnabled = _messages.BooleanField(8)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 9)
+  constraintViolationLimit = _messages.IntegerField(2)
+  deploymentConfigs = _messages.MessageField('DeploymentConfigsValue', 3)
+  exemptableNamespaces = _messages.StringField(4, repeated=True)
+  installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 5)
+  logDeniesEnabled = _messages.BooleanField(6)
+  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 7)
+  mutationEnabled = _messages.BooleanField(8)
+  policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 9)
+  referentialRulesEnabled = _messages.BooleanField(10)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 11)
 
 
 class PolicyControllerMembershipSpec(_messages.Message):
@@ -3441,7 +3514,7 @@ class PolicyControllerMembershipState(_messages.Message):
         the cluster. The PCH has a Membership, is aware of the version the
         cluster should be running in, but has not confirmed for itself that
         the PC is running with that version.
-      DECOMISSIONING: The PC may have resources on the cluster, but the PCH
+      DECOMMISSIONING: The PC may have resources on the cluster, but the PCH
         wishes to remove the Membership. The Membership still exists.
       CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
         to make it operational. Entering a CLUSTER_ERROR state happens
@@ -3464,7 +3537,7 @@ class PolicyControllerMembershipState(_messages.Message):
     INSTALLING = 2
     ACTIVE = 3
     UPDATING = 4
-    DECOMISSIONING = 5
+    DECOMMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
@@ -3590,7 +3663,7 @@ class PolicyControllerOnClusterState(_messages.Message):
         the cluster. The PCH has a Membership, is aware of the version the
         cluster should be running in, but has not confirmed for itself that
         the PC is running with that version.
-      DECOMISSIONING: The PC may have resources on the cluster, but the PCH
+      DECOMMISSIONING: The PC may have resources on the cluster, but the PCH
         wishes to remove the Membership. The Membership still exists.
       CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
         to make it operational. Entering a CLUSTER_ERROR state happens
@@ -3613,7 +3686,7 @@ class PolicyControllerOnClusterState(_messages.Message):
     INSTALLING = 2
     ACTIVE = 3
     UPDATING = 4
-    DECOMISSIONING = 5
+    DECOMMISSIONING = 5
     CLUSTER_ERROR = 6
     HUB_ERROR = 7
     SUSPENDED = 8
@@ -3664,6 +3737,46 @@ class PolicyControllerPolicyContentSpec(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bundles = _messages.MessageField('BundlesValue', 1)
+
+
+class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
+  r"""Deployment-specific configuration.
+
+  Fields:
+    containerResources: Container resource requirements.
+    podAntiAffinity: Pod anti-affinity enablement.
+    replicaCount: Pod replica count.
+  """
+
+  containerResources = _messages.MessageField('PolicyControllerResourceRequirements', 1)
+  podAntiAffinity = _messages.BooleanField(2)
+  replicaCount = _messages.IntegerField(3)
+
+
+class PolicyControllerResourceList(_messages.Message):
+  r"""ResourceList contains container resource requirements.
+
+  Fields:
+    cpu: CPU requirement expressed in Kubernetes resource units.
+    memory: Memory requirement expressed in Kubernetes resource units.
+  """
+
+  cpu = _messages.StringField(1)
+  memory = _messages.StringField(2)
+
+
+class PolicyControllerResourceRequirements(_messages.Message):
+  r"""ResourceRequirements describes the compute resource requirements.
+
+  Fields:
+    limits: Limits describes the maximum amount of compute resources allowed
+      for use by the running container.
+    requests: Requests describes the amount of compute resources reserved for
+      the container by the kube-scheduler.
+  """
+
+  limits = _messages.MessageField('PolicyControllerResourceList', 1)
+  requests = _messages.MessageField('PolicyControllerResourceList', 2)
 
 
 class PolicyControllerTemplateLibraryConfig(_messages.Message):

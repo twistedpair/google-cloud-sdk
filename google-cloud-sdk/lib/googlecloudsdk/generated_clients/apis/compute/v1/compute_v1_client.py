@@ -1630,6 +1630,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+
+      Args:
+        request: (ComputeDisksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.disks.update',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['paths', 'requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}',
+        request_field='diskResource',
+        request_type_name='ComputeDisksUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ExternalVpnGatewaysService(base_api.BaseApiService):
     """Service class for the externalVpnGateways resource."""
 
@@ -11287,6 +11313,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionDisksTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+
+      Args:
+        request: (ComputeRegionDisksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionDisks.update',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['paths', 'requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}',
+        request_field='diskResource',
+        request_type_name='ComputeRegionDisksUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

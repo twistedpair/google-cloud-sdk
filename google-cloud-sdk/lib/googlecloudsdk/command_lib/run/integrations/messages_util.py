@@ -47,10 +47,14 @@ def GetCallToAction(integration_type, resource_config, resource_status):
     A formatted string of the call to action message.
   """
   formatter = integration_printer.GetFormatter(integration_type)
-  return formatter.CallToAction({
-      'config': resource_config,
-      'status': resource_status
-  })
+  return formatter.CallToAction(integration_printer.Record(
+      name=None,
+      integration_type=integration_type,
+      region=None,
+      config=resource_config,
+      status=resource_status,
+      latest_deployment=None
+  ))
 
 
 def GetDeleteErrorMessage(integration_name):

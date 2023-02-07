@@ -78,6 +78,7 @@ class Cluster(_messages.Message):
     nodeVersion: Output only. The lowest release version among all worker
       nodes. This field can be empty if the cluster does not have any worker
       nodes.
+    systemAddonsConfig: Optional. The configuration of the system add-ons.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
@@ -118,7 +119,8 @@ class Cluster(_messages.Message):
   name = _messages.StringField(11)
   networking = _messages.MessageField('ClusterNetworking', 12)
   nodeVersion = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 14)
+  updateTime = _messages.StringField(15)
 
 
 class ClusterNetworking(_messages.Message):
@@ -589,6 +591,18 @@ class GenerateAccessTokenResponse(_messages.Message):
 
   accessToken = _messages.StringField(1)
   expireTime = _messages.StringField(2)
+
+
+class Ingress(_messages.Message):
+  r"""Config for the Ingress add-on which allows customers to create an
+  Ingress object to manage external access to the servers in a cluster. The
+  add-on consists of istiod and istio-ingress.
+
+  Fields:
+    disabled: Optional. Whether Ingress is disabled.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class ListClustersResponse(_messages.Message):
@@ -1283,6 +1297,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class SystemAddonsConfig(_messages.Message):
+  r"""Config that customers are allowed to define for GDCE system add-ons.
+
+  Fields:
+    ingress: Optional. Config for Ingress.
+  """
+
+  ingress = _messages.MessageField('Ingress', 1)
 
 
 class TimeWindow(_messages.Message):

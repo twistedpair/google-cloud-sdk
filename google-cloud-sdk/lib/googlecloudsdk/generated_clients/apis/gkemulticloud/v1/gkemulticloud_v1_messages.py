@@ -832,14 +832,14 @@ class GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestReques
   object.
 
   Fields:
-    attachedClusterId: Required. A client provided ID the resource. Must be
+    attachedClusterId: Required. A client provided ID of the resource. Must be
       unique within the parent resource. The provided ID will be part of the
       AttachedCluster resource name formatted as
       `projects//locations//attachedClusters/`. Valid characters are `/a-z-/`.
       Cannot be longer than 63 characters. When generating an install manifest
       for importing an existing Membership resource, the attached_cluster_id
       field must be the Membership id. Membership names are formatted as
-      `resource name formatted as `projects//locations//memberships/`.
+      `projects//locations//memberships/`.
     parent: Required. The parent location where this AttachedCluster resource
       will be created. Location names are formatted as `projects//locations/`.
       See [Resource

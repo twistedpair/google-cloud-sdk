@@ -645,13 +645,19 @@ class ModelsClient(object):
     Returns:
       Response from calling copy model.
     """
+    encryption_spec = None
+    if kms_key_name:
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+              kmsKeyName=kms_key_name
+          )
+      )
     request = self.messages.AiplatformProjectsLocationsModelsCopyRequest(
         parent=destination_region_ref.RelativeName(),
         googleCloudAiplatformV1beta1CopyModelRequest=self.messages
         .GoogleCloudAiplatformV1beta1CopyModelRequest(
             sourceModel=source_model,
-            encryptionSpec=self.messages.
-            GoogleCloudAiplatformV1beta1EncryptionSpec(kmsKeyName=kms_key_name),
+            encryptionSpec=encryption_spec,
             parentModel=destination_parent_model,
             modelId=destination_model_id))
     return self._service.Copy(request)

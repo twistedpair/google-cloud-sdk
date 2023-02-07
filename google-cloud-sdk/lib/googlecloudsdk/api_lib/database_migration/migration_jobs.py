@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.database_migration import api_util
+from googlecloudsdk.api_lib.database_migration import conversion_workspaces
+from googlecloudsdk.api_lib.database_migration import filter_rewrite
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -38,6 +40,7 @@ class MigrationJobsClient(object):
     self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_migrationJobs
     self.resource_parser = api_util.GetResourceParser(release_track)
+    self.release_track = release_track
 
   def _ValidateArgs(self, args):
     self._ValidateDumpPath(args)
@@ -50,6 +53,36 @@ class MigrationJobsClient(object):
           args.dump_path, allow_empty_object=False)
     except Exception as e:
       raise exceptions.InvalidArgumentException('dump-path', six.text_type(e))
+
+  def _ValidateConversionWorkspaceArgs(self, conversion_workspace_ref, args):
+    """Validate flags for conversion workspace.
+
+    Args:
+      conversion_workspace_ref: str, the reference of the conversion workspace.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Raises:
+      BadArgumentException: commit-id or filter field is provided without
+      specifying the conversion workspace
+    """
+    if conversion_workspace_ref is None:
+      if args.IsKnownAndSpecified('commit_id'):
+        raise exceptions.BadArgumentException(
+            'commit-id',
+            (
+                'Conversion workspace commit-id can only be specified for'
+                ' migration jobs associated with a conversion workspace.'
+            ),
+        )
+      if args.IsKnownAndSpecified('filter'):
+        raise exceptions.BadArgumentException(
+            'filter',
+            (
+                'Filter can only be specified for migration jobs associated'
+                ' with a conversion workspace.'
+            ),
+        )
 
   def _GetType(self, mj_type, type_value):
     return mj_type.TypeValueValuesEnum.lookup_by_name(type_value)
@@ -82,11 +115,51 @@ class MigrationJobsClient(object):
       migration_job.labels = update_result.labels
       update_fields.append('labels')
 
-  def _GetMigrationJob(self, source_ref, destination_ref, args):
+  def _GetConversionWorkspaceInfo(self, conversion_workspace_ref, args):
+    """Returns the conversion worksapce info.
+
+    Args:
+      conversion_workspace_ref: str, the reference of the conversion workspace.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Raises:
+      BadArgumentException: Unable to fetch latest commit for the specified
+      conversion workspace.
+    """
+    if conversion_workspace_ref is not None:
+      conversion_workspace_obj = self.messages.ConversionWorkspaceInfo(
+          name=conversion_workspace_ref.RelativeName()
+      )
+      if args.commit_id is not None:
+        conversion_workspace_obj.commitId = args.commit_id
+      else:
+        # Get conversion workspace's latest commit id.
+        cw_client = conversion_workspaces.ConversionWorkspacesClient(
+            self.release_track
+        )
+        conversion_workspace = cw_client.Describe(
+            conversion_workspace_ref.RelativeName(),
+        )
+        if conversion_workspace.latestCommitId is None:
+          raise exceptions.BadArgumentException(
+              'conversion-workspace',
+              (
+                  'Unable to fetch latest commit for the specified conversion'
+                  ' workspace. Conversion Workspace might not be committed.'
+              ),
+          )
+        conversion_workspace_obj.commitId = conversion_workspace.latestCommitId
+      return conversion_workspace_obj
+
+  def _GetMigrationJob(
+      self, source_ref, destination_ref, conversion_workspace_ref, args
+  ):
     """Returns a migration job."""
     migration_job_type = self.messages.MigrationJob
     labels = labels_util.ParseCreateArgs(
-        args, self.messages.MigrationJob.LabelsValue)
+        args, self.messages.MigrationJob.LabelsValue
+    )
     type_value = self._GetType(migration_job_type, args.type)
     source = source_ref.RelativeName()
     destination = destination_ref.RelativeName()
@@ -97,7 +170,8 @@ class MigrationJobsClient(object):
       params['reverseSshConnectivity'] = self._GetReverseSshConnectivity(args)
     elif args.IsSpecified('static_ip'):
       params['staticIpConnectivity'] = self._GetStaticIpConnectivity()
-    return migration_job_type(
+
+    migration_job_obj = migration_job_type(
         labels=labels,
         displayName=args.display_name,
         state=migration_job_type.StateValueValuesEnum.CREATING,
@@ -106,6 +180,18 @@ class MigrationJobsClient(object):
         source=source,
         destination=destination,
         **params)
+    if conversion_workspace_ref is not None:
+      migration_job_obj.conversionWorkspace = self._GetConversionWorkspaceInfo(
+          conversion_workspace_ref, args
+      )
+
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      migration_job_obj.filter = server_filter
+
+    return migration_job_obj
 
   def _UpdateConnectivity(self, migration_job, args):
     """Update connectivity method for the migration job."""
@@ -162,36 +248,51 @@ class MigrationJobsClient(object):
     return migration_job, update_fields
 
   def _GetExistingMigrationJob(self, name):
-    get_req = self.messages.DatamigrationProjectsLocationsMigrationJobsGetRequest(
-        name=name
+    get_req = (
+        self.messages.DatamigrationProjectsLocationsMigrationJobsGetRequest(
+            name=name
+        )
     )
     return self._service.Get(get_req)
 
-  def Create(self, parent_ref, migration_job_id,
-             source_ref, destination_ref, args=None):
+  def Create(
+      self,
+      parent_ref,
+      migration_job_id,
+      source_ref,
+      destination_ref,
+      conversion_workspace_ref=None,
+      args=None,
+  ):
     """Creates a migration job.
 
     Args:
       parent_ref: a Resource reference to a parent
-        datamigration.projects.locations resource for this migration
-        job.
+        datamigration.projects.locations resource for this migration job.
       migration_job_id: str, the name of the resource to create.
       source_ref: a Resource reference to a
         datamigration.projects.locations.connectionProfiles resource.
       destination_ref: a Resource reference to a
         datamigration.projects.locations.connectionProfiles resource.
-      args: argparse.Namespace, The arguments that this command was
-          invoked with.
+      conversion_workspace_ref: a Resource reference to a
+        datamigration.projects.locations.conversionWorkspaces resource.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
 
     Returns:
       Operation: the operation for creating the migration job.
     """
     self._ValidateArgs(args)
+    self._ValidateConversionWorkspaceArgs(conversion_workspace_ref, args)
 
-    migration_job = self._GetMigrationJob(source_ref, destination_ref, args)
+    migration_job = self._GetMigrationJob(
+        source_ref, destination_ref, conversion_workspace_ref, args
+    )
 
     request_id = api_util.GenerateRequestId()
-    create_req_type = self.messages.DatamigrationProjectsLocationsMigrationJobsCreateRequest
+    create_req_type = (
+        self.messages.DatamigrationProjectsLocationsMigrationJobsCreateRequest
+    )
     create_req = create_req_type(
         migrationJob=migration_job,
         migrationJobId=migration_job_id,
@@ -224,7 +325,9 @@ class MigrationJobsClient(object):
         current_mj, source_ref, destination_ref, args)
 
     request_id = api_util.GenerateRequestId()
-    update_req_type = self.messages.DatamigrationProjectsLocationsMigrationJobsPatchRequest
+    update_req_type = (
+        self.messages.DatamigrationProjectsLocationsMigrationJobsPatchRequest
+    )
     update_req = update_req_type(
         migrationJob=migration_job,
         name=name,

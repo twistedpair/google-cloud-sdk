@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.database_migration import api_util
+from googlecloudsdk.api_lib.database_migration import filter_rewrite
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import resource_property
@@ -111,16 +112,61 @@ class ConversionWorkspacesClient(object):
 
   def _GetConvertConversionWorkspaceRequest(self, args):
     """Returns convert conversion workspace request."""
-    return self.messages.ConvertConversionWorkspaceRequest(
-        autoCommit=args.auto_commit, filter=args.filter_string)
+    convert_req_obj = self.messages.ConvertConversionWorkspaceRequest(
+        autoCommit=args.auto_commit
+    )
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      convert_req_obj.filter = server_filter
+
+    return convert_req_obj
 
   def _GetApplyConversionWorkspaceRequest(self,
                                           destination_connection_profile_ref,
                                           args):
     """Returns apply conversion workspace request."""
-    return self.messages.ApplyConversionWorkspaceRequest(
+    apply_req_obj = self.messages.ApplyConversionWorkspaceRequest(
         connectionProfile=destination_connection_profile_ref.RelativeName(),
-        filter=args.filter_string)
+    )
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      apply_req_obj.filter = server_filter
+
+    return apply_req_obj
+
+  def _GetTreeType(self, tree_type):
+    """Returns the tree type for database entities."""
+    if tree_type == 'SOURCE':
+      return (
+          self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.SOURCE_TREE
+      )
+    if tree_type == 'DRAFT':
+      return (
+          self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.DRAFT_TREE
+      )
+    return (
+        self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.DB_TREE_TYPE_UNSPECIFIED
+    )
+
+  def _GetDescribeEntitiesRequest(self, conversion_workspace_ref, args):
+    """Returns request to describe database entities in a conversion workspace."""
+    describe_entities_req = self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest(
+        commitId=args.commit_id,
+        conversionWorkspace=conversion_workspace_ref,
+        uncommitted=args.uncommitted,
+        tree=self._GetTreeType(args.tree_type),
+    )
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      describe_entities_req.filter = server_filter
+
+    return describe_entities_req
 
   def Create(self, parent_ref, conversion_workspace_id, args=None):
     """Creates a conversion workspace.
@@ -312,3 +358,31 @@ class ConversionWorkspacesClient(object):
                                              args))
 
     return self._service.Apply(apply_req)
+
+  def Describe(self, name):
+    """Describe a conversion worksapce.
+
+    Args:
+      name: str, the name for conversion worksapce being described.
+
+    Returns:
+      Described conversion worksapce Resource.
+    """
+    describe_req = self.messages.DatamigrationProjectsLocationsConversionWorkspacesGetRequest(
+        name=name
+    )
+    return self._service.Get(describe_req)
+
+  def DescribeEntities(self, name, args=None):
+    """Describes database entities in a conversion worksapce.
+
+    Args:
+      name: str, the name for conversion worksapce being described.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      Described entities for the conversion worksapce.
+    """
+    describe_req = self._GetDescribeEntitiesRequest(name, args)
+    return self._service.DescribeDatabaseEntities(describe_req).databaseEntities

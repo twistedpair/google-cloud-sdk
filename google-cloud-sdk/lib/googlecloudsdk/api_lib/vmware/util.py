@@ -81,6 +81,10 @@ class VmwareClientBase(object):
     return waiter.WaitFor(
         poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000)
 
+  def GetResponse(self, operation):
+    poller = waiter.CloudOperationPoller(self.service, self.operations_service)
+    return poller.GetResult(operation)
+
 
 def GetResourceId(resource_name):
   return resource_name.split('/')[-1]

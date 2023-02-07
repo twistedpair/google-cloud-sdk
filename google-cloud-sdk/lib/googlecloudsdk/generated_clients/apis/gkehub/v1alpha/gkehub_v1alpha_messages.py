@@ -231,7 +231,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -248,9 +250,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1400,6 +1400,33 @@ class ConfigManagementPolicyController(_messages.Message):
   templateLibraryInstalled = _messages.BooleanField(8)
 
 
+class ConfigManagementPolicyControllerMigration(_messages.Message):
+  r"""State for the migration of PolicyController from ACM -> PoCo Hub.
+
+  Enums:
+    StageValueValuesEnum: Stage of the migration.
+
+  Fields:
+    stage: Stage of the migration.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""Stage of the migration.
+
+    Values:
+      STAGE_UNSPECIFIED: Unknown state of migration.
+      ACM_MANAGED: ACM Hub/Operator manages policycontroller. No migration yet
+        completed.
+      POCO_MANAGED: All migrations steps complete; Poco Hub now manages
+        policycontroller.
+    """
+    STAGE_UNSPECIFIED = 0
+    ACM_MANAGED = 1
+    POCO_MANAGED = 2
+
+  stage = _messages.EnumField('StageValueValuesEnum', 1)
+
+
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
   r"""PolicyControllerMonitoring specifies the backends Policy Controller
   should export metrics to. For example, to specify metrics should be exported
@@ -1434,11 +1461,13 @@ class ConfigManagementPolicyControllerState(_messages.Message):
 
   Fields:
     deploymentState: The state about the policy controller installation.
+    migration: Record state of ACM -> PoCo Hub migration for this feature.
     version: The version of Gatekeeper Policy Controller deployed.
   """
 
   deploymentState = _messages.MessageField('ConfigManagementGatekeeperDeploymentState', 1)
-  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 2)
+  migration = _messages.MessageField('ConfigManagementPolicyControllerMigration', 2)
+  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 3)
 
 
 class ConfigManagementPolicyControllerVersion(_messages.Message):
@@ -2160,8 +2189,14 @@ class FleetLifecycleState(_messages.Message):
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
   feature.
+
+  Fields:
+    loggingConfig: Specified if fleet logging feature is enabled for the
+      entire fleet. If UNSPECIFIED, fleet logging feature is disabled for the
+      entire fleet.
   """
 
+  loggingConfig = _messages.MessageField('FleetObservabilityLoggingConfig', 1)
 
 
 class FleetObservabilityFeatureState(_messages.Message):
@@ -2169,6 +2204,20 @@ class FleetObservabilityFeatureState(_messages.Message):
   Feature state.
   """
 
+
+
+class FleetObservabilityLoggingConfig(_messages.Message):
+  r"""LoggingConfig defines the configuration for different types of logs.
+
+  Fields:
+    defaultConfig: Specified if applying the default routing config to logs
+      not specified in other configs.
+    fleetScopeLogsConfig: Specified if applying the routing config to all logs
+      for all fleet scopes.
+  """
+
+  defaultConfig = _messages.MessageField('FleetObservabilityRoutingConfig', 1)
+  fleetScopeLogsConfig = _messages.MessageField('FleetObservabilityRoutingConfig', 2)
 
 
 class FleetObservabilityMembershipSpec(_messages.Message):
@@ -2183,6 +2232,31 @@ class FleetObservabilityMembershipState(_messages.Message):
   specific Feature state.
   """
 
+
+
+class FleetObservabilityRoutingConfig(_messages.Message):
+  r"""RoutingConfig configures the behaviour of fleet logging feature.
+
+  Enums:
+    ModeValueValuesEnum: mode configures the logs routing mode.
+
+  Fields:
+    mode: mode configures the logs routing mode.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""mode configures the logs routing mode.
+
+    Values:
+      MODE_UNSPECIFIED: If UNSPECIFIED, fleet logging feature is disabled.
+      COPY: logs will be copied to the destination project.
+      MOVE: logs will be moved to the destination project.
+    """
+    MODE_UNSPECIFIED = 0
+    COPY = 1
+    MOVE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class GenerateConnectManifestResponse(_messages.Message):
@@ -2808,6 +2882,7 @@ class GkehubProjectsLocationsMembershipsListPermittedRequest(_messages.Message):
       the resources.
     parent: Required. The parent (project and location) where the Memberships
       will be listed. Specified in the format `projects/*/locations/*`.
+      `projects/*/locations/-` list memberships in all the regions.
   """
 
   filter = _messages.StringField(1)
@@ -2838,6 +2913,7 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
       the resources.
     parent: Required. The parent (project and location) where the Memberships
       will be listed. Specified in the format `projects/*/locations/*`.
+      `projects/*/locations/-` list memberships in all the regions.
   """
 
   filter = _messages.StringField(1)
@@ -4652,7 +4728,7 @@ class Namespace(_messages.Message):
     deleteTime: Output only. When the namespace was deleted.
     name: The resource name for the namespace
       `projects/{project}/locations/{location}/namespaces/{namespace}`
-    scope: A string attribute.
+    scope: Optional. Scope associated with the namespace
     state: Output only. State of the namespace resource.
     tenancyProject: Tenancy Project associated with the namespace
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -5048,10 +5124,19 @@ class PolicyControllerHubConfig(_messages.Message):
       spec, not the lifecycle state of the feature observed by the Hub feature
       controller that is reported in the feature state.
 
+  Messages:
+    DeploymentConfigsValue: Map of deployment configs to deployments
+      ("admission", "audit", "mutation").
+
   Fields:
     auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
       (in seconds). When set to 0, this disables audit functionality
       altogether.
+    constraintViolationLimit: The maximum number of audit violations to be
+      stored in a constraint. If not set, the internal default (currently 20)
+      will be used.
+    deploymentConfigs: Map of deployment configs to deployments ("admission",
+      "audit", "mutation").
     exemptableNamespaces: The set of namespaces that are excluded from Policy
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
@@ -5090,15 +5175,44 @@ class PolicyControllerHubConfig(_messages.Message):
     INSTALL_SPEC_ENABLED = 2
     INSTALL_SPEC_SUSPENDED = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeploymentConfigsValue(_messages.Message):
+    r"""Map of deployment configs to deployments ("admission", "audit",
+    "mutation").
+
+    Messages:
+      AdditionalProperty: An additional property for a DeploymentConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeploymentConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeploymentConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerPolicyControllerDeploymentConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerPolicyControllerDeploymentConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   auditIntervalSeconds = _messages.IntegerField(1)
-  exemptableNamespaces = _messages.StringField(2, repeated=True)
-  installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 3)
-  logDeniesEnabled = _messages.BooleanField(4)
-  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 5)
-  mutationEnabled = _messages.BooleanField(6)
-  policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 7)
-  referentialRulesEnabled = _messages.BooleanField(8)
-  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 9)
+  constraintViolationLimit = _messages.IntegerField(2)
+  deploymentConfigs = _messages.MessageField('DeploymentConfigsValue', 3)
+  exemptableNamespaces = _messages.StringField(4, repeated=True)
+  installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 5)
+  logDeniesEnabled = _messages.BooleanField(6)
+  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 7)
+  mutationEnabled = _messages.BooleanField(8)
+  policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 9)
+  referentialRulesEnabled = _messages.BooleanField(10)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 11)
 
 
 class PolicyControllerMembershipSpec(_messages.Message):
@@ -5384,6 +5498,46 @@ class PolicyControllerPolicyContentSpec(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bundles = _messages.MessageField('BundlesValue', 1)
+
+
+class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
+  r"""Deployment-specific configuration.
+
+  Fields:
+    containerResources: Container resource requirements.
+    podAntiAffinity: Pod anti-affinity enablement.
+    replicaCount: Pod replica count.
+  """
+
+  containerResources = _messages.MessageField('PolicyControllerResourceRequirements', 1)
+  podAntiAffinity = _messages.BooleanField(2)
+  replicaCount = _messages.IntegerField(3)
+
+
+class PolicyControllerResourceList(_messages.Message):
+  r"""ResourceList contains container resource requirements.
+
+  Fields:
+    cpu: CPU requirement expressed in Kubernetes resource units.
+    memory: Memory requirement expressed in Kubernetes resource units.
+  """
+
+  cpu = _messages.StringField(1)
+  memory = _messages.StringField(2)
+
+
+class PolicyControllerResourceRequirements(_messages.Message):
+  r"""ResourceRequirements describes the compute resource requirements.
+
+  Fields:
+    limits: Limits describes the maximum amount of compute resources allowed
+      for use by the running container.
+    requests: Requests describes the amount of compute resources reserved for
+      the container by the kube-scheduler.
+  """
+
+  limits = _messages.MessageField('PolicyControllerResourceList', 1)
+  requests = _messages.MessageField('PolicyControllerResourceList', 2)
 
 
 class PolicyControllerTemplateLibraryConfig(_messages.Message):

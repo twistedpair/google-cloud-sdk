@@ -2901,8 +2901,8 @@ class GoogleCloudDataplexV1ContentSqlScript(_messages.Message):
 class GoogleCloudDataplexV1DataAccessSpec(_messages.Message):
   r"""DataAccessSpec holds the access control configuration to be enforced on
   data stored within resources (eg: rows, columns in BigQuery Tables). When
-  associated with data,the data is only accessible to principals explicitly
-  granted access through the DataAttribute. Principals with access to the
+  associated with data, the data is only accessible to principals explicitly
+  granted access through the DataAccessSpec. Principals with access to the
   containing resource are not implicitly granted access.
 
   Fields:
@@ -6312,7 +6312,9 @@ class GoogleIamV1Binding(_messages.Message):
       (https://cloud.google.com/kubernetes-engine/docs/how-to/kubernetes-
       service-accounts). For example, my-project.svc.id.goog[my-namespace/my-
       kubernetes-sa]. group:{emailid}: An email address that represents a
-      Google group. For example, admins@example.com.
+      Google group. For example, admins@example.com. domain:{domain}: The G
+      Suite domain (primary) that represents all the users of that domain. For
+      example, google.com or example.com.
       deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, alice@example.com?uid=123456789012345678901. If the user is
@@ -6329,9 +6331,7 @@ class GoogleIamV1Binding(_messages.Message):
       been recently deleted. For example,
       admins@example.com?uid=123456789012345678901. If the group is recovered,
       this value reverts to group:{emailid} and the recovered group retains
-      the role in the binding. domain:{domain}: The G Suite domain (primary)
-      that represents all the users of that domain. For example, google.com or
-      example.com.
+      the role in the binding.
     role: Role that is assigned to the list of members, or principals. For
       example, roles/viewer, roles/editor, or roles/owner.
   """

@@ -40,10 +40,12 @@ def ExtractMatchingAssetFromDescribeResponse(response, args):
   """Returns asset that matches the user provided asset or resource-name."""
   del args
   list_asset_response = list(response)
-  assert list_asset_response, ("Asset or resource does not exist.")
-  assert len(list_asset_response) == 1, (
-      "ListAssetResponse must only return one asset since it is filtered "
-      "by Asset Name or Resource Name.")
+  if not list_asset_response:
+    raise InvalidSCCInputError("Asset or resource does not exist.")
+  if len(list_asset_response) > 1:
+    raise InvalidSCCInputError(
+        "ListAssetResponse must only return one asset since it is filtered "
+        "by Asset Name or Resource Name.")
   for asset_result in list_asset_response:
     result_dictionary = {
         "asset": int(asset_result.asset.name.split("/")[3]),
@@ -82,27 +84,29 @@ def ExtractMatchingAssetFromGetProjectResponse(response, args):
 
 def _ValidateAndGetAssetResult(response):
   list_asset_response = list(response)
-  assert list_asset_response, (
-      "Asset or resource does not exist for the provided Organization. Please "
-      "verify that both the OrganizationId and AssetId/ResourceName are "
-      "correct.")
-  assert len(list_asset_response) == 1, (
-      "An asset can not have multiple projects. Something went wrong.")
+  if not list_asset_response:
+    raise InvalidSCCInputError(
+        "Asset or resource does not exist for the provided Organization. Please"
+        " verify that both the OrganizationId and AssetId/ResourceName are "
+        "correct.")
+  if len(list_asset_response) > 1:
+    raise InvalidSCCInputError(
+        "An asset can not have multiple projects. Something went wrong.")
   return list_asset_response[0]
 
 
-# TODO(b/177658164): Avoid using assert.
 def _GetAssetResourceParent(asset_result):
   asset_parent = asset_result.asset.securityCenterProperties.resourceParent
-  assert asset_parent is not None, ("Asset does not have a parent.")
+  if asset_parent is None:
+    raise InvalidSCCInputError("Asset does not have a parent.")
   return asset_parent
 
 
-# TODO(b/177658164): Avoid using assert.
 def _GetAssetProject(asset_result):
   asset_project = asset_result.asset.securityCenterProperties.resourceProject
-  assert asset_project is not None, (
-      "Organization assets do not belong to a Project.")
+  if asset_project is None:
+    raise InvalidSCCInputError(
+        "Organization assets do not belong to a Project.")
   return asset_project
 
 
@@ -116,7 +120,8 @@ def _GetProjectId(asset):
       for x in asset.resourceProperties.additionalProperties
       if x.key == "projectId"
   ]
-  assert len(project_id) == 1, ("No projectId exists for this asset.")
+  if not project_id:
+    raise InvalidSCCInputError("No projectId exists for this asset.")
   return _JsonValueToPythonValue(project_id[0])
 
 
@@ -126,7 +131,8 @@ def _GetParent(asset):
       for x in asset.resourceProperties.additionalProperties
       if x.key == "name"
   ]
-  assert len(parent) == 1, ("No parent exists for this asset.")
+  if not parent:
+    raise InvalidSCCInputError("No parent exists for this asset.")
   return _JsonValueToPythonValue(parent[0])
 
 
@@ -140,7 +146,7 @@ def _GetAsset(parent, request_filter=None):
   list_asset_response_for_project = asset_service_client.List(
       parent=parent, request_filter=request_filter)
   list_asset_results = list_asset_response_for_project.listAssetsResults
-  assert len(list_asset_results) == 1, (
-      "Something went wrong while retrieving the "
-      "ProjectId for this Asset.")
+  if len(list_asset_results) != 1:
+    raise InvalidSCCInputError(
+        "Something went wrong while retrieving the ProjectId for this Asset.")
   return list_asset_results[0].asset

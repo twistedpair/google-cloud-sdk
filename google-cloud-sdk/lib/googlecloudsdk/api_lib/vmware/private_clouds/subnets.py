@@ -44,3 +44,14 @@ class SubnetsClient(util.VmwareClientBase):
         name=resource.RelativeName())
     response = self.service.Get(request)
     return response
+
+  def Update(self, resource, ip_cidr_range):
+    subnet = self.Get(resource)
+    subnet.ipCidrRange = ip_cidr_range
+    update_mask = ['ip_cidr_range']
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest(
+        subnet=subnet,
+        name=resource.RelativeName(),
+        updateMask=','.join(update_mask),
+    )
+    return self.service.Patch(request)

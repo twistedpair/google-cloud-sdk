@@ -27,6 +27,7 @@ DEFAULT_LIST_FORMAT = """\
       name,
       sslCertificates.map().basename().list():label=SSL_CERTIFICATES,
       urlMap.basename(),
+      region.basename(),
       certificateMap.basename()
     )"""
 

@@ -8260,6 +8260,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       the logs incur cost, which are subject to [Cloud Logging
       pricing](https://cloud.google.com/stackdriver/pricing). User can disable
       container logging by setting this flag to true.
+    disableExplanations: If true, deploy the model without explainable
+      feature, regardless the existence of Model.explanation_spec or
+      explanation_spec.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
     enableAccessLogging: If true, online prediction access logs are sent to
@@ -8339,20 +8342,21 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
   createTime = _messages.StringField(2)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformUiDedicatedResources', 3)
   disableContainerLogging = _messages.BooleanField(4)
-  displayName = _messages.StringField(5)
-  enableAccessLogging = _messages.BooleanField(6)
-  enableContainerLogging = _messages.BooleanField(7)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformUiExplanationSpec', 8)
-  id = _messages.StringField(9)
-  model = _messages.StringField(10)
-  modelDisplayName = _messages.StringField(11)
-  modelMonitoringObjectiveConfig = _messages.MessageField('GoogleCloudAiplatformUiModelMonitoringObjectiveConfig', 12)
-  modelObjective = _messages.StringField(13)
-  modelVersionId = _messages.StringField(14)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiPrivateEndpoints', 15)
-  serviceAccount = _messages.StringField(16)
-  sharedResources = _messages.StringField(17)
-  uiState = _messages.EnumField('UiStateValueValuesEnum', 18)
+  disableExplanations = _messages.BooleanField(5)
+  displayName = _messages.StringField(6)
+  enableAccessLogging = _messages.BooleanField(7)
+  enableContainerLogging = _messages.BooleanField(8)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformUiExplanationSpec', 9)
+  id = _messages.StringField(10)
+  model = _messages.StringField(11)
+  modelDisplayName = _messages.StringField(12)
+  modelMonitoringObjectiveConfig = _messages.MessageField('GoogleCloudAiplatformUiModelMonitoringObjectiveConfig', 13)
+  modelObjective = _messages.StringField(14)
+  modelVersionId = _messages.StringField(15)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiPrivateEndpoints', 16)
+  serviceAccount = _messages.StringField(17)
+  sharedResources = _messages.StringField(18)
+  uiState = _messages.EnumField('UiStateValueValuesEnum', 19)
 
 
 class GoogleCloudAiplatformUiDiskSpec(_messages.Message):
@@ -12637,6 +12641,260 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingIn
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata(_messages.Message):
   r"""Model metadata specific to Seq2Seq Plus Forecasting.
+
+  Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
+    trainCostMilliNodeHours: Output only. The actual training cost of the
+      model, expressed in milli node hours, i.e. 1,000 value in this field
+      means 1 node hour. Guaranteed to not exceed the train budget.
+  """
+
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecasting(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Forecasting Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingMetadata', 2)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs
+  object.
+
+  Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
+    exportEvaluatedDataItemsConfig: Configuration for exporting test set
+      predictions to a BigQuery table. If this configuration is absent, then
+      the export is not performed.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
+    hierarchyConfig: Configuration that defines the hierarchical relationship
+      of time series and parameters for hierarchical forecasting strategies.
+    holidayRegions: The geographical region based on which the holiday effect
+      is applied in modeling by adding holiday categorical array feature that
+      include all holidays matching the date. This option only allowed when
+      data_granularity is day. By default, holiday effect modeling is
+      disabled. To turn it on, specify the holiday region using this option.
+    optimizationObjective: Objective function the model is optimizing towards.
+      The training process creates a model that optimizes the value of the
+      objective function over the validation set. The supported optimization
+      objectives: * "minimize-rmse" (default) - Minimize root-mean-squared
+      error (RMSE). * "minimize-mae" - Minimize mean-absolute error (MAE). *
+      "minimize-rmsle" - Minimize root-mean-squared log error (RMSLE). *
+      "minimize-rmspe" - Minimize root-mean-squared percentage error (RMSPE).
+      * "minimize-wape-mae" - Minimize the combination of weighted absolute
+      percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
+      quantile-loss" - Minimize the quantile loss at the quantiles defined in
+      `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
+      error.
+    quantiles: Quantiles to use for minimize-quantile-loss
+      `optimization_objective`. Up to 5 quantiles are allowed of values
+      between 0 and 1, exclusive. Required if the value of
+      optimization_objective is minimize-quantile-loss. Represents the percent
+      quantiles to use for that objective. Quantiles must be unique.
+    targetColumn: The name of the column that the Model is to predict values
+      for. This column must be unavailable at forecast.
+    timeColumn: The name of the column that identifies time order in the time
+      series. This column must be available at forecast.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
+    timeSeriesIdentifierColumn: The name of the column that identifies the
+      time series.
+    trainBudgetMilliNodeHours: Required. The train budget of creating this
+      model, expressed in milli node hours i.e. 1,000 value in this field
+      means 1 node hour. The training cost of the model will not exceed this
+      budget. The final cost will be attempted to be close to the budget,
+      though may end up being (even) noticeably smaller - at the backend's
+      discretion. This especially may happen when further model training
+      ceases to provide any improvements. If the budget is set to a value
+      known to be insufficient to train a model for the given dataset, the
+      training won't be attempted and will error. The train budget must be
+      between 1,000 and 72,000 milli node hours, inclusive.
+    transformations: Each transformation will apply transform function to
+      given input column. And the result will be used for training. When
+      creating transformation for BigQuery Struct column, the column should be
+      flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
+    validationOptions: Validation options for the data validation component.
+      The available options are: * "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. * "ignore-
+      validation" - ignore the results of the validation and continue
+    weightColumn: Column name that should be used as the weight column. Higher
+      values in this column give more importance to the row during model
+      training. The column must have numeric values between 0 and 10000
+      inclusively; 0 means the row is ignored for training. If weight column
+      field is not set, then all rows are assumed to have equal weight of 1.
+      This column must be available at forecast.
+    windowConfig: Config containing strategy for generating sliding windows.
+  """
+
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig', 7)
+  holidayRegions = _messages.StringField(8, repeated=True)
+  optimizationObjective = _messages.StringField(9)
+  quantiles = _messages.FloatField(10, repeated=True)
+  targetColumn = _messages.StringField(11)
+  timeColumn = _messages.StringField(12)
+  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(14)
+  trainBudgetMilliNodeHours = _messages.IntegerField(15)
+  transformations = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformation', 16, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
+  validationOptions = _messages.StringField(18)
+  weightColumn = _messages.StringField(19)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig', 20)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsGranularity(_messages.Message):
+  r"""A duration of time expressed in time granularity units.
+
+  Fields:
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
+      are: * "minute" * "hour" * "day" * "week" * "month" * "year"
+  """
+
+  quantity = _messages.IntegerField(1)
+  unit = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformation(_messages.Message):
+  r"""A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs
+  Transformation object.
+
+  Fields:
+    auto: A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingIn
+      putsTransformationAutoTransformation attribute.
+    categorical: A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForeca
+      stingInputsTransformationCategoricalTransformation attribute.
+    numeric: A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastin
+      gInputsTransformationNumericTransformation attribute.
+    text: A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingIn
+      putsTransformationTextTransformation attribute.
+    timestamp: A GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecast
+      ingInputsTransformationTimestampTransformation attribute.
+  """
+
+  auto = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation', 1)
+  categorical = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation', 2)
+  numeric = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation', 3)
+  text = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation', 4)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation', 5)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation(_messages.Message):
+  r"""Training pipeline will infer the proper transformation based on the
+  statistic of dataset.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  categorical string as is--no change to case, punctuation, spelling, tense,
+  and so on. * Convert the category name to a dictionary lookup index and
+  generate an embedding for each index. * Categories that appear less than 5
+  times in the training dataset are treated as the "unknown" category. The
+  "unknown" category gets its own special lookup index and resulting
+  embedding.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  value converted to float32. * The z_score of the value. * log(value+1) when
+  the value is greater than or equal to 0. Otherwise, this transformation is
+  not applied and the value is considered a missing value. * z_score of
+  log(value+1) when the value is greater than or equal to 0. Otherwise, this
+  transformation is not applied and the value is considered a missing value.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  text as is--no change to case, punctuation, spelling, tense, and so on. *
+  Convert the category name to a dictionary lookup index and generate an
+  embedding for each index.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. *
+  Apply the transformation functions for Numerical columns. * Determine the
+  year, month, day,and weekday. Treat each value from the timestamp as a
+  Categorical column. * Invalid numerical values (for example, values that
+  fall outside of a typical timestamp range, or are extreme values) receive no
+  special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+    timeFormat: The format in which that time field is expressed. The
+      time_format must either be one of: * `unix-seconds` * `unix-
+      milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
+      respectively number of seconds, milliseconds, microseconds and
+      nanoseconds since start of the Unix epoch); or be written in `strftime`
+      syntax. If time_format is not set, then the default format is RFC 3339
+      `date-time` format, where `time-offset` = `"Z"` (e.g.
+      1985-04-12T23:20:50.52Z)
+  """
+
+  columnName = _messages.StringField(1)
+  timeFormat = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingMetadata(_messages.Message):
+  r"""Model metadata specific to TFT Forecasting.
 
   Fields:
     evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
@@ -18648,6 +18906,260 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMe
   trainCostMilliNodeHours = _messages.IntegerField(2)
 
 
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecasting(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Forecasting Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingMetadata', 2)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs
+  object.
+
+  Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
+    exportEvaluatedDataItemsConfig: Configuration for exporting test set
+      predictions to a BigQuery table. If this configuration is absent, then
+      the export is not performed.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
+    hierarchyConfig: Configuration that defines the hierarchical relationship
+      of time series and parameters for hierarchical forecasting strategies.
+    holidayRegions: The geographical region based on which the holiday effect
+      is applied in modeling by adding holiday categorical array feature that
+      include all holidays matching the date. This option only allowed when
+      data_granularity is day. By default, holiday effect modeling is
+      disabled. To turn it on, specify the holiday region using this option.
+    optimizationObjective: Objective function the model is optimizing towards.
+      The training process creates a model that optimizes the value of the
+      objective function over the validation set. The supported optimization
+      objectives: * "minimize-rmse" (default) - Minimize root-mean-squared
+      error (RMSE). * "minimize-mae" - Minimize mean-absolute error (MAE). *
+      "minimize-rmsle" - Minimize root-mean-squared log error (RMSLE). *
+      "minimize-rmspe" - Minimize root-mean-squared percentage error (RMSPE).
+      * "minimize-wape-mae" - Minimize the combination of weighted absolute
+      percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
+      quantile-loss" - Minimize the quantile loss at the quantiles defined in
+      `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
+      error.
+    quantiles: Quantiles to use for minimize-quantile-loss
+      `optimization_objective`. Up to 5 quantiles are allowed of values
+      between 0 and 1, exclusive. Required if the value of
+      optimization_objective is minimize-quantile-loss. Represents the percent
+      quantiles to use for that objective. Quantiles must be unique.
+    targetColumn: The name of the column that the Model is to predict values
+      for. This column must be unavailable at forecast.
+    timeColumn: The name of the column that identifies time order in the time
+      series. This column must be available at forecast.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
+    timeSeriesIdentifierColumn: The name of the column that identifies the
+      time series.
+    trainBudgetMilliNodeHours: Required. The train budget of creating this
+      model, expressed in milli node hours i.e. 1,000 value in this field
+      means 1 node hour. The training cost of the model will not exceed this
+      budget. The final cost will be attempted to be close to the budget,
+      though may end up being (even) noticeably smaller - at the backend's
+      discretion. This especially may happen when further model training
+      ceases to provide any improvements. If the budget is set to a value
+      known to be insufficient to train a model for the given dataset, the
+      training won't be attempted and will error. The train budget must be
+      between 1,000 and 72,000 milli node hours, inclusive.
+    transformations: Each transformation will apply transform function to
+      given input column. And the result will be used for training. When
+      creating transformation for BigQuery Struct column, the column should be
+      flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
+    validationOptions: Validation options for the data validation component.
+      The available options are: * "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. * "ignore-
+      validation" - ignore the results of the validation and continue
+    weightColumn: Column name that should be used as the weight column. Higher
+      values in this column give more importance to the row during model
+      training. The column must have numeric values between 0 and 10000
+      inclusively; 0 means the row is ignored for training. If weight column
+      field is not set, then all rows are assumed to have equal weight of 1.
+      This column must be available at forecast.
+    windowConfig: Config containing strategy for generating sliding windows.
+  """
+
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig', 7)
+  holidayRegions = _messages.StringField(8, repeated=True)
+  optimizationObjective = _messages.StringField(9)
+  quantiles = _messages.FloatField(10, repeated=True)
+  targetColumn = _messages.StringField(11)
+  timeColumn = _messages.StringField(12)
+  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(14)
+  trainBudgetMilliNodeHours = _messages.IntegerField(15)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformation', 16, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
+  validationOptions = _messages.StringField(18)
+  weightColumn = _messages.StringField(19)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig', 20)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsGranularity(_messages.Message):
+  r"""A duration of time expressed in time granularity units.
+
+  Fields:
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
+      are: * "minute" * "hour" * "day" * "week" * "month" * "year"
+  """
+
+  quantity = _messages.IntegerField(1)
+  unit = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformation(_messages.Message):
+  r"""A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs
+  Transformation object.
+
+  Fields:
+    auto: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingIn
+      putsTransformationAutoTransformation attribute.
+    categorical: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForeca
+      stingInputsTransformationCategoricalTransformation attribute.
+    numeric: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastin
+      gInputsTransformationNumericTransformation attribute.
+    text: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingIn
+      putsTransformationTextTransformation attribute.
+    timestamp: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecast
+      ingInputsTransformationTimestampTransformation attribute.
+  """
+
+  auto = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation', 1)
+  categorical = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation', 2)
+  numeric = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation', 3)
+  text = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation', 4)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation', 5)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation(_messages.Message):
+  r"""Training pipeline will infer the proper transformation based on the
+  statistic of dataset.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  categorical string as is--no change to case, punctuation, spelling, tense,
+  and so on. * Convert the category name to a dictionary lookup index and
+  generate an embedding for each index. * Categories that appear less than 5
+  times in the training dataset are treated as the "unknown" category. The
+  "unknown" category gets its own special lookup index and resulting
+  embedding.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  value converted to float32. * The z_score of the value. * log(value+1) when
+  the value is greater than or equal to 0. Otherwise, this transformation is
+  not applied and the value is considered a missing value. * z_score of
+  log(value+1) when the value is greater than or equal to 0. Otherwise, this
+  transformation is not applied and the value is considered a missing value.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  text as is--no change to case, punctuation, spelling, tense, and so on. *
+  Convert the category name to a dictionary lookup index and generate an
+  embedding for each index.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. *
+  Apply the transformation functions for Numerical columns. * Determine the
+  year, month, day,and weekday. Treat each value from the timestamp as a
+  Categorical column. * Invalid numerical values (for example, values that
+  fall outside of a typical timestamp range, or are extreme values) receive no
+  special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+    timeFormat: The format in which that time field is expressed. The
+      time_format must either be one of: * `unix-seconds` * `unix-
+      milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
+      respectively number of seconds, milliseconds, microseconds and
+      nanoseconds since start of the Unix epoch); or be written in `strftime`
+      syntax. If time_format is not set, then the default format is RFC 3339
+      `date-time` format, where `time-offset` = `"Z"` (e.g.
+      1985-04-12T23:20:50.52Z)
+  """
+
+  columnName = _messages.StringField(1)
+  timeFormat = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingMetadata(_messages.Message):
+  r"""Model metadata specific to TFT Forecasting.
+
+  Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
+    trainCostMilliNodeHours: Output only. The actual training cost of the
+      model, expressed in milli node hours, i.e. 1,000 value in this field
+      means 1 node hour. Guaranteed to not exceed the train budget.
+  """
+
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
+
+
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig(_messages.Message):
   r"""Config that contains the strategy used to generate sliding windows in
   time series training. A window is a series of rows that comprise the context
@@ -23502,6 +24014,9 @@ class GoogleCloudAiplatformV1alpha1IndexEndpoint(_messages.Message):
       cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
       `projects/{project}/global/networks/{network}`. Where {project} is a
       project number, as in '12345', and {network} is network name.
+    privateServiceConnectConfig: Optional. Configuration for private service
+      connect. network and private_service_connect_config are mutually
+      exclusive.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
       DeployedIndexes are updated, e.g. due to updates of the original Indexes
@@ -23545,7 +24060,8 @@ class GoogleCloudAiplatformV1alpha1IndexEndpoint(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   network = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1PrivateServiceConnectConfig', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints(_messages.Message):
@@ -26328,6 +26844,20 @@ class GoogleCloudAiplatformV1alpha1Presets(_messages.Message):
 
   modality = _messages.EnumField('ModalityValueValuesEnum', 1)
   query = _messages.EnumField('QueryValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1alpha1PrivateServiceConnectConfig(_messages.Message):
+  r"""Represents configuration for private service connect.
+
+  Fields:
+    enablePrivateServiceConnect: Required. If true, expose the IndexEndpoint
+      via private service connect.
+    projectAllowlist: A list of Projects from which the forwarding rule will
+      target the service attachment.
+  """
+
+  enablePrivateServiceConnect = _messages.BooleanField(1)
+  projectAllowlist = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1PythonPackageSpec(_messages.Message):
@@ -29541,6 +30071,9 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
       DeployedModel, and that need a higher degree of manual configuration.
+    disableExplanations: If true, deploy the model without explainable
+      feature, regardless the existence of Model.explanation_spec or
+      explanation_spec.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
     enableAccessLogging: If true, online prediction access logs are sent to
@@ -29588,16 +30121,17 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
   createTime = _messages.StringField(2)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 3)
-  displayName = _messages.StringField(4)
-  enableAccessLogging = _messages.BooleanField(5)
-  enableContainerLogging = _messages.BooleanField(6)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 7)
-  id = _messages.StringField(8)
-  model = _messages.StringField(9)
-  modelVersionId = _messages.StringField(10)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 11)
-  serviceAccount = _messages.StringField(12)
-  sharedResources = _messages.StringField(13)
+  disableExplanations = _messages.BooleanField(4)
+  displayName = _messages.StringField(5)
+  enableAccessLogging = _messages.BooleanField(6)
+  enableContainerLogging = _messages.BooleanField(7)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 8)
+  id = _messages.StringField(9)
+  model = _messages.StringField(10)
+  modelVersionId = _messages.StringField(11)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 12)
+  serviceAccount = _messages.StringField(13)
+  sharedResources = _messages.StringField(14)
 
 
 class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
@@ -34004,6 +34538,261 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecast
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata(_messages.Message):
   r"""Model metadata specific to Seq2Seq Plus Forecasting.
+
+  Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
+    trainCostMilliNodeHours: Output only. The actual training cost of the
+      model, expressed in milli node hours, i.e. 1,000 value in this field
+      means 1 node hour. Guaranteed to not exceed the train budget.
+  """
+
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecasting(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Forecasting Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputs(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputs
+  object.
+
+  Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
+    exportEvaluatedDataItemsConfig: Configuration for exporting test set
+      predictions to a BigQuery table. If this configuration is absent, then
+      the export is not performed.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
+    hierarchyConfig: Configuration that defines the hierarchical relationship
+      of time series and parameters for hierarchical forecasting strategies.
+    holidayRegions: The geographical region based on which the holiday effect
+      is applied in modeling by adding holiday categorical array feature that
+      include all holidays matching the date. This option only allowed when
+      data_granularity is day. By default, holiday effect modeling is
+      disabled. To turn it on, specify the holiday region using this option.
+    optimizationObjective: Objective function the model is optimizing towards.
+      The training process creates a model that optimizes the value of the
+      objective function over the validation set. The supported optimization
+      objectives: * "minimize-rmse" (default) - Minimize root-mean-squared
+      error (RMSE). * "minimize-mae" - Minimize mean-absolute error (MAE). *
+      "minimize-rmsle" - Minimize root-mean-squared log error (RMSLE). *
+      "minimize-rmspe" - Minimize root-mean-squared percentage error (RMSPE).
+      * "minimize-wape-mae" - Minimize the combination of weighted absolute
+      percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
+      quantile-loss" - Minimize the quantile loss at the quantiles defined in
+      `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
+      error.
+    quantiles: Quantiles to use for minimize-quantile-loss
+      `optimization_objective`. Up to 5 quantiles are allowed of values
+      between 0 and 1, exclusive. Required if the value of
+      optimization_objective is minimize-quantile-loss. Represents the percent
+      quantiles to use for that objective. Quantiles must be unique.
+    targetColumn: The name of the column that the Model is to predict values
+      for. This column must be unavailable at forecast.
+    timeColumn: The name of the column that identifies time order in the time
+      series. This column must be available at forecast.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
+    timeSeriesIdentifierColumn: The name of the column that identifies the
+      time series.
+    trainBudgetMilliNodeHours: Required. The train budget of creating this
+      model, expressed in milli node hours i.e. 1,000 value in this field
+      means 1 node hour. The training cost of the model will not exceed this
+      budget. The final cost will be attempted to be close to the budget,
+      though may end up being (even) noticeably smaller - at the backend's
+      discretion. This especially may happen when further model training
+      ceases to provide any improvements. If the budget is set to a value
+      known to be insufficient to train a model for the given dataset, the
+      training won't be attempted and will error. The train budget must be
+      between 1,000 and 72,000 milli node hours, inclusive.
+    transformations: Each transformation will apply transform function to
+      given input column. And the result will be used for training. When
+      creating transformation for BigQuery Struct column, the column should be
+      flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
+    validationOptions: Validation options for the data validation component.
+      The available options are: * "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. * "ignore-
+      validation" - ignore the results of the validation and continue
+    weightColumn: Column name that should be used as the weight column. Higher
+      values in this column give more importance to the row during model
+      training. The column must have numeric values between 0 and 10000
+      inclusively; 0 means the row is ignored for training. If weight column
+      field is not set, then all rows are assumed to have equal weight of 1.
+      This column must be available at forecast.
+    windowConfig: Config containing strategy for generating sliding windows.
+  """
+
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  hierarchyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig', 7)
+  holidayRegions = _messages.StringField(8, repeated=True)
+  optimizationObjective = _messages.StringField(9)
+  quantiles = _messages.FloatField(10, repeated=True)
+  targetColumn = _messages.StringField(11)
+  timeColumn = _messages.StringField(12)
+  timeSeriesAttributeColumns = _messages.StringField(13, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(14)
+  trainBudgetMilliNodeHours = _messages.IntegerField(15)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformation', 16, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(17, repeated=True)
+  validationOptions = _messages.StringField(18)
+  weightColumn = _messages.StringField(19)
+  windowConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig', 20)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsGranularity(_messages.Message):
+  r"""A duration of time expressed in time granularity units.
+
+  Fields:
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
+      are: * "minute" * "hour" * "day" * "week" * "month" * "year"
+  """
+
+  quantity = _messages.IntegerField(1)
+  unit = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformation(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingI
+  nputsTransformation object.
+
+  Fields:
+    auto: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecast
+      ingInputsTransformationAutoTransformation attribute.
+    categorical: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftF
+      orecastingInputsTransformationCategoricalTransformation attribute.
+    numeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForec
+      astingInputsTransformationNumericTransformation attribute.
+    text: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecast
+      ingInputsTransformationTextTransformation attribute.
+    timestamp: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftFor
+      ecastingInputsTransformationTimestampTransformation attribute.
+  """
+
+  auto = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation', 1)
+  categorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation', 2)
+  numeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation', 3)
+  text = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation', 4)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation', 5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation(_messages.Message):
+  r"""Training pipeline will infer the proper transformation based on the
+  statistic of dataset.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  categorical string as is--no change to case, punctuation, spelling, tense,
+  and so on. * Convert the category name to a dictionary lookup index and
+  generate an embedding for each index. * Categories that appear less than 5
+  times in the training dataset are treated as the "unknown" category. The
+  "unknown" category gets its own special lookup index and resulting
+  embedding.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  value converted to float32. * The z_score of the value. * log(value+1) when
+  the value is greater than or equal to 0. Otherwise, this transformation is
+  not applied and the value is considered a missing value. * z_score of
+  log(value+1) when the value is greater than or equal to 0. Otherwise, this
+  transformation is not applied and the value is considered a missing value.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  text as is--no change to case, punctuation, spelling, tense, and so on. *
+  Convert the category name to a dictionary lookup index and generate an
+  embedding for each index.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. *
+  Apply the transformation functions for Numerical columns. * Determine the
+  year, month, day,and weekday. Treat each value from the timestamp as a
+  Categorical column. * Invalid numerical values (for example, values that
+  fall outside of a typical timestamp range, or are extreme values) receive no
+  special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+    timeFormat: The format in which that time field is expressed. The
+      time_format must either be one of: * `unix-seconds` * `unix-
+      milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
+      respectively number of seconds, milliseconds, microseconds and
+      nanoseconds since start of the Unix epoch); or be written in `strftime`
+      syntax. If time_format is not set, then the default format is RFC 3339
+      `date-time` format, where `time-offset` = `"Z"` (e.g.
+      1985-04-12T23:20:50.52Z)
+  """
+
+  columnName = _messages.StringField(1)
+  timeFormat = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingMetadata(_messages.Message):
+  r"""Model metadata specific to TFT Forecasting.
 
   Fields:
     evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported

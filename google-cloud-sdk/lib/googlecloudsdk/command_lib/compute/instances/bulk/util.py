@@ -107,7 +107,7 @@ def _GetLocationPolicy(
   location_policy = messages.LocationPolicy()
 
   if args.IsKnownAndSpecified('location_policy') or args.IsKnownAndSpecified(
-      'max_count'
+      'max_count_per_zone'
   ):
     if max_count_per_zone_enabled:
       location_policy.locations = (

@@ -1078,6 +1078,46 @@
       "description": "**Fleet Observability**: The Hub-wide input for the FleetObservability feature.",
       "type": "object",
       "properties": {
+        "loggingConfig": {
+          "description": "Specified if fleet logging feature is enabled for the entire fleet. If UNSPECIFIED, fleet logging feature is disabled for the entire fleet.",
+          "$ref": "FleetObservabilityLoggingConfig"
+        }
+      }
+    },
+    "FleetObservabilityLoggingConfig": {
+      "id": "FleetObservabilityLoggingConfig",
+      "description": "LoggingConfig defines the configuration for different types of logs.",
+      "type": "object",
+      "properties": {
+        "defaultConfig": {
+          "description": "Specified if applying the default routing config to logs not specified in other configs.",
+          "$ref": "FleetObservabilityRoutingConfig"
+        },
+        "fleetScopeLogsConfig": {
+          "description": "Specified if applying the routing config to all logs for all fleet scopes.",
+          "$ref": "FleetObservabilityRoutingConfig"
+        }
+      }
+    },
+    "FleetObservabilityRoutingConfig": {
+      "id": "FleetObservabilityRoutingConfig",
+      "description": "RoutingConfig configures the behaviour of fleet logging feature.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "mode configures the logs routing mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "If UNSPECIFIED, fleet logging feature is disabled.",
+            "logs will be copied to the destination project.",
+            "logs will be moved to the destination project."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "COPY",
+            "MOVE"
+          ]
+        }
       }
     },
     "WorkloadMigrationFeatureSpec": {
@@ -1694,6 +1734,18 @@
         "policyContent": {
           "description": "Specifies the desired policy content on the cluster",
           "$ref": "PolicyControllerPolicyContentSpec"
+        },
+        "constraintViolationLimit": {
+          "description": "The maximum number of audit violations to be stored in a constraint. If not set, the internal default (currently 20) will be used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "deploymentConfigs": {
+          "description": "Map of deployment configs to deployments (\u201Cadmission\u201D, \u201Caudit\u201D, \u201Cmutation\u201D).",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PolicyControllerPolicyControllerDeploymentConfig"
+          }
         }
       }
     },
@@ -1769,6 +1821,56 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "PolicyControllerPolicyControllerDeploymentConfig": {
+      "id": "PolicyControllerPolicyControllerDeploymentConfig",
+      "description": "Deployment-specific configuration.",
+      "type": "object",
+      "properties": {
+        "replicaCount": {
+          "description": "Pod replica count.",
+          "type": "string",
+          "format": "int64"
+        },
+        "containerResources": {
+          "description": "Container resource requirements.",
+          "$ref": "PolicyControllerResourceRequirements"
+        },
+        "podAntiAffinity": {
+          "description": "Pod anti-affinity enablement.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PolicyControllerResourceRequirements": {
+      "id": "PolicyControllerResourceRequirements",
+      "description": "ResourceRequirements describes the compute resource requirements.",
+      "type": "object",
+      "properties": {
+        "limits": {
+          "description": "Limits describes the maximum amount of compute resources allowed for use by the running container.",
+          "$ref": "PolicyControllerResourceList"
+        },
+        "requests": {
+          "description": "Requests describes the amount of compute resources reserved for the container by the kube-scheduler.",
+          "$ref": "PolicyControllerResourceList"
+        }
+      }
+    },
+    "PolicyControllerResourceList": {
+      "id": "PolicyControllerResourceList",
+      "description": "ResourceList contains container resource requirements.",
+      "type": "object",
+      "properties": {
+        "memory": {
+          "description": "Memory requirement expressed in Kubernetes resource units.",
+          "type": "string"
+        },
+        "cpu": {
+          "description": "CPU requirement expressed in Kubernetes resource units.",
+          "type": "string"
         }
       }
     },
@@ -2757,6 +2859,10 @@
         "deploymentState": {
           "description": "The state about the policy controller installation.",
           "$ref": "ConfigManagementGatekeeperDeploymentState"
+        },
+        "migration": {
+          "description": "Record state of ACM -> PoCo Hub migration for this feature.",
+          "$ref": "ConfigManagementPolicyControllerMigration"
         }
       }
     },
@@ -2822,6 +2928,27 @@
             "NOT_INSTALLED",
             "INSTALLED",
             "ERROR"
+          ]
+        }
+      }
+    },
+    "ConfigManagementPolicyControllerMigration": {
+      "id": "ConfigManagementPolicyControllerMigration",
+      "description": "State for the migration of PolicyController from ACM -> PoCo Hub.",
+      "type": "object",
+      "properties": {
+        "stage": {
+          "description": "Stage of the migration.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown state of migration.",
+            "ACM Hub\/Operator manages policycontroller. No migration yet completed.",
+            "All migrations steps complete; Poco Hub now manages policycontroller."
+          ],
+          "enum": [
+            "STAGE_UNSPECIFIED",
+            "ACM_MANAGED",
+            "POCO_MANAGED"
           ]
         }
       }
@@ -3574,6 +3701,7 @@
           "format": "int64"
         },
         "scope": {
+          "description": "Optional. Scope associated with the namespace",
           "type": "string"
         }
       }
@@ -4277,7 +4405,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -5049,7 +5177,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`. `projects\/*\/locations\/-` list memberships in all the regions.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5141,7 +5269,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`. `projects\/*\/locations\/-` list memberships in all the regions.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,

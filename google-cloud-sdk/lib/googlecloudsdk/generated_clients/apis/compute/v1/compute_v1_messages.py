@@ -583,8 +583,10 @@ class AccessConfig(_messages.Message):
   Fields:
     externalIpv6: The first IPv6 address of the external IPv6 range associated
       with this instance, prefix length is stored in externalIpv6PrefixLength
-      in ipv6AccessConfig. The field is output only, an IPv6 address from a
-      subnetwork associated with the instance will be allocated dynamically.
+      in ipv6AccessConfig. To use a static external IP address, it must be
+      unused and in the same region as the instance's zone. If not specified,
+      GCP will automatically assign an external IPv6 address from the
+      instance's subnetwork.
     externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
@@ -1456,21 +1458,21 @@ class AliasIpRange(_messages.Message):
 
 
 class AllocationResourceStatus(_messages.Message):
-  r"""A AllocationResourceStatus object.
+  r"""[Output Only] Contains output only fields.
 
   Fields:
-    specificSkuAllocation: A AllocationResourceStatusSpecificSKUAllocation
-      attribute.
+    specificSkuAllocation: Allocation Properties of this reservation.
   """
 
   specificSkuAllocation = _messages.MessageField('AllocationResourceStatusSpecificSKUAllocation', 1)
 
 
 class AllocationResourceStatusSpecificSKUAllocation(_messages.Message):
-  r"""A AllocationResourceStatusSpecificSKUAllocation object.
+  r"""Contains Properties set for the reservation.
 
   Fields:
-    sourceInstanceTemplateId: A string attribute.
+    sourceInstanceTemplateId: ID of the instance template used to populate
+      reservation properties.
   """
 
   sourceInstanceTemplateId = _messages.StringField(1)
@@ -4007,6 +4009,16 @@ class BackendService(_messages.Message):
         the requests.
       ROUND_ROBIN: This is a simple policy in which each healthy backend is
         selected in round robin order. This is the default.
+      WEIGHTED_MAGLEV: Per-instance weighted Load Balancing via health check
+        reported weights. If set, the Backend Service must configure a non
+        legacy HTTP-based Health Check, and health check replies are expected
+        to contain non-standard HTTP response header field X-Load-Balancing-
+        Endpoint-Weight to specify the per-instance weights. If set, Load
+        Balancing is weighted based on the per-instance weights reported in
+        the last processed health check replies, as long as every instance
+        either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise,
+        Load Balancing remains equal-weight. This option is only supported in
+        Network Load Balancing.
     """
     INVALID_LB_POLICY = 0
     LEAST_REQUEST = 1
@@ -4015,6 +4027,7 @@ class BackendService(_messages.Message):
     RANDOM = 4
     RING_HASH = 5
     ROUND_ROBIN = 6
+    WEIGHTED_MAGLEV = 7
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
@@ -4988,6 +5001,16 @@ class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
         the requests.
       ROUND_ROBIN: This is a simple policy in which each healthy backend is
         selected in round robin order. This is the default.
+      WEIGHTED_MAGLEV: Per-instance weighted Load Balancing via health check
+        reported weights. If set, the Backend Service must configure a non
+        legacy HTTP-based Health Check, and health check replies are expected
+        to contain non-standard HTTP response header field X-Load-Balancing-
+        Endpoint-Weight to specify the per-instance weights. If set, Load
+        Balancing is weighted based on the per-instance weights reported in
+        the last processed health check replies, as long as every instance
+        either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise,
+        Load Balancing remains equal-weight. This option is only supported in
+        Network Load Balancing.
     """
     INVALID_LB_POLICY = 0
     LEAST_REQUEST = 1
@@ -4996,6 +5019,7 @@ class BackendServiceLocalityLoadBalancingPolicyConfigPolicy(_messages.Message):
     RANDOM = 4
     RING_HASH = 5
     ROUND_ROBIN = 6
+    WEIGHTED_MAGLEV = 7
 
   name = _messages.EnumField('NameValueValuesEnum', 1)
 
@@ -5492,7 +5516,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -5509,9 +5535,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -5818,7 +5842,8 @@ class Commitment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
-      CANCELLED: <no description>
+      CANCELLED: Deprecate CANCELED status. Will use separate status to
+        differentiate cancel by mergeCud or manual cancellation.
       CREATING: <no description>
       EXPIRED: <no description>
       NOT_YET_ACTIVE: <no description>
@@ -5840,6 +5865,7 @@ class Commitment(_messages.Message):
       ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
+      COMPUTE_OPTIMIZED_C3: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -5852,14 +5878,15 @@ class Commitment(_messages.Message):
     ACCELERATOR_OPTIMIZED = 0
     COMPUTE_OPTIMIZED = 1
     COMPUTE_OPTIMIZED_C2D = 2
-    GENERAL_PURPOSE = 3
-    GENERAL_PURPOSE_E2 = 4
-    GENERAL_PURPOSE_N2 = 5
-    GENERAL_PURPOSE_N2D = 6
-    GENERAL_PURPOSE_T2D = 7
-    MEMORY_OPTIMIZED = 8
-    MEMORY_OPTIMIZED_M3 = 9
-    TYPE_UNSPECIFIED = 10
+    COMPUTE_OPTIMIZED_C3 = 3
+    GENERAL_PURPOSE = 4
+    GENERAL_PURPOSE_E2 = 5
+    GENERAL_PURPOSE_N2 = 6
+    GENERAL_PURPOSE_N2D = 7
+    GENERAL_PURPOSE_T2D = 8
+    MEMORY_OPTIMIZED = 9
+    MEMORY_OPTIMIZED_M3 = 10
+    TYPE_UNSPECIFIED = 11
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -8240,6 +8267,38 @@ class ComputeDisksTestIamPermissionsRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeDisksUpdateRequest(_messages.Message):
+  r"""A ComputeDisksUpdateRequest object.
+
+  Fields:
+    disk: The disk name for this request.
+    diskResource: A Disk resource to be passed as the request body.
+    paths: A string attribute.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+    zone: The name of the zone for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  diskResource = _messages.MessageField('Disk', 2)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  updateMask = _messages.StringField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeExternalVpnGatewaysDeleteRequest(_messages.Message):
@@ -19266,6 +19325,38 @@ class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionDisksUpdateRequest(_messages.Message):
+  r"""A ComputeRegionDisksUpdateRequest object.
+
+  Fields:
+    disk: The disk name for this request.
+    diskResource: A Disk resource to be passed as the request body.
+    paths: A string attribute.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  diskResource = _messages.MessageField('Disk', 2)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+  updateMask = _messages.StringField(7)
 
 
 class ComputeRegionHealthCheckServicesDeleteRequest(_messages.Message):
@@ -45845,6 +45936,9 @@ class NetworkInterface(_messages.Message):
       whether the IP can be accessed from the Internet. This field is always
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
     ipv6Address: An IPv6 internal network address for this network interface.
+      To use a static internal IP address, it must be unused and in the same
+      region as the instance's zone. If not specified, GCP will automatically
+      assign an internal IPv6 address from the instance's subnetwork.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -53763,6 +53857,11 @@ class Reservation(_messages.Message):
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the reservation.
 
+  Messages:
+    ResourcePoliciesValue: Resource policies to be added to this reservation.
+      The key is defined by user, and the value is resource policy url. This
+      is to define placement policy with reservation.
+
   Fields:
     commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
@@ -53781,6 +53880,9 @@ class Reservation(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    resourcePolicies: Resource policies to be added to this reservation. The
+      key is defined by user, and the value is resource policy url. This is to
+      define placement policy with reservation.
     resourceStatus: [Output Only] Status information for Reservation resource.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
@@ -53816,20 +53918,49 @@ class Reservation(_messages.Message):
     READY = 3
     UPDATING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourcePoliciesValue(_messages.Message):
+    r"""Resource policies to be added to this reservation. The key is defined
+    by user, and the value is resource policy url. This is to define placement
+    policy with reservation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourcePoliciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourcePoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourcePoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   commitment = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#reservation')
   name = _messages.StringField(6)
-  resourceStatus = _messages.MessageField('AllocationResourceStatus', 7)
-  satisfiesPzs = _messages.BooleanField(8)
-  selfLink = _messages.StringField(9)
-  shareSettings = _messages.MessageField('ShareSettings', 10)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 11)
-  specificReservationRequired = _messages.BooleanField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  zone = _messages.StringField(14)
+  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 7)
+  resourceStatus = _messages.MessageField('AllocationResourceStatus', 8)
+  satisfiesPzs = _messages.BooleanField(9)
+  selfLink = _messages.StringField(10)
+  shareSettings = _messages.MessageField('ShareSettings', 11)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 12)
+  specificReservationRequired = _messages.BooleanField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  zone = _messages.StringField(15)
 
 
 class ReservationAffinity(_messages.Message):
@@ -58074,8 +58205,12 @@ class SecurityPolicy(_messages.Message):
       CLOUD_ARMOR_INTERNAL_SERVICE: Cloud Armor internal service policies can
       be configured to filter HTTP requests targeting services managed by
       Traffic Director in a service mesh. They filter requests before the
-      request is served from the application. This field can be set only at
-      resource creation time.
+      request is served from the application. - CLOUD_ARMOR_NETWORK: Cloud
+      Armor network policies can be configured to filter packets targeting
+      network load balancing resources such as backend services, target pools,
+      target instances, and instances with external IPs. They filter requests
+      before the request is served from the application. This field can be set
+      only at resource creation time.
 
   Fields:
     adaptiveProtectionConfig: A SecurityPolicyAdaptiveProtectionConfig
@@ -58126,7 +58261,12 @@ class SecurityPolicy(_messages.Message):
       Cloud Armor internal service policies can be configured to filter HTTP
       requests targeting services managed by Traffic Director in a service
       mesh. They filter requests before the request is served from the
-      application. This field can be set only at resource creation time.
+      application. - CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be
+      configured to filter packets targeting network load balancing resources
+      such as backend services, target pools, target instances, and instances
+      with external IPs. They filter requests before the request is served
+      from the application. This field can be set only at resource creation
+      time.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -58140,6 +58280,10 @@ class SecurityPolicy(_messages.Message):
     request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE:
     Cloud Armor internal service policies can be configured to filter HTTP
     requests targeting services managed by Traffic Director in a service mesh.
+    They filter requests before the request is served from the application. -
+    CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be configured to
+    filter packets targeting network load balancing resources such as backend
+    services, target pools, target instances, and instances with external IPs.
     They filter requests before the request is served from the application.
     This field can be set only at resource creation time.
 

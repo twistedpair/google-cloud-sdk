@@ -367,11 +367,13 @@ def AddScheduledAutoscaling(parser, patch_args):
           a scaling schedule that is currently active, the deleted scaling
           schedule stops being effective immediately after it is deleted.
           If there is no need to maintain capacity, the autoscaler starts
-          removing instances after a 10-minute stabilization period and (if
-          configured) following scale-in controls. This ensures you don't
-          accidentally lose capacity immediately after the scaling schedule
-          ends.
-          """)
+          removing instances after the usual stabilization period and after
+          scale-in controls (if configured). For more information, see
+          [Delays in scaling in](https://cloud.google.com/compute/docs/autoscaler/understanding-autoscaler-decisions#delays_in_scaling_in) and [Scale-in controls](https://cloud.google.com/compute/docs/autoscaler/understanding-autoscaler-decisions#scale-in_controls).
+          This ensures you don't accidentally lose capacity immediately after
+          the scaling schedule ends.
+          """,
+    )
     arg_group.add_argument(
         '--enable-schedule',
         metavar='SCHEDULE_NAME',
@@ -392,11 +394,13 @@ def AddScheduledAutoscaling(parser, patch_args):
           schedule stops being effective immediately after it moves into
           DISABLED state.
           If there is no need to maintain capacity, the autoscaler starts
-          removing instances after a 10-minute stabilization period and (if
-          configured) following scale-in controls. This ensures you don't
-          accidentally lose capacity immediately after the scaling schedule
-          ends.
-          """)
+          removing instances after the usual stabilization period and after
+          scale-in controls (if configured). For more information, see
+          [Delays in scaling in](https://cloud.google.com/compute/docs/autoscaler/understanding-autoscaler-decisions#delays_in_scaling_in) and [Scale-in controls](https://cloud.google.com/compute/docs/autoscaler/understanding-autoscaler-decisions#scale-in_controls).
+          This ensures you don't accidentally lose capacity immediately after
+          the scaling schedule ends.
+          """,
+    )
     AddScheduledAutoscalingConfigurationArguments(arg_group_config)
   else:
     arg_group = parser
@@ -434,9 +438,13 @@ def AddScheduledAutoscalingConfigurationArguments(arg_group):
         autoscaler scales the group to have at least as many VMs as defined by
         the minimum required instances. After the configured duration, if there
         is no need to maintain capacity, the autoscaler starts removing
-        instances after a 10-minute stabilization period and (if configured)
-        following scale-in controls.
-        """)
+        instances after the usual stabilization period and after scale-in
+        controls (if configured). For more information, see
+        [Delays in scaling in](https://cloud.google.com/compute/docs/autoscaler/understanding-autoscaler-decisions#delays_in_scaling_in) and [Scale-in controls](https://cloud.google.com/compute/docs/autoscaler/understanding-autoscaler-decisions#scale-in_controls).
+        This ensures you don't accidentally lose capacity immediately after
+        the scaling schedule ends.
+        """,
+  )
   arg_group.add_argument(
       '--schedule-min-required-replicas',
       metavar='MIN_REQUIRED_REPLICAS',

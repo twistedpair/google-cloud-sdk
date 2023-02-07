@@ -181,7 +181,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -198,9 +200,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -763,6 +763,22 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsListRe
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsTerminateRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsTe
+  rminateRequest object.
+
+  Fields:
+    name: Required. Name of the `JobRun`. Format must be projects/{project}/lo
+      cations/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/{rollout}/jobRuns/{jobRun}.
+    terminateJobRunRequest: A TerminateJobRunRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  terminateJobRunRequest = _messages.MessageField('TerminateJobRunRequest', 2)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_messages.Message):
@@ -1994,11 +2010,15 @@ class JobRun(_messages.Message):
       IN_PROGRESS: The `JobRun` is in progress.
       SUCCEEDED: The `JobRun` has succeeded.
       FAILED: The `JobRun` has failed.
+      TERMINATING: The `JobRun` is terminating.
+      TERMINATED: The `JobRun` was terminated.
     """
     STATE_UNSPECIFIED = 0
     IN_PROGRESS = 1
     SUCCEEDED = 2
     FAILED = 3
+    TERMINATING = 4
+    TERMINATED = 5
 
   advanceChildRolloutJobRun = _messages.MessageField('AdvanceChildRolloutJobRun', 1)
   createChildRolloutJobRun = _messages.MessageField('CreateChildRolloutJobRun', 2)
@@ -3906,6 +3926,21 @@ class TargetsTypeCondition(_messages.Message):
 
   errorDetails = _messages.StringField(1)
   status = _messages.BooleanField(2)
+
+
+class TerminateJobRunRequest(_messages.Message):
+  r"""The request object used by `TerminateJobRun`.
+
+  Fields:
+    overrideDeployPolicy: Optional. Deploy policies to override. Format is
+      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+  """
+
+  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+
+
+class TerminateJobRunResponse(_messages.Message):
+  r"""The response object from `TerminateJobRun`."""
 
 
 class TestIamPermissionsRequest(_messages.Message):

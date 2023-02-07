@@ -1268,7 +1268,8 @@ def AddAddressArgs(parser,
                    support_subinterface=False,
                    instance_create=False,
                    containers=False,
-                   support_network_queue_count=False):
+                   support_network_queue_count=False,
+                   support_network_attachments=False):
   """Adds address arguments for instances and instance-templates.
 
   Args:
@@ -1282,6 +1283,8 @@ def AddAddressArgs(parser,
       to true, for create command otherwise.
     support_network_queue_count: indicates flexible networking queue count is
       supported or not.
+    support_network_attachments: indicates whether network attachments are
+      supported.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1435,8 +1438,9 @@ def AddAddressArgs(parser,
         netmask and allocate it to this network interface.
         """)
 
-  # TODO(b/265153883): Add a link to the user guide.
-  network_interface_help_texts.append("""
+  if support_network_attachments:
+    # TODO(b/265153883): Add a link to the user guide.
+    network_interface_help_texts.append("""
       *network-attachment*::: Specifies the network attachment that this
       interface should connect to. Mutually exclusive with *--network* and
       *--subnet* flags.

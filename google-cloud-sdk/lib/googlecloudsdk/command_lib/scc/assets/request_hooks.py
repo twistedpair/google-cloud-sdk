@@ -100,8 +100,10 @@ def _GetAssetName(args):
   """Prepares asset relative path using organization and asset."""
   resource_pattern = re.compile("organizations/[0-9]+/assets/[0-9]+")
   id_pattern = re.compile("[0-9]+")
-  assert resource_pattern.match(args.asset) or id_pattern.match(args.asset), (
-      "Asset must match either organizations/[0-9]+/assets/[0-9]+ or [0-9]+.")
+  if (not resource_pattern.match(args.asset) and
+      not id_pattern.match(args.asset)):
+    raise InvalidSCCInputError(
+        "Asset must match either organizations/[0-9]+/assets/[0-9]+ or [0-9]+.")
   if resource_pattern.match(args.asset):
     # Handle asset id as full resource name
     return args.asset
@@ -144,10 +146,9 @@ def _GetNameOrResourceFilterForParent(args):
   return request_filter
 
 
-# TODO(b/177658164): Avoid using assert.
 def _ValidateMutexOnAssetAndOrganization(args):
   """Validates that only a full resource name or split arguments are provided."""
-  if "/" in args.asset:
-    assert args.organization is None, (
+  if "/" in args.asset and args.organization is not None:
+    raise InvalidSCCInputError(
         "Only provide a full resouce name "
         "(organizations/123/assets/456) or an --organization flag, not both.")

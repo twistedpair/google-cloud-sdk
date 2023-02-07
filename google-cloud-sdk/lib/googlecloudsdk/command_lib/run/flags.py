@@ -2428,7 +2428,7 @@ def AddSourceAndImageFlags(parser, image='gcr.io/cloudrun/hello:latest'):
       'directory on a local disk or a gzipped archive file (.tar.gz) in '
       'Google Cloud Storage. If the source is a local directory, this '
       'command skips the files specified in the `--ignore-file`. If '
-      '`--ignore-file` is not specified, use`.gcloudignore` file. If a '
+      '`--ignore-file` is not specified, use `.gcloudignore` file. If a '
       '`.gcloudignore` file is absent and a `.gitignore` file is present in '
       'the local source directory, gcloud will use a generated Git-compatible '
       '`.gcloudignore` file that respects your .gitignored files. The global '

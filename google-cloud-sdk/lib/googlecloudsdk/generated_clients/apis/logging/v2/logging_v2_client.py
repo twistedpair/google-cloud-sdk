@@ -1279,6 +1279,32 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Redact(self, request, global_params=None):
+      r"""Redacts the contents of log entries. This method replaces the payload of entries in a log bucket that match a filter with a RedactedLogEntryTombstone message.
+
+      Args:
+        request: (RedactLogEntriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Redact')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Redact.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.entries.redact',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/entries:redact',
+        request_field='<request>',
+        request_type_name='RedactLogEntriesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Tail(self, request, global_params=None):
       r"""Streaming read of log entries as they are ingested. Until the stream is terminated, it will continue reading logs.
 

@@ -1876,7 +1876,8 @@
             "A resource update operation.",
             "A resource check operation.",
             "Saves snapshot of the resource operation.",
-            "Loads snapshot of the resource operation."
+            "Loads snapshot of the resource operation.",
+            "Triggers failover of environment's Cloud SQL instance (only for highly resilient environments)."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -1885,7 +1886,8 @@
             "UPDATE",
             "CHECK",
             "SAVE_SNAPSHOT",
-            "LOAD_SNAPSHOT"
+            "LOAD_SNAPSHOT",
+            "DATABASE_FAILOVER"
           ]
         },
         "resource": {

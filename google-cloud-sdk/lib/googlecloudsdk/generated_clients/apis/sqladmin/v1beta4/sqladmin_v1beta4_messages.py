@@ -2070,6 +2070,32 @@ class OperationErrors(_messages.Message):
   kind = _messages.StringField(2)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have been cancelled
+      successfully have Operation.error value with a google.rpc.Status.code of
+      1, corresponding to `Code.CANCELLED`.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class OperationsListResponse(_messages.Message):
   r"""Operations list response.
 
@@ -2131,6 +2157,16 @@ class PasswordValidationPolicy(_messages.Message):
   minLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   passwordChangeInterval = _messages.StringField(5)
   reuseInterval = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class PerformDiskShrinkContext(_messages.Message):
+  r"""Perform disk shrink context.
+
+  Fields:
+    targetSizeGb: The target disk shrink size in GigaBytes.
+  """
+
+  targetSizeGb = _messages.IntegerField(1)
 
 
 class PscConfig(_messages.Message):
@@ -2913,6 +2949,19 @@ class SqlInstancesFailoverRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class SqlInstancesGetDiskShrinkConfigResponse(_messages.Message):
+  r"""Instance get disk shrink config response.
+
+  Fields:
+    kind: This is always `sql#getDiskShrinkConfig`.
+    minimalTargetSizeGb: The minimum size to which a disk can be shrunk in
+      GigaBytes.
+  """
+
+  kind = _messages.StringField(1)
+  minimalTargetSizeGb = _messages.IntegerField(2)
+
+
 class SqlInstancesGetRequest(_messages.Message):
   r"""A SqlInstancesGetRequest object.
 
@@ -3028,6 +3077,10 @@ class SqlInstancesRescheduleMaintenanceRequestBody(_messages.Message):
   """
 
   reschedule = _messages.MessageField('Reschedule', 1)
+
+
+class SqlInstancesResetReplicaSizeRequest(_messages.Message):
+  r"""Instance reset replica size request."""
 
 
 class SqlInstancesResetSslConfigRequest(_messages.Message):
@@ -3301,6 +3354,33 @@ class SqlOutOfDiskReport(_messages.Message):
   sqlOutOfDiskState = _messages.EnumField('SqlOutOfDiskStateValueValuesEnum', 2)
 
 
+class SqlProjectsInstancesGetDiskShrinkConfigRequest(_messages.Message):
+  r"""A SqlProjectsInstancesGetDiskShrinkConfigRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class SqlProjectsInstancesPerformDiskShrinkRequest(_messages.Message):
+  r"""A SqlProjectsInstancesPerformDiskShrinkRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    performDiskShrinkContext: A PerformDiskShrinkContext resource to be passed
+      as the request body.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  performDiskShrinkContext = _messages.MessageField('PerformDiskShrinkContext', 2)
+  project = _messages.StringField(3, required=True)
+
+
 class SqlProjectsInstancesRescheduleMaintenanceRequest(_messages.Message):
   r"""A SqlProjectsInstancesRescheduleMaintenanceRequest object.
 
@@ -3315,6 +3395,21 @@ class SqlProjectsInstancesRescheduleMaintenanceRequest(_messages.Message):
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   sqlInstancesRescheduleMaintenanceRequestBody = _messages.MessageField('SqlInstancesRescheduleMaintenanceRequestBody', 3)
+
+
+class SqlProjectsInstancesResetReplicaSizeRequest(_messages.Message):
+  r"""A SqlProjectsInstancesResetReplicaSizeRequest object.
+
+  Fields:
+    instance: Cloud SQL read replica instance name.
+    project: ID of the project that contains the read replica.
+    sqlInstancesResetReplicaSizeRequest: A SqlInstancesResetReplicaSizeRequest
+      resource to be passed as the request body.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  sqlInstancesResetReplicaSizeRequest = _messages.MessageField('SqlInstancesResetReplicaSizeRequest', 3)
 
 
 class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):

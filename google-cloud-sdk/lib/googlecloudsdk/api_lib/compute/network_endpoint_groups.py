@@ -33,9 +33,11 @@ class NetworkEndpointGroupsClient(object):
     self.resources = resources
     self._zonal_service = self.client.apitools_client.networkEndpointGroups
     if hasattr(self.client.apitools_client, 'globalNetworkEndpointGroups'):
-      self._global_service = self.client.apitools_client.globalNetworkEndpointGroups
+      self._global_service = (
+          self.client.apitools_client.globalNetworkEndpointGroups)
     if hasattr(self.client.apitools_client, 'regionNetworkEndpointGroups'):
-      self._region_service = self.client.apitools_client.regionNetworkEndpointGroups
+      self._region_service = (
+          self.client.apitools_client.regionNetworkEndpointGroups)
 
   def Create(self,
              neg_ref,
@@ -62,10 +64,13 @@ class NetworkEndpointGroupsClient(object):
     is_regional = hasattr(neg_ref, 'region')
 
     network_uri = None
-    # Zonal and PSC NEG will pass the network parameter to Arcus
-    if network and (is_zonal or psc_target_service):
-      network_ref = self.resources.Parse(network, {'project': neg_ref.project},
-                                         collection='compute.networks')
+    # Zonal, PSC NEG and regional Internet NEGs will pass the network
+    # parameter to Arcus
+    is_regional_internet_neg = is_regional and self._IsInternetNeg(
+        network_endpoint_type)
+    if network and (is_zonal or psc_target_service or is_regional_internet_neg):
+      network_ref = self.resources.Parse(
+          network, {'project': neg_ref.project}, collection='compute.networks')
       network_uri = network_ref.SelfLink()
     subnet_uri = None
     if subnet and (is_zonal or psc_target_service):
@@ -75,8 +80,12 @@ class NetworkEndpointGroupsClient(object):
         region = api_utils.ZoneNameToRegionName(neg_ref.zone)
       subnet_ref = self.resources.Parse(
           subnet,
-          {'project': neg_ref.project, 'region': region},
-          collection='compute.subnetworks')
+          {
+              'project': neg_ref.project,
+              'region': region
+          },
+          collection='compute.subnetworks',
+      )
       subnet_uri = subnet_ref.SelfLink()
 
     cloud_run = None
@@ -99,13 +108,14 @@ class NetworkEndpointGroupsClient(object):
     serverless_deployment = None
     if (serverless_deployment_platform or serverless_deployment_resource or
         serverless_deployment_version or serverless_deployment_url_mask):
-      serverless_deployment = self.messages.NetworkEndpointGroupServerlessDeployment(
-          platform=serverless_deployment_platform,
-          resource=serverless_deployment_resource,
-          version=serverless_deployment_version,
-          urlMask=serverless_deployment_url_mask)
-    endpoint_type_enum = (self.messages.NetworkEndpointGroup
-                          .NetworkEndpointTypeValueValuesEnum)
+      serverless_deployment = (
+          self.messages.NetworkEndpointGroupServerlessDeployment(
+              platform=serverless_deployment_platform,
+              resource=serverless_deployment_resource,
+              version=serverless_deployment_version,
+              urlMask=serverless_deployment_url_mask))
+    endpoint_type_enum = (
+        self.messages.NetworkEndpointGroup.NetworkEndpointTypeValueValuesEnum)
 
     # TODO(b/137663401): remove the check below after all Serverless flags go
     # to GA.
@@ -204,6 +214,42 @@ class NetworkEndpointGroupsClient(object):
             networkEndpoints=self._GetEndpointMessageList(endpoints)))
     return self._zonal_service.DetachNetworkEndpoints(request)
 
+  def _AttachRegionalEndpoints(self, neg_ref, endpoints):
+    """Attaches network endpoints to a regional network endpoint group."""
+    request_class = (
+        self.messages.ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest
+    )
+    nested_request_class = (
+        self.messages.RegionNetworkEndpointGroupsAttachEndpointsRequest
+    )
+    request = request_class(
+        networkEndpointGroup=neg_ref.Name(),
+        project=neg_ref.project,
+        region=neg_ref.region,
+        regionNetworkEndpointGroupsAttachEndpointsRequest=nested_request_class(
+            networkEndpoints=self._GetEndpointMessageList(endpoints)
+        ),
+    )
+    return self._region_service.AttachNetworkEndpoints(request)
+
+  def _DetachRegionalEndpoints(self, neg_ref, endpoints):
+    """Detaches network endpoints from a regional network endpoint group."""
+    request_class = (
+        self.messages.ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest
+    )
+    nested_request_class = (
+        self.messages.RegionNetworkEndpointGroupsDetachEndpointsRequest
+    )
+    request = request_class(
+        networkEndpointGroup=neg_ref.Name(),
+        project=neg_ref.project,
+        region=neg_ref.region,
+        regionNetworkEndpointGroupsDetachEndpointsRequest=nested_request_class(
+            networkEndpoints=self._GetEndpointMessageList(endpoints)
+        ),
+    )
+    return self._region_service.DetachNetworkEndpoints(request)
+
   def _AttachGlobalEndpoints(self, neg_ref, endpoints):
     """Attaches network endpoints to a global network endpoint group."""
     request_class = (
@@ -250,8 +296,12 @@ class NetworkEndpointGroupsClient(object):
     return output_list
 
   def _GetOperationsRef(self, operation):
-    return self.resources.Parse(operation.selfLink,
-                                collection='compute.zoneOperations')
+    return self.resources.Parse(
+        operation.selfLink, collection='compute.zoneOperations')
+
+  def _GetRegionalOperationsRef(self, operation):
+    return self.resources.Parse(
+        operation.selfLink, collection='compute.regionOperations')
 
   def _GetGlobalOperationsRef(self, operation):
     return self.resources.Parse(
@@ -276,6 +326,14 @@ class NetworkEndpointGroupsClient(object):
       if remove_endpoints:
         operation = self._DetachZonalEndpoints(neg_ref, remove_endpoints)
         detach_endpoints_ref = self._GetOperationsRef(operation)
+    elif hasattr(neg_ref, 'region'):
+      operation_poller = poller.Poller(self._region_service)
+      if add_endpoints:
+        operation = self._AttachRegionalEndpoints(neg_ref, add_endpoints)
+        attach_endpoints_ref = self._GetRegionalOperationsRef(operation)
+      if remove_endpoints:
+        operation = self._DetachRegionalEndpoints(neg_ref, remove_endpoints)
+        detach_endpoints_ref = self._GetRegionalOperationsRef(operation)
     else:
       operation_poller = poller.Poller(self._global_service)
       if add_endpoints:
@@ -291,10 +349,24 @@ class NetworkEndpointGroupsClient(object):
         operation_poller, attach_endpoints_ref,
         'Attaching {0} endpoints to [{1}].'.format(
             len(add_endpoints) if add_endpoints else 0, neg_name)) or result
-    result = self._WaitForResult(
-        operation_poller, detach_endpoints_ref,
-        'Detaching {0} endpoints from [{1}].'.format(
-            len(remove_endpoints) if remove_endpoints else 0, neg_name)
-    ) or result
+    result = (
+        self._WaitForResult(
+            operation_poller,
+            detach_endpoints_ref,
+            'Detaching {0} endpoints from [{1}].'.format(
+                len(remove_endpoints) if remove_endpoints else 0, neg_name
+            ),
+        ) or result)
 
     return result
+
+  def _IsInternetNeg(self, network_endpoint_type):
+    endpoint_type_enum = (
+        self.messages.NetworkEndpointGroup.NetworkEndpointTypeValueValuesEnum)
+    endpoint_type_enum_value = arg_utils.ChoiceToEnum(
+        network_endpoint_type, endpoint_type_enum
+    )
+    return endpoint_type_enum_value in {
+        endpoint_type_enum.INTERNET_FQDN_PORT,
+        endpoint_type_enum.INTERNET_IP_PORT,
+    }

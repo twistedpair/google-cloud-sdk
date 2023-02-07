@@ -5,6 +5,75 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 417.0.0 (2023-02-07)
+
+### Breaking Changes
+
+*   **(Cloud IoT)** Added `--device-field-mask` flag to `gcloud iot devices list`
+  to have override possibility for device fieldMask. In case the API response
+  does not include the `blocked` field for any of the devices, the `BLOCKED`
+  column will disappear from the results table.
+
+
+### Google Cloud CLI
+
+* Defined "quota_project" in `gcloud auth application-default set-quota-project` command documentation.
+
+### Anthos Multi-Cloud
+
+* Modified `gcloud container azure clients create` to wait for the returned
+  long-running operation. Use `--async` flag to get the old behavior.
+* Modified `gcloud container azure clients delete` to wait for the returned
+  long-running operation. Use `--async` flag to get the old behavior.
+
+### Cloud Composer
+
+* Added warning message when running commands that use the default Cloud
+ Composer version, which will be changed soon.
+
+### Cloud Logging
+
+*  Updated `gcloud logging buckets list` command to include CMEK enabled or disabled setting.
+
+### Cloud Run
+
+* Promoted `gcloud run jobs deploy` to beta, which allows creating
+or updating a Cloud Run job from a container image or source to build.
+
+### Compute Engine
+
+* Added `REGION` column to default output of `gcloud compute target-https-proxies list`.
+* Promoted `gcloud compute network-attachments` to GA.
+
+### Distributed Cloud Edge
+
+* Promoted `--vpc-project` to `gcloud edge-cloud container vpn-connections create`
+  to create resources in a different GCP project than the GDCE cluster project.
+
+### Firebase Test Lab
+
+* Promoted `gcloud firebase test [android|ios] list-device-capacities` to GA.
+  This feature can inform your test decisions by letting you view the inventory
+  level of device types in the Test Lab catalog. To access this information, run
+  `gcloud firebase test [android|ios] list-device-capacities`, or
+  `gcloud firebase test [android|ios] models describe [MODEL_ID]`.
+
+### Identity and Access Management
+
+* Added `gcloud iam workforce-pools` commands for Workforce Identity Federation management.
+
+### Notebooks
+
+* Deprecate alpha and beta notebooks.
+
+### Security Command Center
+
+* Updated `gcloud scc custom-modules sha` command group to allow custom modules feature.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 416.0.0 (2023-01-31)
 
 ### Breaking Changes
@@ -36,10 +105,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     Using this flag lets you use an Identity-Aware Proxy (IAP) tunnel when
     attempting to SCP to/from an App Engine flexible environment instance
     without an external IP address.
-
-### Cloud IAM
-
-* Added `jwk-keys-path` to existing `gcloud iam workload-identity-pools providers create-oidc|update-oidc` to allow customer upload jwks.
 
 ### Cloud Run
 

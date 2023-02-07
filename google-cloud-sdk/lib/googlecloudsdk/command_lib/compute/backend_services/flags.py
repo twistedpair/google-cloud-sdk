@@ -1001,6 +1001,43 @@ def AddLoggingSampleRateProtocols(parser, protocols):
       """.format(protocols))
 
 
+def AddLoggingOptionalProtocols(parser, protocols):
+  """Adds the logging optional argument to the argparse."""
+  parser.add_argument(
+      '--logging-optional',
+      choices=['EXCLUDE_ALL_OPTIONAL', 'INCLUDE_ALL_OPTIONAL', 'CUSTOM'],
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      This field can only be specified if logging is enabled for the backend
+      service. Configures whether all, none or a subset of optional fields
+      should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
+      EXCLUDE_ALL_OPTIONAL, CUSTOM]. This can only be specified if the protocol
+      is {0}. Default is EXCLUDE_ALL_OPTIONAL.
+      """.format(
+          protocols
+      ),
+  )
+
+
+def AddLoggingOptionalFieldsProtocols(parser, protocols):
+  """Adds the logging optional argument to the argparse."""
+  parser.add_argument(
+      '--logging-optional-fields',
+      type=arg_parsers.ArgList(),
+      metavar='LOGGING_OPTIONAL_FIELDS',
+      help="""\
+      This field can only be specified if logging is enabled for the backend
+      service and "logConfig.optionalMode" was set to CUSTOM. Contains a
+      comma-separated list of optional fields you want to include in the logs.
+      For example: serverInstance, serverGkeDetails.cluster,
+      serverGkeDetails.pod.podNamespace. This can only be specified if the
+      protocol is {0}.
+      """.format(
+          protocols
+      ),
+  )
+
+
 def AddInstanceGroupAndNetworkEndpointGroupArgs(parser,
                                                 verb,
                                                 support_global_neg=False,

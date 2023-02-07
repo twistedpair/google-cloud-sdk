@@ -35,10 +35,13 @@ def AddGcsSourceStagingDirFlag(parser, hidden=False):
   parser.add_argument(
       '--gcs-source-staging-dir',
       hidden=hidden,
-      help='A directory in Google Cloud Storage to copy the source used for '
-      'staging the build. If the specified bucket does not exist, Cloud '
-      'Deploy will create one. If you don\'t set this field, '
-      '```gs://[DELIVERY_PIPELINE_ID]_clouddeploy/source``` is used.')
+      help=(
+          'A directory in Google Cloud Storage to copy the source used for '
+          'staging the build. If the specified bucket does not exist, Cloud '
+          "Deploy will create one. If you don't set this field, "
+          '```gs://[DELIVERY_PIPELINE_ID]_clouddeploy/source``` is used.'
+      ),
+  )
 
 
 def AddIgnoreFileFlag(parser, hidden=False):
@@ -46,8 +49,11 @@ def AddIgnoreFileFlag(parser, hidden=False):
   parser.add_argument(
       '--ignore-file',
       hidden=hidden,
-      help='Override the `.gcloudignore` file and use the specified file '
-      'instead.')
+      help=(
+          'Override the `.gcloudignore` file and use the specified file '
+          'instead.'
+      ),
+  )
 
 
 def AddToTargetFlag(parser, hidden=False):
@@ -55,7 +61,8 @@ def AddToTargetFlag(parser, hidden=False):
   parser.add_argument(
       '--to-target',
       hidden=hidden,
-      help='Specifies a target to deliver into upon release creation')
+      help='Specifies a target to deliver into upon release creation',
+  )
 
 
 def AddImagesGroup(parser, hidden=False):
@@ -66,18 +73,26 @@ def AddImagesGroup(parser, hidden=False):
       metavar='NAME=TAG',
       type=arg_parsers.ArgDict(),
       hidden=hidden,
-      help=textwrap.dedent("""\
+      help=textwrap.dedent(
+          """\
       Reference to a collection of individual image name to image full path replacements.
 
       For example:
 
           $ gcloud deploy releases create foo \\
               --images image1=path/to/image1:v1@sha256:45db24
-      """))
+      """
+      ),
+  )
   images_group.add_argument(
       '--build-artifacts',
       hidden=hidden,
-      help='Reference to a Skaffold build artifacts output file from skaffold build --file-output=BUILD_ARTIFACTS. If you aren\'t using Skaffold, use the --images flag below to specify the image-names-to-tagged-image references.'
+      help=(
+          'Reference to a Skaffold build artifacts output file from skaffold'
+          " build --file-output=BUILD_ARTIFACTS. If you aren't using Skaffold,"
+          ' use the --images flag below to specify the'
+          ' image-names-to-tagged-image references.'
+      ),
   )
 
 
@@ -87,14 +102,18 @@ def AddConfigFile(parser, hidden=False):
       '--file',
       hidden=hidden,
       required=True,
-      help='Path to yaml file containing Delivery Pipeline(s), Target(s) declarative definitions.',
+      help=(
+          'Path to yaml file containing Delivery Pipeline(s), Target(s)'
+          ' declarative definitions.'
+      ),
   )
 
 
 def AddToTarget(parser, hidden=False):
   """Adds to-target flag."""
   parser.add_argument(
-      '--to-target', hidden=hidden, help='Destination target to promote into.')
+      '--to-target', hidden=hidden, help='Destination target to promote into.'
+  )
 
 
 def AddRolloutID(parser, hidden=False):
@@ -102,7 +121,8 @@ def AddRolloutID(parser, hidden=False):
   parser.add_argument(
       '--rollout-id',
       hidden=hidden,
-      help='ID to assign to the generated rollout for promotion.')
+      help='ID to assign to the generated rollout for promotion.',
+  )
 
 
 def AddRelease(parser, help_text, hidden=False):
@@ -133,12 +153,15 @@ def AddDeliveryPipeline(parser, required=True):
   parser.add_argument(
       '--delivery-pipeline',
       help='The name of the Cloud Deploy delivery pipeline',
-      required=required)
+      required=required,
+  )
 
 
 def AddAnnotationsFlag(parser, resource_type):
   """Adds --annotations flag."""
-  help_text = textwrap.dedent("""\
+  help_text = (
+      textwrap.dedent(
+          """\
   Annotations to apply to the %s. Annotations take the form of key/value string pairs.
 
   Examples:
@@ -147,19 +170,24 @@ def AddAnnotationsFlag(parser, resource_type):
 
     $ {command} --annotations="from_target=test,status=stable"
 
-  """) % (
-      resource_type)
+  """
+      )
+      % (resource_type)
+  )
 
   parser.add_argument(
       '--annotations',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddLabelsFlag(parser, resource_type):
   """Add --labels flag."""
-  help_text = textwrap.dedent("""\
+  help_text = (
+      textwrap.dedent(
+          """\
   Labels to apply to the %s. Labels take the form of key/value string pairs.
 
   Examples:
@@ -168,25 +196,30 @@ def AddLabelsFlag(parser, resource_type):
 
     $ {command} --labels="commit=abc123,author=foo"
 
-""") % (
-    resource_type)
+"""
+      )
+      % (resource_type)
+  )
 
   parser.add_argument(
       '--labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddSkaffoldVersion(parser):
   """Adds skaffold version flag."""
   parser.add_argument(
-      '--skaffold-version', help='Version of the Skaffold binary.')
+      '--skaffold-version', help='Version of the Skaffold binary.'
+  )
 
 
 def AddSkaffoldFileFlag():
   """Add --skaffold-file flag."""
-  help_text = textwrap.dedent("""\
+  help_text = textwrap.dedent(
+      """\
   Path of the skaffold file absolute or relative to the source directory.
 
   Examples:
@@ -207,15 +240,16 @@ def AddSkaffoldFileFlag():
 
     $ {command} --skaffold-file=/home/user/source/config/skaffold.yaml
 
-  """)
+  """
+  )
   return base.Argument('--skaffold-file', help=help_text)
 
 
 def AddSourceFlag():
   """Adds source flag."""
   return base.Argument(
-      '--source', help=_SOURCE_HELP_TEXT,
-      default='.')  # By default, the current directory is used.
+      '--source', help=_SOURCE_HELP_TEXT, default='.'
+  )  # By default, the current directory is used.
 
 
 def AddKubernetesFileFlag():
@@ -226,18 +260,22 @@ def AddKubernetesFileFlag():
           'generate a skaffold.yaml file for you (for example, '
           'foo/bar/k8.yaml). The generated Skaffold file will be available in '
           'the Google Cloud Storage source staging directory (see '
-          '--gcs-source-staging-dir flag) after the release is complete.'))
+          '--gcs-source-staging-dir flag) after the release is complete.'
+      ),
+  )
 
 
 def AddCloudRunFileFlag():
   return base.Argument(
       '--from-run-manifest',
       help=(
-          'The path to a Cloud Run manifest, which Cloud Deploy will use to '
-          'generate a skaffold.yaml file for you (for example, '
-          'foo/bar/service.yaml). The generated Skaffold file will be available '
-          'in the Google Cloud Storage source staging directory (see '
-          '--gcs-source-staging-dir flag) after the release is complete.'))
+          'The path to a Cloud Run manifest, which Cloud Deploy will use to'
+          ' generate a skaffold.yaml file for you (for example,'
+          ' foo/bar/service.yaml). The generated Skaffold file will be'
+          ' available in the Google Cloud Storage source staging directory (see'
+          ' --gcs-source-staging-dir flag) after the release is complete.'
+      ),
+  )
 
 
 def AddSkaffoldSources(parser):
@@ -260,45 +298,77 @@ def AddDescriptionFlag(parser):
       help='Description of rollout created during a rollback.',
       hidden=False,
       default=None,
-      required=False)
+      required=False,
+  )
 
 
 def AddListAllPipelines(parser):
   """Add --list-all-pipelines flag."""
-  help_text = textwrap.dedent("""\
+  help_text = textwrap.dedent(
+      """\
   List all Delivery Pipelines associated with a target.
 
   Usage:
 
     $ {command} --list-all-pipelines
 
-""")
+"""
+  )
 
   parser.add_argument(
-      '--list-all-pipelines', action='store_true', default=None, help=help_text)
+      '--list-all-pipelines', action='store_true', default=None, help=help_text
+  )
 
 
 def AddSkipPipelineLookup(parser):
   """Add --skip-pipeline-lookup flag."""
-  help_text = textwrap.dedent("""\
+  help_text = textwrap.dedent(
+      """\
   If set, skip fetching details of associated pipelines when describing a target.
 
   Usage:
 
     $ {command} --skip-pipeline-lookup
 
-""")
+"""
+  )
 
   parser.add_argument(
       '--skip-pipeline-lookup',
       action='store_true',
       default=False,
-      help=help_text)
+      help=help_text,
+  )
+
+
+def AddStartingPhaseId(parser):
+  """Add --starting-phase-id flag."""
+  help_text = textwrap.dedent(
+      """\
+  If set, starts the created rollout at the specified phase.
+
+  Start rollout at `stable` phase:
+
+    $ {command} --starting-phase-id=stable
+
+  """
+  )
+
+  parser.add_argument(
+      '--starting-phase-id',
+      help=help_text,
+      # TODO(b/252836203) Set hidden to false once surface spec is not hidden.
+      hidden=True,
+      # By default, None is used.
+      default=None,
+      required=False,
+  )
 
 
 def AddInitialRolloutLabelsFlag():
   """Add --initial-rollout-labels flag."""
-  help_text = textwrap.dedent("""\
+  help_text = textwrap.dedent(
+      """\
   Labels to apply to the initial rollout when creating the release. Labels take
   the form of key/value string pairs.
 
@@ -308,17 +378,20 @@ def AddInitialRolloutLabelsFlag():
 
     $ {command} initial-rollout-labels="commit=abc123,author=foo"
 
-""")
+"""
+  )
   return base.Argument(
       '--initial-rollout-labels',
       help=help_text,
       metavar='KEY=VALUE',
-      type=arg_parsers.ArgDict())
+      type=arg_parsers.ArgDict(),
+  )
 
 
 def AddInitialRolloutAnnotationsFlag():
   """Adds --initial-rollout-annotations flag."""
-  help_text = textwrap.dedent("""\
+  help_text = textwrap.dedent(
+      """\
   Annotations to apply to the initial rollout when creating the release.
   Annotations take the form of key/value string pairs.
 
@@ -328,13 +401,43 @@ def AddInitialRolloutAnnotationsFlag():
 
     $ {command} --initial-rollout-annotations="from_target=test,status=stable"
 
-  """)
+  """
+  )
 
   return base.Argument(
       '--initial-rollout-annotations',
       help=help_text,
       metavar='KEY=VALUE',
-      type=arg_parsers.ArgDict())
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def AddInitialRolloutPhaseIDFlag():
+  """Adds --initial-rollout-phase-id flag."""
+  help_text = textwrap.dedent(
+      """\
+  The phase to start the initial rollout at when creating the release.
+  The phase ID must be a valid phase on the rollout. If not specified, then the
+  rollout will start at the first phase.
+
+  Examples:
+
+  Start rollout at `stable` phase:
+
+    $ {command} --initial-rollout-phase-id=stable
+
+  """
+  )
+
+  return base.Argument(
+      '--initial-rollout-phase-id',
+      help=help_text,
+      # TODO(b/252836203) Set hidden to false once surface spec is not hidden.
+      hidden=True,
+      # By default, None is used.
+      default=None,
+      required=False,
+  )
 
 
 def AddEnableInitialRolloutFlag():
@@ -343,8 +446,12 @@ def AddEnableInitialRolloutFlag():
   return base.Argument(
       '--enable-initial-rollout',
       action='store_const',
-      help='Creates a rollout in the first target defined in the delivery pipeline. This is the default behavior.',
-      const=True)
+      help=(
+          'Creates a rollout in the first target defined in the delivery'
+          ' pipeline. This is the default behavior.'
+      ),
+      const=True,
+  )
 
 
 def AddDisableInitialRolloutFlag():
@@ -353,8 +460,12 @@ def AddDisableInitialRolloutFlag():
   return base.Argument(
       '--disable-initial-rollout',
       action='store_const',
-      help='Skips creating a rollout in the first target defined in the delivery pipeline.',
-      const=True)
+      help=(
+          'Skips creating a rollout in the first target defined in the delivery'
+          ' pipeline.'
+      ),
+      const=True,
+  )
 
 
 def AddInitialRolloutGroup(parser):
@@ -366,6 +477,7 @@ def AddInitialRolloutGroup(parser):
   enable_initial_rollout_group = group.add_group(mutex=False)
   AddInitialRolloutLabelsFlag().AddToParser(enable_initial_rollout_group)
   AddInitialRolloutAnnotationsFlag().AddToParser(enable_initial_rollout_group)
+  AddInitialRolloutPhaseIDFlag().AddToParser(enable_initial_rollout_group)
   AddEnableInitialRolloutFlag().AddToParser(enable_initial_rollout_group)
   # Add the disable initial rollout flag to the mutex group.
   AddDisableInitialRolloutFlag().AddToParser(group)
@@ -377,7 +489,8 @@ def AddJobId(parser, hidden=False):
       '--job-id',
       hidden=hidden,
       help='Job ID on a rollout resource',
-      required=True)
+      required=True,
+  )
 
 
 def AddPhaseId(parser, hidden=False):
@@ -386,4 +499,5 @@ def AddPhaseId(parser, hidden=False):
       '--phase-id',
       hidden=hidden,
       help='Phase ID on a rollout resource',
-      required=True)
+      required=True,
+  )

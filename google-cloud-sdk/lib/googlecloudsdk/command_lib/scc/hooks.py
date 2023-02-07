@@ -98,9 +98,10 @@ def GetOrganization(args):
   if organization is None:
     raise InvalidSCCInputError("Could not find Organization argument. Please "
                                "provide the organization argument.")
-  assert resource_pattern.match(organization) or id_pattern.match(
-      organization), (
-          "Organization must match either organizations/[0-9]+ or [0-9]+.")
+  if (not resource_pattern.match(organization) and
+      not id_pattern.match(organization)):
+    raise InvalidSCCInputError(
+        "Organization must match either organizations/[0-9]+ or [0-9]+.")
   if resource_pattern.match(organization):
     return organization
   return "organizations/" + organization
@@ -111,9 +112,10 @@ def GetDefaultOrganization():
   resource_pattern = re.compile("organizations/[0-9]+")
   id_pattern = re.compile("[0-9]+")
   organization = properties.VALUES.scc.organization.Get()
-  assert resource_pattern.match(organization) or id_pattern.match(
-      organization), (
-          "Organization must match either organizations/[0-9]+ or [0-9]+.")
+  if (not resource_pattern.match(organization) and
+      not id_pattern.match(organization)):
+    raise InvalidSCCInputError(
+        "Organization must match either organizations/[0-9]+ or [0-9]+.")
   if resource_pattern.match(organization):
     return organization
   return "organizations/" + organization
@@ -138,15 +140,6 @@ def GetDefaultParent():
 def CleanUpUserInput(mask):
   """Removes spaces from a field mask provided by user."""
   return mask.replace(" ", "")
-
-
-def GetOrganizationFromResourceName(resource_name):
-  resource_pattern = re.compile("organizations/[0-9]+")
-  assert resource_pattern.match(resource_name), (
-      "When providing a full resource path, it must also include the pattern "
-      "organizations/[0-9]+.")
-  list_organization_components = resource_name.split("/")
-  return list_organization_components[0] + "/" + list_organization_components[1]
 
 
 def GetParentFromResourceName(resource_name):

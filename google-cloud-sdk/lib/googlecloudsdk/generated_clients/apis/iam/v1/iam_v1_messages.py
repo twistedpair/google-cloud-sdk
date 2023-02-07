@@ -222,7 +222,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -239,9 +241,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -3637,7 +3637,9 @@ class WorkforcePool(_messages.Message):
       sign-in sessions, and `gcloud` sign-in sessions from this pool are
       valid. Must be greater than 15 minutes (900s) and less than 12 hours
       (43200s). If `session_duration` is not configured, minted credentials
-      have a default duration of one hour (3600s).
+      have a default duration of one hour (3600s). For SAML providers, the
+      lifetime of the token is the minimum of the `session_duration` and the
+      SessionNotOnOrAfter claim in the SAML assertion.
     state: Output only. The state of the pool.
   """
 

@@ -244,6 +244,33 @@ class DatacatalogV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Reconcile(self, request, global_params=None):
+      r"""Reconciles tags created with a given tag template on a given Entry. Reconciliation is an operation that given a list of tags creates or updates them on the entry. Additionally, the operation is also able to delete tags not mentioned in the tag list. It can be achieved by setting force_delete_missing parameter. Reconciliation is a long-running operation done in the background, so this method returns long-running operation resource. The resource can be queried with Operations.GetOperation which contains metadata and response.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reconcile')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reconcile.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags:reconcile',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.tags.reconcile',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/tags:reconcile',
+        request_field='googleCloudDatacatalogV1ReconcileTagsRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsEntriesService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups_entries resource."""
 

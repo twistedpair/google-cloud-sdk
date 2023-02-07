@@ -27,13 +27,17 @@ from googlecloudsdk.command_lib.deploy import exceptions as cd_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
-_ROLLOUT_COLLECTION = 'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
+_ROLLOUT_COLLECTION = (
+    'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
+)
 PENDING_APPROVAL_FILTER_TEMPLATE = (
     'approvalState="NEEDS_APPROVAL" AND '
-    'state="PENDING_APPROVAL" AND targetId="{}"')
+    'state="PENDING_APPROVAL" AND targetId="{}"'
+)
 DEPLOYED_ROLLOUT_FILTER_TEMPLATE = (
     '(approvalState!="REJECTED" AND '
-    'approvalState!="NEEDS_APPROVAL") AND state="SUCCEEDED" AND targetId="{}"')
+    'approvalState!="NEEDS_APPROVAL") AND state="SUCCEEDED" AND targetId="{}"'
+)
 ROLLOUT_IN_TARGET_FILTER_TEMPLATE = 'targetId="{}"'
 ROLLOUT_ID_TEMPLATE = '{}-to-{}-{:04d}'
 WILDCARD_RELEASE_NAME_TEMPLATE = '{}/releases/-'
@@ -52,7 +56,8 @@ def RolloutReferenceFromName(rollout_name):
     Rollout reference object
   """
   return resources.REGISTRY.ParseRelativeName(
-      rollout_name, collection=_ROLLOUT_COLLECTION)
+      rollout_name, collection=_ROLLOUT_COLLECTION
+  )
 
 
 def RolloutId(rollout_name_or_id):
@@ -67,7 +72,8 @@ def RolloutId(rollout_name_or_id):
   rollout_id = rollout_name_or_id
   if 'projects/' in rollout_name_or_id:
     rollout_id = resources.REGISTRY.ParseRelativeName(
-        rollout_name_or_id, collection=_ROLLOUT_COLLECTION).Name()
+        rollout_name_or_id, collection=_ROLLOUT_COLLECTION
+    ).Name()
 
   return rollout_id
 
@@ -92,15 +98,13 @@ def ListPendingRollouts(target_ref, pipeline_ref):
   return rollout.RolloutClient().List(
       release_name=parent,
       filter_str=filter_str,
-      order_by=PENDING_ROLLOUT_ORDERBY)
+      order_by=PENDING_ROLLOUT_ORDERBY,
+  )
 
 
-def GetFilteredRollouts(target_ref,
-                        pipeline_ref,
-                        filter_str,
-                        order_by,
-                        page_size=None,
-                        limit=None):
+def GetFilteredRollouts(
+    target_ref, pipeline_ref, filter_str, order_by, page_size=None, limit=None
+):
   """Gets successfully deployed rollouts for the releases associated with the specified target and index.
 
   Args:
@@ -121,15 +125,19 @@ def GetFilteredRollouts(target_ref,
       filter_str=filter_str.format(target_ref.Name()),
       order_by=order_by,
       page_size=page_size,
-      limit=limit)
+      limit=limit,
+  )
 
 
-def CreateRollout(release_ref,
-                  to_target,
-                  rollout_id=None,
-                  annotations=None,
-                  labels=None,
-                  description=None):
+def CreateRollout(
+    release_ref,
+    to_target,
+    rollout_id=None,
+    annotations=None,
+    labels=None,
+    description=None,
+    starting_phase_id=None,
+):
   """Creates a rollout by calling the rollout create API and waits for the operation to finish.
 
   Args:
@@ -143,6 +151,7 @@ def CreateRollout(release_ref,
       select cloud deploy resources and to find collections of cloud deploy
       resources that satisfy certain conditions.
     description: str, rollout description.
+    starting_phase_id: str, rollout starting phase.
 
   Raises:
       ListRolloutsError: an error occurred calling rollout list API.
@@ -154,10 +163,12 @@ def CreateRollout(release_ref,
   if not final_rollout_id:
     filter_str = ROLLOUT_IN_TARGET_FILTER_TEMPLATE.format(to_target)
     try:
-      rollouts = rollout.RolloutClient().List(release_ref.RelativeName(),
-                                              filter_str)
-      final_rollout_id = ComputeRolloutID(release_ref.Name(), to_target,
-                                          rollouts)
+      rollouts = rollout.RolloutClient().List(
+          release_ref.RelativeName(), filter_str
+      )
+      final_rollout_id = ComputeRolloutID(
+          release_ref.Name(), to_target, rollouts
+      )
     except apitools_exceptions.HttpError:
       raise cd_exceptions.ListRolloutsError(release_ref.RelativeName())
 
@@ -170,22 +181,31 @@ def CreateRollout(release_ref,
           'locationsId': resource_dict.get('locationsId'),
           'deliveryPipelinesId': resource_dict.get('deliveryPipelinesId'),
           'releasesId': release_ref.Name(),
-      })
+      },
+  )
   rollout_obj = client_util.GetMessagesModule().Rollout(
       name=rollout_ref.RelativeName(),
       targetId=to_target,
-      description=description)
+      description=description,
+  )
 
-  log.status.Print('Creating rollout {} in target {}'.format(
-      rollout_ref.RelativeName(), to_target))
-  operation = rollout.RolloutClient().Create(rollout_ref, rollout_obj,
-                                             annotations, labels)
+  log.status.Print(
+      'Creating rollout {} in target {}'.format(
+          rollout_ref.RelativeName(), to_target
+      )
+  )
+  operation = rollout.RolloutClient().Create(
+      rollout_ref, rollout_obj, annotations, labels, starting_phase_id
+  )
   operation_ref = resources.REGISTRY.ParseRelativeName(
-      operation.name, collection='clouddeploy.projects.locations.operations')
+      operation.name, collection='clouddeploy.projects.locations.operations'
+  )
 
   client_util.OperationsClient().WaitForOperation(
-      operation, operation_ref,
-      'Waiting for rollout creation operation to complete')
+      operation,
+      operation_ref,
+      'Waiting for rollout creation operation to complete',
+  )
   return rollout.RolloutClient().Get(rollout_ref.RelativeName())
 
 
@@ -209,7 +229,8 @@ def GetValidRollBackCandidate(target_ref, pipeline_ref):
       filter_str=DEPLOYED_ROLLOUT_FILTER_TEMPLATE,
       order_by=SUCCEED_ROLLOUT_ORDERBY,
       limit=None,
-      page_size=10)
+      page_size=10,
+  )
   rollouts = []
   for rollout_obj in iterable:
     if not rollouts:  # Currently deployed rollout in target

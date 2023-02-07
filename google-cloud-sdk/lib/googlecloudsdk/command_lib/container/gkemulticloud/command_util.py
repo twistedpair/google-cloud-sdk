@@ -71,6 +71,15 @@ def NodePoolMessage(name, action=None, cluster=None, kind=None, region=None):
   return msg
 
 
+def ClientMessage(name, action=None, region=None):
+  msg = 'client [{name}]'.format(name=name)
+  if action:
+    msg = '{action} '.format(action=action) + msg
+  if region:
+    msg += ' in [{region}]'.format(region=region)
+  return msg
+
+
 def Create(resource_ref=None,
            resource_client=None,
            args=None,
@@ -133,6 +142,8 @@ def _DeletePrompt(kind, items):
     title = title.format('clusters')
   elif kind == constants.AWS_NODEPOOL_KIND or kind == constants.AZURE_NODEPOOL_KIND:
     title = title.format('node pool')
+  elif kind == constants.AZURE_CLIENT_KIND:
+    title = title.format('client')
   console_io.PromptContinue(
       message=gke_util.ConstructList(title, items),
       throw_if_unattended=True,

@@ -25,7 +25,6 @@ import re
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
-from googlecloudsdk.command_lib.scc.hooks import GetOrganization
 from googlecloudsdk.command_lib.scc.hooks import GetSourceParentFromResourceName
 from googlecloudsdk.command_lib.scc.util import GetParentFromPositionalArguments
 
@@ -136,21 +135,6 @@ def UpdateFindingSecurityMarksReqHook(ref, args, req):
   return req
 
 
-def _GetFindingName(args):
-  """Returns relative resource name for a finding name."""
-  resource_pattern = re.compile(
-      "organizations/[0-9]+/sources/[0-9-]+/findings/[a-zA-Z0-9]+$")
-  id_pattern = re.compile("[a-zA-Z0-9]+")
-  assert resource_pattern.match(args.finding) or id_pattern.match(
-      args.finding), (
-          "Finding must match either organizations/"
-          "[0-9]+/sources/[0-9-]+/findings/[a-zA-Z0-9]+ or [0-9]+.")
-  if resource_pattern.match(args.finding):
-    # Handle finding id as full resource name
-    return args.finding
-  return _GetSourceName(args) + "/findings/" + args.finding
-
-
 def _GetFindingNameForParent(args):
   """Returns relative resource name for a finding name."""
   resource_pattern = re.compile(
@@ -181,19 +165,6 @@ def _GetSourceNameForParent(args):
     # Handle full resource name
     return args.source
   return GetParentFromPositionalArguments(args) + "/sources/" + args.source
-
-
-def _GetSourceName(args):
-  """Returns relative resource name for a source."""
-  resource_pattern = re.compile("organizations/[0-9]+/sources/[0-9-]+$")
-  id_pattern = re.compile("[0-9-]+")
-  assert resource_pattern.match(args.source) or id_pattern.match(args.source), (
-      "Source must match either organizations/[0-9]+/sources/[0-9-]+ "
-      "or [0-9-]+.")
-  if resource_pattern.match(args.source):
-    # Handle full resource name
-    return args.source
-  return GetOrganization(args) + "/sources/" + args.source
 
 
 def _GetFindingIdFromName(finding_name):
@@ -255,9 +226,9 @@ def _ValidateAndGetParent(args):
 
 def _ValidateMutexOnSourceAndOrganization(args):
   """Validates that only a full resource name or split arguments are provided."""
-  if "/" in args.source:
-    assert args.organization is None, (
-        "Only provide a full resouce name "
+  if "/" in args.source and args.organization is not None:
+    raise InvalidSCCInputError(
+        "Only provide a full resource name "
         "(organizations/123/sources/456) or an --organization flag, not both.")
 
 
@@ -265,20 +236,17 @@ def _ValidateMutexOnSourceAndParent(args):
   """Validates that only a full resource name or split arguments are provided."""
   if "/" in args.source and args.parent is not None:
     raise InvalidSCCInputError(
-        "Only provide a full resouce name "
+        "Only provide a full resource name "
         "(organizations/123/sources/456) or a --parent flag, not both.")
 
 
-# TODO(b/177658164): Avoid using assert.
 def _ValidateMutexOnFindingAndSourceAndOrganization(args):
   """Validates that only a full resource name or split arguments are provided."""
-  if "/" in args.finding:
-    assert args.organization is None, (
-        "Only provide a full resouce name "
-        "(organizations/123/sources/456/findings/789) or an --organization "
-        "flag and --sources flag, not both.")
-    assert args.source is None, (
-        "Only provide a full resouce name "
+  if "/" in args.finding and (
+      args.organization is not None or
+      args.source is not None):
+    raise InvalidSCCInputError(
+        "Only provide a full resource name "
         "(organizations/123/sources/456/findings/789) or an --organization flag"
         " and --sources flag, not both.")
 

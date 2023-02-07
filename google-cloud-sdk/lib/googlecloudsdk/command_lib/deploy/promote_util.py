@@ -28,19 +28,23 @@ from googlecloudsdk.core import resources
 
 _LAST_TARGET_IN_SEQUENCE = (
     'Release {} is already deployed to the last target '
-    '({}) in the promotion sequence.\n- Release: {}\n- Target: {}\n')
+    '({}) in the promotion sequence.\n- Release: {}\n- Target: {}\n'
+)
 # In progress List filter
-IN_PROGRESS_FILTER_TEMPLATE = ('state="IN_PROGRESS"')
+IN_PROGRESS_FILTER_TEMPLATE = 'state="IN_PROGRESS"'
 
 
-def Promote(release_ref,
-            release_obj,
-            to_target,
-            is_create,
-            rollout_id=None,
-            annotations=None,
-            labels=None,
-            description=None):
+def Promote(
+    release_ref,
+    release_obj,
+    to_target,
+    is_create,
+    rollout_id=None,
+    annotations=None,
+    labels=None,
+    description=None,
+    starting_phase_id=None,
+):
   """Creates a rollout for the given release in the destination target.
 
   If to_target is not specified and there is a rollout in progress, the promote
@@ -61,6 +65,8 @@ def Promote(release_ref,
       select cloud deploy resources and to find collections of cloud deploy
       resources that satisfy certain conditions.
     description: str, rollout description.
+    starting_phase_id: str, the starting phase for the rollout.
+
   Raises:
     googlecloudsdk.command_lib.deploy.exceptions.RolloutIdExhausted
     googlecloudsdk.command_lib.deploy.exceptions.ReleaseInactiveError
@@ -71,9 +77,15 @@ def Promote(release_ref,
   if not dest_target:
     dest_target = GetToTargetID(release_obj, is_create)
 
-  rollout_resource = rollout_util.CreateRollout(release_ref, dest_target,
-                                                rollout_id, annotations, labels,
-                                                description)
+  rollout_resource = rollout_util.CreateRollout(
+      release_ref,
+      dest_target,
+      rollout_id,
+      annotations,
+      labels,
+      description,
+      starting_phase_id,
+  )
 
   # Check if it requires approval.
   target_obj = release_util.GetSnappedTarget(release_obj, dest_target)
@@ -110,17 +122,19 @@ def GetToTargetID(release_obj, is_create):
       release_obj.name,
       collection='clouddeploy.projects.locations.deliveryPipelines.releases',
   )
-  to_target = (
-      release_obj.deliveryPipelineSnapshot.serialPipeline.stages[0].targetId)
+  to_target = release_obj.deliveryPipelineSnapshot.serialPipeline.stages[
+      0
+  ].targetId
   # The order of pipeline stages represents the promotion sequence.
   # E.g. test->stage->prod. Here we start with the last stage.
   reversed_stages = list(
-      reversed(release_obj.deliveryPipelineSnapshot.serialPipeline.stages))
+      reversed(release_obj.deliveryPipelineSnapshot.serialPipeline.stages)
+  )
   release_dict = release_ref.AsDict()
   for i, stage in enumerate(reversed_stages):
-    target_ref = target_util.TargetReference(stage.targetId,
-                                             release_dict['projectsId'],
-                                             release_dict['locationsId'])
+    target_ref = target_util.TargetReference(
+        stage.targetId, release_dict['projectsId'], release_dict['locationsId']
+    )
     # Starting with the last target in the promotion sequence per above, find
     # the last successfully deployed rollout to that target.
     current_rollout = target_util.GetCurrentRollout(
@@ -131,13 +145,15 @@ def GetToTargetID(release_obj, is_create):
             params={
                 'projectsId': release_dict['projectsId'],
                 'locationsId': release_dict['locationsId'],
-                'deliveryPipelinesId': release_dict['deliveryPipelinesId']
-            }))
+                'deliveryPipelinesId': release_dict['deliveryPipelinesId'],
+            },
+        ),
+    )
 
     if current_rollout:
       current_rollout_ref = resources.REGISTRY.Parse(
           current_rollout.name,
-          collection='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
+          collection='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts',
       )
       # Promotes the release from the target that is farthest along in the
       # promotion sequence to its next stage in the promotion sequence.
@@ -146,19 +162,24 @@ def GetToTargetID(release_obj, is_create):
           to_target = reversed_stages[i - 1].targetId
         else:
           log.status.Print(
-              _LAST_TARGET_IN_SEQUENCE.format(release_ref.Name(),
-                                              target_ref.Name(),
-                                              release_ref.RelativeName(),
-                                              target_ref.RelativeName()))
+              _LAST_TARGET_IN_SEQUENCE.format(
+                  release_ref.Name(),
+                  target_ref.Name(),
+                  release_ref.RelativeName(),
+                  target_ref.RelativeName(),
+              )
+          )
           to_target = target_ref.RelativeName()
           # Once a target to promote to is found break out of the loop
         break
 
   # This means the release is not deployed to any target,
   # to_target flag is required in this case.
-  if (to_target
+  if (
+      to_target
       == release_obj.deliveryPipelineSnapshot.serialPipeline.stages[0].targetId
-      and not is_create):
+      and not is_create
+  ):
     raise exceptions.ReleaseInactiveError()
 
   return target_util.TargetId(to_target)
@@ -176,8 +197,11 @@ def CheckIfInProgressRollout(release_ref, release_obj, to_target_id):
   Raises:
     googlecloudsdk.command_lib.deploy.exceptions.RolloutInProgressError
   """
-  rollouts = list(rollout.RolloutClient().List(
-      release_ref.RelativeName(), IN_PROGRESS_FILTER_TEMPLATE, limit=1))
+  rollouts = list(
+      rollout.RolloutClient().List(
+          release_ref.RelativeName(), IN_PROGRESS_FILTER_TEMPLATE, limit=1
+      )
+  )
 
   if rollouts:
     raise exceptions.RolloutInProgressError(release_obj.name, to_target_id)

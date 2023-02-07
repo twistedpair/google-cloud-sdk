@@ -2097,13 +2097,17 @@
             "The `JobRun` has an unspecified state.",
             "The `JobRun` is in progress.",
             "The `JobRun` has succeeded.",
-            "The `JobRun` has failed."
+            "The `JobRun` has failed.",
+            "The `JobRun` is terminating.",
+            "The `JobRun` was terminated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "IN_PROGRESS",
             "SUCCEEDED",
-            "FAILED"
+            "FAILED",
+            "TERMINATING",
+            "TERMINATED"
           ]
         },
         "deployJobRun": {
@@ -2270,6 +2274,27 @@
         }
       }
     },
+    "TerminateJobRunRequest": {
+      "id": "TerminateJobRunRequest",
+      "description": "The request object used by `TerminateJobRun`.",
+      "type": "object",
+      "properties": {
+        "overrideDeployPolicy": {
+          "description": "Optional. Deploy policies to override. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TerminateJobRunResponse": {
+      "id": "TerminateJobRunResponse",
+      "description": "The response object from `TerminateJobRun`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "Config": {
       "id": "Config",
       "description": "Service-wide configuration.",
@@ -2416,7 +2441,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3782,6 +3807,34 @@
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
                               "description": "Gets details of a single JobRun."
+                            },
+                            "terminate": {
+                              "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns.terminate",
+                              "path": "v1/{+name}:terminate",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}/jobRuns/{jobRunsId}:terminate",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. Name of the `JobRun`. Format must be projects\/{project}\/locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/{rollout}\/jobRuns\/{jobRun}.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+\/jobRuns\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "request": {
+                                "$ref": "TerminateJobRunRequest"
+                              },
+                              "response": {
+                                "$ref": "TerminateJobRunResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Terminates a Job Run in a given project and location."
                             }
                           }
                         }

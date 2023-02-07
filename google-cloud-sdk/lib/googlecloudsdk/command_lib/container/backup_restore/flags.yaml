@@ -64,7 +64,7 @@ cron_schedule:
     Schedule on which backups will be automatically created.
 
     Use standard [cron](http://en.wikipedia.org/wiki/Cron#Overview) syntax. For example,
-    "10 3 * * *" will automatically create a backup at 0310 every day. All times are interpreted as
+    `10 3 * * *` will automatically create a backup at 0310 every day. All times are interpreted as
     UTC. The minimum interval between scheduled backups is 10 minutes.
 
 update_cron_schedule:
@@ -79,7 +79,7 @@ update_cron_schedule:
     Schedule on which backups will be automatically created.
 
     Use standard [cron](http://en.wikipedia.org/wiki/Cron#Overview) syntax. For example,
-    "10 3 * * *" will automatically create a backup at 0310 every day. All times are interpreted as
+    `10 3 * * *` will automatically create a backup at 0310 every day. All times are interpreted as
     UTC. The minimum interval between scheduled backups is 10 minutes.
 
 paused:

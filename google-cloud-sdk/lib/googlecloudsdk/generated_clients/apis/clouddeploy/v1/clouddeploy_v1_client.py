@@ -113,6 +113,33 @@ class ClouddeployV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Terminate(self, request, global_params=None):
+      r"""Terminates a Job Run in a given project and location.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsTerminateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TerminateJobRunResponse) The response message.
+      """
+      config = self.GetMethodConfig('Terminate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Terminate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}/jobRuns/{jobRunsId}:terminate',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns.terminate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:terminate',
+        request_field='terminateJobRunRequest',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsTerminateRequest',
+        response_type_name='TerminateJobRunResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDeliveryPipelinesReleasesRolloutsService(base_api.BaseApiService):
     """Service class for the projects_locations_deliveryPipelines_releases_rollouts resource."""
 

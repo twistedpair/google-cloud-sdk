@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20230120",
+  "revision": "20230201",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2534,7 +2534,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3657,7 +3657,7 @@
           "type": "string"
         },
         "type": {
-          "description": "The type indicates the intended use of the security policy. - CLOUD_ARMOR: Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. - CLOUD_ARMOR_EDGE: Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They filter requests before the request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE: Cloud Armor internal service policies can be configured to filter HTTP requests targeting services managed by Traffic Director in a service mesh. They filter requests before the request is served from the application. This field can be set only at resource creation time.",
+          "description": "The type indicates the intended use of the security policy. - CLOUD_ARMOR: Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. - CLOUD_ARMOR_EDGE: Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They filter requests before the request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE: Cloud Armor internal service policies can be configured to filter HTTP requests targeting services managed by Traffic Director in a service mesh. They filter requests before the request is served from the application. - CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be configured to filter packets targeting network load balancing resources such as backend services, target pools, target instances, and instances with external IPs. They filter requests before the request is served from the application. This field can be set only at resource creation time.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -4705,7 +4705,7 @@
           "type": "string"
         },
         "ipv6Address": {
-          "description": "An IPv6 internal network address for this network interface.",
+          "description": "An IPv6 internal network address for this network interface. To use a static internal IP address, it must be unused and in the same region as the instance's zone. If not specified, GCP will automatically assign an internal IPv6 address from the instance's subnetwork.",
           "type": "string"
         },
         "internalIpv6PrefixLength": {
@@ -4824,7 +4824,7 @@
           "type": "string"
         },
         "externalIpv6": {
-          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. The field is output only, an IPv6 address from a subnetwork associated with the instance will be allocated dynamically.",
+          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static external IP address, it must be unused and in the same region as the instance's zone. If not specified, GCP will automatically assign an external IPv6 address from the instance's subnetwork.",
           "type": "string"
         },
         "externalIpv6PrefixLength": {
@@ -6598,6 +6598,13 @@
           "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
         },
+        "resourcePolicies": {
+          "description": "Resource policies to be added to this reservation. The key is defined by user, and the value is resource policy url. This is to define placement policy with reservation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "resourceStatus": {
           "description": "[Output Only] Status information for Reservation resource.",
           "$ref": "AllocationResourceStatus"
@@ -6733,18 +6740,22 @@
     },
     "AllocationResourceStatus": {
       "id": "AllocationResourceStatus",
+      "description": "[Output Only] Contains output only fields.",
       "type": "object",
       "properties": {
         "specificSkuAllocation": {
+          "description": "Allocation Properties of this reservation.",
           "$ref": "AllocationResourceStatusSpecificSKUAllocation"
         }
       }
     },
     "AllocationResourceStatusSpecificSKUAllocation": {
       "id": "AllocationResourceStatusSpecificSKUAllocation",
+      "description": "Contains Properties set for the reservation.",
       "type": "object",
       "properties": {
         "sourceInstanceTemplateId": {
+          "description": "ID of the instance template used to populate reservation properties.",
           "type": "string"
         }
       }
@@ -11405,7 +11416,8 @@
             "Backend host is selected based on the client connection metadata, i.e., connections are opened to the same address as the destination address of the incoming connection before the connection was redirected to the load balancer.",
             "The load balancer selects a random healthy host.",
             "The ring\/modulo hash load balancer implements consistent hashing to backends. The algorithm has the property that the addition\/removal of a host from a set of N hosts only affects 1\/N of the requests.",
-            "This is a simple policy in which each healthy backend is selected in round robin order. This is the default."
+            "This is a simple policy in which each healthy backend is selected in round robin order. This is the default.",
+            "Per-instance weighted Load Balancing via health check reported weights. If set, the Backend Service must configure a non legacy HTTP-based Health Check, and health check replies are expected to contain non-standard HTTP response header field X-Load-Balancing-Endpoint-Weight to specify the per-instance weights. If set, Load Balancing is weighted based on the per-instance weights reported in the last processed health check replies, as long as every instance either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise, Load Balancing remains equal-weight. This option is only supported in Network Load Balancing."
           ],
           "enum": [
             "INVALID_LB_POLICY",
@@ -11414,7 +11426,8 @@
             "ORIGINAL_DESTINATION",
             "RANDOM",
             "RING_HASH",
-            "ROUND_ROBIN"
+            "ROUND_ROBIN",
+            "WEIGHTED_MAGLEV"
           ]
         },
         "consistentHash": {
@@ -12048,7 +12061,8 @@
             "Backend host is selected based on the client connection metadata, i.e., connections are opened to the same address as the destination address of the incoming connection before the connection was redirected to the load balancer.",
             "The load balancer selects a random healthy host.",
             "The ring\/modulo hash load balancer implements consistent hashing to backends. The algorithm has the property that the addition\/removal of a host from a set of N hosts only affects 1\/N of the requests.",
-            "This is a simple policy in which each healthy backend is selected in round robin order. This is the default."
+            "This is a simple policy in which each healthy backend is selected in round robin order. This is the default.",
+            "Per-instance weighted Load Balancing via health check reported weights. If set, the Backend Service must configure a non legacy HTTP-based Health Check, and health check replies are expected to contain non-standard HTTP response header field X-Load-Balancing-Endpoint-Weight to specify the per-instance weights. If set, Load Balancing is weighted based on the per-instance weights reported in the last processed health check replies, as long as every instance either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise, Load Balancing remains equal-weight. This option is only supported in Network Load Balancing."
           ],
           "enum": [
             "INVALID_LB_POLICY",
@@ -12057,7 +12071,8 @@
             "ORIGINAL_DESTINATION",
             "RANDOM",
             "RING_HASH",
-            "ROUND_ROBIN"
+            "ROUND_ROBIN",
+            "WEIGHTED_MAGLEV"
           ]
         }
       }
@@ -12567,7 +12582,7 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            "",
+            "Deprecate CANCELED status. Will use separate status to differentiate cancel by mergeCud or manual cancellation.",
             "",
             "",
             ""
@@ -12627,12 +12642,14 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
             "ACCELERATOR_OPTIMIZED",
             "COMPUTE_OPTIMIZED",
             "COMPUTE_OPTIMIZED_C2D",
+            "COMPUTE_OPTIMIZED_C3",
             "GENERAL_PURPOSE",
             "GENERAL_PURPOSE_E2",
             "GENERAL_PURPOSE_N2",
@@ -50664,6 +50681,67 @@
             "https://www.googleapis.com/auth/compute.readonly"
           ],
           "description": "Returns permissions that a caller has on the specified resource."
+        },
+        "update": {
+          "id": "compute.disks.update",
+          "path": "projects/{project}/zones/{zone}/disks/{disk}",
+          "flatPath": "projects/{project}/zones/{zone}/disks/{disk}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "disk": {
+              "description": "The disk name for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "paths": {
+              "location": "query",
+              "repeated": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "update_mask indicates fields to be updated as part of this request.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            },
+            "zone": {
+              "description": "The name of the zone for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "zone",
+            "disk"
+          ],
+          "request": {
+            "$ref": "Disk"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license."
         }
       }
     },
@@ -51257,6 +51335,67 @@
             "https://www.googleapis.com/auth/compute.readonly"
           ],
           "description": "Returns permissions that a caller has on the specified resource."
+        },
+        "update": {
+          "id": "compute.regionDisks.update",
+          "path": "projects/{project}/regions/{region}/disks/{disk}",
+          "flatPath": "projects/{project}/regions/{region}/disks/{disk}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "disk": {
+              "description": "The disk name for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "paths": {
+              "location": "query",
+              "repeated": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "The name of the region for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "update_mask indicates fields to be updated as part of this request.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "disk"
+          ],
+          "request": {
+            "$ref": "Disk"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license."
         }
       }
     },

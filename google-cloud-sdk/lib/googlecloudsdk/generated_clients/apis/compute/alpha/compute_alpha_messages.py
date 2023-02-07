@@ -612,8 +612,10 @@ class AccessConfig(_messages.Message):
   Fields:
     externalIpv6: The first IPv6 address of the external IPv6 range associated
       with this instance, prefix length is stored in externalIpv6PrefixLength
-      in ipv6AccessConfig. The field is output only, an IPv6 address from a
-      subnetwork associated with the instance will be allocated dynamically.
+      in ipv6AccessConfig. To use a static external IP address, it must be
+      unused and in the same region as the instance's zone. If not specified,
+      GCP will automatically assign an external IPv6 address from the
+      instance's subnetwork.
     externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
@@ -1593,12 +1595,14 @@ class AllocationAggregateReservation(_messages.Message):
 
     Values:
       VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P: <no description>
+      VM_FAMILY_COMPUTE_OPTIMIZED_C3: <no description>
       VM_FAMILY_GENERAL_PURPOSE_T2D: <no description>
       VM_FAMILY_MEMORY_OPTIMIZED_M3: <no description>
     """
     VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 0
-    VM_FAMILY_GENERAL_PURPOSE_T2D = 1
-    VM_FAMILY_MEMORY_OPTIMIZED_M3 = 2
+    VM_FAMILY_COMPUTE_OPTIMIZED_C3 = 1
+    VM_FAMILY_GENERAL_PURPOSE_T2D = 2
+    VM_FAMILY_MEMORY_OPTIMIZED_M3 = 3
 
   inUseResources = _messages.MessageField('AllocationAggregateReservationReservedResourceInfo', 1, repeated=True)
   reservedResources = _messages.MessageField('AllocationAggregateReservationReservedResourceInfo', 2, repeated=True)
@@ -6108,7 +6112,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -6125,9 +6131,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -6607,7 +6611,8 @@ class Commitment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
-      CANCELLED: <no description>
+      CANCELLED: Deprecate CANCELED status. Will use separate status to
+        differentiate cancel by mergeCud or manual cancellation.
       CREATING: <no description>
       EXPIRED: <no description>
       NOT_YET_ACTIVE: <no description>
@@ -6629,6 +6634,7 @@ class Commitment(_messages.Message):
       ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
+      COMPUTE_OPTIMIZED_C3: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -6642,15 +6648,16 @@ class Commitment(_messages.Message):
     ACCELERATOR_OPTIMIZED = 0
     COMPUTE_OPTIMIZED = 1
     COMPUTE_OPTIMIZED_C2D = 2
-    GENERAL_PURPOSE = 3
-    GENERAL_PURPOSE_E2 = 4
-    GENERAL_PURPOSE_N2 = 5
-    GENERAL_PURPOSE_N2D = 6
-    GENERAL_PURPOSE_T2D = 7
-    GRAPHICS_OPTIMIZED = 8
-    MEMORY_OPTIMIZED = 9
-    MEMORY_OPTIMIZED_M3 = 10
-    TYPE_UNSPECIFIED = 11
+    COMPUTE_OPTIMIZED_C3 = 3
+    GENERAL_PURPOSE = 4
+    GENERAL_PURPOSE_E2 = 5
+    GENERAL_PURPOSE_N2 = 6
+    GENERAL_PURPOSE_N2D = 7
+    GENERAL_PURPOSE_T2D = 8
+    GRAPHICS_OPTIMIZED = 9
+    MEMORY_OPTIMIZED = 10
+    MEMORY_OPTIMIZED_M3 = 11
+    TYPE_UNSPECIFIED = 12
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -12649,8 +12656,8 @@ class ComputeInstanceGroupManagerResizeRequestsGetRequest(_messages.Message):
     project: Project ID for this request.
     resizeRequest: The name of the resize request. Name should conform to
       RFC1035 or be a resource ID.
-    zone: The name of the zone where the managed instance group and the resize
-      request are located. Name should conform to RFC1035.
+    zone: Name of the href="/compute/docs/regions-zones/#available">zone
+      scoping this request. Name should conform to RFC1035.
   """
 
   instanceGroupManager = _messages.StringField(1, required=True)
@@ -37410,6 +37417,9 @@ class FirewallPolicyRule(_messages.Message):
       of target label tags allowed is 256.
     targetServiceAccounts: A list of service accounts indicating the sets of
       instances that are applied with this rule.
+    tlsInspect: Boolean flag indicating if the traffic should be TLS
+      decrypted. Can be set only if action = 'apply_security_profile_group'
+      and cannot be set for other actions.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -37436,6 +37446,7 @@ class FirewallPolicyRule(_messages.Message):
   targetResources = _messages.StringField(12, repeated=True)
   targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 13, repeated=True)
   targetServiceAccounts = _messages.StringField(14, repeated=True)
+  tlsInspect = _messages.BooleanField(15)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -44738,6 +44749,7 @@ class InstanceGroupManagerResizeRequest(_messages.Message):
       ResizeRequest.status.queuing_policy always contains absolute time as
       calculated by the server when the request is queued.
     zone: [Output Only] The URL of a zone where the resize request is located.
+      Populated only for zonal resize requests.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -56255,6 +56267,9 @@ class NetworkInterface(_messages.Message):
       whether the IP can be accessed from the Internet. This field is always
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
     ipv6Address: An IPv6 internal network address for this network interface.
+      To use a static internal IP address, it must be unused and in the same
+      region as the instance's zone. If not specified, GCP will automatically
+      assign an internal IPv6 address from the instance's subnetwork.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -70835,8 +70850,12 @@ class SecurityPolicy(_messages.Message):
       CLOUD_ARMOR_INTERNAL_SERVICE: Cloud Armor internal service policies can
       be configured to filter HTTP requests targeting services managed by
       Traffic Director in a service mesh. They filter requests before the
-      request is served from the application. This field can be set only at
-      resource creation time.
+      request is served from the application. - CLOUD_ARMOR_NETWORK: Cloud
+      Armor network policies can be configured to filter packets targeting
+      network load balancing resources such as backend services, target pools,
+      target instances, and instances with external IPs. They filter requests
+      before the request is served from the application. This field can be set
+      only at resource creation time.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -70918,7 +70937,12 @@ class SecurityPolicy(_messages.Message):
       Cloud Armor internal service policies can be configured to filter HTTP
       requests targeting services managed by Traffic Director in a service
       mesh. They filter requests before the request is served from the
-      application. This field can be set only at resource creation time.
+      application. - CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be
+      configured to filter packets targeting network load balancing resources
+      such as backend services, target pools, target instances, and instances
+      with external IPs. They filter requests before the request is served
+      from the application. This field can be set only at resource creation
+      time.
     userDefinedFields: Definitions of user-defined fields for
       CLOUD_ARMOR_NETWORK policies. A user-defined field consists of up to 4
       bytes extracted from a fixed offset in the packet, relative to the IPv4,
@@ -70939,6 +70963,10 @@ class SecurityPolicy(_messages.Message):
     request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE:
     Cloud Armor internal service policies can be configured to filter HTTP
     requests targeting services managed by Traffic Director in a service mesh.
+    They filter requests before the request is served from the application. -
+    CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be configured to
+    filter packets targeting network load balancing resources such as backend
+    services, target pools, target instances, and instances with external IPs.
     They filter requests before the request is served from the application.
     This field can be set only at resource creation time.
 

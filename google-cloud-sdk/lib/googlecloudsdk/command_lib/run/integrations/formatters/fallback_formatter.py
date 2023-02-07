@@ -33,12 +33,12 @@ class FallbackFormatter(base_formatter.BaseFormatter):
     """Print the config of the integration.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       The printed output.
     """
-    return self._PrintAsYaml(record['config'])
+    return self._PrintAsYaml(record.config)
 
   def TransformComponentStatus(self, record):
     """Print the component status of the integration.
@@ -49,8 +49,7 @@ class FallbackFormatter(base_formatter.BaseFormatter):
     Returns:
       The printed output.
     """
-    component_status = record.get('status', {}).get('resourceComponentStatuses',
-                                                    {})
+    component_status = record.status.get('resourceComponentStatuses', {})
     components = []
     for r in component_status:
       components.append((self.PrintType(r.get('type')), '{} {}'.format(

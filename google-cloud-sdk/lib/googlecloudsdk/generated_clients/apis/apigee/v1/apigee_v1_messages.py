@@ -2169,8 +2169,7 @@ class ApigeeOrganizationsEnvironmentsCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1Environment: A GoogleCloudApigeeV1Environment resource
       to be passed as the request body.
-    name: Optional. Name of the environment. Alternatively, the name may be
-      specified in the request body in the name field.
+    name: Optional. Name of the environment.
     parent: Required. Name of the organization in which the environment will
       be created. Use the following structure in your request:
       `organizations/{org}`
@@ -10902,16 +10901,20 @@ class GoogleCloudApigeeV1TargetServer(_messages.Message):
       PROTOCOL_UNSPECIFIED: UNSPECIFIED defaults to HTTP for backwards
         compatibility.
       HTTP: The TargetServer uses HTTP.
-      HTTP2: The TargetSever uses HTTP2
-      GRPC: The TargetServer uses GRPC.
+      HTTP2: The TargetSever uses HTTP2.
+      GRPC_TARGET: The TargetServer uses GRPC.
+      GRPC: GRPC TargetServer to be used in ExternalCallout Policy. Prefer to
+        use EXTERNAL_CALLOUT instead. TODO(b/266125112) deprecate once
+        EXTERNAL _CALLOUT generally available.
       EXTERNAL_CALLOUT: The TargetServer is to be used in the ExternalCallout
         Policy
     """
     PROTOCOL_UNSPECIFIED = 0
     HTTP = 1
     HTTP2 = 2
-    GRPC = 3
-    EXTERNAL_CALLOUT = 4
+    GRPC_TARGET = 3
+    GRPC = 4
+    EXTERNAL_CALLOUT = 5
 
   description = _messages.StringField(1)
   host = _messages.StringField(2)
@@ -10946,16 +10949,20 @@ class GoogleCloudApigeeV1TargetServerConfig(_messages.Message):
       PROTOCOL_UNSPECIFIED: UNSPECIFIED defaults to HTTP for backwards
         compatibility.
       HTTP: The TargetServer uses HTTP.
-      HTTP2: The TargetSever uses HTTP2
-      GRPC: The TargetServer uses GRPC.
+      HTTP2: The TargetSever uses HTTP2.
+      GRPC_TARGET: The TargetServer uses GRPC.
+      GRPC: GRPC TargetServer to be used in ExternalCallout Policy. Prefer to
+        use EXTERNAL_CALLOUT instead. TODO(b/266125112) deprecate once
+        EXTERNAL _CALLOUT generally available.
       EXTERNAL_CALLOUT: The TargetServer is to be used in the ExternalCallout
         Policy
     """
     PROTOCOL_UNSPECIFIED = 0
     HTTP = 1
     HTTP2 = 2
-    GRPC = 3
-    EXTERNAL_CALLOUT = 4
+    GRPC_TARGET = 3
+    GRPC = 4
+    EXTERNAL_CALLOUT = 5
 
   enabled = _messages.BooleanField(1)
   host = _messages.StringField(2)
@@ -11384,7 +11391,9 @@ class GoogleIamV1Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -11401,9 +11410,7 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """

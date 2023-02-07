@@ -1395,6 +1395,44 @@
         "bundle": {
           "description": "Bundle url reference to a Tekton Bundle.",
           "type": "string"
+        },
+        "resolver": {
+          "description": "Resolver is the name of the resolver that should perform resolution of the referenced Tekton resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default enum type; should not be used.",
+            "Bundles resolver. https:\/\/tekton.dev\/docs\/pipelines\/bundle-resolver\/",
+            "GCB repo resolver.",
+            "Simple Git resolver. https:\/\/tekton.dev\/docs\/pipelines\/git-resolver\/"
+          ],
+          "enum": [
+            "RESOLVER_NAME_UNSPECIFIED",
+            "BUNDLES",
+            "GCB_REPO",
+            "GIT"
+          ]
+        },
+        "params": {
+          "description": "Params contains the parameters used to identify the referenced Tekton resource. Example entries might include \"repo\" or \"path\" but the set of params ultimately depends on the chosen resolver.",
+          "type": "array",
+          "items": {
+            "$ref": "Param"
+          }
+        }
+      }
+    },
+    "Param": {
+      "id": "Param",
+      "description": "Param defined with name and value. PipelineRef can be used to refer to a specific instance of a Pipeline.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the parameter.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value of the parameter.",
+          "$ref": "ParamValue"
         }
       }
     },
@@ -1444,21 +1482,6 @@
         }
       }
     },
-    "Param": {
-      "id": "Param",
-      "description": "Param defined with name and value. PipelineRef can be used to refer to a specific instance of a Pipeline.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the parameter.",
-          "type": "string"
-        },
-        "value": {
-          "description": "Value of the parameter.",
-          "$ref": "ParamValue"
-        }
-      }
-    },
     "WorkspacePipelineTaskBinding": {
       "id": "WorkspacePipelineTaskBinding",
       "description": "WorkspacePipelineTaskBinding maps workspaces from the PipelineSpec to the workspaces declared in the Task.",
@@ -1505,6 +1528,29 @@
         "bundle": {
           "description": "Bundle url reference to a Tekton Bundle.",
           "type": "string"
+        },
+        "resolver": {
+          "description": "Resolver is the name of the resolver that should perform resolution of the referenced Tekton resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default enum type; should not be used.",
+            "Bundles resolver. https:\/\/tekton.dev\/docs\/pipelines\/bundle-resolver\/",
+            "GCB repo resolver.",
+            "Simple Git resolver. https:\/\/tekton.dev\/docs\/pipelines\/git-resolver\/"
+          ],
+          "enum": [
+            "RESOLVER_NAME_UNSPECIFIED",
+            "BUNDLES",
+            "GCB_REPO",
+            "GIT"
+          ]
+        },
+        "params": {
+          "description": "Params contains the parameters used to identify the referenced Tekton resource. Example entries might include \"repo\" or \"path\" but the set of params ultimately depends on the chosen resolver.",
+          "type": "array",
+          "items": {
+            "$ref": "Param"
+          }
         }
       }
     },
@@ -1520,11 +1566,6 @@
         "statusUpdateOptions": {
           "description": "How\/where status on the workflow is posted.",
           "$ref": "WorkflowStatusUpdateOptions"
-        },
-        "timeout": {
-          "description": "Time after which the Workflow times out. Deprecated - use timeouts instead.",
-          "type": "string",
-          "format": "google-duration"
         },
         "timeouts": {
           "description": "Time after which the Pipeline times out. Currently three keys are accepted in the map pipeline, tasks and finally with Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally",
@@ -2004,11 +2045,6 @@
             "$ref": "WorkspaceBinding"
           }
         },
-        "timeout": {
-          "description": "Time after which the Pipeline times out. Deprecated - use timeouts instead.",
-          "type": "string",
-          "format": "google-duration"
-        },
         "serviceAccount": {
           "description": "Service account used in the Pipeline.",
           "type": "string"
@@ -2044,14 +2080,6 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
-        },
-        "taskRuns": {
-          "description": "Output only. List of TaskRuns and their status.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "PipelineRunTaskRunStatus"
-          }
         },
         "childReferences": {
           "description": "Output only. List of TaskRun and Run names and PipelineTask names for children of this PipelineRun.",
@@ -2132,206 +2160,6 @@
         },
         "message": {
           "description": "A human readable message indicating details about the transition.",
-          "type": "string"
-        }
-      }
-    },
-    "PipelineRunTaskRunStatus": {
-      "id": "PipelineRunTaskRunStatus",
-      "description": "PipelineRunTaskRunStatus contains the name of the PipelineTask for this TaskRun and the TaskRun's Status.",
-      "type": "object",
-      "properties": {
-        "pipelineTaskName": {
-          "description": "Name of the pipeline task.",
-          "type": "string"
-        },
-        "status": {
-          "description": "Status of the task run.",
-          "$ref": "TaskRunStatus"
-        }
-      }
-    },
-    "TaskRunStatus": {
-      "id": "TaskRunStatus",
-      "description": "TaskRunStatus defines the status of TaskRun",
-      "type": "object",
-      "properties": {
-        "conditions": {
-          "description": "Output only. Kubernetes Conditions convention for PipelineRun status and error.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "Condition"
-          }
-        },
-        "startTime": {
-          "description": "Output only. Time the task is actually started.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "completionTime": {
-          "description": "Output only. Time the task completed.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "steps": {
-          "description": "Output only. Steps describes the state of each build step container.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "StepState"
-          }
-        },
-        "taskSpec": {
-          "description": "Spec for the task.",
-          "$ref": "TaskSpec"
-        },
-        "sidecars": {
-          "description": "Output only. State of each Sidecar.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "SidecarState"
-          }
-        },
-        "taskRunResults": {
-          "description": "Output only. List of results written out by the task's containers",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "TaskRunResult"
-          }
-        }
-      }
-    },
-    "StepState": {
-      "id": "StepState",
-      "description": "StepState reports the results of running a step in a Task.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the StepState.",
-          "type": "string"
-        },
-        "imageId": {
-          "description": "Image ID of the StepState.",
-          "type": "string"
-        },
-        "waiting": {
-          "description": "Details about a waiting container",
-          "$ref": "ContainerStateWaiting"
-        },
-        "running": {
-          "description": "Details about a running container",
-          "$ref": "ContainerStateRunning"
-        },
-        "terminated": {
-          "description": "Details about a terminated container",
-          "$ref": "ContainerStateTerminated"
-        }
-      }
-    },
-    "ContainerStateWaiting": {
-      "id": "ContainerStateWaiting",
-      "description": "ContainerStateWaiting is a waiting state of a container.",
-      "type": "object",
-      "properties": {
-        "reason": {
-          "description": "Reason the container is not yet running.",
-          "type": "string"
-        },
-        "message": {
-          "description": "Message regarding why the container is not yet running.",
-          "type": "string"
-        }
-      }
-    },
-    "ContainerStateRunning": {
-      "id": "ContainerStateRunning",
-      "description": "ContainerStateWaiting is a running state of a container.",
-      "type": "object",
-      "properties": {
-        "startedAt": {
-          "description": "Time at which the container was last (re-)started.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ContainerStateTerminated": {
-      "id": "ContainerStateTerminated",
-      "description": "ContainerStateWaiting is a terminated state of a container.",
-      "type": "object",
-      "properties": {
-        "exitCode": {
-          "description": "Exit status from the last termination of the container.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "reason": {
-          "description": "Reason from the last termination of the container",
-          "type": "string"
-        },
-        "message": {
-          "description": "Message regarding the last termination of the container",
-          "type": "string"
-        },
-        "startedAt": {
-          "description": "Time at which previous execution of the container started",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "finishedAt": {
-          "description": "Time at which the container last terminated",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "SidecarState": {
-      "id": "SidecarState",
-      "description": "The state of a sidecar.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the Sidecar.",
-          "type": "string"
-        },
-        "containerName": {
-          "description": "Name of the container.",
-          "type": "string"
-        },
-        "imageId": {
-          "description": "ID of the image.",
-          "type": "string"
-        },
-        "waiting": {
-          "description": "Details about a waiting container.",
-          "$ref": "ContainerStateWaiting"
-        },
-        "running": {
-          "description": "Details about a running container.",
-          "$ref": "ContainerStateRunning"
-        },
-        "terminated": {
-          "description": "Details about a terminated container.",
-          "$ref": "ContainerStateTerminated"
-        }
-      }
-    },
-    "TaskRunResult": {
-      "id": "TaskRunResult",
-      "description": "TaskRunResult used to describe the results of a task",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the TaskRun",
-          "type": "string"
-        },
-        "value": {
-          "description": "Value of the result",
           "type": "string"
         }
       }
@@ -2535,6 +2363,136 @@
           "description": "Output only. The exact TaskSpec used to instantiate the run.",
           "readOnly": true,
           "$ref": "TaskSpec"
+        }
+      }
+    },
+    "StepState": {
+      "id": "StepState",
+      "description": "StepState reports the results of running a step in a Task.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the StepState.",
+          "type": "string"
+        },
+        "imageId": {
+          "description": "Image ID of the StepState.",
+          "type": "string"
+        },
+        "waiting": {
+          "description": "Details about a waiting container",
+          "$ref": "ContainerStateWaiting"
+        },
+        "running": {
+          "description": "Details about a running container",
+          "$ref": "ContainerStateRunning"
+        },
+        "terminated": {
+          "description": "Details about a terminated container",
+          "$ref": "ContainerStateTerminated"
+        }
+      }
+    },
+    "ContainerStateWaiting": {
+      "id": "ContainerStateWaiting",
+      "description": "ContainerStateWaiting is a waiting state of a container.",
+      "type": "object",
+      "properties": {
+        "reason": {
+          "description": "Reason the container is not yet running.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Message regarding why the container is not yet running.",
+          "type": "string"
+        }
+      }
+    },
+    "ContainerStateRunning": {
+      "id": "ContainerStateRunning",
+      "description": "ContainerStateWaiting is a running state of a container.",
+      "type": "object",
+      "properties": {
+        "startedAt": {
+          "description": "Time at which the container was last (re-)started.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ContainerStateTerminated": {
+      "id": "ContainerStateTerminated",
+      "description": "ContainerStateWaiting is a terminated state of a container.",
+      "type": "object",
+      "properties": {
+        "exitCode": {
+          "description": "Exit status from the last termination of the container.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "reason": {
+          "description": "Reason from the last termination of the container",
+          "type": "string"
+        },
+        "message": {
+          "description": "Message regarding the last termination of the container",
+          "type": "string"
+        },
+        "startedAt": {
+          "description": "Time at which previous execution of the container started",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "finishedAt": {
+          "description": "Time at which the container last terminated",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TaskRunResult": {
+      "id": "TaskRunResult",
+      "description": "TaskRunResult used to describe the results of a task",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the TaskRun",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value of the result",
+          "type": "string"
+        }
+      }
+    },
+    "SidecarState": {
+      "id": "SidecarState",
+      "description": "The state of a sidecar.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the Sidecar.",
+          "type": "string"
+        },
+        "containerName": {
+          "description": "Name of the container.",
+          "type": "string"
+        },
+        "imageId": {
+          "description": "ID of the image.",
+          "type": "string"
+        },
+        "waiting": {
+          "description": "Details about a waiting container.",
+          "$ref": "ContainerStateWaiting"
+        },
+        "running": {
+          "description": "Details about a running container.",
+          "$ref": "ContainerStateRunning"
+        },
+        "terminated": {
+          "description": "Details about a terminated container.",
+          "$ref": "ContainerStateTerminated"
         }
       }
     },
@@ -2755,7 +2713,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"

@@ -202,9 +202,13 @@ class _Transform(object):
     """Sets the conditional expression string."""
     self._conditional = expr
 
-  def Evaluate(self, obj):
+  def Evaluate(self, obj, original_object=None):
     """Apply the list of transforms to obj and return the transformed value."""
     for transform in self._transforms:
+      # If the transform key is 'uri', uri transform function is expecting
+      # an object not a dict
+      if transform.name == 'uri' and original_object is not None:
+        obj = original_object
       if transform.map_transform and resource_property.IsListLike(obj):
         # A transform mapped on a list - transform each list item.
         # map_transform > 1 for nested lists. For example:

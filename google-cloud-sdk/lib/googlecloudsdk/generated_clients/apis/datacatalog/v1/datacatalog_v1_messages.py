@@ -46,7 +46,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -63,9 +65,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -368,6 +368,21 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest(_messages.M
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest
+  object.
+
+  Fields:
+    googleCloudDatacatalogV1ReconcileTagsRequest: A
+      GoogleCloudDatacatalogV1ReconcileTagsRequest resource to be passed as
+      the request body.
+    parent: Required. Name of Entry to be tagged.
+  """
+
+  googleCloudDatacatalogV1ReconcileTagsRequest = _messages.MessageField('GoogleCloudDatacatalogV1ReconcileTagsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest(_messages.Message):
@@ -2462,6 +2477,104 @@ class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
   parentPolicyTag = _messages.StringField(5)
+
+
+class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
+  r"""Metadata message for long-running operation returned by the
+  ReconcileTags.
+
+  Enums:
+    StateValueValuesEnum: State of the reconciliation operation.
+
+  Messages:
+    ErrorsValue: Map that maps name of each tagged column (or empty string in
+      case of sole entry) to tagging operation status.
+
+  Fields:
+    errors: Map that maps name of each tagged column (or empty string in case
+      of sole entry) to tagging operation status.
+    state: State of the reconciliation operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the reconciliation operation.
+
+    Values:
+      RECONCILIATION_STATE_UNSPECIFIED: Default value. This value is unused.
+      RECONCILIATION_QUEUED: The reconciliation has been queued and awaits for
+        execution.
+      RECONCILIATION_IN_PROGRESS: The reconciliation is in progress.
+      RECONCILIATION_DONE: The reconciliation has been finished.
+    """
+    RECONCILIATION_STATE_UNSPECIFIED = 0
+    RECONCILIATION_QUEUED = 1
+    RECONCILIATION_IN_PROGRESS = 2
+    RECONCILIATION_DONE = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ErrorsValue(_messages.Message):
+    r"""Map that maps name of each tagged column (or empty string in case of
+    sole entry) to tagging operation status.
+
+    Messages:
+      AdditionalProperty: An additional property for a ErrorsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ErrorsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ErrorsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Status attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Status', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  errors = _messages.MessageField('ErrorsValue', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudDatacatalogV1ReconcileTagsRequest(_messages.Message):
+  r"""Request message for ReconcileTags.
+
+  Fields:
+    forceDeleteMissing: If set to true deletes from the entry tags related to
+      given tag template and not mentioned in the tags source. If set to false
+      only creates and updates of the tags mentioned in the source will take
+      place. Other tags in that entry using the same tag template will be
+      retained instead of being deleted.
+    tagTemplate: Required. The name of the tag template, that will be used for
+      reconciliation.
+    tags: A list of tags to be applied on a given entry. Individual tags may
+      specify tag template, but it must be the same as the one in the
+      ReconcileTagsRequest. The sole entry and each of its columns must be
+      mentioned at most once.
+  """
+
+  forceDeleteMissing = _messages.BooleanField(1)
+  tagTemplate = _messages.StringField(2)
+  tags = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 3, repeated=True)
+
+
+class GoogleCloudDatacatalogV1ReconcileTagsResponse(_messages.Message):
+  r"""Request message for long-running operation returned by the
+  ReconcileTags.
+
+  Fields:
+    createdTagsCount: Number of tags created in the request.
+    deletedTagsCount: Number of tags deleted in the request.
+    updatedTagsCount: Number of tags updated in the request.
+  """
+
+  createdTagsCount = _messages.IntegerField(1)
+  deletedTagsCount = _messages.IntegerField(2)
+  updatedTagsCount = _messages.IntegerField(3)
 
 
 class GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest(_messages.Message):

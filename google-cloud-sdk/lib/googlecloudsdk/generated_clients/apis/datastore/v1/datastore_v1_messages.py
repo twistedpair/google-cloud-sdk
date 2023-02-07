@@ -1738,7 +1738,7 @@ class LookupResponse(_messages.Message):
       of the keys in the input.
     readTime: The time at which these entities were read or found missing.
     transaction: The identifier of the transaction that was started as part of
-      this Lookup request. Set only when ReadOptions.begin_transaction was set
+      this Lookup request. Set only when ReadOptions.new_transaction was set
       in LookupRequest.read_options.
   """
 
@@ -2210,7 +2210,7 @@ class RunAggregationQueryResponse(_messages.Message):
     query: The parsed form of the `GqlQuery` from the request, if it was set.
     transaction: The identifier of the transaction that was started as part of
       this RunAggregationQuery request. Set only when
-      ReadOptions.begin_transaction was set in
+      ReadOptions.new_transaction was set in
       RunAggregationQueryRequest.read_options.
   """
 
@@ -2249,8 +2249,8 @@ class RunQueryResponse(_messages.Message):
     batch: A batch of query results (always present).
     query: The parsed form of the `GqlQuery` from the request, if it was set.
     transaction: The identifier of the transaction that was started as part of
-      this RunQuery request. Set only when ReadOptions.begin_transaction was
-      set in RunQueryRequest.read_options.
+      this RunQuery request. Set only when ReadOptions.new_transaction was set
+      in RunQueryRequest.read_options.
   """
 
   batch = _messages.MessageField('QueryResultBatch', 1)

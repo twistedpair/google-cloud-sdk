@@ -229,7 +229,7 @@
           }
         },
         "query": {
-          "description": "Optional. A query string, following the BigQuery SQL query syntax. The FROM clause should specify a fully qualified log view corresponding to the log view in the resource_names, but should not include the name of the resource container. For example: SELECT count(*) FROM logs_my_bucket_US._AllLogs;",
+          "description": "Optional. A query string, following the BigQuery SQL query syntax. The FROM clause should specify a fully qualified log view corresponding to the log view in the resource_names in dot separated format like PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT count(*) FROM my_project.us.my_bucket._AllLogs;If any of the dot separated components have special characters, that component needs to be escaped separately like the following example:SELECT count(*) FROM company.com:abc.us.my-bucket._AllLogs;",
           "type": "string"
         },
         "resultReference": {
@@ -250,7 +250,7 @@
           "type": "boolean"
         },
         "disableQueryCaching": {
-          "description": "Optional. If set to false turns off all query caching on log analytics and bigquery side.",
+          "description": "Optional. If set to true, turns off all query caching on both the Log Analytics and BigQuery sides.",
           "type": "boolean"
         }
       }
@@ -571,6 +571,21 @@
       "description": "The parameters to UndeleteBucket.",
       "type": "object",
       "properties": {
+      }
+    },
+    "MoveBucketRequest": {
+      "id": "MoveBucketRequest",
+      "description": "The parameters to MoveBucket.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+          "type": "string"
+        },
+        "newName": {
+          "description": "Required. The full resource name of the relocated bucket.",
+          "type": "string"
+        }
       }
     },
     "ListViewsResponse": {
@@ -913,17 +928,21 @@
         }
       }
     },
-    "MoveBucketRequest": {
-      "id": "MoveBucketRequest",
-      "description": "The parameters to MoveBucket.",
+    "RedactLogEntriesRequest": {
+      "id": "RedactLogEntriesRequest",
+      "description": "The parameters to RedactLogEntries.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The full resource name of the source bucket to move. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+          "description": "Required. Log bucket from which to redact log entries.For example:\"projects\/my-project\/locations\/global\/buckets\/my-source-bucket\"",
           "type": "string"
         },
-        "newName": {
-          "description": "Required. The full resource name of the relocated bucket.",
+        "filter": {
+          "description": "Required. A filter specifying which log entries to redact. The filter must be no more than 20k characters. An empty filter matches all log entries.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Required. The reason log entries need to be redacted. This field will be recorded in redacted log entries and should omit sensitive information. The reason is limited 1,024 characters.",
           "type": "string"
         }
       }
@@ -2398,6 +2417,91 @@
           "$ref": "LogBucket"
         }
       }
+    },
+    "RedactLogEntriesMetadata": {
+      "id": "RedactLogEntriesMetadata",
+      "description": "Metadata for RedactLogEntries long running operations.",
+      "type": "object",
+      "properties": {
+        "receiveTime": {
+          "description": "The time at which the redaction request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "The time at which redaction of log entries commenced.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time at which the operation completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "State of an operation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The operation is scheduled.",
+            "Waiting for necessary permissions.",
+            "The operation is running.",
+            "The operation was completed successfully.",
+            "The operation failed.",
+            "The operation was cancelled by the user."
+          ],
+          "enum": [
+            "OPERATION_STATE_UNSPECIFIED",
+            "OPERATION_STATE_SCHEDULED",
+            "OPERATION_STATE_WAITING_FOR_PERMISSIONS",
+            "OPERATION_STATE_RUNNING",
+            "OPERATION_STATE_SUCCEEDED",
+            "OPERATION_STATE_FAILED",
+            "OPERATION_STATE_CANCELLED"
+          ]
+        },
+        "cancellationRequested": {
+          "description": "Identifies whether the user has requested cancellation of the operation.",
+          "type": "boolean"
+        },
+        "impactAssessment": {
+          "description": "The expected impact of the operation. If not set, impact has not been fully assessed.",
+          "$ref": "RedactLogEntriesImpact"
+        },
+        "request": {
+          "description": "RedactLogEntries RPC request.",
+          "$ref": "RedactLogEntriesRequest"
+        },
+        "progress": {
+          "description": "Estimated progress of the operation (0 - 100%).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RedactLogEntriesImpact": {
+      "id": "RedactLogEntriesImpact",
+      "description": "Information about the impact of a redaction.",
+      "type": "object",
+      "properties": {
+        "endTime": {
+          "description": "The time impact assessment was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "logEntriesCount": {
+          "description": "The number of entries in the requested bucket that match the requested filter.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "RedactLogEntriesResponse": {
+      "id": "RedactLogEntriesResponse",
+      "description": "Response type for RedactLogEntries long running operations.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -2446,6 +2550,27 @@
             "https://www.googleapis.com/auth/logging.admin"
           ],
           "description": "Copies a set of log entries from a log bucket to a Cloud Storage bucket."
+        },
+        "redact": {
+          "id": "logging.entries.redact",
+          "path": "v2/entries:redact",
+          "flatPath": "v2/entries:redact",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "RedactLogEntriesRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ],
+          "description": "Redacts the contents of log entries. This method replaces the payload of entries in a log bucket that match a filter with a RedactedLogEntryTombstone message."
         },
         "write": {
           "id": "logging.entries.write",

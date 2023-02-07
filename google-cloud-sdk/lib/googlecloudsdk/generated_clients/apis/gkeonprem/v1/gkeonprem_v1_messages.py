@@ -1255,7 +1255,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -1272,9 +1274,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1737,6 +1737,10 @@ class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest
     etag: The current etag of the BareMetalNodePool. If an etag is provided
       and does not match the current etag of the node pool, deletion will be
       blocked and an ABORTED error will be returned.
+    ignoreErrors: If set to true, the deletion of BareMetalNodePool resource
+      will succeed even if errors occur during deletion in admin cluster
+      resource. Using this parameter may result in orphaned node pool in the
+      admin cluster.
     name: Required. The name of the node pool to delete. Format: projects/{pro
       ject}/locations/{location}/bareMetalClusters/{cluster}/bareMetalNodePool
       s/{nodepool}
@@ -1746,8 +1750,9 @@ class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetIamPolicyRequest(_messages.Message):
@@ -1942,6 +1947,10 @@ class GkeonpremProjectsLocationsBareMetalClustersDeleteRequest(_messages.Message
       blocked and an ABORTED error will be returned.
     force: If set to true, any node pools from the cluster will also be
       deleted.
+    ignoreErrors: If set to true, the deletion of BareMetalUserCluster
+      resource will succeed even if errors occur during deletion in admin
+      cluster resource. Using this parameter may result in orphaned user
+      cluster in the admin cluster.
     name: Required. Name of the bare metal user cluster to be deleted. Format:
       "projects/{project}/locations/{location}/bareMetalClusters/{bare_metal_c
       luster}"
@@ -1951,8 +1960,9 @@ class GkeonpremProjectsLocationsBareMetalClustersDeleteRequest(_messages.Message
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
   force = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  validateOnly = _messages.BooleanField(5)
+  ignoreErrors = _messages.BooleanField(4)
+  name = _messages.StringField(5, required=True)
+  validateOnly = _messages.BooleanField(6)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersEnrollRequest(_messages.Message):
@@ -2464,6 +2474,10 @@ class GkeonpremProjectsLocationsVmwareClustersDeleteRequest(_messages.Message):
       and an ABORTED error will be returned.
     force: If set to true, any node pools from the cluster will also be
       deleted.
+    ignoreErrors: If set to true, the deletion of VmwareUserCluster resource
+      will succeed even if errors occur during deletion in admin cluster
+      resource. Using this parameter may result in orphaned user cluster in
+      the admin cluster.
     name: Required. Name of the VMware user cluster to be deleted. Format:
       "projects/{project}/locations/{location}/vmwareClusters/{vmware_cluster}
       "
@@ -2473,8 +2487,9 @@ class GkeonpremProjectsLocationsVmwareClustersDeleteRequest(_messages.Message):
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
   force = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  validateOnly = _messages.BooleanField(5)
+  ignoreErrors = _messages.BooleanField(4)
+  name = _messages.StringField(5, required=True)
+  validateOnly = _messages.BooleanField(6)
 
 
 class GkeonpremProjectsLocationsVmwareClustersEnrollRequest(_messages.Message):
@@ -2726,6 +2741,10 @@ class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(_mess
     etag: The current etag of the VmwareNodePool. If an etag is provided and
       does not match the current etag of the node pool, deletion will be
       blocked and an ABORTED error will be returned.
+    ignoreErrors: If set to true, the deletion of VmwareNodePool resource will
+      succeed even if errors occur during deletion in admin cluster resource.
+      Using this parameter may result in orphaned node pool in the admin
+      cluster.
     name: Required. The name of the node pool to delete. Format: projects/{pro
       ject}/locations/{location}/vmwareClusters/{cluster}/vmwareNodePools/{nod
       epool}
@@ -2735,8 +2754,9 @@ class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(_mess
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetIamPolicyRequest(_messages.Message):

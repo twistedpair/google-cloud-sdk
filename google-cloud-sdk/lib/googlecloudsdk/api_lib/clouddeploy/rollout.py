@@ -107,7 +107,14 @@ class RolloutClient(object):
         batch_size_attribute='pageSize',
     )
 
-  def Create(self, rollout_ref, rollout_obj, annotations=None, labels=None):
+  def Create(
+      self,
+      rollout_ref,
+      rollout_obj,
+      annotations=None,
+      labels=None,
+      starting_phase_id=None,
+  ):
     """Creates a rollout resource.
 
     Args:
@@ -119,6 +126,7 @@ class RolloutClient(object):
       labels: dict[str,str], a dict of label (key,value) pairs that can be used
         to select cloud deploy resources and to find collections of cloud deploy
         resources that satisfy certain conditions.
+      starting_phase_id: a str that specifies the rollout starting phase.
 
     Returns:
       The operation message.
@@ -135,6 +143,7 @@ class RolloutClient(object):
         parent=rollout_ref.Parent().RelativeName(),
         rollout=rollout_obj,
         rolloutId=rollout_ref.Name(),
+        startingPhaseId=starting_phase_id,
     )
 
     return self._service.Create(request)

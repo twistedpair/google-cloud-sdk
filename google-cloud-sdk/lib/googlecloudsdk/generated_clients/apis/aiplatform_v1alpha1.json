@@ -1552,6 +1552,10 @@
         "enablePrivateServiceConnect": {
           "description": "Optional. Deprecated: If true, expose the IndexEndpoint via private service connect. Only one of the fields, network or enable_private_service_connect, can be set.",
           "type": "boolean"
+        },
+        "privateServiceConnectConfig": {
+          "description": "Optional. Configuration for private service connect. network and private_service_connect_config are mutually exclusive.",
+          "$ref": "GoogleCloudAiplatformV1alpha1PrivateServiceConnectConfig"
         }
       }
     },
@@ -1609,6 +1613,24 @@
           "description": "Output only. The name of the service attachment resource. Populated if private service connect is enabled.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1PrivateServiceConnectConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1PrivateServiceConnectConfig",
+      "description": "Represents configuration for private service connect.",
+      "type": "object",
+      "properties": {
+        "enablePrivateServiceConnect": {
+          "description": "Required. If true, expose the IndexEndpoint via private service connect.",
+          "type": "boolean"
+        },
+        "projectAllowlist": {
+          "description": "A list of Projects from which the forwarding rule will target the service attachment.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4850,11 +4872,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "originalModelInfo": {
-          "description": "Output only. If this Model is a copy of another Model, this contains info about the original.",
-          "readOnly": true,
-          "$ref": "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo"
-        },
         "containerSpec": {
           "description": "Input only. The specification of the container that is to be used when deploying this Model. The specification is ingested upon ModelService.UploadModel, and all binaries it contains are copied and stored internally by Vertex AI. Not present for AutoML Models.",
           "$ref": "GoogleCloudAiplatformV1alpha1ModelContainerSpec"
@@ -4937,6 +4954,11 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key spec for a Model. If set, this Model and all sub-resources of this Model will be secured by this key.",
           "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
+        },
+        "originalModelInfo": {
+          "description": "Output only. If this Model is a copy of another Model, this contains info about the original.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo"
         }
       }
     },
@@ -4947,18 +4969,6 @@
       "properties": {
         "id": {
           "description": "Output only. The ID of the export format. The possible format IDs are: * `tflite` Used for Android mobile devices. * `edgetpu-tflite` Used for [Edge TPU](https:\/\/cloud.google.com\/edge-tpu\/) devices. * `tf-saved-model` A tensorflow model in SavedModel format. * `tf-js` A [TensorFlow.js](https:\/\/www.tensorflow.org\/js) model that can be used in the browser and in Node.js using JavaScript. * `core-ml` Used for iOS mobile devices. * `custom-trained` A Model that was uploaded or trained by custom code.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo": {
-      "id": "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo",
-      "description": "Contains information about the original Model if this Model is a copy.",
-      "type": "object",
-      "properties": {
-        "model": {
-          "description": "Output only. The resource name of the Model this Model is a copy of, including the revision. Format: `projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}`",
           "readOnly": true,
           "type": "string"
         }
@@ -4975,6 +4985,18 @@
         },
         "deployedModelId": {
           "description": "Immutable. An ID of a DeployedModel in the above Endpoint.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo",
+      "description": "Contains information about the original Model if this Model is a copy.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Output only. The resource name of the Model this Model is a copy of, including the revision. Format: `projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}`",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -10829,6 +10851,10 @@
           "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. If the corresponding Model.explanation_spec is not populated, all fields of the explanation_spec will be used for the explanation configuration.",
           "$ref": "GoogleCloudAiplatformUiExplanationSpec"
         },
+        "disableExplanations": {
+          "description": "If true, deploy the model without explainable feature, regardless the existence of Model.explanation_spec or explanation_spec.",
+          "type": "boolean"
+        },
         "uiState": {
           "description": "Output only. The state of the model deployment. Different from public API, BEING_DEPLOYED and FAILED deployment state model will also be returned in Ui ListEndpoints.",
           "readOnly": true,
@@ -14642,6 +14668,239 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecasting": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionTftForecastingMetadata",
+      "description": "Model metadata specific to TFT Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiSchemaImageBoundingBoxAnnotation": {
       "id": "GoogleCloudAiplatformUiSchemaImageBoundingBoxAnnotation",
       "description": "Annotation details specific to image object detection.",
@@ -17549,6 +17808,10 @@
         "explanationSpec": {
           "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. If the corresponding Model.explanation_spec is not populated, all fields of the explanation_spec will be used for the explanation configuration.",
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationSpec"
+        },
+        "disableExplanations": {
+          "description": "If true, deploy the model without explainable feature, regardless the existence of Model.explanation_spec or explanation_spec.",
+          "type": "boolean"
         },
         "serviceAccount": {
           "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
@@ -21651,6 +21914,239 @@
     "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
       "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
       "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecasting": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionTftForecastingMetadata",
+      "description": "Model metadata specific to TFT Forecasting.",
       "type": "object",
       "properties": {
         "trainCostMilliNodeHours": {
@@ -27060,6 +27556,239 @@
     "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata": {
       "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionSeq2SeqPlusForecastingMetadata",
       "description": "Model metadata specific to Seq2Seq Plus Forecasting.",
+      "type": "object",
+      "properties": {
+        "trainCostMilliNodeHours": {
+          "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
+          "type": "string",
+          "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecasting": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecasting",
+      "description": "A TrainingJob that trains and uploads an AutoML Forecasting Model.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "The input parameters of this TrainingJob.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs"
+        },
+        "metadata": {
+          "description": "The metadata information.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputs",
+      "type": "object",
+      "properties": {
+        "targetColumn": {
+          "description": "The name of the column that the Model is to predict values for. This column must be unavailable at forecast.",
+          "type": "string"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The name of the column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The name of the column that identifies time order in the time series. This column must be available at forecast.",
+          "type": "string"
+        },
+        "transformations": {
+          "description": "Each transformation will apply transform function to given input column. And the result will be used for training. When creating transformation for BigQuery Struct column, the column should be flattened using \".\" as the delimiter.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformation"
+          }
+        },
+        "optimizationObjective": {
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
+          "type": "string"
+        },
+        "trainBudgetMilliNodeHours": {
+          "description": "Required. The train budget of creating this model, expressed in milli node hours i.e. 1,000 value in this field means 1 node hour. The training cost of the model will not exceed this budget. The final cost will be attempted to be close to the budget, though may end up being (even) noticeably smaller - at the backend's discretion. This especially may happen when further model training ceases to provide any improvements. If the budget is set to a value known to be insufficient to train a model for the given dataset, the training won't be attempted and will error. The train budget must be between 1,000 and 72,000 milli node hours, inclusive.",
+          "type": "string",
+          "format": "int64"
+        },
+        "weightColumn": {
+          "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1. This column must be available at forecast.",
+          "type": "string"
+        },
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsGranularity"
+        },
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
+          "type": "string",
+          "format": "int64"
+        },
+        "holidayRegions": {
+          "description": "The geographical region based on which the holiday effect is applied in modeling by adding holiday categorical array feature that include all holidays matching the date. This option only allowed when data_granularity is day. By default, holiday effect modeling is disabled. To turn it on, specify the holiday region using this option.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exportEvaluatedDataItemsConfig": {
+          "description": "Configuration for exporting test set predictions to a BigQuery table. If this configuration is absent, then the export is not performed.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig"
+        },
+        "windowConfig": {
+          "description": "Config containing strategy for generating sliding windows.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionWindowConfig"
+        },
+        "quantiles": {
+          "description": "Quantiles to use for minimize-quantile-loss `optimization_objective`. Up to 5 quantiles are allowed of values between 0 and 1, exclusive. Required if the value of optimization_objective is minimize-quantile-loss. Represents the percent quantiles to use for that objective. Quantiles must be unique.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "validationOptions": {
+          "description": "Validation options for the data validation component. The available options are: * \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. * \"ignore-validation\" - ignore the results of the validation and continue",
+          "type": "string"
+        },
+        "additionalExperiments": {
+          "description": "Additional experiment flags for the time series forcasting training.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchyConfig": {
+          "description": "Configuration that defines the hierarchical relationship of time series and parameters for hierarchical forecasting strategies.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHierarchyConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformation",
+      "type": "object",
+      "properties": {
+        "auto": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation"
+        },
+        "numeric": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation"
+        },
+        "categorical": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation"
+        },
+        "timestamp": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation"
+        },
+        "text": {
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationAutoTransformation",
+      "description": "Training pipeline will infer the proper transformation based on the statistic of dataset.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationNumericTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The value converted to float32. * The z_score of the value. * log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value. * z_score of log(value+1) when the value is greater than or equal to 0. Otherwise, this transformation is not applied and the value is considered a missing value.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationCategoricalTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The categorical string as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index. * Categories that appear less than 5 times in the training dataset are treated as the \"unknown\" category. The \"unknown\" category gets its own special lookup index and resulting embedding.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTimestampTransformation",
+      "description": "Training pipeline will perform following transformation functions. * Apply the transformation functions for Numerical columns. * Determine the year, month, day,and weekday. Treat each value from the timestamp as a Categorical column. * Invalid numerical values (for example, values that fall outside of a typical timestamp range, or are extreme values) receive no special treatment and are not removed.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        },
+        "timeFormat": {
+          "description": "The format in which that time field is expressed. The time_format must either be one of: * `unix-seconds` * `unix-milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for respectively number of seconds, milliseconds, microseconds and nanoseconds since start of the Unix epoch); or be written in `strftime` syntax. If time_format is not set, then the default format is RFC 3339 `date-time` format, where `time-offset` = `\"Z\"` (e.g. 1985-04-12T23:20:50.52Z)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsTransformationTextTransformation",
+      "description": "Training pipeline will perform following transformation functions. * The text as is--no change to case, punctuation, spelling, tense, and so on. * Convert the category name to a dictionary lookup index and generate an embedding for each index.",
+      "type": "object",
+      "properties": {
+        "columnName": {
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingInputsGranularity",
+      "description": "A duration of time expressed in time granularity units.",
+      "type": "object",
+      "properties": {
+        "unit": {
+          "description": "The time granularity unit of this time period. The supported units are: * \"minute\" * \"hour\" * \"day\" * \"week\" * \"month\" * \"year\"",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingMetadata": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionTftForecastingMetadata",
+      "description": "Model metadata specific to TFT Forecasting.",
       "type": "object",
       "properties": {
         "trainCostMilliNodeHours": {

@@ -310,7 +310,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a platform policy, and returns a copy of the new platform policy. Returns NOT_FOUND if the project or platform does not exist, INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the platform policy already exists. Returns INVALID_ARGUMENT if the policy contains a platform specific policy that does not match the platform value in the URL.
+      r"""Creates a platform policy, and returns a copy of it. Returns NOT_FOUND if the project or platform doesn't exist, INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the policy already exists, and INVALID_ARGUMENT if the policy contains a platform-specific policy that does not match the platform value specified in the URL.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesCreateRequest) input message
@@ -337,7 +337,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a platform policy. Returns NOT_FOUND if the platform policy does not exist.
+      r"""Deletes a platform policy. Returns NOT_FOUND if the policy doesn't exist.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest) input message
@@ -364,7 +364,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a platform policy. Returns NOT_FOUND if the platform policy does not exist.
+      r"""Gets a platform policy. Returns NOT_FOUND if the policy doesn't exist.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesGetRequest) input message
@@ -391,7 +391,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists platform policies owned by a project in the specified platform.. Returns INVALID_ARGUMENT if the project or the platform does not exist.
+      r"""Lists platform policies owned by a project in the specified platform. Returns INVALID_ARGUMENT if the project or the platform doesn't exist.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsPoliciesListRequest) input message
@@ -418,7 +418,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
     )
 
     def ReplacePlatformPolicy(self, request, global_params=None):
-      r"""Replaces a platform policy. Returns NOT_FOUND if the platform policy does not exist.
+      r"""Replaces a platform policy. Returns NOT_FOUND if the policy doesn't exist.
 
       Args:
         request: (PlatformPolicy) input message
@@ -455,7 +455,7 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists all platforms supported by binary authorization platform policy.
+      r"""Lists all platforms supported by the platform policy.
 
       Args:
         request: (BinaryauthorizationProjectsPlatformsListRequest) input message

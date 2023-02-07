@@ -1083,6 +1083,58 @@ class SqladminV1beta4(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetDiskShrinkConfig(self, request, global_params=None):
+      r"""Get Disk Shrink Config for a given instance.
+
+      Args:
+        request: (SqlProjectsInstancesGetDiskShrinkConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SqlInstancesGetDiskShrinkConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetDiskShrinkConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDiskShrinkConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sql.projects.instances.getDiskShrinkConfig',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/getDiskShrinkConfig',
+        request_field='',
+        request_type_name='SqlProjectsInstancesGetDiskShrinkConfigRequest',
+        response_type_name='SqlInstancesGetDiskShrinkConfigResponse',
+        supports_download=False,
+    )
+
+    def PerformDiskShrink(self, request, global_params=None):
+      r"""Perform Disk Shrink on primary instance.
+
+      Args:
+        request: (SqlProjectsInstancesPerformDiskShrinkRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformDiskShrink')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformDiskShrink.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.projects.instances.performDiskShrink',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/performDiskShrink',
+        request_field='performDiskShrinkContext',
+        request_type_name='SqlProjectsInstancesPerformDiskShrinkRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def RescheduleMaintenance(self, request, global_params=None):
       r"""Reschedules the maintenance on the given instance.
 
@@ -1105,6 +1157,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/rescheduleMaintenance',
         request_field='sqlInstancesRescheduleMaintenanceRequestBody',
         request_type_name='SqlProjectsInstancesRescheduleMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ResetReplicaSize(self, request, global_params=None):
+      r"""Reset Replica Size to primary instance disk size.
+
+      Args:
+        request: (SqlProjectsInstancesResetReplicaSizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResetReplicaSize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResetReplicaSize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.projects.instances.resetReplicaSize',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/resetReplicaSize',
+        request_field='sqlInstancesResetReplicaSizeRequest',
+        request_type_name='SqlProjectsInstancesResetReplicaSizeRequest',
         response_type_name='Operation',
         supports_download=False,
     )

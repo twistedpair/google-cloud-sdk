@@ -3080,7 +3080,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3455,6 +3455,11 @@
                     },
                     "force": {
                       "description": "If set to true, any node pools from the cluster will also be deleted.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "ignoreErrors": {
+                      "description": "If set to true, the deletion of BareMetalUserCluster resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned user cluster in the admin cluster.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -3896,7 +3901,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new bare metal Node Pool in a given project, location and Bare Metal Cluster."
+                      "description": "Creates a new bare metal Node Pool in a given project, location and Bare Metal cluster."
                     },
                     "delete": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.delete",
@@ -3925,6 +3930,11 @@
                           "description": "If set, only validate the request, but do not actually delete the node pool.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "ignoreErrors": {
+                          "description": "If set to true, the deletion of BareMetalNodePool resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned node pool in the admin cluster.",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [
@@ -3936,7 +3946,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a single bare metal Node Pool."
+                      "description": "Deletes a single bare metal node pool."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.get",
@@ -3961,7 +3971,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single bare metal Node Pool."
+                      "description": "Gets details of a single bare metal node pool."
                     },
                     "list": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.list",
@@ -4002,7 +4012,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists bare metal Node Pools in a given project, location and bare metal Cluster."
+                      "description": "Lists bare metal Node Pools in a given project, location and bare metal cluster."
                     },
                     "patch": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.patch",
@@ -4046,7 +4056,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the parameters of a single bare metal Node Pool."
+                      "description": "Updates the parameters of a single bare metal node pool."
                     },
                     "setIamPolicy": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.setIamPolicy",
@@ -4357,6 +4367,11 @@
                       "description": "If set to true, any node pools from the cluster will also be deleted.",
                       "location": "query",
                       "type": "boolean"
+                    },
+                    "ignoreErrors": {
+                      "description": "If set to true, the deletion of VmwareUserCluster resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned user cluster in the admin cluster.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -4483,7 +4498,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single VMware Cluster."
+                  "description": "Updates the parameters of a single VMware cluster."
                 },
                 "queryVersionConfig": {
                   "id": "gkeonprem.projects.locations.vmwareClusters.queryVersionConfig",
@@ -4723,7 +4738,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new VMware Node Pool in a given project, location and VMWare Cluster."
+                      "description": "Creates a new VMware Node Pool in a given project, location and VMWare cluster."
                     },
                     "delete": {
                       "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.delete",
@@ -4752,6 +4767,11 @@
                           "description": "If set, only validate the request, but do not actually delete the node pool.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "ignoreErrors": {
+                          "description": "If set to true, the deletion of VmwareNodePool resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned node pool in the admin cluster.",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [
@@ -4763,7 +4783,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a single VMware Node Pool."
+                      "description": "Deletes a single VMware node pool."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.get",
@@ -4788,7 +4808,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single VMware Node Pool."
+                      "description": "Gets details of a single VMware node pool."
                     },
                     "list": {
                       "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.list",
@@ -4829,7 +4849,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists VMware Node Pools in a given project, location and VMWare Cluster."
+                      "description": "Lists VMware Node Pools in a given project, location and VMWare cluster."
                     },
                     "patch": {
                       "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.patch",

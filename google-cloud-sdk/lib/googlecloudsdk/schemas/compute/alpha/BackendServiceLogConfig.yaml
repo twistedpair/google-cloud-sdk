@@ -38,3 +38,24 @@ properties:
       requests are reported and 0.0 means no logged requests are reported. The
       default value is 1.0.
     type: number
+  optionalMode:
+    description: |-
+      This field can only be specified if logging is enabled for this backend
+      service. Configures whether all, none or a subset of optional fields
+      should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
+      EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
+    type: string
+    enum:
+    - INCLUDE_ALL_OPTIONAL
+    - EXCLUDE_ALL_OPTIONAL
+    - CUSTOM
+  optionalFields:
+    description: |-
+      This field can only be specified if logging is enabled for this backend
+      service and "logConfig.optionalMode" was set to CUSTOM. Contains a
+      comma-separated list of optional fields you want to include in the logs.
+      For example: serverInstance, serverGkeDetails.cluster,
+      serverGkeDetails.pod.podNamespace
+    type: array
+    items:
+      type: string

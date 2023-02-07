@@ -755,15 +755,17 @@
             "Operation type unspecified. If no operation is specified a provenance entry is simply used to match against a `parent`.",
             "Add an element.",
             "Remove an element identified by `parent`.",
-            "Replace an element identified by `parent`.",
-            "Request human review for the element identified by `parent`.",
-            "Element is reviewed and approved at human review, confidence will be set to 1.0.",
-            "Element is skipped in the validation process."
+            "Updates any fields within the given provenance scope of the message. It 'overwrites' the fields rather than replacing them. This is especially relevant when we just want to update a field value of an entity without also affecting all the child properties.",
+            "Currently unused. Replace an element identified by `parent`.",
+            "Deprecated. Request human review for the element identified by `parent`.",
+            "Deprecated. Element is reviewed and approved at human review, confidence will be set to 1.0.",
+            "Deprecated. Element is skipped in the validation process."
           ],
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "ADD",
             "REMOVE",
+            "UPDATE",
             "REPLACE",
             "EVAL_REQUESTED",
             "EVAL_APPROVED",
@@ -3528,15 +3530,17 @@
             "Operation type unspecified. If no operation is specified a provenance entry is simply used to match against a `parent`.",
             "Add an element.",
             "Remove an element identified by `parent`.",
-            "Replace an element identified by `parent`.",
-            "Request human review for the element identified by `parent`.",
-            "Element is reviewed and approved at human review, confidence will be set to 1.0.",
-            "Element is skipped in the validation process."
+            "Updates any fields within the given provenance scope of the message. It 'overwrites' the fields rather than replacing them. This is especially relevant when we just want to update a field value of an entity without also affecting all the child properties.",
+            "Currently unused. Replace an element identified by `parent`.",
+            "Deprecated. Request human review for the element identified by `parent`.",
+            "Deprecated. Element is reviewed and approved at human review, confidence will be set to 1.0.",
+            "Deprecated. Element is skipped in the validation process."
           ],
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "ADD",
             "REMOVE",
+            "UPDATE",
             "REPLACE",
             "EVAL_REQUESTED",
             "EVAL_APPROVED",
@@ -4814,15 +4818,17 @@
             "Operation type unspecified. If no operation is specified a provenance entry is simply used to match against a `parent`.",
             "Add an element.",
             "Remove an element identified by `parent`.",
-            "Replace an element identified by `parent`.",
-            "Request human review for the element identified by `parent`.",
-            "Element is reviewed and approved at human review, confidence will be set to 1.0.",
-            "Element is skipped in the validation process."
+            "Updates any fields within the given provenance scope of the message. It 'overwrites' the fields rather than replacing them. This is especially relevant when we just want to update a field value of an entity without also affecting all the child properties.",
+            "Currently unused. Replace an element identified by `parent`.",
+            "Deprecated. Request human review for the element identified by `parent`.",
+            "Deprecated. Element is reviewed and approved at human review, confidence will be set to 1.0.",
+            "Deprecated. Element is skipped in the validation process."
           ],
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "ADD",
             "REMOVE",
+            "UPDATE",
             "REPLACE",
             "EVAL_REQUESTED",
             "EVAL_APPROVED",
@@ -6444,10 +6450,6 @@
         "gcsManagedDocId": {
           "$ref": "GoogleCloudDocumentaiUiv1beta3DocumentIdGCSManagedDocumentId"
         },
-        "revisionReference": {
-          "description": "Points to a specific revision of the document if set.",
-          "$ref": "GoogleCloudDocumentaiUiv1beta3RevisionReference"
-        },
         "revisionRef": {
           "description": "Points to a specific revision of the document if set.",
           "$ref": "GoogleCloudDocumentaiUiv1beta3RevisionRef"
@@ -6465,35 +6467,6 @@
         },
         "cwDocId": {
           "description": "Id of the document (indexed) managed by Content Warehouse.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDocumentaiUiv1beta3RevisionReference": {
-      "id": "GoogleCloudDocumentaiUiv1beta3RevisionReference",
-      "description": "The revision reference specifies which revision on the document to read.",
-      "type": "object",
-      "properties": {
-        "revisionCase": {
-          "description": "Reads the revision by the predefined case.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified case, fallback to read the LATEST_HUMAN_REVIEW.",
-            "The latest revision made by a human.",
-            "The latest revision based on timestamp."
-          ],
-          "enum": [
-            "REVISION_CASE_UNSPECIFIED",
-            "LATEST_HUMAN_REVIEW",
-            "LATEST_TIMESTAMP"
-          ]
-        },
-        "revisionId": {
-          "description": "Reads the revision given by the id.",
-          "type": "string"
-        },
-        "latestProcessorVersion": {
-          "description": "Reads the revision generated by the processor version.",
           "type": "string"
         }
       }

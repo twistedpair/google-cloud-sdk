@@ -120,7 +120,14 @@ def _HandleMessageList(response, service, method, errors):
   return items, response.nextPageToken
 
 
-def _ListCore(requests, http, batch_url, errors, response_handler):
+def _ListCore(
+    requests,
+    http,
+    batch_url,
+    errors,
+    response_handler,
+    enable_single_request=False,
+):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
@@ -133,15 +140,30 @@ def _ListCore(requests, http, batch_url, errors, response_handler):
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
     response_handler: The function to extract information responses.
+    enable_single_request: if requests is single, send single request instead of
+      batch request
 
   Yields:
     Resources encapsulated in format chosen by response_handler as they are
       received from the server.
   """
+
   while requests:
-    responses, request_errors = batch_helper.MakeRequests(
-        requests=requests, http=http, batch_url=batch_url)
-    errors.extend(request_errors)
+    if (
+        not _ForceBatchRequest()
+        and enable_single_request
+        and len(requests) == 1
+    ):
+      service, method, request_body = requests[0]
+      responses, request_errors = single_request_helper.MakeSingleRequest(
+          service, method, request_body
+      )
+      errors.extend(request_errors)
+    else:
+      responses, request_errors = batch_helper.MakeRequests(
+          requests=requests, http=http, batch_url=batch_url
+      )
+      errors.extend(request_errors)
 
     new_requests = []
 
@@ -164,7 +186,7 @@ def _ListCore(requests, http, batch_url, errors, response_handler):
     requests = new_requests
 
 
-def _List(requests, http, batch_url, errors):
+def _List(requests, http, batch_url, errors, enable_single_request=False):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
@@ -176,12 +198,21 @@ def _List(requests, http, batch_url, errors):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
+    enable_single_request: if requests is single, send single request instead of
+      batch request
 
   Returns:
     Resources encapsulated as protocol buffers as they are received
       from the server.
   """
-  return _ListCore(requests, http, batch_url, errors, _HandleMessageList)
+  return _ListCore(
+      requests,
+      http,
+      batch_url,
+      errors,
+      _HandleMessageList,
+      enable_single_request,
+  )
 
 
 def _IsEmptyOperation(operation, service):
@@ -210,7 +241,7 @@ def _ForceBatchRequest():
   return properties.VALUES.compute.force_batch_request.GetBool()
 
 
-def ListJson(requests, http, batch_url, errors):
+def ListJson(requests, http, batch_url, errors, enable_single_request=False):
   """Makes a series of list and/or aggregatedList batch requests.
 
   This function does all of:
@@ -229,6 +260,8 @@ def ListJson(requests, http, batch_url, errors):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
+    enable_single_request: if requests is single, send single request instead of
+      batch request
 
   Yields:
     Resources in dicts as they are received from the server.
@@ -236,7 +269,14 @@ def ListJson(requests, http, batch_url, errors):
   # This is compute-specific helper. It is assumed at this point that all
   # requests are being sent to the same client (for example Compute).
   with requests[0][0].client.JsonResponseModel():
-    for item in _ListCore(requests, http, batch_url, errors, _HandleJsonList):
+    for item in _ListCore(
+        requests,
+        http,
+        batch_url,
+        errors,
+        _HandleJsonList,
+        enable_single_request=enable_single_request,
+    ):
       yield item
 
 
@@ -302,7 +342,12 @@ def MakeRequests(requests,
   """
   if _RequestsAreListRequests(requests):
     for item in _List(
-        requests=requests, http=http, batch_url=batch_url, errors=errors):
+        requests=requests,
+        http=http,
+        batch_url=batch_url,
+        errors=errors,
+        enable_single_request=enable_single_request,
+    ):
       yield item
     return
 

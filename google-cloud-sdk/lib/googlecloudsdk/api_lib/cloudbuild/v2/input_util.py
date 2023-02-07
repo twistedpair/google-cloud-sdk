@@ -48,13 +48,38 @@ def UnrecognizedFields(message):
 
 
 def WorkflowTriggerTransform(trigger):
+  """Transform workflow trigger according to the proto.
+
+  Refer to go/gcb-v2-filters to understand more details.
+
+  Args:
+    trigger: the trigger defined in the workflow YAML.
+  Raises:
+    InvalidYamlError: The eventType was unsupported.
+  """
   trigger["id"] = trigger.pop("name")
   event_source = trigger.pop("eventSource")
   trigger["eventSource"] = {
       "id": event_source,
   }
+  event_type_mapping = {
+      "branch-push": "PUSH_BRANCH",
+      "tag-push": "PUSH_TAG",
+      "pull-request": "PULL_REQUEST",
+      "any": "ALL",
+  }
+  if "eventType" in trigger:
+    event_type = trigger.pop("eventType")
+    mapped_event_type = event_type_mapping.get(event_type)
+    if mapped_event_type is not None:
+      trigger["eventType"] = mapped_event_type
+    else:
+      raise cloudbuild_exceptions.InvalidYamlError(
+          "Unsupported event type: {event_type}".format(event_type=event_type))
   for key, value in trigger.pop("filters").items():
     trigger[key] = value
+  if "gitRef" in trigger and "regex" in trigger["gitRef"]:
+    trigger["gitRef"]["nameRegex"] = trigger["gitRef"].pop("regex")
   ParamDictTransform(trigger.get("params", []))
 
 
@@ -80,3 +105,9 @@ def ParamValueTransform(param_value):
     raise cloudbuild_exceptions.InvalidYamlError(
         "Unsupported param value type. {msg_type}".format(
             msg_type=type(param_value)))
+
+
+def RefTransform(ref):
+  if "resolver" in ref:
+    ref["resolver"] = ref.pop("resolver").upper()
+  ParamDictTransform(ref.get("params", []))

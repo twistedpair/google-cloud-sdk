@@ -20,7 +20,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from frozendict import frozendict
-from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
@@ -38,25 +37,47 @@ _INTEGRATION_FORMATTER_MAPS = frozendict({
 })
 
 
+class Record(object):
+  """Record holds data that is passed around to printers for formatting.
+
+  Attributes:
+    name: str, name of the integration
+    region: str, GCP region for the integration.
+    integration_type: str, type of the integration, for example: redis,
+      custom-domains, or cloudsql.
+    config: dict, resource config for the given integration.
+    status: dict, application status for the given integration.
+    latest_deployment:
+      str, canonical deployment name for the latest deployment for the given
+      integration.
+  """
+
+  def __init__(self, name, region, integration_type, config, status,
+               latest_deployment):
+    self.name = name
+    self.region = region
+    self.integration_type = integration_type
+    self.config = config if config is not None else {}
+    self.status = status if status is not None else {}
+    self.latest_deployment = latest_deployment
+
+
 class IntegrationPrinter(cp.CustomPrinterBase):
   """Prints the run Integration in a custom human-readable format."""
 
   def Transform(self, record):
     """Transform an integration into the output structure of marker classes."""
-
-    integration_type = record['type']
-    formatter = GetFormatter(integration_type)
+    formatter = GetFormatter(record.integration_type)
     config_block = formatter.TransformConfig(record)
-    component_block = None
-    if 'status' in record and record['status'] is not None:
-      component_block = formatter.TransformComponentStatus(record)
-    if not component_block:
-      component_block = 'Status not available'
+    component_block = (
+        formatter.TransformComponentStatus(record)
+        if record.status
+        else 'Status not available')
 
     lines = [
         self.Header(record),
         ' ',
-        self._DeploymentProgress(record[types_utils.LATEST_DEPLOYMENT_FIELD],
+        self._DeploymentProgress(record.latest_deployment,
                                  formatter),
         config_block,
         ' ',
@@ -85,15 +106,11 @@ class IntegrationPrinter(cp.CustomPrinterBase):
       The printed output.
     """
     con = console_attr.GetConsoleAttr()
-    status = record.get('status', {})
-    if status is None:
-      status = {}
-
-    formatter = GetFormatter(record['type'])
-    resource_state = status.get('state', states.UNKNOWN)
+    formatter = GetFormatter(record.integration_type)
+    resource_state = record.status.get('state', states.UNKNOWN)
     symbol = formatter.StatusSymbolAndColor(resource_state)
     return con.Emphasize('{} Integration status: {} in region {}'.format(
-        symbol, record.get('name'), record.get('region')))
+        symbol, record.name, record.region))
 
   def _DeploymentProgress(self, deployment, formatter):
     """Returns a message denoting the deployment progress.

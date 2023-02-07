@@ -201,8 +201,13 @@ class RecognizeArgsToRequestMapper:
       config.enableAutomaticPunctuation = args.enable_automatic_punctuation
     if args.model is not None:
       if args.model in [
-          'default', 'command_and_search', 'phone_call', 'latest_long',
-          'latest_short'
+          'default',
+          'command_and_search',
+          'phone_call',
+          'latest_long',
+          'latest_short',
+          'medical_conversation',
+          'medical_dictation',
       ]:
         config.model = args.model
       elif args.model == 'phone_call_enhanced':

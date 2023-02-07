@@ -311,6 +311,10 @@
           "description": "The specification for FleetObservability feature.",
           "$ref": "FleetObservabilityFeatureSpec"
         },
+        "namespaceactuationFeatureSpec": {
+          "description": "The specification for Fleet Namespace Actuation.",
+          "$ref": "NamespaceActuationFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the Feature resource itself.",
           "readOnly": true,
@@ -1199,6 +1203,18 @@
         "policyContent": {
           "description": "Specifies the desired policy content on the cluster",
           "$ref": "PolicyContentSpec"
+        },
+        "constraintViolationLimit": {
+          "description": "The maximum number of audit violations to be stored in a constraint. If not set, the internal default (currently 20) will be used.",
+          "type": "string",
+          "format": "int64"
+        },
+        "deploymentConfigs": {
+          "description": "Map of deployment configs to deployments (\u201Cadmission\u201D, \u201Caudit\u201D, \u201Cmutation\u201D).",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PolicyControllerDeploymentConfig"
+          }
         }
       }
     },
@@ -1277,6 +1293,56 @@
         }
       }
     },
+    "PolicyControllerDeploymentConfig": {
+      "id": "PolicyControllerDeploymentConfig",
+      "description": "Deployment-specific configuration.",
+      "type": "object",
+      "properties": {
+        "replicaCount": {
+          "description": "Pod replica count.",
+          "type": "string",
+          "format": "int64"
+        },
+        "containerResources": {
+          "description": "Container resource requirements.",
+          "$ref": "ResourceRequirements"
+        },
+        "podAntiAffinity": {
+          "description": "Pod anti-affinity enablement.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ResourceRequirements": {
+      "id": "ResourceRequirements",
+      "description": "ResourceRequirements describes the compute resource requirements.",
+      "type": "object",
+      "properties": {
+        "limits": {
+          "description": "Limits describes the maximum amount of compute resources allowed for use by the running container.",
+          "$ref": "ResourceList"
+        },
+        "requests": {
+          "description": "Requests describes the amount of compute resources reserved for the container by the kube-scheduler.",
+          "$ref": "ResourceList"
+        }
+      }
+    },
+    "ResourceList": {
+      "id": "ResourceList",
+      "description": "ResourceList contains container resource requirements.",
+      "type": "object",
+      "properties": {
+        "memory": {
+          "description": "Memory requirement expressed in Kubernetes resource units.",
+          "type": "string"
+        },
+        "cpu": {
+          "description": "CPU requirement expressed in Kubernetes resource units.",
+          "type": "string"
+        }
+      }
+    },
     "RBACRoleBindingActuationFeatureSpec": {
       "id": "RBACRoleBindingActuationFeatureSpec",
       "description": "**RBAC RoleBinding Actuation**: The Hub-wide input for the RBACRoleBindingActuation feature.",
@@ -1289,7 +1355,54 @@
     },
     "FleetObservabilityFeatureSpec": {
       "id": "FleetObservabilityFeatureSpec",
-      "description": "An empty spec for FleetObservability feature. This is required since Feature proto requires a spec.",
+      "description": "Spec for FleetObservability feature. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+        "loggingConfig": {
+          "description": "Specified if fleet logging feature is enabled for the entire fleet. If UNSPECIFIED, fleet logging feature is disabled for the entire fleet.",
+          "$ref": "LoggingConfig"
+        }
+      }
+    },
+    "LoggingConfig": {
+      "id": "LoggingConfig",
+      "description": "LoggingConfig defines the configuration for different types of logs.",
+      "type": "object",
+      "properties": {
+        "defaultConfig": {
+          "description": "Specified if applying the default routing config to logs not specified in other configs.",
+          "$ref": "RoutingConfig"
+        },
+        "fleetScopeLogsConfig": {
+          "description": "Specified if applying the routing config to all logs for all fleet scopes.",
+          "$ref": "RoutingConfig"
+        }
+      }
+    },
+    "RoutingConfig": {
+      "id": "RoutingConfig",
+      "description": "RoutingConfig configures the behaviour of fleet logging feature.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "mode configures the logs routing mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "If UNSPECIFIED, fleet logging feature is disabled.",
+            "logs will be copied to the destination project.",
+            "logs will be moved to the destination project."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "COPY",
+            "MOVE"
+          ]
+        }
+      }
+    },
+    "NamespaceActuationFeatureSpec": {
+      "id": "NamespaceActuationFeatureSpec",
+      "description": "An empty spec for FNS actuation feature.",
       "type": "object",
       "properties": {
       }
@@ -1424,6 +1537,10 @@
         "fleetobservabilityFeatureState": {
           "description": "State for the FleetObservability Feature.",
           "$ref": "FleetObservabilityFeatureState"
+        },
+        "namespaceactuationFeatureState": {
+          "description": "State for Fleet Namespace Actuation.",
+          "$ref": "NamespaceActuationFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -2210,6 +2327,10 @@
         "deploymentState": {
           "description": "The state about the policy controller installation.",
           "$ref": "GatekeeperDeploymentState"
+        },
+        "migration": {
+          "description": "Record state of ACM -> PoCo Hub migration for this feature.",
+          "$ref": "PolicyControllerMigration"
         }
       }
     },
@@ -2275,6 +2396,27 @@
             "NOT_INSTALLED",
             "INSTALLED",
             "ERROR"
+          ]
+        }
+      }
+    },
+    "PolicyControllerMigration": {
+      "id": "PolicyControllerMigration",
+      "description": "State for the migration of PolicyController from ACM -> PoCo Hub.",
+      "type": "object",
+      "properties": {
+        "stage": {
+          "description": "Stage of the migration.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown state of migration.",
+            "ACM Hub\/Operator manages policycontroller. No migration yet completed.",
+            "All migrations steps complete; Poco Hub now manages policycontroller."
+          ],
+          "enum": [
+            "STAGE_UNSPECIFIED",
+            "ACM_MANAGED",
+            "POCO_MANAGED"
           ]
         }
       }
@@ -2510,7 +2652,7 @@
             "INSTALLING",
             "ACTIVE",
             "UPDATING",
-            "DECOMISSIONING",
+            "DECOMMISSIONING",
             "CLUSTER_ERROR",
             "HUB_ERROR",
             "SUSPENDED"
@@ -2557,7 +2699,7 @@
             "INSTALLING",
             "ACTIVE",
             "UPDATING",
-            "DECOMISSIONING",
+            "DECOMMISSIONING",
             "CLUSTER_ERROR",
             "HUB_ERROR",
             "SUSPENDED"
@@ -2579,6 +2721,13 @@
     "FleetObservabilityFeatureState": {
       "id": "FleetObservabilityFeatureState",
       "description": "An empty state for FleetObservability feature. This is required since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "NamespaceActuationFeatureState": {
+      "id": "NamespaceActuationFeatureState",
+      "description": "NamespaceActuation Feature State.",
       "type": "object",
       "properties": {
       }
@@ -2726,7 +2875,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3153,6 +3302,135 @@
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "Reference": {
+      "id": "Reference",
+      "description": "Represents a reference to a resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Relative resource name of the reference. Includes target resource as a parent and reference uid `{target_resource}\/references\/{reference_id}`. For example, `projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. Type of the reference. A service might impose limits on number of references of a specific type. Note: It's recommended to use CAPITALS_WITH_UNDERSCORES style for a type name.",
+          "type": "string"
+        },
+        "sourceResource": {
+          "description": "Required. Full resource name of the resource which refers the target resource. For example: \/\/tpu.googleapis.com\/projects\/myproject\/nodes\/mynode",
+          "type": "string"
+        },
+        "details": {
+          "description": "Details of the reference type with no implied semantics. Cumulative size of the field must not be more than 1KiB. Note: For the Arcus Reference API, you must add the proto you store in this field to http:\/\/cs\/symbol:cloud.cluster.reference.ReferencePayload",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "targetUniqueId": {
+          "description": "Output only. The unique_id of the target resource. Example 1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811 unique_id format defined in go\/m11n-unique-id-as-resource-id Example 2: (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "CreateReferenceRequest": {
+      "id": "CreateReferenceRequest",
+      "description": "The CreateReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "type": "string"
+        },
+        "referenceId": {
+          "description": "The unique id of this resource. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future. It can be any arbitrary string, either GUID or any other string, however CLHs can use preprocess callbacks to perform a custom validation.",
+          "type": "string"
+        },
+        "reference": {
+          "description": "Required. The reference to be created.",
+          "$ref": "Reference"
+        },
+        "requestId": {
+          "description": "Optional. Request ID is an idempotency ID of the request. It must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "DeleteReferenceRequest": {
+      "id": "DeleteReferenceRequest",
+      "description": "The DeleteReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Full resource name of the reference, in the following format: `\/\/{targer_service}\/{target_resource}\/references\/{reference_id}`. For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. Request ID is an idempotency ID of the request. It must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "GetReferenceRequest": {
+      "id": "GetReferenceRequest",
+      "description": "The GetReferenceRequest request.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Full resource name of the reference, in the following format: `\/\/{target_service}\/{target_resource}\/references\/{reference_id}`. For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}\/references\/{xyz}`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListReferencesRequest": {
+      "id": "ListReferencesRequest",
+      "description": "The ListResourceMetadataRequest request.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The parent resource name (target_resource of this reference). For example: `\/\/targetservice.googleapis.com\/projects\/{my-project}\/locations\/{location}\/instances\/{my-instance}`.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more References left to be queried.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "The next_page_token value returned from a previous List request, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "ListReferencesResponse": {
+      "id": "ListReferencesResponse",
+      "description": "The ListReferencesResponse response.",
+      "type": "object",
+      "properties": {
+        "references": {
+          "description": "The list of references.",
+          "type": "array",
+          "items": {
+            "$ref": "Reference"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }

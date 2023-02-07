@@ -508,7 +508,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -525,9 +527,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1064,6 +1064,7 @@ class JobStatus(_messages.Message):
       map key is TaskGroup ID.
 
   Fields:
+    resourceUsage: The resource usage of the job.
     runDuration: The duration of time that the Job spent in status RUNNING.
     state: Job state
     statusEvents: Job status events
@@ -1122,10 +1123,11 @@ class JobStatus(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  runDuration = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
-  taskGroups = _messages.MessageField('TaskGroupsValue', 4)
+  resourceUsage = _messages.MessageField('ResourceUsage', 1)
+  runDuration = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  statusEvents = _messages.MessageField('StatusEvent', 4, repeated=True)
+  taskGroups = _messages.MessageField('TaskGroupsValue', 5)
 
 
 class KMSEnvMap(_messages.Message):
@@ -1714,6 +1716,16 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ResourceUsage(_messages.Message):
+  r"""ResourceUsage describes the resource usage of the job.
+
+  Fields:
+    coreHours: The CPU core hours that the job consumes.
+  """
+
+  coreHours = _messages.FloatField(1)
+
+
 class Runnable(_messages.Message):
   r"""Runnable describes instructions for executing a specific script or
   container as part of a Task.
@@ -2158,6 +2170,17 @@ class TaskGroupStatus(_messages.Message):
   instances = _messages.MessageField('InstanceStatus', 2, repeated=True)
 
 
+class TaskResourceUsage(_messages.Message):
+  r"""TaskResourceUsage describes the resource usage of the task.
+
+  Fields:
+    coreHours: The CPU core hours the task consumes based on task requirement
+      and run time.
+  """
+
+  coreHours = _messages.FloatField(1)
+
+
 class TaskSpec(_messages.Message):
   r"""Spec of a task
 
@@ -2235,6 +2258,7 @@ class TaskStatus(_messages.Message):
     StateValueValuesEnum: Task state
 
   Fields:
+    resourceUsage: The resource usage of the task.
     state: Task state
     statusEvents: Detailed info about why the state is reached.
   """
@@ -2257,8 +2281,9 @@ class TaskStatus(_messages.Message):
     FAILED = 4
     SUCCEEDED = 5
 
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-  statusEvents = _messages.MessageField('StatusEvent', 2, repeated=True)
+  resourceUsage = _messages.MessageField('TaskResourceUsage', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -609,8 +609,10 @@ class AccessConfig(_messages.Message):
   Fields:
     externalIpv6: The first IPv6 address of the external IPv6 range associated
       with this instance, prefix length is stored in externalIpv6PrefixLength
-      in ipv6AccessConfig. The field is output only, an IPv6 address from a
-      subnetwork associated with the instance will be allocated dynamically.
+      in ipv6AccessConfig. To use a static external IP address, it must be
+      unused and in the same region as the instance's zone. If not specified,
+      GCP will automatically assign an external IPv6 address from the
+      instance's subnetwork.
     externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
@@ -5660,7 +5662,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -5677,9 +5681,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -6001,7 +6003,8 @@ class Commitment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
-      CANCELLED: <no description>
+      CANCELLED: Deprecate CANCELED status. Will use separate status to
+        differentiate cancel by mergeCud or manual cancellation.
       CREATING: <no description>
       EXPIRED: <no description>
       NOT_YET_ACTIVE: <no description>
@@ -6023,6 +6026,7 @@ class Commitment(_messages.Message):
       ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
+      COMPUTE_OPTIMIZED_C3: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -6035,14 +6039,15 @@ class Commitment(_messages.Message):
     ACCELERATOR_OPTIMIZED = 0
     COMPUTE_OPTIMIZED = 1
     COMPUTE_OPTIMIZED_C2D = 2
-    GENERAL_PURPOSE = 3
-    GENERAL_PURPOSE_E2 = 4
-    GENERAL_PURPOSE_N2 = 5
-    GENERAL_PURPOSE_N2D = 6
-    GENERAL_PURPOSE_T2D = 7
-    MEMORY_OPTIMIZED = 8
-    MEMORY_OPTIMIZED_M3 = 9
-    TYPE_UNSPECIFIED = 10
+    COMPUTE_OPTIMIZED_C3 = 3
+    GENERAL_PURPOSE = 4
+    GENERAL_PURPOSE_E2 = 5
+    GENERAL_PURPOSE_N2 = 6
+    GENERAL_PURPOSE_N2D = 7
+    GENERAL_PURPOSE_T2D = 8
+    MEMORY_OPTIMIZED = 9
+    MEMORY_OPTIMIZED_M3 = 10
+    TYPE_UNSPECIFIED = 11
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -48331,6 +48336,9 @@ class NetworkInterface(_messages.Message):
       whether the IP can be accessed from the Internet. This field is always
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
     ipv6Address: An IPv6 internal network address for this network interface.
+      To use a static internal IP address, it must be unused and in the same
+      region as the instance's zone. If not specified, GCP will automatically
+      assign an internal IPv6 address from the instance's subnetwork.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -57596,6 +57604,7 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
       instances across. If two instances are in different availability domain,
       they are not in the same low latency network.
     collocation: Specifies network collocation
+    maxDistance: Specifies the number of max logical switches.
     vmCount: Number of VMs in this placement group. Google does not recommend
       that you use this field unless you use a compact policy and you want
       your policy to work only if it contains this exact number of VMs.
@@ -57613,7 +57622,8 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
 
   availabilityDomainCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   collocation = _messages.EnumField('CollocationValueValuesEnum', 2)
-  vmCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxDistance = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  vmCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ResourcePolicyHourlyCycle(_messages.Message):
@@ -60911,8 +60921,12 @@ class SecurityPolicy(_messages.Message):
       CLOUD_ARMOR_INTERNAL_SERVICE: Cloud Armor internal service policies can
       be configured to filter HTTP requests targeting services managed by
       Traffic Director in a service mesh. They filter requests before the
-      request is served from the application. This field can be set only at
-      resource creation time.
+      request is served from the application. - CLOUD_ARMOR_NETWORK: Cloud
+      Armor network policies can be configured to filter packets targeting
+      network load balancing resources such as backend services, target pools,
+      target instances, and instances with external IPs. They filter requests
+      before the request is served from the application. This field can be set
+      only at resource creation time.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -60993,7 +61007,12 @@ class SecurityPolicy(_messages.Message):
       Cloud Armor internal service policies can be configured to filter HTTP
       requests targeting services managed by Traffic Director in a service
       mesh. They filter requests before the request is served from the
-      application. This field can be set only at resource creation time.
+      application. - CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be
+      configured to filter packets targeting network load balancing resources
+      such as backend services, target pools, target instances, and instances
+      with external IPs. They filter requests before the request is served
+      from the application. This field can be set only at resource creation
+      time.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -61007,6 +61026,10 @@ class SecurityPolicy(_messages.Message):
     request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE:
     Cloud Armor internal service policies can be configured to filter HTTP
     requests targeting services managed by Traffic Director in a service mesh.
+    They filter requests before the request is served from the application. -
+    CLOUD_ARMOR_NETWORK: Cloud Armor network policies can be configured to
+    filter packets targeting network load balancing resources such as backend
+    services, target pools, target instances, and instances with external IPs.
     They filter requests before the request is served from the application.
     This field can be set only at resource creation time.
 

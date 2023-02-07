@@ -169,7 +169,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -186,9 +188,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -794,6 +794,33 @@ class ConfigManagementPolicyController(_messages.Message):
   templateLibraryInstalled = _messages.BooleanField(8)
 
 
+class ConfigManagementPolicyControllerMigration(_messages.Message):
+  r"""State for the migration of PolicyController from ACM -> PoCo Hub.
+
+  Enums:
+    StageValueValuesEnum: Stage of the migration.
+
+  Fields:
+    stage: Stage of the migration.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""Stage of the migration.
+
+    Values:
+      STAGE_UNSPECIFIED: Unknown state of migration.
+      ACM_MANAGED: ACM Hub/Operator manages policycontroller. No migration yet
+        completed.
+      POCO_MANAGED: All migrations steps complete; Poco Hub now manages
+        policycontroller.
+    """
+    STAGE_UNSPECIFIED = 0
+    ACM_MANAGED = 1
+    POCO_MANAGED = 2
+
+  stage = _messages.EnumField('StageValueValuesEnum', 1)
+
+
 class ConfigManagementPolicyControllerMonitoring(_messages.Message):
   r"""PolicyControllerMonitoring specifies the backends Policy Controller
   should export metrics to. For example, to specify metrics should be exported
@@ -828,11 +855,13 @@ class ConfigManagementPolicyControllerState(_messages.Message):
 
   Fields:
     deploymentState: The state about the policy controller installation.
+    migration: Record state of ACM -> PoCo Hub migration for this feature.
     version: The version of Gatekeeper Policy Controller deployed.
   """
 
   deploymentState = _messages.MessageField('ConfigManagementGatekeeperDeploymentState', 1)
-  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 2)
+  migration = _messages.MessageField('ConfigManagementPolicyControllerMigration', 2)
+  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 3)
 
 
 class ConfigManagementPolicyControllerVersion(_messages.Message):
@@ -1700,6 +1729,10 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any subresource from this Membership will
+      also be deleted. (Otherwise, the request will only work if the
+      Membership has no subresource.) following go/ccfe-nested-
+      collections#cascading-deletion.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1715,8 +1748,9 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
@@ -1813,6 +1847,7 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
       the resources.
     parent: Required. The parent (project and location) where the Memberships
       will be listed. Specified in the format `projects/*/locations/*`.
+      `projects/*/locations/-` list memberships in all the regions.
   """
 
   filter = _messages.StringField(1)

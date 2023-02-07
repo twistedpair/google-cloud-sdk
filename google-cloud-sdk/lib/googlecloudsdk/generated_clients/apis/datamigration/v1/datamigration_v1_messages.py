@@ -256,7 +256,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -273,9 +275,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -975,6 +975,7 @@ class DatabaseEntity(_messages.Message):
       DATABASE_ENTITY_TYPE_SYNONYM: Synonym
       DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package
       DATABASE_ENTITY_TYPE_UDT: UDT
+      DATABASE_ENTITY_TYPE_MATERIAL_VIEW: Material View
     """
     DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
     DATABASE_ENTITY_TYPE_SCHEMA = 1
@@ -990,6 +991,7 @@ class DatabaseEntity(_messages.Message):
     DATABASE_ENTITY_TYPE_SYNONYM = 11
     DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
     DATABASE_ENTITY_TYPE_UDT = 13
+    DATABASE_ENTITY_TYPE_MATERIAL_VIEW = 14
 
   class TreeValueValuesEnum(_messages.Enum):
     r"""The type of tree the entity belongs to.
@@ -1404,6 +1406,33 @@ class DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntities
   uncommitted = _messages.BooleanField(7)
 
 
+class DatamigrationProjectsLocationsConversionWorkspacesGetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsConversionWorkspacesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class DatamigrationProjectsLocationsConversionWorkspacesGetRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsConversionWorkspacesGetRequest object.
 
@@ -1536,6 +1565,41 @@ class DatamigrationProjectsLocationsConversionWorkspacesSeedRequest(_messages.Me
 
   name = _messages.StringField(1, required=True)
   seedConversionWorkspaceRequest = _messages.MessageField('SeedConversionWorkspaceRequest', 2)
+
+
+class DatamigrationProjectsLocationsConversionWorkspacesSetIamPolicyRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsConversionWorkspacesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatamigrationProjectsLocationsConversionWorkspacesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  DatamigrationProjectsLocationsConversionWorkspacesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DatamigrationProjectsLocationsGetRequest(_messages.Message):
@@ -3793,6 +3857,7 @@ class SynonymEntity(_messages.Message):
       DATABASE_ENTITY_TYPE_SYNONYM: Synonym
       DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package
       DATABASE_ENTITY_TYPE_UDT: UDT
+      DATABASE_ENTITY_TYPE_MATERIAL_VIEW: Material View
     """
     DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
     DATABASE_ENTITY_TYPE_SCHEMA = 1
@@ -3808,6 +3873,7 @@ class SynonymEntity(_messages.Message):
     DATABASE_ENTITY_TYPE_SYNONYM = 11
     DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
     DATABASE_ENTITY_TYPE_UDT = 13
+    DATABASE_ENTITY_TYPE_MATERIAL_VIEW = 14
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomFeaturesValue(_messages.Message):

@@ -161,7 +161,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -178,9 +180,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -2034,13 +2034,41 @@ class PersistentVolumeClaimSpec(_messages.Message):
 class PipelineRef(_messages.Message):
   r"""PipelineRef can be used to refer to a specific instance of a Pipeline.
 
+  Enums:
+    ResolverValueValuesEnum: Resolver is the name of the resolver that should
+      perform resolution of the referenced Tekton resource.
+
   Fields:
     bundle: Bundle url reference to a Tekton Bundle.
     name: Name of the Pipeline.
+    params: Params contains the parameters used to identify the referenced
+      Tekton resource. Example entries might include "repo" or "path" but the
+      set of params ultimately depends on the chosen resolver.
+    resolver: Resolver is the name of the resolver that should perform
+      resolution of the referenced Tekton resource.
   """
+
+  class ResolverValueValuesEnum(_messages.Enum):
+    r"""Resolver is the name of the resolver that should perform resolution of
+    the referenced Tekton resource.
+
+    Values:
+      RESOLVER_NAME_UNSPECIFIED: Default enum type; should not be used.
+      BUNDLES: Bundles resolver. https://tekton.dev/docs/pipelines/bundle-
+        resolver/
+      GCB_REPO: GCB repo resolver.
+      GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
+        resolver/
+    """
+    RESOLVER_NAME_UNSPECIFIED = 0
+    BUNDLES = 1
+    GCB_REPO = 2
+    GIT = 3
 
   bundle = _messages.StringField(1)
   name = _messages.StringField(2)
+  params = _messages.MessageField('Param', 3, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 4)
 
 
 class PipelineRun(_messages.Message):
@@ -2077,9 +2105,6 @@ class PipelineRun(_messages.Message):
     skippedTasks: Output only. List of tasks that were skipped due to when
       expressions evaluating to false.
     startTime: Output only. Time the pipeline is actually started.
-    taskRuns: Output only. List of TaskRuns and their status.
-    timeout: Time after which the Pipeline times out. Deprecated - use
-      timeouts instead.
     timeouts: Time after which the Pipeline times out. Currently three keys
       are accepted in the map pipeline, tasks and finally with
       Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally
@@ -2167,27 +2192,12 @@ class PipelineRun(_messages.Message):
   serviceAccount = _messages.StringField(14)
   skippedTasks = _messages.MessageField('SkippedTask', 15, repeated=True)
   startTime = _messages.StringField(16)
-  taskRuns = _messages.MessageField('PipelineRunTaskRunStatus', 17, repeated=True)
-  timeout = _messages.StringField(18)
-  timeouts = _messages.MessageField('TimeoutFields', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  workerPool = _messages.StringField(22)
-  workflow = _messages.StringField(23)
-  workspaces = _messages.MessageField('WorkspaceBinding', 24, repeated=True)
-
-
-class PipelineRunTaskRunStatus(_messages.Message):
-  r"""PipelineRunTaskRunStatus contains the name of the PipelineTask for this
-  TaskRun and the TaskRun's Status.
-
-  Fields:
-    pipelineTaskName: Name of the pipeline task.
-    status: Status of the task run.
-  """
-
-  pipelineTaskName = _messages.StringField(1)
-  status = _messages.MessageField('TaskRunStatus', 2)
+  timeouts = _messages.MessageField('TimeoutFields', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workerPool = _messages.StringField(20)
+  workflow = _messages.StringField(21)
+  workspaces = _messages.MessageField('WorkspaceBinding', 22, repeated=True)
 
 
 class PipelineSpec(_messages.Message):
@@ -2894,13 +2904,41 @@ class TaskRef(_messages.Message):
   r"""TaskRef can be used to refer to a specific instance of a task.
   PipelineRef can be used to refer to a specific instance of a Pipeline.
 
+  Enums:
+    ResolverValueValuesEnum: Resolver is the name of the resolver that should
+      perform resolution of the referenced Tekton resource.
+
   Fields:
     bundle: Bundle url reference to a Tekton Bundle.
     name: Name of the task.
+    params: Params contains the parameters used to identify the referenced
+      Tekton resource. Example entries might include "repo" or "path" but the
+      set of params ultimately depends on the chosen resolver.
+    resolver: Resolver is the name of the resolver that should perform
+      resolution of the referenced Tekton resource.
   """
+
+  class ResolverValueValuesEnum(_messages.Enum):
+    r"""Resolver is the name of the resolver that should perform resolution of
+    the referenced Tekton resource.
+
+    Values:
+      RESOLVER_NAME_UNSPECIFIED: Default enum type; should not be used.
+      BUNDLES: Bundles resolver. https://tekton.dev/docs/pipelines/bundle-
+        resolver/
+      GCB_REPO: GCB repo resolver.
+      GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
+        resolver/
+    """
+    RESOLVER_NAME_UNSPECIFIED = 0
+    BUNDLES = 1
+    GCB_REPO = 2
+    GIT = 3
 
   bundle = _messages.StringField(1)
   name = _messages.StringField(2)
+  params = _messages.MessageField('Param', 3, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 4)
 
 
 class TaskResult(_messages.Message):
@@ -3054,31 +3092,6 @@ class TaskRunResult(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
-
-
-class TaskRunStatus(_messages.Message):
-  r"""TaskRunStatus defines the status of TaskRun
-
-  Fields:
-    completionTime: Output only. Time the task completed.
-    conditions: Output only. Kubernetes Conditions convention for PipelineRun
-      status and error.
-    sidecars: Output only. State of each Sidecar.
-    startTime: Output only. Time the task is actually started.
-    steps: Output only. Steps describes the state of each build step
-      container.
-    taskRunResults: Output only. List of results written out by the task's
-      containers
-    taskSpec: Spec for the task.
-  """
-
-  completionTime = _messages.StringField(1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  sidecars = _messages.MessageField('SidecarState', 3, repeated=True)
-  startTime = _messages.StringField(4)
-  steps = _messages.MessageField('StepState', 5, repeated=True)
-  taskRunResults = _messages.MessageField('TaskRunResult', 6, repeated=True)
-  taskSpec = _messages.MessageField('TaskSpec', 7)
 
 
 class TaskSpec(_messages.Message):
@@ -3404,8 +3417,6 @@ class WorkflowOptions(_messages.Message):
   Fields:
     executionEnvironment: Contains the workerpool.
     statusUpdateOptions: How/where status on the workflow is posted.
-    timeout: Time after which the Workflow times out. Deprecated - use
-      timeouts instead.
     timeouts: Time after which the Pipeline times out. Currently three keys
       are accepted in the map pipeline, tasks and finally with
       Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally
@@ -3413,8 +3424,7 @@ class WorkflowOptions(_messages.Message):
 
   executionEnvironment = _messages.MessageField('ExecutionEnvironment', 1)
   statusUpdateOptions = _messages.MessageField('WorkflowStatusUpdateOptions', 2)
-  timeout = _messages.StringField(3)
-  timeouts = _messages.MessageField('TimeoutFields', 4)
+  timeouts = _messages.MessageField('TimeoutFields', 3)
 
 
 class WorkflowStatusUpdateOptions(_messages.Message):

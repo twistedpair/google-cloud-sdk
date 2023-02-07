@@ -6,7 +6,7 @@
   "canonicalName": "SQL Admin",
   "version": "v1beta4",
   "revision": "0",
-  "title": "Cloud SQL Admin API",
+  "title": "sqladmin API (prod)",
   "description": "API for Cloud SQL database instance management",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -2783,6 +2783,41 @@
         }
       }
     },
+    "PerformDiskShrinkContext": {
+      "id": "PerformDiskShrinkContext",
+      "description": "Perform disk shrink context.",
+      "type": "object",
+      "properties": {
+        "targetSizeGb": {
+          "description": "The target disk shrink size in GigaBytes.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SqlInstancesGetDiskShrinkConfigResponse": {
+      "id": "SqlInstancesGetDiskShrinkConfigResponse",
+      "description": "Instance get disk shrink config response.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "This is always `sql#getDiskShrinkConfig`.",
+          "type": "string"
+        },
+        "minimalTargetSizeGb": {
+          "description": "The minimum size to which a disk can be shrunk in GigaBytes.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SqlInstancesResetReplicaSizeRequest": {
+      "id": "SqlInstancesResetReplicaSizeRequest",
+      "description": "Instance reset replica size request.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "OperationsListResponse": {
       "id": "OperationsListResponse",
       "description": "Operations list response.",
@@ -3229,6 +3264,50 @@
         },
         "nextPageToken": {
           "description": "Unused.",
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -4658,6 +4737,108 @@
                 "https://www.googleapis.com/auth/sqlservice.admin"
               ],
               "description": "Start External primary instance migration."
+            },
+            "performDiskShrink": {
+              "id": "sql.projects.instances.performDiskShrink",
+              "path": "sql/v1beta4/projects/{project}/instances/{instance}/performDiskShrink",
+              "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/performDiskShrink",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "Project ID of the project that contains the instance.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "instance": {
+                  "description": "Cloud SQL instance ID. This does not include the project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "project",
+                "instance"
+              ],
+              "request": {
+                "$ref": "PerformDiskShrinkContext"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/sqlservice.admin"
+              ],
+              "description": "Perform Disk Shrink on primary instance."
+            },
+            "getDiskShrinkConfig": {
+              "id": "sql.projects.instances.getDiskShrinkConfig",
+              "path": "sql/v1beta4/projects/{project}/instances/{instance}/getDiskShrinkConfig",
+              "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/getDiskShrinkConfig",
+              "httpMethod": "GET",
+              "parameters": {
+                "project": {
+                  "description": "Project ID of the project that contains the instance.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "instance": {
+                  "description": "Cloud SQL instance ID. This does not include the project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "project",
+                "instance"
+              ],
+              "response": {
+                "$ref": "SqlInstancesGetDiskShrinkConfigResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/sqlservice.admin"
+              ],
+              "description": "Get Disk Shrink Config for a given instance."
+            },
+            "resetReplicaSize": {
+              "id": "sql.projects.instances.resetReplicaSize",
+              "path": "sql/v1beta4/projects/{project}/instances/{instance}/resetReplicaSize",
+              "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/resetReplicaSize",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "ID of the project that contains the read replica.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "instance": {
+                  "description": "Cloud SQL read replica instance name.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "project",
+                "instance"
+              ],
+              "request": {
+                "$ref": "SqlInstancesResetReplicaSizeRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/sqlservice.admin"
+              ],
+              "description": "Reset Replica Size to primary instance disk size."
             }
           }
         }

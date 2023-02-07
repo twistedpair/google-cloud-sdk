@@ -1605,6 +1605,25 @@ def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=False):
       hidden=hidden)
 
 
+def AddTPUTopologyFlag(parser, hidden=False):
+  """Adds a --tpu-topology flag to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  help_text = textwrap.dedent("""\
+    This indicates the desired physical topology for the PodSlice.
+
+    $ {command} node-pool-1 --cluster=example-cluster --tpu-topology
+      """)
+
+  parser.add_argument(
+      '--tpu-topology',
+      help=help_text,
+      hidden=hidden)
+
+
 def AddQueuedProvisioningFlag(parser, hidden=False):
   """Adds a --enable-queued-provisioning flag to parser."""
   parser.add_argument(

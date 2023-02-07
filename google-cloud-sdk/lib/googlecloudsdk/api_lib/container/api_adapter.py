@@ -1111,6 +1111,7 @@ class CreateNodePoolOptions(object):
                preemptible=None,
                spot=None,
                placement_type=None,
+               tpu_topology=None,
                enable_queued_provisioning=None,
                enable_autorepair=None,
                enable_autoupgrade=None,
@@ -1182,6 +1183,7 @@ class CreateNodePoolOptions(object):
     self.preemptible = preemptible
     self.spot = spot
     self.placement_type = placement_type
+    self.tpu_topology = tpu_topology
     self.enable_queued_provisioning = enable_queued_provisioning
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -3588,6 +3590,16 @@ class APIAdapter(object):
     if options.placement_type == 'COMPACT':
       pool.placementPolicy = self.messages.PlacementPolicy()
       pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+
+    if options.tpu_topology:
+      if options.placement_type and options.placement_type != 'COMPACT':
+        raise util.Error(
+            'Please specify -placement-type=COMPACT for --tpu-topology'
+        )
+      if pool.placementPolicy is None:
+        pool.placementPolicy = self.messages.PlacementPolicy()
+        pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+      pool.placementPolicy.tpuTopology = options.tpu_topology
 
     if options.enable_queued_provisioning:
       pool.queuedProvisioning = self.messages.QueuedProvisioning()

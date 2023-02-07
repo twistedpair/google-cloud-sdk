@@ -155,7 +155,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -172,9 +174,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -354,11 +354,16 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any subresource from this Membership will
+      also be deleted. (Otherwise, the request will only work if the
+      Membership has no subresource.) following go/ccfe-nested-
+      collections#cascading-deletion.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
@@ -455,6 +460,7 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
       the resources.
     parent: Required. The parent (project and location) where the Memberships
       will be listed. Specified in the format `projects/*/locations/*`.
+      `projects/*/locations/-` list memberships in all the regions.
   """
 
   filter = _messages.StringField(1)

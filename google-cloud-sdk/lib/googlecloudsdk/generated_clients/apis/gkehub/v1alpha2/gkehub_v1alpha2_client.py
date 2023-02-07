@@ -149,7 +149,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.memberships.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v1alpha2/{+name}',
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsDeleteRequest',

@@ -6215,8 +6215,8 @@ class QueryLogEntriesRequest(_messages.Message):
   r"""The parameters to QueryLogEntries.
 
   Fields:
-    disableQueryCaching: Optional. If set to false turns off all query caching
-      on log analytics and bigquery side.
+    disableQueryCaching: Optional. If set to true, turns off all query caching
+      on both the Log Analytics and BigQuery sides.
     pageSize: Optional. The maximum number of rows to return in the results.
       Responses are limited to 10 MB in size.By default, there is no maximum
       row count, and only the byte limit applies. When the byte limit is
@@ -6225,9 +6225,12 @@ class QueryLogEntriesRequest(_messages.Message):
       QueryLogEntries to paginate through the response rows.
     query: Optional. A query string, following the BigQuery SQL query syntax.
       The FROM clause should specify a fully qualified log view corresponding
-      to the log view in the resource_names, but should not include the name
-      of the resource container. For example: SELECT count(*) FROM
-      logs_my_bucket_US._AllLogs;
+      to the log view in the resource_names in dot separated format like
+      PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT count(*)
+      FROM my_project.us.my_bucket._AllLogs;If any of the dot separated
+      components have special characters, that component needs to be escaped
+      separately like the following example:SELECT count(*) FROM
+      company.com:abc.us.my-bucket._AllLogs;
     resourceNames: Required. Names of one or more log views to run a SQL
       query. Currently, only a single view is supported. Multiple view
       selection may be supported in the future.Examples: projects/[PROJECT_ID]
@@ -6317,6 +6320,92 @@ class QueryResults(_messages.Message):
   schema = _messages.MessageField('TableSchema', 5)
   totalBytesProcessed = _messages.IntegerField(6)
   totalRows = _messages.IntegerField(7)
+
+
+class RedactLogEntriesImpact(_messages.Message):
+  r"""Information about the impact of a redaction.
+
+  Fields:
+    endTime: The time impact assessment was completed.
+    logEntriesCount: The number of entries in the requested bucket that match
+      the requested filter.
+  """
+
+  endTime = _messages.StringField(1)
+  logEntriesCount = _messages.IntegerField(2)
+
+
+class RedactLogEntriesMetadata(_messages.Message):
+  r"""Metadata for RedactLogEntries long running operations.
+
+  Enums:
+    StateValueValuesEnum: State of an operation.
+
+  Fields:
+    cancellationRequested: Identifies whether the user has requested
+      cancellation of the operation.
+    endTime: The time at which the operation completed.
+    impactAssessment: The expected impact of the operation. If not set, impact
+      has not been fully assessed.
+    progress: Estimated progress of the operation (0 - 100%).
+    receiveTime: The time at which the redaction request was received.
+    request: RedactLogEntries RPC request.
+    startTime: The time at which redaction of log entries commenced.
+    state: State of an operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of an operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Should not be used.
+      OPERATION_STATE_SCHEDULED: The operation is scheduled.
+      OPERATION_STATE_WAITING_FOR_PERMISSIONS: Waiting for necessary
+        permissions.
+      OPERATION_STATE_RUNNING: The operation is running.
+      OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
+      OPERATION_STATE_FAILED: The operation failed.
+      OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    OPERATION_STATE_SCHEDULED = 1
+    OPERATION_STATE_WAITING_FOR_PERMISSIONS = 2
+    OPERATION_STATE_RUNNING = 3
+    OPERATION_STATE_SUCCEEDED = 4
+    OPERATION_STATE_FAILED = 5
+    OPERATION_STATE_CANCELLED = 6
+
+  cancellationRequested = _messages.BooleanField(1)
+  endTime = _messages.StringField(2)
+  impactAssessment = _messages.MessageField('RedactLogEntriesImpact', 3)
+  progress = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  receiveTime = _messages.StringField(5)
+  request = _messages.MessageField('RedactLogEntriesRequest', 6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
+class RedactLogEntriesRequest(_messages.Message):
+  r"""The parameters to RedactLogEntries.
+
+  Fields:
+    filter: Required. A filter specifying which log entries to redact. The
+      filter must be no more than 20k characters. An empty filter matches all
+      log entries.
+    name: Required. Log bucket from which to redact log entries.For
+      example:"projects/my-project/locations/global/buckets/my-source-bucket"
+    reason: Required. The reason log entries need to be redacted. This field
+      will be recorded in redacted log entries and should omit sensitive
+      information. The reason is limited 1,024 characters.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  reason = _messages.StringField(3)
+
+
+class RedactLogEntriesResponse(_messages.Message):
+  r"""Response type for RedactLogEntries long running operations."""
 
 
 class RequestLog(_messages.Message):

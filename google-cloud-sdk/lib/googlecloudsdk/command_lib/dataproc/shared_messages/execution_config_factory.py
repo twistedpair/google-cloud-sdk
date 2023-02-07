@@ -77,6 +77,10 @@ class ExecutionConfigFactory(object):
       # ExecutionConfig message expects duration in seconds
       kwargs['idleTtl'] = six.text_type(args.max_idle) + 's'
 
+    if args.ttl:
+      # ExecutionConfig message expects duration in seconds
+      kwargs['ttl'] = six.text_type(args.ttl) + 's'
+
     if not kwargs:
       return None
 
@@ -117,3 +121,12 @@ def AddArguments(parser):
       help='Network tags for traffic control.')
 
   parser.add_argument('--kms-key', help='Cloud KMS key to use for encryption.')
+
+  parser.add_argument(
+      '--ttl',
+      type=arg_parsers.Duration(),
+      hidden=True,  # Not yet publicly launched
+      help="""
+      The duration after the workload will be unconditionally terminated, e.g.
+      '20m' or '1h'. See $ gcloud topic datetimes for information on duration
+      formats.""")

@@ -38,7 +38,9 @@ def TektonYamlDataToPipelineRun(data):
   spec = data["spec"]
   if "pipelineSpec" in spec:
     _PipelineSpecTransform(spec["pipelineSpec"])
-  elif "pipelineRef" not in spec:
+  elif "pipelineRef" in spec:
+    input_util.RefTransform(spec["pipelineRef"])
+  else:
     raise cloudbuild_exceptions.InvalidYamlError(
         "PipelineSpec or PipelineRef is required.")
 
@@ -72,7 +74,9 @@ def TektonYamlDataToTaskRun(data):
     managed_sidecars = _MetadataToSidecar(metadata)
     if managed_sidecars:
       spec["taskSpec"]["managedSidecars"] = managed_sidecars
-  elif "taskRef" not in spec:
+  elif "taskRef" in spec:
+    input_util.RefTransform(spec["taskRef"])
+  else:
     raise cloudbuild_exceptions.InvalidYamlError(
         "TaskSpec or TaskRef is required.")
 

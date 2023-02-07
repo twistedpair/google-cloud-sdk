@@ -34,3 +34,16 @@ node:
     attribute_name: node_name
     help: |
       Name of the blockchain node resource.
+
+operation:
+  name: operation
+  collection: blockchainnodeengine.projects.locations.operations
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      Long running operation on a Blockchain Node Engine resource.

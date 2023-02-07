@@ -474,7 +474,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new bare metal Node Pool in a given project, location and Bare Metal Cluster.
+      r"""Creates a new bare metal Node Pool in a given project, location and Bare Metal cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest) input message
@@ -501,7 +501,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single bare metal Node Pool.
+      r"""Deletes a single bare metal node pool.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest) input message
@@ -519,7 +519,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest',
@@ -528,7 +528,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single bare metal Node Pool.
+      r"""Gets details of a single bare metal node pool.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetRequest) input message
@@ -582,7 +582,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists bare metal Node Pools in a given project, location and bare metal Cluster.
+      r"""Lists bare metal Node Pools in a given project, location and bare metal cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest) input message
@@ -609,7 +609,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single bare metal Node Pool.
+      r"""Updates the parameters of a single bare metal node pool.
 
       Args:
         request: (GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest) input message
@@ -809,7 +809,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.bareMetalClusters.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'force', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'force', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsBareMetalClustersDeleteRequest',
@@ -1607,7 +1607,7 @@ class GkeonpremV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new VMware Node Pool in a given project, location and VMWare Cluster.
+      r"""Creates a new VMware Node Pool in a given project, location and VMWare cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsCreateRequest) input message
@@ -1634,7 +1634,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single VMware Node Pool.
+      r"""Deletes a single VMware node pool.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest) input message
@@ -1652,7 +1652,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest',
@@ -1661,7 +1661,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single VMware Node Pool.
+      r"""Gets details of a single VMware node pool.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetRequest) input message
@@ -1715,7 +1715,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists VMware Node Pools in a given project, location and VMWare Cluster.
+      r"""Lists VMware Node Pools in a given project, location and VMWare cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsListRequest) input message
@@ -1878,7 +1878,7 @@ class GkeonpremV1(base_api.BaseApiClient):
         method_id='gkeonprem.projects.locations.vmwareClusters.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'force', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'force', 'ignoreErrors', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersDeleteRequest',
@@ -1995,7 +1995,7 @@ class GkeonpremV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single VMware Cluster.
+      r"""Updates the parameters of a single VMware cluster.
 
       Args:
         request: (GkeonpremProjectsLocationsVmwareClustersPatchRequest) input message

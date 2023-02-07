@@ -5330,53 +5330,6 @@
         }
       }
     },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "ListLocationsResponse returns the list of all GKE locations and their recommendation state.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A full list of GKE locations.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "Only return ListLocationsResponse that occur after the page_token. This value should be populated from the ListLocationsResponse.next_page_token if that response token was set (which happens when listing more Locations than fit in a single ListLocationsResponse). This is currently not used and will be honored once we use pagination.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "Location returns the location name, and if the location is recommended for GKE cluster scheduling.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Contains the type of location this Location is for. Regional or Zonal.",
-          "type": "string",
-          "enumDescriptions": [
-            "LOCATION_TYPE_UNSPECIFIED means the location type was not determined.",
-            "A GKE Location where Zonal clusters can be created.",
-            "A GKE Location where Regional clusters can be created."
-          ],
-          "enum": [
-            "LOCATION_TYPE_UNSPECIFIED",
-            "ZONE",
-            "REGION"
-          ]
-        },
-        "name": {
-          "description": "Contains the name of the resource requested. Specified in the format `projects\/*\/locations\/*`.",
-          "type": "string"
-        },
-        "recommended": {
-          "description": "Recommended is a bool combining the drain state of the location (ie- has the region been drained manually?), and the stockout status of any zone according to Zone Advisor. This will be internal only for use by pantheon.",
-          "type": "boolean"
-        }
-      }
-    },
     "ListUsableSubnetworksResponse": {
       "id": "ListUsableSubnetworksResponse",
       "description": "ListUsableSubnetworksResponse is the response of ListUsableSubnetworksRequest.",
@@ -5514,6 +5467,53 @@
         "description": {
           "description": "The description of the issue.",
           "type": "string"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "ListLocationsResponse returns the list of all GKE locations and their recommendation state.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A full list of GKE locations.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "Only return ListLocationsResponse that occur after the page_token. This value should be populated from the ListLocationsResponse.next_page_token if that response token was set (which happens when listing more Locations than fit in a single ListLocationsResponse). This is currently not used and will be honored once we use pagination.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "Location returns the location name, and if the location is recommended for GKE cluster scheduling.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Contains the type of location this Location is for. Regional or Zonal.",
+          "type": "string",
+          "enumDescriptions": [
+            "LOCATION_TYPE_UNSPECIFIED means the location type was not determined.",
+            "A GKE Location where Zonal clusters can be created.",
+            "A GKE Location where Regional clusters can be created."
+          ],
+          "enum": [
+            "LOCATION_TYPE_UNSPECIFIED",
+            "ZONE",
+            "REGION"
+          ]
+        },
+        "name": {
+          "description": "Contains the name of the resource requested. Specified in the format `projects\/*\/locations\/*`.",
+          "type": "string"
+        },
+        "recommended": {
+          "description": "Recommended is a bool combining the drain state of the location (ie- has the region been drained manually?), and the stockout status of any zone according to Zone Advisor. This will be internal only for use by pantheon.",
+          "type": "boolean"
         }
       }
     }

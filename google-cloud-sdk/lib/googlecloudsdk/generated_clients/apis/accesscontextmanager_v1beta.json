@@ -7,7 +7,7 @@
   "version": "v1beta",
   "revision": "0",
   "title": "Access Context Manager API",
-  "description": "An API for setting attribute based access control to requests to GCP services.",
+  "description": "An API for setting attribute based access control to requests to Google Cloud services.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

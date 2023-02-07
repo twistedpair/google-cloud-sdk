@@ -38,6 +38,7 @@ from six.moves import urllib
 from six.moves import zip  # pylint: disable=redefined-builtin
 
 ENCODING = None if six.PY2 else 'utf-8'
+INVOCATION_ID = uuid.uuid4().hex
 
 TOKEN_URIS = [
     'https://accounts.google.com/o/oauth2/token',
@@ -575,7 +576,7 @@ def MakeUserAgentString(cmd_path=None):
           ' {ua_fragment}').format(
               version=config.CLOUD_SDK_VERSION.replace(' ', '_'),
               cmd=(cmd_path or properties.VALUES.metrics.command_name.Get()),
-              inv_id=uuid.uuid4().hex,
+              inv_id=INVOCATION_ID,
               environment=properties.GetMetricsEnvironment(),
               env_version=properties.VALUES.metrics.environment_version.Get(),
               is_interactive=console_io.IsInteractive(

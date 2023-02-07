@@ -34,12 +34,12 @@ class RedisFormatter(base_formatter.BaseFormatter):
     """Print the config of the integration.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       The printed output.
     """
-    res_config = record.get('config', {}).get('redis', {}).get('instance', {})
+    res_config = record.config.get('redis', {}).get('instance', {})
 
     labeled = [('Memory Size GB', res_config.get('memory-size-gb'))]
     if 'tier' in res_config:
@@ -53,12 +53,12 @@ class RedisFormatter(base_formatter.BaseFormatter):
     """Print the component status of the integration.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       The printed output.
     """
-    resource_status = record.get('status', {})
+    resource_status = record.status
     resources = resource_status.get('resourceComponentStatuses', {})
     redis = self._RedisFromResources(resources)
     vpc = self._VpcFromResources(resources)
@@ -86,7 +86,7 @@ class RedisFormatter(base_formatter.BaseFormatter):
     use and the call to action will not be shown.
 
     Args:
-      record: dict, the integration.
+      record: integration_printer.Record class that just holds data.
 
     Returns:
       A formatted string of the call to action message,
@@ -96,7 +96,7 @@ class RedisFormatter(base_formatter.BaseFormatter):
     ## correct variables. This will not be trivial since binding is not
     ## contained with redis resource.
 
-    state = record.get('status', '{}').get('state', '')
+    state = record.status.get('state', '')
     if state != states.ACTIVE:
       return None
 

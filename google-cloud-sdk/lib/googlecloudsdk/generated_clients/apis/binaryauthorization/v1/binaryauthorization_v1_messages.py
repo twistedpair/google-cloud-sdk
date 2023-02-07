@@ -365,12 +365,12 @@ class BinaryauthorizationProjectsPlatformsListRequest(_messages.Message):
 
   Fields:
     pageSize: Requested page size. The server may return fewer results than
-      requested. If unspecified, the server will pick an appropriate default.
+      requested. If unspecified, the server picks an appropriate default.
     pageToken: A token identifying a page of results the server should return.
       Typically, this is the value of ListPlatformsResponse.next_page_token
       returned from the previous call to the `ListPlatforms` method.
-    parent: Required. Contains the name of the resource requested. Specified
-      in the format `projects/*`.
+    parent: Required. Contains the name of the resource requested, specified
+      using the format `projects/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -408,7 +408,7 @@ class BinaryauthorizationProjectsPlatformsPoliciesGetRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsPlatformsPoliciesGetRequest object.
 
   Fields:
-    name: Required. The name of the platform policy to retrieve, in the format
+    name: Required. The name of the platform policy to retrieve in the format
       `projects/*/platforms/*/policies/*`.
   """
 
@@ -420,13 +420,13 @@ class BinaryauthorizationProjectsPlatformsPoliciesListRequest(_messages.Message)
 
   Fields:
     pageSize: Requested page size. The server may return fewer results than
-      requested. If unspecified, the server will pick an appropriate default.
+      requested. If unspecified, the server picks an appropriate default.
     pageToken: A token identifying a page of results the server should return.
       Typically, this is the value of
       ListPlatformPoliciesResponse.next_page_token returned from the previous
       call to the `ListPlatformPolicies` method.
     parent: Required. The resource name of the platform associated with the
-      platform policies, in the format `projects/*/platforms/*`.
+      platform policies using the format `projects/*/platforms/*`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -534,7 +534,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -551,9 +553,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -980,7 +980,7 @@ class ListPlatformsResponse(_messages.Message):
     nextPageToken: A token to retrieve the next page of results. Pass this
       value in the ListPlatformsRequest.page_token field in the subsequent
       call to the `ListPlatforms` method to retrieve the next page of results.
-    platforms: The list of platforms supported by binary authorization.
+    platforms: The list of platforms supported by Binary Authorization.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1089,11 +1089,11 @@ class PkixPublicKeySet(_messages.Message):
 
 
 class Platform(_messages.Message):
-  r"""A platform supported by binary authorization platform policy.
+  r"""A platform supported by Binary Authorization platform policy.
 
   Fields:
     name: Output only. The relative resource name of the platform supported by
-      binary authorization platform policies, in the form of
+      Binary Authorization platform policies, in the form of
       `projects/*/platforms/*`.
   """
 
@@ -1101,13 +1101,13 @@ class Platform(_messages.Message):
 
 
 class PlatformPolicy(_messages.Message):
-  r"""A binary authorization platform policy for deployments on various
+  r"""A Binary Authorization platform policy for deployments on various
   platforms.
 
   Fields:
-    cloudRunPolicy: Optional. Cloud Run platform specific policy.
+    cloudRunPolicy: Optional. Cloud Run platform-specific policy.
     description: Optional. A description comment about the policy.
-    gkePolicy: Optional. GKE platform specific policy.
+    gkePolicy: Optional. GKE platform-specific policy.
     name: Output only. The relative resource name of the BinAuthz platform
       policy, in the form of `projects/*/platforms/*/policies/*`.
     updateTime: Output only. Time when the policy was last updated.
