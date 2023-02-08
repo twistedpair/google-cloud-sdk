@@ -85,10 +85,6 @@ SCHEMA = s.Message(
             error_code=s.Value(converter=c.EnumConverter('ERROR_CODE')),
             file=s.Value('static_file', converter=c.ToJsonString),
             mime_type=s.Value(converter=c.ToJsonString))),
-    runtime_config=s.Message('flexible_runtime_settings',
-        operating_system=s.Value(converter=c.ToJsonString),
-        runtime_version=s.Value(converter=c.ToJsonString),
-    ),
     # Restructure the handler after it's complete, since this is more
     # complicated than a simple rename.
     handlers=s.RepeatedField(

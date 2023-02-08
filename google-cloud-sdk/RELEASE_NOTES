@@ -5,6 +5,16 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 417.0.1 ()
+
+### App Engine Flexible Environment
+
+* Fixing issue where App Engine Flex users cannot deploy their PHP, Java or Python applications via gcloud 417.0.0.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 417.0.0 (2023-02-07)
 
 ### Breaking Changes
