@@ -26,6 +26,7 @@ from googlecloudsdk.core import properties
 
 PARENT_TEMPLATE = 'projects/{}/locations/{}/instances/{}'
 SNAPSHOT_NAME_TEMPLATE = PARENT_TEMPLATE + '/snapshots/{}'
+V1_API_VERSION = 'v1'
 
 
 def FormatSnapshotCreateRequest(ref, args, req):
@@ -33,8 +34,12 @@ def FormatSnapshotCreateRequest(ref, args, req):
   del ref
   req.snapshotId = args.snapshot
   project = properties.VALUES.core.project.Get(required=True)
-  req.parent = PARENT_TEMPLATE.format(project, args.instance_region,
-                                      args.instance)
+  location_id = args.instance_location if args.instance_region is None else (
+      args.instance_region)
+
+  req.parent = PARENT_TEMPLATE.format(
+      project, location_id, args.instance)
+
   return req
 
 
@@ -42,8 +47,12 @@ def FormatSnapshotAccessRequest(ref, args, req):
   """Python hook for yaml commands to supply snapshot access requests with the proper name."""
   del ref
   project = properties.VALUES.core.project.Get(required=True)
-  req.name = SNAPSHOT_NAME_TEMPLATE.format(project, args.instance_region,
-                                           args.instance, args.snapshot)
+  location_id = args.instance_location if args.instance_region is None else (
+      args.instance_region)
+
+  req.name = SNAPSHOT_NAME_TEMPLATE.format(
+      project, location_id, args.instance, args.snapshot)
+
   return req
 
 
@@ -51,8 +60,12 @@ def FormatSnapshotsListRequest(ref, args, req):
   """Python hook for yaml commands to supply the list snapshots request with proper values."""
   del ref
   project = properties.VALUES.core.project.Get(required=True)
-  req.parent = PARENT_TEMPLATE.format(project, args.instance_region,
-                                      args.instance)
+  location_id = args.instance_location if args.instance_region is None else (
+      args.instance_region)
+
+  req.parent = PARENT_TEMPLATE.format(
+      project, location_id, args.instance)
+
   return req
 
 
@@ -71,12 +84,16 @@ def GetResourceRef(args):
   project = properties.VALUES.core.project.Get(required=True)
   api_version = util.GetApiVersionFromArgs(args)
   registry = filestore_client.GetFilestoreRegistry(api_version)
+  location_id = args.instance_location if args.instance_region is None else (
+      args.instance_region)
+
   ref = registry.Create(
       'file.projects.locations.instances.snapshots',
       projectsId=project,
-      locationsId=args.instance_region,
+      locationsId=location_id,
       instancesId=args.instance,
       snapshotsId=args.snapshot)
+
   return ref
 
 

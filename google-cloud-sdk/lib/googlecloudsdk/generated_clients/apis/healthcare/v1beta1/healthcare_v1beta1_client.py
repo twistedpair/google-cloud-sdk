@@ -3145,6 +3145,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetFHIRStoreMetrics(self, request, global_params=None):
+      r"""Gets metrics associated with the FHIR store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FhirStoreMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetFHIRStoreMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetFHIRStoreMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getFHIRStoreMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.getFHIRStoreMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:getFHIRStoreMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest',
+        response_type_name='FhirStoreMetrics',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 

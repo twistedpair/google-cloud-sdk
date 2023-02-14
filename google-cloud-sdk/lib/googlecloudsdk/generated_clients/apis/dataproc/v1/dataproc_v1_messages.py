@@ -1311,9 +1311,15 @@ class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
   r"""A DataprocProjectsLocationsSessionsListRequest object.
 
   Fields:
-    filter: Optional. A filter constraining the sessions to list. Filters are
-      case-sensitive and have the following syntax:[field = value] AND [field
-      [= value]] ...
+    filter: Optional. A filter for the sessions to return in the response.A
+      filter is a logical expression constraining the values of various fields
+      in each session resource. Filters are case sensitive, and may contain
+      multiple clauses combined with logical operators (AND/OR). Supported
+      fields are session_id, session_uuid, state, and create_time.e.g. state =
+      ACTIVE and create_time < "2023-01-01T00:00:00Z" filters for sessions in
+      state ACTIVE that were created before 2023-01-01See
+      https://google.aip.dev/assets/misc/ebnf-filtering.txt for a detailed
+      description of the filter syntax and a list of supported comparisons.
     orderBy: Optional. Field(s) on which to sort the list of sessions. See
       https://google.aip.dev/132#ordering for more details.
     pageSize: Optional. The maximum number of sessions to return in each
@@ -2684,9 +2690,12 @@ class EncryptionConfig(_messages.Message):
   Fields:
     gcePdKmsKeyName: Optional. The Cloud KMS key name to use for PD disk
       encryption for all instances in the cluster.
+    kmsKey: Optional. The Cloud KMS key name to use for encrypting customer
+      core content and cluster PD disk for all instances in the cluster.
   """
 
   gcePdKmsKeyName = _messages.StringField(1)
+  kmsKey = _messages.StringField(2)
 
 
 class EndpointConfig(_messages.Message):
@@ -3217,6 +3226,17 @@ class GkeNodePoolTarget(_messages.Message):
   nodePool = _messages.StringField(1)
   nodePoolConfig = _messages.MessageField('GkeNodePoolConfig', 2)
   roles = _messages.EnumField('RolesValueListEntryValuesEnum', 3, repeated=True)
+
+
+class GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig(_messages.Message):
+  r"""Encryption settings for the encrypting customer core content. NEXT ID: 2
+
+  Fields:
+    kmsKey: Optional. The Cloud KMS key name to use for encrypting customer
+      core content.
+  """
+
+  kmsKey = _messages.StringField(1)
 
 
 class HadoopJob(_messages.Message):
@@ -3995,7 +4015,28 @@ class JobStatus(_messages.Message):
 
 
 class JupyterConfig(_messages.Message):
-  r"""Jupyter configuration for an interactive session."""
+  r"""Jupyter configuration for an interactive session.
+
+  Enums:
+    KernelValueValuesEnum: Optional. Kernel
+
+  Fields:
+    kernel: Optional. Kernel
+  """
+
+  class KernelValueValuesEnum(_messages.Enum):
+    r"""Optional. Kernel
+
+    Values:
+      KERNEL_UNSPECIFIED: The kernel is unknown.
+      PYTHON: Python kernel.
+      SCALA: Scala kernel.
+    """
+    KERNEL_UNSPECIFIED = 0
+    PYTHON = 1
+    SCALA = 2
+
+  kernel = _messages.EnumField('KernelValueValuesEnum', 1)
 
 
 class KerberosConfig(_messages.Message):
@@ -6958,6 +6999,8 @@ class WorkflowTemplate(_messages.Message):
       workflow is running at the end of the timeout period, any remaining jobs
       are cancelled, the workflow is ended, and if the workflow was running on
       a managed cluster, the cluster is deleted.
+    encryptionConfig: Optional. Encryption settings for the encrypting
+      customer core content.
     id: A string attribute.
     jobs: Required. The Directed Acyclic Graph of Jobs to submit.
     labels: Optional. The labels to associate with this template. These labels
@@ -7022,14 +7065,15 @@ class WorkflowTemplate(_messages.Message):
 
   createTime = _messages.StringField(1)
   dagTimeout = _messages.StringField(2)
-  id = _messages.StringField(3)
-  jobs = _messages.MessageField('OrderedJob', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  parameters = _messages.MessageField('TemplateParameter', 7, repeated=True)
-  placement = _messages.MessageField('WorkflowTemplatePlacement', 8)
-  updateTime = _messages.StringField(9)
-  version = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  encryptionConfig = _messages.MessageField('GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig', 3)
+  id = _messages.StringField(4)
+  jobs = _messages.MessageField('OrderedJob', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  parameters = _messages.MessageField('TemplateParameter', 8, repeated=True)
+  placement = _messages.MessageField('WorkflowTemplatePlacement', 9)
+  updateTime = _messages.StringField(10)
+  version = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class WorkflowTemplatePlacement(_messages.Message):

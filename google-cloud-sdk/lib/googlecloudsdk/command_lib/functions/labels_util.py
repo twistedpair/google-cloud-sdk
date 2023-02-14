@@ -24,9 +24,9 @@ from googlecloudsdk.command_lib.util.args import labels_util
 class Diff(labels_util.Diff):
   """Computes changes to labels.
 
-    Similar to the core class, but it allows specifying labels that will be
-    added if not present or removed either via --remove-labels or
-    --clear-labels.
+  Similar to the core class, but it allows specifying labels that will be
+  added if not present or removed either via --remove-labels or
+  --clear-labels.
   """
 
   @classmethod

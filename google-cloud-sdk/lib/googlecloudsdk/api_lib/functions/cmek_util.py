@@ -21,15 +21,18 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.api_lib.functions.v1 import exceptions
 from googlecloudsdk.calliope import exceptions as base_exceptions
-
+from six.moves import http_client
 
 _KMS_KEY_RE = re.compile(
     r'^projects/[^/]+/locations/(?P<location>[^/]+)/keyRings/[a-zA-Z0-9_-]+'
-    '/cryptoKeys/[a-zA-Z0-9_-]+$')
+    '/cryptoKeys/[a-zA-Z0-9_-]+$'
+)
 _DOCKER_REPOSITORY_RE = re.compile(
     r'^projects/(?P<project>[^/]+)/locations/(?P<location>[^/]+)'
-    '/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$')
+    '/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$'
+)
 
 
 def ValidateKMSKeyForFunction(kms_key, function_ref):
@@ -48,11 +51,13 @@ def ValidateKMSKeyForFunction(kms_key, function_ref):
     kms_keyring_location = kms_key_match.group('location')
     if kms_keyring_location == 'global':
       raise base_exceptions.InvalidArgumentException(
-          '--kms-key', 'Global KMS keyrings are not allowed.')
+          '--kms-key', 'Global KMS keyrings are not allowed.'
+      )
     if function_ref.locationsId != kms_keyring_location:
       raise base_exceptions.InvalidArgumentException(
           '--kms-key',
-          'KMS keyrings should be created in the same region as the function.')
+          'KMS keyrings should be created in the same region as the function.',
+      )
 
 
 def ValidateDockerRepositoryForFunction(docker_repository, function_ref):
@@ -72,12 +77,31 @@ def ValidateDockerRepositoryForFunction(docker_repository, function_ref):
   if repo_match:
     repo_project = repo_match.group('project')
     repo_location = repo_match.group('location')
-    if function_project != repo_project and function_project.isdigit(
-    ) == repo_project.isdigit():
+    if (
+        function_project != repo_project
+        and function_project.isdigit() == repo_project.isdigit()
+    ):
       raise base_exceptions.InvalidArgumentException(
-          '--docker-repository',
-          'Cross-project repositories are not supported.')
+          '--docker-repository', 'Cross-project repositories are not supported.'
+      )
     if function_location != repo_location:
       raise base_exceptions.InvalidArgumentException(
           '--docker-repository',
-          'Cross-location repositories are not supported.')
+          'Cross-location repositories are not supported.',
+      )
+
+
+def ProcessException(http_exception, kms_key=None):
+  if (
+      kms_key
+      and http_exception.status_code == http_client.INTERNAL_SERVER_ERROR
+  ):
+    # TODO(b/268523346): more specific user-friendly error messages for
+    # CMEK-related error modes.
+    raise exceptions.FunctionsError(
+        'An error occurred. Ensure that the KMS key {kms_key} exists and the '
+        'Cloud Functions service account has encrypter/decrypter permissions '
+        '(roles/cloudkms.cryptoKeyEncrypterDecrypter) on the key. If you '
+        'have recently made changes to the IAM config, wait a few minutes '
+        'for the config to propagate and try again.'.format(kms_key=kms_key)
+    )

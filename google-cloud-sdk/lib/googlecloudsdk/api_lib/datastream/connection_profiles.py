@@ -204,8 +204,17 @@ class ConnectionProfilesClient:
 
     return connection_profile_obj
 
-  def _ParseConnectionProfileObjectFile(self, connection_profile_object_file):
+  def _ParseConnectionProfileObjectFile(
+      self, connection_profile_object_file, release_track
+  ):
     """Parses a connection-profile-file into the ConnectionProfile message."""
+    if release_track != base.ReleaseTrack.BETA:
+      return util.ParseMessageAndValidateSchema(
+          connection_profile_object_file,
+          'ConnectionProfile',
+          self._messages.ConnectionProfile,
+      )
+
     data = console_io.ReadFromFileOrStdin(
         connection_profile_object_file, binary=False)
     try:
@@ -553,7 +562,8 @@ class ConnectionProfilesClient:
       request.connectionProfileName = connection_profile_ref.RelativeName()
     elif args.connection_profile_object_file:
       request.connectionProfile = self._ParseConnectionProfileObjectFile(
-          args.connection_profile_object_file)
+          args.connection_profile_object_file, release_track
+      )
 
     if args.recursive:
       request.recursive = True
@@ -577,7 +587,7 @@ class ConnectionProfilesClient:
     return self._service.Discover(discover_req)
 
   def GetUri(self, name):
-    """Get the URL string for a connnection profile.
+    """Get the URL string for a connection profile.
 
     Args:
       name: connection profile's full name.

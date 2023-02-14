@@ -21,6 +21,7 @@ import json
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
@@ -75,11 +76,8 @@ def SetDeleteCleanupPolicyUpdateMask(unused_ref, unused_args, request):
 
 def RepositoryToCleanupPoliciesResponse(response, unused_args):
   if not response.cleanupPolicies:
+    log.status.Print('No cleanup policies set.')
     return None
-  return response.cleanupPolicies.additionalProperties
-
-
-def RepositoryToSetCleanupPolicyResponse(response, unused_args):
   return response.cleanupPolicies.additionalProperties
 
 

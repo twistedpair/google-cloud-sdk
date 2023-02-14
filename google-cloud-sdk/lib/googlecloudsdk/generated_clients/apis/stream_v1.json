@@ -399,7 +399,7 @@
           "type": "string"
         },
         "contentBuildVersion": {
-          "description": "The user-specified version tag and build ID of the content served in this realm.",
+          "description": "The user-specified version tag and build ID of the content served.",
           "$ref": "BuildVersion"
         },
         "apiEndpoint": {
@@ -902,7 +902,7 @@
                       "type": "string"
                     },
                     "streamContentId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and stream_content_id from the method_signature of Create RPC",
+                      "description": "Required. Id of the requesting object If the id is generated from the server-side, remove this field and stream_content_id from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
                     },
@@ -1112,7 +1112,7 @@
                       "type": "string"
                     },
                     "streamInstanceId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and stream_instance_id from the method_signature of Create RPC",
+                      "description": "Required. Id of the requesting object If the id is generated from the server-side, remove this field and stream_instance_id from the method_signature of Create RPC",
                       "location": "query",
                       "type": "string"
                     },

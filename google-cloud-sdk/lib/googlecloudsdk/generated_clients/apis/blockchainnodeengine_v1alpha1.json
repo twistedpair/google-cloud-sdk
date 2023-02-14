@@ -368,13 +368,15 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            "",
-            ""
+            "An Ethereum node that only downloads Ethereum block headers.",
+            "Keeps a complete copy of the blockchain data, and contributes to the network by receiving, validating and forwarding transactions. This type is currently only available for nodes running Geth\/Lighthouse clients.",
+            "Holds the same data as full node as well as all of the blockchain's history state data dating back to the Genesis Block. This type is currently only available for the nodes running Erigon clients."
           ],
           "enum": [
             "NODE_TYPE_UNSPECIFIED",
             "LIGHT",
-            "FULL"
+            "FULL",
+            "ARCHIVE"
           ]
         },
         "executionClient": {
@@ -382,11 +384,13 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            ""
+            "Official Go implementation of the Ethereum protocol. https:\/\/geth.ethereum.org\/",
+            "An implementation of Ethereum (execution client), on the efficiency frontier, written in Go. https:\/\/github.com\/ledgerwatch\/erigon"
           ],
           "enum": [
             "EXECUTION_CLIENT_UNSPECIFIED",
-            "GETH"
+            "GETH",
+            "ERIGON"
           ]
         },
         "consensusClient": {
@@ -394,12 +398,22 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            ""
+            "Consensus client implementation written in Rust, maintained by Sigma Prime. https:\/\/lighthouse.sigmaprime.io\/",
+            "Erigon's native Embedded Consensus Layer. https:\/\/github.com\/ledgerwatch\/erigon#embedded-consensus-layer"
           ],
           "enum": [
             "CONSENSUS_CLIENT_UNSPECIFIED",
-            "LIGHTHOUSE"
+            "LIGHTHOUSE",
+            "ERIGON_EMBEDDED_CONSENSUS_LAYER"
           ]
+        },
+        "apiEnableAdmin": {
+          "description": "Immutable. Enables access to the admin HTTP endpoints",
+          "type": "boolean"
+        },
+        "apiEnableDebug": {
+          "description": "Immutable. Enables access to the debug HTTP endpoints",
+          "type": "boolean"
         }
       }
     },

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2014 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1304,6 +1304,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.securedlandingzone = self._Add(
         'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
     self.securesourcemanager = self._Add('securesourcemanager', hidden=True)
+    self.workloadcertificate = self._Add('workloadcertificate', hidden=True)
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""
@@ -1563,6 +1564,15 @@ class _SectionAuth(_Section):
         'service_account_disable_id_token_refresh',
         default=False,
         help_text='If True, disable ID token refresh for service account.',
+    )
+    self.reauth_use_google_auth = self._AddBool(
+        'reauth_use_google_auth',
+        hidden=True,
+        default=True,
+        help_text=(
+            'A switch to choose to use google-auth reauth or oauth2client'
+            ' reauth implementation. By default google-auth is used.'
+        ),
     )
 
 

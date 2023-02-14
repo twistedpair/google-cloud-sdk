@@ -1064,7 +1064,7 @@
       "type": "object",
       "properties": {
         "instanceType": {
-          "description": "Optional. The AWS instance type. When unspecified, it uses a default based on the node pool's version.",
+          "description": "Optional. The EC2 instance type when creating on-Demand instances. If unspecified during node pool creation, a default will be chosen based on the node pool version, and assigned to this field.",
           "type": "string"
         },
         "rootVolume": {

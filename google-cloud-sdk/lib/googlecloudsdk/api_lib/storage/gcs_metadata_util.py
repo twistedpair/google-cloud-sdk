@@ -74,7 +74,7 @@ def copy_object_metadata(source_metadata,
       backend must generate and preserving destination address.
 
   Returns:
-    New destination metatdata with data copied from source (messages.Object).
+    New destination metadata with data copied from source (messages.Object).
   """
   if should_deep_copy:
     destination_bucket = destination_metadata.bucket
@@ -473,9 +473,13 @@ def get_cleared_bucket_fields(request_config):
   if not resource_args:
     return cleared_fields
 
-  if (resource_args.cors_file_path == user_request_args_factory.CLEAR or
-      resource_args.cors_file_path and
-      not metadata_util.cached_read_json_file(resource_args.cors_file_path)):
+  if (
+      resource_args.cors_file_path == user_request_args_factory.CLEAR
+      or resource_args.cors_file_path
+      and not metadata_util.cached_read_yaml_json_file(
+          resource_args.cors_file_path
+      )
+  ):
     # Empty JSON object similar to CLEAR flag.
     cleared_fields.append('cors')
 
@@ -488,30 +492,38 @@ def get_cleared_bucket_fields(request_config):
   if resource_args.labels_file_path == user_request_args_factory.CLEAR:
     cleared_fields.append('labels')
 
-  if (resource_args.lifecycle_file_path == user_request_args_factory.CLEAR or
-      resource_args.lifecycle_file_path and
-      not metadata_util.cached_read_json_file(resource_args.lifecycle_file_path)
-     ):
+  if (
+      resource_args.lifecycle_file_path == user_request_args_factory.CLEAR
+      or resource_args.lifecycle_file_path
+      and not metadata_util.cached_read_yaml_json_file(
+          resource_args.lifecycle_file_path
+      )
+  ):
     # Empty JSON object similar to CLEAR flag.
     cleared_fields.append('lifecycle')
 
-  if (resource_args.log_bucket == resource_args.log_object_prefix ==
-      user_request_args_factory.CLEAR):
+  if (
+      resource_args.log_bucket
+      == resource_args.log_object_prefix
+      == user_request_args_factory.CLEAR
+  ):
     cleared_fields.append('logging')
   elif resource_args.log_bucket == user_request_args_factory.CLEAR:
     cleared_fields.append('logging.logBucket')
   elif resource_args.log_object_prefix == user_request_args_factory.CLEAR:
     cleared_fields.append('logging.logObjectPrefix')
 
-  if (resource_args.public_access_prevention == user_request_args_factory.CLEAR
-     ):
+  if resource_args.public_access_prevention == user_request_args_factory.CLEAR:
     cleared_fields.append('iamConfiguration.publicAccessPrevention')
 
   if resource_args.retention_period == user_request_args_factory.CLEAR:
     cleared_fields.append('retentionPolicy')
 
-  if (resource_args.web_error_page
-      == resource_args.web_main_page_suffix == user_request_args_factory.CLEAR):
+  if (
+      resource_args.web_error_page
+      == resource_args.web_main_page_suffix
+      == user_request_args_factory.CLEAR
+  ):
     cleared_fields.append('website')
   elif resource_args.web_error_page == user_request_args_factory.CLEAR:
     cleared_fields.append('website.notFoundPage')

@@ -472,12 +472,11 @@ class S3Api(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    if (request_config.system_posix_data and cloud_resource.metadata and
-        'Metadata' in cloud_resource.metadata):
-      custom_fields_dict = cloud_resource.metadata['Metadata']
-      posix_attributes_to_set = (
-          posix_util.get_posix_attributes_from_custom_metadata_dict(
-              cloud_resource.storage_url.url_string, custom_fields_dict))
+    # TODO(b/267654163): Remove POSIX handling.
+    if request_config.system_posix_data:
+      posix_attributes_to_set = posix_util.get_posix_attributes_from_resource(
+          cloud_resource
+      )
     else:
       posix_attributes_to_set = None
 

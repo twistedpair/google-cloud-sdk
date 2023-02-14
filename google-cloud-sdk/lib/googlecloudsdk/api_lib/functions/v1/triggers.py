@@ -38,8 +38,9 @@ class Resources(enum.Enum):
   BUCKET = Resource('bucket', 'cloudfunctions.projects.buckets')
   FIREBASE_DB = Resource('firebase database', 'google.firebase.database.ref')
   FIRESTORE_DOC = Resource('firestore document', 'google.firestore.document')
-  FIREBASE_ANALYTICS_EVENT = Resource('firebase analytics',
-                                      'google.firebase.analytics.event')
+  FIREBASE_ANALYTICS_EVENT = Resource(
+      'firebase analytics', 'google.firebase.analytics.event'
+  )
   PROJECT = Resource('project', 'cloudresourcemanager.projects')
 
 
@@ -82,52 +83,103 @@ class TriggerEvent(object):
 # Don't use those structures directly. Use registry object instead.
 # By convention, first event type is default.
 _PROVIDERS = [
-    TriggerProvider('cloud.pubsub', [
-        TriggerEvent('google.pubsub.topic.publish', Resources.TOPIC),
-        TriggerEvent('providers/cloud.pubsub/eventTypes/topic.publish',
-                     Resources.TOPIC),
-    ]),
-    TriggerProvider('cloud.storage', [
-        TriggerEvent('google.storage.object.finalize', Resources.BUCKET),
-        TriggerEvent('providers/cloud.storage/eventTypes/object.change',
-                     Resources.BUCKET),
-        TriggerEvent('google.storage.object.archive', Resources.BUCKET),
-        TriggerEvent('google.storage.object.delete', Resources.BUCKET),
-        TriggerEvent('google.storage.object.metadataUpdate', Resources.BUCKET),
-    ]),
-    TriggerProvider('google.firebase.database.ref', [
-        TriggerEvent('providers/google.firebase.database/eventTypes/ref.create',
-                     Resources.FIREBASE_DB),
-        TriggerEvent('providers/google.firebase.database/eventTypes/ref.update',
-                     Resources.FIREBASE_DB),
-        TriggerEvent('providers/google.firebase.database/eventTypes/ref.delete',
-                     Resources.FIREBASE_DB),
-        TriggerEvent('providers/google.firebase.database/eventTypes/ref.write',
-                     Resources.FIREBASE_DB),
-    ]),
-    TriggerProvider('google.firestore.document', [
-        TriggerEvent('providers/cloud.firestore/eventTypes/document.create',
-                     Resources.FIRESTORE_DOC),
-        TriggerEvent('providers/cloud.firestore/eventTypes/document.update',
-                     Resources.FIRESTORE_DOC),
-        TriggerEvent('providers/cloud.firestore/eventTypes/document.delete',
-                     Resources.FIRESTORE_DOC),
-        TriggerEvent('providers/cloud.firestore/eventTypes/document.write',
-                     Resources.FIRESTORE_DOC),
-    ]),
-    TriggerProvider('google.firebase.analytics.event', [
-        TriggerEvent('providers/google.firebase.analytics/eventTypes/event.log',
-                     Resources.FIREBASE_ANALYTICS_EVENT),
-    ]),
-    TriggerProvider('google.firebase.remoteConfig', [
-        TriggerEvent('google.firebase.remoteconfig.update', Resources.PROJECT),
-    ]),
-    TriggerProvider('firebase.auth', [
-        TriggerEvent('providers/firebase.auth/eventTypes/user.create',
-                     Resources.PROJECT),
-        TriggerEvent('providers/firebase.auth/eventTypes/user.delete',
-                     Resources.PROJECT),
-    ])
+    TriggerProvider(
+        'cloud.pubsub',
+        [
+            TriggerEvent('google.pubsub.topic.publish', Resources.TOPIC),
+            TriggerEvent(
+                'providers/cloud.pubsub/eventTypes/topic.publish',
+                Resources.TOPIC,
+            ),
+        ],
+    ),
+    TriggerProvider(
+        'cloud.storage',
+        [
+            TriggerEvent('google.storage.object.finalize', Resources.BUCKET),
+            TriggerEvent(
+                'providers/cloud.storage/eventTypes/object.change',
+                Resources.BUCKET,
+            ),
+            TriggerEvent('google.storage.object.archive', Resources.BUCKET),
+            TriggerEvent('google.storage.object.delete', Resources.BUCKET),
+            TriggerEvent(
+                'google.storage.object.metadataUpdate', Resources.BUCKET
+            ),
+        ],
+    ),
+    TriggerProvider(
+        'google.firebase.database.ref',
+        [
+            TriggerEvent(
+                'providers/google.firebase.database/eventTypes/ref.create',
+                Resources.FIREBASE_DB,
+            ),
+            TriggerEvent(
+                'providers/google.firebase.database/eventTypes/ref.update',
+                Resources.FIREBASE_DB,
+            ),
+            TriggerEvent(
+                'providers/google.firebase.database/eventTypes/ref.delete',
+                Resources.FIREBASE_DB,
+            ),
+            TriggerEvent(
+                'providers/google.firebase.database/eventTypes/ref.write',
+                Resources.FIREBASE_DB,
+            ),
+        ],
+    ),
+    TriggerProvider(
+        'google.firestore.document',
+        [
+            TriggerEvent(
+                'providers/cloud.firestore/eventTypes/document.create',
+                Resources.FIRESTORE_DOC,
+            ),
+            TriggerEvent(
+                'providers/cloud.firestore/eventTypes/document.update',
+                Resources.FIRESTORE_DOC,
+            ),
+            TriggerEvent(
+                'providers/cloud.firestore/eventTypes/document.delete',
+                Resources.FIRESTORE_DOC,
+            ),
+            TriggerEvent(
+                'providers/cloud.firestore/eventTypes/document.write',
+                Resources.FIRESTORE_DOC,
+            ),
+        ],
+    ),
+    TriggerProvider(
+        'google.firebase.analytics.event',
+        [
+            TriggerEvent(
+                'providers/google.firebase.analytics/eventTypes/event.log',
+                Resources.FIREBASE_ANALYTICS_EVENT,
+            ),
+        ],
+    ),
+    TriggerProvider(
+        'google.firebase.remoteConfig',
+        [
+            TriggerEvent(
+                'google.firebase.remoteconfig.update', Resources.PROJECT
+            ),
+        ],
+    ),
+    TriggerProvider(
+        'firebase.auth',
+        [
+            TriggerEvent(
+                'providers/firebase.auth/eventTypes/user.create',
+                Resources.PROJECT,
+            ),
+            TriggerEvent(
+                'providers/firebase.auth/eventTypes/user.delete',
+                Resources.PROJECT,
+            ),
+        ],
+    ),
 ]
 
 
@@ -136,8 +188,9 @@ class _TriggerProviderRegistry(object):
 
   def __init__(self, all_providers):
     self.providers = all_providers
-    self._unadvertised_provider = TriggerProvider(UNADVERTISED_PROVIDER_LABEL,
-                                                  [])
+    self._unadvertised_provider = TriggerProvider(
+        UNADVERTISED_PROVIDER_LABEL, []
+    )
 
   def ProvidersLabels(self):
     return (p.label for p in self.providers)

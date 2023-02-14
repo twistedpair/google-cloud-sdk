@@ -1767,6 +1767,13 @@
         }
       }
     },
+    "DatabaseFailoverRequest": {
+      "id": "DatabaseFailoverRequest",
+      "description": "Request to trigger database failover (only for highly resilient environments).",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListImageVersionsResponse": {
       "id": "ListImageVersionsResponse",
       "description": "The ImageVersions in a project and location.",
@@ -1967,6 +1974,13 @@
     "LoadSnapshotResponse": {
       "id": "LoadSnapshotResponse",
       "description": "Response to LoadSnapshotRequest.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DatabaseFailoverResponse": {
+      "id": "DatabaseFailoverResponse",
+      "description": "Response for DatabaseFailoverRequest.",
       "type": "object",
       "properties": {
       }
@@ -2330,6 +2344,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Loads a snapshot of a Cloud Composer environment. As a result of this operation, a snapshot of environment's specified in LoadSnapshotRequest is loaded into the environment."
+                },
+                "databaseFailover": {
+                  "id": "composer.projects.locations.environments.databaseFailover",
+                  "path": "v1alpha2/{+environment}:databaseFailover",
+                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:databaseFailover",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "Target environment: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "DatabaseFailoverRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Triggers database failover (only for highly resilient environments)."
                 }
               }
               ,

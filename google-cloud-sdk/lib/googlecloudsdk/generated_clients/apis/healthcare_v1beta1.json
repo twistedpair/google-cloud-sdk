@@ -3546,6 +3546,45 @@
         }
       }
     },
+    "FhirStoreMetrics": {
+      "id": "FhirStoreMetrics",
+      "description": "List of metrics for a given FHIR store.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the FHIR store to get metrics for, in the format `projects\/{project_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+          "type": "string"
+        },
+        "metrics": {
+          "description": "List of FhirStoreMetric by resource type.",
+          "type": "array",
+          "items": {
+            "$ref": "FhirStoreMetric"
+          }
+        }
+      }
+    },
+    "FhirStoreMetric": {
+      "id": "FhirStoreMetric",
+      "description": "Count of resources and total storage size by type for a given FHIR store.",
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "description": "The FHIR resource type this metric applies to.",
+          "type": "string"
+        },
+        "count": {
+          "description": "The total count of FHIR resources in the store of this resource type.",
+          "type": "string",
+          "format": "int64"
+        },
+        "structuredStorageSizeBytes": {
+          "description": "The total amount of structured storage used by FHIR resources of this resource type in the store.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "AnalyzeEntitiesRequest": {
       "id": "AnalyzeEntitiesRequest",
       "description": "The request to analyze healthcare entities in a document.",
@@ -6206,6 +6245,31 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Configure the search parameters for the FHIR store and reindex resources in the FHIR store according to the defined search parameters. The search parameters provided in this request will replace any previous search configuration. The target SearchParameter resources need to exist in the store before calling ConfigureSearch, otherwise an error will occur. This method returns an Operation that can be used to track the progress of the reindexing by calling GetOperation."
+                    },
+                    "getFHIRStoreMetrics": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.getFHIRStoreMetrics",
+                      "path": "v1beta1/{+name}:getFHIRStoreMetrics",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:getFHIRStoreMetrics",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the FHIR store to get metrics for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "FhirStoreMetrics"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets metrics associated with the FHIR store."
                     }
                   }
                   ,

@@ -32,6 +32,10 @@ class ClientBase(object):
     self._messages = self._client.MESSAGES_MODULE
     self._service = service
 
+  def GetMessage(self):
+    """Returns the gkeonprem message module."""
+    return self._messages
+
   def Describe(self, resource_ref):
     """Gets a gkeonprem API resource."""
     req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())
@@ -162,32 +166,39 @@ class ClientBase(object):
 
     input_node_taint = '='.join(node_taint)
     valid_node_taint_effects = ', '.join(
-        six.text_type(key) for key in sorted(taint_effect_mapping.keys()))
+        six.text_type(key) for key in sorted(taint_effect_mapping.keys())
+    )
 
     if len(node_taint) != 2:
       raise arg_parsers.ArgumentTypeError(
           'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
-          .format(input_node_taint))
+          .format(input_node_taint)
+      )
     taint_key = node_taint[0]
 
     effect_delimiter_count = node_taint[1].count(':')
     if effect_delimiter_count > 1:
       raise arg_parsers.ArgumentTypeError(
           'Node taint [{}] not in correct format, expect KEY=VALUE:EFFECT.'
-          .format(input_node_taint))
+          .format(input_node_taint)
+      )
 
     if effect_delimiter_count == 0:
       taint_value = node_taint[1]
       raise arg_parsers.ArgumentTypeError(
           'Taint effect unspecified: [{}], expect one of [{}].'.format(
-              input_node_taint, valid_node_taint_effects))
+              input_node_taint, valid_node_taint_effects
+          )
+      )
 
     if effect_delimiter_count == 1:
       taint_value, taint_effect = node_taint[1].split(':', 1)
       if taint_effect not in taint_effect_mapping:
         raise arg_parsers.ArgumentTypeError(
             'Invalid taint effect in [{}] , expect one of [{}]'.format(
-                input_node_taint, valid_node_taint_effects))
+                input_node_taint, valid_node_taint_effects
+            )
+        )
 
       taint_effect = taint_effect_mapping[taint_effect]
 

@@ -1602,6 +1602,21 @@ class DatamigrationProjectsLocationsConversionWorkspacesTestIamPermissionsReques
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class DatamigrationProjectsLocationsFetchStaticIpsRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsFetchStaticIpsRequest object.
+
+  Fields:
+    name: Required. The resource name for the location for which static IPs
+      should be returned. Must be in the format `projects/*/locations/*`.
+    pageSize: Maximum number of IPs to return.
+    pageToken: A page token, received from a previous `FetchStaticIps` call.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class DatamigrationProjectsLocationsGetRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsGetRequest object.
 
@@ -2145,6 +2160,19 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FetchStaticIpsResponse(_messages.Message):
+  r"""Response message for a 'FetchStaticIps' request.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    staticIps: List of static IPs.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  staticIps = _messages.StringField(2, repeated=True)
 
 
 class ForwardSshTunnelConnectivity(_messages.Message):

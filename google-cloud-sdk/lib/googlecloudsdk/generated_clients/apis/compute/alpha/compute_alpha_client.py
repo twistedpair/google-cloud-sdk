@@ -4945,7 +4945,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def GetFromFamily(self, request, global_params=None):
-      r"""Returns the latest image that is part of an image family and is not deprecated.
+      r"""Returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
 
       Args:
         request: (ComputeImagesGetFromFamilyRequest) input message

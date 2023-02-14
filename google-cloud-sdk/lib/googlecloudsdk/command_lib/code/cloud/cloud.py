@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.code import dataobject
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import flags as run_flags
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
@@ -150,11 +151,27 @@ class Settings(dataobject.DataObject):
     elif args.IsKnownAndSpecified('memory'):
       replacements['memory'] = args.memory
 
+    context = self.context
+    if args.source:
+      context = os.path.abspath(args.source)
+    replacements['context'] = context
+
     if args.IsKnownAndSpecified('builder'):
       replacements['builder'] = _BuilderFromArg(args.builder)
     elif args.IsKnownAndSpecified('dockerfile'):
       replacements['builder'] = builders.DockerfileBuilder(
           dockerfile=args.dockerfile)
+    else:
+      if isinstance(self.builder, builders.DockerfileBuilder):
+        try:
+          replacements['builder'] = self.builder
+          replacements['builder'].Validate(context)
+        except builders.InvalidLocationError:
+          log.status.Print(
+              'No Dockerfile detected. '
+              'Using GCP buildpacks to build the container'
+          )
+          replacements['builder'] = _BuilderFromArg(_DEFAULT_BUILDPACK_BUILDER)
     return self.replace(**replacements)
 
   def Build(self):

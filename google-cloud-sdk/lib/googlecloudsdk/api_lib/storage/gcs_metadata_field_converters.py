@@ -23,6 +23,7 @@ import json
 from apitools.base.protorpclite import protojson
 from apitools.base.py import encoding
 
+from googlecloudsdk.api_lib.storage import gcs_iam_util
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import storage_url
@@ -58,7 +59,7 @@ def get_bucket_or_object_acl_class(is_bucket=False):
 
 def process_acl_file(file_path, is_bucket=False):
   """Converts ACL file to Apitools objects."""
-  acl_dict_list = metadata_util.cached_read_json_file(file_path)
+  acl_dict_list = metadata_util.cached_read_yaml_json_file(file_path)
   acl_class = get_bucket_or_object_acl_class(is_bucket)
   acl_messages = []
   for acl_dict in acl_dict_list:
@@ -76,7 +77,7 @@ def process_cors(file_path):
   """Converts CORS file to Apitools objects."""
   if file_path == user_request_args_factory.CLEAR:
     return []
-  cors_dict_list = metadata_util.cached_read_json_file(file_path)
+  cors_dict_list = metadata_util.cached_read_yaml_json_file(file_path)
   if not cors_dict_list:
     return []
 
@@ -107,7 +108,8 @@ def process_default_storage_class(default_storage_class):
 
 def process_iam_file(file_path, custom_etag=None):
   """Converts IAM file to Apitools objects."""
-  policy_dict = metadata_util.cached_read_json_file(file_path)
+  policy_dict = metadata_util.cached_read_yaml_json_file(file_path)
+  policy_dict['version'] = gcs_iam_util.IAM_POLICY_VERSION
   if custom_etag is not None:
     policy_dict['etag'] = custom_etag
   # Would normally encode the dict directly into a messages object, but the
@@ -156,7 +158,7 @@ def process_labels(existing_labels_object, file_path):
   else:
     new_labels_dict = {}
 
-  for key, value in metadata_util.cached_read_json_file(file_path).items():
+  for key, value in metadata_util.cached_read_yaml_json_file(file_path).items():
     new_labels_dict[key] = value
 
   messages = apis.GetMessagesModule('storage', 'v1')
@@ -172,7 +174,7 @@ def process_lifecycle(file_path):
   """Converts lifecycle file to Apitools objects."""
   if file_path == user_request_args_factory.CLEAR:
     return None
-  lifecycle_dict = metadata_util.cached_read_json_file(file_path)
+  lifecycle_dict = metadata_util.cached_read_yaml_json_file(file_path)
   if not lifecycle_dict:
     # Empty JSON dict similar to CLEAR flag.
     return None

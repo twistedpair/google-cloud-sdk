@@ -363,7 +363,10 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
     orderBy: The sorting order of the resources returned. Value should be a
       comma separated list of fields. The default sorting oder is ascending.
       See https://google.aip.dev/132#ordering.
-    pageSize: Maximum number of functions to return per call.
+    pageSize: Maximum number of functions to return per call. The largest
+      allowed page_size is 1,000, if the page_size is omitted or specified as
+      greater than 1,000 then it will be replaced as 1,000. The size of the
+      list response can be less than specified when used with filters.
     pageToken: The value returned by the last `ListFunctionsResponse`;
       indicates that this is a continuation of a prior `ListFunctions` call,
       and that the system should return the next page of data.

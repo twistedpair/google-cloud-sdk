@@ -48,7 +48,8 @@ from six.moves import urllib
 
 _BUILD_NAME_REGEX = re.compile(
     r'projects\/(?P<projectnumber>[^\/]+)\/locations'
-    r'\/(?P<region>[^\/]+)\/builds\/(?P<buildid>[^\/]+)')
+    r'\/(?P<region>[^\/]+)\/builds\/(?P<buildid>[^\/]+)'
+)
 
 
 def _ApplyBuildEnvVarsArgsToFunction(function, args):
@@ -69,15 +70,21 @@ def _ApplyBuildEnvVarsArgsToFunction(function, args):
 
   updated_fields = []
   old_build_env_vars = env_vars_api_util.GetEnvVarsAsDict(
-      function.buildEnvironmentVariables)
+      function.buildEnvironmentVariables
+  )
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
-  new_build_env_vars = map_util.ApplyMapFlags(old_build_env_vars,
-                                              **build_env_var_flags)
+  new_build_env_vars = map_util.ApplyMapFlags(
+      old_build_env_vars, **build_env_var_flags
+  )
   if old_build_env_vars != new_build_env_vars:
-    build_env_vars_type_class = api_util.GetApiMessagesModule(
-    ).CloudFunction.BuildEnvironmentVariablesValue
-    function.buildEnvironmentVariables = env_vars_api_util.DictToEnvVarsProperty(
-        build_env_vars_type_class, new_build_env_vars)
+    build_env_vars_type_class = (
+        api_util.GetApiMessagesModule().CloudFunction.BuildEnvironmentVariablesValue
+    )
+    function.buildEnvironmentVariables = (
+        env_vars_api_util.DictToEnvVarsProperty(
+            build_env_vars_type_class, new_build_env_vars
+        )
+    )
     updated_fields.append('buildEnvironmentVariables')
   return updated_fields
 
@@ -100,14 +107,17 @@ def _ApplyEnvVarsArgsToFunction(function, args):
 
   updated_fields = []
   old_env_vars = env_vars_api_util.GetEnvVarsAsDict(
-      function.environmentVariables)
+      function.environmentVariables
+  )
   env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
   new_env_vars = map_util.ApplyMapFlags(old_env_vars, **env_var_flags)
   if old_env_vars != new_env_vars:
-    env_vars_type_class = api_util.GetApiMessagesModule(
-    ).CloudFunction.EnvironmentVariablesValue
+    env_vars_type_class = (
+        api_util.GetApiMessagesModule().CloudFunction.EnvironmentVariablesValue
+    )
     function.environmentVariables = env_vars_api_util.DictToEnvVarsProperty(
-        env_vars_type_class, new_env_vars)
+        env_vars_type_class, new_env_vars
+    )
     updated_fields.append('environmentVariables')
   return updated_fields
 
@@ -123,17 +133,22 @@ def _LogSecretsPermissionMessage(project, service_account_email):
   """
   if not service_account_email:
     service_account_email = '{project}@appspot.gserviceaccount.com'.format(
-        project=project)
-  message = ('This deployment uses secrets. Ensure that the runtime service '
-             "account '{sa}' has access to the secrets. You can do that by "
-             "granting the permission 'roles/secretmanager.secretAccessor' to "
-             'the runtime service account on the project or secrets.\n')
+        project=project
+    )
+  message = (
+      'This deployment uses secrets. Ensure that the runtime service '
+      "account '{sa}' has access to the secrets. You can do that by "
+      "granting the permission 'roles/secretmanager.secretAccessor' to "
+      'the runtime service account on the project or secrets.\n'
+  )
   command = (
       'E.g. gcloud projects add-iam-policy-binding {project} --member='
-      "'serviceAccount:{sa}' --role='roles/secretmanager.secretAccessor'")
+      "'serviceAccount:{sa}' --role='roles/secretmanager.secretAccessor'"
+  )
   # TODO(b/185133105): Log this message for secret access failures only
   log.warning(
-      (message + command).format(project=project, sa=service_account_email))
+      (message + command).format(project=project, sa=service_account_email)
+  )
 
 
 def _ApplySecretsArgsToFunction(function, args):
@@ -153,12 +168,16 @@ def _ApplySecretsArgsToFunction(function, args):
     return []
 
   old_secrets = secrets_util.GetSecretsAsDict(
-      function.secretEnvironmentVariables, function.secretVolumes)
+      function.secretEnvironmentVariables, function.secretVolumes
+  )
   new_secrets = {}
   try:
     new_secrets = secrets_config.ApplyFlags(
-        old_secrets, args, _GetProject(),
-        project_util.GetProjectNumber(_GetProject()))
+        old_secrets,
+        args,
+        _GetProject(),
+        project_util.GetProjectNumber(_GetProject()),
+    )
   except ArgumentTypeError as error:
     exceptions.reraise(function_exceptions.FunctionsError(error))
 
@@ -166,18 +185,22 @@ def _ApplySecretsArgsToFunction(function, args):
     _LogSecretsPermissionMessage(_GetProject(), function.serviceAccountEmail)
 
   old_secret_env_vars, old_secret_volumes = secrets_config.SplitSecretsDict(
-      old_secrets)
+      old_secrets
+  )
   new_secret_env_vars, new_secret_volumes = secrets_config.SplitSecretsDict(
-      new_secrets)
+      new_secrets
+  )
 
   updated_fields = []
   if old_secret_env_vars != new_secret_env_vars:
     function.secretEnvironmentVariables = secrets_util.SecretEnvVarsToMessages(
-        new_secret_env_vars, api_util.GetApiMessagesModule())
+        new_secret_env_vars, api_util.GetApiMessagesModule()
+    )
     updated_fields.append('secretEnvironmentVariables')
   if old_secret_volumes != new_secret_volumes:
     function.secretVolumes = secrets_util.SecretVolumesToMessages(
-        new_secret_volumes, api_util.GetApiMessagesModule())
+        new_secret_volumes, api_util.GetApiMessagesModule()
+    )
     updated_fields.append('secretVolumes')
   return updated_fields
 
@@ -205,26 +228,32 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
   updated_fields = []
   if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
     old_kms_key = function.kmsKeyName
-    function.kmsKeyName = (None if args.clear_kms_key else args.kms_key)
+    function.kmsKeyName = None if args.clear_kms_key else args.kms_key
     if function.kmsKeyName != old_kms_key:
       if function.kmsKeyName:
         cmek_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
       updated_fields.append('kmsKeyName')
   if args.IsSpecified('docker_repository') or args.IsSpecified(
-      'clear_docker_repository'):
+      'clear_docker_repository'
+  ):
     old_docker_repository = function.dockerRepository
-    function.dockerRepository = (None if args.clear_docker_repository else
-                                 args.docker_repository)
+    function.dockerRepository = (
+        None if args.clear_docker_repository else args.docker_repository
+    )
     if function.dockerRepository != old_docker_repository:
       if function.dockerRepository:
         cmek_util.ValidateDockerRepositoryForFunction(
-            function.dockerRepository, function_ref)
+            function.dockerRepository, function_ref
+        )
       updated_fields.append('dockerRepository')
   if function.kmsKeyName and not function.dockerRepository:
     raise calliope_exceptions.RequiredArgumentException(
         '--docker-repository',
-        'A Docker repository must be specified when a KMS key is configured '
-        'for the function.')
+        (
+            'A Docker repository must be specified when a KMS key is configured'
+            ' for the function.'
+        ),
+    )
   return updated_fields
 
 
@@ -246,20 +275,25 @@ def _ApplyDockerRegistryArgsToFunction(function, args):
   if args.IsSpecified('docker_registry'):
     kms_key = function.kmsKeyName
     if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-      kms_key = (None if args.clear_kms_key else args.kms_key)
+      kms_key = None if args.clear_kms_key else args.kms_key
     if kms_key is not None and args.docker_registry == 'container-registry':
       raise calliope_exceptions.InvalidArgumentException(
           '--docker-registry',
-          'CMEK deployments are not supported by Container Registry.'
-          'Please either use Artifact Registry or do not specify a KMS key '
-          'for the function (you may need to clear it).')
+          (
+              'CMEK deployments are not supported by Container Registry.'
+              'Please either use Artifact Registry or do not specify a KMS key '
+              'for the function (you may need to clear it).'
+          ),
+      )
     function.dockerRegistry = enum_util.ParseDockerRegistry(
-        args.docker_registry)
+        args.docker_registry
+    )
     updated_fields.append('docker_registry')
 
     if args.docker_registry == 'artifact-registry':
       api_enablement.PromptToEnableApiIfDisabled(
-          'artifactregistry.googleapis.com')
+          'artifactregistry.googleapis.com'
+      )
   return updated_fields
 
 
@@ -278,7 +312,7 @@ def _GetActiveKMSKey(function, args):
   """
   kms_key = function.kmsKeyName
   if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-    kms_key = (None if args.clear_kms_key else args.kms_key)
+    kms_key = None if args.clear_kms_key else args.kms_key
   return kms_key
 
 
@@ -305,17 +339,23 @@ def _ApplyBuildpackStackArgsToFunction(function, args, track):
 
 
 def _CreateBindPolicyCommand(function_ref):
-  template = ('gcloud functions add-iam-policy-binding %s --region=%s '
-              '--member=allUsers --role=roles/cloudfunctions.invoker')
+  template = (
+      'gcloud functions add-iam-policy-binding %s --region=%s '
+      '--member=allUsers --role=roles/cloudfunctions.invoker'
+  )
   return template % (function_ref.Name(), function_ref.locationsId)
 
 
 def _CreateStackdriverURLforBuildLogs(build_id, project_id):
-  query_param = ('resource.type=build\nresource.labels.build_id=%s\n'
-                 'logName=projects/%s/logs/cloudbuild' % (build_id, project_id))
-  return ('https://console.cloud.google.com/logs/viewer?'
-          'project=%s&advancedFilter=%s' %
-          (project_id, urllib.parse.quote(query_param, safe='')))  # pylint: disable=redundant-keyword-arg
+  query_param = (
+      'resource.type=build\nresource.labels.build_id=%s\n'
+      'logName=projects/%s/logs/cloudbuild' % (build_id, project_id)
+  )
+  return (
+      'https://console.cloud.google.com/logs/viewer?'
+      'project=%s&advancedFilter=%s'
+      % (project_id, urllib.parse.quote(query_param, safe=''))
+  )
 
 
 def _GetProject():
@@ -324,16 +364,23 @@ def _GetProject():
 
 def _CreateCloudBuildLogURL(build_name):
   matched_groups = _BUILD_NAME_REGEX.match(build_name).groupdict()
-  return ('https://console.cloud.google.com/'
-          'cloud-build/builds;region=%s/%s?project=%s' %
-          (matched_groups['region'], matched_groups['buildid'],
-           matched_groups['projectnumber']))
+  return (
+      'https://console.cloud.google.com/'
+      'cloud-build/builds;region=%s/%s?project=%s'
+      % (
+          matched_groups['region'],
+          matched_groups['buildid'],
+          matched_groups['projectnumber'],
+      )
+  )
 
 
 def _ValidateV1Flag(args):
   if args.timeout and args.timeout > 540:
-    raise ArgumentTypeError('--timeout: value must be less than or equal to '
-                            '540s; received: {}s'.format(args.timeout))
+    raise ArgumentTypeError(
+        '--timeout: value must be less than or equal to '
+        '540s; received: {}s'.format(args.timeout)
+    )
 
 
 def Run(args, track=None, enable_runtime=True):
@@ -345,14 +392,19 @@ def Run(args, track=None, enable_runtime=True):
   labels_util.CheckNoDeploymentLabels('--update-labels', args.update_labels)
 
   # Check that exactly one trigger type is specified properly.
-  trigger_util.ValidateTriggerArgs(args.trigger_event, args.trigger_resource,
-                                   args.IsSpecified('retry'),
-                                   args.IsSpecified('trigger_http'))
-  trigger_params = trigger_util.GetTriggerEventParams(args.trigger_http,
-                                                      args.trigger_bucket,
-                                                      args.trigger_topic,
-                                                      args.trigger_event,
-                                                      args.trigger_resource)
+  trigger_util.ValidateTriggerArgs(
+      args.trigger_event,
+      args.trigger_resource,
+      args.IsSpecified('retry'),
+      args.IsSpecified('trigger_http'),
+  )
+  trigger_params = trigger_util.GetTriggerEventParams(
+      args.trigger_http,
+      args.trigger_bucket,
+      args.trigger_topic,
+      args.trigger_event,
+      args.trigger_resource,
+  )
 
   function_ref = args.CONCEPTS.name.Parse()
   function_url = function_ref.RelativeName()
@@ -363,10 +415,12 @@ def Run(args, track=None, enable_runtime=True):
   function = api_util.GetFunction(function_url)
 
   is_new_function = function is None
-  had_vpc_connector = bool(
-      function.vpcConnector) if not is_new_function else False
-  had_http_trigger = bool(
-      function.httpsTrigger) if not is_new_function else False
+  had_vpc_connector = (
+      bool(function.vpcConnector) if not is_new_function else False
+  )
+  had_http_trigger = (
+      bool(function.httpsTrigger) if not is_new_function else False
+  )
   if is_new_function:
     trigger_util.CheckTriggerSpecified(args)
     function = messages.CloudFunction()
@@ -374,8 +428,9 @@ def Run(args, track=None, enable_runtime=True):
   elif trigger_params:
     # If the new deployment would implicitly change the trigger_event type
     # raise error
-    trigger_util.CheckLegacyTriggerUpdate(function.eventTrigger,
-                                          trigger_params['trigger_event'])
+    trigger_util.CheckLegacyTriggerUpdate(
+        function.eventTrigger, trigger_params['trigger_event']
+    )
 
   # Keep track of which fields are updated in the case of patching.
   updated_fields = []
@@ -393,13 +448,15 @@ def Run(args, track=None, enable_runtime=True):
   if args.service_account:
     function.serviceAccountEmail = args.service_account
     updated_fields.append('serviceAccountEmail')
-  if (args.IsSpecified('max_instances') or
-      args.IsSpecified('clear_max_instances')):
+  if args.IsSpecified('max_instances') or args.IsSpecified(
+      'clear_max_instances'
+  ):
     max_instances = 0 if args.clear_max_instances else args.max_instances
     function.maxInstances = max_instances
     updated_fields.append('maxInstances')
-  if (args.IsSpecified('min_instances') or
-      args.IsSpecified('clear_min_instances')):
+  if args.IsSpecified('min_instances') or args.IsSpecified(
+      'clear_min_instances'
+  ):
     min_instances = 0 if args.clear_min_instances else args.min_instances
     function.minInstances = min_instances
     updated_fields.append('minInstances')
@@ -414,37 +471,41 @@ def Run(args, track=None, enable_runtime=True):
 
     elif is_new_function:
       raise calliope_exceptions.RequiredArgumentException(
-          'runtime', 'Flag `--runtime` is required for new functions.')
+          'runtime', 'Flag `--runtime` is required for new functions.'
+      )
   if args.vpc_connector or args.clear_vpc_connector:
-    function.vpcConnector = ('' if args.clear_vpc_connector else
-                             args.vpc_connector)
+    function.vpcConnector = (
+        '' if args.clear_vpc_connector else args.vpc_connector
+    )
     updated_fields.append('vpcConnector')
   if args.IsSpecified('egress_settings'):
-    will_have_vpc_connector = ((had_vpc_connector and
-                                not args.clear_vpc_connector) or
-                               args.vpc_connector)
+    will_have_vpc_connector = (
+        had_vpc_connector and not args.clear_vpc_connector
+    ) or args.vpc_connector
     if not will_have_vpc_connector:
       raise calliope_exceptions.RequiredArgumentException(
-          'vpc-connector', 'Flag `--vpc-connector` is '
-          'required for setting `egress-settings`.')
+          'vpc-connector',
+          'Flag `--vpc-connector` is required for setting `egress-settings`.',
+      )
     egress_settings_enum = arg_utils.ChoiceEnumMapper(
         arg_name='egress_settings',
         message_enum=function.VpcConnectorEgressSettingsValueValuesEnum,
-        custom_mappings=flags.EGRESS_SETTINGS_MAPPING).GetEnumForChoice(
-            args.egress_settings)
+        custom_mappings=flags.EGRESS_SETTINGS_MAPPING,
+    ).GetEnumForChoice(args.egress_settings)
     function.vpcConnectorEgressSettings = egress_settings_enum
     updated_fields.append('vpcConnectorEgressSettings')
   if args.IsSpecified('ingress_settings'):
     ingress_settings_enum = arg_utils.ChoiceEnumMapper(
         arg_name='ingress_settings',
         message_enum=function.IngressSettingsValueValuesEnum,
-        custom_mappings=flags.INGRESS_SETTINGS_MAPPING).GetEnumForChoice(
-            args.ingress_settings)
+        custom_mappings=flags.INGRESS_SETTINGS_MAPPING,
+    ).GetEnumForChoice(args.ingress_settings)
     function.ingressSettings = ingress_settings_enum
     updated_fields.append('ingressSettings')
   if args.build_worker_pool or args.clear_build_worker_pool:
-    function.buildWorkerPool = ('' if args.clear_build_worker_pool else
-                                args.build_worker_pool)
+    function.buildWorkerPool = (
+        '' if args.clear_build_worker_pool else args.build_worker_pool
+    )
     updated_fields.append('buildWorkerPool')
   # Populate trigger properties of function based on trigger args.
   if args.trigger_http:
@@ -467,19 +528,21 @@ def Run(args, track=None, enable_runtime=True):
 
   will_have_http_trigger = had_http_trigger or args.trigger_http
 
-  if args.IsSpecified('security_level') or (will_have_http_trigger and
-                                            is_new_function):
+  if args.IsSpecified('security_level') or (
+      will_have_http_trigger and is_new_function
+  ):
     if not will_have_http_trigger:
       raise calliope_exceptions.RequiredArgumentException(
           'trigger-http',
-          'Flag `--trigger-http` is required for setting `security-level`.')
+          'Flag `--trigger-http` is required for setting `security-level`.',
+      )
 
     # SecurityLevelValueValuesEnum('SECURE_ALWAYS' | 'SECURE_OPTIONAL')
     security_level_enum = arg_utils.ChoiceEnumMapper(
         arg_name='security_level',
         message_enum=function.httpsTrigger.SecurityLevelValueValuesEnum,
-        custom_mappings=flags.SECURITY_LEVEL_MAPPING).GetEnumForChoice(
-            args.security_level)
+        custom_mappings=flags.SECURITY_LEVEL_MAPPING,
+    ).GetEnumForChoice(args.security_level)
     function.httpsTrigger.securityLevel = security_level_enum
     updated_fields.append('httpsTrigger.securityLevel')
 
@@ -489,16 +552,27 @@ def Run(args, track=None, enable_runtime=True):
   # Only Add source to function if its explicitly provided, a new function,
   # using a stage bucket or deploy of an existing function that previously
   # used local source.
-  if (args.source or args.stage_bucket or is_new_function or
-      function.sourceUploadUrl):
+  if (
+      args.source
+      or args.stage_bucket
+      or is_new_function
+      or function.sourceUploadUrl
+  ):
     updated_fields.extend(
-        source_util.SetFunctionSourceProps(function, function_ref, args.source,
-                                           args.stage_bucket, args.ignore_file,
-                                           kms_key))
+        source_util.SetFunctionSourceProps(
+            function,
+            function_ref,
+            args.source,
+            args.stage_bucket,
+            args.ignore_file,
+            kms_key,
+        )
+    )
 
   # Apply label args to function
-  if labels_util.SetFunctionLabels(function, args.update_labels,
-                                   args.remove_labels, args.clear_labels):
+  if labels_util.SetFunctionLabels(
+      function, args.update_labels, args.remove_labels, args.clear_labels
+  ):
     updated_fields.append('labels')
 
   # Apply build environment variables args to function
@@ -514,34 +588,44 @@ def Run(args, track=None, enable_runtime=True):
   updated_fields.extend(_ApplySecretsArgsToFunction(function, args))
 
   # Applies CMEK args to function
-  updated_fields.extend(
-      _ApplyCMEKArgsToFunction(function_ref, function, args))
+  updated_fields.extend(_ApplyCMEKArgsToFunction(function_ref, function, args))
 
   # Applies remaining Artifact Registry args to the function. Note that one of
   # them, docker_repository, was already added as part of CMEK
-  updated_fields.extend(
-      _ApplyDockerRegistryArgsToFunction(function, args))
+  updated_fields.extend(_ApplyDockerRegistryArgsToFunction(function, args))
 
   # Applies Buildpack stack args to the function.
   updated_fields.extend(
-      _ApplyBuildpackStackArgsToFunction(function, args, track))
+      _ApplyBuildpackStackArgsToFunction(function, args, track)
+  )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   if is_new_function:
-    if (function.httpsTrigger and not ensure_all_users_invoke and
-        not deny_all_users_invoke and
-        api_util.CanAddFunctionIamPolicyBinding(_GetProject())):
+    if (
+        function.httpsTrigger
+        and not ensure_all_users_invoke
+        and not deny_all_users_invoke
+        and api_util.CanAddFunctionIamPolicyBinding(_GetProject())
+    ):
       ensure_all_users_invoke = console_io.PromptContinue(
           prompt_string=(
               'Allow unauthenticated invocations of new function [{}]?'.format(
-                  args.NAME)),
-          default=False)
+                  args.NAME
+              )
+          ),
+          default=False,
+      )
 
     op = api_util.CreateFunction(function, function_ref.Parent().RelativeName())
-    if (function.httpsTrigger and not ensure_all_users_invoke and
-        not deny_all_users_invoke):
-      template = ('Function created with limited-access IAM policy. '
-                  'To enable unauthorized access consider `%s`')
+    if (
+        function.httpsTrigger
+        and not ensure_all_users_invoke
+        and not deny_all_users_invoke
+    ):
+      template = (
+          'Function created with limited-access IAM policy. '
+          'To enable unauthorized access consider `%s`'
+      )
       log.warning(template % _CreateBindPolicyCommand(function_ref))
       deny_all_users_invoke = True
 
@@ -579,11 +663,14 @@ def Run(args, track=None, enable_runtime=True):
         stop_trying_perm_set[0] = True
       elif deny_all_users_invoke:
         stop_trying_perm_set[0] = (
-            api_util.RemoveFunctionIamPolicyBindingIfFound(function.name))
+            api_util.RemoveFunctionIamPolicyBindingIfFound(function.name)
+        )
     except calliope_exceptions.HttpException:
       stop_trying_perm_set[0] = True
-      log.warning('Setting IAM policy failed, try `%s`' %
-                  _CreateBindPolicyCommand(function_ref))
+      log.warning(
+          'Setting IAM policy failed, try `%s`'
+          % _CreateBindPolicyCommand(function_ref)
+      )
 
   log_stackdriver_url = [True]
 
@@ -598,16 +685,20 @@ def Run(args, track=None, enable_runtime=True):
     """
     if log_stackdriver_url[0] and op.metadata:
       metadata = encoding.PyValueToMessage(
-          messages.OperationMetadataV1, encoding.MessageToPyValue(op.metadata))
+          messages.OperationMetadataV1, encoding.MessageToPyValue(op.metadata)
+      )
       if metadata.buildName and _BUILD_NAME_REGEX.match(metadata.buildName):
-        log.status.Print('\nFor Cloud Build Logs, visit: %s' %
-                         _CreateCloudBuildLogURL(metadata.buildName))
+        log.status.Print(
+            '\nFor Cloud Build Logs, visit: %s'
+            % _CreateCloudBuildLogURL(metadata.buildName)
+        )
         log_stackdriver_url[0] = False
       elif metadata.buildId:
         sd_info_template = '\nFor Cloud Build Stackdriver Logs, visit: %s'
         log.status.Print(
-            sd_info_template %
-            _CreateStackdriverURLforBuildLogs(metadata.buildId, _GetProject()))
+            sd_info_template
+            % _CreateStackdriverURLforBuildLogs(metadata.buildId, _GetProject())
+        )
         log_stackdriver_url[0] = False
 
   if op:
@@ -617,5 +708,6 @@ def Run(args, track=None, enable_runtime=True):
     api_util.WaitForFunctionUpdateOperation(
         op,
         try_set_invoker=try_set_invoker,
-        on_every_poll=[TryToLogStackdriverURL])
+        on_every_poll=[TryToLogStackdriverURL],
+    )
   return api_util.GetFunction(function.name)

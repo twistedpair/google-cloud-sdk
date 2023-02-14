@@ -287,6 +287,16 @@
         "maintenancePolicy": {
           "description": "Optional. Cluster-wide maintenance policy configuration.",
           "$ref": "MaintenancePolicy"
+        },
+        "controlPlaneVersion": {
+          "description": "Output only. The control plane release version",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nodeVersion": {
+          "description": "Output only. The lowest release version among all worker nodes. This field can be empty if the cluster does not have any worker nodes.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -490,6 +500,11 @@
         "localDiskEncryption": {
           "description": "Optional. Local disk encryption options. This field is only used when enabling CMEK support.",
           "$ref": "LocalDiskEncryption"
+        },
+        "nodeVersion": {
+          "description": "Output only. The lowest release version among all worker nodes.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -583,11 +598,16 @@
           }
         },
         "hostedNode": {
-          "description": "Canonical resource name of the node that this machine is responsible for hosting e.g. projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/nodePools\/{pool_id}\/{node}, Or empty if the machine is not assigned to assume the role of a node.",
+          "description": "Canonical resource name of the node that this machine is responsible for hosting e.g. projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/nodePools\/{pool_id}\/{node}, Or empty if the machine is not assigned to assume the role of a node. For control plane nodes hosted on edge machines, this will return the following format: \"projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/controlPlaneNodes\/{node}\".",
           "type": "string"
         },
         "zone": {
           "description": "The Google Distributed Cloud Edge zone of this machine.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Output only. The software version of the machine.",
+          "readOnly": true,
           "type": "string"
         },
         "disabled": {

@@ -955,21 +955,10 @@ def AddEnableLogging(parser):
       help="""\
       The logging options for the load balancer traffic served by this backend
       service. If logging is enabled, logs will be exported to Cloud Logging.
-      Disabled by default.
-      """)
-
-
-def AddEnableLoggingProtocols(parser, protocols):
-  """Adds the enable logging argument to the argparse."""
-  parser.add_argument(
-      '--enable-logging',
-      action=arg_parsers.StoreTrueFalseAction,
-      help="""\
-      The logging options for the load balancer traffic served by this backend
-      service. If logging is enabled, logs will be exported to Cloud Logging.
-      This can only be specified if the protocol is {0}.
-      Disabled by default.
-      """.format(protocols))
+      Disabled by default. This field cannot be specified for SSL Proxy and TCP
+      Proxy Load Balancing.
+      """,
+  )
 
 
 def AddLoggingSampleRate(parser):
@@ -982,26 +971,13 @@ def AddLoggingSampleRate(parser):
       service. The value of the field must be a float in the range [0, 1]. This
       configures the sampling rate of requests to the load balancer where 1.0
       means all logged requests are reported and 0.0 means no logged requests
-      are reported. The default value is 1.0.
-      """)
+      are reported. The default value is 1.0 when logging is enabled and 0.0
+      otherwise.
+      """,
+  )
 
 
-def AddLoggingSampleRateProtocols(parser, protocols):
-  """Adds the logging sample rate argument to the argparse."""
-  parser.add_argument(
-      '--logging-sample-rate',
-      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
-      help="""\
-      This field can only be specified if logging is enabled for the backend
-      service. The value of the field must be a float in the range [0, 1]. This
-      configures the sampling rate of requests to the load balancer where 1.0
-      means all logged requests are reported and 0.0 means no logged requests
-      are reported.  This can only be specified if the protocol is {0}. The
-      default value is 0.0.
-      """.format(protocols))
-
-
-def AddLoggingOptionalProtocols(parser, protocols):
+def AddLoggingOptional(parser):
   """Adds the logging optional argument to the argparse."""
   parser.add_argument(
       '--logging-optional',
@@ -1009,17 +985,15 @@ def AddLoggingOptionalProtocols(parser, protocols):
       type=arg_utils.ChoiceToEnumName,
       help="""\
       This field can only be specified if logging is enabled for the backend
-      service. Configures whether all, none or a subset of optional fields
-      should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
-      EXCLUDE_ALL_OPTIONAL, CUSTOM]. This can only be specified if the protocol
-      is {0}. Default is EXCLUDE_ALL_OPTIONAL.
-      """.format(
-          protocols
-      ),
+      service. Configures whether all, none, or a subset of optional fields
+      should be added to the reported logs. Default is EXCLUDE_ALL_OPTIONAL.
+      This field can only be specified for Internal TCP/UDP Load Balancing and
+      External Network Load Balancing.
+      """,
   )
 
 
-def AddLoggingOptionalFieldsProtocols(parser, protocols):
+def AddLoggingOptionalFields(parser):
   """Adds the logging optional argument to the argparse."""
   parser.add_argument(
       '--logging-optional-fields',
@@ -1027,14 +1001,12 @@ def AddLoggingOptionalFieldsProtocols(parser, protocols):
       metavar='LOGGING_OPTIONAL_FIELDS',
       help="""\
       This field can only be specified if logging is enabled for the backend
-      service and "logConfig.optionalMode" was set to CUSTOM. Contains a
+      service and "--logging-optional" was set to CUSTOM. Contains a
       comma-separated list of optional fields you want to include in the logs.
       For example: serverInstance, serverGkeDetails.cluster,
-      serverGkeDetails.pod.podNamespace. This can only be specified if the
-      protocol is {0}.
-      """.format(
-          protocols
-      ),
+      serverGkeDetails.pod.podNamespace. This can only be specified for Internal
+      TCP/UDP Load Balancing and External Network Load Balancing.
+      """,
   )
 
 

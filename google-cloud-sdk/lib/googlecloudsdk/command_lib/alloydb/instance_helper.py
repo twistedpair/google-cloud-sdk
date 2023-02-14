@@ -56,9 +56,21 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
                                                       args.instance_type)
 
-  if instance_resource.instanceType == alloydb_messages.Instance.InstanceTypeValueValuesEnum.READ_POOL:
+  if (
+      instance_resource.instanceType
+      == alloydb_messages.Instance.InstanceTypeValueValuesEnum.READ_POOL
+  ):
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
-        nodeCount=args.read_pool_node_count)
+        nodeCount=args.read_pool_node_count
+    )
+
+  instance_resource.queryInsightsConfig = _QueryInsightsConfig(
+      alloydb_messages,
+      insights_config_query_string_length=args.insights_config_query_string_length,
+      insights_config_query_plans_per_minute=args.insights_config_query_plans_per_minute,
+      insights_config_record_application_tags=args.insights_config_record_application_tags,
+      insights_config_record_client_address=args.insights_config_record_client_address,
+  )
 
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
@@ -103,6 +115,18 @@ def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
   database_flags_path = 'databaseFlags'
   cpu_count_path = 'machineConfig.cpuCount'
   read_pool_node_count_path = 'readPoolConfig.nodeCount'
+  insights_config_query_string_length_path = (
+      'queryInsightsConfig.queryStringLength'
+  )
+  insights_config_query_plans_per_minute_path = (
+      'queryInsightsConfig.queryPlansPerMinute'
+  )
+  insights_config_record_application_tags_path = (
+      'queryInsightsConfig.recordApplicationTags'
+  )
+  insights_config_record_client_address_path = (
+      'queryInsightsConfig.recordClientAddress'
+  )
 
   instance_resource = alloydb_messages.Instance()
   paths = []
@@ -133,8 +157,74 @@ def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
         nodeCount=args.read_pool_node_count)
     paths.append(read_pool_node_count_path)
 
+  if args.insights_config_query_string_length:
+    paths.append(insights_config_query_string_length_path)
+  if args.insights_config_query_plans_per_minute:
+    paths.append(insights_config_query_plans_per_minute_path)
+  if args.insights_config_record_application_tags is not None:
+    paths.append(insights_config_record_application_tags_path)
+  if args.insights_config_record_client_address is not None:
+    paths.append(insights_config_record_client_address_path)
+
+  instance_resource.queryInsightsConfig = _QueryInsightsConfig(
+      alloydb_messages,
+      args.insights_config_query_string_length,
+      args.insights_config_query_plans_per_minute,
+      args.insights_config_record_application_tags,
+      args.insights_config_record_client_address,
+  )
+
   mask = ','.join(paths) if paths else None
   return instance_resource, mask
+
+
+def _QueryInsightsConfig(
+    alloydb_messages,
+    insights_config_query_string_length=None,
+    insights_config_query_plans_per_minute=None,
+    insights_config_record_application_tags=None,
+    insights_config_record_client_address=None,
+):
+  """Generates the insights config for the instance.
+
+  Args:
+    alloydb_messages: module, Message module for the API client.
+    insights_config_query_string_length: number, length of the query string to
+      be stored.
+    insights_config_query_plans_per_minute: number, number of query plans to
+      sample every minute.
+    insights_config_record_application_tags: boolean, True if application tags
+      should be recorded.
+    insights_config_record_client_address: boolean, True if client address
+      should be recorded.
+
+  Returns:
+    alloydb_messages.QueryInsightsInstanceConfig or None
+  """
+
+  should_generate_config = any([
+      insights_config_query_string_length is not None,
+      insights_config_query_plans_per_minute is not None,
+      insights_config_record_application_tags is not None,
+      insights_config_record_client_address is not None,
+  ])
+  if not should_generate_config:
+    return None
+
+  # Config exists, generate insights config.
+  insights_config = alloydb_messages.QueryInsightsInstanceConfig()
+  if insights_config_query_string_length is not None:
+    insights_config.queryStringLength = insights_config_query_string_length
+  if insights_config_query_plans_per_minute is not None:
+    insights_config.queryPlansPerMinute = insights_config_query_plans_per_minute
+  if insights_config_record_application_tags is not None:
+    insights_config.recordApplicationTags = (
+        insights_config_record_application_tags
+    )
+  if insights_config_record_client_address is not None:
+    insights_config.recordClientAddress = insights_config_record_client_address
+
+  return insights_config
 
 
 def _ParseAvailabilityType(alloydb_messages, availability_type):

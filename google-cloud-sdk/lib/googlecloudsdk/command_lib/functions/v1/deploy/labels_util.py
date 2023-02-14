@@ -25,7 +25,8 @@ from googlecloudsdk.command_lib.util.args import labels_util as args_labels_util
 
 NO_LABELS_STARTING_WITH_DEPLOY_MESSAGE = (
     'Label keys starting with `deployment` are reserved for use by deployment '
-    'tools and cannot be specified manually.')
+    'tools and cannot be specified manually.'
+)
 
 
 def CheckNoDeploymentLabels(flag_name, label_names):
@@ -34,6 +35,7 @@ def CheckNoDeploymentLabels(flag_name, label_names):
   Args:
     flag_name: The name of the flag to include in case of an exception
     label_names: A list of label names to check
+
   Raises:
     calliope_exceptions.InvalidArgumentException
   """
@@ -42,7 +44,8 @@ def CheckNoDeploymentLabels(flag_name, label_names):
   for label_name in label_names:
     if label_name.startswith('deployment'):
       raise calliope_exceptions.InvalidArgumentException(
-          flag_name, NO_LABELS_STARTING_WITH_DEPLOY_MESSAGE)
+          flag_name, NO_LABELS_STARTING_WITH_DEPLOY_MESSAGE
+      )
 
 
 def SetFunctionLabels(function, update_labels, remove_labels, clear_labels):
@@ -51,21 +54,23 @@ def SetFunctionLabels(function, update_labels, remove_labels, clear_labels):
   Args:
     function: the function to set the labels on
     update_labels: a dict of <label-name>-<label-value> pairs for the labels to
-        be updated, from --update-labels
+      be updated, from --update-labels
     remove_labels: a list of the labels to be removed, from --remove-labels
-    clear_labels: a bool representing whether or not to clear all labels,
-        from --clear-labels
+    clear_labels: a bool representing whether or not to clear all labels, from
+      --clear-labels
+
   Returns:
     A bool indicating whether or not any labels were updated on the function.
   """
   labels_to_update = update_labels or {}
   labels_to_update['deployment-tool'] = 'cli-gcloud'
-  labels_diff = args_labels_util.Diff(additions=labels_to_update,
-                                      subtractions=remove_labels,
-                                      clear=clear_labels)
+  labels_diff = args_labels_util.Diff(
+      additions=labels_to_update, subtractions=remove_labels, clear=clear_labels
+  )
   messages = api_util.GetApiMessagesModule()
-  labels_update = labels_diff.Apply(messages.CloudFunction.LabelsValue,
-                                    function.labels)
+  labels_update = labels_diff.Apply(
+      messages.CloudFunction.LabelsValue, function.labels
+  )
   if labels_update.needs_update:
     function.labels = labels_update.labels
     return True

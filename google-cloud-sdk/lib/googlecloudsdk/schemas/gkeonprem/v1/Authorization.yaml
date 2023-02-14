@@ -1,0 +1,36 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: gkeonprem v1 Authorization export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- adminUsers
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  adminUsers:
+    description: |-
+      Users that will be granted the cluster-admin role on the cluster,
+      providing full access to the cluster.
+    type: array
+    items:
+      $ref: ClusterUser.yaml

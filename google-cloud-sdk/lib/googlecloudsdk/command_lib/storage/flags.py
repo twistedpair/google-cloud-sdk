@@ -433,8 +433,10 @@ def add_raw_display_flag(parser):
       '--raw',
       action='store_true',
       hidden=True,
-      help='Shows metadata in the format returned by the API instead of'
-           ' standardizing it.',
+      help=(
+          'Shows metadata in the format returned by the API instead of'
+          ' standardizing it.'
+      ),
   )
 
 

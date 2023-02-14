@@ -970,6 +970,11 @@
           "description": "Retries represents how many times this task should be retried in case of task failure.",
           "type": "integer",
           "format": "int32"
+        },
+        "timeout": {
+          "description": "Time after which the TaskRun times out. Defaults to 1 hour. Specified TaskRun timeout should be less than 24h.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1854,6 +1859,11 @@
           "description": "Output only. Secret Manager secret.",
           "readOnly": true,
           "$ref": "GoogleDevtoolsCloudbuildV2SecretManagerSecret"
+        },
+        "eventSource": {
+          "description": "Output only. The fully qualified resource name for the event source.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

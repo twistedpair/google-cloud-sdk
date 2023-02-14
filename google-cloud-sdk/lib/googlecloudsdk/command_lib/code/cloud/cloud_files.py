@@ -61,6 +61,8 @@ class CloudRuntimeFiles(object):
       artifact['buildpacks'] = {
           'builder': self._settings.builder.builder,
       }
+      # sync is not currently supported for Cloud Run
+      artifact['sync'] = {'auto': False}
     else:
       # Macos needs a relative path or else
       # e2e.surface.code.dev_mac_test.MacE2ETest.testNamespace fails.

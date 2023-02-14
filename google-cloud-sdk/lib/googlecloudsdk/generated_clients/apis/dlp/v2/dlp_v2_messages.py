@@ -5031,7 +5031,12 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       not used for data profiling. When redacting sensitive data from images,
       finding limits don't apply. They can cause unexpected or inconsistent
       results, where only some data is redacted. Don't include finding limits
-      in RedactImage requests. Otherwise, Cloud DLP returns an error.
+      in RedactImage requests. Otherwise, Cloud DLP returns an error. When set
+      within `InspectJobConfig`, the specified maximum values aren't hard
+      limits. If an inspection job reaches these limits, the job ends
+      gradually, not abruptly. Therefore, the actual number of findings that
+      Cloud DLP returns can be multiple times higher than these maximum
+      values.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
       learn more.

@@ -1087,7 +1087,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -2227,6 +2227,11 @@
           "description": "The maximum number of nodes to scale up to. Must be greater than min_node_count, and less than or equal to 10 times of 'min_node_count'.",
           "type": "integer",
           "format": "int32"
+        },
+        "cpuUtilizationTarget": {
+          "description": "Optional. The cpu utilization that the Autoscaler should be trying to achieve. This number is on a scale from 0 (no utilization) to 100 (total utilization), and is limited between 10 and 80. When a cluster's CPU utilization exceeds the target that you have set, Bigtable immediately adds nodes to the cluster. When CPU utilization is substantially lower than the target, Bigtable removes nodes. If not set or set to 0, default to 50.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3343,7 +3348,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-highmem-16 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "enableAccessLogging": {
@@ -4899,6 +4904,10 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key options for a NasJob. If this is set, then all resources created by the NasJob will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        },
+        "enableRestrictedImageTraining": {
+          "description": "Optional. Enable a separation of Custom model training and restricted image training for tenant project.",
+          "type": "boolean"
         }
       }
     },
@@ -5193,7 +5202,7 @@
           "type": "string"
         },
         "model": {
-          "description": "The name of the Model resource that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set. The model resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be used.",
+          "description": "The name of the Model resource that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set. The model resource name may contain version id or version alias to specify the version. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -10525,7 +10534,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -13700,7 +13709,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -14671,7 +14680,7 @@
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-highmem-16 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformUiDedicatedResources"
         },
         "enableAccessLogging": {
@@ -19073,7 +19082,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "displayName": {
@@ -25122,7 +25131,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version, if no version is specified, the default version will be deployed.",
+          "description": "Required. The resource name of the Model that this is the deployment of. Note that the Model may be in a different location than the DeployedModel's Endpoint. The resource name may contain version id or version alias to specify the version. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@2` or `projects\/{project}\/locations\/{location}\/models\/{model}@golden` if no version is specified, the default version will be deployed.",
           "type": "string"
         },
         "modelVersionId": {
@@ -25763,7 +25772,7 @@
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "dedicatedResources": {
-          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-standard-32 for cost efficiency.",
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types for SMALL shard: e2-standard-2 and all machine types available for MEDIUM and LARGE shard. Available machine types for MEDIUM shard: e2-standard-16 and all machine types available for LARGE shard. Available machine types for LARGE shard: e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are still available, but we recommend e2-standard-16 and e2-highmem-16 for cost efficiency.",
           "$ref": "GoogleCloudAiplatformV1DedicatedResources"
         },
         "enableAccessLogging": {

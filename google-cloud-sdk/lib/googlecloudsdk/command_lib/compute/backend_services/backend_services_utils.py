@@ -619,7 +619,6 @@ def ApplyLogConfigArgs(
     backend_service,
     support_logging,
     support_tcp_ssl_logging,
-    support_net_lb_ilb_logging,
     support_logging_optional_fields,
     cleared_fields=None,
 ):
@@ -634,7 +633,6 @@ def ApplyLogConfigArgs(
     backend_service: The backend service proto message object.
     support_logging: Support logging functionality.
     support_tcp_ssl_logging: Support logging for TCL and SSL protocols.
-    support_net_lb_ilb_logging: Support logging for External Net LB and ILB.
     support_logging_optional_fields: Support logging optional fields.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
@@ -665,7 +663,7 @@ def ApplyLogConfigArgs(
       messages.BackendService.ProtocolValueValuesEnum.UDP,
       messages.BackendService.ProtocolValueValuesEnum.UNSPECIFIED
   ]
-  if support_net_lb_ilb_logging and support_tcp_ssl_logging:
+  if support_tcp_ssl_logging:
     if (logging_specified and backend_service.protocol
         not in valid_protocols + tcp_ssl_protocols + net_lb_ilb_protocols):
       if support_logging_optional_fields:
@@ -681,26 +679,13 @@ def ApplyLogConfigArgs(
           '--protocol',
           'can only specify --enable-logging or --logging-sample-rate if the '
           'protocol is HTTP/HTTPS/HTTP2/TCP/SSL/UDP/UNSPECIFIED.')
-  elif support_net_lb_ilb_logging:
+  else:
     if (logging_specified and
         backend_service.protocol not in valid_protocols + net_lb_ilb_protocols):
       raise exceptions.InvalidArgumentException(
           '--protocol',
           'can only specify --enable-logging or --logging-sample-rate if the '
           'protocol is HTTP/HTTPS/HTTP2/TCP/UDP/UNSPECIFIED.')
-  elif support_tcp_ssl_logging:
-    if (logging_specified and
-        backend_service.protocol not in valid_protocols + tcp_ssl_protocols):
-      raise exceptions.InvalidArgumentException(
-          '--protocol',
-          'can only specify --enable-logging or --logging-sample-rate if the '
-          'protocol is HTTP/HTTPS/HTTP2/TCP/SSL.')
-  else:
-    if (logging_specified and backend_service.protocol not in valid_protocols):
-      raise exceptions.InvalidArgumentException(
-          '--protocol',
-          'can only specify --enable-logging or --logging-sample-rate if the '
-          'protocol is HTTP/HTTPS/HTTP2.')
 
   if logging_specified:
     if backend_service.logConfig:

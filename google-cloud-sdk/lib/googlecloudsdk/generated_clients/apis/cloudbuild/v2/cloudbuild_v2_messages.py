@@ -1173,16 +1173,19 @@ class EventSource(_messages.Message):
   r"""Event Source referenceable within a WorkflowTrigger.
 
   Fields:
+    eventSource: Output only. The fully qualified resource name for the event
+      source.
     id: identification to Resource.
     repository: Output only. Resource name of GCB v2 repo.
     secret: Output only. Secret Manager secret.
     subscription: Output only. Resource name of PubSub subscription.
   """
 
-  id = _messages.StringField(1)
-  repository = _messages.StringField(2)
-  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 3)
-  subscription = _messages.StringField(4)
+  eventSource = _messages.StringField(1)
+  id = _messages.StringField(2)
+  repository = _messages.StringField(3)
+  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 4)
+  subscription = _messages.StringField(5)
 
 
 class ExecutionEnvironment(_messages.Message):
@@ -2232,6 +2235,8 @@ class PipelineTask(_messages.Message):
       in graph execution.)
     taskRef: Reference to a specific instance of a task.
     taskSpec: Spec to instantiate this TaskRun.
+    timeout: Time after which the TaskRun times out. Defaults to 1 hour.
+      Specified TaskRun timeout should be less than 24h.
     whenExpressions: Conditions that need to be true for the task to run.
     workspaces: Workspaces maps workspaces from the pipeline spec to the
       workspaces declared in the Task.
@@ -2243,8 +2248,9 @@ class PipelineTask(_messages.Message):
   runAfter = _messages.StringField(4, repeated=True)
   taskRef = _messages.MessageField('TaskRef', 5)
   taskSpec = _messages.MessageField('EmbeddedTask', 6)
-  whenExpressions = _messages.MessageField('WhenExpression', 7, repeated=True)
-  workspaces = _messages.MessageField('WorkspacePipelineTaskBinding', 8, repeated=True)
+  timeout = _messages.StringField(7)
+  whenExpressions = _messages.MessageField('WhenExpression', 8, repeated=True)
+  workspaces = _messages.MessageField('WorkspacePipelineTaskBinding', 9, repeated=True)
 
 
 class PipelineWorkspaceDeclaration(_messages.Message):

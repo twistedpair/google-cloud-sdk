@@ -42,23 +42,30 @@ def _YieldFromLocations(locations, project, limit, messages, client):
   def _ReadAttrAndLogUnreachable(message, attribute):
     if message.unreachable:
       log.warning(
-          'The following regions were fully or partially unreachable '
-          'for query: %s', ', '.join(message.unreachable))
+          (
+              'The following regions were fully or partially unreachable '
+              'for query: %s'
+          ),
+          ', '.join(message.unreachable),
+      )
     return getattr(message, attribute)
 
   for location in locations:
     location_ref = resources.REGISTRY.Parse(
         location,
         params={'projectsId': project},
-        collection='cloudfunctions.projects.locations')
+        collection='cloudfunctions.projects.locations',
+    )
     for function in list_pager.YieldFromList(
         service=client.projects_locations_functions,
         request=messages.CloudfunctionsProjectsLocationsFunctionsListRequest(
-            parent=location_ref.RelativeName(), filter='environment="GEN_2"'),
+            parent=location_ref.RelativeName(), filter='environment="GEN_2"'
+        ),
         limit=limit,
         field='functions',
         batch_size_attribute='pageSize',
-        get_field_func=_ReadAttrAndLogUnreachable):
+        get_field_func=_ReadAttrAndLogUnreachable,
+    ):
       yield function
 
 

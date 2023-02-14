@@ -31,8 +31,11 @@ from googlecloudsdk.core import resources
 def _GetFunctionsAndLogUnreachable(message, attribute):
   """Response callback to log unreachable while generating functions."""
   if message.unreachable:
-    log.warning('The following regions were fully or partially unreachable '
-                'for query: %s' % ', '.join(message.unreachable))
+    log.warning(
+        'The following regions were fully or partially unreachable '
+        'for query: %s'
+        % ', '.join(message.unreachable)
+    )
   return getattr(message, attribute)
 
 
@@ -42,7 +45,8 @@ def YieldFromLocations(locations, project, limit, messages, client):
     location_ref = resources.REGISTRY.Parse(
         location,
         params={'projectsId': project},
-        collection='cloudfunctions.projects.locations')
+        collection='cloudfunctions.projects.locations',
+    )
     for function in _YieldFromLocation(location_ref, limit, messages, client):
       yield function
 
@@ -55,7 +59,8 @@ def _YieldFromLocation(location_ref, limit, messages, client):
       limit=limit,
       field='functions',
       batch_size_attribute='pageSize',
-      get_field_func=_GetFunctionsAndLogUnreachable)
+      get_field_func=_GetFunctionsAndLogUnreachable,
+  )
 
   # Decorators (e.g. util.CatchHTTPErrorRaiseHTTPException) don't work
   # for generators. We have to catch the exception above the iteration loop,
@@ -70,7 +75,8 @@ def _YieldFromLocation(location_ref, limit, messages, client):
 
 def _BuildRequest(location_ref, messages):
   return messages.CloudfunctionsProjectsLocationsFunctionsListRequest(
-      parent=location_ref.RelativeName())
+      parent=location_ref.RelativeName()
+  )
 
 
 def Run(args):

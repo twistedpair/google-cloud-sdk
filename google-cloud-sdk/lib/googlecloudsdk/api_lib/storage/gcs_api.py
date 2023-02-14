@@ -29,7 +29,6 @@ import contextlib
 import errno
 import json
 
-from apitools.base.py import encoding_helper
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
@@ -37,6 +36,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_download
 from googlecloudsdk.api_lib.storage import gcs_error_util
+from googlecloudsdk.api_lib.storage import gcs_iam_util
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
 from googlecloudsdk.api_lib.storage import grpc_util
@@ -72,8 +72,6 @@ patch_gcs_messages.patch()
 KB = 1024  # Bytes.
 MINIMUM_PROGRESS_CALLBACK_THRESHOLD = 512 * KB
 
-# Determines which IAM format to use as new features are added.
-_IAM_POLICY_VERSION = 3
 _NOTIFICATION_PAYLOAD_FORMAT_KEY_TO_API_CONSTANT = {
     cloud_api.NotificationPayloadFormat.JSON: 'JSON_API_V1',
     cloud_api.NotificationPayloadFormat.NONE: 'NONE',
@@ -130,7 +128,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     The download_http_client object is stored on the gcs_api object. This allows
     resusing the same http_client when the gcs_api is cached using
     threading.local, which improves performance.
-    Since this same object gets used for mutliple downloads, we need to update
+    Since this same object gets used for multiple downloads, we need to update
     the stream handler with the current active download's destination.
 
     Args:
@@ -357,7 +355,7 @@ class GcsApi(cloud_api.CloudApi):
     return self.client.buckets.GetIamPolicy(
         self.messages.StorageBucketsGetIamPolicyRequest(
             bucket=bucket_name,
-            optionsRequestedPolicyVersion=_IAM_POLICY_VERSION),
+            optionsRequestedPolicyVersion=gcs_iam_util.IAM_POLICY_VERSION),
         global_params=global_params)
 
   def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
@@ -733,13 +731,11 @@ class GcsApi(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    if (request_config.system_posix_data and cloud_resource.metadata and
-        cloud_resource.metadata.metadata):
-      custom_fields_dict = encoding_helper.MessageToDict(
-          cloud_resource.metadata.metadata)
-      posix_attributes_to_set = (
-          posix_util.get_posix_attributes_from_custom_metadata_dict(
-              cloud_resource.storage_url.url_string, custom_fields_dict))
+    # TODO(b/267654163): Remove POSIX handling.
+    if request_config.system_posix_data:
+      posix_attributes_to_set = posix_util.get_posix_attributes_from_resource(
+          cloud_resource
+      )
     else:
       posix_attributes_to_set = None
 

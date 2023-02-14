@@ -395,8 +395,11 @@ def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
       policy_group,
       'automated backups',
       flag_overrides=GetAutomatedBackupKmsFlagOverrides(),
-      permission_info="The 'AlloyDB Service Agent' service account must hold permission 'Cloud KMS CryptoKey Encrypter/Decrypter'",
-      name='--automated-backup-encryption-key'
+      permission_info=(
+          "The 'AlloyDB Service Agent' service account must hold permission"
+          " 'Cloud KMS CryptoKey Encrypter/Decrypter'"
+      ),
+      name='--automated-backup-encryption-key',
   )
 
   if update:
@@ -452,11 +455,12 @@ def AddRestoreClusterSourceFlags(parser):
             '2012-11-15T16:19:00.094Z.'))
 
 
-def AddContinuousBackupConfigFlags(parser):
+def AddContinuousBackupConfigFlags(parser, update=False):
   """Adds Continuous backup configuration flags.
 
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
+    update: Whether database flags were provided as part of an update.
   """
   group = parser.add_group(mutex=False, help='Continuous Backup configuration.')
   group.add_argument(
@@ -470,8 +474,23 @@ def AddContinuousBackupConfigFlags(parser):
       type=int,
       help=('Recovery window of the log files and backups saved to support '
             'Continuous Backups.'))
+
+  cmek_group = group
+  if update:
+    cmek_group = group.add_group(
+        mutex=True, help='Encryption configuration for Continuous Backups.'
+    )
+    cmek_group.add_argument(
+        '--clear-continuous-backup-encryption-key',
+        action='store_true',
+        help=(
+            'Clears the encryption configuration for Continuous Backups.'
+            ' Google default encryption will be used for future'
+            ' Continuous Backups.'
+        ),
+    )
   kms_resource_args.AddKmsKeyResourceArg(
-      group,
+      cmek_group,
       'continuous backup',
       flag_overrides=GetContinuousBackupKmsFlagOverrides(),
       permission_info=(
@@ -479,6 +498,58 @@ def AddContinuousBackupConfigFlags(parser):
           " 'Cloud KMS CryptoKey Encrypter/Decrypter'"
       ),
       name='--continuous-backup-encryption-key',
+  )
+
+
+def AddInsightsConfigQueryStringLength(parser):
+  parser.add_argument(
+      '--insights-config-query-string-length',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=256, upper_bound=4500),
+      help="""Query string length in bytes to be stored by the query insights
+        feature. Default length is 1024 bytes. Allowed range: 256 to 4500
+        bytes.""",
+  )
+
+
+def AddInsightsConfigQueryPlansPerMinute(parser):
+  parser.add_argument(
+      '--insights-config-query-plans-per-minute',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=20),
+      help="""Number of query plans to sample every minute.
+        Default value is 5. Allowed range: 0 to 20.""",
+  )
+
+
+def _GetKwargsForBoolFlag(show_negated_in_help):
+  if show_negated_in_help:
+    return {
+        'action': arg_parsers.StoreTrueFalseAction,
+    }
+  else:
+    return {'action': 'store_true', 'default': None}
+
+
+def AddInsightsConfigRecordApplicationTags(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--insights-config-record-application-tags',
+      required=False,
+      help="""Allow application tags to be recorded by the query insights
+        feature.""",
+      **kwargs
+  )
+
+
+def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--insights-config-record-client-address',
+      required=False,
+      help="""Allow the client address to be recorded by the query insights
+        feature.""",
+      **kwargs
   )
 
 
@@ -545,16 +616,21 @@ def GetAndValidateKmsKeyName(args, flag_overrides=None):
 
 
 # LINT.IfChange(validate_continuous_backup_flags)
-def ValidateContinuousBackupFlags(args):
+def ValidateContinuousBackupFlags(args, update=False):
   """Validate the arguments for continuous backup, ensure the correct set of flags are passed."""
-  if args.enable_continuous_backup is False and (  # pylint: disable=g-bool-id-comparison
-      args.continuous_backup_recovery_window_days
-      or args.continuous_backup_encryption_key
+  if (
+      args.enable_continuous_backup is False  # pylint: disable=g-bool-id-comparison
+      and (
+          args.continuous_backup_recovery_window_days
+          or args.continuous_backup_encryption_key
+          or (update and args.clear_continuous_backup_encryption_key)
+      )
   ):
     raise exceptions.ConflictingArgumentsException(
         '--no-enable-continuous-backup',
         '--continuous-backup-recovery-days',
         '--continuous-backup-encryption-key',
+        '--clear-continuous-backup-encryption-key',
     )
 # LINT.ThenChange()
 

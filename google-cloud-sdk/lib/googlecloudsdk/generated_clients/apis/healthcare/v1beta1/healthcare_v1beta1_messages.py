@@ -2263,6 +2263,37 @@ class FhirStore(_messages.Message):
   version = _messages.EnumField('VersionValueValuesEnum', 13)
 
 
+class FhirStoreMetric(_messages.Message):
+  r"""Count of resources and total storage size by type for a given FHIR
+  store.
+
+  Fields:
+    count: The total count of FHIR resources in the store of this resource
+      type.
+    resourceType: The FHIR resource type this metric applies to.
+    structuredStorageSizeBytes: The total amount of structured storage used by
+      FHIR resources of this resource type in the store.
+  """
+
+  count = _messages.IntegerField(1)
+  resourceType = _messages.StringField(2)
+  structuredStorageSizeBytes = _messages.IntegerField(3)
+
+
+class FhirStoreMetrics(_messages.Message):
+  r"""List of metrics for a given FHIR store.
+
+  Fields:
+    metrics: List of FhirStoreMetric by resource type.
+    name: The resource name of the FHIR store to get metrics for, in the
+      format `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_sto
+      re_id}`.
+  """
+
+  metrics = _messages.MessageField('FhirStoreMetric', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
 class Field(_messages.Message):
   r"""A (sub) field of a type.
 
@@ -4968,6 +4999,18 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirVreadRequest(_messages.Me
 
   Fields:
     name: The name of the resource version to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the FHIR store to get metrics for.
   """
 
   name = _messages.StringField(1, required=True)

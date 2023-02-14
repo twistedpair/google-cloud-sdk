@@ -130,6 +130,14 @@
           "description": "Required. The `EntityKey` of the `Group`.",
           "$ref": "EntityKey"
         },
+        "additionalGroupKeys": {
+          "description": "Output only. Additional group keys associated with the Group.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "EntityKey"
+          }
+        },
         "parent": {
           "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources\/{identity_source}` for external [identity-mapped groups](https:\/\/support.google.com\/a\/answer\/9039510) or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https:\/\/support.google.com\/cloudidentity\/answer\/10070793)",
           "type": "string"
@@ -444,6 +452,27 @@
             "SHARED_DRIVE",
             "OTHER"
           ]
+        },
+        "deliverySetting": {
+          "description": "Output only. Delivery setting associated with the membership.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Represents each mail should be delivered",
+            "Represents 1 email for every 25 messages.",
+            "Represents daily summary of messages.",
+            "Represents no delivery.",
+            "Represents disabled state."
+          ],
+          "enum": [
+            "DELIVERY_SETTING_UNSPECIFIED",
+            "ALL_MAIL",
+            "DIGEST",
+            "DAILY",
+            "NONE",
+            "DISABLED"
+          ]
         }
       }
     },
@@ -755,6 +784,65 @@
         "hasMembership": {
           "description": "Response does not include the possible roles of a member since the behavior of this rpc is not all-or-nothing unlike the other rpcs. So, it may not be possible to list all the roles definitively, due to possible lack of authorization in some of the paths.",
           "type": "boolean"
+        }
+      }
+    },
+    "SearchDirectGroupsResponse": {
+      "id": "SearchDirectGroupsResponse",
+      "description": "The response message for MembershipsService.SearchDirectGroups.",
+      "type": "object",
+      "properties": {
+        "memberships": {
+          "description": "List of direct groups satisfying the query.",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipRelation"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results available for listing.",
+          "type": "string"
+        }
+      }
+    },
+    "MembershipRelation": {
+      "id": "MembershipRelation",
+      "description": "Message containing membership relation.",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Membership`. Shall be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+          "type": "string"
+        },
+        "roles": {
+          "description": "The `MembershipRole`s that apply to the `Membership`.",
+          "type": "array",
+          "items": {
+            "$ref": "MembershipRole"
+          }
+        },
+        "group": {
+          "description": "The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the `Group`. Shall be of the form `groups\/{group_id}`.",
+          "type": "string"
+        },
+        "groupKey": {
+          "description": "The `EntityKey` of the `Group`.",
+          "$ref": "EntityKey"
+        },
+        "displayName": {
+          "description": "The display name of the `Group`.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "One or more label entries that apply to the Group. Currently supported labels contain a key with an empty value.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "An extended description to help users determine the purpose of a `Group`.",
+          "type": "string"
         }
       }
     },
@@ -2749,7 +2837,7 @@
                   "type": "string"
                 },
                 "query": {
-                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Identity-mapped groups are uniquely identified by both a `member_key_id` and a `member_key_namespace`, which requires an additional query input: `member_key_namespace`. Example query: member_key_id == 'member_key_id_value' [ && member_key_namespace == 'member_key_namespace_value' ] && in labels",
+                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Identity-mapped groups are uniquely identified by both a `member_key_id` and a `member_key_namespace`, which requires an additional query input: `member_key_namespace`. Example query: member_key_id == 'member_key_id_value' [ && member_key_namespace == 'member_key_namespace_value' ] && in labels Query may optionally contain equality operators on the parent of the group restricting the search within a particular customer, e.g. `parent == 'customers\/{customer_id}'`. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). This filtering is only supported for Admins with groups read permissons on the input customer. Example query: `member_key_id == \u2018member_key_id_value\u2019 && in labels && parent == 'customers\/C046psxkn'`",
                   "location": "query",
                   "type": "string"
                 },
@@ -2841,6 +2929,49 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a membership graph of a member or member\/group."
+            },
+            "searchDirectGroups": {
+              "id": "cloudidentity.groups.memberships.searchDirectGroups",
+              "path": "v1alpha1/{+parent}/memberships:searchDirectGroups",
+              "flatPath": "v1alpha1/groups/{groupsId}/memberships:searchDirectGroups",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "[Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the group to search transitive memberships in. Format: groups\/{group_id}, where group_id is always '-' as this API will search across all groups for a given member.",
+                  "pattern": "^groups\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "query": {
+                  "description": "Required. A CEL expression that MUST include member specification AND label(s). Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Identity-mapped groups are uniquely identified by both a `member_key_id` and a `member_key_namespace`, which requires an additional query input: `member_key_namespace`. Example query: `member_key_id == 'member_key_id_value' && 'label_value' in labels`",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The default page size is 200 (max 1000).",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The next_page_token value returned from a previous list request, if any",
+                  "location": "query",
+                  "type": "string"
+                },
+                "orderBy": {
+                  "description": "The ordering of membership relation for the display name or email in the response. The syntax for this field can be found at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order. Example: Sort by the ascending display name: order_by=\"group_name\" or order_by=\"group_name asc\". Sort by the descending display name: order_by=\"group_name desc\". Sort by the ascending group key: order_by=\"group_key\" or order_by=\"group_key asc\". Sort by the descending group key: order_by=\"group_key desc\".",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "SearchDirectGroupsResponse"
+              },
+              "description": "Searches direct groups of a member."
             }
           }
         }

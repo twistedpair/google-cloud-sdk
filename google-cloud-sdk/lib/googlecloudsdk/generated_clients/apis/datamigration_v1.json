@@ -2410,6 +2410,24 @@
         }
       }
     },
+    "FetchStaticIpsResponse": {
+      "id": "FetchStaticIpsResponse",
+      "description": "Response message for a 'FetchStaticIps' request.",
+      "type": "object",
+      "properties": {
+        "staticIps": {
+          "description": "List of static IPs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -2748,6 +2766,42 @@
       "resources": {
         "locations": {
           "methods": {
+            "fetchStaticIps": {
+              "id": "datamigration.projects.locations.fetchStaticIps",
+              "path": "v1/{+name}:fetchStaticIps",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}:fetchStaticIps",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name for the location for which static IPs should be returned. Must be in the format `projects\/*\/locations\/*`.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Maximum number of IPs to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous `FetchStaticIps` call.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "FetchStaticIpsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Exposes the outgoing static IP addresses used by DMS for source for static-IP connectivity."
+            },
             "list": {
               "id": "datamigration.projects.locations.list",
               "path": "v1/{+name}/locations",

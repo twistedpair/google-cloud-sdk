@@ -122,6 +122,8 @@ class RoutersClient(object):
   def ModifyToRemoveBgpPeer(self, args, existing):
     """Mutate the router to delete BGP peers."""
     input_remove_list = args.peer_names if args.peer_names else []
+    input_remove_list = input_remove_list + ([args.peer_name]
+                                             if args.peer_name else [])
     actual_remove_list = []
     replacement = encoding.CopyProtoMessage(existing)
     existing_router = encoding.CopyProtoMessage(existing)

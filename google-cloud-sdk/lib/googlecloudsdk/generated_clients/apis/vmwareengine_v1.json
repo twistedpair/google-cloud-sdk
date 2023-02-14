@@ -228,7 +228,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this private cloud. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+          "description": "Output only. The resource name of this private cloud. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
           "readOnly": true,
           "type": "string"
         },
@@ -310,6 +310,18 @@
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
           "type": "string"
+        },
+        "type": {
+          "description": "Optional. Type of the private cloud. Defaults to STANDARD.",
+          "type": "string",
+          "enumDescriptions": [
+            "Standard private is a zonal resource, with 3+ nodes. Default type.",
+            "Time limited private cloud is a zonal resource, can have only 1 node and has limited life span. Will be deleted after defined period of time, can be converted into standard private cloud by expanding it up to 3 or more nodes."
+          ],
+          "enum": [
+            "STANDARD",
+            "TIME_LIMITED"
+          ]
         }
       }
     },
@@ -543,7 +555,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this cluster. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+          "description": "Output only. The resource name of this cluster. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
           "readOnly": true,
           "type": "string"
         },
@@ -644,7 +656,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this external IP address. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`",
+          "description": "Output only. The resource name of this external IP address. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`",
           "readOnly": true,
           "type": "string"
         },
@@ -748,7 +760,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this subnet. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
+          "description": "Output only. The resource name of this subnet. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
           "readOnly": true,
           "type": "string"
         },
@@ -877,7 +889,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this external access rule. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+          "description": "Output only. The resource name of this external access rule. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
           "readOnly": true,
           "type": "string"
         },
@@ -988,7 +1000,7 @@
           "type": "string"
         },
         "externalAddress": {
-          "description": "The name of an `ExternalAddress` resource. The external address must have been reserved in the scope of this external access rule's parent network policy. Provide the external address name in the form of `projects\/{project}\/locations\/{location}\/privateClouds\/{private_cloud}\/externalAddresses\/{external_address}`. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`.",
+          "description": "The name of an `ExternalAddress` resource. The external address must have been reserved in the scope of this external access rule's parent network policy. Provide the external address name in the form of `projects\/{project}\/locations\/{location}\/privateClouds\/{private_cloud}\/externalAddresses\/{external_address}`. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`.",
           "type": "string"
         }
       }
@@ -1024,7 +1036,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this node type. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-west1-a\/nodeTypes\/standard-72`",
+          "description": "Output only. The resource name of this node type. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-central1-a\/nodeTypes\/standard-72`",
           "readOnly": true,
           "type": "string"
         },
@@ -1330,7 +1342,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this HcxActivationKey. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateClouds\/my-cloud\/hcxActivationKeys\/my-key`",
+          "description": "Output only. The resource name of this HcxActivationKey. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud\/hcxActivationKeys\/my-key`",
           "readOnly": true,
           "type": "string"
         },
@@ -1536,7 +1548,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this binding. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+          "description": "Output only. The resource name of this binding. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
           "readOnly": true,
           "type": "string"
         },
@@ -1734,7 +1746,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the private connection. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+          "description": "Output only. The resource name of the private connection. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateConnections\/my-connection`",
           "readOnly": true,
           "type": "string"
         },
@@ -1778,7 +1790,7 @@
           ]
         },
         "vmwareEngineNetwork": {
-          "description": "Required. The relative resource name of Legacy VMware Engine network. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}`, `{location}` will be same as specified in private connection resource name and `{vmware_engine_network_id}` will be in the form of `{location}`-default e.g. projects\/project\/locations\/us-west1\/vmwareEngineNetworks\/us-west1-default.",
+          "description": "Required. The relative resource name of Legacy VMware Engine network. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}`, `{location}` will be same as specified in private connection resource name and `{vmware_engine_network_id}` will be in the form of `{location}`-default e.g. projects\/project\/locations\/us-central1\/vmwareEngineNetworks\/us-central1-default.",
           "type": "string"
         },
         "type": {
@@ -1996,7 +2008,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2330,7 +2342,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the private cloud to be queried for clusters. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "description": "Required. The resource name of the private cloud to be queried for clusters. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2376,7 +2388,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private cloud to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2401,7 +2413,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the location to create the new private cloud in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "description": "Required. The resource name of the location to create the new private cloud in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2444,7 +2456,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of this private cloud. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Output only. The resource name of this private cloud. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2483,7 +2495,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private cloud to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2524,7 +2536,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private cloud scheduled for deletion. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud scheduled for deletion. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2552,7 +2564,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "privateCloud": {
-                      "description": "Required. The resource name of the private cloud to be queried for credentials. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud to be queried for credentials. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2577,7 +2589,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "privateCloud": {
-                      "description": "Required. The resource name of the private cloud to be queried for credentials. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud to be queried for credentials. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2602,7 +2614,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "privateCloud": {
-                      "description": "Required. The resource name of the private cloud to reset credentials for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud to reset credentials for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2630,7 +2642,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "privateCloud": {
-                      "description": "Required. The resource name of the private cloud to reset credentials for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud to reset credentials for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2750,7 +2762,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to query for clusters. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to query for clusters. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2796,7 +2808,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The cluster resource name to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                          "description": "Required. The cluster resource name to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2821,7 +2833,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to create a new cluster in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to create a new cluster in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2864,7 +2876,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this cluster. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                          "description": "Output only. The resource name of this cluster. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2908,7 +2920,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the cluster to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                          "description": "Required. The resource name of the cluster to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3029,7 +3041,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to be queried for external IP addresses. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to be queried for external IP addresses. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3075,7 +3087,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the external IP address to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-ip`",
+                          "description": "Required. The resource name of the external IP address to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/externalAddresses\/my-ip`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/externalAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3100,7 +3112,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to create a new external IP address in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to create a new external IP address in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3138,7 +3150,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this external IP address. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`",
+                          "description": "Output only. The resource name of this external IP address. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/externalAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3177,7 +3189,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the external IP address to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-ip`",
+                          "description": "Required. The resource name of the external IP address to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/externalAddresses\/my-ip`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/externalAddresses\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3211,7 +3223,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to be queried for subnets. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to be queried for subnets. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3257,7 +3269,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the subnet to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
+                          "description": "Required. The resource name of the subnet to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/subnets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3282,7 +3294,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this subnet. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
+                          "description": "Output only. The resource name of this subnet. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/subnets\/my-subnet`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/subnets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3399,7 +3411,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the HCX activation key to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateClouds\/my-cloud\/hcxActivationKeys\/my-key`",
+                          "description": "Required. The resource name of the HCX activation key to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud\/hcxActivationKeys\/my-key`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/hcxActivationKeys\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3515,7 +3527,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to be queried for management DNS zone bindings. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to be queried for management DNS zone bindings. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3561,7 +3573,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the management DNS zone binding to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+                          "description": "Required. The resource name of the management DNS zone binding to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/managementDnsZoneBindings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3586,7 +3598,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the private cloud to create a new management DNS zone binding for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "description": "Required. The resource name of the private cloud to create a new management DNS zone binding for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3624,7 +3636,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this binding. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+                          "description": "Output only. The resource name of this binding. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/managementDnsZoneBindings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3663,7 +3675,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the management DNS zone binding to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
+                          "description": "Required. The resource name of the management DNS zone binding to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/managementDnsZoneBindings\/my-management-dns-zone-binding`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/managementDnsZoneBindings\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3699,7 +3711,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "networkPolicy": {
-                      "description": "Required. The resource name of the network policy to query for assigned external IP addresses. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy`",
+                      "description": "Required. The resource name of the network policy to query for assigned external IP addresses. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3918,7 +3930,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the network policy to query for external access firewall rules. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy`",
+                          "description": "Required. The resource name of the network policy to query for external access firewall rules. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3964,7 +3976,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the external access firewall rule to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+                          "description": "Required. The resource name of the external access firewall rule to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+\/externalAccessRules\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3989,7 +4001,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the network policy to create a new external access firewall rule in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy`",
+                          "description": "Required. The resource name of the network policy to create a new external access firewall rule in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4027,7 +4039,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of this external access rule. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+                          "description": "Output only. The resource name of this external access rule. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+\/externalAccessRules\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4066,7 +4078,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the external access firewall rule to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+                          "description": "Required. The resource name of the external access firewall rule to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+\/externalAccessRules\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4102,7 +4114,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the location to be queried for node types. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "description": "Required. The resource name of the location to be queried for node types. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4143,7 +4155,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the node type to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-west1-a\/nodeTypes\/standard-72`",
+                      "description": "Required. The resource name of the node type to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-central1-a\/nodeTypes\/standard-72`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4413,7 +4425,7 @@
                       "type": "string"
                     },
                     "vmwareEngineNetworkId": {
-                      "description": "Required. The user-provided identifier of the new VMware Engine network. This identifier must be unique among VMware Engine network resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * For networks of type LEGACY, adheres to the format: `{region-id}-default`. Replace `{region-id}` with the region where you want to create the VMware Engine network. For example, \"us-west1-default\". * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
+                      "description": "Required. The user-provided identifier of the new VMware Engine network. This identifier must be unique among VMware Engine network resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * For networks of type LEGACY, adheres to the format: `{region-id}-default`. Replace `{region-id}` with the region where you want to create the VMware Engine network. For example, \"us-central1-default\". * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
                       "location": "query",
                       "type": "string"
                     },
@@ -4593,7 +4605,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the location to create the new private connection in. Private connection is a regional resource. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1`",
+                      "description": "Required. The resource name of the location to create the new private connection in. Private connection is a regional resource. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4631,7 +4643,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private connection to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+                      "description": "Required. The resource name of the private connection to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateConnections\/my-connection`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateConnections\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4656,7 +4668,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the location to query for private connections. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1`",
+                      "description": "Required. The resource name of the location to query for private connections. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4702,7 +4714,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name of the private connection. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+                      "description": "Output only. The resource name of the private connection. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateConnections\/my-connection`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateConnections\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4741,7 +4753,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private connection to be deleted. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateConnections\/my-connection`",
+                      "description": "Required. The resource name of the private connection to be deleted. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateConnections\/my-connection`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateConnections\/[^\/]+$",
                       "location": "path",
                       "required": true,

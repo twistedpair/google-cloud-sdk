@@ -412,12 +412,14 @@
           }
         },
         "createTime": {
-          "description": "The time when the File was created.",
+          "description": "Output only. The time when the File was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time when the File was last updated.",
+          "description": "Output only. The time when the File was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -1394,7 +1396,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the repository whose files will be listed. For example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1",
+                          "description": "Required. The name of the repository whose files will be listed. For example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1436,7 +1438,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The name of the file to retrieve.",
+                          "description": "Required. The name of the file to retrieve.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/.*$",
                           "location": "path",
                           "required": true,

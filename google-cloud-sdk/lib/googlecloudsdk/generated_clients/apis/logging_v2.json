@@ -2364,6 +2364,17 @@
         }
       }
     },
+    "LocationMetadata": {
+      "id": "LocationMetadata",
+      "description": "Cloud Logging specific location metadata.",
+      "type": "object",
+      "properties": {
+        "logAnalyticsEnabled": {
+          "description": "Indicates whether or not Log Analytics features are supported in the given location.",
+          "type": "boolean"
+        }
+      }
+    },
     "MoveBucketMetadata": {
       "id": "MoveBucketMetadata",
       "description": "Metadata for long running MoveBucket operations.",

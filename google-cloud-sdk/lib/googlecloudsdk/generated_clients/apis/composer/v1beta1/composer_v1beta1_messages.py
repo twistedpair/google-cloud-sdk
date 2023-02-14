@@ -187,6 +187,21 @@ class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest object.
+
+  Fields:
+    databaseFailoverRequest: A DatabaseFailoverRequest resource to be passed
+      as the request body.
+    environment: Target environment:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  databaseFailoverRequest = _messages.MessageField('DatabaseFailoverRequest', 1)
+  environment = _messages.StringField(2, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsDeleteRequest object.
 
@@ -542,6 +557,17 @@ class DatabaseConfig(_messages.Message):
 
   machineType = _messages.StringField(1)
   zone = _messages.StringField(2)
+
+
+class DatabaseFailoverRequest(_messages.Message):
+  r"""Request to trigger database failover (only for highly resilient
+  environments).
+  """
+
+
+
+class DatabaseFailoverResponse(_messages.Message):
+  r"""Response for DatabaseFailoverRequest."""
 
 
 class Date(_messages.Message):

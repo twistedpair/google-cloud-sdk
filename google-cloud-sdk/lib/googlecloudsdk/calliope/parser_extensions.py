@@ -615,17 +615,17 @@ class ArgumentParser(argparse.ArgumentParser):
 
     if need_required:
       if top or have_required and not (have_optional or also_optional):
-        need_args = parser_arguments.Argument(
+        need_args = usage_text.ArgumentWrapper(
             arguments=need_required, is_group=True, sort_args=ai.sort_args)
         self._Error(parser_errors.RequiredError(
             parser=self,
             argument=usage_text.GetArgUsage(
                 need_args, value=False, hidden=True, top=top)))
       if have_optional or have_required:
-        have_args = parser_arguments.Argument(
+        have_args = usage_text.ArgumentWrapper(
             arguments=have_optional + have_required, is_group=True,
             sort_args=ai.sort_args)
-        need_args = parser_arguments.Argument(
+        need_args = usage_text.ArgumentWrapper(
             arguments=need_required, is_group=True,
             sort_args=ai.sort_args)
         self._Error(parser_errors.ModalGroupError(

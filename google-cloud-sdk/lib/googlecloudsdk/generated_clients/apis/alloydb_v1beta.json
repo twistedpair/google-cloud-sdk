@@ -674,7 +674,7 @@
     },
     "PitrConfig": {
       "id": "PitrConfig",
-      "description": "PitrConfig describes the point-in-time recovery configurations of a cluster.",
+      "description": "Deprecated, use ContinuousBackupConfig instead.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -842,7 +842,7 @@
     },
     "PitrSource": {
       "id": "PitrSource",
-      "description": "Message describing a PitrSource.",
+      "description": "Deprecated, use ContinuousBackupSource instead.",
       "type": "object",
       "properties": {
         "cluster": {

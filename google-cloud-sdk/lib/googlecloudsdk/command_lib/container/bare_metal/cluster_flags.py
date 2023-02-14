@@ -211,7 +211,7 @@ def AddConfigType(parser):
     parser: The argparse parser to add the flag to.
   """
   config_type_group = parser.add_group(
-      'Use cases for querying versions.', mutex=True, required=True
+      'Use cases for querying versions.', mutex=True
   )
   create_config = config_type_group.add_group(
       'Create an Anthos on bare metal user cluster use case.'
@@ -368,6 +368,9 @@ def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):
     bare_metal_metal_lb_node_config: The parent group to add the flag
       to.
   """
+  node_config_mutex_group = bare_metal_metal_lb_node_config.add_group(
+      help='Populate MetalLB load balancer node config.',
+      mutex=True)
   metal_lb_node_configs_from_file_help_text = """
 Path of the YAML/JSON file that contains the Metal LB node configs.
 
@@ -391,10 +394,23 @@ nodeIP        | string                    | required, mutable
 labels        | one or more key-val pairs | optional, mutable
 
 """
-  bare_metal_metal_lb_node_config.add_argument(
+  node_config_mutex_group.add_argument(
       '--metal-lb-load-balancer-node-configs-from-file',
       help=metal_lb_node_configs_from_file_help_text,
       type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  node_config_mutex_group.add_argument(
+      '--metal-lb-load-balancer-node-configs',
+      help='MetalLB load balancer node configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=['node-ip'],
+      ),
   )
 
 
@@ -594,9 +610,11 @@ def _AddStorageLVPShareConfig(bare_metal_lvp_share_config_group):
   Args:
     bare_metal_lvp_share_config_group: The parent group to add the flags to.
   """
-  bare_metal_storage_lvp_share_config_group = bare_metal_lvp_share_config_group.add_group(
-      help=' LVP share class and path used by the storage.',
-      required=True,
+  bare_metal_storage_lvp_share_config_group = (
+      bare_metal_lvp_share_config_group.add_group(
+          help=' LVP share class and path used by the storage.',
+          required=True,
+      )
   )
   bare_metal_storage_lvp_share_config_group.add_argument(
       '--lvp-share-path',
@@ -674,6 +692,10 @@ def _AddControlPlaneNodeConfigs(bare_metal_node_config_group, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
+  node_config_mutex_group = bare_metal_node_config_group.add_group(
+      help='Populate control plane node config.',
+      required=required,
+      mutex=True)
   control_plane_node_configs_from_file_help_text = """
 Path of the YAML/JSON file that contains the control plane node configs.
 
@@ -697,11 +719,23 @@ nodeIP        | string                    | required, mutable
 labels        | one or more key-val pairs | optional, mutable
 
 """
-  bare_metal_node_config_group.add_argument(
+  node_config_mutex_group.add_argument(
       '--control-plane-node-configs-from-file',
-      required=required,
       help=control_plane_node_configs_from_file_help_text,
       type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  node_config_mutex_group.add_argument(
+      '--control-plane-node-configs',
+      help='Control plane node configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=['node-ip'],
+      ),
   )
 
 
@@ -744,7 +778,10 @@ def _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group,
   """
   required = not is_update
   bare_metal_node_pool_config_group = bare_metal_control_plane_node_pool_config_group.add_group(
-      help='Anthos on bare metal node pool configuration for control plane nodes.',
+      help=(
+          'Anthos on bare metal node pool configuration for control plane'
+          ' nodes.'
+      ),
       required=required,
   )
   bare_metal_node_config_group = bare_metal_node_pool_config_group.add_group(

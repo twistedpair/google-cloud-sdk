@@ -1040,7 +1040,7 @@
     },
     "BufferTaskRequest": {
       "id": "BufferTaskRequest",
-      "description": "Request message for BufferTask.",
+      "description": "LINT.IfChange Request message for BufferTask.",
       "type": "object",
       "properties": {
         "body": {

@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20230127",
+  "revision": "20230208",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -521,6 +521,23 @@
         "name": {
           "description": "The resource name of the Database. Format: `projects\/{project}\/databases\/{database}`",
           "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The system-generated UUID4 for this Database.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp at which this database was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp at which this database was most recently updated. Note this only includes updates to the database resource and not data contained by the database.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         },
         "locationId": {
           "description": "The location of the database. Available databases are listed at https:\/\/cloud.google.com\/firestore\/docs\/locations.",
@@ -3514,7 +3531,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/datastore"
                   ],
-                  "description": "Streams batches of document updates and deletes, in order."
+                  "description": "Streams batches of document updates and deletes, in order. This method is only available via the gRPC API (not REST)."
                 },
                 "listen": {
                   "id": "firestore.projects.databases.documents.listen",
@@ -3543,7 +3560,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/datastore"
                   ],
-                  "description": "Listens to changes."
+                  "description": "Listens to changes. This method is only available via the gRPC API (not REST)."
                 },
                 "listCollectionIds": {
                   "id": "firestore.projects.databases.documents.listCollectionIds",

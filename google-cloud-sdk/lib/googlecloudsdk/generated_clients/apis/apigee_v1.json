@@ -6603,6 +6603,24 @@
           "readOnly": true,
           "type": "integer",
           "format": "int32"
+        },
+        "lowRiskIncidentsCount": {
+          "description": "Output only. Total incidents with risk level low.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "moderateRiskIncidentsCount": {
+          "description": "Output only. Total incidents with risk level moderate.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "severeRiskIncidentsCount": {
+          "description": "Output only. Total incidents with risk level severe.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -14350,7 +14368,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Optional. The filter expression to be used to get the list of apps, where filtering can be done on developerEmail, apiProduct, consumerKey, status, appId createdAt, appFamily, appGroup. Example: filter = \"developerEmail = foo@bar.com\"",
+                  "description": "Optional. The filter expression to be used to get the list of apps, where filtering can be done on developerEmail, apiProduct, consumerKey, status, appId, appName and appType. Example: filter = \"developerEmail = foo@bar.com\"",
                   "location": "query",
                   "type": "string"
                 }

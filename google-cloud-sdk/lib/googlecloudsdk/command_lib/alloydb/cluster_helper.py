@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.alloydb import flags
 from googlecloudsdk.core import properties
 
@@ -54,11 +53,11 @@ def _ConstructAutomatedBackupPolicy(alloydb_messages, args):
   return backup_policy
 
 
-def _ConstructContinuousBackupConfig(alloydb_messages, args):
+def _ConstructContinuousBackupConfig(alloydb_messages, args, update=False):
   """Returns the continuous backup config based on args."""
   continuous_backup_config = alloydb_messages.ContinuousBackupConfig()
 
-  flags.ValidateContinuousBackupFlags(args)
+  flags.ValidateContinuousBackupFlags(args, update)
   if args.enable_continuous_backup:
     continuous_backup_config.enabled = True
   elif args.enable_continuous_backup is False:  # pylint: disable=g-bool-id-comparison
@@ -235,14 +234,17 @@ def _ConstructClusterAndMaskForPatchRequestAlphaBeta(alloydb_messages, args):
     # configuration when disabling continuous backups
     update_masks.append('continuous_backup_config')
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
-        alloydb_messages, args)
+        alloydb_messages, args, update=True)
     return cluster, update_masks
 
   if args.continuous_backup_recovery_window_days:
     continuous_backup_update_masks.append(
         'continuous_backup_config.recovery_window_days'
     )
-  if args.continuous_backup_encryption_key:
+  if (
+      args.continuous_backup_encryption_key
+      or args.clear_continuous_backup_encryption_key
+  ):
     continuous_backup_update_masks.append(
         'continuous_backup_config.encryption_config'
     )
@@ -250,7 +252,7 @@ def _ConstructClusterAndMaskForPatchRequestAlphaBeta(alloydb_messages, args):
   update_masks.extend(continuous_backup_update_masks)
   if continuous_backup_update_masks:
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
-        alloydb_messages, args)
+        alloydb_messages, args, update=True)
   return cluster, update_masks
 
 

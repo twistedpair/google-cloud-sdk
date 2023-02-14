@@ -1377,6 +1377,7 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     appEngineIntegrationMode: The App Engine integration mode to use for this
       database.
     concurrencyMode: The concurrency control mode to use for this database.
+    createTime: Output only. The timestamp at which this database was created.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -1393,6 +1394,10 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     type: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
+    uid: Output only. The system-generated UUID4 for this Database.
+    updateTime: Output only. The timestamp at which this database was most
+      recently updated. Note this only includes updates to the database
+      resource and not data contained by the database.
   """
 
   class AppEngineIntegrationModeValueValuesEnum(_messages.Enum):
@@ -1448,11 +1453,14 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
 
   appEngineIntegrationMode = _messages.EnumField('AppEngineIntegrationModeValueValuesEnum', 1)
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 2)
-  etag = _messages.StringField(3)
-  keyPrefix = _messages.StringField(4)
-  locationId = _messages.StringField(5)
-  name = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  createTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  keyPrefix = _messages.StringField(5)
+  locationId = _messages.StringField(6)
+  name = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):

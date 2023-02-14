@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 # modules in the presence of threads.
 import encodings.idna  # pylint: disable=unused-import
 import json
+import mimetypes
 import os
 import re
 
@@ -247,7 +248,6 @@ def UpstreamsArgs():
   return [
       base.Argument(
           "--upstream-policy-file",
-          hidden=True,
           metavar="FILE",
           help=_REPO_CREATION_HELP_UPSTREAM_POLICIES)
   ]
@@ -924,3 +924,8 @@ def SanitizeRemoteRepositoryConfig(unused_ref, args, request):
     request.repository.remoteRepositoryConfig.mavenRepository = None
 
   return request
+
+
+def GetMimetype(path):
+  mime_type, _ = mimetypes.guess_type(path)
+  return mime_type or "application/octet-stream"

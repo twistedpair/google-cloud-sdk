@@ -101,6 +101,33 @@ def AddAutoCommitFlag(parser):
   parser.add_argument('--auto-commit', action='store_true', help=help_text)
 
 
+def AddImportFileFormatFlag(parser):
+  """Adds the --file-format flag to the given parser."""
+  help_text = """\
+    File format type to import rules from.
+    """
+  choices = ['ORA2PG', 'HARBOUR_BRIGE']
+
+  parser.add_argument(
+      '--file-format', help=help_text, choices=choices, required=True)
+
+
+def AddConfigFilesFlag(parser):
+  """Adds a --config-files flag to the given parser."""
+  help_text = """\
+    A list of files to import rules from. Either provide a single file or if
+    multiple files are provided, each file should correspond to one schema.
+    Provide file paths as a comma separated list.
+    """
+  parser.add_argument(
+      '--config-files',
+      metavar='CONGIF_FILE',
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text,
+      required=True,
+  )
+
+
 def AddFilterFlag(parser):
   """Adds a --filter flag to the given parser."""
   help_text = 'Filter the entities based on AIP-160 standard.'

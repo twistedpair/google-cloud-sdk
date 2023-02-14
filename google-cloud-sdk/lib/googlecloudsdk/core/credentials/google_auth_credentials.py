@@ -25,6 +25,7 @@ from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
 
@@ -41,6 +42,7 @@ from google.auth import external_account_authorized_user as google_auth_external
 from google.auth import exceptions as google_auth_exceptions
 from google.oauth2 import _client as google_auth_client
 from google.oauth2 import credentials
+from google.oauth2 import reauth as google_auth_reauth
 
 GOOGLE_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
@@ -102,21 +104,39 @@ class Credentials(credentials.Credentials):
     try:
       return self._Refresh(request)
     except ReauthRequiredError:
-      # reauth.GetRaptToken is implemented in oauth2client and it is built on
-      # httplib2. GetRaptToken does not work with
-      # google.auth.transport.Request.
       if not console_io.IsInteractive():
         log.info('Reauthentication not performed as we cannot prompt during '
                  'non-interactive execution.')
         return
 
-      response_encoding = None if six.PY2 else 'utf-8'
-      http_request = http.Http(response_encoding=response_encoding).request
-      self._rapt_token = reauth.GetRaptToken(http_request, self._client_id,
-                                             self._client_secret,
-                                             self._refresh_token,
-                                             self._token_uri,
-                                             list(self.scopes or []))
+      # When we clean up oauth2client code in the future, we can remove the else
+      # part.
+      if properties.VALUES.auth.reauth_use_google_auth.GetBool():
+        log.debug('using google-auth reauth')
+        self._rapt_token = google_auth_reauth.get_rapt_token(
+            request,
+            self._client_id,
+            self._client_secret,
+            self._refresh_token,
+            self._token_uri,
+            list(self.scopes or []),
+        )
+      else:
+        # reauth.GetRaptToken is implemented in oauth2client and it is built on
+        # httplib2. GetRaptToken does not work with
+        # google.auth.transport.Request.
+        log.debug('using oauth2client reauth')
+        response_encoding = None if six.PY2 else 'utf-8'
+        http_request = http.Http(response_encoding=response_encoding).request
+        self._rapt_token = reauth.GetRaptToken(
+            http_request,
+            self._client_id,
+            self._client_secret,
+            self._refresh_token,
+            self._token_uri,
+            list(self.scopes or []),
+        )
+
     return self._Refresh(request)
 
   def _Refresh(self, request):

@@ -493,11 +493,10 @@ def AddJobId(parser, hidden=False):
   )
 
 
-def AddPhaseId(parser, hidden=False):
+def AddPhaseId(parser, required=True, hidden=False):
   """Adds phase-id flag."""
   parser.add_argument(
       '--phase-id',
       hidden=hidden,
       help='Phase ID on a rollout resource',
-      required=True,
-  )
+      required=required)

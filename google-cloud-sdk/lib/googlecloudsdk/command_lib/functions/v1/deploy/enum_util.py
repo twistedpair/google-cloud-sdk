@@ -35,5 +35,5 @@ def ParseDockerRegistry(docker_registry_str):
   return arg_utils.ChoiceEnumMapper(
       arg_name='docker_registry',
       message_enum=func_message.CloudFunction.DockerRegistryValueValuesEnum,
-      custom_mappings=flags.DOCKER_REGISTRY_MAPPING).GetEnumForChoice(
-          docker_registry_str)
+      custom_mappings=flags.DOCKER_REGISTRY_MAPPING,
+  ).GetEnumForChoice(docker_registry_str)

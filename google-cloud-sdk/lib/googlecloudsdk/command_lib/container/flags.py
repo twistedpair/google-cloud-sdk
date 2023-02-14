@@ -3306,6 +3306,24 @@ def AddWorkloadVulnScanningFlag(parser):
       """))
 
 
+def AddSecurityPostureFlag(parser):
+  """Adds Security Posture Config's enablement flag to the parser."""
+  parser.add_argument(
+      '--enable-security-posture',
+      default=None,
+      action='store_true',
+      hidden=True,
+      help=textwrap.dedent(
+          """\
+      Enables the GKE Security Posture API's features.
+
+      To disable in an existing cluster, explicitly set flag to
+      `--no-enable-security-posture`.
+      """
+      ),
+  )
+
+
 def AddGkeOidcFlag(parser):
   parser.add_argument(
       '--enable-gke-oidc',

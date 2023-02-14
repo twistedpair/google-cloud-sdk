@@ -610,7 +610,7 @@
           "type": "string"
         },
         "resource": {
-          "description": "Optional. Immutable. The resource name of the resource that is binded to attributes. Presently, only entity resource is supported in the form: projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/entities\/{entity_id} Must belong in the same project and region as the attribute binding, and there can only exist one active binding for a resource.",
+          "description": "Optional. Immutable. The resource name of the resource that is associated to attributes. Presently, only entity resource is supported in the form: projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/entities\/{entity_id} Must belong in the same project and region as the attribute binding, and there can only exist one active binding for a resource.",
           "type": "string"
         },
         "attributes": {
@@ -2934,6 +2934,11 @@
           "description": "Last update time of the status.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "managedAccessIdentity": {
+          "description": "Output only. Service account associated with the BigQuery Connection.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -3773,6 +3778,7 @@
     },
     "GoogleCloudDataplexV1EnvironmentSessionSpec": {
       "id": "GoogleCloudDataplexV1EnvironmentSessionSpec",
+      "description": "Configuration for sessions created for this environment.",
       "type": "object",
       "properties": {
         "maxIdleDuration": {
@@ -3788,6 +3794,7 @@
     },
     "GoogleCloudDataplexV1EnvironmentSessionStatus": {
       "id": "GoogleCloudDataplexV1EnvironmentSessionStatus",
+      "description": "Status of sessions created for this environment.",
       "type": "object",
       "properties": {
         "active": {
@@ -3799,6 +3806,7 @@
     },
     "GoogleCloudDataplexV1EnvironmentEndpoints": {
       "id": "GoogleCloudDataplexV1EnvironmentEndpoints",
+      "description": "URI Endpoints to access sessions associated with the Environment.",
       "type": "object",
       "properties": {
         "notebooks": {
@@ -3871,6 +3879,7 @@
           "format": "google-datetime"
         },
         "state": {
+          "description": "Output only. State of Session",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -7125,6 +7134,11 @@
                       "description": "Required. DataScan identifier. Must contain only lowercase letters, numbers and hyphens. Must start with a letter. Must end with a number or a letter. Must be between 1-63 characters. Must be unique within the customer project \/ location.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -7159,6 +7173,11 @@
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [

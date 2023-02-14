@@ -433,6 +433,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'instanceGroup'],
       True
   )
+  REGIONINSTANCETEMPLATES = (
+      'regionInstanceTemplates',
+      'projects/{project}/regions/{region}/instanceTemplates/'
+      '{instanceTemplate}',
+      {},
+      ['project', 'region', 'instanceTemplate'],
+      True
+  )
   REGIONNETWORKENDPOINTGROUPS = (
       'regionNetworkEndpointGroups',
       'projects/{project}/regions/{region}/networkEndpointGroups/'

@@ -29,6 +29,7 @@ from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
 from apitools.base.py import util as http_util
 
+from googlecloudsdk.api_lib.functions import cmek_util
 from googlecloudsdk.api_lib.functions.v1 import exceptions
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
 from googlecloudsdk.api_lib.storage import storage_api
@@ -47,16 +48,19 @@ from six.moves import range
 
 def _GcloudIgnoreCreationPredicate(directory):
   return gcloudignore.AnyFileOrDirExists(
-      directory, gcloudignore.GIT_FILES + ['node_modules'])
+      directory, gcloudignore.GIT_FILES + ['node_modules']
+  )
 
 
 def _GetChooser(path, ignore_file):
   default_ignore_file = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
 
   return gcloudignore.GetFileChooserForDir(
-      path, default_ignore_file=default_ignore_file,
+      path,
+      default_ignore_file=default_ignore_file,
       gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate,
-      ignore_file=ignore_file)
+      ignore_file=ignore_file,
+  )
 
 
 def _ValidateUnpackedSourceSize(path, ignore_file=None):
@@ -70,12 +74,14 @@ def _ValidateUnpackedSourceSize(path, ignore_file=None):
         'Error building source archive from path [{path}]. '
         'Could not validate source files: [{error}]. '
         'Please ensure that path [{path}] contains function code or '
-        'specify another directory with --source'.format(path=path, error=e))
+        'specify another directory with --source'.format(path=path, error=e)
+    )
   size_limit_mb = 512
-  size_limit_b = size_limit_mb * 2 ** 20
+  size_limit_b = size_limit_mb * 2**20
   if size_b > size_limit_b:
     raise exceptions.OversizedDeployment(
-        six.text_type(size_b) + 'B', six.text_type(size_limit_b) + 'B')
+        six.text_type(size_b) + 'B', six.text_type(size_limit_b) + 'B'
+    )
 
 
 def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
@@ -83,10 +89,11 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
 
   Args:
     zip_dir: str, directory in which zip file will be located. Name of the file
-             will be `fun.zip`.
+      will be `fun.zip`.
     source_path: str, directory containing the sources to be zipped.
-    ignore_file: custom ignore_file name.
-        Override .gcloudignore file to customize files to be skipped.
+    ignore_file: custom ignore_file name. Override .gcloudignore file to
+      customize files to be skipped.
+
   Returns:
     Path to the zip file (str).
   Raises:
@@ -94,8 +101,11 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
   """
   api_util.ValidateDirectoryExistsOrRaiseFunctionError(source_path)
   if ignore_file and not os.path.exists(os.path.join(source_path, ignore_file)):
-    raise exceptions.FileNotFoundError('File {0} referenced by --ignore-file '
-                                       'does not exist.'.format(ignore_file))
+    raise exceptions.FileNotFoundError(
+        'File {0} referenced by --ignore-file does not exist.'.format(
+            ignore_file
+        )
+    )
   _ValidateUnpackedSourceSize(source_path, ignore_file)
   zip_file_name = os.path.join(zip_dir, 'fun.zip')
   try:
@@ -105,7 +115,8 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
   except ValueError as e:
     raise exceptions.FunctionsError(
         'Error creating a ZIP archive with the source code '
-        'for directory {0}: {1}'.format(source_path, six.text_type(e)))
+        'for directory {0}: {1}'.format(source_path, six.text_type(e))
+    )
   return zip_file_name
 
 
@@ -116,8 +127,9 @@ def _GenerateRemoteZipFileName(region, function_name):
 
 def _UploadFileToGcs(source, function_ref, stage_bucket):
   """Upload local source files to GCS staging bucket."""
-  zip_file = _GenerateRemoteZipFileName(function_ref.locationsId,
-                                        function_ref.RelativeName())
+  zip_file = _GenerateRemoteZipFileName(
+      function_ref.locationsId, function_ref.RelativeName()
+  )
   bucket_ref = storage_util.BucketReference.FromArgument(stage_bucket)
   dest_object = storage_util.ObjectReference.FromBucketRef(bucket_ref, zip_file)
 
@@ -131,8 +143,10 @@ def _UploadFileToGcs(source, function_ref, stage_bucket):
 
   if not upload_success:
     raise exceptions.FunctionsError(
-        'Failed to upload the function source code to the bucket {0}'
-        .format(stage_bucket))
+        'Failed to upload the function source code to the bucket {0}'.format(
+            stage_bucket
+        )
+    )
   return dest_object.ToUrl()
 
 
@@ -154,9 +168,11 @@ def _UploadFileToGcsStorageApi(source, dest_object):
 
 
 def _AddDefaultBranch(source_archive_url):
-  cloud_repo_pattern = (r'^https://source\.developers\.google\.com'
-                        r'/projects/[^/]+'
-                        r'/repos/[^/]+$')
+  cloud_repo_pattern = (
+      r'^https://source\.developers\.google\.com'
+      r'/projects/[^/]+'
+      r'/repos/[^/]+$'
+  )
   if re.match(cloud_repo_pattern, source_archive_url):
     return source_archive_url + '/moveable-aliases/master'
   return source_archive_url
@@ -167,24 +183,21 @@ def _GetUploadUrl(messages, service, function_ref, kms_key):
   generate_upload_url_request = None
   if kms_key:
     generate_upload_url_request = messages.GenerateUploadUrlRequest(
-        kmsKeyName=kms_key)
+        kmsKeyName=kms_key
+    )
   request = (
       messages.CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest
-  )(parent='projects/{}/locations/{}'.format(function_ref.projectsId,
-                                             function_ref.locationsId),
-    generateUploadUrlRequest=generate_upload_url_request)
+  )(
+      parent='projects/{}/locations/{}'.format(
+          function_ref.projectsId, function_ref.locationsId
+      ),
+      generateUploadUrlRequest=generate_upload_url_request,
+  )
   try:
     response = service.GenerateUploadUrl(request)
     return response.uploadUrl
   except http_exceptions.HttpError as e:
-    # TODO(b/223631733): Check for a specific error once the backend supports.
-    if kms_key and e.status_code == http_client.INTERNAL_SERVER_ERROR:
-      raise exceptions.FunctionsError(
-          'An error occurred. Ensure that the KMS key {kms_key} exists and the '
-          'Cloud Functions service account has encrypter/decrypter permissions '
-          '(roles/cloudkms.cryptoKeyEncrypterDecrypter) on the key. If you '
-          'have recently made changes to the IAM config, wait a few minutes '
-          'for the config to propagate and try again.'.format(kms_key=kms_key))
+    cmek_util.ProcessException(e, kms_key)
     raise e
 
 
@@ -205,7 +218,9 @@ def _UploadFileToGeneratedUrlRetryFunc(base_retry_func, retry_args):
     http_wrapper.RebuildHttpConnections(retry_args.http)
     time.sleep(
         http_util.CalculateWaitForRetry(
-            retry_args.num_retries, max_wait=retry_args.max_retry_wait))
+            retry_args.num_retries, max_wait=retry_args.max_retry_wait
+        )
+    )
   else:
     base_retry_func(retry_args)
 
@@ -223,8 +238,9 @@ def _UploadFileToGeneratedUrl(source, messages, service, function_ref, kms_key):
             # Magic header, request will fail without it.
             # Not documented at the moment this comment was being written.
             'x-goog-content-length-range': '0,104857600',
-            'Content-Length': '{0:d}'.format(upload.total_size)
-        })
+            'Content-Length': '{0:d}'.format(upload.total_size),
+        },
+    )
     upload_request.body = upload.stream.read()
   finally:
     upload.stream.close()
@@ -232,37 +248,41 @@ def _UploadFileToGeneratedUrl(source, messages, service, function_ref, kms_key):
       transports.GetApitoolsTransport(),
       upload_request,
       retry_func=lambda ra: _UploadFileToGeneratedUrlRetryFunc(  # pylint: disable=g-long-lambda
-          upload.retry_func, ra),
+          upload.retry_func, ra
+      ),
       check_response_func=lambda r: _UploadFileToGeneratedUrlCheckResponse(  # pylint: disable=g-long-lambda
-          http_wrapper.CheckResponse, r),
-      retries=upload.num_retries)
+          http_wrapper.CheckResponse, r
+      ),
+      retries=upload.num_retries,
+  )
   if not _CheckUploadStatus(response.status_code):
     raise exceptions.FunctionsError(
         'Failed to upload the function source code to signed url: {url}. '
-        'Status: [{code}:{detail}]'.format(url=url,
-                                           code=response.status_code,
-                                           detail=response.content))
+        'Status: [{code}:{detail}]'.format(
+            url=url, code=response.status_code, detail=response.content
+        )
+    )
   return url
 
 
-def UploadFile(source,
-               stage_bucket,
-               messages,
-               service,
-               function_ref,
-               kms_key=None):
+def UploadFile(
+    source, stage_bucket, messages, service, function_ref, kms_key=None
+):
   if stage_bucket:
     return _UploadFileToGcs(source, function_ref, stage_bucket)
-  return _UploadFileToGeneratedUrl(source, messages, service, function_ref,
-                                   kms_key)
+  return _UploadFileToGeneratedUrl(
+      source, messages, service, function_ref, kms_key
+  )
 
 
-def SetFunctionSourceProps(function,
-                           function_ref,
-                           source_arg,
-                           stage_bucket,
-                           ignore_file=None,
-                           kms_key=None):
+def SetFunctionSourceProps(
+    function,
+    function_ref,
+    source_arg,
+    stage_bucket,
+    ignore_file=None,
+    kms_key=None,
+):
   """Add sources to function.
 
   Args:
@@ -270,10 +290,11 @@ def SetFunctionSourceProps(function,
     function_ref: The reference to the function.
     source_arg: Location of source code to deploy.
     stage_bucket: The name of the Google Cloud Storage bucket where source code
-        will be stored.
-    ignore_file: custom ignore_file name.
-        Override .gcloudignore file to customize files to be skipped.
+      will be stored.
+    ignore_file: custom ignore_file name. Override .gcloudignore file to
+      customize files to be skipped.
     kms_key: KMS key configured for the function.
+
   Returns:
     A list of fields on the function that have been changed.
   Raises:
@@ -296,7 +317,8 @@ def SetFunctionSourceProps(function,
       log.warning(
           '[{}] does not end with extension `.zip`. '
           'The `--source` argument must designate the zipped source archive '
-          'when providing a Google Cloud Storage URI.'.format(source_arg))
+          'when providing a Google Cloud Storage URI.'.format(source_arg)
+      )
     function.sourceArchiveUrl = source_arg
     return ['sourceArchiveUrl']
   elif source_arg.startswith('https://'):
@@ -308,8 +330,9 @@ def SetFunctionSourceProps(function,
     zip_file = _CreateSourcesZipFile(tmp_dir, source_arg, ignore_file)
     service = api_util.GetApiClientInstance().projects_locations_functions
 
-    upload_url = UploadFile(zip_file, stage_bucket, messages, service,
-                            function_ref, kms_key)
+    upload_url = UploadFile(
+        zip_file, stage_bucket, messages, service, function_ref, kms_key
+    )
     if upload_url.startswith('gs://'):
       function.sourceArchiveUrl = upload_url
       return ['sourceArchiveUrl']

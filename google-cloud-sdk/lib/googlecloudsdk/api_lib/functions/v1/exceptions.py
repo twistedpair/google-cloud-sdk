@@ -31,7 +31,8 @@ class OversizedDeployment(FunctionsError):
   def __init__(self, actual_size, max_allowed_size):
     super(OversizedDeployment, self).__init__(
         'Uncompressed deployment is {}, bigger than maximum allowed size of {}.'
-        .format(actual_size, max_allowed_size))
+        .format(actual_size, max_allowed_size)
+    )
 
 
 class FileNotFoundError(exceptions.Error):

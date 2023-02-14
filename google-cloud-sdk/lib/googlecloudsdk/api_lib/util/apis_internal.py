@@ -233,11 +233,6 @@ def _GetGapicClientInstance(api_name,
   Returns:
     An instance of the specified GAPIC API client.
   """
-  api_def = _GetApiDef(api_name, api_version)
-  mtls_enabled = (
-      api_def.enable_mtls and
-      properties.VALUES.context_aware.use_client_certificate.GetBool())
-
   def AddressOverride(address):
     endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
     endpoint_override = endpoint_overrides.get(api_name)
@@ -254,7 +249,7 @@ def _GetGapicClientInstance(api_name,
   return client_class(
       credentials,
       address_override_func=AddressOverride,
-      mtls_enabled=mtls_enabled)
+      mtls_enabled=_MtlsEnabled(api_name, api_version))
 
 
 def _GetMtlsEndpoint(api_name, api_version, client_class=None):
@@ -264,8 +259,14 @@ def _GetMtlsEndpoint(api_name, api_version, client_class=None):
   return api_def.mtls_endpoint_override or client_class.MTLS_BASE_URL
 
 
-def _MtlsAllowed(api_name, api_version):
-  """Checks if the api of the given version is in the mTLS allowlist.
+def _MtlsEnabled(api_name, api_version):
+  """Checks if the API of the given version should use mTLS.
+
+  If context_aware/always_use_mtls_endpoint is True, then mTLS will always be
+  used.
+
+  If context_aware/use_client_certificate is True, then mTLS will be used only
+  if the API version is in the mTLS allowlist.
 
   gcloud maintains a client-side allowlist for the mTLS feature
   (go/gcloud-rollout-mtls).
@@ -277,6 +278,12 @@ def _MtlsAllowed(api_name, api_version):
   Returns:
     True if the given service and version is in the mTLS allowlist.
   """
+  if properties.VALUES.context_aware.always_use_mtls_endpoint.GetBool():
+    return True
+
+  if not properties.VALUES.context_aware.use_client_certificate.GetBool():
+    return False
+
   api_def = _GetApiDef(api_name, api_version)
   return api_def.enable_mtls
 
@@ -299,10 +306,7 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   client_class = client_class or _GetClientClass(api_name, api_version)
   if endpoint_override:
     return _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
-  if properties.VALUES.context_aware.always_use_mtls_endpoint.GetBool():
-    return _GetMtlsEndpoint(api_name, api_version, client_class)
-  if (properties.VALUES.context_aware.use_client_certificate.GetBool() and
-      _MtlsAllowed(api_name, api_version)):
+  if _MtlsEnabled(api_name, api_version):
     return _GetMtlsEndpoint(api_name, api_version, client_class)
   return client_class.BASE_URL
 

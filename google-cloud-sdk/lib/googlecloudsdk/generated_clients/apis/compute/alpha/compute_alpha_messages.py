@@ -9694,7 +9694,9 @@ class ComputeFirewallPoliciesListRequest(_messages.Message):
     pageToken: Specifies a page token to use. Set `pageToken` to the
       `nextPageToken` returned by a previous list request to get the next page
       of results.
-    parentId: Parent ID for this request.
+    parentId: Parent ID for this request. The ID can be either be
+      "folders/[FOLDER_ID]" if the parent is a folder or
+      "organizations/[ORGANIZATION_ID]" if the parent is an organization.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
   """
@@ -9712,7 +9714,9 @@ class ComputeFirewallPoliciesMoveRequest(_messages.Message):
 
   Fields:
     firewallPolicy: Name of the firewall policy to update.
-    parentId: The new parent of the firewall policy.
+    parentId: The new parent of the firewall policy. The ID can be either be
+      "folders/[FOLDER_ID]" if the parent is a folder or
+      "organizations/[ORGANIZATION_ID]" if the parent is an organization.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. For example,
@@ -12421,7 +12425,8 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
 
   Fields:
     family: Name of the image family to search for.
-    project: Project ID for this request.
+    project: The image project that the image belongs to. For example, to get
+      a CentOS image, specify centos-cloud as the image project.
   """
 
   family = _messages.StringField(1, required=True)
@@ -42509,10 +42514,14 @@ class Image(_messages.Message):
       property when you create the resource.
     diskSizeGb: Size of the image when restored onto a persistent disk (in
       GB).
-    family: The name of the image family to which this image belongs. You can
-      create disks by specifying an image family instead of a specific image
-      name. The image family always returns its latest image that is not
-      deprecated. The name of the image family must comply with RFC1035.
+    family: The name of the image family to which this image belongs. The
+      image family name can be from a publicly managed image family provided
+      by Compute Engine, or from a custom image family you create. For
+      example, centos-stream-9 is a publicly available image family. For more
+      information, see Image family best practices. When creating disks, you
+      can specify an image family instead of a specific image name. The image
+      family always returns its latest image that is not deprecated. The name
+      of the image family must comply with RFC1035.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. To see a list of available
       options, see the guestOSfeatures[].type parameter.

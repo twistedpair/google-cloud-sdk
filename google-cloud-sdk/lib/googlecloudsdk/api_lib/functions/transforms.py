@@ -102,9 +102,14 @@ def TransformTrigger(data, undefined=''):
         return 'Cloud Audit Log'
       elif trigger_types.IsStorageType(event_type):
         event_filters = event_trigger['eventFilters']
-        bucket = next((f.get('value')
-                       for f in event_filters
-                       if f.get('attribute') == 'bucket'), None)
+        bucket = next(
+            (
+                f.get('value')
+                for f in event_filters
+                if f.get('attribute') == 'bucket'
+            ),
+            None,
+        )
         if bucket:
           return 'bucket: ' + bucket
 
@@ -163,6 +168,7 @@ def _TransformEnvironments(data):
       generations.append(GEN_2)
 
   return ', '.join(generations)
+
 
 _TRANSFORMS = {
     'trigger': TransformTrigger,

@@ -62,17 +62,21 @@ SECURITY_LEVEL_MAPPING = {
 
 _KMS_KEY_NAME_PATTERN = (
     r'^projects/[^/]+/locations/[^/]+/keyRings/[a-zA-Z0-9_-]+'
-    '/cryptoKeys/[a-zA-Z0-9_-]+$')
+    '/cryptoKeys/[a-zA-Z0-9_-]+$'
+)
 _KMS_KEY_NAME_ERROR = (
     'KMS key name should match projects/{project}/locations/{location}'
     '/keyRings/{keyring}/cryptoKeys/{cryptokey} and only contain characters '
-    'from the valid character set for a KMS key.')
+    'from the valid character set for a KMS key.'
+)
 _DOCKER_REPOSITORY_NAME_PATTERN = (
-    r'^projects/[^/]+/locations/[^/]+/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$')
+    r'^projects/[^/]+/locations/[^/]+/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$'
+)
 _DOCKER_REPOSITORY_NAME_ERROR = (
     'Docker repository name should match projects/{project}'
     '/locations/{location}/repositories/{repository} and only contain '
-    'characters from the valid character set for a repository.')
+    'characters from the valid character set for a repository.'
+)
 
 DOCKER_REGISTRY_MAPPING = {
     'CONTAINER_REGISTRY': 'container-registry',
@@ -84,7 +88,8 @@ def AddMinLogLevelFlag(parser):
   min_log_arg = base.ChoiceArgument(
       '--min-log-level',
       choices=[x.lower() for x in SEVERITIES],
-      help_str='Minimum level of logs to be fetched.')
+      help_str='Minimum level of logs to be fetched.',
+  )
   min_log_arg.AddToParser(parser)
 
 
@@ -92,8 +97,11 @@ def AddIngressSettingsFlag(parser):
   ingress_settings_arg = base.ChoiceArgument(
       '--ingress-settings',
       choices=[x.lower() for x in INGRESS_SETTINGS],
-      help_str='Ingress settings controls what traffic can reach the '
-      'function. By default `all` will be used.')
+      help_str=(
+          'Ingress settings controls what traffic can reach the '
+          'function. By default `all` will be used.'
+      ),
+  )
   ingress_settings_arg.AddToParser(parser)
 
 
@@ -101,9 +109,12 @@ def AddEgressSettingsFlag(parser):
   egress_settings_arg = base.ChoiceArgument(
       '--egress-settings',
       choices=[x.lower() for x in EGRESS_SETTINGS],
-      help_str='Egress settings controls what traffic is diverted through the '
-      'VPC Access Connector resource. '
-      'By default `private-ranges-only` will be used.')
+      help_str=(
+          'Egress settings controls what traffic is diverted through the '
+          'VPC Access Connector resource. '
+          'By default `private-ranges-only` will be used.'
+      ),
+  )
   egress_settings_arg.AddToParser(parser)
 
 
@@ -112,9 +123,12 @@ def AddSecurityLevelFlag(parser):
       '--security-level',
       default='secure-always',
       choices=[x.lower() for x in SECURITY_LEVEL],
-      help_str='Security level controls whether a function\'s URL supports '
-      'HTTPS only or both HTTP and HTTPS. By default, `secure-always` will'
-      ' be used, meaning only HTTPS is supported.')
+      help_str=(
+          "Security level controls whether a function's URL supports "
+          'HTTPS only or both HTTP and HTTPS. By default, `secure-always` will'
+          ' be used, meaning only HTTPS is supported.'
+      ),
+  )
   security_level_arg.AddToParser(parser)
 
 
@@ -124,7 +138,8 @@ def GetLocationsUri(resource):
   ref = registry.Parse(
       resource.name,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection=LOCATIONS_COLLECTION)
+      collection=LOCATIONS_COLLECTION,
+  )
   return ref.SelfLink()
 
 
@@ -162,7 +177,8 @@ def AddFunctionMemoryAndCpuFlags(parser, track):
       to change the setting.
       """
     group.add_argument(
-        '--memory', type=str, help=memory_help_text, required=True)
+        '--memory', type=str, help=memory_help_text, required=True
+    )
     group.add_argument('--cpu', help=cpu_help_text)
   else:
     parser.add_argument('--memory', type=str, help=memory_help_text)
@@ -180,7 +196,8 @@ def ParseMemoryStrToNumBytes(binary_size):
 
   binary_size_parser = arg_parsers.BinarySize(
       suggested_binary_size_scales=['KB', 'MB', 'MiB', 'GB', 'GiB'],
-      default_unit='MB')
+      default_unit='MB',
+  )
   return binary_size_parser(binary_size)
 
 
@@ -188,7 +205,8 @@ def ValidateV1TimeoutFlag(args):
   if args.timeout and args.timeout > 540:
     raise arg_parsers.ArgumentTypeError(
         '--timeout: value must be less than or equal to 540s; received: {}s'
-        .format(args.timeout))
+        .format(args.timeout)
+    )
 
 
 def AddFunctionTimeoutFlag(parser):
@@ -212,15 +230,18 @@ def AddFunctionTimeoutFlag(parser):
       See $ gcloud topic datetimes for information on duration formats."""
 
   parser.add_argument(
-      '--timeout', help=help_text, type=arg_parsers.Duration(lower_bound='1s'))
+      '--timeout', help=help_text, type=arg_parsers.Duration(lower_bound='1s')
+  )
 
 
 def AddFunctionRetryFlag(parser):
   """Add flag for specifying function retry behavior to the parser."""
   parser.add_argument(
       '--retry',
-      help=('If specified, then the function will be retried in case of a '
-            'failure.'),
+      help=(
+          'If specified, then the function will be retried in case of a '
+          'failure.'
+      ),
       action='store_true',
   )
 
@@ -231,19 +252,24 @@ def AddAllowUnauthenticatedFlag(parser):
       '--allow-unauthenticated',
       default=False,
       action='store_true',
-      help=('If set, makes this a public function. This will allow all '
-            'callers, without checking authentication.'))
+      help=(
+          'If set, makes this a public function. This will allow all '
+          'callers, without checking authentication.'
+      ),
+  )
 
 
 def AddServeAllTrafficLatestRevisionFlag(parser):
   help_text = (
       'If specified, latest function revision will be served all traffic. '
-      'This is only relevant when `--gen2` is provided.')
+      'This is only relevant when `--gen2` is provided.'
+  )
   parser.add_argument(
       '--serve-all-traffic-latest-revision',
       action='store_true',
       default=False,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddBuildpackStackFlag(parser):
@@ -261,12 +287,14 @@ def AddGen2Flag(parser):
       'If enabled, this command will use Cloud Functions (Second generation). '
       'If disabled, Cloud Functions (First generation) will be used. If not '
       'specified, the value of this flag will be taken from the '
-      '`functions/gen2` configuration property.')
+      '`functions/gen2` configuration property.'
+  )
   parser.add_argument(
       '--gen2',
       default=False,
       action=actions.StoreBooleanProperty(properties.VALUES.functions.gen2),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def ShouldUseGen2():
@@ -278,8 +306,10 @@ def ShouldEnsureAllUsersInvoke(args):
 
 
 def ShouldDenyAllUsersInvoke(args):
-  return (args.IsSpecified('allow_unauthenticated') and
-          not args.allow_unauthenticated)
+  return (
+      args.IsSpecified('allow_unauthenticated')
+      and not args.allow_unauthenticated
+  )
 
 
 def AddSourceFlag(parser):
@@ -355,23 +385,27 @@ def AddSourceFlag(parser):
       moveable-aliases/alternate-branch/paths/path-to=source
       ```
 
-      """)
+      """,
+  )
 
 
 def AddStageBucketFlag(parser):
   """Add flag for specifying stage bucket to the parser."""
   parser.add_argument(
       '--stage-bucket',
-      help=('When deploying a function from a local directory, this flag\'s '
-            'value is the name of the Google Cloud Storage bucket in which '
-            'source code will be stored. Note that if you set the '
-            '`--stage-bucket` flag when deploying a function, you will need to '
-            'specify `--source` or `--stage-bucket` in subsequent deployments '
-            'to update your source code. To use this flag successfully, the '
-            'account in use must have permissions to write to this bucket. For '
-            'help granting access, refer to this guide: '
-            'https://cloud.google.com/storage/docs/access-control/'),
-      type=api_util.ValidateAndStandarizeBucketUriOrRaise)
+      help=(
+          "When deploying a function from a local directory, this flag's "
+          'value is the name of the Google Cloud Storage bucket in which '
+          'source code will be stored. Note that if you set the '
+          '`--stage-bucket` flag when deploying a function, you will need to '
+          'specify `--source` or `--stage-bucket` in subsequent deployments '
+          'to update your source code. To use this flag successfully, the '
+          'account in use must have permissions to write to this bucket. For '
+          'help granting access, refer to this guide: '
+          'https://cloud.google.com/storage/docs/access-control/'
+      ),
+      type=api_util.ValidateAndStandarizeBucketUriOrRaise,
+  )
 
 
 def AddRuntimeFlag(parser):
@@ -385,7 +419,8 @@ def AddRuntimeFlag(parser):
           an existing function.
 
           For a list of available runtimes, run `gcloud functions runtimes list`.
-          """)
+          """,
+  )
 
 
 def AddVPCConnectorMutexGroup(parser):
@@ -401,13 +436,15 @@ def AddVPCConnectorMutexGroup(parser):
         `projects/${PROJECT}/locations/${LOCATION}/connectors/${CONNECTOR}`
         or `${CONNECTOR}`, where `${CONNECTOR}` is the short name of the VPC
         Access connector.
-      """)
+      """,
+  )
   mutex_group.add_argument(
       '--clear-vpc-connector',
       action='store_true',
       help="""\
         Clears the VPC connector field.
-      """)
+      """,
+  )
 
 
 def AddBuildWorkerPoolMutexGroup(parser):
@@ -422,13 +459,15 @@ def AddBuildWorkerPoolMutexGroup(parser):
         where ${PROJECT} is the project id and ${LOCATION} is the location where
         the worker pool is defined and ${WORKERPOOL} is the short name of the
         worker pool.
-      """)
+      """,
+  )
   mutex_group.add_argument(
       '--clear-build-worker-pool',
       action='store_true',
       help="""\
         Clears the Cloud Build Custom Worker Pool field.
-      """)
+      """,
+  )
 
 
 def AddEntryPointFlag(parser):
@@ -442,7 +481,8 @@ def AddEntryPointFlag(parser):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
-""")
+""",
+  )
 
 
 def AddMaxInstancesFlag(parser):
@@ -454,13 +494,15 @@ def AddMaxInstancesFlag(parser):
       help="""\
         Sets the maximum number of instances for the function. A function
         execution that would exceed max-instances times out.
-      """)
+      """,
+  )
   mutex_group.add_argument(
       '--clear-max-instances',
       action='store_true',
       help="""\
         Clears the maximum instances setting for the function.
-      """)
+      """,
+  )
 
 
 def AddMinInstancesFlag(parser):
@@ -472,13 +514,15 @@ def AddMinInstancesFlag(parser):
       help="""\
         Sets the minimum number of instances for the function. This is helpful
         for reducing cold start times. Defaults to zero.
-      """)
+      """,
+  )
   mutex_group.add_argument(
       '--clear-min-instances',
       action='store_true',
       help="""\
         Clears the minimum instances setting for the function.
-      """)
+      """,
+  )
 
 
 def AddTriggerFlagGroup(parser):
@@ -492,26 +536,36 @@ def AddTriggerFlagGroup(parser):
   formatted_trigger_flags = ', '.join(['`{}`'.format(f) for f in trigger_flags])
 
   trigger_group = parser.add_mutually_exclusive_group(
-      help=('If you don\'t specify a trigger when deploying an update to an '
-            'existing function it will keep its current trigger. '
-            'You must specify {formatted_trigger_flags} or '
-            '(`--trigger-event` AND `--trigger-resource`) when deploying a '
-            'new function.'.format(
-                formatted_trigger_flags=formatted_trigger_flags)))
+      help=(
+          "If you don't specify a trigger when deploying an update to an "
+          'existing function it will keep its current trigger. '
+          'You must specify {formatted_trigger_flags} or '
+          '(`--trigger-event` AND `--trigger-resource`) when deploying a '
+          'new function.'.format(
+              formatted_trigger_flags=formatted_trigger_flags
+          )
+      )
+  )
   trigger_group.add_argument(
       '--trigger-topic',
-      help=('Name of Pub/Sub topic. Every message published in this topic '
-            'will trigger function execution with message contents passed as '
-            'input data. Note that this flag does not accept the format of '
-            'projects/PROJECT_ID/topics/TOPIC_ID. Use this flag to specify the '
-            'final element TOPIC_ID. The PROJECT_ID will be read from the '
-            'active configuration.'),
-      type=api_util.ValidatePubsubTopicNameOrRaise)
+      help=(
+          'Name of Pub/Sub topic. Every message published in this topic '
+          'will trigger function execution with message contents passed as '
+          'input data. Note that this flag does not accept the format of '
+          'projects/PROJECT_ID/topics/TOPIC_ID. Use this flag to specify the '
+          'final element TOPIC_ID. The PROJECT_ID will be read from the '
+          'active configuration.'
+      ),
+      type=api_util.ValidatePubsubTopicNameOrRaise,
+  )
   trigger_group.add_argument(
       '--trigger-bucket',
-      help=('Google Cloud Storage bucket name. Every change in files in this '
-            'bucket will trigger function execution.'),
-      type=api_util.ValidateAndStandarizeBucketUriOrRaise)
+      help=(
+          'Google Cloud Storage bucket name. Every change in files in this '
+          'bucket will trigger function execution.'
+      ),
+      type=api_util.ValidateAndStandarizeBucketUriOrRaise,
+  )
   trigger_group.add_argument(
       '--trigger-http',
       action='store_true',
@@ -519,7 +573,8 @@ def AddTriggerFlagGroup(parser):
       Function will be assigned an endpoint, which you can view by using
       the `describe` command. Any HTTP request (of a supported type) to the
       endpoint will trigger function execution. Supported HTTP request
-      types are: POST, PUT, GET, DELETE, and OPTIONS.""")
+      types are: POST, PUT, GET, DELETE, and OPTIONS.""",
+  )
   eventarc_trigger_group = trigger_group.add_argument_group()
   concept_parsers.ConceptParser(
       [
@@ -531,11 +586,13 @@ def AddTriggerFlagGroup(parser):
               This is only relevant when `--gen2` is provided.""",
               flag_name_overrides={'location': ''},
               group=eventarc_trigger_group,
-              hidden=True)
+              hidden=True,
+          )
       ],
       command_level_fallthroughs={
           '--trigger-channel.location': ['--trigger-location'],
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
   eventarc_trigger_group.add_argument(
       '--trigger-event-filters',
       type=arg_parsers.ArgDict(),
@@ -555,25 +612,31 @@ def AddTriggerFlagGroup(parser):
       help="""\
       The Eventarc matching criteria for the trigger in path pattern format.
       The criteria can be specified as a single comma-separated argument or as
-      multiple arguments. This is only relevant when `--gen2` is provided.""")
+      multiple arguments. This is only relevant when `--gen2` is provided.""",
+  )
 
   trigger_provider_spec_group = trigger_group.add_argument_group()
   # check later as type of applicable input depends on options above
   trigger_provider_spec_group.add_argument(
       '--trigger-event',
       metavar='EVENT_TYPE',
-      help=('Specifies which action should trigger the function. For a '
-            'list of acceptable values, call '
-            '`gcloud functions event-types list`.'))
+      help=(
+          'Specifies which action should trigger the function. For a '
+          'list of acceptable values, call '
+          '`gcloud functions event-types list`.'
+      ),
+  )
   trigger_provider_spec_group.add_argument(
       '--trigger-resource',
       metavar='RESOURCE',
-      help=('Specifies which resource from `--trigger-event` is being '
-            'observed. E.g. if `--trigger-event` is  '
-            '`providers/cloud.storage/eventTypes/object.change`, '
-            '`--trigger-resource` must be a bucket name. For a list of '
-            'expected resources, call '
-            '`gcloud functions event-types list`.'),
+      help=(
+          'Specifies which resource from `--trigger-event` is being '
+          'observed. E.g. if `--trigger-event` is  '
+          '`providers/cloud.storage/eventTypes/object.change`, '
+          '`--trigger-resource` must be a bucket name. For a list of '
+          'expected resources, call '
+          '`gcloud functions event-types list`.'
+      ),
   )
 
 
@@ -583,7 +646,8 @@ class LocationsCompleter(completers.ListCommandCompleter):
     super(LocationsCompleter, self).__init__(
         collection=LOCATIONS_COLLECTION,
         list_command='alpha functions regions list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
 class RegionFallthrough(deps.PropertyFallthrough):
@@ -606,8 +670,11 @@ class RegionFallthrough(deps.PropertyFallthrough):
 
     if not console_io.CanPrompt():
       raise calliope_exceptions.RequiredArgumentException(
-          'region', 'You must specify a region. '
-          'Either use the flag `--region` or set the functions/region property.'
+          'region',
+          (
+              'You must specify a region. Either use the flag `--region` or set'
+              ' the functions/region property.'
+          ),
       )
 
     client = client_v2.FunctionsClient(self.release_track)
@@ -616,7 +683,8 @@ class RegionFallthrough(deps.PropertyFallthrough):
     region = regions[idx]
     log.status.Print(
         'To make this the default region, run '
-        '`gcloud config set functions/region {}`.\n'.format(region))
+        '`gcloud config set functions/region {}`.\n'.format(region)
+    )
 
     return region
 
@@ -635,7 +703,8 @@ def RegionAttributeConfig():
       name='region',
       help_text=(
           'The Cloud region for the {resource}. Overrides the default '
-          '`functions/region` property value for this command invocation.'),
+          '`functions/region` property value for this command invocation.'
+      ),
       completer=LocationsCompleter,
       fallthroughs=[RegionFallthrough()],
   )
@@ -645,9 +714,11 @@ def AddTriggerLocationFlag(parser):
   """Add flag for specifying trigger location to the parser."""
   parser.add_argument(
       '--trigger-location',
-      help=('The location of the trigger, which must be a region or multi-'
-            'region where the relevant events originate. This is only '
-            'relevant when `--gen2` is provided.'),
+      help=(
+          'The location of the trigger, which must be a region or multi-'
+          'region where the relevant events originate. This is only '
+          'relevant when `--gen2` is provided.'
+      ),
       completer=LocationsCompleter,
   )
 
@@ -655,7 +726,7 @@ def AddTriggerLocationFlag(parser):
 def FunctionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='function',
-      help_text='The Cloud functon name.',
+      help_text='The name of the {resource}.',
       value_type=api_util.ValidateFunctionNameOrRaise,
   )
 
@@ -684,7 +755,8 @@ def AddFunctionResourceArg(parser, verb):
       'NAME',
       GetFunctionResourceSpec(),
       'The Cloud function name {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddServiceAccountFlag(parser):
@@ -697,7 +769,8 @@ def AddServiceAccountFlag(parser):
 
       If not provided, the function will use the project's default service
       account.
-      """)
+      """,
+  )
 
 
 def AddRunServiceAccountFlag(parser):
@@ -713,7 +786,8 @@ def AddRunServiceAccountFlag(parser):
       account for Compute Engine.
 
       This is only relevant when `--gen2` is provided.
-      """)
+      """,
+  )
 
 
 def AddTriggerServiceAccountFlag(parser):
@@ -727,13 +801,15 @@ def AddTriggerServiceAccountFlag(parser):
       account for Compute Engine.
 
       This is only relevant when `--gen2` is provided.
-      """)
+      """,
+  )
 
 
 def AddDataFlag(parser):
   parser.add_argument(
       '--data',
-      help="""JSON string with data that will be passed to the function.""")
+      help="""JSON string with data that will be passed to the function.""",
+  )
 
 
 def AddCloudEventsFlag(parser):
@@ -748,21 +824,27 @@ def AddCloudEventsFlag(parser):
       object will be sent to your function as a binary content mode message with
       the top-level 'data' field set as the HTTP body and all other JSON fields
       sent as HTTP headers.
-      """)
+      """,
+  )
 
 
 def AddIAMPolicyFileArg(parser):
   parser.add_argument(
       'policy_file',
       metavar='POLICY_FILE',
-      help='Path to a local JSON or YAML formatted file '
-      'containing a valid policy.')
+      help=(
+          'Path to a local JSON or YAML formatted file '
+          'containing a valid policy.'
+      ),
+  )
 
 
 def AddIgnoreFileFlag(parser):
   parser.add_argument(
       '--ignore-file',
-      help='Override the .gcloudignore file and use the specified file instead.'
+      help=(
+          'Override the .gcloudignore file and use the specified file instead.'
+      ),
   )
 
 
@@ -779,7 +861,8 @@ def AddDockerRegistryFlags(parser):
         Warning: Artifact Registry and Container Registry have different image
         storage costs. For more details, please see
         https://cloud.google.com/functions/pricing#deployment_costs
-      """)
+      """,
+  )
   docker_registry_arg.AddToParser(parser)
 
 
@@ -789,8 +872,9 @@ def AddKMSKeyFlags(parser):
   kmskey_group = parser.add_group(mutex=True)
   kmskey_group.add_argument(
       '--kms-key',
-      type=arg_parsers.RegexpValidator(_KMS_KEY_NAME_PATTERN,
-                                       _KMS_KEY_NAME_ERROR),
+      type=arg_parsers.RegexpValidator(
+          _KMS_KEY_NAME_PATTERN, _KMS_KEY_NAME_ERROR
+      ),
       help="""\
         Sets the user managed KMS crypto key used to encrypt the Cloud Function
         and its resources.
@@ -804,13 +888,15 @@ def AddKMSKeyFlags(parser):
         If this flag is set, then a Docker repository created in Artifact
         Registry must be specified using the `--docker-repository` flag and the
         repository must be encrypted using the `same` KMS key.
-      """)
+      """,
+  )
   kmskey_group.add_argument(
       '--clear-kms-key',
       action='store_true',
       help="""\
         Clears the KMS crypto key used to encrypt the function.
-      """)
+      """,
+  )
 
 
 def AddDockerRepositoryFlags(parser):
@@ -818,8 +904,9 @@ def AddDockerRepositoryFlags(parser):
   kmskey_group = parser.add_group(mutex=True)
   kmskey_group.add_argument(
       '--docker-repository',
-      type=arg_parsers.RegexpValidator(_DOCKER_REPOSITORY_NAME_PATTERN,
-                                       _DOCKER_REPOSITORY_NAME_ERROR),
+      type=arg_parsers.RegexpValidator(
+          _DOCKER_REPOSITORY_NAME_PATTERN, _DOCKER_REPOSITORY_NAME_ERROR
+      ),
       help="""\
         Sets the Docker repository to be used for storing the Cloud Function's
         Docker images while the function is being deployed. `DOCKER_REPOSITORY`
@@ -830,13 +917,15 @@ def AddDockerRepositoryFlags(parser):
         `projects/${PROJECT}/locations/${LOCATION}/repositories/${REPOSITORY}`
         where ${PROJECT} is the project, ${LOCATION} is the location of the
         repository and ${REPOSITORY} is a valid repository ID.
-      """)
+      """,
+  )
   kmskey_group.add_argument(
       '--clear-docker-repository',
       action='store_true',
       help="""\
         Clears the Docker repository configuration of the function.
-      """)
+      """,
+  )
 
 
 def AddConcurrencyFlag(parser, track):
@@ -844,6 +933,10 @@ def AddConcurrencyFlag(parser, track):
     parser.add_argument(
         '--concurrency',
         type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=1000),
-        help='Set the maximum number of concurrent requests allowed per '
-        'container instance. Leave concurrency unspecified to receive the server default value. Only applicable when the `--gen2` flag is provided.'
+        help=(
+            'Set the maximum number of concurrent requests allowed per'
+            ' container instance. Leave concurrency unspecified to receive the'
+            ' server default value. Only applicable when the `--gen2` flag is'
+            ' provided.'
+        ),
     )

@@ -24,8 +24,6 @@ import os
 import stat
 
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 
@@ -321,16 +319,14 @@ def _set_posix_attributes_on_file(file_path, custom_posix_attributes):
   os.chmod(file_path, mode.base_ten_int)
 
 
-def set_posix_attributes_on_file_if_valid(user_request_args, task_messages,
-                                          source_resource,
-                                          destination_resource):
+def set_posix_attributes_on_file_if_valid(
+    user_request_args, source_resource, destination_resource
+):
   """Sets custom POSIX attributes on file if the final metadata will be valid.
 
   Args:
     user_request_args (user_request_args_factory._UserRequestArgs): Determines
       if user intended to preserve file POSIX data and get system-wide POSIX.
-    task_messages (List[task.Message]): May carry preserved POSIX data to set
-      from cloud object.
     source_resource (resource_reference.ObjectResource): Copy source.
     destination_resource (resource_reference.FileObjectResource): Copy
       destination.
@@ -343,8 +339,7 @@ def set_posix_attributes_on_file_if_valid(user_request_args, task_messages,
   if not (user_request_args and user_request_args.system_posix_data):
     # Check if user typed "--preserve-posix" flag.
     return
-  posix_attributes = task_util.get_first_matching_message_payload(
-      task_messages, task.Topic.API_DOWNLOAD_RESULT).posix_attributes
+  posix_attributes = get_posix_attributes_from_resource(source_resource)
   destination_path = destination_resource.storage_url.object_name
 
   if not are_file_permissions_valid(source_resource.storage_url.url_string,
@@ -356,83 +351,100 @@ def set_posix_attributes_on_file_if_valid(user_request_args, task_messages,
   _set_posix_attributes_on_file(destination_path, posix_attributes)
 
 
-def _extract_time_from_custom_metadata(url_string, key, metadata_dict):
+def _extract_time_from_custom_metadata(resource, key):
   """Finds, validates, and returns a POSIX time value."""
-  if key not in metadata_dict:
+  if not resource.custom_fields or key not in resource.custom_fields:
     return None
   try:
-    timestamp = int(metadata_dict[key])
+    timestamp = int(resource.custom_fields[key])
   except ValueError:
-    log.warning('{} metadata did not contain a numeric value for {}: {}'.format(
-        url_string, key, metadata_dict[key]))
+    log.warning(
+        '{} metadata did not contain a numeric value for {}: {}'.format(
+            resource.storage_url.url_string, key, resource.custom_fields[key]
+        )
+    )
     return None
   if timestamp < 0:
-    log.warning('Found negative time value in {} metadata {}: {}'.format(
-        url_string, key, metadata_dict[key]))
+    log.warning(
+        'Found negative time value in {} metadata {}: {}'.format(
+            resource.storage_url.url_string, key, resource.custom_fields[key]
+        )
+    )
     return None
   if timestamp > datetime.datetime.now(datetime.timezone.utc).timestamp():
-    log.warning('Found future time value in {} metadata {}: {}'.format(
-        url_string, key, metadata_dict[key]))
+    log.warning(
+        'Found future time value in {} metadata {}: {}'.format(
+            resource.storage_url.url_string, key, resource.custom_fields[key]
+        )
+    )
     return None
   return timestamp
 
 
-def _extract_id_from_custom_metadata(url_string, key, metadata_dict):
+def _extract_id_from_custom_metadata(resource, key):
   """Finds, validates, and returns a POSIX ID value."""
-  if key not in metadata_dict:
+  if not resource.custom_fields or key not in resource.custom_fields:
     return None
   try:
-    posix_id = int(metadata_dict[key])
+    posix_id = int(resource.custom_fields[key])
   except ValueError:
-    log.warning('{} metadata did not contain a numeric value for {}: {}'.format(
-        url_string, key, metadata_dict[key]))
+    log.warning(
+        '{} metadata did not contain a numeric value for {}: {}'.format(
+            resource.storage_url.url_string, key, resource.custom_fields[key]
+        )
+    )
     return None
   if posix_id < 0:
-    log.warning('Found negative ID value in {} metadata {}: {}'.format(
-        url_string, key, metadata_dict[key]))
+    log.warning(
+        'Found negative ID value in {} metadata {}: {}'.format(
+            resource.storage_url.url_string, key, resource.custom_fields[key]
+        )
+    )
     return None
   return posix_id
 
 
-def _extract_mode_from_custom_metadata(url_string, metadata_dict):
+def _extract_mode_from_custom_metadata(resource):
   """Finds, validates, and returns a POSIX mode value."""
-  if _MODE_METADATA_KEY not in metadata_dict:
+  if (
+      not resource.custom_fields
+      or _MODE_METADATA_KEY not in resource.custom_fields
+  ):
     return None
   try:
-    return PosixMode.from_base_eight_str(metadata_dict[_MODE_METADATA_KEY])
+    return PosixMode.from_base_eight_str(
+        resource.custom_fields[_MODE_METADATA_KEY]
+    )
   except ValueError:
-    log.warning('{} metadata did not contain a valid permissions octal string'
-                ' for {}: {}'.format(url_string, _MODE_METADATA_KEY,
-                                     metadata_dict[_MODE_METADATA_KEY]))
+    log.warning(
+        '{} metadata did not contain a valid permissions octal string'
+        ' for {}: {}'.format(
+            resource.storage_url.url_string,
+            _MODE_METADATA_KEY,
+            resource.custom_fields[_MODE_METADATA_KEY],
+        )
+    )
   return None
 
 
-def get_posix_attributes_from_custom_metadata_dict(url_string, metadata_dict):
+def get_posix_attributes_from_resource(resource):
   """Parses metadata_dict and returns PosixAttributes.
 
-  GCS Apitools custom metadata can be converted to a metadata_dict with
-  "encoding_helper.MessageToDict(object_metadata.metadata)". S3 already
-  stores its object custom metadata as a dict.
-
-  Note: This is the dict of an object's *custom* metadata with user-set fields,
-  not all object metadata with provider-set fields.
+  Note: This parses an object's *custom* metadata with user-set fields,
+  not the full metadata with provider-set fields.
 
   Args:
-    url_string (str): File or object path for logging warning.
-    metadata_dict (dict): Contains user-set fields where POSIX info may be.
+    resource (ObjectResource): Contains URL to include in logged warnings and
+      custom metadata to parse.
 
   Returns:
     PosixAttributes object populated from metadata_dict.
   """
-  atime = _extract_time_from_custom_metadata(url_string, _ATIME_METADATA_KEY,
-                                             metadata_dict)
-  mtime = _extract_time_from_custom_metadata(url_string, _MTIME_METADATA_KEY,
-                                             metadata_dict)
-  uid = _extract_id_from_custom_metadata(url_string, _UID_METADATA_KEY,
-                                         metadata_dict)
-  gid = _extract_id_from_custom_metadata(url_string, _GID_METADATA_KEY,
-                                         metadata_dict)
-  mode = _extract_mode_from_custom_metadata(url_string, metadata_dict)
+  atime = _extract_time_from_custom_metadata(resource, _ATIME_METADATA_KEY)
+  mtime = _extract_time_from_custom_metadata(resource, _MTIME_METADATA_KEY)
+  uid = _extract_id_from_custom_metadata(resource, _UID_METADATA_KEY)
+  gid = _extract_id_from_custom_metadata(resource, _GID_METADATA_KEY)
+  mode = _extract_mode_from_custom_metadata(resource)
   return PosixAttributes(atime, mtime, uid, gid, mode)
 
 

@@ -481,7 +481,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster, consisting of the specified number and type of Google Compute Engine instances. By default, the cluster is created in the project's [default network](/compute/docs/networks-and-firewalls#networks). One firewall is added for the cluster. After cluster creation, the kubelet creates routes for each node to allow the containers on that node to communicate with all other instances in the cluster. Finally, an entry is added to the project's global metadata indicating which CIDR range the cluster is using.
+      r"""Creates a cluster, consisting of the specified number and type of Google Compute Engine instances. By default, the cluster is created in the project's [default network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks). One firewall is added for the cluster. After cluster creation, the kubelet creates routes for each node to allow the containers on that node to communicate with all other instances in the cluster. Finally, an entry is added to the project's global metadata indicating which CIDR range the cluster is using.
 
       Args:
         request: (CreateClusterRequest) input message
@@ -670,7 +670,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def SetLocations(self, request, global_params=None):
-      r"""Sets the locations for a specific cluster. Deprecated. Use [projects.locations.clusters.update](/kubernetes-engine/docs/reference/rest/v1alpha1/projects.locations.clusters.update) instead.
+      r"""Sets the locations for a specific cluster. Deprecated. Use [projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1alpha1/projects.locations.clusters.update) instead.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1401,7 +1401,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster, consisting of the specified number and type of Google Compute Engine instances. By default, the cluster is created in the project's [default network](/compute/docs/networks-and-firewalls#networks). One firewall is added for the cluster. After cluster creation, the kubelet creates routes for each node to allow the containers on that node to communicate with all other instances in the cluster. Finally, an entry is added to the project's global metadata indicating which CIDR range the cluster is using.
+      r"""Creates a cluster, consisting of the specified number and type of Google Compute Engine instances. By default, the cluster is created in the project's [default network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks). One firewall is added for the cluster. After cluster creation, the kubelet creates routes for each node to allow the containers on that node to communicate with all other instances in the cluster. Finally, an entry is added to the project's global metadata indicating which CIDR range the cluster is using.
 
       Args:
         request: (CreateClusterRequest) input message
@@ -1531,7 +1531,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def Locations(self, request, global_params=None):
-      r"""Sets the locations for a specific cluster. Deprecated. Use [projects.locations.clusters.update](/kubernetes-engine/docs/reference/rest/v1alpha1/projects.locations.clusters.update) instead.
+      r"""Sets the locations for a specific cluster. Deprecated. Use [projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1alpha1/projects.locations.clusters.update) instead.
 
       Args:
         request: (SetLocationsRequest) input message

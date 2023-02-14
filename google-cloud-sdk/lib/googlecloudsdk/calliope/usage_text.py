@@ -117,6 +117,10 @@ class TextChoiceSuggester(object):
     return self._choices[match[0]] if match else None
 
 
+class ArgumentWrapper(parser_arguments.Argument):
+  pass
+
+
 def _ApplyMarkdownItalic(msg):
   return re.sub(r'(\b[a-zA-Z][-a-zA-Z_0-9]*)',
                 base.MARKDOWN_ITALIC + r'\1' + base.MARKDOWN_ITALIC, msg)
@@ -397,9 +401,12 @@ def GetSingleton(args):
     if singleton:
       return None
     singleton = arg
-  if singleton and args.is_required and not singleton.is_required:
+
+  if (singleton and not isinstance(args, ArgumentWrapper) and
+      singleton.is_required != args.is_required):
     singleton = copy.copy(singleton)
-    singleton.is_required = True
+    singleton.is_required = args.is_required
+
   return singleton
 
 
@@ -709,7 +716,7 @@ def GetArgSections(arguments, is_root, is_group, sort_top_level_args):
     if category not in categories:
       continue
     sections.append(Section(_GetArgHeading(category),
-                            parser_arguments.Argument(
+                            ArgumentWrapper(
                                 arguments=categories[category],
                                 sort_args=sort_top_level_args)))
 

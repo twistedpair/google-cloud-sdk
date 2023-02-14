@@ -1369,6 +1369,18 @@ class FirewallRule(_messages.Message):
   sourceRange = _messages.StringField(4)
 
 
+class FlexibleRuntimeSettings(_messages.Message):
+  r"""Runtime settings for the App Engine flexible environment.
+
+  Fields:
+    operatingSystem: The operating system of the application runtime.
+    runtimeVersion: The runtime version of an App Engine flexible application.
+  """
+
+  operatingSystem = _messages.StringField(1)
+  runtimeVersion = _messages.StringField(2)
+
+
 class GoogleAppengineV1betaLocationMetadata(_messages.Message):
   r"""Metadata for the given google.cloud.location.Location.
 
@@ -3186,6 +3198,7 @@ class Version(_messages.Message):
       returned in GET requests if view=FULL is set.
     errorHandlers: Custom static error pages. Limited to 10KB per page.Only
       returned in GET requests if view=FULL is set.
+    flexibleRuntimeSettings: Settings for App Engine flexible runtimes.
     handlers: An ordered list of URL-matching patterns that should be applied
       to incoming requests. The first matching URL handles the request and
       other request handlers are not attempted.Only returned in GET requests
@@ -3391,30 +3404,31 @@ class Version(_messages.Message):
   env = _messages.StringField(14)
   envVariables = _messages.MessageField('EnvVariablesValue', 15)
   errorHandlers = _messages.MessageField('ErrorHandler', 16, repeated=True)
-  handlers = _messages.MessageField('UrlMap', 17, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 18)
-  id = _messages.StringField(19)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 20, repeated=True)
-  instanceClass = _messages.StringField(21)
-  libraries = _messages.MessageField('Library', 22, repeated=True)
-  livenessCheck = _messages.MessageField('LivenessCheck', 23)
-  manualScaling = _messages.MessageField('ManualScaling', 24)
-  name = _messages.StringField(25)
-  network = _messages.MessageField('Network', 26)
-  nobuildFilesRegex = _messages.StringField(27)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 28)
-  resources = _messages.MessageField('Resources', 29)
-  runtime = _messages.StringField(30)
-  runtimeApiVersion = _messages.StringField(31)
-  runtimeChannel = _messages.StringField(32)
-  runtimeMainExecutablePath = _messages.StringField(33)
-  serviceAccount = _messages.StringField(34)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 35)
-  threadsafe = _messages.BooleanField(36)
-  versionUrl = _messages.StringField(37)
-  vm = _messages.BooleanField(38)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 39)
-  zones = _messages.StringField(40, repeated=True)
+  flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 17)
+  handlers = _messages.MessageField('UrlMap', 18, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 19)
+  id = _messages.StringField(20)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 21, repeated=True)
+  instanceClass = _messages.StringField(22)
+  libraries = _messages.MessageField('Library', 23, repeated=True)
+  livenessCheck = _messages.MessageField('LivenessCheck', 24)
+  manualScaling = _messages.MessageField('ManualScaling', 25)
+  name = _messages.StringField(26)
+  network = _messages.MessageField('Network', 27)
+  nobuildFilesRegex = _messages.StringField(28)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 29)
+  resources = _messages.MessageField('Resources', 30)
+  runtime = _messages.StringField(31)
+  runtimeApiVersion = _messages.StringField(32)
+  runtimeChannel = _messages.StringField(33)
+  runtimeMainExecutablePath = _messages.StringField(34)
+  serviceAccount = _messages.StringField(35)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 36)
+  threadsafe = _messages.BooleanField(37)
+  versionUrl = _messages.StringField(38)
+  vm = _messages.BooleanField(39)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 40)
+  zones = _messages.StringField(41, repeated=True)
 
 
 class Volume(_messages.Message):

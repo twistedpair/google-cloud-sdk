@@ -91,8 +91,8 @@ class CreateEnvironmentFlags:
     connection_subnetwork: str or None, the Compute Engine subnetwork from which
       to reserve the IP address for internal connections, specified as relative
       resource name.
-    connection_type: str or None, mode of internal connectivity within the
-      Cloud Composer environment. Can be VPC_PEERING or PRIVATE_SERVICE_CONNECT.
+    connection_type: str or None, mode of internal connectivity within the Cloud
+      Composer environment. Can be VPC_PEERING or PRIVATE_SERVICE_CONNECT.
     web_server_access_control: [{string: string}], List of IP ranges with
       descriptions to allow access to the web server.
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
@@ -142,6 +142,8 @@ class CreateEnvironmentFlags:
       specified only in Airflow 2.2.x and greater
     triggerer_cpu: float or None, CPU allocated to Airflow triggerer. Can be
       specified only in Airflow 2.2.x and greater
+    triggerer_count: int or None, number of Airflow triggerers. Can be specified
+      only in Airflow 2.2.x and greater
     triggerer_memory_gb: float or None, memory allocated to Airflow triggerer.
       Can be specified only in Airflow 2.2.x and greater
     enable_scheduled_snapshot_creation: bool or None, whether the automatic
@@ -219,6 +221,7 @@ class CreateEnvironmentFlags:
                release_track=base.ReleaseTrack.GA,
                enable_triggerer=None,
                triggerer_cpu=None,
+               triggerer_count=None,
                triggerer_memory_gb=None,
                enable_scheduled_snapshot_creation=None,
                snapshot_creation_schedule=None,
@@ -275,6 +278,7 @@ class CreateEnvironmentFlags:
     self.scheduler_count = scheduler_count
     self.enable_triggerer = enable_triggerer
     self.triggerer_cpu = triggerer_cpu
+    self.triggerer_count = triggerer_count
     self.triggerer_memory_gb = triggerer_memory_gb
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
@@ -487,7 +491,7 @@ def _CreateConfig(messages, flags, is_composer_v1):
       flags.web_server_memory_gb or flags.scheduler_storage_gb or
       flags.worker_storage_gb or flags.web_server_storage_gb or
       flags.min_workers or flags.max_workers or flags.triggerer_memory_gb or
-      flags.triggerer_cpu or flags.enable_triggerer)
+      flags.triggerer_cpu or flags.enable_triggerer or flags.triggerer_count)
   if composer_v2_flag_used or (flags.scheduler_count and not is_composer_v1):
     config.workloadsConfig = _CreateWorkloadConfig(messages, flags)
   return config
@@ -511,11 +515,20 @@ def _CreateWorkloadConfig(messages, flags):
           storageGb=flags.worker_storage_gb,
           minCount=flags.min_workers,
           maxCount=flags.max_workers))
-  if flags.enable_triggerer or flags.triggerer_cpu or flags.triggerer_memory_gb:
+  if (
+      flags.enable_triggerer
+      or flags.triggerer_cpu
+      or flags.triggerer_memory_gb
+      or flags.triggerer_count
+  ):
+    triggerer_count = 1 if flags.enable_triggerer else 0
+    if flags.triggerer_count is not None:
+      triggerer_count = flags.triggerer_count
     workload_resources['triggerer'] = messages.TriggererResource(
         cpu=flags.triggerer_cpu,
         memoryGb=flags.triggerer_memory_gb,
-        count=1 if flags.enable_triggerer else 0)
+        count=triggerer_count
+    )
   return messages.WorkloadsConfig(**workload_resources)
 
 

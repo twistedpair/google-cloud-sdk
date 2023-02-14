@@ -224,3 +224,39 @@ def AddRolloutResourceArg(parser,
       help_text,
       required=required,
       plural=False).AddToParser(parser)
+
+
+def GetJobRunResourceSpec():
+  """Constructs and returns the Resource specification for Job Run."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.jobRuns',
+      resource_name='job_run',
+      deliveryPipelinesId=DeliveryPipelineAttributeConfig(),
+      releasesId=ReleaseAttributeConfig(),
+      rolloutsId=RolloutAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False,
+  )
+
+
+def AddJobRunResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
+  """Add --job-run resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the Job Run.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'job_run' if positional else '--job-run',
+      GetJobRunResourceSpec(),
+      help_text,
+      required=required,
+      plural=False,
+  ).AddToParser(parser)

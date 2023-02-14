@@ -520,8 +520,10 @@ def GetResourceRecordSetsRoutingPolicyPrimaryDataArg(required=False):
       metavar='ROUTING_POLICY_PRIMARY_DATA',
       required=required,
       type=RoutingPolicyPrimaryDataArg,
-      help='The primary config for a primary backup routing policy. This is '
-      'just a list of forwarding configs of the format "config_name" or "config_name@scope"'
+      help='The primary configuration for a primary backup routing policy. '
+      'This configuration is a list of forwarding rules of the format '
+      '"FORWARDING_RULE_NAME", "FORWARDING_RULE_NAME@scope", or the full '
+      'resource path of the forwarding rule.'
   )
 
 
@@ -594,9 +596,9 @@ def GetResourceRecordSetsRoutingPolicyBackupDataArg(required=False):
       metavar='ROUTING_POLICY_BACKUP_DATA',
       required=required,
       type=RoutingPolicyBackupDataArg,
-      help='The backup config for a primary backup routing policy. This is '
-      'the same format as the routing-policy-data arg as this is just '
-      'another geo policy.')
+      help='The backup configuration for a primary backup routing policy. This '
+      'configuration has the same format as the routing-policy-data argument '
+      'because it is just another geo-locations policy.')
 
 
 def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
@@ -685,8 +687,10 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
       'over the total across all weights.\n\n'
       'For --routing-policy-type = "GEO" this flag indicates the geo-locations '
       'policy data. The field accepts a semicolon-delimited list of the format '
-      '"${region}=${rrdata},${rrdata}". Each individual rrdata can either be '
-      'an ip address or a string of the format forwarding_config_name@region.')
+      '"${region}=${rrdata},${rrdata}". Each rrdata can either be '
+      'an IP address or a reference to a forwarding rule of the format '
+      'FORWARDING_RULE_NAME", "FORWARDING_RULE_NAME@region", or the full '
+      'resource path of the forwarding rule.')
 
 
 # Response Policy Flags

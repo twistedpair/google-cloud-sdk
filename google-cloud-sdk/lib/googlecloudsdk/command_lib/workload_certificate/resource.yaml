@@ -1,0 +1,30 @@
+project:
+  name: project
+  collection: workloadcertificate.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+    property: core/project
+
+location:
+  name: location
+  collection: workloadcertificate.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.workload_certificate.util:DefaultToGlobal
+      hint: "global is the only supported location for workload_certificate feature"
+
+feature:
+  name: feature
+  collection: workloadcertificate.projects.locations.features
+  attributes:
+  - *project
+  - *location
+  - &feature

@@ -1141,19 +1141,18 @@ class GoogleCloudDatacatalogV1ImportEntriesResponse(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
-  r"""Metadata message for long-running operation returned by the
-  ReconcileTags.
+  r"""Long-running operation metadata message returned by the ReconcileTags.
 
   Enums:
     StateValueValuesEnum: State of the reconciliation operation.
 
   Messages:
-    ErrorsValue: Map that maps name of each tagged column (or empty string in
-      case of sole entry) to tagging operation status.
+    ErrorsValue: Maps the name of each tagged column (or empty string for a
+      sole entry) to tagging operation status.
 
   Fields:
-    errors: Map that maps name of each tagged column (or empty string in case
-      of sole entry) to tagging operation status.
+    errors: Maps the name of each tagged column (or empty string for a sole
+      entry) to tagging operation status.
     state: State of the reconciliation operation.
   """
 
@@ -1174,8 +1173,8 @@ class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ErrorsValue(_messages.Message):
-    r"""Map that maps name of each tagged column (or empty string in case of
-    sole entry) to tagging operation status.
+    r"""Maps the name of each tagged column (or empty string for a sole entry)
+    to tagging operation status.
 
     Messages:
       AdditionalProperty: An additional property for a ErrorsValue object.
@@ -1202,8 +1201,7 @@ class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1ReconcileTagsResponse(_messages.Message):
-  r"""Request message for long-running operation returned by the
-  ReconcileTags.
+  r"""Long-running operation response message returned by ReconcileTags.
 
   Fields:
     createdTagsCount: Number of tags created in the request.
@@ -1751,9 +1749,9 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequestScope(_messages.Message):
   r"""The criteria that select the subspace used for query matching.
 
   Fields:
-    includeGcpPublicDatasets: If `true`, include Google Cloud Platform (GCP)
-      public datasets in the search results. Info on GCP public datasets is
-      available at https://cloud.google.com/public-datasets/. By default, GCP
+    includeGcpPublicDatasets: If `true`, include Google Cloud public datasets
+      in the search results. Info on Google Cloud public datasets is available
+      at https://cloud.google.com/public-datasets/. By default, Google Cloud
       public datasets are excluded.
     includeOrgIds: The list of organization IDs to search within. To find your
       organization ID, follow instructions in
@@ -2042,12 +2040,12 @@ class GoogleCloudDatacatalogV1beta1TagFieldEnumValue(_messages.Message):
 
 class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
   r"""A tag template defines a tag, which can have one or more typed fields.
-  The template is used to create and attach the tag to GCP resources. [Tag
-  template roles](https://cloud.google.com/iam/docs/understanding-roles#data-
-  catalog-roles) provide permissions to create, edit, and use the template.
-  See, for example, the [TagTemplate User](https://cloud.google.com/data-
-  catalog/docs/how-to/template-user) role, which includes permission to use
-  the tag template to tag resources.
+  The template is used to create and attach the tag to Google Cloud resources.
+  [Tag template roles](https://cloud.google.com/iam/docs/understanding-
+  roles#data-catalog-roles) provide permissions to create, edit, and use the
+  template. See, for example, the [TagTemplate
+  User](https://cloud.google.com/data-catalog/docs/how-to/template-user) role,
+  which includes permission to use the tag template to tag resources.
 
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for
@@ -2162,8 +2160,8 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
     policyTagCount: Output only. Number of policy tags contained in this
       taxonomy.
     service: Output only. Identity of the service which owns the Taxonomy.
-      This field is only populated when the taxonomy is created by a GCP
-      service. Currently only 'DATAPLEX' is supported.
+      This field is only populated when the taxonomy is created by a Google
+      Cloud service. Currently only 'DATAPLEX' is supported.
     taxonomyTimestamps: Output only. Timestamps about this taxonomy. Only
       create_time and update_time are used.
   """
@@ -2192,15 +2190,15 @@ class GoogleCloudDatacatalogV1beta1TaxonomyService(_messages.Message):
   r"""The source system of the Taxonomy.
 
   Enums:
-    NameValueValuesEnum: The GCP service name.
+    NameValueValuesEnum: The Google Cloud service name.
 
   Fields:
     identity: P4SA Identity of the service.
-    name: The GCP service name.
+    name: The Google Cloud service name.
   """
 
   class NameValueValuesEnum(_messages.Enum):
-    r"""The GCP service name.
+    r"""The Google Cloud service name.
 
     Values:
       MANAGING_SYSTEM_UNSPECIFIED: Default value

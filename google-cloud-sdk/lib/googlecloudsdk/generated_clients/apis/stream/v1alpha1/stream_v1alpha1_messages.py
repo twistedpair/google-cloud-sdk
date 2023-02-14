@@ -622,7 +622,7 @@ class StreamInstance(_messages.Message):
       requesting a streaming session.
     content: The content that this instance serves.
     contentBuildVersion: The user-specified version tag and build ID of the
-      content served in this realm.
+      content served.
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
     lifecycleState: Output only. Current status of the instance.
@@ -811,9 +811,9 @@ class StreamProjectsLocationsStreamContentsCreateRequest(_messages.Message):
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     streamContent: A StreamContent resource to be passed as the request body.
-    streamContentId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and stream_content_id from the
-      method_signature of Create RPC
+    streamContentId: Required. Id of the requesting object If the id is
+      generated from the server-side, remove this field and stream_content_id
+      from the method_signature of Create RPC
   """
 
   parent = _messages.StringField(1, required=True)
@@ -921,9 +921,9 @@ class StreamProjectsLocationsStreamInstancesCreateRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
     streamInstance: A StreamInstance resource to be passed as the request
       body.
-    streamInstanceId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and stream_instance_id from the
-      method_signature of Create RPC
+    streamInstanceId: Required. Id of the requesting object If the id is
+      generated from the server-side, remove this field and stream_instance_id
+      from the method_signature of Create RPC
   """
 
   parent = _messages.StringField(1, required=True)

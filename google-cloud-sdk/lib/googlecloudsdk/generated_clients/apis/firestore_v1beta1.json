@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20230127",
+  "revision": "20230208",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -2606,7 +2606,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/datastore"
                   ],
-                  "description": "Streams batches of document updates and deletes, in order."
+                  "description": "Streams batches of document updates and deletes, in order. This method is only available via the gRPC API (not REST)."
                 },
                 "listen": {
                   "id": "firestore.projects.databases.documents.listen",
@@ -2635,7 +2635,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/datastore"
                   ],
-                  "description": "Listens to changes."
+                  "description": "Listens to changes. This method is only available via the gRPC API (not REST)."
                 },
                 "listCollectionIds": {
                   "id": "firestore.projects.databases.documents.listCollectionIds",

@@ -643,6 +643,7 @@ class CreateClusterOptions(object):
       gateway_api=None,
       logging_variant=None,
       enable_multi_networking=None,
+      enable_security_posture=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -822,6 +823,7 @@ class CreateClusterOptions(object):
     self.gateway_api = gateway_api
     self.logging_variant = logging_variant
     self.enable_multi_networking = enable_multi_networking
+    self.enable_security_posture = enable_security_posture
 
 
 class UpdateClusterOptions(object):
@@ -942,6 +944,7 @@ class UpdateClusterOptions(object):
       fleet_project=None,
       enable_fleet=None,
       clear_fleet_project=None,
+      enable_security_posture=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1057,6 +1060,7 @@ class UpdateClusterOptions(object):
     self.fleet_project = fleet_project
     self.enable_fleet = enable_fleet
     self.clear_fleet_project = clear_fleet_project
+    self.enable_security_posture = enable_security_posture
 
 
 class SetMasterAuthOptions(object):
@@ -1951,6 +1955,18 @@ class APIAdapter(object):
             enableMultiNetworking=options.enable_multi_networking)
       else:
         cluster.networkConfig.enableMultiNetworking = options.enable_multi_networking
+
+    if options.enable_security_posture is not None:
+      if cluster.securityPostureConfig is None:
+        cluster.securityPostureConfig = self.messages.SecurityPostureConfig()
+      if options.enable_security_posture:
+        cluster.securityPostureConfig.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
+        )
+      else:
+        cluster.securityPostureConfig.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
 
     return cluster
 
@@ -3068,6 +3084,19 @@ class APIAdapter(object):
     if options.clear_fleet_project:
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(project=''))
+
+    if options.enable_security_posture is not None:
+      security_posture_config = self.messages.SecurityPostureConfig()
+      if options.enable_security_posture:
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
+        )
+      else:
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      update = self.messages.ClusterUpdate(
+          desiredSecurityPostureConfig=security_posture_config)
 
     return update
 

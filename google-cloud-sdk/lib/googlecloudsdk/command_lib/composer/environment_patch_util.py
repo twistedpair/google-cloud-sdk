@@ -783,7 +783,7 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
       mask.append('config.workloads_config.worker.max_count')
     if scheduler_count:
       mask.append('config.workloads_config.scheduler.count')
-    if triggerer_cpu or triggerer_memory_gb:
+    if triggerer_cpu or triggerer_memory_gb or triggerer_count is not None:
       mask.append('config.workloads_config.triggerer')
     return ','.join(mask), messages.Environment(config=config)
 

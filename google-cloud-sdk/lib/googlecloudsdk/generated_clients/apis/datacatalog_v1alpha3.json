@@ -661,7 +661,7 @@
     },
     "GoogleCloudDatacatalogV1ReconcileTagsMetadata": {
       "id": "GoogleCloudDatacatalogV1ReconcileTagsMetadata",
-      "description": "Metadata message for long-running operation returned by the ReconcileTags.",
+      "description": "Long-running operation metadata message returned by the ReconcileTags.",
       "type": "object",
       "properties": {
         "state": {
@@ -681,7 +681,7 @@
           ]
         },
         "errors": {
-          "description": "Map that maps name of each tagged column (or empty string in case of sole entry) to tagging operation status.",
+          "description": "Maps the name of each tagged column (or empty string for a sole entry) to tagging operation status.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Status"
@@ -691,7 +691,7 @@
     },
     "GoogleCloudDatacatalogV1ReconcileTagsResponse": {
       "id": "GoogleCloudDatacatalogV1ReconcileTagsResponse",
-      "description": "Request message for long-running operation returned by the ReconcileTags.",
+      "description": "Long-running operation response message returned by ReconcileTags.",
       "type": "object",
       "properties": {
         "createdTagsCount": {

@@ -84,7 +84,7 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest(_messages.Mes
   r"""A ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest object.
 
   Fields:
-    name: The name of the file to retrieve.
+    name: Required. The name of the file to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -105,8 +105,8 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
     pageSize: The maximum number of files to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the repository whose files will be listed. For
-      example: "projects/p1/locations/us-central1/repositories/repo1
+    parent: Required. The name of the repository whose files will be listed.
+      For example: "projects/p1/locations/us-central1/repositories/repo1
   """
 
   filter = _messages.StringField(1)
@@ -538,14 +538,14 @@ class File(_messages.Message):
   Versions.
 
   Fields:
-    createTime: The time when the File was created.
+    createTime: Output only. The time when the File was created.
     hashes: The hashes of the file content.
     name: The name of the file, for example: "projects/p1/locations/us-
       central1/repositories/repo1/files/a%2Fb%2Fc.txt". If the file ID part
       contains slashes, they are escaped.
     owner: The name of the Package or Version that owns this file, if any.
     sizeBytes: The size of the File in bytes.
-    updateTime: The time when the File was last updated.
+    updateTime: Output only. The time when the File was last updated.
   """
 
   createTime = _messages.StringField(1)

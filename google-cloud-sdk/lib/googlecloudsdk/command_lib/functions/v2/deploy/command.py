@@ -61,12 +61,14 @@ import six
 
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
     'There was a problem uploading the source code to a signed Cloud Storage '
-    'URL. Please try again.')
+    'URL. Please try again.'
+)
 
 _GCS_SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
 _GCS_SOURCE_ERROR_MESSAGE = (
     'Invalid Cloud Storage URL. Must match the following format: '
-    'gs://bucket/object')
+    'gs://bucket/object'
+)
 
 # https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#sourcerepository
 _CSR_SOURCE_REGEX = re.compile(
@@ -80,7 +82,8 @@ _CSR_SOURCE_REGEX = re.compile(
     # Optional path
     r'(/paths/(?P<path>[^/]+))?)?'
     # Optional ending forward slash and enforce regex matches end of string
-    r'/?$')
+    r'/?$'
+)
 _CSR_SOURCE_ERROR_MESSAGE = (
     'Invalid Cloud Source Repository URL provided. Must match the '
     'following format: https://source.developers.google.com/projects/'
@@ -90,23 +93,25 @@ _CSR_SOURCE_ERROR_MESSAGE = (
 )
 
 _INVALID_RETRY_FLAG_ERROR_MESSAGE = (
-    '`--retry` is only supported with an event trigger not http triggers.')
+    '`--retry` is only supported with an event trigger not http triggers.'
+)
 
 _LATEST_REVISION_TRAFFIC_WARNING_MESSAGE = (
     'The latest revision of this function is not serving 100% of traffic. '
     'Please see the associated Cloud Run service to '
-    'confirm your expected traffic settings.')
+    'confirm your expected traffic settings.'
+)
 
 _V1_ONLY_FLAGS = [
     # Legacy flags
     ('docker_registry', '--docker-registry'),
     ('security_level', '--security-level'),
-
     # Not yet supported flags
     ('buildpack_stack', '--buildpack-stack'),
 ]
 _V1_ONLY_FLAG_ERROR = (
-    '`%s` is only supported in Cloud Functions (First generation).')
+    '`%s` is only supported in Cloud Functions (First generation).'
+)
 
 _CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
@@ -121,14 +126,19 @@ _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
 # Extra progress tracker stages that can appear during rollbacks.
 # cs/symbol:google.cloud.functions.v2main.Stage.Name
 _ARTIFACT_REGISTRY_STAGE = progress_tracker.Stage(
-    '[ArtifactRegistry]', key='ARTIFACT_REGISTRY')
+    '[ArtifactRegistry]', key='ARTIFACT_REGISTRY'
+)
 _SERVICE_ROLLBACK_STAGE = progress_tracker.Stage(
-    '[Healthcheck]', key='SERVICE_ROLLBACK')
+    '[Healthcheck]', key='SERVICE_ROLLBACK'
+)
 _TRIGGER_ROLLBACK_STAGE = progress_tracker.Stage(
-    '[Triggercheck]', key='TRIGGER_ROLLBACK')
+    '[Triggercheck]', key='TRIGGER_ROLLBACK'
+)
 
 _EXTRA_STAGES = [
-    _ARTIFACT_REGISTRY_STAGE, _SERVICE_ROLLBACK_STAGE, _TRIGGER_ROLLBACK_STAGE
+    _ARTIFACT_REGISTRY_STAGE,
+    _SERVICE_ROLLBACK_STAGE,
+    _TRIGGER_ROLLBACK_STAGE,
 ]
 
 # GCF 2nd generation control plane valid memory units
@@ -165,7 +175,8 @@ _CPU_VALUE_PATTERN = r"""
 
 def _GcloudIgnoreCreationPredicate(directory):
   return gcloudignore.AnyFileOrDirExists(
-      directory, gcloudignore.GIT_FILES + ['node_modules'])
+      directory, gcloudignore.GIT_FILES + ['node_modules']
+  )
 
 
 def _GetSourceGCS(messages, source):
@@ -184,7 +195,9 @@ def _GetSourceGCS(messages, source):
 
   return messages.Source(
       storageSource=messages.StorageSource(
-          bucket=match.group(1), object=match.group(2)))
+          bucket=match.group(1), object=match.group(2)
+      )
+  )
 
 
 def _GetSourceCSR(messages, source):
@@ -240,8 +253,11 @@ def _UploadToStageBucket(region, function_name, zip_file_path, stage_bucket):
   dest_object = storage_util.ObjectReference.FromBucketRef(
       storage_util.BucketReference.FromArgument(stage_bucket),
       '{}-{}-{}.zip'.format(
-          region, function_name,
-          ''.join(random.choice(string.ascii_lowercase) for _ in range(12))))
+          region,
+          function_name,
+          ''.join(random.choice(string.ascii_lowercase) for _ in range(12)),
+      ),
+  )
   storage_api.StorageClient().CopyFileToGCS(zip_file_path, dest_object)
   return dest_object
 
@@ -256,19 +272,29 @@ def _UploadToGeneratedUrl(zip_file_path, url):
   upload = transfer.Upload.FromFile(zip_file_path, mime_type=_ZIP_MIME_TYPE)
   try:
     request = http_wrapper.Request(
-        url, http_method='PUT', headers={'content-type': upload.mime_type})
+        url, http_method='PUT', headers={'content-type': upload.mime_type}
+    )
     request.body = upload.stream.read()
     upload.stream.close()
-    response = http_wrapper.MakeRequest(transports.GetApitoolsTransport(),
-                                        request)
+    response = http_wrapper.MakeRequest(
+        transports.GetApitoolsTransport(), request
+    )
   finally:
     upload.stream.close()
   if response.status_code // 100 != 2:
     raise exceptions.FunctionsError(_SIGNED_URL_UPLOAD_ERROR_MESSSAGE)
 
 
-def _GetSourceLocal(client, messages, region, function_name, source,
-                    stage_bucket_arg, ignore_file_arg):
+def _GetSourceLocal(
+    client,
+    messages,
+    region,
+    function_name,
+    source,
+    stage_bucket_arg,
+    ignore_file_arg,
+    kms_key=None
+):
   """Constructs a `Source` message from a local file system path.
 
   Args:
@@ -279,6 +305,7 @@ def _GetSourceLocal(client, messages, region, function_name, source,
     source: str, the path
     stage_bucket_arg: str, the passed in --stage-bucket flag argument
     ignore_file_arg: str, the passed in --ignore-file flag argument
+    kms_key: resource name of the customer managed KMS key | None
 
   Returns:
     function_source: cloud.functions.v2main.Source
@@ -289,30 +316,52 @@ def _GetSourceLocal(client, messages, region, function_name, source,
         source,
         default_ignore_file=_DEFAULT_IGNORE_FILE,
         gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate,
-        ignore_file=ignore_file_arg)
+        ignore_file=ignore_file_arg,
+    )
     archive.MakeZipFromDir(zip_file_path, source, predicate=chooser.IsIncluded)
 
     if stage_bucket_arg:
-      dest_object = _UploadToStageBucket(region, function_name, zip_file_path,
-                                         stage_bucket_arg)
+      dest_object = _UploadToStageBucket(
+          region, function_name, zip_file_path, stage_bucket_arg
+      )
       return messages.Source(
           storageSource=messages.StorageSource(
-              bucket=dest_object.bucket, object=dest_object.name))
+              bucket=dest_object.bucket, object=dest_object.name
+          )
+      )
     else:
-      dest = client.projects_locations_functions.GenerateUploadUrl(
-          messages
-          .CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(
-              generateUploadUrlRequest=messages.GenerateUploadUrlRequest(),
-              parent='projects/{}/locations/{}'.format(api_util.GetProject(),
-                                                       region)))
+      generate_upload_url_request = messages.GenerateUploadUrlRequest(
+          kmsKeyName=kms_key
+      )
+      try:
+        dest = client.projects_locations_functions.GenerateUploadUrl(
+            messages.CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(
+                generateUploadUrlRequest=generate_upload_url_request,
+                parent='projects/{}/locations/{}'.format(
+                    api_util.GetProject(), region
+                ),
+            )
+        )
+      except exceptions.HttpError as e:
+        cmek_util.ProcessException(e, kms_key)
+        raise e
 
       _UploadToGeneratedUrl(zip_file_path, dest.uploadUrl)
 
       return messages.Source(storageSource=dest.storageSource)
 
 
-def _GetSource(client, messages, region, function_name, source_arg,
-               stage_bucket_arg, ignore_file_arg, existing_function):
+def _GetSource(
+    client,
+    messages,
+    region,
+    function_name,
+    source_arg,
+    stage_bucket_arg,
+    ignore_file_arg,
+    existing_function,
+    kms_key=None
+):
   """Parses the source bucket and object from the --source flag.
 
   Args:
@@ -324,13 +373,17 @@ def _GetSource(client, messages, region, function_name, source_arg,
     stage_bucket_arg: str, the passed in --stage-bucket flag argument
     ignore_file_arg: str, the passed in --ignore-file flag argument
     existing_function: cloudfunctions_v2alpha_messages.Function | None
+    kms_key: resource name of the customer managed KMS key | None
 
   Returns:
     function_source: cloud.functions.v2main.Source | None
     update_field_set: frozenset, set of update mask fields
   """
-  if (source_arg is None and existing_function is not None and
-      existing_function.buildConfig.source.repoSource):
+  if (
+      source_arg is None
+      and existing_function is not None
+      and existing_function.buildConfig.source.repoSource
+  ):
     # The function was previously deployed from a Cloud Source Repository, and
     # the `--source` flag was not specified this time. Don't set any source,
     # so the control plane will reuse the original one.
@@ -343,9 +396,16 @@ def _GetSource(client, messages, region, function_name, source_arg,
   elif source.startswith('https://'):
     return _GetSourceCSR(messages, source), frozenset(['build_config.source'])
   else:
-    return _GetSourceLocal(client, messages, region, function_name, source,
-                           stage_bucket_arg,
-                           ignore_file_arg), frozenset(['build_config.source'])
+    return _GetSourceLocal(
+        client,
+        messages,
+        region,
+        function_name,
+        source,
+        stage_bucket_arg,
+        ignore_file_arg,
+        kms_key,
+    ), frozenset(['build_config.source'])
 
 
 def _GetServiceConfig(args, messages, existing_function):
@@ -364,12 +424,17 @@ def _GetServiceConfig(args, messages, existing_function):
   """
 
   old_env_vars = {}
-  if (existing_function and existing_function.serviceConfig and
-      existing_function.serviceConfig.environmentVariables and
-      existing_function.serviceConfig.environmentVariables.additionalProperties
-     ):
-    for additional_property in (existing_function.serviceConfig
-                                .environmentVariables.additionalProperties):
+  if (
+      existing_function
+      and existing_function.serviceConfig
+      and existing_function.serviceConfig.environmentVariables
+      and existing_function.serviceConfig.environmentVariables.additionalProperties
+  ):
+    for (
+        additional_property
+    ) in (
+        existing_function.serviceConfig.environmentVariables.additionalProperties
+    ):
       old_env_vars[additional_property.key] = additional_property.value
 
   env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
@@ -380,24 +445,30 @@ def _GetServiceConfig(args, messages, existing_function):
   if existing_function and existing_function.serviceConfig:
     old_secrets = secrets_util.GetSecretsAsDict(
         existing_function.serviceConfig.secretEnvironmentVariables,
-        existing_function.serviceConfig.secretVolumes)
+        existing_function.serviceConfig.secretVolumes,
+    )
 
   if secrets_config.IsArgsSpecified(args):
     try:
       new_secrets = secrets_config.ApplyFlags(
-          old_secrets, args, api_util.GetProject(),
-          projects_util.GetProjectNumber(api_util.GetProject()))
+          old_secrets,
+          args,
+          api_util.GetProject(),
+          projects_util.GetProjectNumber(api_util.GetProject()),
+      )
     except ArgumentTypeError as error:
       core_exceptions.reraise(exceptions.FunctionsError(error))
   else:
     new_secrets = old_secrets
 
   old_secret_env_vars, old_secret_volumes = secrets_config.SplitSecretsDict(
-      old_secrets)
+      old_secrets
+  )
   secret_env_vars, secret_volumes = secrets_config.SplitSecretsDict(new_secrets)
 
   vpc_connector, vpc_egress_settings, vpc_updated_fields = (
-      _GetVpcAndVpcEgressSettings(args, messages, existing_function))
+      _GetVpcAndVpcEgressSettings(args, messages, existing_function)
+  )
 
   ingress_settings, ingress_updated_fields = _GetIngressSettings(args, messages)
 
@@ -430,33 +501,46 @@ def _GetServiceConfig(args, messages, existing_function):
   if secret_volumes != old_secret_volumes:
     updated_fields.add('service_config.secret_volumes')
 
-  service_updated_fields = frozenset.union(vpc_updated_fields,
-                                           ingress_updated_fields,
-                                           updated_fields)
+  service_updated_fields = frozenset.union(
+      vpc_updated_fields, ingress_updated_fields, updated_fields
+  )
 
-  return messages.ServiceConfig(
-      availableMemory=_ParseMemoryStrToK8sMemory(args.memory),
-      maxInstanceCount=None if args.clear_max_instances else args.max_instances,
-      minInstanceCount=None if args.clear_min_instances else args.min_instances,
-      serviceAccountEmail=args.run_service_account or args.service_account,
-      timeoutSeconds=args.timeout,
-      ingressSettings=ingress_settings,
-      vpcConnector=vpc_connector,
-      vpcConnectorEgressSettings=vpc_egress_settings,
-      allTrafficOnLatestRevision=(args.serve_all_traffic_latest_revision or
-                                  None),
-      environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
-          additionalProperties=[
-              messages.ServiceConfig.EnvironmentVariablesValue
-              .AdditionalProperty(key=key, value=value)
-              for key, value in sorted(env_vars.items())
-          ]),
-      secretEnvironmentVariables=secrets_util.SecretEnvVarsToMessages(
-          secret_env_vars, messages),
-      secretVolumes=secrets_util.SecretVolumesToMessages(
-          secret_volumes, messages, normalize_for_v2=True),
-      maxInstanceRequestConcurrency=concurrency,
-      availableCpu=_ValidateK8sCpuStr(cpu)), service_updated_fields
+  return (
+      messages.ServiceConfig(
+          availableMemory=_ParseMemoryStrToK8sMemory(args.memory),
+          maxInstanceCount=None
+          if args.clear_max_instances
+          else args.max_instances,
+          minInstanceCount=None
+          if args.clear_min_instances
+          else args.min_instances,
+          serviceAccountEmail=args.run_service_account or args.service_account,
+          timeoutSeconds=args.timeout,
+          ingressSettings=ingress_settings,
+          vpcConnector=vpc_connector,
+          vpcConnectorEgressSettings=vpc_egress_settings,
+          allTrafficOnLatestRevision=(
+              args.serve_all_traffic_latest_revision or None
+          ),
+          environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
+              additionalProperties=[
+                  messages.ServiceConfig.EnvironmentVariablesValue.AdditionalProperty(
+                      key=key, value=value
+                  )
+                  for key, value in sorted(env_vars.items())
+              ]
+          ),
+          secretEnvironmentVariables=secrets_util.SecretEnvVarsToMessages(
+              secret_env_vars, messages
+          ),
+          secretVolumes=secrets_util.SecretVolumesToMessages(
+              secret_volumes, messages, normalize_for_v2=True
+          ),
+          maxInstanceRequestConcurrency=concurrency,
+          availableCpu=_ValidateK8sCpuStr(cpu),
+      ),
+      service_updated_fields,
+  )
 
 
 def _ParseMemoryStrToK8sMemory(memory):
@@ -484,7 +568,8 @@ def _ParseMemoryStrToK8sMemory(memory):
   match = re.match(_MEMORY_VALUE_PATTERN, memory, re.VERBOSE)
   if not match:
     raise exceptions.InvalidArgumentException(
-        '--memory', 'Invalid memory value for: {} specified.'.format(memory))
+        '--memory', 'Invalid memory value for: {} specified.'.format(memory)
+    )
 
   suffix = match.group('suffix')
   amount = match.group('amount')
@@ -494,13 +579,15 @@ def _ParseMemoryStrToK8sMemory(memory):
     suffix = 'M'
 
   # No case enforced since previously didn't enforce case sensitivity.
-  uppercased_gen2_units = dict([(unit.upper(), unit) for unit in _GCF_GEN2_UNITS
-                               ])
+  uppercased_gen2_units = dict(
+      [(unit.upper(), unit) for unit in _GCF_GEN2_UNITS]
+  )
   corrected_suffix = uppercased_gen2_units.get(suffix.upper())
 
   if not corrected_suffix:
     raise exceptions.InvalidArgumentException(
-        '--memory', 'Invalid suffix for: {} specified.'.format(memory))
+        '--memory', 'Invalid suffix for: {} specified.'.format(memory)
+    )
 
   parsed_memory = amount + corrected_suffix
   return parsed_memory
@@ -527,18 +614,21 @@ def _ValidateK8sCpuStr(cpu):
   match = re.match(_CPU_VALUE_PATTERN, cpu, re.VERBOSE)
   if not match:
     raise exceptions.InvalidArgumentException(
-        '--cpu', 'Invalid cpu value for: {} specified.'.format(cpu))
+        '--cpu', 'Invalid cpu value for: {} specified.'.format(cpu)
+    )
 
   suffix = match.group('suffix') or ''
   amount = match.group('amount')
 
   if not amount or amount == '.':
     raise exceptions.InvalidArgumentException(
-        '--cpu', 'Invalid amount for: {} specified.'.format(cpu))
+        '--cpu', 'Invalid amount for: {} specified.'.format(cpu)
+    )
 
   if suffix and suffix not in _GCF_GEN2_CPU_UNITS:
     raise exceptions.InvalidArgumentException(
-        '--cpu', 'Invalid suffix for: {} specified.'.format(cpu))
+        '--cpu', 'Invalid suffix for: {} specified.'.format(cpu)
+    )
 
   parsed_memory = amount + suffix
   return parsed_memory
@@ -559,24 +649,35 @@ def _GetEventTrigger(args, messages, existing_function):
   """
   if args.trigger_http:
     event_trigger, updated_fields_set = None, frozenset(
-        ['event_trigger'] if existing_function else [])
+        ['event_trigger'] if existing_function else []
+    )
 
   elif args.trigger_event or args.trigger_resource:
     event_trigger, updated_fields_set = _GetEventTriggerForEventType(
-        args, messages), frozenset(['event_trigger'])
+        args, messages
+    ), frozenset(['event_trigger'])
   elif args.trigger_topic or args.trigger_bucket or args.trigger_event_filters:
     event_trigger, updated_fields_set = _GetEventTriggerForOther(
-        args, messages), frozenset(['event_trigger'])
+        args, messages
+    ), frozenset(['event_trigger'])
 
   else:
     if existing_function:
-      event_trigger, updated_fields_set = existing_function.eventTrigger, frozenset(
+      event_trigger, updated_fields_set = (
+          existing_function.eventTrigger,
+          frozenset(),
       )
     else:
-      raise calliope_exceptions.OneOfArgumentsRequiredException([
-          '--trigger-topic', '--trigger-bucket', '--trigger-http',
-          '--trigger-event', '--trigger-event-filters'
-      ], 'You must specify a trigger when deploying a new function.')
+      raise calliope_exceptions.OneOfArgumentsRequiredException(
+          [
+              '--trigger-topic',
+              '--trigger-bucket',
+              '--trigger-http',
+              '--trigger-event',
+              '--trigger-event-filters',
+          ],
+          'You must specify a trigger when deploying a new function.',
+      )
 
   if args.IsSpecified('retry'):
     retry_policy, retry_updated_field = _GetRetry(args, messages, event_trigger)
@@ -585,14 +686,18 @@ def _GetEventTrigger(args, messages, existing_function):
 
   if event_trigger and trigger_types.IsPubsubType(event_trigger.eventType):
     pubsub_sa = 'service-{}@gcp-sa-pubsub.iam.gserviceaccount.com'.format(
-        projects_util.GetProjectNumber(api_util.GetProject()))
+        projects_util.GetProjectNumber(api_util.GetProject())
+    )
     if not api_util.HasRoleBinding(pubsub_sa, 'roles/pubsub.serviceAgent'):
       api_util.PromptToBindRoleIfMissing(
           pubsub_sa,
           'roles/iam.serviceAccountTokenCreator',
-          reason=('Pub/Sub needs this role to create identity tokens. '
-                  'For more details, please see '
-                  'https://cloud.google.com/pubsub/docs/push#authentication'))
+          reason=(
+              'Pub/Sub needs this role to create identity tokens. '
+              'For more details, please see '
+              'https://cloud.google.com/pubsub/docs/push#authentication'
+          ),
+      )
 
   if event_trigger and trigger_types.IsAuditLogType(event_trigger.eventType):
     service_filter = [
@@ -627,27 +732,33 @@ def _GetEventTriggerForEventType(args, messages):
         eventType=api_util.EA_PUBSUB_MESSAGE_PUBLISHED,
         pubsubTopic=_BuildFullPubsubTopic(pubsub_topic),
         serviceAccountEmail=service_account_email,
-        triggerRegion=args.trigger_location)
+        triggerRegion=args.trigger_location,
+    )
 
-  elif (trigger_event in api_util.EVENTARC_STORAGE_TYPES or
-        trigger_event in api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP):
+  elif (
+      trigger_event in api_util.EVENTARC_STORAGE_TYPES
+      or trigger_event in api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP
+  ):
     # name without prefix gs://
     bucket_name = storage_util.BucketReference.FromUrl(trigger_resource).bucket
     storage_event_type = api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP.get(
-        trigger_event, trigger_event)
+        trigger_event, trigger_event
+    )
     return messages.EventTrigger(
         eventType=storage_event_type,
         eventFilters=[
             messages.EventFilter(attribute='bucket', value=bucket_name)
         ],
         serviceAccountEmail=service_account_email,
-        triggerRegion=args.trigger_location)
+        triggerRegion=args.trigger_location,
+    )
 
   else:
     raise exceptions.InvalidArgumentException(
         '--trigger-event',
-        'Event type {} is not supported by this flag, try using --trigger-event-filters.'
-        .format(trigger_event))
+        'Event type {} is not supported by this flag, try using'
+        ' --trigger-event-filters.'.format(trigger_event),
+    )
 
 
 def _GetEventTriggerForOther(args, messages):
@@ -683,10 +794,12 @@ def _GetEventTriggerForOther(args, messages):
     ]
     if args.trigger_event_filters_path_pattern:
       operator = 'match-path-pattern'
-      event_filters.extend([
-          messages.EventFilter(attribute=attr, value=val, operator=operator)
-          for attr, val in args.trigger_event_filters_path_pattern.items()
-      ])
+      event_filters.extend(
+          [
+              messages.EventFilter(attribute=attr, value=val, operator=operator)
+              for attr, val in args.trigger_event_filters_path_pattern.items()
+          ]
+      )
 
   trigger_channel = None
   if args.trigger_channel:
@@ -698,7 +811,8 @@ def _GetEventTriggerForOther(args, messages):
       pubsubTopic=pubsub_topic,
       serviceAccountEmail=service_account_email,
       channel=trigger_channel,
-      triggerRegion=trigger_location)
+      triggerRegion=trigger_location,
+  )
 
 
 def _GetRetry(args, messages, event_trigger):
@@ -721,19 +835,22 @@ def _GetRetry(args, messages, event_trigger):
 
   if args.retry:
     return messages.EventTrigger.RetryPolicyValueValuesEnum(
-        'RETRY_POLICY_RETRY'), frozenset(['eventTrigger.retryPolicy'])
+        'RETRY_POLICY_RETRY'
+    ), frozenset(['eventTrigger.retryPolicy'])
   else:
     # explicitly using --no-retry flag
     return messages.EventTrigger.RetryPolicyValueValuesEnum(
-        'RETRY_POLICY_DO_NOT_RETRY'), frozenset(['eventTrigger.retryPolicy'])
+        'RETRY_POLICY_DO_NOT_RETRY'
+    ), frozenset(['eventTrigger.retryPolicy'])
 
 
 def _BuildFullPubsubTopic(pubsub_topic):
   return 'projects/{}/topics/{}'.format(api_util.GetProject(), pubsub_topic)
 
 
-def _GetBuildConfig(args, client, messages, region, function_name,
-                    existing_function):
+def _GetBuildConfig(
+    args, client, messages, region, function_name, existing_function
+):
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
@@ -749,22 +866,38 @@ def _GetBuildConfig(args, client, messages, region, function_name,
       build step for the function
     updated_fields_set: frozenset[str], set of update mask fields
   """
+  kms_key = _GetActiveKmsKey(args, existing_function)
   function_source, source_updated_fields = _GetSource(
-      client, messages, region, function_name, args.source, args.stage_bucket,
-      args.ignore_file, existing_function)
+      client,
+      messages,
+      region,
+      function_name,
+      args.source,
+      args.stage_bucket,
+      args.ignore_file,
+      existing_function,
+      kms_key
+  )
 
   old_build_env_vars = {}
-  if (existing_function and existing_function.buildConfig and
-      existing_function.buildConfig.environmentVariables and
-      existing_function.buildConfig.environmentVariables.additionalProperties):
-    for additional_property in (existing_function.buildConfig
-                                .environmentVariables.additionalProperties):
+  if (
+      existing_function
+      and existing_function.buildConfig
+      and existing_function.buildConfig.environmentVariables
+      and existing_function.buildConfig.environmentVariables.additionalProperties
+  ):
+    for (
+        additional_property
+    ) in (
+        existing_function.buildConfig.environmentVariables.additionalProperties
+    ):
       old_build_env_vars[additional_property.key] = additional_property.value
 
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
   # Dict
-  build_env_vars = map_util.ApplyMapFlags(old_build_env_vars,
-                                          **build_env_var_flags)
+  build_env_vars = map_util.ApplyMapFlags(
+      old_build_env_vars, **build_env_var_flags
+  )
 
   updated_fields = set()
 
@@ -776,24 +909,46 @@ def _GetBuildConfig(args, client, messages, region, function_name,
   if args.runtime is not None:
     updated_fields.add('build_config.runtime')
 
-  worker_pool = (None
-                 if args.clear_build_worker_pool else args.build_worker_pool)
+  worker_pool = None if args.clear_build_worker_pool else args.build_worker_pool
 
   if args.build_worker_pool is not None or args.clear_build_worker_pool:
     updated_fields.add('build_config.worker_pool')
 
   build_updated_fields = frozenset.union(source_updated_fields, updated_fields)
-  return messages.BuildConfig(
-      entryPoint=args.entry_point,
-      runtime=args.runtime,
-      source=function_source,
-      workerPool=worker_pool,
-      environmentVariables=messages.BuildConfig.EnvironmentVariablesValue(
-          additionalProperties=[
-              messages.BuildConfig.EnvironmentVariablesValue.AdditionalProperty(
-                  key=key, value=value)
-              for key, value in sorted(build_env_vars.items())
-          ])), build_updated_fields
+  return (
+      messages.BuildConfig(
+          entryPoint=args.entry_point,
+          runtime=args.runtime,
+          source=function_source,
+          workerPool=worker_pool,
+          environmentVariables=messages.BuildConfig.EnvironmentVariablesValue(
+              additionalProperties=[
+                  messages.BuildConfig.EnvironmentVariablesValue.AdditionalProperty(
+                      key=key, value=value
+                  )
+                  for key, value in sorted(build_env_vars.items())
+              ]
+          ),
+      ),
+      build_updated_fields,
+  )
+
+
+def _GetActiveKmsKey(args, existing_function):
+  """Retrives KMS key applicable to the deployment request.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with.
+    existing_function: cloudfunctions_v2alpha_messages.Function | None.
+
+  Returns:
+    Either newly passed or pre-existing KMS key.
+  """
+  if args.IsSpecified('kms_key'):
+    return args.kms_key
+  elif args.IsSpecified('clear_kms_key'):
+    return None
+  return None if not existing_function else existing_function.kmsKeyName
 
 
 def _GetIngressSettings(args, messages):
@@ -812,8 +967,8 @@ def _GetIngressSettings(args, messages):
     ingress_settings_enum = arg_utils.ChoiceEnumMapper(
         arg_name='ingress_settings',
         message_enum=messages.ServiceConfig.IngressSettingsValueValuesEnum,
-        custom_mappings=flags.INGRESS_SETTINGS_MAPPING).GetEnumForChoice(
-            args.ingress_settings)
+        custom_mappings=flags.INGRESS_SETTINGS_MAPPING,
+    ).GetEnumForChoice(args.ingress_settings)
     return ingress_settings_enum, frozenset(['service_config.ingress_settings'])
   else:
     return None, frozenset()
@@ -839,33 +994,47 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
   if args.egress_settings:
     egress_settings = arg_utils.ChoiceEnumMapper(
         arg_name='egress_settings',
-        message_enum=messages.ServiceConfig
-        .VpcConnectorEgressSettingsValueValuesEnum,
-        custom_mappings=flags.EGRESS_SETTINGS_MAPPING).GetEnumForChoice(
-            args.egress_settings)
+        message_enum=messages.ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
+        custom_mappings=flags.EGRESS_SETTINGS_MAPPING,
+    ).GetEnumForChoice(args.egress_settings)
 
   if args.clear_vpc_connector:
-    return None, None, frozenset([
-        'service_config.vpc_connector',
-        'service_config.vpc_connector_egress_settings'
-    ])
+    return (
+        None,
+        None,
+        frozenset([
+            'service_config.vpc_connector',
+            'service_config.vpc_connector_egress_settings',
+        ]),
+    )
   elif args.vpc_connector:
     if args.egress_settings:
-      return args.vpc_connector, egress_settings, frozenset([
-          'service_config.vpc_connector',
-          'service_config.vpc_connector_egress_settings'
-      ])
+      return (
+          args.vpc_connector,
+          egress_settings,
+          frozenset([
+              'service_config.vpc_connector',
+              'service_config.vpc_connector_egress_settings',
+          ]),
+      )
     else:
-      return args.vpc_connector, None, frozenset(
-          ['service_config.vpc_connector'])
+      return (
+          args.vpc_connector,
+          None,
+          frozenset(['service_config.vpc_connector']),
+      )
   elif args.egress_settings:
     if existing_function and existing_function.vpc_connector:
-      return existing_function.vpc_connector, egress_settings, frozenset(
-          ['service_config.vpc_connector_egress_settings'])
+      return (
+          existing_function.vpc_connector,
+          egress_settings,
+          frozenset(['service_config.vpc_connector_egress_settings']),
+      )
     else:
       raise exceptions.RequiredArgumentException(
-          'vpc-connector', 'Flag `--vpc-connector` is '
-          'required for setting `egress-settings`.')
+          'vpc-connector',
+          'Flag `--vpc-connector` is required for setting `egress-settings`.',
+      )
   else:
     return None, None, frozenset()
 
@@ -879,15 +1048,19 @@ def _ValidateV1OnlyFlags(args, release_track):
   # process of being supported across tracks. Remove once they reach the GA.
   if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
     if release_track != calliope_base.ReleaseTrack.ALPHA:
-      flag_name = ('--kms-key'
-                   if args.IsSpecified('kms_key') else '--clear-kms-key')
+      flag_name = (
+          '--kms-key' if args.IsSpecified('kms_key') else '--clear-kms-key'
+      )
       raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
   if args.IsSpecified('docker_repository') or args.IsSpecified(
-      'clear_docker_repository'):
+      'clear_docker_repository'
+  ):
     if release_track != calliope_base.ReleaseTrack.ALPHA:
-      flag_name = ('--docker-repository'
-                   if args.IsSpecified('docker_repository') else
-                   '--clear-docker-repository')
+      flag_name = (
+          '--docker-repository'
+          if args.IsSpecified('docker_repository')
+          else '--clear-docker-repository'
+      )
       raise exceptions.FunctionsError(_V1_ONLY_FLAG_ERROR % flag_name)
 
 
@@ -908,18 +1081,21 @@ def _GetLabels(args, messages, existing_function):
   else:
     required_labels = {_DEPLOYMENT_TOOL_LABEL: _DEPLOYMENT_TOOL_VALUE}
   labels_diff = labels_util.Diff.FromUpdateArgs(
-      args, required_labels=required_labels)
+      args, required_labels=required_labels
+  )
   labels_update = labels_diff.Apply(
       messages.Function.LabelsValue,
-      existing_function.labels if existing_function else None)
+      existing_function.labels if existing_function else None,
+  )
   if labels_update.needs_update:
     return labels_update.labels, frozenset(['labels'])
   else:
     return None, frozenset()
 
 
-def _SetCmekFields(args, function, existing_function, function_ref,
-                   release_track):
+def _SetCmekFields(
+    args, function, existing_function, function_ref, release_track
+):
   """Sets CMEK-related fields on the function.
 
   Args:
@@ -938,20 +1114,25 @@ def _SetCmekFields(args, function, existing_function, function_ref,
   if release_track != calliope_base.ReleaseTrack.ALPHA:
     return updated_fields
   function.kmsKeyName = (
-      existing_function.kmsKeyName if existing_function else None)
+      existing_function.kmsKeyName if existing_function else None
+  )
   if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-    function.kmsKeyName = None if args.IsSpecified(
-        'clear_kms_key') else args.kms_key
-  if (existing_function is None or
-      function.kmsKeyName != existing_function.kmsKeyName):
+    function.kmsKeyName = (
+        None if args.IsSpecified('clear_kms_key') else args.kms_key
+    )
+  if (
+      existing_function is None
+      or function.kmsKeyName != existing_function.kmsKeyName
+  ):
     if args.kms_key is not None:
       cmek_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
     updated_fields.add('kms_key_name')
   return updated_fields
 
 
-def _SetDockerRepositoryConfig(args, function, existing_function, function_ref,
-                               release_track):
+def _SetDockerRepositoryConfig(
+    args, function, existing_function, function_ref, release_track
+):
   """Sets user-provided docker repository field on the function.
 
   Args:
@@ -971,23 +1152,34 @@ def _SetDockerRepositoryConfig(args, function, existing_function, function_ref,
   if release_track != calliope_base.ReleaseTrack.ALPHA:
     return updated_fields
   function.buildConfig.dockerRepository = (
-      existing_function.buildConfig.dockerRepository if existing_function else
-      None)
+      existing_function.buildConfig.dockerRepository
+      if existing_function
+      else None
+  )
   if args.IsSpecified('docker_repository') or args.IsSpecified(
-      'clear_docker_repository'):
+      'clear_docker_repository'
+  ):
     function.buildConfig.dockerRepository = (
-        None if args.clear_docker_repository else args.docker_repository)
-    if (existing_function is None or function.buildConfig.dockerRepository !=
-        existing_function.buildConfig.dockerRepository):
+        None if args.clear_docker_repository else args.docker_repository
+    )
+    if (
+        existing_function is None
+        or function.buildConfig.dockerRepository
+        != existing_function.buildConfig.dockerRepository
+    ):
       if function.buildConfig.dockerRepository:
         cmek_util.ValidateDockerRepositoryForFunction(
-            function.buildConfig.dockerRepository, function_ref)
+            function.buildConfig.dockerRepository, function_ref
+        )
       updated_fields.add('build_config.docker_repository')
   if function.kmsKeyName and not function.buildConfig.dockerRepository:
     raise calliope_exceptions.RequiredArgumentException(
         '--docker-repository',
-        'A Docker repository must be specified when a KMS key is configured '
-        'for the function.')
+        (
+            'A Docker repository must be specified when a KMS key is configured'
+            ' for the function.'
+        ),
+    )
   return updated_fields
 
 
@@ -1004,8 +1196,8 @@ def _SetInvokerPermissions(args, function, is_new_function):
     None
   """
   service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service,
-      _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
+      function.serviceConfig.service, _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM
+  )
 
   # This condition will be truthy if the user provided either
   # `--allow-unauthenticated` or `--no-allow-unauthenticated`. In other
@@ -1017,35 +1209,44 @@ def _SetInvokerPermissions(args, function, is_new_function):
       allow_unauthenticated = console_io.PromptContinue(
           prompt_string=(
               'Allow unauthenticated invocations of new function [{}]?'.format(
-                  args.NAME)),
-          default=False)
+                  args.NAME
+              )
+          ),
+          default=False,
+      )
     else:
       # The function already exists, and the user didn't request any change to
       # the permissions. There is nothing to do in this case.
       return
 
   run_connection_context = connection_context.RegionalConnectionContext(
-      service_ref_one_platform.locationsId, global_methods.SERVERLESS_API_NAME,
-      global_methods.SERVERLESS_API_VERSION)
+      service_ref_one_platform.locationsId,
+      global_methods.SERVERLESS_API_NAME,
+      global_methods.SERVERLESS_API_VERSION,
+  )
 
   with serverless_operations.Connect(run_connection_context) as operations:
     service_ref_k8s = resources.REGISTRY.ParseRelativeName(
-        'namespaces/{}/services/{}'.format(api_util.GetProject(),
-                                           service_ref_one_platform.Name()),
-        _CLOUD_RUN_SERVICE_COLLECTION_K8S)
+        'namespaces/{}/services/{}'.format(
+            api_util.GetProject(), service_ref_one_platform.Name()
+        ),
+        _CLOUD_RUN_SERVICE_COLLECTION_K8S,
+    )
 
     if allow_unauthenticated:
       operations.AddOrRemoveIamPolicyBinding(
           service_ref_k8s,
           add_binding=True,
           member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
-          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+      )
     elif not is_new_function:
       operations.AddOrRemoveIamPolicyBinding(
           service_ref_k8s,
           add_binding=False,
           member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
-          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+      )
 
 
 def _GetFunction(client, messages, function_ref):
@@ -1063,7 +1264,9 @@ def _GetFunction(client, messages, function_ref):
     # We got response for a GET request, so a function exists.
     return client.projects_locations_functions.Get(
         messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
-            name=function_ref.RelativeName()))
+            name=function_ref.RelativeName()
+        )
+    )
   except apitools_exceptions.HttpError as error:
     if error.status_code == six.moves.http_client.NOT_FOUND:
       return None
@@ -1084,20 +1287,28 @@ def _CreateAndWait(client, messages, function_ref, function):
   Returns:
     None
   """
-  function_parent = 'projects/{}/locations/{}'.format(api_util.GetProject(),
-                                                      function_ref.locationsId)
+  function_parent = 'projects/{}/locations/{}'.format(
+      api_util.GetProject(), function_ref.locationsId
+  )
 
-  create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
-      parent=function_parent, functionId=function_ref.Name(), function=function)
+  create_request = (
+      messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
+          parent=function_parent,
+          functionId=function_ref.Name(),
+          function=function,
+      )
+  )
   operation = client.projects_locations_functions.Create(create_request)
   operation_description = 'Deploying function'
 
-  api_util.WaitForOperation(client, messages, operation, operation_description,
-                            _EXTRA_STAGES)
+  api_util.WaitForOperation(
+      client, messages, operation, operation_description, _EXTRA_STAGES
+  )
 
 
-def _UpdateAndWait(client, messages, function_ref, function,
-                   updated_fields_set):
+def _UpdateAndWait(
+    client, messages, function_ref, function, updated_fields_set
+):
   """Update a function.
 
   This does not include setting the invoker permissions.
@@ -1117,16 +1328,20 @@ def _UpdateAndWait(client, messages, function_ref, function,
     updated_fields.sort()
     update_mask = ','.join(updated_fields)
 
-    update_request = messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
-        name=function_ref.RelativeName(),
-        updateMask=update_mask,
-        function=function)
+    update_request = (
+        messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
+            name=function_ref.RelativeName(),
+            updateMask=update_mask,
+            function=function,
+        )
+    )
 
     operation = client.projects_locations_functions.Patch(update_request)
     operation_description = 'Updating function (may take a while)'
 
-    api_util.WaitForOperation(client, messages, operation,
-                              operation_description, _EXTRA_STAGES)
+    api_util.WaitForOperation(
+        client, messages, operation, operation_description, _EXTRA_STAGES
+    )
   else:
     log.status.Print('Nothing to update.')
 
@@ -1146,44 +1361,62 @@ def Run(args, release_track):
   if is_new_function and not args.runtime:
     if not console_io.CanPrompt():
       raise calliope_exceptions.RequiredArgumentException(
-          'runtime', 'Flag `--runtime` is required for new functions.')
+          'runtime', 'Flag `--runtime` is required for new functions.'
+      )
     gcf_client = api_client_v2.FunctionsClient(release_track=release_track)
     runtimes = [
         r.name
         for r in gcf_client.ListRuntimes(function_ref.locationsId).runtimes
     ]
     idx = console_io.PromptChoice(
-        runtimes, message='Please select a runtime:\n')
+        runtimes, message='Please select a runtime:\n'
+    )
     args.runtime = runtimes[idx]
     log.status.Print(
         'To skip this prompt, add `--runtime={}` to your command next time.\n'
-        .format(args.runtime))
+        .format(args.runtime)
+    )
 
-  if (flags.ShouldUseGen2() and existing_function and
-      str(existing_function.environment) == 'GEN_1'):
+  if (
+      flags.ShouldUseGen2()
+      and existing_function
+      and str(existing_function.environment) == 'GEN_1'
+  ):
     raise exceptions.InvalidArgumentException(
         '--gen2',
-        "Function already exist in 1st gen, can't change the environment.")
+        "Function already exist in 1st gen, can't change the environment.",
+    )
 
   if existing_function and existing_function.serviceConfig:
-    has_all_traffic_on_latest_revision = existing_function.serviceConfig.allTrafficOnLatestRevision
-    if (has_all_traffic_on_latest_revision is not None and
-        not has_all_traffic_on_latest_revision):
+    has_all_traffic_on_latest_revision = (
+        existing_function.serviceConfig.allTrafficOnLatestRevision
+    )
+    if (
+        has_all_traffic_on_latest_revision is not None
+        and not has_all_traffic_on_latest_revision
+    ):
       log.warning(_LATEST_REVISION_TRAFFIC_WARNING_MESSAGE)
 
   event_trigger, trigger_updated_fields = _GetEventTrigger(
-      args, messages, existing_function)
+      args, messages, existing_function
+  )
 
-  build_config, build_updated_fields = _GetBuildConfig(args, client, messages,
-                                                       function_ref.locationsId,
-                                                       function_ref.Name(),
-                                                       existing_function)
+  build_config, build_updated_fields = _GetBuildConfig(
+      args,
+      client,
+      messages,
+      function_ref.locationsId,
+      function_ref.Name(),
+      existing_function,
+  )
 
   service_config, service_updated_fields = _GetServiceConfig(
-      args, messages, existing_function)
+      args, messages, existing_function
+  )
 
-  labels_value, labels_updated_fields = _GetLabels(args, messages,
-                                                   existing_function)
+  labels_value, labels_updated_fields = _GetLabels(
+      args, messages, existing_function
+  )
 
   # cs/symbol:google.cloud.functions.v2main.Function$
   function = messages.Function(
@@ -1191,12 +1424,15 @@ def Run(args, release_track):
       buildConfig=build_config,
       eventTrigger=event_trigger,
       serviceConfig=service_config,
-      labels=labels_value)
+      labels=labels_value,
+  )
 
-  cmek_updated_fields = _SetCmekFields(args, function, existing_function,
-                                       function_ref, release_track)
+  cmek_updated_fields = _SetCmekFields(
+      args, function, existing_function, function_ref, release_track
+  )
   docker_repository_updated_fields = _SetDockerRepositoryConfig(
-      args, function, existing_function, function_ref, release_track)
+      args, function, existing_function, function_ref, release_track
+  )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
@@ -1204,22 +1440,35 @@ def Run(args, release_track):
     _CreateAndWait(client, messages, function_ref, function)
   else:
     _UpdateAndWait(
-        client, messages, function_ref, function,
-        frozenset.union(trigger_updated_fields, build_updated_fields,
-                        service_updated_fields, labels_updated_fields,
-                        cmek_updated_fields, docker_repository_updated_fields))
+        client,
+        messages,
+        function_ref,
+        function,
+        frozenset.union(
+            trigger_updated_fields,
+            build_updated_fields,
+            service_updated_fields,
+            labels_updated_fields,
+            cmek_updated_fields,
+            docker_repository_updated_fields,
+        ),
+    )
 
   function = client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
-          name=function_ref.RelativeName()))
+          name=function_ref.RelativeName()
+      )
+  )
 
   if event_trigger is None:
     _SetInvokerPermissions(args, function, is_new_function)
 
   log.status.Print(
-      'You can view your function in the Cloud Console here: ' +
-      'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
-      .format(function_ref.locationsId, function_ref.Name(),
-              api_util.GetProject()))
+      'You can view your function in the Cloud Console here: '
+      + 'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
+      .format(
+          function_ref.locationsId, function_ref.Name(), api_util.GetProject()
+      )
+  )
 
   return function

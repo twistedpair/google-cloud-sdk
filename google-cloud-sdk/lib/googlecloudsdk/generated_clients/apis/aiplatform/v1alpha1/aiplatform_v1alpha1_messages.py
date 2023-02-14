@@ -5224,8 +5224,10 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
     model: Required. The resource name of the Model that this is the
       deployment of. Note that the Model may be in a different location than
       the DeployedModel's Endpoint. The resource name may contain version id
-      or version alias to specify the version, if no version is specified, the
-      default version will be deployed.
+      or version alias to specify the version. Example:
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` if no
+      version is specified, the default version will be deployed.
     modelVersionId: Output only. The version ID of the model that is deployed.
     serviceAccount: The service account that the DeployedModel's container
       runs as. Specify the email address of the service account. If this
@@ -8117,9 +8119,9 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
       and all machine types available for MEDIUM and LARGE shard. Available
       machine types for MEDIUM shard: e2-standard-16 and all machine types
       available for LARGE shard. Available machine types for LARGE shard:
-      e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and
-      n1-standard-32 are still available, but we recommend e2-standard-16 and
-      e2-standard-32 for cost efficiency.
+      e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are
+      still available, but we recommend e2-standard-16 and e2-highmem-16 for
+      cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -8289,8 +8291,10 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
     model: Required. The resource name of the Model that this is the
       deployment of. Note that the Model may be in a different location than
       the DeployedModel's Endpoint. The resource name may contain version id
-      or version alias to specify the version, if no version is specified, the
-      default version will be deployed.
+      or version alias to specify the version. Example:
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` if no
+      version is specified, the default version will be deployed.
     modelDisplayName: Output only. The display name of the Model this
       DeployedModel was created from.
     modelMonitoringObjectiveConfig: Monitoring Config used by UI requests to
@@ -14569,9 +14573,9 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
       and all machine types available for MEDIUM and LARGE shard. Available
       machine types for MEDIUM shard: e2-standard-16 and all machine types
       available for LARGE shard. Available machine types for LARGE shard:
-      e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and
-      n1-standard-32 are still available, but we recommend e2-standard-16 and
-      e2-standard-32 for cost efficiency.
+      e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are
+      still available, but we recommend e2-standard-16 and e2-highmem-16 for
+      cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -14703,8 +14707,10 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
     model: Required. The resource name of the Model that this is the
       deployment of. Note that the Model may be in a different location than
       the DeployedModel's Endpoint. The resource name may contain version id
-      or version alias to specify the version, if no version is specified, the
-      default version will be deployed.
+      or version alias to specify the version. Example:
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` if no
+      version is specified, the default version will be deployed.
     modelVersionId: Output only. The version ID of the model that is deployed.
     privateEndpoints: Output only. Provide paths for users to send
       predict/explain/health requests directly to the deployed model services
@@ -20810,8 +20816,10 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
       no impact on any existing deployments of the Model and their resources.
       Exactly one of model and unmanaged_container_model must be set. The
       model resource name may contain version id or version alias to specify
-      the version, if no version is specified, the default version will be
-      used.
+      the version. Example:
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` if no
+      version is specified, the default version will be deployed.
     modelMonitoringConfig: Model monitoring config will be used for analysis
       model behaviors, based on the input and output to the batch prediction
       job, as well as the provided training dataset.
@@ -22373,8 +22381,10 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
     model: Required. The resource name of the Model that this is the
       deployment of. Note that the Model may be in a different location than
       the DeployedModel's Endpoint. The resource name may contain version id
-      or version alias to specify the version, if no version is specified, the
-      default version will be deployed.
+      or version alias to specify the version. Example:
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` if no
+      version is specified, the default version will be deployed.
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1AutomaticResources', 1)
@@ -29965,9 +29975,9 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
       and all machine types available for MEDIUM and LARGE shard. Available
       machine types for MEDIUM shard: e2-standard-16 and all machine types
       available for LARGE shard. Available machine types for LARGE shard:
-      e2-standard-32, e2-highmem-16, n2d-standard-32. n1-standard-16 and
-      n1-standard-32 are still available, but we recommend e2-standard-16 and
-      e2-standard-32 for cost efficiency.
+      e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are
+      still available, but we recommend e2-standard-16 and e2-highmem-16 for
+      cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -30100,8 +30110,10 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
     model: Required. The resource name of the Model that this is the
       deployment of. Note that the Model may be in a different location than
       the DeployedModel's Endpoint. The resource name may contain version id
-      or version alias to specify the version, if no version is specified, the
-      default version will be deployed.
+      or version alias to specify the version. Example:
+      `projects/{project}/locations/{location}/models/{model}@2` or
+      `projects/{project}/locations/{location}/models/{model}@golden` if no
+      version is specified, the default version will be deployed.
     modelVersionId: Output only. The version ID of the model that is deployed.
     privateEndpoints: Output only. Provide paths for users to send
       predict/explain/health requests directly to the deployed model services

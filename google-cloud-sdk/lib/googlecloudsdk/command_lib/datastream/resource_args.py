@@ -54,19 +54,19 @@ _MYSQL_SOURCE_CONFIG_HELP_TEXT_BETA = """\
 _MYSQL_SOURCE_CONFIG_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the configuration for MySQL Source Config.
 
-  The JSON file is formatted as follows, with snake_case field naming:
+  The JSON file is formatted as follows, with camelCase field naming:
 
   ```
     {
-      "include_objects": {},
-      "exclude_objects":  {
-        "mysql_databases": [
+      "includeObjects": {},
+      "excludeObjects":  {
+        "mysqlDatabases": [
             {
               "database":"sample_database",
-              "mysql_tables": [
+              "mysqlTables": [
                 {
                   "table": "sample_table",
-                  "mysql_columns": [
+                  "mysqlColumns": [
                     {
                       "column": "sample_column",
                     }
@@ -110,19 +110,19 @@ _ORACLE_SOURCE_CONFIG_HELP_TEXT_BETA = """\
 _ORACLE_SOURCE_CONFIG_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the configuration for Oracle Source Config.
 
-  The JSON file is formatted as follows, with snake_case field naming:
+  The JSON file is formatted as follows, with camelCase field naming:
 
   ```
     {
-      "include_objects": {},
-      "exclude_objects": {
-        "oracle_schemas": [
+      "includeObjects": {},
+      "excludeObjects": {
+        "oracleSchemas": [
           {
             "schema": "SAMPLE",
-            "oracle_tables": [
+            "oracleTables": [
               {
                 "table": "SAMPLE_TABLE",
-                "oracle_columns": [
+                "oracleColumns": [
                   {
                     "column": "COL",
                   }
@@ -138,19 +138,19 @@ _ORACLE_SOURCE_CONFIG_HELP_TEXT = """\
 _POSTGRESQL_CREATE_SOURCE_CONFIG_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the configuration for PostgreSQL Source Config.
 
-  The JSON file is formatted as follows, with snake_case field naming:
+  The JSON file is formatted as follows, with camelCase field naming:
 
   ```
     {
-      "include_objects": {},
-      "exclude_objects": {
-        "postgresql_schemas": [
+      "includeObjects": {},
+      "excludeObjects": {
+        "postgresqlSchemas": [
           {
             "schema": "SAMPLE",
-            "postgresql_tables": [
+            "postgresqlTables": [
               {
                 "table": "SAMPLE_TABLE",
-                "postgresql_columns": [
+                "postgresqlColumns": [
                   {
                     "column": "COL",
                   }
@@ -160,7 +160,7 @@ _POSTGRESQL_CREATE_SOURCE_CONFIG_HELP_TEXT = """\
           }
         ]
       },
-      "replication_slot": "SAMPLE_REPLICATION_SLOT",
+      "replicationSlot": "SAMPLE_REPLICATION_SLOT",
       "publication": "SAMPLE_PUBLICATION"
     }
   ```
@@ -169,19 +169,19 @@ _POSTGRESQL_CREATE_SOURCE_CONFIG_HELP_TEXT = """\
 _POSTGRESQL_UPDATE_SOURCE_CONFIG_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the configuration for PostgreSQL Source Config.
 
-  The JSON file is formatted as follows, with snake_case field naming:
+  The JSON file is formatted as follows, with camelCase field naming:
 
   ```
     {
-      "include_objects": {},
-      "exclude_objects": {
-        "postgresql_schemas": [
+      "includeObjects": {},
+      "excludeObjects": {
+        "postgresqlSchemas": [
           {
             "schema": "SAMPLE",
-            "postgresql_tables": [
+            "postgresqlTables": [
               {
                 "table": "SAMPLE_TABLE",
-                "postgresql_columns": [
+                "postgresqlColumns": [
                   {
                     "column": "COL",
                   }
@@ -496,12 +496,13 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       ```
        {
        "path": "some/path",
-       "file_rotation_mb":5,
-       "file_rotation_interval":"15s",
-       "avro_file_format": {}
+       "fileRotationMb":5,
+       "fileRotationInterval":"15s",
+       "avroFileFormat": {}
        }
       ```
-        """)
+        """,
+  )
   destination_config_parser_group.add_argument(
       '--bigquery-destination-config',
       help="""\
@@ -511,17 +512,18 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
 
       ```
       {
-        "source_hierarchy_datasets": {
-          "dataset_template": {
+        "sourceHierarchyDatasets": {
+          "datasetTemplate": {
             "location": "us-central1",
-            "dataset_id_prefix": "my_prefix",
-            "kms_key_name": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}"
+            "datasetIdPrefix": "my_prefix",
+            "kmsKeyName": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}"
           }
         },
-        "data_freshness": 3600
+        "dataFreshness": 3600
       }
       ```
-        """)
+        """,
+  )
 
   source_field = 'source'
   destination_field = 'destination'

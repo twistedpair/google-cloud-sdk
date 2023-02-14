@@ -384,6 +384,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Rename(self, request, global_params=None):
+      r"""RenameInstance sets a new name for an instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesRenameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Rename')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rename.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rename',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.rename',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:rename',
+        request_field='renameInstanceRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesRenameRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Reset(self, request, global_params=None):
       r"""Perform an ungraceful, hard reset on a server. Equivalent to shutting the power off and then turning it back on.
 
@@ -1263,6 +1290,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsVolumesLunsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Evict(self, request, global_params=None):
+      r"""Skips lun's cooloff and deletes it now. Lun must be in cooloff state.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesLunsEvictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Evict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Evict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns/{lunsId}:evict',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.luns.evict',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:evict',
+        request_field='evictLunRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesLunsEvictRequest',
         response_type_name='Operation',
         supports_download=False,
     )

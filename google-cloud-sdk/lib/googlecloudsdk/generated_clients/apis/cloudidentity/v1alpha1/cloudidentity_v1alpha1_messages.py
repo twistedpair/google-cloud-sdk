@@ -608,6 +608,42 @@ class CloudidentityGroupsMembershipsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class CloudidentityGroupsMembershipsSearchDirectGroupsRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsSearchDirectGroupsRequest object.
+
+  Fields:
+    orderBy: The ordering of membership relation for the display name or email
+      in the response. The syntax for this field can be found at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+      Example: Sort by the ascending display name: order_by="group_name" or
+      order_by="group_name asc". Sort by the descending display name:
+      order_by="group_name desc". Sort by the ascending group key:
+      order_by="group_key" or order_by="group_key asc". Sort by the descending
+      group key: order_by="group_key desc".
+    pageSize: The default page size is 200 (max 1000).
+    pageToken: The next_page_token value returned from a previous list
+      request, if any
+    parent: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the group
+      to search transitive memberships in. Format: groups/{group_id}, where
+      group_id is always '-' as this API will search across all groups for a
+      given member.
+    query: Required. A CEL expression that MUST include member specification
+      AND label(s). Users can search on label attributes of groups. CONTAINS
+      match ('in') is supported on labels. Identity-mapped groups are uniquely
+      identified by both a `member_key_id` and a `member_key_namespace`, which
+      requires an additional query input: `member_key_namespace`. Example
+      query: `member_key_id == 'member_key_id_value' && 'label_value' in
+      labels`
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  query = _messages.StringField(5)
+
+
 class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Message):
   r"""A CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest object.
 
@@ -627,7 +663,14 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
       and a `member_key_namespace`, which requires an additional query input:
       `member_key_namespace`. Example query: member_key_id ==
       'member_key_id_value' [ && member_key_namespace ==
-      'member_key_namespace_value' ] && in labels
+      'member_key_namespace_value' ] && in labels Query may optionally contain
+      equality operators on the parent of the group restricting the search
+      within a particular customer, e.g. `parent ==
+      'customers/{customer_id}'`. The `customer_id` must begin with "C" (for
+      example, 'C046psxkn'). This filtering is only supported for Admins with
+      groups read permissons on the input customer. Example query:
+      `member_key_id == 'member_key_id_value' && in labels && parent ==
+      'customers/C046psxkn'`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1782,6 +1825,8 @@ class Group(_messages.Message):
       an empty value.
 
   Fields:
+    additionalGroupKeys: Output only. Additional group keys associated with
+      the Group.
     createTime: Output only. The time when the `Group` was created.
     description: An extended description to help users determine the purpose
       of a `Group`. Must not be longer than 4,096 characters.
@@ -1847,16 +1892,17 @@ class Group(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 4)
-  groupKey = _messages.MessageField('EntityKey', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  parent = _messages.StringField(8)
-  posixGroups = _messages.MessageField('PosixGroup', 9, repeated=True)
-  updateTime = _messages.StringField(10)
+  additionalGroupKeys = _messages.MessageField('EntityKey', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 5)
+  groupKey = _messages.MessageField('EntityKey', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  parent = _messages.StringField(9)
+  posixGroups = _messages.MessageField('PosixGroup', 10, repeated=True)
+  updateTime = _messages.StringField(11)
 
 
 class GroupRelation(_messages.Message):
@@ -2086,10 +2132,14 @@ class Membership(_messages.Message):
   `Group`, referred to as a "member".
 
   Enums:
+    DeliverySettingValueValuesEnum: Output only. Delivery setting associated
+      with the membership.
     TypeValueValuesEnum: Output only. The type of the membership.
 
   Fields:
     createTime: Output only. The time when the `Membership` was created.
+    deliverySetting: Output only. Delivery setting associated with the
+      membership.
     expiryDetail: The expiry details of the `MembershipRole`. May be set if
       the only `MembershipRole` is one with `name` `MEMBER`. Must not be set
       if any other `MembershipRole`s exist.
@@ -2105,6 +2155,24 @@ class Membership(_messages.Message):
     type: Output only. The type of the membership.
     updateTime: Output only. The time when the `Membership` was last updated.
   """
+
+  class DeliverySettingValueValuesEnum(_messages.Enum):
+    r"""Output only. Delivery setting associated with the membership.
+
+    Values:
+      DELIVERY_SETTING_UNSPECIFIED: Default. Should not be used.
+      ALL_MAIL: Represents each mail should be delivered
+      DIGEST: Represents 1 email for every 25 messages.
+      DAILY: Represents daily summary of messages.
+      NONE: Represents no delivery.
+      DISABLED: Represents disabled state.
+    """
+    DELIVERY_SETTING_UNSPECIFIED = 0
+    ALL_MAIL = 1
+    DIGEST = 2
+    DAILY = 3
+    NONE = 4
+    DISABLED = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The type of the membership.
@@ -2125,12 +2193,13 @@ class Membership(_messages.Message):
     OTHER = 5
 
   createTime = _messages.StringField(1)
-  expiryDetail = _messages.MessageField('ExpiryDetail', 2)
-  name = _messages.StringField(3)
-  preferredMemberKey = _messages.MessageField('EntityKey', 4)
-  roles = _messages.MessageField('MembershipRole', 5, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  deliverySetting = _messages.EnumField('DeliverySettingValueValuesEnum', 2)
+  expiryDetail = _messages.MessageField('ExpiryDetail', 3)
+  name = _messages.StringField(4)
+  preferredMemberKey = _messages.MessageField('EntityKey', 5)
+  roles = _messages.MessageField('MembershipRole', 6, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MembershipAdjacencyList(_messages.Message):
@@ -2144,6 +2213,64 @@ class MembershipAdjacencyList(_messages.Message):
 
   edges = _messages.MessageField('Membership', 1, repeated=True)
   group = _messages.StringField(2)
+
+
+class MembershipRelation(_messages.Message):
+  r"""Message containing membership relation.
+
+  Messages:
+    LabelsValue: One or more label entries that apply to the Group. Currently
+      supported labels contain a key with an empty value.
+
+  Fields:
+    description: An extended description to help users determine the purpose
+      of a `Group`.
+    displayName: The display name of the `Group`.
+    group: The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      `Group`. Shall be of the form `groups/{group_id}`.
+    groupKey: The `EntityKey` of the `Group`.
+    labels: One or more label entries that apply to the Group. Currently
+      supported labels contain a key with an empty value.
+    membership: The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      `Membership`. Shall be of the form
+      `groups/{group_id}/memberships/{membership_id}`.
+    roles: The `MembershipRole`s that apply to the `Membership`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""One or more label entries that apply to the Group. Currently supported
+    labels contain a key with an empty value.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  group = _messages.StringField(3)
+  groupKey = _messages.MessageField('EntityKey', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  membership = _messages.StringField(6)
+  roles = _messages.MessageField('MembershipRole', 7, repeated=True)
 
 
 class MembershipRole(_messages.Message):
@@ -2373,6 +2500,19 @@ class RestrictionEvaluations(_messages.Message):
   """
 
   memberRestrictionEvaluation = _messages.MessageField('MembershipRoleRestrictionEvaluation', 1)
+
+
+class SearchDirectGroupsResponse(_messages.Message):
+  r"""The response message for MembershipsService.SearchDirectGroups.
+
+  Fields:
+    memberships: List of direct groups satisfying the query.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results available for listing.
+  """
+
+  memberships = _messages.MessageField('MembershipRelation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class SearchGroupsResponse(_messages.Message):

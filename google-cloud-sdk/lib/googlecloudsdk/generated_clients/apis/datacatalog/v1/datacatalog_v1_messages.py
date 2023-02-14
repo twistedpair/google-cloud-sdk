@@ -2480,19 +2480,18 @@ class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
-  r"""Metadata message for long-running operation returned by the
-  ReconcileTags.
+  r"""Long-running operation metadata message returned by the ReconcileTags.
 
   Enums:
     StateValueValuesEnum: State of the reconciliation operation.
 
   Messages:
-    ErrorsValue: Map that maps name of each tagged column (or empty string in
-      case of sole entry) to tagging operation status.
+    ErrorsValue: Maps the name of each tagged column (or empty string for a
+      sole entry) to tagging operation status.
 
   Fields:
-    errors: Map that maps name of each tagged column (or empty string in case
-      of sole entry) to tagging operation status.
+    errors: Maps the name of each tagged column (or empty string for a sole
+      entry) to tagging operation status.
     state: State of the reconciliation operation.
   """
 
@@ -2513,8 +2512,8 @@ class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ErrorsValue(_messages.Message):
-    r"""Map that maps name of each tagged column (or empty string in case of
-    sole entry) to tagging operation status.
+    r"""Maps the name of each tagged column (or empty string for a sole entry)
+    to tagging operation status.
 
     Messages:
       AdditionalProperty: An additional property for a ErrorsValue object.
@@ -2544,16 +2543,14 @@ class GoogleCloudDatacatalogV1ReconcileTagsRequest(_messages.Message):
   r"""Request message for ReconcileTags.
 
   Fields:
-    forceDeleteMissing: If set to true deletes from the entry tags related to
-      given tag template and not mentioned in the tags source. If set to false
-      only creates and updates of the tags mentioned in the source will take
-      place. Other tags in that entry using the same tag template will be
-      retained instead of being deleted.
-    tagTemplate: Required. The name of the tag template, that will be used for
+    forceDeleteMissing: If set to `true`, deletes entry tags related to a tag
+      template not listed in the tags source from an entry. If set to `false`,
+      unlisted tags are retained.
+    tagTemplate: Required. The name of the tag template, which is used for
       reconciliation.
-    tags: A list of tags to be applied on a given entry. Individual tags may
-      specify tag template, but it must be the same as the one in the
-      ReconcileTagsRequest. The sole entry and each of its columns must be
+    tags: A list of tags to apply to an entry. A tag can specify a tag
+      template, which must be the template specified in the
+      `ReconcileTagsRequest`. The sole entry and each of its columns must be
       mentioned at most once.
   """
 
@@ -2563,8 +2560,7 @@ class GoogleCloudDatacatalogV1ReconcileTagsRequest(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1ReconcileTagsResponse(_messages.Message):
-  r"""Request message for long-running operation returned by the
-  ReconcileTags.
+  r"""Long-running operation response message returned by ReconcileTags.
 
   Fields:
     createdTagsCount: Number of tags created in the request.
@@ -2737,9 +2733,9 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
   r"""The criteria that select the subspace used for query matching.
 
   Fields:
-    includeGcpPublicDatasets: If `true`, include Google Cloud Platform (GCP)
-      public datasets in search results. By default, they are excluded. See
-      [Google Cloud Public Datasets](/public-datasets) for more information.
+    includeGcpPublicDatasets: If `true`, include Google Cloud public datasets
+      in search results. By default, they are excluded. See [Google Cloud
+      Public Datasets](/public-datasets) for more information.
     includeOrgIds: The list of organization IDs to search within. To find your
       organization ID, follow the steps from [Creating and managing
       organizations] (/resource-manager/docs/creating-managing-organization).
@@ -3123,12 +3119,12 @@ class GoogleCloudDatacatalogV1TagFieldEnumValue(_messages.Message):
 
 class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
   r"""A tag template defines a tag that can have one or more typed fields. The
-  template is used to create tags that are attached to GCP resources. [Tag
-  template roles] (https://cloud.google.com/iam/docs/understanding-roles#data-
-  catalog-roles) provide permissions to create, edit, and use the template.
-  For example, see the [TagTemplate User] (https://cloud.google.com/data-
-  catalog/docs/how-to/template-user) role that includes a permission to use
-  the tag template to tag resources.
+  template is used to create tags that are attached to Google Cloud resources.
+  [Tag template roles] (https://cloud.google.com/iam/docs/understanding-
+  roles#data-catalog-roles) provide permissions to create, edit, and use the
+  template. For example, see the [TagTemplate User]
+  (https://cloud.google.com/data-catalog/docs/how-to/template-user) role that
+  includes a permission to use the tag template to tag resources.
 
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for
@@ -3256,8 +3252,8 @@ class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
       Policy tag manager generates unique taxonomy IDs.
     policyTagCount: Output only. Number of policy tags in this taxonomy.
     service: Output only. Identity of the service which owns the Taxonomy.
-      This field is only populated when the taxonomy is created by a GCP
-      service. Currently only 'DATAPLEX' is supported.
+      This field is only populated when the taxonomy is created by a Google
+      Cloud service. Currently only 'DATAPLEX' is supported.
     taxonomyTimestamps: Output only. Creation and modification timestamps of
       this taxonomy.
   """
@@ -3286,15 +3282,15 @@ class GoogleCloudDatacatalogV1TaxonomyService(_messages.Message):
   r"""The source system of the Taxonomy.
 
   Enums:
-    NameValueValuesEnum: The GCP service name.
+    NameValueValuesEnum: The Google Cloud service name.
 
   Fields:
     identity: P4SA Identity of the service.
-    name: The GCP service name.
+    name: The Google Cloud service name.
   """
 
   class NameValueValuesEnum(_messages.Enum):
-    r"""The GCP service name.
+    r"""The Google Cloud service name.
 
     Values:
       MANAGING_SYSTEM_UNSPECIFIED: Default value

@@ -319,7 +319,7 @@ cluster_resource_restore_scope:
   help_text: |
     List of cluster-scoped resource types to be restored. Not specifying this means NO cluster
     resource will be restored. The format of a resource is "<group>/<kind>", e.g.
-    `storage.k8s.io/StorageClass` for StorageClass.
+    `storage.k8s.io/StorageClass` for StorageClass. Use an empty string for core API group.
 
 restore_plan_all_namespaces:
   arg_name: all-namespaces

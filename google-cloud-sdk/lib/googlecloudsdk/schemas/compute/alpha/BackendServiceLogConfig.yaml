@@ -41,7 +41,7 @@ properties:
   optionalMode:
     description: |-
       This field can only be specified if logging is enabled for this backend
-      service. Configures whether all, none or a subset of optional fields
+      service. Configures whether all, none, or a subset of optional fields
       should be added to the reported logs. One of [INCLUDE_ALL_OPTIONAL,
       EXCLUDE_ALL_OPTIONAL, CUSTOM]. Default is EXCLUDE_ALL_OPTIONAL.
     type: string
@@ -52,7 +52,7 @@ properties:
   optionalFields:
     description: |-
       This field can only be specified if logging is enabled for this backend
-      service and "logConfig.optionalMode" was set to CUSTOM. Contains a
+      service and "--logging-optional" was set to CUSTOM. Contains a
       comma-separated list of optional fields you want to include in the logs.
       For example: serverInstance, serverGkeDetails.cluster,
       serverGkeDetails.pod.podNamespace

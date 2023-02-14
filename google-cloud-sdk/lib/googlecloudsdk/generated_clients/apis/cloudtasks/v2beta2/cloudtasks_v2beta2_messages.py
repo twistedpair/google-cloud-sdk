@@ -410,7 +410,7 @@ class Binding(_messages.Message):
 
 
 class BufferTaskRequest(_messages.Message):
-  r"""Request message for BufferTask.
+  r"""LINT.IfChange Request message for BufferTask.
 
   Fields:
     body: Optional. Body of the HTTP request. The body can take any generic

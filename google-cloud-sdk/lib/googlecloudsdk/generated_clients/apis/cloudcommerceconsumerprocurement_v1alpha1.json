@@ -1473,7 +1473,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of a consent. An examples of valid names would be in the format of: - \"billingAccounts\/{billing_account}\/consents\/{consent}\".",
+          "description": "The resource name of a consent. An examples of valid names would be in the format of: - \"billingAccounts\/{billing_account}\/consents\/{consent}\". - \"projects\/{project_number}\/consents\/{consent}\".",
           "type": "string"
         },
         "agreementDocument": {
@@ -1512,7 +1512,7 @@
           "type": "string"
         },
         "offer": {
-          "description": "The name of the offer linked to this consent. It is in the format of: - \"billingAccounts\/{billing_account}\/offers\/{offer_id}\".",
+          "description": "The name of the offer linked to this consent. It is in the format of: - \"billingAccounts\/{billing_account}\/offers\/{offer_id}\". - \"services\/{service}\/offers\/{offer_id}\".",
           "type": "string"
         }
       }

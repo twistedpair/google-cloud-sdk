@@ -54,6 +54,40 @@ class AptArtifact(_messages.Message):
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
 
 
+class AptRepository(_messages.Message):
+  r"""Configuration for an Apt remote repository.
+
+  Fields:
+    artifactRegistryRepository: An Artifact Registry Repository.
+    publicRepository: One of the publicly available Apt repositories supported
+      by Artifact Registry.
+  """
+
+  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
+  publicRepository = _messages.MessageField('PublicRepository', 2)
+
+
+class ArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class ArtifactregistryMediaDownloadRequest(_messages.Message):
+  r"""A ArtifactregistryMediaDownloadRequest object.
+
+  Fields:
+    name: Required. The name of the file to download.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsGetProjectSettingsRequest(_messages.Message):
   r"""A ArtifactregistryProjectsGetProjectSettingsRequest object.
 
@@ -203,7 +237,7 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest(_messages.Mes
   r"""A ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest object.
 
   Fields:
-    name: The name of the file to retrieve.
+    name: Required. The name of the file to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -225,8 +259,8 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
     pageSize: The maximum number of files to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the repository whose files will be listed. For
-      example: "projects/p1/locations/us-central1/repositories/repo1
+    parent: Required. The name of the repository whose files will be listed.
+      For example: "projects/p1/locations/us-central1/repositories/repo1
   """
 
   filter = _messages.StringField(1)
@@ -815,7 +849,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -832,9 +868,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -852,9 +886,10 @@ class CleanupPolicy(_messages.Message):
 
   Fields:
     action: Policy action.
-    condition: Policy condition that indicates when versions should be
-      deleted.
+    condition: Policy condition for matching versions.
     id: The user-provided ID of the cleanup policy.
+    mostRecentVersions: Policy condition for retaining a minimum number of
+      versions. May only be specified with a Keep action.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -863,26 +898,73 @@ class CleanupPolicy(_messages.Message):
     Values:
       ACTION_UNSPECIFIED: Action not specified.
       DELETE: Delete action.
+      KEEP: Keep action.
     """
     ACTION_UNSPECIFIED = 0
     DELETE = 1
+    KEEP = 2
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   condition = _messages.MessageField('CleanupPolicyCondition', 2)
   id = _messages.StringField(3)
+  mostRecentVersions = _messages.MessageField('CleanupPolicyMostRecentVersions', 4)
 
 
 class CleanupPolicyCondition(_messages.Message):
-  r"""CleanupPolicyCondtion defines a set of conditions of a CleanupPolicy. If
-  multiple entries are set, all must be satisfied for the condition to be
-  satisfied.
+  r"""CleanupPolicyCondition is a set of conditions attached to a
+  CleanupPolicy. If multiple entries are set, all must be satisfied for the
+  condition to be satisfied.
+
+  Enums:
+    TagStateValueValuesEnum: Match versions by tag status.
 
   Fields:
-    versionAge: Condition type which is satisfied if a version is older than
-      the specified time.
+    newerThan: Match versions newer than a duration.
+    olderThan: Match versions older than a duration.
+    packageNamePrefixes: Match versions by package prefix. Applied on any
+      prefix match.
+    tagPrefixes: Match versions by tag prefix. Applied on any prefix match.
+    tagState: Match versions by tag status.
+    versionAge: Match versions older than a duration.
+    versionNamePrefixes: Match versions by version name prefix. Applied on any
+      prefix match.
   """
 
-  versionAge = _messages.StringField(1)
+  class TagStateValueValuesEnum(_messages.Enum):
+    r"""Match versions by tag status.
+
+    Values:
+      TAG_STATE_UNSPECIFIED: Tag status not specified.
+      TAGGED: Applies to tagged versions only.
+      UNTAGGED: Applies to untagged versions only.
+      ANY: Applies to all versions.
+    """
+    TAG_STATE_UNSPECIFIED = 0
+    TAGGED = 1
+    UNTAGGED = 2
+    ANY = 3
+
+  newerThan = _messages.StringField(1)
+  olderThan = _messages.StringField(2)
+  packageNamePrefixes = _messages.StringField(3, repeated=True)
+  tagPrefixes = _messages.StringField(4, repeated=True)
+  tagState = _messages.EnumField('TagStateValueValuesEnum', 5)
+  versionAge = _messages.StringField(6)
+  versionNamePrefixes = _messages.StringField(7, repeated=True)
+
+
+class CleanupPolicyMostRecentVersions(_messages.Message):
+  r"""CleanupPolicyMostRecentVersions is an alternate condition of a
+  CleanupPolicy for retaining a minimum number of versions.
+
+  Fields:
+    keepCount: Minimum number of versions to keep.
+    packageNamePrefixes: List of package name prefixes that will apply this
+      rule.
+  """
+
+  keepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  packageNamePrefixes = _messages.StringField(2, repeated=True)
 
 
 class DockerImage(_messages.Message):
@@ -935,6 +1017,7 @@ class DockerRepository(_messages.Message):
       repositories supported by Artifact Registry.
 
   Fields:
+    artifactRegistryRepository: An Artifact Registry Repository.
     publicRepository: One of the publicly available Docker repositories
       supported by Artifact Registry.
   """
@@ -950,7 +1033,25 @@ class DockerRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     DOCKER_HUB = 1
 
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
+  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
+
+
+class DockerRepositoryConfig(_messages.Message):
+  r"""DockerRepositoryConfig is docker related repository details. Provides
+  additional configuration details for repositories of the docker format type.
+
+  Fields:
+    immutableTags: The repository which enabled this flag prevents all tags
+      from being modified, moved or deleted. This does not prevent tags from
+      being created.
+  """
+
+  immutableTags = _messages.BooleanField(1)
+
+
+class DownloadFileResponse(_messages.Message):
+  r"""The response to download a file."""
 
 
 class Empty(_messages.Message):
@@ -1039,22 +1140,25 @@ class GoogleDevtoolsArtifactregistryV1File(_messages.Message):
   Versions.
 
   Fields:
-    createTime: The time when the File was created.
+    createTime: Output only. The time when the File was created.
+    fetchTime: Output only. The time when the last attempt to refresh the
+      file's data was made. Only set when the repository is remote.
     hashes: The hashes of the file content.
     name: The name of the file, for example: "projects/p1/locations/us-
       central1/repositories/repo1/files/a%2Fb%2Fc.txt". If the file ID part
       contains slashes, they are escaped.
     owner: The name of the Package or Version that owns this file, if any.
     sizeBytes: The size of the File in bytes.
-    updateTime: The time when the File was last updated.
+    updateTime: Output only. The time when the File was last updated.
   """
 
   createTime = _messages.StringField(1)
-  hashes = _messages.MessageField('Hash', 2, repeated=True)
-  name = _messages.StringField(3)
-  owner = _messages.StringField(4)
-  sizeBytes = _messages.IntegerField(5)
-  updateTime = _messages.StringField(6)
+  fetchTime = _messages.StringField(2)
+  hashes = _messages.MessageField('Hash', 3, repeated=True)
+  name = _messages.StringField(4)
+  owner = _messages.StringField(5)
+  sizeBytes = _messages.IntegerField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Hash(_messages.Message):
@@ -1474,6 +1578,7 @@ class MavenRepository(_messages.Message):
       repositories supported by Artifact Registry.
 
   Fields:
+    artifactRegistryRepository: An Artifact Registry Repository.
     publicRepository: One of the publicly available Maven repositories
       supported by Artifact Registry.
   """
@@ -1489,7 +1594,8 @@ class MavenRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     MAVEN_CENTRAL = 1
 
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
+  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
 
 
 class MavenRepositoryConfig(_messages.Message):
@@ -1558,6 +1664,7 @@ class NpmRepository(_messages.Message):
       repositories supported by Artifact Registry.
 
   Fields:
+    artifactRegistryRepository: An Artifact Registry Repository.
     publicRepository: One of the publicly available Npm repositories supported
       by Artifact Registry.
   """
@@ -1573,7 +1680,8 @@ class NpmRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     NPMJS = 1
 
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
+  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
 
 
 class Operation(_messages.Message):
@@ -1817,6 +1925,35 @@ class ProjectSettings(_messages.Message):
   name = _messages.StringField(2)
 
 
+class PublicRepository(_messages.Message):
+  r"""Publicly available Apt repositories constructed from a common repository
+  base and a custom repository path.
+
+  Enums:
+    RepositoryBaseValueValuesEnum: A common public repository base for Apt.
+
+  Fields:
+    repositoryBase: A common public repository base for Apt.
+    repositoryPath: A custom field to define a path to a specific repository
+      from the base.
+  """
+
+  class RepositoryBaseValueValuesEnum(_messages.Enum):
+    r"""A common public repository base for Apt.
+
+    Values:
+      REPOSITORY_BASE_UNSPECIFIED: Unspecified repository base.
+      DEBIAN: Debian.
+      UBUNTU: Ubuntu LTS/Pro.
+    """
+    REPOSITORY_BASE_UNSPECIFIED = 0
+    DEBIAN = 1
+    UBUNTU = 2
+
+  repositoryBase = _messages.EnumField('RepositoryBaseValueValuesEnum', 1)
+  repositoryPath = _messages.StringField(2)
+
+
 class PythonPackage(_messages.Message):
   r"""PythonPackage represents a python artifact.
 
@@ -1853,6 +1990,7 @@ class PythonRepository(_messages.Message):
       repositories supported by Artifact Registry.
 
   Fields:
+    artifactRegistryRepository: An Artifact Registry Repository.
     publicRepository: One of the publicly available Python repositories
       supported by Artifact Registry.
   """
@@ -1868,13 +2006,15 @@ class PythonRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     PYPI = 1
 
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 1)
+  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
 
 
 class RemoteRepositoryConfig(_messages.Message):
   r"""Remote repository configuration.
 
   Fields:
+    aptRepository: Specific settings for an Apt remote repository.
     description: The description of the remote source.
     dockerRepository: Specific settings for a Docker remote repository.
     mavenRepository: Specific settings for a Maven remote repository.
@@ -1882,11 +2022,12 @@ class RemoteRepositoryConfig(_messages.Message):
     pythonRepository: Specific settings for a Python remote repository.
   """
 
-  description = _messages.StringField(1)
-  dockerRepository = _messages.MessageField('DockerRepository', 2)
-  mavenRepository = _messages.MessageField('MavenRepository', 3)
-  npmRepository = _messages.MessageField('NpmRepository', 4)
-  pythonRepository = _messages.MessageField('PythonRepository', 5)
+  aptRepository = _messages.MessageField('AptRepository', 1)
+  description = _messages.StringField(2)
+  dockerRepository = _messages.MessageField('DockerRepository', 3)
+  mavenRepository = _messages.MessageField('MavenRepository', 4)
+  npmRepository = _messages.MessageField('NpmRepository', 5)
+  pythonRepository = _messages.MessageField('PythonRepository', 6)
 
 
 class Repository(_messages.Message):
@@ -1915,6 +2056,8 @@ class Repository(_messages.Message):
       unique within a repository and be under 128 characters in length.
     createTime: The time when the repository was created.
     description: The user-provided description of the repository.
+    dockerConfig: Docker repository config contains repository level
+      configuration for the repositories of docker type.
     format: The format of packages that are stored in the repository.
     kmsKeyName: The Cloud KMS resource name of the customer managed encryption
       key that's used to encrypt the contents of the Repository. Has the form:
@@ -2042,17 +2185,18 @@ class Repository(_messages.Message):
   cleanupPolicies = _messages.MessageField('CleanupPoliciesValue', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  format = _messages.EnumField('FormatValueValuesEnum', 4)
-  kmsKeyName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 7)
-  mode = _messages.EnumField('ModeValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 10)
-  satisfiesPzs = _messages.BooleanField(11)
-  sizeBytes = _messages.IntegerField(12)
-  updateTime = _messages.StringField(13)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 14)
+  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 4)
+  format = _messages.EnumField('FormatValueValuesEnum', 5)
+  kmsKeyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 8)
+  mode = _messages.EnumField('ModeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 11)
+  satisfiesPzs = _messages.BooleanField(12)
+  sizeBytes = _messages.IntegerField(13)
+  updateTime = _messages.StringField(14)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 15)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2399,7 +2543,7 @@ class UpstreamPolicy(_messages.Message):
     priority: Entries with a greater priority value take precedence in the
       pull order.
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repository/repo1".
+      "projects/p1/locations/us-central1/repositories/repo1".
   """
 
   id = _messages.StringField(1)

@@ -130,8 +130,10 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         self._temporary_destination_resource.storage_url)
 
     posix_util.set_posix_attributes_on_file_if_valid(
-        self._user_request_args, self.received_messages, self._source_resource,
-        self._final_destination_resource)
+        self._user_request_args,
+        self._source_resource,
+        self._final_destination_resource,
+    )
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(final_destination_object_path))

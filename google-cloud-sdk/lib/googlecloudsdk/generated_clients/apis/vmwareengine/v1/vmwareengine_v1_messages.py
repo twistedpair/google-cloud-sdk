@@ -109,7 +109,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -126,9 +128,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -157,7 +157,7 @@ class Cluster(_messages.Message):
     name: Output only. The resource name of this cluster. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/clusters/my-cluster`
     nodeCount: Optional. Deprecated: Number of nodes in this cluster.
     nodeCustomCoreCount: Optional. Deprecated: Customized number of cores
@@ -319,7 +319,7 @@ class ExternalAccessRule(_messages.Message):
     name: Output only. The resource name of this external access rule.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-
+      `projects/my-project/locations/us-central1/networkPolicies/my-
       policy/externalAccessRules/my-rule`
     priority: External access rule priority, which determines the external
       access rule to use when multiple rules apply. If multiple rules have the
@@ -404,7 +404,7 @@ class ExternalAddress(_messages.Message):
     name: Output only. The resource name of this external IP address. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/externalAddresses/my-address`
     state: Output only. The state of the resource.
     uid: Output only. System-generated unique identifier for the resource.
@@ -500,7 +500,7 @@ class HcxActivationKey(_messages.Message):
     name: Output only. The resource name of this HcxActivationKey. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/privateClouds/my-
+      `projects/my-project/locations/us-central1/privateClouds/my-
       cloud/hcxActivationKeys/my-key`
     state: Output only. State of HCX activation key.
     uid: Output only. System-generated unique identifier for the resource.
@@ -548,7 +548,7 @@ class IpRange(_messages.Message):
       rule's parent network policy. Provide the external address name in the
       form of `projects/{project}/locations/{location}/privateClouds/{private_
       cloud}/externalAddresses/{external_address}`. For example: `projects/my-
-      project/locations/us-west1-a/privateClouds/my-
+      project/locations/us-central1-a/privateClouds/my-
       cloud/externalAddresses/my-address`.
     ipAddress: A single IP address. For example: `10.0.0.5`.
     ipAddressRange: An IP address range in the CIDR format. For example:
@@ -961,7 +961,7 @@ class ManagementDnsZoneBinding(_messages.Message):
     name: Output only. The resource name of this binding. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
     state: Output only. The state of the resource.
     uid: Output only. System-generated unique identifier for the resource.
@@ -1282,7 +1282,7 @@ class NodeType(_messages.Message):
     name: Output only. The resource name of this node type. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-proj/locations/us-west1-a/nodeTypes/standard-72`
+      `projects/my-proj/locations/us-central1-a/nodeTypes/standard-72`
     nodeTypeId: Output only. The canonical identifier of the node type
       (corresponds to the `NodeType`). For example: standard-72.
     totalCoreCount: Output only. The total number of CPU cores in a single
@@ -1642,6 +1642,8 @@ class PrivateCloud(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. State of the resource. New values may
       be added to this enum when appropriate.
+    TypeValueValuesEnum: Optional. Type of the private cloud. Defaults to
+      STANDARD.
 
   Fields:
     createTime: Output only. Creation time of this resource.
@@ -1659,11 +1661,12 @@ class PrivateCloud(_messages.Message):
     name: Output only. The resource name of this private cloud. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
     networkConfig: Required. Network configuration of the private cloud.
     nsx: Output only. NSX appliance.
     state: Output only. State of the resource. New values may be added to this
       enum when appropriate.
+    type: Optional. Type of the private cloud. Defaults to STANDARD.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource.
     vcenter: Output only. Vcenter appliance.
@@ -1692,6 +1695,20 @@ class PrivateCloud(_messages.Message):
     DELETED = 5
     PURGING = 6
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the private cloud. Defaults to STANDARD.
+
+    Values:
+      STANDARD: Standard private is a zonal resource, with 3+ nodes. Default
+        type.
+      TIME_LIMITED: Time limited private cloud is a zonal resource, can have
+        only 1 node and has limited life span. Will be deleted after defined
+        period of time, can be converted into standard private cloud by
+        expanding it up to 3 or more nodes.
+    """
+    STANDARD = 0
+    TIME_LIMITED = 1
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
@@ -1702,9 +1719,10 @@ class PrivateCloud(_messages.Message):
   networkConfig = _messages.MessageField('NetworkConfig', 8)
   nsx = _messages.MessageField('Nsx', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  vcenter = _messages.MessageField('Vcenter', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  vcenter = _messages.MessageField('Vcenter', 14)
 
 
 class PrivateConnection(_messages.Message):
@@ -1727,7 +1745,7 @@ class PrivateConnection(_messages.Message):
     name: Output only. The resource name of the private connection. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/privateConnections/my-
+      `projects/my-project/locations/us-central1/privateConnections/my-
       connection`
     peeringId: Output only. VPC network peering id between given network VPC
       and VMwareEngineNetwork.
@@ -1758,7 +1776,7 @@ class PrivateConnection(_messages.Message):
       ` where `{project}`, `{location}` will be same as specified in private
       connection resource name and `{vmware_engine_network_id}` will be in the
       form of `{location}`-default e.g. projects/project/locations/us-
-      west1/vmwareEngineNetworks/us-west1-default.
+      central1/vmwareEngineNetworks/us-central1-default.
   """
 
   class PeeringStateValueValuesEnum(_messages.Enum):
@@ -2049,7 +2067,7 @@ class Subnet(_messages.Message):
     name: Output only. The resource name of this subnet. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/subnets/my-subnet`
     standardConfig: Output only. Whether the NSX-T configuration in the
       backend follows the standard configuration supported by Google Cloud. If
@@ -2542,7 +2560,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesCreateReque
       external access firewall rule in. Resource names are schemeless URIs
       that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-policy`
+      `projects/my-project/locations/us-central1/networkPolicies/my-policy`
     requestId: A request ID to identify requests. Specify a unique request ID
       so that if you must retry your request, the server will know to ignore
       the request if it has already been completed. The server guarantees that
@@ -2571,7 +2589,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteReque
     name: Required. The resource name of the external access firewall rule to
       delete. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-
+      `projects/my-project/locations/us-central1/networkPolicies/my-
       policy/externalAccessRules/my-rule`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -2600,7 +2618,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest(
     name: Required. The resource name of the external access firewall rule to
       retrieve. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-
+      `projects/my-project/locations/us-central1/networkPolicies/my-
       policy/externalAccessRules/my-rule`
   """
 
@@ -2642,7 +2660,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest
       external access firewall rules. Resource names are schemeless URIs that
       follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-policy`
+      `projects/my-project/locations/us-central1/networkPolicies/my-policy`
   """
 
   filter = _messages.StringField(1)
@@ -2663,7 +2681,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchReques
     name: Output only. The resource name of this external access rule.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-
+      `projects/my-project/locations/us-central1/networkPolicies/my-
       policy/externalAccessRules/my-rule`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -2700,7 +2718,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest(
       for assigned external IP addresses. Resource names are schemeless URIs
       that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/networkPolicies/my-policy`
+      `projects/my-project/locations/us-central1/networkPolicies/my-policy`
     pageSize: The maximum number of external IP addresses to return in one
       page. The service may return fewer than this value. The maximum value is
       coerced to 1000. The default value of this field is 500.
@@ -2813,7 +2831,7 @@ class VmwareengineProjectsLocationsNodeTypesGetRequest(_messages.Message):
     name: Required. The resource name of the node type to retrieve. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-proj/locations/us-west1-a/nodeTypes/standard-72`
+      `projects/my-proj/locations/us-central1-a/nodeTypes/standard-72`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2845,7 +2863,7 @@ class VmwareengineProjectsLocationsNodeTypesListRequest(_messages.Message):
     parent: Required. The resource name of the location to be queried for node
       types. Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a`
+      `projects/my-project/locations/us-central1-a`
   """
 
   filter = _messages.StringField(1)
@@ -2906,7 +2924,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.
     parent: Required. The resource name of the private cloud to create a new
       cluster in. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/us-west1-a/privateClouds/my-
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud`
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
@@ -2930,7 +2948,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.
     name: Required. The resource name of the cluster to delete. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/clusters/my-cluster`
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
@@ -2975,7 +2993,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersGetRequest(_messages.Mes
     name: Required. The cluster resource name to retrieve. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/clusters/my-cluster`
   """
 
@@ -3007,7 +3025,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
     parent: Required. The resource name of the private cloud to query for
       clusters. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
   """
 
   filter = _messages.StringField(1)
@@ -3025,7 +3043,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(_messages.M
     name: Output only. The resource name of this cluster. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/clusters/my-cluster`
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
@@ -3088,7 +3106,7 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
     parent: Required. The resource name of the location to create the new
       private cloud in. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/us-west1-a`
+      example: `projects/my-project/locations/us-central1-a`
     privateCloud: A PrivateCloud resource to be passed as the request body.
     privateCloudId: Required. The user-provided identifier of the private
       cloud to be created. This identifier must be unique among each
@@ -3132,7 +3150,7 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
     name: Required. The resource name of the private cloud to delete. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -3163,8 +3181,8 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesCreateRequest(_
     parent: Required. The resource name of the private cloud to create a new
       external IP address in. Resource names are schemeless URIs that follow
       the conventions in https://cloud.google.com/apis/design/resource_names.
-      For example: `projects/my-project/locations/us-west1-a/privateClouds/my-
-      cloud`
+      For example: `projects/my-project/locations/us-
+      central1-a/privateClouds/my-cloud`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server
@@ -3194,7 +3212,7 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesDeleteRequest(_
     name: Required. The resource name of the external IP address to delete.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/externalAddresses/my-ip`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -3222,7 +3240,7 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesGetRequest(_mes
     name: Required. The resource name of the external IP address to retrieve.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/externalAddresses/my-ip`
   """
 
@@ -3261,8 +3279,8 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest(_me
     parent: Required. The resource name of the private cloud to be queried for
       external IP addresses. Resource names are schemeless URIs that follow
       the conventions in https://cloud.google.com/apis/design/resource_names.
-      For example: `projects/my-project/locations/us-west1-a/privateClouds/my-
-      cloud`
+      For example: `projects/my-project/locations/us-
+      central1-a/privateClouds/my-cloud`
   """
 
   filter = _messages.StringField(1)
@@ -3283,7 +3301,7 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest(_m
     name: Output only. The resource name of this external IP address. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/externalAddresses/my-address`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -3343,7 +3361,7 @@ class VmwareengineProjectsLocationsPrivateCloudsGetRequest(_messages.Message):
     name: Required. The resource name of the private cloud to retrieve.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
   """
 
   name = _messages.StringField(1, required=True)
@@ -3423,7 +3441,7 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetRequest(_mes
     name: Required. The resource name of the HCX activation key to retrieve.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/privateClouds/my-
+      `projects/my-project/locations/us-central1/privateClouds/my-
       cloud/hcxActivationKeys/my-key`
   """
 
@@ -3522,7 +3540,7 @@ class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
     parent: Required. The resource name of the private cloud to be queried for
       clusters. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a`
+      `projects/my-project/locations/us-central1-a`
   """
 
   filter = _messages.StringField(1)
@@ -3551,7 +3569,7 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsCreateR
       management DNS zone binding for. Resource names are schemeless URIs that
       follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server
@@ -3580,7 +3598,7 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsDeleteR
     name: Required. The resource name of the management DNS zone binding to
       delete. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -3608,7 +3626,7 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsGetRequ
     name: Required. The resource name of the management DNS zone binding to
       retrieve. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
   """
 
@@ -3651,7 +3669,7 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsListReq
       management DNS zone bindings. Resource names are schemeless URIs that
       follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
   """
 
   filter = _messages.StringField(1)
@@ -3671,7 +3689,7 @@ class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsPatchRe
     name: Output only. The resource name of this binding. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/managementDnsZoneBindings/my-management-dns-zone-binding`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -3705,7 +3723,7 @@ class VmwareengineProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):
     name: Output only. The resource name of this private cloud. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
     privateCloud: A PrivateCloud resource to be passed as the request body.
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
@@ -3731,7 +3749,7 @@ class VmwareengineProjectsLocationsPrivateCloudsResetNsxCredentialsRequest(_mess
     privateCloud: Required. The resource name of the private cloud to reset
       credentials for. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/us-west1-a/privateClouds/my-
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud`
     resetNsxCredentialsRequest: A ResetNsxCredentialsRequest resource to be
       passed as the request body.
@@ -3750,7 +3768,7 @@ class VmwareengineProjectsLocationsPrivateCloudsResetVcenterCredentialsRequest(_
     privateCloud: Required. The resource name of the private cloud to reset
       credentials for. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/us-west1-a/privateClouds/my-
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud`
     resetVcenterCredentialsRequest: A ResetVcenterCredentialsRequest resource
       to be passed as the request body.
@@ -3784,8 +3802,8 @@ class VmwareengineProjectsLocationsPrivateCloudsShowNsxCredentialsRequest(_messa
     privateCloud: Required. The resource name of the private cloud to be
       queried for credentials. Resource names are schemeless URIs that follow
       the conventions in https://cloud.google.com/apis/design/resource_names.
-      For example: `projects/my-project/locations/us-west1-a/privateClouds/my-
-      cloud`
+      For example: `projects/my-project/locations/us-
+      central1-a/privateClouds/my-cloud`
   """
 
   privateCloud = _messages.StringField(1, required=True)
@@ -3800,8 +3818,8 @@ class VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(_m
     privateCloud: Required. The resource name of the private cloud to be
       queried for credentials. Resource names are schemeless URIs that follow
       the conventions in https://cloud.google.com/apis/design/resource_names.
-      For example: `projects/my-project/locations/us-west1-a/privateClouds/my-
-      cloud`
+      For example: `projects/my-project/locations/us-
+      central1-a/privateClouds/my-cloud`
   """
 
   privateCloud = _messages.StringField(1, required=True)
@@ -3814,7 +3832,7 @@ class VmwareengineProjectsLocationsPrivateCloudsSubnetsGetRequest(_messages.Mess
     name: Required. The resource name of the subnet to retrieve. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/subnets/my-subnet`
   """
 
@@ -3852,7 +3870,7 @@ class VmwareengineProjectsLocationsPrivateCloudsSubnetsListRequest(_messages.Mes
     parent: Required. The resource name of the private cloud to be queried for
       subnets. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
   """
 
   filter = _messages.StringField(1)
@@ -3869,7 +3887,7 @@ class VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest(_messages.Me
     name: Output only. The resource name of this subnet. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/subnets/my-subnet`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -3921,7 +3939,7 @@ class VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(_messages.Messag
     name: Required. The resource name of the private cloud scheduled for
       deletion. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+      `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
     undeletePrivateCloudRequest: A UndeletePrivateCloudRequest resource to be
       passed as the request body.
   """
@@ -3938,7 +3956,7 @@ class VmwareengineProjectsLocationsPrivateConnectionsCreateRequest(_messages.Mes
       private connection in. Private connection is a regional resource.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1`
+      `projects/my-project/locations/us-central1`
     privateConnection: A PrivateConnection resource to be passed as the
       request body.
     privateConnectionId: Required. The user-provided identifier of the new
@@ -3976,7 +3994,7 @@ class VmwareengineProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Mes
     name: Required. The resource name of the private connection to be deleted.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/privateConnections/my-
+      `projects/my-project/locations/us-central1/privateConnections/my-
       connection`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -4003,7 +4021,7 @@ class VmwareengineProjectsLocationsPrivateConnectionsGetRequest(_messages.Messag
     name: Required. The resource name of the private connection to retrieve.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/privateConnections/my-
+      `projects/my-project/locations/us-central1/privateConnections/my-
       connection`
   """
 
@@ -4042,7 +4060,7 @@ class VmwareengineProjectsLocationsPrivateConnectionsListRequest(_messages.Messa
     parent: Required. The resource name of the location to query for private
       connections. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/us-west1`
+      example: `projects/my-project/locations/us-central1`
   """
 
   filter = _messages.StringField(1)
@@ -4059,7 +4077,7 @@ class VmwareengineProjectsLocationsPrivateConnectionsPatchRequest(_messages.Mess
     name: Output only. The resource name of the private connection. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/us-west1/privateConnections/my-
+      `projects/my-project/locations/us-central1/privateConnections/my-
       connection`
     privateConnection: A PrivateConnection resource to be passed as the
       request body.
@@ -4144,7 +4162,7 @@ class VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest(_messages.M
       in the name URI. The identifier must meet the following requirements: *
       For networks of type LEGACY, adheres to the format: `{region-
       id}-default`. Replace `{region-id}` with the region where you want to
-      create the VMware Engine network. For example, "us-west1-default". *
+      create the VMware Engine network. For example, "us-central1-default". *
       Only contains 1-63 alphanumeric characters and hyphens * Begins with an
       alphabetical character * Ends with a non-hyphen character * Not
       formatted as a UUID * Complies with [RFC

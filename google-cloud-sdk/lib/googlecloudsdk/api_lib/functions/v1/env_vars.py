@@ -38,7 +38,9 @@ def DictToEnvVarsProperty(env_vars_type_class=None, env_vars=None):
   """
   if not env_vars_type_class or not env_vars:
     return None
-  return env_vars_type_class(additionalProperties=[
-      env_vars_type_class.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(env_vars.items())
-  ])
+  return env_vars_type_class(
+      additionalProperties=[
+          env_vars_type_class.AdditionalProperty(key=key, value=value)
+          for key, value in sorted(env_vars.items())
+      ]
+  )

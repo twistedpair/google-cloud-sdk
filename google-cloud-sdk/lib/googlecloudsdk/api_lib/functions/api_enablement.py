@@ -33,5 +33,6 @@ def PromptToEnableApiIfDisabled(service_name):
   """
   project_id = properties.VALUES.core.project.GetOrFail()
   if console_io.CanPrompt() and not enable_api.IsServiceEnabled(
-      project_id, service_name):
+      project_id, service_name
+  ):
     api_enablement.PromptToEnableApi(project_id, service_name)

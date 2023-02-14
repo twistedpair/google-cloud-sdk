@@ -101,6 +101,7 @@ class BareMetalAdminCluster(_messages.Message):
     networkConfig: Network configuration.
     nodeAccessConfig: Node access related configurations.
     nodeConfig: Workload node configuration.
+    osEnvironmentConfig: OS environment related configurations.
     proxy: Proxy configuration.
     reconciling: Output only. If set, there are currently changes in flight to
       the bare metal Admin Cluster.
@@ -190,15 +191,16 @@ class BareMetalAdminCluster(_messages.Message):
   networkConfig = _messages.MessageField('BareMetalAdminNetworkConfig', 16)
   nodeAccessConfig = _messages.MessageField('BareMetalAdminNodeAccessConfig', 17)
   nodeConfig = _messages.MessageField('BareMetalAdminWorkloadNodeConfig', 18)
-  proxy = _messages.MessageField('BareMetalAdminProxyConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  securityConfig = _messages.MessageField('BareMetalAdminSecurityConfig', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  status = _messages.MessageField('ResourceStatus', 23)
-  storage = _messages.MessageField('BareMetalAdminStorageConfig', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  validationCheck = _messages.MessageField('ValidationCheck', 27)
+  osEnvironmentConfig = _messages.MessageField('BareMetalAdminOsEnvironmentConfig', 19)
+  proxy = _messages.MessageField('BareMetalAdminProxyConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  securityConfig = _messages.MessageField('BareMetalAdminSecurityConfig', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  status = _messages.MessageField('ResourceStatus', 24)
+  storage = _messages.MessageField('BareMetalAdminStorageConfig', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  validationCheck = _messages.MessageField('ValidationCheck', 28)
 
 
 class BareMetalAdminClusterOperationsConfig(_messages.Message):
@@ -375,6 +377,17 @@ class BareMetalAdminNodeAccessConfig(_messages.Message):
   loginUser = _messages.StringField(1)
 
 
+class BareMetalAdminOsEnvironmentConfig(_messages.Message):
+  r"""Specifies operating system operation settings for cluster provisioning.
+
+  Fields:
+    packageRepoExcluded: Whether the package repo should be added when
+      initializing bare metal machines.
+  """
+
+  packageRepoExcluded = _messages.BooleanField(1)
+
+
 class BareMetalAdminPortConfig(_messages.Message):
   r"""BareMetalAdminPortConfig is the specification of load balancer ports.
 
@@ -535,6 +548,7 @@ class BareMetalCluster(_messages.Message):
     networkConfig: Required. Network configuration.
     nodeAccessConfig: Node access related configurations.
     nodeConfig: Workload node configuration.
+    osEnvironmentConfig: OS environment related configurations.
     proxy: Proxy configuration.
     reconciling: Output only. If set, there are currently changes in flight to
       the bare metal user cluster.
@@ -625,15 +639,16 @@ class BareMetalCluster(_messages.Message):
   networkConfig = _messages.MessageField('BareMetalNetworkConfig', 18)
   nodeAccessConfig = _messages.MessageField('BareMetalNodeAccessConfig', 19)
   nodeConfig = _messages.MessageField('BareMetalWorkloadNodeConfig', 20)
-  proxy = _messages.MessageField('BareMetalProxyConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  status = _messages.MessageField('ResourceStatus', 25)
-  storage = _messages.MessageField('BareMetalStorageConfig', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
-  validationCheck = _messages.MessageField('ValidationCheck', 29)
+  osEnvironmentConfig = _messages.MessageField('BareMetalOsEnvironmentConfig', 21)
+  proxy = _messages.MessageField('BareMetalProxyConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  securityConfig = _messages.MessageField('BareMetalSecurityConfig', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  status = _messages.MessageField('ResourceStatus', 26)
+  storage = _messages.MessageField('BareMetalStorageConfig', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  validationCheck = _messages.MessageField('ValidationCheck', 30)
 
 
 class BareMetalClusterOperationsConfig(_messages.Message):
@@ -855,6 +870,10 @@ class BareMetalNetworkConfig(_messages.Message):
   r"""Specifies the cluster network configuration.
 
   Fields:
+    advancedNetworking: Enables the use of advanced Anthos networking
+      features, such as Bundled Load Balancing with BGP or the egress NAT
+      gateway. Setting configuration for advanced networking features will
+      automatically set this flag.
     islandModeCidr: Configuration for island mode CIDR. In an island-mode
       network, nodes have unique IP addresses, but pods don't have unique
       addresses across clusters. This doesn't cause problems because pods in
@@ -863,7 +882,8 @@ class BareMetalNetworkConfig(_messages.Message):
       and a pod in another cluster.
   """
 
-  islandModeCidr = _messages.MessageField('BareMetalIslandModeCidrConfig', 1)
+  advancedNetworking = _messages.BooleanField(1)
+  islandModeCidr = _messages.MessageField('BareMetalIslandModeCidrConfig', 2)
 
 
 class BareMetalNodeAccessConfig(_messages.Message):
@@ -1113,6 +1133,17 @@ class BareMetalNodePoolConfig(_messages.Message):
   nodeConfigs = _messages.MessageField('BareMetalNodeConfig', 2, repeated=True)
   operatingSystem = _messages.EnumField('OperatingSystemValueValuesEnum', 3)
   taints = _messages.MessageField('NodeTaint', 4, repeated=True)
+
+
+class BareMetalOsEnvironmentConfig(_messages.Message):
+  r"""Specifies operating system settings for cluster provisioning.
+
+  Fields:
+    packageRepoExcluded: Whether the package repo should not be included when
+      initializing bare metal machines.
+  """
+
+  packageRepoExcluded = _messages.BooleanField(1)
 
 
 class BareMetalPortConfig(_messages.Message):

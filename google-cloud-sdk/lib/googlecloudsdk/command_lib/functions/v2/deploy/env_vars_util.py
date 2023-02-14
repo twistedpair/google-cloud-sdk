@@ -27,6 +27,7 @@ def EnvVarKeyType(key):
 
   Args:
     key: The environment variable key.
+
   Returns:
     The environment variable key.
   Raises:
@@ -34,14 +35,17 @@ def EnvVarKeyType(key):
   """
   if not key:
     raise argparse.ArgumentTypeError(
-        'Environment variable keys cannot be empty.')
+        'Environment variable keys cannot be empty.'
+    )
   if key.startswith('X_GOOGLE_'):
     raise argparse.ArgumentTypeError(
         'Environment variable keys that start with `X_GOOGLE_` are reserved '
-        'for use by deployment tools and cannot be specified manually.')
+        'for use by deployment tools and cannot be specified manually.'
+    )
   if '=' in key:
     raise argparse.ArgumentTypeError(
-        'Environment variable keys cannot contain `=`.')
+        'Environment variable keys cannot contain `=`.'
+    )
   return key
 
 
@@ -56,8 +60,12 @@ def AddUpdateEnvVarsFlags(parser):
     parser: The argument parser.
   """
   map_util.AddUpdateMapFlags(
-      parser, 'env-vars', long_name='environment variables',
-      key_type=EnvVarKeyType, value_type=EnvVarValueType)
+      parser,
+      'env-vars',
+      long_name='environment variables',
+      key_type=EnvVarKeyType,
+      value_type=EnvVarValueType,
+  )
 
 
 def BuildEnvVarKeyType(key):
@@ -75,12 +83,15 @@ def BuildEnvVarKeyType(key):
     ArgumentTypeError: If the key is not valid.
   """
   if key in [
-      'GOOGLE_ENTRYPOINT', 'GOOGLE_FUNCTION_TARGET', 'GOOGLE_RUNTIME',
-      'GOOGLE_RUNTIME_VERSION'
+      'GOOGLE_ENTRYPOINT',
+      'GOOGLE_FUNCTION_TARGET',
+      'GOOGLE_RUNTIME',
+      'GOOGLE_RUNTIME_VERSION',
   ]:
     raise argparse.ArgumentTypeError(
         '{} is reserved for internal use by GCF deployments and cannot be used.'
-        .format(key))
+        .format(key)
+    )
   return EnvVarKeyType(key)
 
 
@@ -99,4 +110,5 @@ def AddBuildEnvVarsFlags(parser):
       'build-env-vars',
       long_name='build environment variables',
       key_type=BuildEnvVarKeyType,
-      value_type=BuildEnvVarValueType)
+      value_type=BuildEnvVarValueType,
+  )

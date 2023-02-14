@@ -28,6 +28,7 @@ properties:
   avroFileFormat:
     description: AVRO file format configuration.
     type: avrofileformat
+    $ref: AvroFileFormat.yaml
   fileRotationInterval:
     description: |-
       The maximum duration for which new events are added before a file is

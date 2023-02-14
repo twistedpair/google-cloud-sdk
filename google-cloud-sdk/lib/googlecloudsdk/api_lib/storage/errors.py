@@ -32,6 +32,14 @@ from six.moves import urllib
 OBJECT_RESOURCE_PATH_PATTERN = re.compile(
     r'b/(?P<bucket>.*)/o/(?P<object>.*?)(\?|$)')
 
+# This regex matches all possible resource paths for a bucket resource that have
+# a bucket name as path parameter.
+# To see a complete list, check the following list:
+# https://cloud.google.com/storage/docs/json_api/v1#buckets
+BUCKET_RESOURCE_PATH_PATTERN = re.compile(
+    r'^b/(?P<bucket>[a-z0-9\-_\.]+)(/)?(iam|channels|lockRetentionPolicy|'
+    r'iam/testPermissions)?(\?|$)')
+
 
 class CloudApiError(core_exceptions.Error):
   pass
@@ -70,30 +78,76 @@ class GcsNotFoundError(GcsApiError, NotFoundError):
   def __init__(self, error, *args, **kwargs):
     del args, kwargs  # Unused.
     super(GcsNotFoundError, self).__init__(
+        error,
         # status_code should be 404, but it's better to rely on the code
         # present in the error message, just in case this class is used
         # incorrectly for a different error.
-        error, error_format='gs://{instance_name} not found: {status_code}.')
-
+        # gcloud uses different format based on the number of path
+        # components present in resource_path after splitting on "/".
+        # To avoid this inconsistency, we set the error_format string
+        # explicitly.
+        error_format='HTTPError {status_code}: {status_message}')
     if not error.url:
       return
 
+    custom_error_format_for_buckets_and_objects = (
+        'gs://{instance_name} not found: {status_code}.')
     # Parsing 'instance_name' here because it is not parsed correctly
     # by gcloud's exceptions.py module. See b/225168232.
     _, _, resource_path = resource.SplitDefaultEndpointUrl(error.url)
     # For an object, resource_path will be of the form b/bucket/o/object
-    match = OBJECT_RESOURCE_PATH_PATTERN.search(resource_path)
-    if match:
-      params = urllib.parse.parse_qs(resource_path)
-      if 'generation' in params:
-        generation_string = '#' + params['generation'][0]
-      else:
-        # Ideally, a generation is always present for an object, but this is
-        # just a safeguard against unexpected formats.
-        generation_string = ''
-      # Overwrite the instance_name field if it is a GCS object.
-      self.payload.instance_name = '{}/{}{}'.format(
-          match.group('bucket'), match.group('object'), generation_string)
+    match_object_resource_path = OBJECT_RESOURCE_PATH_PATTERN.search(
+        resource_path)
+    if match_object_resource_path:
+      self._custom_format_object_error(
+          match_object_resource_path,
+          custom_error_format_for_buckets_and_objects)
+      return
+
+    match_bucket_resource_path = BUCKET_RESOURCE_PATH_PATTERN.search(
+        resource_path)
+    if match_bucket_resource_path:
+      self._custom_format_bucket_error(
+          match_bucket_resource_path,
+          custom_error_format_for_buckets_and_objects)
+
+  def _custom_format_bucket_error(self, match_bucket_resource_path,
+                                  error_format):
+    """Sets custom error formatting for buckets resource paths.
+
+    Args:
+      match_bucket_resource_path (re.Match): Match object that contains the
+        result of searching regex BUCKET_RESOURCE_PATH_PATTERN in a resource
+        path.
+      error_format (str): Custom error format for buckets.
+    """
+    self.error_format = error_format
+    self.payload.instance_name = match_bucket_resource_path.group('bucket')
+
+  def _custom_format_object_error(self, match_object_resource_path,
+                                  error_format):
+    """Sets custom error formatting for object resource paths.
+
+    Args:
+      match_object_resource_path (re.Match): Match object
+        that contains the result of searching regex OBJECT_RESOURCE_PATH_PATTERN
+        in a resource path.
+      error_format (str): Custom error format for objects.
+    """
+    resource_path = match_object_resource_path.string
+    params = urllib.parse.parse_qs(resource_path)
+    if 'generation' in params:
+      generation_string = '#' + params['generation'][0]
+    else:
+      # Ideally, a generation is always present for an object, but this is
+      # just a safeguard against unexpected formats.
+      generation_string = ''
+
+    self.error_format = error_format
+    # Overwrite the instance_name field if it is a GCS object.
+    self.payload.instance_name = '{}/{}{}'.format(
+        match_object_resource_path.group('bucket'),
+        match_object_resource_path.group('object'), generation_string)
 
 
 class S3ErrorPayload(api_exceptions.FormattableErrorPayload):

@@ -26,6 +26,8 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 
+_DEFAULT_API_VERSION = 'v1'
+
 
 def GetStreamURI(resource):
   stream = resources.REGISTRY.ParseRelativeName(
@@ -61,6 +63,21 @@ class StreamsClient:
 
   def _ParseOracleSourceConfig(self, oracle_source_config_file, release_track):
     """Parses a oracle_sorce_config into the OracleSourceConfig message."""
+    if release_track == base.ReleaseTrack.BETA:
+      return self._ParseOracleSourceConfigBeta(
+          oracle_source_config_file, release_track
+      )
+
+    return util.ParseMessageAndValidateSchema(
+        oracle_source_config_file,
+        'OracleSourceConfig',
+        self._messages.OracleSourceConfig,
+    )
+
+  def _ParseOracleSourceConfigBeta(
+      self, oracle_source_config_file, release_track
+  ):
+    """Parses a oracle_sorce_config into the OracleSourceConfig message."""
     data = console_io.ReadFromFileOrStdin(
         oracle_source_config_file, binary=False)
     try:
@@ -69,8 +86,13 @@ class StreamsClient:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     oracle_sorce_config_data_object = oracle_source_config_head_data.get(
-        'oracle_source_config')
-    oracle_source_config = oracle_sorce_config_data_object if oracle_sorce_config_data_object else oracle_source_config_head_data
+        'oracle_source_config'
+    )
+    oracle_source_config = (
+        oracle_sorce_config_data_object
+        if oracle_sorce_config_data_object
+        else oracle_source_config_head_data
+    )
 
     include_objects_raw = oracle_source_config.get(
         util.GetRDBMSV1alpha1ToV1FieldName('include_objects', release_track),
@@ -97,6 +119,21 @@ class StreamsClient:
 
   def _ParseMysqlSourceConfig(self, mysql_source_config_file, release_track):
     """Parses a mysql_sorce_config into the MysqlSourceConfig message."""
+    if release_track == base.ReleaseTrack.BETA:
+      return self._ParseMysqlSourceConfigBeta(
+          mysql_source_config_file, release_track
+      )
+
+    return util.ParseMessageAndValidateSchema(
+        mysql_source_config_file,
+        'MysqlSourceConfig',
+        self._messages.MysqlSourceConfig,
+    )
+
+  def _ParseMysqlSourceConfigBeta(
+      self, mysql_source_config_file, release_track
+  ):
+    """Parses an old mysql_sorce_config into the MysqlSourceConfig message."""
     data = console_io.ReadFromFileOrStdin(
         mysql_source_config_file, binary=False)
     try:
@@ -105,8 +142,13 @@ class StreamsClient:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     mysql_sorce_config_data_object = mysql_sorce_config_head_data.get(
-        'mysql_source_config')
-    mysql_source_config = mysql_sorce_config_data_object if mysql_sorce_config_data_object else mysql_sorce_config_head_data
+        'mysql_source_config'
+    )
+    mysql_source_config = (
+        mysql_sorce_config_data_object
+        if mysql_sorce_config_data_object
+        else mysql_sorce_config_head_data
+    )
 
     include_objects_raw = mysql_source_config.get(
         util.GetRDBMSV1alpha1ToV1FieldName('include_objects', release_track),
@@ -132,36 +174,29 @@ class StreamsClient:
     return mysql_sourec_config_msg
 
   def _ParsePostgresqlSourceConfig(self, postgresql_source_config_file):
-    """Parses a postgresql_source_config into the PostgresqlSourceConfig message."""
-    data = console_io.ReadFromFileOrStdin(
-        postgresql_source_config_file, binary=False)
-    try:
-      postgresql_source_config_head_data = yaml.load(data)
-    except yaml.YAMLParseError as e:
-      raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+    """Parses a postgresql_sorce_config into the PostgresqlSourceConfig message."""
 
-    postgresql_sorce_config_data_object = postgresql_source_config_head_data.get(
-        'postgresql_source_config')
-    postgresql_source_config_data = postgresql_sorce_config_data_object if postgresql_sorce_config_data_object else postgresql_source_config_head_data
-    include_objects_raw = postgresql_source_config_data.get('include_objects')
-    include_objects_data = util.ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
-        self._messages, include_objects_raw)
+    return util.ParseMessageAndValidateSchema(
+        postgresql_source_config_file,
+        'PostgresqlSourceConfig',
+        self._messages.PostgresqlSourceConfig,
+    )
 
-    exclude_objects_raw = postgresql_source_config_data.get('exclude_objects')
-    exclude_objects_data = util.ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
-        self._messages, exclude_objects_raw)
+  def _ParseGcsDestinationConfig(
+      self, gcs_destination_config_file, release_track
+  ):
+    """Parses a GcsDestinationConfig into the GcsDestinationConfig message."""
 
-    replication_slot = postgresql_source_config_data.get('replication_slot')
-    publication = postgresql_source_config_data.get('publication')
+    if release_track == base.ReleaseTrack.BETA:
+      return self._ParseGcsDestinationConfigBeta(gcs_destination_config_file)
 
-    postgresql_source_config_msg = self._messages.PostgresqlSourceConfig(
-        includeObjects=include_objects_data,
-        excludeObjects=exclude_objects_data,
-        replicationSlot=replication_slot,
-        publication=publication)
-    return postgresql_source_config_msg
+    return util.ParseMessageAndValidateSchema(
+        gcs_destination_config_file,
+        'GcsDestinationConfig',
+        self._messages.GcsDestinationConfig,
+    )
 
-  def _ParseGcsDestinationConfig(self, gcs_destination_config_file):
+  def _ParseGcsDestinationConfigBeta(self, gcs_destination_config_file):
     """Parses a gcs_destination_config into the GcsDestinationConfig message."""
     data = console_io.ReadFromFileOrStdin(
         gcs_destination_config_file, binary=False)
@@ -171,8 +206,13 @@ class StreamsClient:
       raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
 
     gcs_destination_config_data_object = gcs_destination_head_config_data.get(
-        'gcs_destination_config')
-    gcs_destination_config_data = gcs_destination_config_data_object if gcs_destination_config_data_object else gcs_destination_head_config_data
+        'gcs_destination_config'
+    )
+    gcs_destination_config_data = (
+        gcs_destination_config_data_object
+        if gcs_destination_config_data_object
+        else gcs_destination_head_config_data
+    )
 
     path = gcs_destination_config_data.get('path', '')
     file_rotation_mb = gcs_destination_config_data.get('file_rotation_mb', {})
@@ -195,49 +235,12 @@ class StreamsClient:
     return gcs_dest_config_msg
 
   def _ParseBigqueryDestinationConfig(self, config_file):
-    """Parses a bigquery_destination_config into the BigQueryDestinationConfig message."""
-    data = console_io.ReadFromFileOrStdin(config_file, binary=False)
-    try:
-      head_config_data = yaml.load(data)
-    except yaml.YAMLParseError as e:
-      raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
-
-    config_data_object = head_config_data.get('bigquery_destination_config')
-    config_data = config_data_object if config_data_object else head_config_data
-
-    config_msg = self._messages.BigQueryDestinationConfig()
-
-    if 'data_freshness' not in config_data:
-      raise ds_exceptions.ParseError(
-          'Cannot parse YAML: missing data_freshness.')
-    config_msg.dataFreshness = config_data.get('data_freshness')
-
-    if 'single_target_dataset' in config_data:
-      single_target_data = config_data.get('single_target_dataset')
-      config_msg.singleTargetDataset = self._messages.SingleTargetDataset(
-          datasetId=single_target_data.get('dataset_id'))
-    elif 'source_hierarchy_datasets' in config_data:
-      source_hierarchy_data = config_data.get('source_hierarchy_datasets')
-      if 'dataset_template' in source_hierarchy_data:
-        dataset_template_data = source_hierarchy_data.get('dataset_template')
-        if 'location' not in dataset_template_data:
-          raise ds_exceptions.ParseError(
-              'Cannot parse YAML: missing source_hierarchy_datasets.' +
-              'dataset_template.location')
-        location = dataset_template_data.get('location')
-        template = self._messages.DatasetTemplate(location=location)
-        if 'dataset_id_prefix' in dataset_template_data:
-          template.datasetIdPrefix = dataset_template_data.get(
-              'dataset_id_prefix')
-        if 'kms_key_name' in dataset_template_data:
-          template.kmsKeyName = dataset_template_data.get('kms_key_name')
-        config_msg.sourceHierarchyDatasets = self._messages.SourceHierarchyDatasets(
-            datasetTemplate=template)
-    else:
-      raise ds_exceptions.ParseError(
-          'Cannot parse YAML: must specific either source_hierarchy_datasets' +
-          ' or single_target_dataset.')
-    return config_msg
+    """Parses a BigQueryDestinationConfig into the BigQueryDestinationConfig message."""
+    return util.ParseMessageAndValidateSchema(
+        config_file,
+        'BigQueryDestinationConfig',
+        self._messages.BigQueryDestinationConfig,
+    )
 
   def _GetStream(self, stream_id, release_track, args):
     """Returns a stream object."""
@@ -262,8 +265,9 @@ class StreamsClient:
       stream_source_config.mysqlSourceConfig = self._ParseMysqlSourceConfig(
           args.mysql_source_config, release_track)
     elif args.postgresql_source_config:
-      stream_source_config.postgresqlSourceConfig = self._ParsePostgresqlSourceConfig(
-          args.postgresql_source_config)
+      stream_source_config.postgresqlSourceConfig = (
+          self._ParsePostgresqlSourceConfig(args.postgresql_source_config)
+      )
     stream_obj.sourceConfig = stream_source_config
 
     # TODO(b/207467120): use CONCEPTS.destination only.
@@ -278,7 +282,10 @@ class StreamsClient:
         destination_connection_profile_ref.RelativeName())
     if args.gcs_destination_config:
       stream_destination_config.gcsDestinationConfig = (
-          self._ParseGcsDestinationConfig(args.gcs_destination_config))
+          self._ParseGcsDestinationConfig(
+              args.gcs_destination_config, release_track
+          )
+      )
     elif args.bigquery_destination_config:
       stream_destination_config.bigqueryDestinationConfig = (
           self._ParseBigqueryDestinationConfig(
@@ -370,8 +377,9 @@ class StreamsClient:
           update_fields, 'mysql_source_config', 'source_config.')
 
     elif args.IsSpecified('postgresql_source_config'):
-      stream.sourceConfig.postgresqlSourceConfig = self._ParsePostgresqlSourceConfig(
-          args.postgresql_source_config)
+      stream.sourceConfig.postgresqlSourceConfig = (
+          self._ParsePostgresqlSourceConfig(args.postgresql_source_config)
+      )
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'postgresql_source_config', 'source_config.')
 
@@ -393,7 +401,10 @@ class StreamsClient:
 
     if args.IsSpecified('gcs_destination_config'):
       stream.destinationConfig.gcsDestinationConfig = (
-          self._ParseGcsDestinationConfig(args.gcs_destination_config))
+          self._ParseGcsDestinationConfig(
+              args.gcs_destination_config, release_track
+          )
+      )
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'gcs_destination_config', 'destination_config.')
     elif args.IsSpecified('bigquery_destination_config'):

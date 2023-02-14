@@ -295,6 +295,33 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchDirectGroups(self, request, global_params=None):
+      r"""Searches direct groups of a member.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsSearchDirectGroupsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchDirectGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchDirectGroups')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchDirectGroups.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/groups/{groupsId}/memberships:searchDirectGroups',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.searchDirectGroups',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['orderBy', 'pageSize', 'pageToken', 'query'],
+        relative_path='v1alpha1/{+parent}/memberships:searchDirectGroups',
+        request_field='',
+        request_type_name='CloudidentityGroupsMembershipsSearchDirectGroupsRequest',
+        response_type_name='SearchDirectGroupsResponse',
+        supports_download=False,
+    )
+
     def SearchTransitiveGroups(self, request, global_params=None):
       r"""Search transitive groups of a member.
 

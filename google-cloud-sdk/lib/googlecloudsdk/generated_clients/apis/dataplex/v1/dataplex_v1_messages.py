@@ -189,11 +189,14 @@ class DataplexProjectsLocationsDataScansCreateRequest(_messages.Message):
     parent: Required. The resource name of the parent location:
       projects/{project}/locations/{location_id} where project refers to a
       project_id or project_number and location_id refers to a GCP region.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
   """
 
   dataScanId = _messages.StringField(1)
   googleCloudDataplexV1DataScan = _messages.MessageField('GoogleCloudDataplexV1DataScan', 2)
   parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsDataScansDeleteRequest(_messages.Message):
@@ -356,11 +359,14 @@ class DataplexProjectsLocationsDataScansPatchRequest(_messages.Message):
       where project refers to a project_id or project_number and location_id
       refers to a GCP region.
     updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
   """
 
   googleCloudDataplexV1DataScan = _messages.MessageField('GoogleCloudDataplexV1DataScan', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsDataScansRunRequest(_messages.Message):
@@ -2710,6 +2716,8 @@ class GoogleCloudDataplexV1AssetResourceStatus(_messages.Message):
     StateValueValuesEnum: The current state of the managed resource.
 
   Fields:
+    managedAccessIdentity: Output only. Service account associated with the
+      BigQuery Connection.
     message: Additional information about the current state.
     state: The current state of the managed resource.
     updateTime: Last update time of the status.
@@ -2727,9 +2735,10 @@ class GoogleCloudDataplexV1AssetResourceStatus(_messages.Message):
     READY = 1
     ERROR = 2
 
-  message = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  updateTime = _messages.StringField(3)
+  managedAccessIdentity = _messages.StringField(1)
+  message = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
@@ -3017,11 +3026,11 @@ class GoogleCloudDataplexV1DataAttributeBinding(_messages.Message):
     paths: Optional. The list of paths for items within the associated
       resource (eg. columns within a table) along with attribute bindings.
     resource: Optional. Immutable. The resource name of the resource that is
-      binded to attributes. Presently, only entity resource is supported in
-      the form: projects/{project}/locations/{location}/lakes/{lake}/zones/{zo
-      ne}/entities/{entity_id} Must belong in the same project and region as
-      the attribute binding, and there can only exist one active binding for a
-      resource.
+      associated to attributes. Presently, only entity resource is supported
+      in the form: projects/{project}/locations/{location}/lakes/{lake}/zones/
+      {zone}/entities/{entity_id} Must belong in the same project and region
+      as the attribute binding, and there can only exist one active binding
+      for a resource.
     uid: Output only. System generated globally unique ID for the
       DataAttributeBinding. This ID will be different if the
       DataAttributeBinding is deleted and re-created with the same name.
@@ -4300,7 +4309,7 @@ class GoogleCloudDataplexV1Environment(_messages.Message):
 
 
 class GoogleCloudDataplexV1EnvironmentEndpoints(_messages.Message):
-  r"""A GoogleCloudDataplexV1EnvironmentEndpoints object.
+  r"""URI Endpoints to access sessions associated with the Environment.
 
   Fields:
     notebooks: Output only. URI to serve notebook APIs
@@ -4398,7 +4407,7 @@ class GoogleCloudDataplexV1EnvironmentInfrastructureSpecOsImageRuntime(_messages
 
 
 class GoogleCloudDataplexV1EnvironmentSessionSpec(_messages.Message):
-  r"""A GoogleCloudDataplexV1EnvironmentSessionSpec object.
+  r"""Configuration for sessions created for this environment.
 
   Fields:
     enableFastStartup: Optional. If True, this causes sessions to be pre-
@@ -4415,7 +4424,7 @@ class GoogleCloudDataplexV1EnvironmentSessionSpec(_messages.Message):
 
 
 class GoogleCloudDataplexV1EnvironmentSessionStatus(_messages.Message):
-  r"""A GoogleCloudDataplexV1EnvironmentSessionStatus object.
+  r"""Status of sessions created for this environment.
 
   Fields:
     active: Output only. Queries over sessions to mark whether the environment
@@ -5232,19 +5241,19 @@ class GoogleCloudDataplexV1Session(_messages.Message):
   r"""Represents an active analyze session running for a user.
 
   Enums:
-    StateValueValuesEnum:
+    StateValueValuesEnum: Output only. State of Session
 
   Fields:
     createTime: Output only. Session start time.
     name: Output only. The relative resource name of the content, of the form:
       projects/{project_id}/locations/{location_id}/lakes/{lake_id}/environmen
       t/{environment_id}/sessions/{session_id}
-    state: A StateValueValuesEnum attribute.
+    state: Output only. State of Session
     userId: Output only. Email of user running the session.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""StateValueValuesEnum enum type.
+    r"""Output only. State of Session
 
     Values:
       STATE_UNSPECIFIED: State is not specified.

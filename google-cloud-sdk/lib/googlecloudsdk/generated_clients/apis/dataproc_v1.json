@@ -1482,6 +1482,10 @@
         "gcePdKmsKeyName": {
           "description": "Optional. The Cloud KMS key name to use for PD disk encryption for all instances in the cluster.",
           "type": "string"
+        },
+        "kmsKey": {
+          "description": "Optional. The Cloud KMS key name to use for encrypting customer core content and cluster PD disk for all instances in the cluster.",
+          "type": "string"
         }
       }
     },
@@ -3259,6 +3263,20 @@
       "description": "Jupyter configuration for an interactive session.",
       "type": "object",
       "properties": {
+        "kernel": {
+          "description": "Optional. Kernel",
+          "type": "string",
+          "enumDescriptions": [
+            "The kernel is unknown.",
+            "Python kernel.",
+            "Scala kernel."
+          ],
+          "enum": [
+            "KERNEL_UNSPECIFIED",
+            "PYTHON",
+            "SCALA"
+          ]
+        }
       }
     },
     "SparkConfig": {
@@ -3431,6 +3449,10 @@
           "description": "Optional. Timeout duration for the DAG of jobs, expressed in seconds (see JSON representation of duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)). The timeout duration must be from 10 minutes (\"600s\") to 24 hours (\"86400s\"). The timer begins when the first job is submitted. If the workflow is running at the end of the timeout period, any remaining jobs are cancelled, the workflow is ended, and if the workflow was running on a managed cluster, the cluster is deleted.",
           "type": "string",
           "format": "google-duration"
+        },
+        "encryptionConfig": {
+          "description": "Optional. Encryption settings for the encrypting customer core content.",
+          "$ref": "GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig"
         }
       }
     },
@@ -3620,6 +3642,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig": {
+      "id": "GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig",
+      "description": "Encryption settings for the encrypting customer core content. NEXT ID: 2",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "Optional. The Cloud KMS key name to use for encrypting customer core content.",
+          "type": "string"
         }
       }
     },
@@ -4932,7 +4965,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Optional. A filter constraining the sessions to list. Filters are case-sensitive and have the following syntax:[field = value] AND [field [= value]] ...",
+                      "description": "Optional. A filter for the sessions to return in the response.A filter is a logical expression constraining the values of various fields in each session resource. Filters are case sensitive, and may contain multiple clauses combined with logical operators (AND\/OR). Supported fields are session_id, session_uuid, state, and create_time.e.g. state = ACTIVE and create_time < \"2023-01-01T00:00:00Z\" filters for sessions in state ACTIVE that were created before 2023-01-01See https:\/\/google.aip.dev\/assets\/misc\/ebnf-filtering.txt for a detailed description of the filter syntax and a list of supported comparisons.",
                       "location": "query",
                       "type": "string"
                     },

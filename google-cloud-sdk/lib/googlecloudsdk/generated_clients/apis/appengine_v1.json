@@ -562,6 +562,10 @@
           "description": "Whether to deploy this version in a container on a virtual machine.",
           "type": "boolean"
         },
+        "flexibleRuntimeSettings": {
+          "description": "Settings for App Engine flexible runtimes.",
+          "$ref": "FlexibleRuntimeSettings"
+        },
         "appEngineApis": {
           "description": "Allows App Engine second generation runtimes to access the legacy bundled services.",
           "type": "boolean"
@@ -1004,6 +1008,21 @@
           "description": "Volume size in gigabytes.",
           "type": "number",
           "format": "double"
+        }
+      }
+    },
+    "FlexibleRuntimeSettings": {
+      "id": "FlexibleRuntimeSettings",
+      "description": "Runtime settings for the App Engine flexible environment.",
+      "type": "object",
+      "properties": {
+        "operatingSystem": {
+          "description": "The operating system of the application runtime.",
+          "type": "string"
+        },
+        "runtimeVersion": {
+          "description": "The runtime version of an App Engine flexible application.",
+          "type": "string"
         }
       }
     },

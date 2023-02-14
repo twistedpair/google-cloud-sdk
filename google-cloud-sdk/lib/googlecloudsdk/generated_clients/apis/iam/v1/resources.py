@@ -165,6 +165,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_NAMESPACES = (
+      'projects.locations.workloadIdentityPools.namespaces',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/'
+              '{namespacesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_NAMESPACES_MANAGEDIDENTITIES = (
+      'projects.locations.workloadIdentityPools.namespaces.managedIdentities',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/'
+              '{namespacesId}/managedIdentities/{managedIdentitiesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_OPERATIONS = (
       'projects.locations.workloadIdentityPools.operations',
       '{+name}',

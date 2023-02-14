@@ -257,7 +257,7 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a authorized orgs desc. The long-running operation from this RPC has a successful status after the authorized orgs desc propagates to long-lasting storage. If a authorized orgs desc contains errors, an error response is returned for the first error encountered. The name of this `AuthorizedOrgsDesc` will be assigned during creation.
+      r"""Creates an authorized orgs desc. The long-running operation from this RPC has a successful status after the authorized orgs desc propagates to long-lasting storage. If a authorized orgs desc contains errors, an error response is returned for the first error encountered. The name of this `AuthorizedOrgsDesc` will be assigned during creation.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsCreateRequest) input message
@@ -284,7 +284,7 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a authorized orgs desc based on the resource name. The long-running operation from this RPC has a successful status after the authorized orgs desc is removed from long-lasting storage.
+      r"""Deletes an authorized orgs desc based on the resource name. The long-running operation from this RPC has a successful status after the authorized orgs desc is removed from long-lasting storage.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsDeleteRequest) input message
@@ -311,7 +311,7 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a authorized orgs desc based on the resource name.
+      r"""Gets an authorized orgs desc based on the resource name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsGetRequest) input message
@@ -365,7 +365,7 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a authorized orgs desc. The long-running operation from this RPC has a successful status after the authorized orgs desc propagates to long-lasting storage. If a authorized orgs desc contains errors, an error response is returned for the first error encountered. Only the organization list in `AuthorizedOrgsDesc` can be updated. The name, authorization_type, asset_type and authorization_direction cannot be updated.
+      r"""Updates an authorized orgs desc. The long-running operation from this RPC has a successful status after the authorized orgs desc propagates to long-lasting storage. If a authorized orgs desc contains errors, an error response is returned for the first error encountered. Only the organization list in `AuthorizedOrgsDesc` can be updated. The name, authorization_type, asset_type and authorization_direction cannot be updated.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsPatchRequest) input message

@@ -1870,16 +1870,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.gkebackup.v1alpha1',
-                    client_classpath='gkebackup_v1alpha1_client.GkebackupV1alpha1',
-                    base_url='https://gkebackup.googleapis.com/',
-                    messages_modulepath='gkebackup_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
     },
     'gkehub': {
         'v1':

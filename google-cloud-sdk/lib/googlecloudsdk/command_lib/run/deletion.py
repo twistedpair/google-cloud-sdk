@@ -34,7 +34,7 @@ class DeletionPoller(waiter.OperationPoller):
     self._ret = None
 
   def IsDone(self, obj):
-    return obj is None or obj.conditions.IsTerminal()
+    return obj is None or obj.conditions.IsFailed()
 
   def Poll(self, ref):
     try:

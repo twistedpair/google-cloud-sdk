@@ -41,12 +41,18 @@ def ParseClusterResourceRestoreScope(cluster_resource_restore_scope):
   message = api_util.GetMessagesModule()
   crrs = message.ClusterResourceRestoreScope()
   try:
-    for group_kind in cluster_resource_restore_scope:
-      group, kind = group_kind.split('/')
-      if not group:
+    for resource in cluster_resource_restore_scope:
+      group_kind = resource.split('/')
+      if len(group_kind) == 1:
+        group = ''
+        kind = group_kind[0]
+      elif len(group_kind) == 2:
+        group, kind = group_kind
+      else:
         raise InvalidArgumentException(
             '--cluster-resource-restore-scope',
-            'Cluster resource restore scope group is empty.')
+            'Cluster resource restore scope is invalid.',
+        )
       if not kind:
         raise InvalidArgumentException(
             '--cluster-resource-restore-scope',
@@ -140,9 +146,7 @@ def PreprocessUpdateBackupPlan(ref, args, request):
 
 
 def GetSchemaPath():
-  # TODO(b/205222056): Move the substitution rule file schema to v1 directory in
-  # the schema directory.
-  return export_util.GetSchemaPath('gkebackup', 'v1alpha1', 'SubstitutionRules')
+  return export_util.GetSchemaPath('gkebackup', 'v1', 'SubstitutionRules')
 
 
 def PreprocessUpdateRestorePlan(ref, args, request):
@@ -150,8 +154,9 @@ def PreprocessUpdateRestorePlan(ref, args, request):
   del ref
 
   if args.IsSpecified('cluster_resource_restore_scope'):
-    request.restorePlan.restoreConfig.clusterResourceRestoreScope = ParseClusterResourceRestoreScope(
-        args.cluster_resource_restore_scope)
+    request.restorePlan.restoreConfig.clusterResourceRestoreScope = (
+        ParseClusterResourceRestoreScope(args.cluster_resource_restore_scope)
+    )
 
   # Guarded by argparser group with mutex=true.
   if args.IsSpecified('all_namespaces'):
@@ -165,8 +170,9 @@ def PreprocessUpdateRestorePlan(ref, args, request):
     request.restorePlan.restoreConfig.selectedNamespaces = None
 
   if args.IsSpecified('substitution_rules_file'):
-    request.restorePlan.restoreConfig.substitutionRules = ReadSubstitutionRuleFile(
-        args.substitution_rules_file)
+    request.restorePlan.restoreConfig.substitutionRules = (
+        ReadSubstitutionRuleFile(args.substitution_rules_file)
+    )
 
   new_masks = []
   for mask in request.updateMask.split(','):

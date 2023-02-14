@@ -655,6 +655,10 @@
           "description": "Maven repository config contains repository level configuration for the repositories of maven type.",
           "$ref": "MavenRepositoryConfig"
         },
+        "dockerConfig": {
+          "description": "Docker repository config contains repository level configuration for the repositories of docker type.",
+          "$ref": "DockerRepositoryConfig"
+        },
         "virtualRepositoryConfig": {
           "description": "Configuration specific for a Virtual Repository.",
           "$ref": "VirtualRepositoryConfig"
@@ -783,6 +787,17 @@
         }
       }
     },
+    "DockerRepositoryConfig": {
+      "id": "DockerRepositoryConfig",
+      "description": "DockerRepositoryConfig is docker related repository details. Provides additional configuration details for repositories of the docker format type.",
+      "type": "object",
+      "properties": {
+        "immutableTags": {
+          "description": "The repository which enabled this flag prevents all tags from being modified, moved or deleted. This does not prevent tags from being created.",
+          "type": "boolean"
+        }
+      }
+    },
     "VirtualRepositoryConfig": {
       "id": "VirtualRepositoryConfig",
       "description": "Virtual repository configuration.",
@@ -807,7 +822,7 @@
           "type": "string"
         },
         "repository": {
-          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repository\/repo1\".",
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
           "type": "string"
         },
         "priority": {
@@ -838,6 +853,10 @@
           "description": "Specific settings for a Python remote repository.",
           "$ref": "PythonRepository"
         },
+        "aptRepository": {
+          "description": "Specific settings for an Apt remote repository.",
+          "$ref": "AptRepository"
+        },
         "description": {
           "description": "The description of the remote source.",
           "type": "string"
@@ -860,6 +879,21 @@
             "PUBLIC_REPOSITORY_UNSPECIFIED",
             "DOCKER_HUB"
           ]
+        },
+        "artifactRegistryRepository": {
+          "description": "An Artifact Registry Repository.",
+          "$ref": "ArtifactRegistryRepository"
+        }
+      }
+    },
+    "ArtifactRegistryRepository": {
+      "id": "ArtifactRegistryRepository",
+      "description": "A representation of an Artifact Registry repository.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
         }
       }
     },
@@ -879,6 +913,10 @@
             "PUBLIC_REPOSITORY_UNSPECIFIED",
             "MAVEN_CENTRAL"
           ]
+        },
+        "artifactRegistryRepository": {
+          "description": "An Artifact Registry Repository.",
+          "$ref": "ArtifactRegistryRepository"
         }
       }
     },
@@ -898,6 +936,10 @@
             "PUBLIC_REPOSITORY_UNSPECIFIED",
             "NPMJS"
           ]
+        },
+        "artifactRegistryRepository": {
+          "description": "An Artifact Registry Repository.",
+          "$ref": "ArtifactRegistryRepository"
         }
       }
     },
@@ -917,6 +959,50 @@
             "PUBLIC_REPOSITORY_UNSPECIFIED",
             "PYPI"
           ]
+        },
+        "artifactRegistryRepository": {
+          "description": "An Artifact Registry Repository.",
+          "$ref": "ArtifactRegistryRepository"
+        }
+      }
+    },
+    "AptRepository": {
+      "id": "AptRepository",
+      "description": "Configuration for an Apt remote repository.",
+      "type": "object",
+      "properties": {
+        "publicRepository": {
+          "description": "One of the publicly available Apt repositories supported by Artifact Registry.",
+          "$ref": "PublicRepository"
+        },
+        "artifactRegistryRepository": {
+          "description": "An Artifact Registry Repository.",
+          "$ref": "ArtifactRegistryRepository"
+        }
+      }
+    },
+    "PublicRepository": {
+      "id": "PublicRepository",
+      "description": "Publicly available Apt repositories constructed from a common repository base and a custom repository path.",
+      "type": "object",
+      "properties": {
+        "repositoryBase": {
+          "description": "A common public repository base for Apt.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified repository base.",
+            "Debian.",
+            "Ubuntu LTS\/Pro."
+          ],
+          "enum": [
+            "REPOSITORY_BASE_UNSPECIFIED",
+            "DEBIAN",
+            "UBUNTU"
+          ]
+        },
+        "repositoryPath": {
+          "description": "A custom field to define a path to a specific repository from the base.",
+          "type": "string"
         }
       }
     },
@@ -925,37 +1011,109 @@
       "description": "Artifact policy configuration for repository cleanup policies.",
       "type": "object",
       "properties": {
+        "condition": {
+          "description": "Policy condition for matching versions.",
+          "$ref": "CleanupPolicyCondition"
+        },
+        "mostRecentVersions": {
+          "description": "Policy condition for retaining a minimum number of versions. May only be specified with a Keep action.",
+          "$ref": "CleanupPolicyMostRecentVersions"
+        },
         "id": {
           "description": "The user-provided ID of the cleanup policy.",
           "type": "string"
-        },
-        "condition": {
-          "description": "Policy condition that indicates when versions should be deleted.",
-          "$ref": "CleanupPolicyCondition"
         },
         "action": {
           "description": "Policy action.",
           "type": "string",
           "enumDescriptions": [
             "Action not specified.",
-            "Delete action."
+            "Delete action.",
+            "Keep action."
           ],
           "enum": [
             "ACTION_UNSPECIFIED",
-            "DELETE"
+            "DELETE",
+            "KEEP"
           ]
         }
       }
     },
     "CleanupPolicyCondition": {
       "id": "CleanupPolicyCondition",
-      "description": "CleanupPolicyCondtion defines a set of conditions of a CleanupPolicy. If multiple entries are set, all must be satisfied for the condition to be satisfied.",
+      "description": "CleanupPolicyCondition is a set of conditions attached to a CleanupPolicy. If multiple entries are set, all must be satisfied for the condition to be satisfied.",
       "type": "object",
       "properties": {
         "versionAge": {
-          "description": "Condition type which is satisfied if a version is older than the specified time.",
+          "description": "Match versions older than a duration.",
           "type": "string",
           "format": "google-duration"
+        },
+        "tagState": {
+          "description": "Match versions by tag status.",
+          "type": "string",
+          "enumDescriptions": [
+            "Tag status not specified.",
+            "Applies to tagged versions only.",
+            "Applies to untagged versions only.",
+            "Applies to all versions."
+          ],
+          "enum": [
+            "TAG_STATE_UNSPECIFIED",
+            "TAGGED",
+            "UNTAGGED",
+            "ANY"
+          ]
+        },
+        "tagPrefixes": {
+          "description": "Match versions by tag prefix. Applied on any prefix match.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "versionNamePrefixes": {
+          "description": "Match versions by version name prefix. Applied on any prefix match.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "packageNamePrefixes": {
+          "description": "Match versions by package prefix. Applied on any prefix match.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "olderThan": {
+          "description": "Match versions older than a duration.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "newerThan": {
+          "description": "Match versions newer than a duration.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "CleanupPolicyMostRecentVersions": {
+      "id": "CleanupPolicyMostRecentVersions",
+      "description": "CleanupPolicyMostRecentVersions is an alternate condition of a CleanupPolicy for retaining a minimum number of versions.",
+      "type": "object",
+      "properties": {
+        "packageNamePrefixes": {
+          "description": "List of package name prefixes that will apply this rule.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keepCount": {
+          "description": "Minimum number of versions to keep.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1116,18 +1274,26 @@
           }
         },
         "createTime": {
-          "description": "The time when the File was created.",
+          "description": "Output only. The time when the File was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time when the File was last updated.",
+          "description": "Output only. The time when the File was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "owner": {
           "description": "The name of the Package or Version that owns this file, if any.",
           "type": "string"
+        },
+        "fetchTime": {
+          "description": "Output only. The time when the last attempt to refresh the file's data was made. Only set when the repository is remote.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1155,6 +1321,13 @@
           "type": "string",
           "format": "byte"
         }
+      }
+    },
+    "DownloadFileResponse": {
+      "id": "DownloadFileResponse",
+      "description": "The response to download a file.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListTagsResponse": {
@@ -1227,7 +1400,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1721,6 +1894,38 @@
     }
   },
   "resources": {
+    "media": {
+      "methods": {
+        "download": {
+          "id": "artifactregistry.media.download",
+          "path": "v1/{+name}:download",
+          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:download",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the file to download.",
+              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "supportsMediaDownload": true,
+          "useMediaDownloadService": true,
+          "response": {
+            "$ref": "DownloadFileResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Download a file."
+        }
+      }
+    },
     "projects": {
       "methods": {
         "getProjectSettings": {
@@ -3219,7 +3424,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the repository whose files will be listed. For example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1",
+                          "description": "Required. The name of the repository whose files will be listed. For example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3266,7 +3471,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The name of the file to retrieve.",
+                          "description": "Required. The name of the file to retrieve.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/.*$",
                           "location": "path",
                           "required": true,

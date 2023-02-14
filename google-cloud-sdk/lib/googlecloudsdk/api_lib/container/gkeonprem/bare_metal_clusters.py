@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 
@@ -151,13 +152,16 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return self._messages.BareMetalNodeConfig(**kwargs)
 
-  def _metal_lb_node_configs(self, args):
+  def _metal_lb_node_configs_from_file(self, args):
     """Constructs proto message field node_configs."""
     if not args.metal_lb_load_balancer_node_configs_from_file:
       return []
 
-    metal_lb_node_configs = args.metal_lb_load_balancer_node_configs_from_file.get(
-        'nodeConfigs', [])
+    metal_lb_node_configs = (
+        args.metal_lb_load_balancer_node_configs_from_file.get(
+            'nodeConfigs', []
+        )
+    )
 
     if not metal_lb_node_configs:
       raise exceptions.BadArgumentException(
@@ -170,6 +174,65 @@ class _BareMetalClusterClient(client.ClientBase):
           self._metal_lb_node_config(metal_lb_node_config))
 
     return metal_lb_node_configs_messages
+
+  def _parse_node_labels(self, node_labels):
+    """Validates and parses a node label object.
+
+    Args:
+      node_labels: str of key-val pairs separated by ';' delimiter.
+
+    Returns:
+      If label is valid, returns a dict mapping message LabelsValue to its
+      value, otherwise, raise ArgumentTypeError.
+      For example,
+      {
+          'key': LABEL_KEY
+          'value': LABEL_VALUE
+      }
+    """
+    if not node_labels.get('labels'):
+      return None
+
+    input_node_labels = node_labels.get('labels', '').split(';')
+    additional_property_messages = []
+
+    for label in input_node_labels:
+      key_val_pair = label.split('=')
+      if len(key_val_pair) != 2:
+        raise arg_parsers.ArgumentTypeError(
+            'Node Label [{}] not in correct format, expect KEY=VALUE.'.format(
+                input_node_labels))
+      additional_property_messages.append(
+          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+              key=key_val_pair[0], value=key_val_pair[1]))
+
+    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+        additionalProperties=additional_property_messages)
+
+    return labels_value_message
+
+  def _node_config(self, node_config_args):
+    """Constructs proto message BareMetalNodeConfig."""
+    kwargs = {
+        'nodeIp': node_config_args.get('node-ip', ''),
+        'labels': self._parse_node_labels(node_config_args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodeConfig(**kwargs)
+
+    return None
+
+  def _metal_lb_node_configs_from_flag(self, args):
+    """Constructs proto message field node_configs."""
+    node_config_flag_value = getattr(
+        args, 'metal_lb_load_balancer_node_configs', []
+    ) if args.metal_lb_load_balancer_node_configs else []
+
+    return [
+        self._node_config(node_config)
+        for node_config in node_config_flag_value
+    ]
 
   def _metal_lb_node_taints(self, args):
     """Constructs proto message NodeTaint."""
@@ -205,9 +268,16 @@ class _BareMetalClusterClient(client.ClientBase):
 
   def _metal_lb_load_balancer_node_pool_config(self, args):
     """Constructs proto message BareMetalNodePoolConfig."""
+    if (
+        'metal_lb_load_balancer_node_configs_from_file'
+        in args.GetSpecifiedArgsDict()
+    ):
+      metal_lb_node_configs = self._metal_lb_node_configs_from_file(args)
+    else:
+      metal_lb_node_configs = self._metal_lb_node_configs_from_flag(args)
+
     kwargs = {
-        'nodeConfigs':
-            self._metal_lb_node_configs(args),
+        'nodeConfigs': metal_lb_node_configs,
         'labels':
             self._metal_lb_labels(args),
         'taints':
@@ -350,7 +420,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return self._messages.BareMetalNodeConfig(**kwargs)
 
-  def _control_plane_node_configs(self, args):
+  def _control_plane_node_configs_from_file(self, args):
     """Constructs proto message field node_configs."""
     if not args.control_plane_node_configs_from_file:
       return []
@@ -369,6 +439,17 @@ class _BareMetalClusterClient(client.ClientBase):
           self._control_plane_node_config(control_plane_node_config))
 
     return control_plane_node_configs_messages
+
+  def _control_plane_node_configs_from_flag(self, args):
+    """Constructs proto message field node_configs."""
+    node_configs = []
+    node_config_flag_value = getattr(args, 'control_plane_node_configs',
+                                     None)
+    if node_config_flag_value:
+      for node_config in node_config_flag_value:
+        node_configs.append(self._node_config(node_config))
+
+    return node_configs
 
   def _control_plane_node_taints(self, args):
     """Constructs proto message NodeTaint."""
@@ -403,9 +484,16 @@ class _BareMetalClusterClient(client.ClientBase):
 
   def _node_pool_config(self, args):
     """Constructs proto message BareMetalNodePoolConfig."""
+    if (
+        'control_plane_node_configs_from_file'
+        in args.GetSpecifiedArgsDict()
+    ):
+      node_configs = self._control_plane_node_configs_from_file(args)
+    else:
+      node_configs = self._control_plane_node_configs_from_flag(args)
+
     kwargs = {
-        'nodeConfigs':
-            self._control_plane_node_configs(args),
+        'nodeConfigs': node_configs,
         'labels':
             self._control_plane_node_labels(args),
         'taints':

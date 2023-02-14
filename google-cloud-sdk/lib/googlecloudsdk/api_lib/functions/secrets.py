@@ -27,12 +27,14 @@ import six
 
 _SECRET_VERSION_RESOURCE_PATTERN = re.compile(
     '^projects/(?P<project>[^/]+)/secrets/(?P<secret>[^/]+)'
-    '/versions/(?P<version>[^/]+)$')
+    '/versions/(?P<version>[^/]+)$'
+)
 
 
 def _GetSecretVersionResource(project, secret, version):
   return 'projects/{project}/secrets/{secret}/versions/{version}'.format(
-      project=project or '*', secret=secret, version=version)
+      project=project or '*', secret=secret, version=version
+  )
 
 
 def _CanonicalizedDict(secrets_dict):
@@ -46,10 +48,14 @@ def _CanonicalizedDict(secrets_dict):
   """
   return collections.OrderedDict(
       sorted(
-          six.iteritems({
-              secrets_config.CanonicalizeKey(key): value
-              for (key, value) in secrets_dict.items()
-          })))
+          six.iteritems(
+              {
+                  secrets_config.CanonicalizeKey(key): value
+                  for (key, value) in secrets_dict.items()
+              }
+          )
+      )
+  )
 
 
 def GetSecretsAsDict(secret_env_vars, secret_volumes):
@@ -65,11 +71,14 @@ def GetSecretsAsDict(secret_env_vars, secret_volumes):
   secrets_dict = {}
 
   if secret_env_vars:
-    secrets_dict.update({
-        sev.key: _GetSecretVersionResource(sev.projectId, sev.secret,
-                                           sev.version)
-        for sev in secret_env_vars
-    })
+    secrets_dict.update(
+        {
+            sev.key: _GetSecretVersionResource(
+                sev.projectId, sev.secret, sev.version
+            )
+            for sev in secret_env_vars
+        }
+    )
 
   if secret_volumes:
     for secret_volume in secret_volumes:
@@ -80,12 +89,14 @@ def GetSecretsAsDict(secret_env_vars, secret_volumes):
         for version in secret_volume.versions:
           secrets_config_key = mount_path + ':' + version.path
           secrets_config_value = _GetSecretVersionResource(
-              project, secret, version.version)
+              project, secret, version.version
+          )
           secrets_dict[secrets_config_key] = secrets_config_value
       else:
         secrets_config_key = mount_path + ':/' + secret
         secrets_config_value = _GetSecretVersionResource(
-            project, secret, 'latest')
+            project, secret, 'latest'
+        )
         secrets_dict[secrets_config_key] = secrets_config_value
 
   return _CanonicalizedDict(secrets_dict)
@@ -116,14 +127,17 @@ def SecretEnvVarsToMessages(secret_env_vars_dict, messages):
   """
   secret_environment_variables = []
   for secret_env_var_key, secret_env_var_value in six.iteritems(
-      secret_env_vars_dict):
+      secret_env_vars_dict
+  ):
     secret_ref = _ParseSecretRef(secret_env_var_value)
     secret_environment_variables.append(
         messages.SecretEnvVar(
             key=secret_env_var_key,
             projectId=secret_ref['project'],
             secret=secret_ref['secret'],
-            version=secret_ref['version']))
+            version=secret_ref['version'],
+        )
+    )
   return secret_environment_variables
 
 
@@ -132,8 +146,8 @@ def SecretVolumesToMessages(secret_volumes, messages, normalize_for_v2=False):
   """Converts secrets from dict to cloud function SecretVolume message list.
 
   Args:
-    secret_volumes: Secrets volumes configuration dict. Prefers a sorted
-      ordered dict for consistency.
+    secret_volumes: Secrets volumes configuration dict. Prefers a sorted ordered
+      dict for consistency.
     messages: The GCF messages module to use.
     normalize_for_v2: If set, normalizes the SecretVolumes to the format the
       GCFv2 API expects.
@@ -154,7 +168,7 @@ def SecretVolumesToMessages(secret_volumes, messages, normalize_for_v2=False):
         'path': secret_file_path,
         'project': secret_ref['project'],
         'secret': secret_ref['secret'],
-        'version': secret_ref['version']
+        'version': secret_ref['version'],
     })
 
   for mount_path, secrets in sorted(six.iteritems(mount_path_to_secrets)):
@@ -169,6 +183,8 @@ def SecretVolumesToMessages(secret_volumes, messages, normalize_for_v2=False):
             mountPath=mount_path,
             projectId=project,
             secret=secret_value,
-            versions=versions))
+            versions=versions,
+        )
+    )
 
   return secret_volumes_messages

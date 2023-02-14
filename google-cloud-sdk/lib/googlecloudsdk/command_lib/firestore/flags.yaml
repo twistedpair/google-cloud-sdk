@@ -31,6 +31,21 @@ query_scope:
   choices:
   - arg_value: collection
     enum_value: COLLECTION
+  - arg_value: collection-group
+    enum_value: COLLECTION_GROUP
+  - arg_value: collection-recursive
+    enum_value: COLLECTION_RECURSIVE
+
+api_scope:
+  api_field: googleFirestoreAdminV1Index.apiScope
+  arg_name: api-scope
+  help_text: Api scope the index applies to.
+  default: any-api
+  choices:
+  - arg_value: any-api
+    enum_value: ANY_API
+  - arg_value: datastore-mode-api
+    enum_value: DATASTORE_MODE_API
 
 field_config:
   api_field: googleFirestoreAdminV1Index.fields

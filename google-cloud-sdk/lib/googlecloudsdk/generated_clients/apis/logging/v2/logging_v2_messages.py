@@ -896,6 +896,17 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationMetadata(_messages.Message):
+  r"""Cloud Logging specific location metadata.
+
+  Fields:
+    logAnalyticsEnabled: Indicates whether or not Log Analytics features are
+      supported in the given location.
+  """
+
+  logAnalyticsEnabled = _messages.BooleanField(1)
+
+
 class LogBucket(_messages.Message):
   r"""Describes a repository in which log entries are stored.
 

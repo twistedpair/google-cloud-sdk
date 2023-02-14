@@ -2072,8 +2072,7 @@ class OperationMetadata(_messages.Message):
 
 
 class PitrConfig(_messages.Message):
-  r"""PitrConfig describes the point-in-time recovery configurations of a
-  cluster.
+  r"""Deprecated, use ContinuousBackupConfig instead.
 
   Fields:
     enabled: Whether PITR is enabled.
@@ -2090,7 +2089,7 @@ class PitrConfig(_messages.Message):
 
 
 class PitrSource(_messages.Message):
-  r"""Message describing a PitrSource.
+  r"""Deprecated, use ContinuousBackupSource instead.
 
   Fields:
     cluster: Required. The source cluster from which to restore. This cluster

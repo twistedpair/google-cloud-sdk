@@ -823,8 +823,8 @@ class ApigeeOrganizationsAppsListRequest(_messages.Message):
       of apps for the organization. Defaults to `false`.
     filter: Optional. The filter expression to be used to get the list of
       apps, where filtering can be done on developerEmail, apiProduct,
-      consumerKey, status, appId createdAt, appFamily, appGroup. Example:
-      filter = "developerEmail = foo@bar.com"
+      consumerKey, status, appId, appName and appType. Example: filter =
+      "developerEmail = foo@bar.com"
     ids: Optional. Comma-separated list of app IDs on which to filter.
     includeCred: Optional. Flag that specifies whether to include credentials
       in the response.
@@ -10373,11 +10373,19 @@ class GoogleCloudApigeeV1SecurityIncidentEnvironment(_messages.Message):
 
   Fields:
     environment: Output only. Name of the environment
+    lowRiskIncidentsCount: Output only. Total incidents with risk level low.
+    moderateRiskIncidentsCount: Output only. Total incidents with risk level
+      moderate.
+    severeRiskIncidentsCount: Output only. Total incidents with risk level
+      severe.
     totalIncidents: Output only. Total incidents count for a given environment
   """
 
   environment = _messages.StringField(1)
-  totalIncidents = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  lowRiskIncidentsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  moderateRiskIncidentsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  severeRiskIncidentsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  totalIncidents = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1SecurityProfile(_messages.Message):

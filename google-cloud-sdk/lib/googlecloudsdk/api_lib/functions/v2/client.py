@@ -39,12 +39,14 @@ class FunctionsClient(object):
     """
     project = properties.VALUES.core.project.GetOrFail()
     request = self.messages.CloudfunctionsProjectsLocationsListRequest(
-        name='projects/' + project)
+        name='projects/' + project
+    )
     return list_pager.YieldFromList(
         service=self.client.projects_locations,
         request=request,
         field='locations',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def ListRuntimes(self, region):
     """Lists available GCF Gen 2 Runtimes in a region.
@@ -60,6 +62,8 @@ class FunctionsClient(object):
     # v2alpha|v2beta.CloudfunctionsProjectsLocationsRuntimesListRequest
     request = self.messages.CloudfunctionsProjectsLocationsRuntimesListRequest(
         parent='projects/{project}/locations/{region}'.format(
-            project=project, region=region))
+            project=project, region=region
+        )
+    )
 
     return self.client.projects_locations_runtimes.List(request)

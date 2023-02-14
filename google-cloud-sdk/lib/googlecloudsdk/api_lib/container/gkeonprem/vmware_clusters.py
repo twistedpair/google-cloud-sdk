@@ -28,7 +28,7 @@ from googlecloudsdk.core import properties
 
 
 class ClustersClient(client.ClientBase):
-  """Client for clusters in gkeonprem vmware API."""
+  """Client for clusters in GKE On-Prem VMware API."""
 
   def __init__(self, **kwargs):
     super(ClustersClient, self).__init__(**kwargs)
@@ -38,7 +38,9 @@ class ClustersClient(client.ClientBase):
     """Lists Clusters in the GKE On-Prem VMware API."""
     list_req = (
         self._messages.GkeonpremProjectsLocationsVmwareClustersListRequest(
-            parent=self._location_name(args)))
+            parent=self._location_name(args)
+        )
+    )
 
     return list_pager.YieldFromList(
         self._service,
@@ -57,7 +59,8 @@ class ClustersClient(client.ClientBase):
         'localName': flags.Get(args, 'local_name'),
     }
     enroll_vmware_cluster_request = self._messages.EnrollVmwareClusterRequest(
-        **kwargs)
+        **kwargs
+    )
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersEnrollRequest(
         parent=self._user_cluster_parent(args),
         enrollVmwareClusterRequest=enroll_vmware_cluster_request,
@@ -74,7 +77,9 @@ class ClustersClient(client.ClientBase):
     }
     req = (
         self._messages.GkeonpremProjectsLocationsVmwareClustersUnenrollRequest(
-            **kwargs))
+            **kwargs
+        )
+    )
     return self._service.Unenroll(req)
 
   def Delete(self, args):
@@ -86,7 +91,8 @@ class ClustersClient(client.ClientBase):
         'force': flags.Get(args, 'force'),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.Delete(req)
 
   def Create(self, args):
@@ -98,50 +104,90 @@ class ClustersClient(client.ClientBase):
         'vmwareClusterId': self._user_cluster_id(args),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
-        **kwargs)
+        **kwargs
+    )
+    return self._service.Create(req)
+
+  def CreateFromImport(self, args, vmware_cluster, vmware_cluster_ref):
+    """Creates an Anthos cluster on VMware."""
+    kwargs = {
+        'parent': vmware_cluster_ref.Parent().RelativeName(),
+        'validateOnly': flags.Get(args, 'validate_only'),
+        'vmwareCluster': vmware_cluster,
+        'vmwareClusterId': vmware_cluster_ref.Name(),
+    }
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersCreateRequest(
+        **kwargs
+    )
     return self._service.Create(req)
 
   def Update(self, args):
     kwargs = {
-        'name':
-            self._user_cluster_name(args),
-        'allowMissing':
-            flags.Get(args, 'allow_missing'),
-        'updateMask':
-            update_mask.get_update_mask(
-                args, update_mask.VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS),
-        'validateOnly':
-            flags.Get(args, 'validate_only'),
-        'vmwareCluster':
-            self._vmware_cluster(args),
+        'name': self._user_cluster_name(args),
+        'allowMissing': flags.Get(args, 'allow_missing'),
+        'updateMask': update_mask.get_update_mask(
+            args, update_mask.VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS
+        ),
+        'validateOnly': flags.Get(args, 'validate_only'),
+        'vmwareCluster': self._vmware_cluster(args),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersPatchRequest(
-        **kwargs)
+        **kwargs
+    )
+    return self._service.Patch(req)
+
+  def UpdateFromFile(self, args, vmware_cluster):
+    # explicitly list supported mutable fields
+    # etag is excluded from the mutable fields, because it is derived.
+    top_level_mutable_fields = [
+        'description',
+        'on_prem_version',
+        'annotations',
+        'control_plane_node',
+        'anti_affinity_groups',
+        'storage',
+        'network_config',
+        'load_balancer',
+        'dataplane_v2',
+        'auto_repair_config',
+        'authorization',
+    ]
+    kwargs = {
+        'name': self._user_cluster_name(args),
+        'allowMissing': flags.Get(args, 'allow_missing'),
+        'updateMask': ','.join(top_level_mutable_fields),
+        'validateOnly': flags.Get(args, 'validate_only'),
+        'vmwareCluster': vmware_cluster,
+    }
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersPatchRequest(
+        **kwargs
+    )
     return self._service.Patch(req)
 
   def query_version_config(self, args):
     kwargs = {
-        'createConfig_adminClusterMembership':
-            self._admin_cluster_membership_name(args),
-        'upgradeConfig_clusterName':
-            self._user_cluster_name(args),
-        'parent':
-            self._location_ref(args).RelativeName(),
+        'createConfig_adminClusterMembership': (
+            self._admin_cluster_membership_name(args)
+        ),
+        'upgradeConfig_clusterName': self._user_cluster_name(args),
+        'parent': self._location_ref(args).RelativeName(),
     }
 
     # This is a workaround for the limitation in apitools with nested messages.
     encoding.AddCustomJsonFieldMapping(
-        self._messages
-        .GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
+        self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
         'createConfig_adminClusterMembership',
-        'createConfig.adminClusterMembership')
+        'createConfig.adminClusterMembership',
+    )
     encoding.AddCustomJsonFieldMapping(
-        self._messages
-        .GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
-        'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
+        self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
+        'upgradeConfig_clusterName',
+        'upgradeConfig.clusterName',
+    )
 
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.QueryVersionConfig(req)
 
   def _vmware_cluster(self, args):
@@ -205,7 +251,8 @@ class ClustersClient(client.ClientBase):
     gcloud_config_core_account = properties.VALUES.core.account.Get()
     if gcloud_config_core_account:
       default_admin_user_message = self._messages.ClusterUser(
-          username=gcloud_config_core_account)
+          username=gcloud_config_core_account
+      )
       cluster_user_messages.append(default_admin_user_message)
       return cluster_user_messages
 
@@ -319,10 +366,13 @@ class ClustersClient(client.ClientBase):
     for key, value in annotations.items():
       additional_property_messages.append(
           self._messages.VmwareCluster.AnnotationsValue.AdditionalProperty(
-              key=key, value=value))
+              key=key, value=value
+          )
+      )
 
     annotation_value_message = self._messages.VmwareCluster.AnnotationsValue(
-        additionalProperties=additional_property_messages)
+        additionalProperties=additional_property_messages
+    )
     return annotation_value_message
 
   def _vmware_host_ip(self, host_ip):
@@ -330,12 +380,14 @@ class ClustersClient(client.ClientBase):
     hostname = host_ip.get('hostname', None)
     if not hostname:
       raise InvalidConfigFile(
-          'Missing field [hostname] in Static IP configuration file.')
+          'Missing field [hostname] in Static IP configuration file.'
+      )
 
     ip = host_ip.get('ip', None)
     if not ip:
       raise InvalidConfigFile(
-          'Missing field [ip] in Static IP configuration file.')
+          'Missing field [ip] in Static IP configuration file.'
+      )
 
     kwargs = {'hostname': hostname, 'ip': ip}
     return self._messages.VmwareHostIp(**kwargs)
@@ -345,17 +397,20 @@ class ClustersClient(client.ClientBase):
     gateway = ip_block.get('gateway', None)
     if not gateway:
       raise InvalidConfigFile(
-          'Missing field [gateway] in Static IP configuration file.')
+          'Missing field [gateway] in Static IP configuration file.'
+      )
 
     netmask = ip_block.get('netmask', None)
     if not netmask:
       raise InvalidConfigFile(
-          'Missing field [netmask] in Static IP configuration file.')
+          'Missing field [netmask] in Static IP configuration file.'
+      )
 
     host_ips = ip_block.get('ips', [])
     if not host_ips:
       raise InvalidConfigFile(
-          'Missing field [ips] in Static IP configuration file.')
+          'Missing field [ips] in Static IP configuration file.'
+      )
 
     kwargs = {
         'gateway': gateway,
@@ -366,27 +421,49 @@ class ClustersClient(client.ClientBase):
       return self._messages.VmwareIpBlock(**kwargs)
     return None
 
-  def _vmware_static_ip_config(self, args):
-    """Constructs proto message VmwareStaticIpConfig."""
-    if 'static_ip_config_from_file' not in args.GetSpecifiedArgsDict():
-      return None
-
+  def _vmware_static_ip_config_from_file(self, args):
     file_content = args.static_ip_config_from_file
     static_ip_config = file_content.get('staticIPConfig', None)
     if not static_ip_config:
       raise InvalidConfigFile(
-          'Missing field [staticIPConfig] in Static IP configuration file.')
+          'Missing field [staticIPConfig] in Static IP configuration file.'
+      )
 
     ip_blocks = static_ip_config.get('ipBlocks', [])
     if not ip_blocks:
       raise InvalidConfigFile(
-          'Missing field [ipBlocks] in Static IP configuration file.')
+          'Missing field [ipBlocks] in Static IP configuration file.'
+      )
 
     kwargs = {
         'ipBlocks': [self._vmware_ip_block(ip_block) for ip_block in ip_blocks],
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareStaticIpConfig(**kwargs)
+    return None
+
+  def _vmware_static_ip_config_ip_blocks(self, args):
+    vmware_static_ip_config_message = self._messages.VmwareStaticIpConfig()
+    for ip_block in args.static_ip_config_ip_blocks:
+      vmware_ip_block_message = self._messages.VmwareIpBlock(
+          gateway=ip_block['gateway'],
+          netmask=ip_block['netmask'],
+          ips=[
+              self._messages.VmwareHostIp(hostname=ip[0], ip=ip[1])
+              for ip in ip_block['ips']
+          ],
+      )
+      vmware_static_ip_config_message.ipBlocks.append(vmware_ip_block_message)
+    return vmware_static_ip_config_message
+
+  def _vmware_static_ip_config(self, args):
+    """Constructs proto message VmwareStaticIpConfig."""
+    if 'static_ip_config_from_file' in args.GetSpecifiedArgsDict():
+      return self._vmware_static_ip_config_from_file(args)
+
+    if 'static_ip_config_ip_blocks' in args.GetSpecifiedArgsDict():
+      return self._vmware_static_ip_config_ip_blocks(args)
+
     return None
 
   def _vmware_dhcp_ip_config(self, args):
@@ -412,16 +489,13 @@ class ClustersClient(client.ClientBase):
   def _vmware_network_config(self, args):
     """Constructs proto message VmwareNetworkConfig."""
     kwargs = {
-        'serviceAddressCidrBlocks':
-            flags.Get(args, 'service_address_cidr_blocks', []),
-        'podAddressCidrBlocks':
-            flags.Get(args, 'pod_address_cidr_blocks', []),
-        'staticIpConfig':
-            self._vmware_static_ip_config(args),
-        'dhcpIpConfig':
-            self._vmware_dhcp_ip_config(args),
-        'hostConfig':
-            self._vmware_host_config(args),
+        'serviceAddressCidrBlocks': flags.Get(
+            args, 'service_address_cidr_blocks', []
+        ),
+        'podAddressCidrBlocks': flags.Get(args, 'pod_address_cidr_blocks', []),
+        'staticIpConfig': self._vmware_static_ip_config(args),
+        'dhcpIpConfig': self._vmware_dhcp_ip_config(args),
+        'hostConfig': self._vmware_host_config(args),
     }
     if any(kwargs.values()):
       return self._messages.VmwareNetworkConfig(**kwargs)
@@ -460,11 +534,7 @@ class ClustersClient(client.ClientBase):
       return self._messages.VmwareF5BigIpConfig(**kwargs)
     return None
 
-  def _vmware_metal_lb_config(self, args):
-    """Constructs proto message VmwareMetalLbConfig."""
-    if 'metal_lb_config_from_file' not in args.GetSpecifiedArgsDict():
-      return None
-
+  def _vmware_metal_lb_config_from_file(self, args):
     file_content = args.metal_lb_config_from_file
     metal_lb_config = file_content.get('metalLBConfig', None)
     if not metal_lb_config:
@@ -475,24 +545,44 @@ class ClustersClient(client.ClientBase):
     address_pools = metal_lb_config.get('addressPools', [])
     if not address_pools:
       raise InvalidConfigFile(
-          'Missing field [addressPools] in Metal LB configuration file.')
+          'Missing field [addressPools] in Metal LB configuration file.'
+      )
 
     kwargs = {
         'addressPools': self._address_pools(address_pools),
     }
     return self._messages.VmwareMetalLbConfig(**kwargs)
 
+  def _vmware_metal_lb_config_from_flag(self, args):
+    vmware_metal_lb_config = self._messages.VmwareMetalLbConfig()
+    for address_pool in args.metal_lb_config_address_pools:
+      address_pool_message = self._messages.VmwareAddressPool(
+          addresses=address_pool.get('addresses', []),
+          avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
+          manualAssign=address_pool.get('manual-assign', None),
+          pool=address_pool.get('pool', None),
+      )
+      vmware_metal_lb_config.addressPools.append(address_pool_message)
+    return vmware_metal_lb_config
+
+  def _vmware_metal_lb_config(self, args):
+    """Constructs proto message VmwareMetalLbConfig."""
+    if 'metal_lb_config_from_file' in args.GetSpecifiedArgsDict():
+      return self._vmware_metal_lb_config_from_file(args)
+    elif 'metal_lb_config_address_pools' in args.GetSpecifiedArgsDict():
+      return self._vmware_metal_lb_config_from_flag(args)
+    else:
+      return None
+
   def _vmware_manual_lb_config(self, args):
     """Constructs proto message VmwareManualLbConfig."""
     kwargs = {
-        'controlPlaneNodePort':
-            flags.Get(args, 'control_plane_node_port'),
-        'ingressHttpNodePort':
-            flags.Get(args, 'ingress_http_node_port'),
-        'ingressHttpsNodePort':
-            flags.Get(args, 'ingress_https_node_port'),
-        'konnectivityServerNodePort':
-            flags.Get(args, 'konnectivity_server_node_port'),
+        'controlPlaneNodePort': flags.Get(args, 'control_plane_node_port'),
+        'ingressHttpNodePort': flags.Get(args, 'ingress_http_node_port'),
+        'ingressHttpsNodePort': flags.Get(args, 'ingress_https_node_port'),
+        'konnectivityServerNodePort': flags.Get(
+            args, 'konnectivity_server_node_port'
+        ),
     }
     if flags.IsSet(kwargs):
       return self._messages.VmwareManualLbConfig(**kwargs)
@@ -510,7 +600,8 @@ class ClustersClient(client.ClientBase):
     addresses = address_pool.get('addresses', [])
     if not addresses:
       raise InvalidConfigFile(
-          'Missing field [addresses] in Metal LB configuration file.')
+          'Missing field [addresses] in Metal LB configuration file.'
+      )
 
     avoid_buggy_ips = address_pool.get('avoidBuggyIPs', None)
     manual_assign = address_pool.get('manualAssign', None)
@@ -518,7 +609,8 @@ class ClustersClient(client.ClientBase):
     pool = address_pool.get('pool', None)
     if not pool:
       raise InvalidConfigFile(
-          'Missing field [pool] in Metal LB configuration file.')
+          'Missing field [pool] in Metal LB configuration file.'
+      )
 
     kwargs = {
         'addresses': addresses,
@@ -531,4 +623,5 @@ class ClustersClient(client.ClientBase):
 
 class InvalidConfigFile(exceptions.Error):
   """Invalid Argument."""
+
   pass

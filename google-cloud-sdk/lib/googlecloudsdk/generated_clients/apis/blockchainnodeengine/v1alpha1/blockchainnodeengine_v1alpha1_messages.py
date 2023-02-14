@@ -329,6 +329,8 @@ class EthereumDetails(_messages.Message):
     NodeTypeValueValuesEnum: Immutable. The type of Ethereum node.
 
   Fields:
+    apiEnableAdmin: Immutable. Enables access to the admin HTTP endpoints
+    apiEnableDebug: Immutable. Enables access to the debug HTTP endpoints
     consensusClient: Immutable. The consensus client
     executionClient: Immutable. The execution client
     network: Immutable. The Ethereum environment being accessed.
@@ -340,20 +342,29 @@ class EthereumDetails(_messages.Message):
 
     Values:
       CONSENSUS_CLIENT_UNSPECIFIED: <no description>
-      LIGHTHOUSE: <no description>
+      LIGHTHOUSE: Consensus client implementation written in Rust, maintained
+        by Sigma Prime. https://lighthouse.sigmaprime.io/
+      ERIGON_EMBEDDED_CONSENSUS_LAYER: Erigon's native Embedded Consensus
+        Layer. https://github.com/ledgerwatch/erigon#embedded-consensus-layer
     """
     CONSENSUS_CLIENT_UNSPECIFIED = 0
     LIGHTHOUSE = 1
+    ERIGON_EMBEDDED_CONSENSUS_LAYER = 2
 
   class ExecutionClientValueValuesEnum(_messages.Enum):
     r"""Immutable. The execution client
 
     Values:
       EXECUTION_CLIENT_UNSPECIFIED: <no description>
-      GETH: <no description>
+      GETH: Official Go implementation of the Ethereum protocol.
+        https://geth.ethereum.org/
+      ERIGON: An implementation of Ethereum (execution client), on the
+        efficiency frontier, written in Go.
+        https://github.com/ledgerwatch/erigon
     """
     EXECUTION_CLIENT_UNSPECIFIED = 0
     GETH = 1
+    ERIGON = 2
 
   class NetworkValueValuesEnum(_messages.Enum):
     r"""Immutable. The Ethereum environment being accessed.
@@ -374,17 +385,26 @@ class EthereumDetails(_messages.Message):
 
     Values:
       NODE_TYPE_UNSPECIFIED: <no description>
-      LIGHT: <no description>
-      FULL: <no description>
+      LIGHT: An Ethereum node that only downloads Ethereum block headers.
+      FULL: Keeps a complete copy of the blockchain data, and contributes to
+        the network by receiving, validating and forwarding transactions. This
+        type is currently only available for nodes running Geth/Lighthouse
+        clients.
+      ARCHIVE: Holds the same data as full node as well as all of the
+        blockchain's history state data dating back to the Genesis Block. This
+        type is currently only available for the nodes running Erigon clients.
     """
     NODE_TYPE_UNSPECIFIED = 0
     LIGHT = 1
     FULL = 2
+    ARCHIVE = 3
 
-  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 1)
-  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 2)
-  network = _messages.EnumField('NetworkValueValuesEnum', 3)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 4)
+  apiEnableAdmin = _messages.BooleanField(1)
+  apiEnableDebug = _messages.BooleanField(2)
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 3)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 4)
+  network = _messages.EnumField('NetworkValueValuesEnum', 5)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 6)
 
 
 class GoogleProtobufEmpty(_messages.Message):

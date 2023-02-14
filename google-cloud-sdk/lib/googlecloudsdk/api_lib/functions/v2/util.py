@@ -49,7 +49,7 @@ _V2_GA = 'v2'
 RELEASE_TRACK_TO_API_VERSION = {
     calliope_base.ReleaseTrack.ALPHA: 'v2alpha',
     calliope_base.ReleaseTrack.BETA: 'v2beta',
-    calliope_base.ReleaseTrack.GA: 'v2'
+    calliope_base.ReleaseTrack.GA: 'v2',
 }
 
 MAX_WAIT_MS = 1820000
@@ -85,7 +85,8 @@ EVENTFLOW_TO_EVENTARC_STORAGE_MAP = frozendict.frozendict({
 
 # Legacy types
 LEGACY_PUBSUB_MESSAGE_PUBLISH = (
-    'providers/cloud.pubsub/eventTypes/topic.publish')
+    'providers/cloud.pubsub/eventTypes/topic.publish'
+)
 
 PUBSUB_MESSAGE_PUBLISH_TYPES = (
     EA_PUBSUB_MESSAGE_PUBLISHED,
@@ -144,8 +145,9 @@ def GetClientInstance(release_track):
 
 def GetStateMessagesStrings(state_messages):
   """Returns the list of string representations of the state messages."""
-  return map(lambda st: '[{}] {}'.format(str(st.severity), st.message),
-             state_messages)
+  return map(
+      lambda st: '[{}] {}'.format(str(st.severity), st.message), state_messages
+  )
 
 
 def _GetStageName(name_enum):
@@ -154,8 +156,7 @@ def _GetStageName(name_enum):
 
 
 def _BuildOperationMetadata(messages):
-  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)OperationMetadata.
-  """
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)OperationMetadata."""
   if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
     return messages.GoogleCloudFunctionsV2alphaOperationMetadata
   elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
@@ -169,7 +170,8 @@ def _BuildOperationMetadata(messages):
 def _GetOperationMetadata(messages, operation):
   return encoding.PyValueToMessage(
       _BuildOperationMetadata(messages),
-      encoding.MessageToPyValue(operation.metadata))
+      encoding.MessageToPyValue(operation.metadata),
+  )
 
 
 def _GetOperation(client, request):
@@ -207,14 +209,17 @@ def _GetOperationStatus(client, request, tracker, messages):
   operation = client.projects_locations_operations.Get(request)
   if operation.error:
     raise exceptions.StatusToFunctionsError(
-        operation.error, error_message=OperationErrorToString(operation.error))
+        operation.error, error_message=OperationErrorToString(operation.error)
+    )
 
   operation_metadata = _GetOperationMetadata(messages, operation)
   for stage in operation_metadata.stages:
     stage_in_progress = (
-        stage.state is GetStage(messages).StateValueValuesEnum.IN_PROGRESS)
+        stage.state is GetStage(messages).StateValueValuesEnum.IN_PROGRESS
+    )
     stage_complete = (
-        stage.state is GetStage(messages).StateValueValuesEnum.COMPLETE)
+        stage.state is GetStage(messages).StateValueValuesEnum.COMPLETE
+    )
 
     if not stage_in_progress and not stage_complete:
       continue
@@ -244,17 +249,16 @@ def _GetOperationStatus(client, request, tracker, messages):
     if stage_complete:
       if stage.stateMessages:
         tracker.CompleteStageWithWarnings(
-            stage_key, GetStateMessagesStrings(stage.stateMessages))
+            stage_key, GetStateMessagesStrings(stage.stateMessages)
+        )
       else:
         tracker.CompleteStage(stage_key)
   return operation.done
 
 
-def WaitForOperation(client,
-                     messages,
-                     operation,
-                     description,
-                     extra_stages=None):
+def WaitForOperation(
+    client, messages, operation, description, extra_stages=None
+):
   """Wait for a long-running operation (LRO) to complete.
 
   Args:
@@ -267,7 +271,8 @@ def WaitForOperation(client,
       in the case of rollbacks.
   """
   request = messages.CloudfunctionsProjectsLocationsOperationsGetRequest(
-      name=operation.name)
+      name=operation.name
+  )
   # Wait for stages to be loaded.
   with progress_tracker.ProgressTracker('Preparing function') as tracker:
     retryer = retry.Retryer(max_wait_ms=MAX_WAIT_MS)
@@ -277,10 +282,12 @@ def WaitForOperation(client,
           _GetStages,
           args=[client, request, messages],
           should_retry_if=None,
-          sleep_ms=SLEEP_MS)
+          sleep_ms=SLEEP_MS,
+      )
     except retry.WaitException:
-      raise exceptions.FunctionsError('Operation {0} is taking too long'.format(
-          request.name))
+      raise exceptions.FunctionsError(
+          'Operation {0} is taking too long'.format(request.name)
+      )
 
   if extra_stages is not None:
     stages += extra_stages
@@ -294,10 +301,12 @@ def WaitForOperation(client,
           _GetOperationStatus,
           args=[client, request, tracker, messages],
           should_retry_if=False,
-          sleep_ms=SLEEP_MS)
+          sleep_ms=SLEEP_MS,
+      )
     except retry.WaitException:
-      raise exceptions.FunctionsError('Operation {0} is taking too long'.format(
-          request.name))
+      raise exceptions.FunctionsError(
+          'Operation {0} is taking too long'.format(request.name)
+      )
 
 
 def FormatTimestamp(timestamp):
@@ -322,12 +331,14 @@ def OperationErrorToString(error):
     A human readable string representation of the error.
   """
   error_message = 'OperationError: code={0}, message={1}'.format(
-      error.code, encoder.Decode(error.message))
+      error.code, encoder.Decode(error.message)
+  )
   messages = apis.GetMessagesModule('cloudfunctions', _V2_ALPHA)
   if error.details:
     for detail in error.details:
-      sub_error = encoding.PyValueToMessage(messages.Status,
-                                            encoding.MessageToPyValue(detail))
+      sub_error = encoding.PyValueToMessage(
+          messages.Status, encoding.MessageToPyValue(detail)
+      )
       if sub_error.code is not None or sub_error.message is not None:
         error_message += '\n' + OperationErrorToString(sub_error)
   return error_message
@@ -342,7 +353,8 @@ def HasRoleBinding(sa_email, role):
     role: The role to check for.
   """
   iam_policy = projects_api.GetIamPolicy(
-      projects_util.ParseProject(GetProject()))
+      projects_util.ParseProject(GetProject())
+  )
 
   # iam_policy.bindings structure:
   # list[<Binding
@@ -350,7 +362,8 @@ def HasRoleBinding(sa_email, role):
   #       role='roles/somerole'>...]
   return any(
       'serviceAccount:{}'.format(sa_email) in b.members and b.role == role
-      for b in iam_policy.bindings)
+      for b in iam_policy.bindings
+  )
 
 
 def PromptToBindRoleIfMissing(sa_email, role, reason=''):
@@ -367,12 +380,17 @@ def PromptToBindRoleIfMissing(sa_email, role, reason=''):
   if HasRoleBinding(sa_email, role):
     return
 
-  log.status.Print('Service account [{}] is missing the role [{}].\n{}'.format(
-      sa_email, role, reason))
+  log.status.Print(
+      'Service account [{}] is missing the role [{}].\n{}'.format(
+          sa_email, role, reason
+      )
+  )
 
   bind = console_io.CanPrompt() and console_io.PromptContinue(
       prompt_string='\nBind the role [{}] to service account [{}]?'.format(
-          role, sa_email))
+          role, sa_email
+      )
+  )
   if not bind:
     log.warning('Manual binding of above role may be necessary.\n')
     return
@@ -384,9 +402,15 @@ def PromptToBindRoleIfMissing(sa_email, role, reason=''):
     log.status.Print('Role successfully bound.\n')
   except apitools_exceptions.HttpForbiddenError:
     log.warning(
-        'Your account does not have permission to add roles to the service '
-        'account [%s]. If the deployment fails, ensure [%s] has the role '
-        '[%s] before retrying.', sa_email, sa_email, role)
+        (
+            'Your account does not have permission to add roles to the service '
+            'account [%s]. If the deployment fails, ensure [%s] has the role '
+            '[%s] before retrying.'
+        ),
+        sa_email,
+        sa_email,
+        role,
+    )
 
 
 def _LookupAuditConfig(iam_policy, service):
@@ -422,10 +446,14 @@ def HasDataAccessAuditLogsFullyEnabled(service):
     whether audit logs are fully enabled for the given service.
   """
   iam_policy = projects_api.GetIamPolicy(
-      projects_util.ParseProject(GetProject()))
+      projects_util.ParseProject(GetProject())
+  )
   audit_config = _LookupAuditConfig(iam_policy, service)
-  enabled_log_types = ([] if not audit_config else
-                       [lc.logType for lc in audit_config.auditLogConfigs])
+  enabled_log_types = (
+      []
+      if not audit_config
+      else [lc.logType for lc in audit_config.auditLogConfigs]
+  )
 
   return all([lt in enabled_log_types for lt in _LOG_TYPES])
 
@@ -446,14 +474,19 @@ def PromptToEnableDataAccessAuditLogs(service):
   log.status.Print(
       'Some Data Access audit logs are disabled for [{}]: '
       'https://console.cloud.google.com/iam-admin/audit?project={}'.format(
-          service, project))
+          service, project
+      )
+  )
 
   enable = console_io.CanPrompt() and console_io.PromptContinue(
       prompt_string='\nEnable all Data Access audit logs for [{}]?'.format(
-          service))
+          service
+      )
+  )
   if not enable:
     log.warning(
-        'Manual enablement of Data Access audit logs may be necessary.\n')
+        'Manual enablement of Data Access audit logs may be necessary.\n'
+    )
     return
 
   project_ref = projects_util.ParseProject(project)
@@ -470,22 +503,29 @@ def PromptToEnableDataAccessAuditLogs(service):
   enabled_log_types = [lc.logType for lc in audit_config.auditLogConfigs]
   log_types_to_enable = [lt for lt in _LOG_TYPES if lt not in enabled_log_types]
   audit_config.auditLogConfigs.extend(
-      [_rm_messages.AuditLogConfig(logType=lt) for lt in log_types_to_enable])
+      [_rm_messages.AuditLogConfig(logType=lt) for lt in log_types_to_enable]
+  )
 
   try:
     projects_api.SetIamPolicy(project_ref, policy, update_mask='auditConfigs')
     log.status.Print('Data Access audit logs successfully enabled.')
   except apitools_exceptions.HttpForbiddenError:
     log.warning(
-        'Your account does not have permission to enable Data Access audit '
-        'logs for the service [%s]. If the deployment fails, ensure audit '
-        'logs are enabled for service [%s] before retrying', service, service)
+        (
+            'Your account does not have permission to enable Data Access audit '
+            'logs for the service [%s]. If the deployment fails, ensure audit '
+            'logs are enabled for service [%s] before retrying'
+        ),
+        service,
+        service,
+    )
 
 
 def GetCloudFunctionsApiEnv():
   """Determine the cloudfunctions API env the gcloud cmd is using."""
-  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
-                              'cloudfunctions')
+  endpoint_property = getattr(
+      properties.VALUES.api_endpoint_overrides, 'cloudfunctions'
+  )
   api_string = endpoint_property.Get()
   if api_string is None:
     return ApiEnv.PROD

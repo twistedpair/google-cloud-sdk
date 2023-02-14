@@ -289,14 +289,16 @@
             "The LUN is being created.",
             "The LUN is being updated.",
             "The LUN is ready for use.",
-            "The LUN has been requested to be deleted."
+            "The LUN has been requested to be deleted.",
+            "The LUN is in cool off state. It will be deleted after `expire_time`."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "UPDATING",
             "READY",
-            "DELETING"
+            "DELETING",
+            "COOL_OFF"
           ]
         },
         "sizeGb": {
@@ -345,6 +347,12 @@
         "wwid": {
           "description": "The WWID for this LUN.",
           "type": "string"
+        },
+        "expireTime": {
+          "description": "Output only. Time after which LUN will be fully deleted. It is filled only for LUNs in COOL_OFF state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -384,14 +392,16 @@
             "The storage volume is being created.",
             "The storage volume is ready for use.",
             "The storage volume has been requested to be deleted.",
-            "The storage volume is being updated."
+            "The storage volume is being updated.",
+            "The storage volume is in cool off state. It will be deleted after `expire_time`."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "READY",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "COOL_OFF"
           ]
         },
         "requestedSizeGib": {
@@ -525,6 +535,12 @@
         "storageAggregatePool": {
           "description": "Input only. Name of the storage aggregate pool to allocate the volume in. Can be used only for VOLUME_PERFORMANCE_TIER_ASSIGNED volumes.",
           "type": "string"
+        },
+        "expireTime": {
+          "description": "Output only. Time after which volume will be fully deleted. It is filled only for volumes in COOLOFF state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -906,6 +922,17 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        }
+      }
+    },
+    "RenameInstanceRequest": {
+      "id": "RenameInstanceRequest",
+      "description": "Message requesting rename of a server.",
+      "type": "object",
+      "properties": {
+        "newName": {
+          "description": "Required. The new `name` of the instance. Format: {instancename}",
+          "type": "string"
         }
       }
     },
@@ -1399,6 +1426,13 @@
             "type": "string"
           }
         }
+      }
+    },
+    "EvictLunRequest": {
+      "id": "EvictLunRequest",
+      "description": "Request for skip lun cooloff and delete it.",
+      "type": "object",
+      "properties": {
       }
     },
     "NfsShare": {
@@ -2573,6 +2607,34 @@
                   ],
                   "description": "Update details of a single server."
                 },
+                "rename": {
+                  "id": "baremetalsolution.projects.locations.instances.rename",
+                  "path": "v2/{+name}:rename",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rename",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The `name` field is used to identify the instance. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RenameInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RenameInstance sets a new name for an instance."
+                },
                 "create": {
                   "id": "baremetalsolution.projects.locations.instances.create",
                   "path": "v2/{+parent}/instances",
@@ -3433,6 +3495,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Delete a Lun. Lun shouldn't be attached to any Instances."
+                    },
+                    "evict": {
+                      "id": "baremetalsolution.projects.locations.volumes.luns.evict",
+                      "path": "v2/{+name}:evict",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns/{lunsId}:evict",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the lun.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/luns\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "EvictLunRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Skips lun's cooloff and deletes it now. Lun must be in cooloff state."
                     }
                   }
                 }

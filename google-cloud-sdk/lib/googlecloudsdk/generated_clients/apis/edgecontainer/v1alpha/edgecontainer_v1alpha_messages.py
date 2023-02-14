@@ -890,7 +890,10 @@ class Machine(_messages.Message):
     hostedNode: Canonical resource name of the node that this machine is
       responsible for hosting e.g. projects/{project}/locations/{location}/clu
       sters/{cluster_id}/nodePools/{pool_id}/{node}, Or empty if the machine
-      is not assigned to assume the role of a node.
+      is not assigned to assume the role of a node. For control plane nodes
+      hosted on edge machines, this will return the following format: "project
+      s/{project}/locations/{location}/clusters/{cluster_id}/controlPlaneNodes
+      /{node}".
     labels: Labels associated with this resource.
     name: Required. The resource name of the machine.
     updateTime: Output only. The time when the node pool was last updated.

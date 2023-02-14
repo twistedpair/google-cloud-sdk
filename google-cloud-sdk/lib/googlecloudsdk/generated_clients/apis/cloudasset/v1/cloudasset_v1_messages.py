@@ -1038,8 +1038,8 @@ class CloudassetFeedsCreateRequest(_messages.Message):
     parent: Required. The name of the project/folder/organization where this
       feed should be created in. It can only be an organization number (such
       as "organizations/123"), a folder number (such as "folders/123"), a
-      project ID (such as "projects/my-project-id")", or a project number
-      (such as "projects/12345").
+      project ID (such as "projects/my-project-id"), or a project number (such
+      as "projects/12345").
   """
 
   createFeedRequest = _messages.MessageField('CreateFeedRequest', 1)
@@ -1137,7 +1137,7 @@ class CloudassetSavedQueriesCreateRequest(_messages.Message):
     parent: Required. The name of the project/folder/organization where this
       saved_query should be created in. It can only be an organization number
       (such as "organizations/123"), a folder number (such as "folders/123"),
-      a project ID (such as "projects/my-project-id")", or a project number
+      a project ID (such as "projects/my-project-id"), or a project number
       (such as "projects/12345").
     savedQuery: A SavedQuery resource to be passed as the request body.
     savedQueryId: Required. The ID to use for the saved query, which must be
@@ -4599,7 +4599,7 @@ class Resource(_messages.Message):
 
 class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resource.
-  Next ID: 31
+  Next ID: 32
 
   Messages:
     AdditionalAttributesValue: The additional searchable attributes of this

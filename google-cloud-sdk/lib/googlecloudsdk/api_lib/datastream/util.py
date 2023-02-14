@@ -20,15 +20,22 @@ from __future__ import unicode_literals
 
 import uuid
 
+from apitools.base.py import encoding as api_encoding
+from googlecloudsdk.api_lib.dataproc import exceptions
+from googlecloudsdk.api_lib.datastream import camel_case_utils
 from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 import six
 
+
 _DEFAULT_API_VERSION = 'v1'
+_DEFAULT_API_NAME = 'datastream'
+CAMEL_CASE_CONVERSION_EVENT = _DEFAULT_API_NAME + '_camel_case_conversion'
 
 # TODO(b/207467120): remove translation after BETA deprecation.
 _UPDATE_MASK_FIELD_TRANSLATION_V1ALPHA1_TO_V1 = {
@@ -64,6 +71,25 @@ RDBMS_FIELD_NAME_BY_RELEASE_TRACK = {
         base.ReleaseTrack.GA: 'exclude_objects'
     }
 }
+
+
+def ParseMessageAndValidateSchema(config_file_path, schema_name, message_type):
+  """Parses a config message and validates it's schema."""
+  schema_path = export_util.GetSchemaPath(
+      _DEFAULT_API_NAME, _DEFAULT_API_VERSION, schema_name, for_help=False
+  )
+
+  # NOMUTANTS -- not necessary here.
+  data = console_io.ReadFromFileOrStdin(config_file_path, binary=False)
+  parsed_yaml = yaml.load(data)
+
+  message = CreateMessageWithCamelCaseConversion(
+      message_type=message_type,
+      parsed_yaml=parsed_yaml,
+      schema_path=schema_path,
+  )
+
+  return message
 
 
 def GetClientInstance(api_version=_DEFAULT_API_VERSION, no_http=False):
@@ -104,6 +130,77 @@ def GenerateRequestId():
   return six.text_type(uuid.uuid4())
 
 
+def ParseMysqlRdbmsFile(
+    messages, mysql_rdbms_file, release_track=base.ReleaseTrack.BETA
+):
+  """Parses a mysql_rdbms_file into the MysqlRdbms message."""
+  if release_track != base.ReleaseTrack.BETA:
+    return ParseMessageAndValidateSchema(
+        mysql_rdbms_file, 'MysqlRdbms', messages.MysqlRdbms
+    )
+
+  return ParseMysqlRdbmsFileBeta(messages, mysql_rdbms_file, release_track)
+
+
+def ParseOracleRdbmsFile(
+    messages, oracle_rdbms_file, release_track=base.ReleaseTrack.BETA
+):
+  """Parses a oracle_rdbms_file into the OracleRdbms message."""
+  if release_track != base.ReleaseTrack.BETA:
+    return ParseMessageAndValidateSchema(
+        oracle_rdbms_file, 'OracleRdbms', messages.OracleRdbms
+    )
+
+  return ParseOracleRdbmsFileBeta(messages, oracle_rdbms_file, release_track)
+
+
+def ParsePostgresqlRdbmsFile(messages, postgresql_rdbms_file):
+  """Parses a postgresql_rdbms_file into the PostgresqlRdbms message."""
+  return ParseMessageAndValidateSchema(
+      postgresql_rdbms_file, 'PostgresqlRdbms', messages.PostgresqlRdbms
+  )
+
+
+def CreateMessageWithCamelCaseConversion(
+    message_type, parsed_yaml, schema_path=None
+):
+  """Create a message from a yaml dict.
+
+  Similar to export_util.Import (since we convert to camel case before)
+  Args:
+    message_type: a Datastream message type to create.
+    parsed_yaml: dict
+    schema_path: str, path to the message schema to validate against.
+
+  Returns:
+    a Datastream message.
+  """
+  converted_yaml = camel_case_utils.ConvertYamlToCamelCase(parsed_yaml)
+  if schema_path:
+    # If a schema is provided, validate against it.
+    export_util.ValidateYAML(converted_yaml, schema_path)
+  try:
+    message = api_encoding.PyValueToMessage(message_type, converted_yaml)
+  except Exception as e:
+    raise exceptions.ParseError('Cannot parse YAML: [{0}]'.format(e))
+  return message
+
+
+# TODO(b/207467120): deprecate BETA client.
+def GetRDBMSV1alpha1ToV1FieldName(field, release_track):
+  return RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field, {}).get(
+      release_track, field
+  )
+
+
+def _GetRDBMSFieldName(field, release_track):
+  return RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field, {}).get(
+      release_track, field
+  )
+
+
+# Deprecated BETA methods - TODO(b/207467120).
+# remove after full BETA deprecation.
 def ParseMysqlColumn(messages, mysql_column_object, release_track):
   """Parses a raw mysql column json/yaml into the MysqlColumn message."""
   message = messages.MysqlColumn(
@@ -158,22 +255,6 @@ def ParseMysqlDatabase(messages, mysql_database_object, release_track):
                                    database_key)
   return messages.MysqlDatabase(
       database=database_name, mysqlTables=mysql_tables_msg_list)
-
-
-def ParseMysqlRdbmsFile(messages,
-                        mysql_rdbms_file,
-                        release_track=base.ReleaseTrack.BETA):
-  """Parses a mysql_rdbms_file into the MysqlRdbms message."""
-  data = console_io.ReadFromFileOrStdin(mysql_rdbms_file, binary=False)
-  try:
-    mysql_rdbms_head_data = yaml.load(data)
-  except Exception as e:
-    raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
-
-  mysql_rdbms_data = mysql_rdbms_head_data.get('mysql_rdbms',
-                                               mysql_rdbms_head_data)
-  return ParseMysqlSchemasListToMysqlRdbmsMessage(messages, mysql_rdbms_data,
-                                                  release_track)
 
 
 def ParseMysqlSchemasListToMysqlRdbmsMessage(messages,
@@ -254,22 +335,6 @@ def ParseOracleSchema(messages, oracle_schema_object, release_track):
       schema=schema_name, oracleTables=oracle_tables_msg_list)
 
 
-def ParseOracleRdbmsFile(messages,
-                         oracle_rdbms_file,
-                         release_track=base.ReleaseTrack.BETA):
-  """Parses a oracle_rdbms_file into the OracleRdbms message."""
-  data = console_io.ReadFromFileOrStdin(oracle_rdbms_file, binary=False)
-  try:
-    oracle_rdbms_head_data = yaml.load(data)
-  except Exception as e:
-    raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
-
-  oracle_rdbms_data = oracle_rdbms_head_data.get('oracle_rdbms',
-                                                 oracle_rdbms_head_data)
-  return ParseOracleSchemasListToOracleRdbmsMessage(messages, oracle_rdbms_data,
-                                                    release_track)
-
-
 def ParseOracleSchemasListToOracleRdbmsMessage(messages,
                                                oracle_rdbms_data,
                                                release_track=base.ReleaseTrack
@@ -338,20 +403,6 @@ def ParsePostgresqlSchema(messages, postgresql_schema_object):
       schema=schema_name, postgresqlTables=postgresql_tables_msg_list)
 
 
-def ParsePostgresqlRdbmsFile(messages, postgresql_rdbms_file):
-  """Parses a postgresql_rdbms_file into the PostgresqlRdbms message."""
-  data = console_io.ReadFromFileOrStdin(postgresql_rdbms_file, binary=False)
-  try:
-    postgresql_rdbms_head_data = yaml.load(data)
-  except Exception as e:
-    raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
-
-  postgresql_rdbms_data = postgresql_rdbms_head_data.get(
-      'postgresql_rdbms', postgresql_rdbms_head_data)
-  return ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(
-      messages, postgresql_rdbms_data)
-
-
 def ParsePostgresqlSchemasListToPostgresqlRdbmsMessage(messages,
                                                        postgresql_rdbms_data):
   """Parses an object of type {postgresql_schemas: [...]} into the PostgresqlRdbms message."""
@@ -396,12 +447,38 @@ def UpdateV1alpha1ToV1MaskFields(field_mask):
   return updated_field_mask
 
 
-# TODO(b/207467120): deprecate BETA client.
-def GetRDBMSV1alpha1ToV1FieldName(field, release_track):
-  return RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field,
-                                               {}).get(release_track, field)
+def ParseMysqlRdbmsFileBeta(
+    messages, mysql_rdbms_file, release_track=base.ReleaseTrack.BETA
+):
+  """Parses a mysql_rdbms_file into the MysqlRdbms message. deprecated."""
+
+  data = console_io.ReadFromFileOrStdin(mysql_rdbms_file, binary=False)
+  try:
+    mysql_rdbms_head_data = yaml.load(data)
+  except Exception as e:
+    raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+  mysql_rdbms_data = mysql_rdbms_head_data.get(
+      'mysql_rdbms', mysql_rdbms_head_data
+  )
+  return ParseMysqlSchemasListToMysqlRdbmsMessage(
+      messages, mysql_rdbms_data, release_track
+  )
 
 
-def _GetRDBMSFieldName(field, release_track):
-  return RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field,
-                                               {}).get(release_track, field)
+def ParseOracleRdbmsFileBeta(
+    messages, oracle_rdbms_file, release_track=base.ReleaseTrack.BETA
+):
+  """Parses a oracle_rdbms_file into the OracleRdbms message. deprecated."""
+  data = console_io.ReadFromFileOrStdin(oracle_rdbms_file, binary=False)
+  try:
+    oracle_rdbms_head_data = yaml.load(data)
+  except Exception as e:
+    raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+  oracle_rdbms_data = oracle_rdbms_head_data.get(
+      'oracle_rdbms', oracle_rdbms_head_data
+  )
+  return ParseOracleSchemasListToOracleRdbmsMessage(
+      messages, oracle_rdbms_data, release_track
+  )

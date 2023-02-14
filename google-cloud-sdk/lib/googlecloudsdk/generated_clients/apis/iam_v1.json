@@ -1565,6 +1565,138 @@
       "properties": {
       }
     },
+    "ListWorkloadIdentityPoolNamespacesResponse": {
+      "id": "ListWorkloadIdentityPoolNamespacesResponse",
+      "description": "Response message for ListWorkloadIdentityPoolNamespaces.",
+      "type": "object",
+      "properties": {
+        "workloadIdentityPoolNamespaces": {
+          "description": "A list of namespaces.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkloadIdentityPoolNamespace"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "WorkloadIdentityPoolNamespace": {
+      "id": "WorkloadIdentityPoolNamespace",
+      "description": "Represents a namespace for a workload identity pool.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the namespace.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the namespace. Cannot exceed 256 characters.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the namespace.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State unspecified.",
+            "The namespace is active.",
+            "The namespace is soft-deleted. Soft-deleted namespaces are permanently deleted after approximately 30 days. You can restore a soft-deleted namespace using UndeleteWorkloadIdentityPoolNamespace. You cannot reuse the ID of a soft-deleted namespace until it is permanently deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETED"
+          ]
+        },
+        "disabled": {
+          "description": "Whether the namespace is disabled. If disabled, credentials may no longer be issued for identities within this namespace (including federated identities) and they will no longer be able to access Google Cloud APIs. Existing credentials may continue to be accepted by third party APIs and workloads until they expire.",
+          "type": "boolean"
+        },
+        "expireTime": {
+          "description": "Output only. Time after which the namespace will be permanently purged and cannot be recovered.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UndeleteWorkloadIdentityPoolNamespaceRequest": {
+      "id": "UndeleteWorkloadIdentityPoolNamespaceRequest",
+      "description": "Request message for UndeleteWorkloadIdentityPoolNamespace.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListWorkloadIdentityPoolManagedIdentitiesResponse": {
+      "id": "ListWorkloadIdentityPoolManagedIdentitiesResponse",
+      "description": "Response message for ListWorkloadIdentityPoolManagedIdentities.",
+      "type": "object",
+      "properties": {
+        "workloadIdentityPoolManagedIdentities": {
+          "description": "A list of namespaces.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkloadIdentityPoolManagedIdentity"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "WorkloadIdentityPoolManagedIdentity": {
+      "id": "WorkloadIdentityPoolManagedIdentity",
+      "description": "Represents a managed identity for a workload identity pool namespace.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the managed identity.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the managed identity. Cannot exceed 256 characters.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the managed identity.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State unspecified.",
+            "The managed identity is active.",
+            "The managed identity is soft-deleted. Soft-deleted managed identities are permanently deleted after approximately 30 days. You can restore a soft-deleted managed identity using UndeleteWorkloadIdentityPoolManagedIdentity. You cannot reuse the ID of a soft-deleted managed identity until it is permanently deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETED"
+          ]
+        },
+        "disabled": {
+          "description": "Whether the managed identity is disabled. If disabled, credentials may no longer be issued for this identity and this identity will no longer be able to access Google Cloud APIs. Existing credentials may continue to be accepted by third party APIs and workloads until they expire.",
+          "type": "boolean"
+        },
+        "expireTime": {
+          "description": "Output only. Time after which the managed identity will be permanently purged and cannot be recovered.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UndeleteWorkloadIdentityPoolManagedIdentityRequest": {
+      "id": "UndeleteWorkloadIdentityPoolManagedIdentityRequest",
+      "description": "Request message for UndeleteWorkloadIdentityPoolManagedIdentity.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListWorkloadIdentityPoolProvidersResponse": {
       "id": "ListWorkloadIdentityPoolProvidersResponse",
       "description": "Response message for ListWorkloadIdentityPoolProviders.",
@@ -2090,6 +2222,389 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                },
+                "namespaces": {
+                  "methods": {
+                    "list": {
+                      "id": "iam.projects.locations.workloadIdentityPools.namespaces.list",
+                      "path": "v1/{+parent}/namespaces",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource to list namespaces for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of namespaces to return. If unspecified, at most 50 namespaces are returned. The maximum value is 1000; values above are 1000 truncated to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListWorkloadIdentityPoolNamespaces` call. Provide this to retrieve the subsequent page.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "showDeleted": {
+                          "description": "Whether to return soft-deleted namespaces.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListWorkloadIdentityPoolNamespacesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists all non-deleted WorkloadIdentityPoolNamespaces in a workload identity pool. If `show_deleted` is set to `true`, then deleted namespaces are also listed."
+                    },
+                    "get": {
+                      "id": "iam.projects.locations.workloadIdentityPools.namespaces.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the namespace to retrieve.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "WorkloadIdentityPoolNamespace"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets an individual WorkloadIdentityPoolNamespace."
+                    },
+                    "create": {
+                      "id": "iam.projects.locations.workloadIdentityPools.namespaces.create",
+                      "path": "v1/{+parent}/namespaces",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource to create the namespace in. The only supported location is `global`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "workloadIdentityPoolNamespaceId": {
+                          "description": "Required. The ID to use for the namespace. Must conform to the SPIFFE spec which limits characters to letters, numbers, dots, dashes, and underscores [a-zA-Z0-9.-_] (it cannot include only periods) and sets a maximum length of the full canonical identifier at 2048 bytes. The prefix \"gcp-\" will be reserved for future uses.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "WorkloadIdentityPoolNamespace"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new WorkloadIdentityPoolNamespace in a WorkloadIdentityPool."
+                    },
+                    "patch": {
+                      "id": "iam.projects.locations.workloadIdentityPools.namespaces.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of the namespace.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. The list of fields to update.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "WorkloadIdentityPoolNamespace"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates an existing WorkloadIdentityPoolNamespace in a WorkloadIdentityPool."
+                    },
+                    "delete": {
+                      "id": "iam.projects.locations.workloadIdentityPools.namespaces.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the namespace to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a WorkloadIdentityPoolNamespace. You can undelete a namespace for 30 days. After 30 days, deletion is permanent."
+                    },
+                    "undelete": {
+                      "id": "iam.projects.locations.workloadIdentityPools.namespaces.undelete",
+                      "path": "v1/{+name}:undelete",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:undelete",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the namespace to undelete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "UndeleteWorkloadIdentityPoolNamespaceRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Undeletes a WorkloadIdentityPoolNamespace, as long as it was deleted fewer than 30 days ago."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "managedIdentities": {
+                      "methods": {
+                        "list": {
+                          "id": "iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.list",
+                          "path": "v1/{+parent}/managedIdentities",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The parent resource to list managed identities for.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of managed identities to return. If unspecified, at most 50 managed identities are returned. The maximum value is 1000; values above are 1000 truncated to 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous `ListWorkloadIdentityPoolManagedIdentities` call. Provide this to retrieve the subsequent page.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "showDeleted": {
+                              "description": "Whether to return soft-deleted namespaces.",
+                              "location": "query",
+                              "type": "boolean"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListWorkloadIdentityPoolManagedIdentitiesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists all non-deleted WorkloadIdentityPoolManagedIdentitys in a namespace. If `show_deleted` is set to `true`, then deleted managed identites are also listed."
+                        },
+                        "get": {
+                          "id": "iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the managed identity to retrieve.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+\/managedIdentities\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "WorkloadIdentityPoolManagedIdentity"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets an individual WorkloadIdentityPoolManagedIdentity."
+                        },
+                        "create": {
+                          "id": "iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.create",
+                          "path": "v1/{+parent}/managedIdentities",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The parent resource to create the manage identity in. The only supported location is `global`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "workloadIdentityPoolManagedIdentityId": {
+                              "description": "Required. The ID to use for the managed identity. Must conform to the SPIFFE spec which limits characters to letters, numbers, dots, dashes, and underscores [a-zA-Z0-9.-_] (it cannot include only periods) and sets a maximum length of the full canonical identifier at 2048 bytes. The prefix \"gcp-\" will be reserved for future uses.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "WorkloadIdentityPoolManagedIdentity"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a new WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace."
+                        },
+                        "patch": {
+                          "id": "iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.patch",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. The resource name of the managed identity.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+\/managedIdentities\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Required. The list of fields to update.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "WorkloadIdentityPoolManagedIdentity"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates an existing WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace."
+                        },
+                        "delete": {
+                          "id": "iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.delete",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the managed identity to delete.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+\/managedIdentities\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a WorkloadIdentityPoolManagedIdentity. You can undelete a managed identity for 30 days. After 30 days, deletion is permanent."
+                        },
+                        "undelete": {
+                          "id": "iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.undelete",
+                          "path": "v1/{+name}:undelete",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:undelete",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the managed identity to undelete.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/namespaces\/[^\/]+\/managedIdentities\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "UndeleteWorkloadIdentityPoolManagedIdentityRequest"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Undeletes a WorkloadIdentityPoolManagedIdentity, as long as it was deleted fewer than 30 days ago."
+                        }
+                      }
                     }
                   }
                 },

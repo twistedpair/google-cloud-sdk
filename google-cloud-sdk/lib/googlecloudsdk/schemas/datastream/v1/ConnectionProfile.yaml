@@ -57,3 +57,4 @@ properties:
   staticServiceIpConnectivity:
     description: Static Service IP connectivity.
     type: staticserviceipconnectivity
+    $ref: StaticServiceIpConnectivity.yaml

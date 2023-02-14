@@ -43,6 +43,10 @@ PREREQUISITE_OPTION_ERROR_MSG = """\
 Cannot specify --{opt} without --{prerequisite}.
 """
 
+ENABLED_TRIGGERER_IS_REQUIRED_MSG = """\
+Cannot specify --{opt} without enabling a triggerer.
+"""
+
 INVALID_OPTION_FOR_MIN_IMAGE_VERSION_ERROR_MSG = """\
 Cannot specify {opt}. Composer version {composer_version} and Airflow version {airflow_version} are required.
 """
@@ -61,8 +65,7 @@ def ValidateComposerVersionExclusiveOptionFactory(composer_v1_option,
   """Creates Composer version specific ActionClass decorators."""
 
   def ValidateComposerVersionExclusiveOptionDecorator(action_class):
-    """Decorates ActionClass to cross-validate argument with Composer version.
-    """
+    """Decorates ActionClass to cross-validate argument with Composer version."""
     original_call = action_class.__call__
 
     def DecoratedCall(self, parser, namespace, value, option_string=None):
@@ -677,11 +680,25 @@ NUM_SCHEDULERS = base.Argument(
     Number of schedulers, supported in the Environments with Airflow 2.0.1 and later.
     """)
 
+TRIGGERER_COUNT = base.Argument(
+    '--triggerer-count',
+    default=None,
+    type=int,
+    action=V2ExclusiveStoreAction,
+    help="""\
+    Number of triggerers, supported in the Environments with Composer {} and Airflow {} and greater.
+    """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION),
+)
+
 ENABLE_TRIGGERER = base.Argument(
     '--enable-triggerer',
     default=None,
     const=True,
-    action='store_const',
+    action=actions.DeprecationAction(
+        '--enable-triggerer',
+        action='store_const',
+        warn='This flag is deprecated. '
+             'Use --triggerer-count instead.'),
     help="""\
     Enable use of a triggerer, supported in the Environments with Composer {} and Airflow {} and greater.
     """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION))
@@ -690,7 +707,11 @@ DISABLE_TRIGGERER = base.Argument(
     '--disable-triggerer',
     default=None,
     const=True,
-    action='store_const',
+    action=actions.DeprecationAction(
+        '--disable-triggerer',
+        action='store_const',
+        warn='This flag is deprecated. '
+             'Use --triggerer-count 0 instead.'),
     help="""\
     Disable a triggerer, supported in the Environments with Composer {} and Airflow {} and greater.
     """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION))
@@ -1506,6 +1527,7 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
     triggerer_enabled_group = triggerer_params_group.add_argument_group(
         TRIGGERER_ENABLED_GROUP_DESCRIPTION)
     TRIGGERER_CPU.AddToParser(triggerer_enabled_group)
+    TRIGGERER_COUNT.AddToParser(triggerer_enabled_group)
     TRIGGERER_MEMORY.AddToParser(triggerer_enabled_group)
     ENABLE_TRIGGERER.AddToParser(triggerer_enabled_group)
     DISABLE_TRIGGERER.AddToParser(triggerer_params_group)

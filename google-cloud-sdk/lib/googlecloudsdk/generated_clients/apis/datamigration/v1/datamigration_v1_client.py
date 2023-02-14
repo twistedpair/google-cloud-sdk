@@ -1414,6 +1414,33 @@ class DatamigrationV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def FetchStaticIps(self, request, global_params=None):
+      r"""Exposes the outgoing static IP addresses used by DMS for source for static-IP connectivity.
+
+      Args:
+        request: (DatamigrationProjectsLocationsFetchStaticIpsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchStaticIpsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchStaticIps')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchStaticIps.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:fetchStaticIps',
+        http_method='GET',
+        method_id='datamigration.projects.locations.fetchStaticIps',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}:fetchStaticIps',
+        request_field='',
+        request_type_name='DatamigrationProjectsLocationsFetchStaticIpsRequest',
+        response_type_name='FetchStaticIpsResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 

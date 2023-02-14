@@ -86,7 +86,8 @@ def RaiseProxyError(source_exc):
       'Example: HTTPS_PROXY=http://192.168.0.1:8080'), source_exc)
 
 
-def PromptForAuthCode(message, authorize_url):
+def PromptForAuthCode(message, authorize_url, client_config=None):
+  ImportReadline(client_config)
   log.err.Print(message.format(url=authorize_url))
   return input('Enter authorization code: ').strip()
 
@@ -228,6 +229,8 @@ class InstalledAppFlow(
       self.redirect_uri = redirect_uri
     else:
       self.redirect_uri = self._OOB_REDIRECT_URI
+    # include_client_id should be set to True for 1P, and False for 3P.
+    self.include_client_id = self.client_config.get('3pi') is None
 
   def Run(self, **kwargs):
     with HandleOauth2FlowErrors():
@@ -326,13 +329,10 @@ class FullWebFlow(InstalledAppFlow):
     authorization_response = self.app.last_request_uri.replace(
         'http:', 'https:')
 
-    # include_client_id should be set to True for 1P, and False for 3P.
-    include_client_id = self.client_config.get('3pi') is None
-
     # TODO(b/204953716): Remove verify=None
     self.fetch_token(
         authorization_response=authorization_response,
-        include_client_id=include_client_id,
+        include_client_id=self.include_client_id,
         verify=None,
     )
     return self.credentials
@@ -478,10 +478,24 @@ def _ValidateAuthResponse(auth_response):
   raise AuthRequestFailedError(_AUTH_RESPONSE_ERR_MSG)
 
 
-def PromptForAuthResponse(helper_msg, prompt_msg):
+def PromptForAuthResponse(helper_msg, prompt_msg, client_config=None):
+  ImportReadline(client_config)
   log.err.Print(helper_msg)
   log.err.Print('\n')
   return input(prompt_msg).strip()
+
+
+def ImportReadline(client_config):
+  if (
+      client_config is not None
+      and '3pi' in client_config
+      and sys.platform.startswith('dar')
+  ):
+    # Importing readline alters the built-in input() method
+    # to use the GNU readline interface.
+    # The basic OSX input() has an input limit of 1024 characters,
+    # which is sometimes not enough for us.
+    import readline  # pylint: disable=unused-import, g-import-not-at-top
 
 
 class NoBrowserFlow(InstalledAppFlow):
@@ -534,15 +548,12 @@ class NoBrowserFlow(InstalledAppFlow):
         target=target,
         version=self._REQUIRED_GCLOUD_VERSION,
         command=command,
-        partial_url=partial_url)
-    if '3pi' in self.client_config and sys.platform.startswith('dar'):
-      # Importing readline alters the built-in input() method
-      # to use the GNU readline interface.
-      # The basic OSX input() has an input limit of 1024 characters,
-      # which is sometimes not enough for us.
-      import readline  # pylint: disable=unused-import, g-import-not-at-top
+        partial_url=partial_url,
+    )
 
-    return PromptForAuthResponse(helper_msg, self._PROMPT_MSG)
+    return PromptForAuthResponse(
+        helper_msg, self._PROMPT_MSG, self.client_config
+    )
 
   def _Run(self, **kwargs):
     auth_url, _ = self.authorization_url(**kwargs)
@@ -562,11 +573,15 @@ class NoBrowserFlow(InstalledAppFlow):
     # using "localhost" as the redirect_uri in token exchange because it is
     # what was used during authorization.
     self.redirect_uri = 'http://{}:{}/'.format(_LOCALHOST, redirect_port)
+
+    # include_client_id should be set to True for 1P, and False for 3P.
+    include_client_id = self.client_config.get('3pi') is None
     # TODO(b/204953716): Remove verify=None
     self.fetch_token(
         authorization_response=auth_response,
-        include_client_id=True,
-        verify=None)
+        include_client_id=include_client_id,
+        verify=None,
+    )
     return self.credentials
 
 
@@ -703,14 +718,22 @@ class RemoteLoginWithAuthProxyFlow(InstalledAppFlow):
         google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
           for the user.
     """
+
     kwargs.setdefault('prompt', 'consent')
     auth_url, _ = self.authorization_url(**kwargs)
 
     authorization_prompt_message = (
-        'Go to the following link in your browser:\n\n    {url}\n')
-    code = PromptForAuthCode(authorization_prompt_message, auth_url)
+        'Go to the following link in your browser:\n\n    {url}\n'
+    )
+
+    code = PromptForAuthCode(
+        authorization_prompt_message, auth_url, self.client_config
+    )
+
     # TODO(b/204953716): Remove verify=None
-    self.fetch_token(code=code, include_client_id=True, verify=None)
+    self.fetch_token(
+        code=code, include_client_id=self.include_client_id, verify=None
+    )
 
     return self.credentials
 

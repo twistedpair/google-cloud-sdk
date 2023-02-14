@@ -106,13 +106,14 @@ def _GetExecutionUiLink(execution):
               project=execution.namespace)
 
 
-def GetBuildEquivalentForSourceRunMessage(serv, pack, source):
+def GetBuildEquivalentForSourceRunMessage(name, pack, source, is_job=False):
   """Returns a user message for equivalent gcloud commands for source deploy.
 
   Args:
-    serv: name of the service
-    pack: the pack arguments used to build the service image
+    name: name of the source target, which is either a service or a job
+    pack: the pack arguments used to build the container image
     source: the location of the source
+    is_job: true if the source is for a job, otherwise for a service.
   """
   build_flag = ''
   if pack:
@@ -121,8 +122,10 @@ def GetBuildEquivalentForSourceRunMessage(serv, pack, source):
     build_flag = '--tag [IMAGE]'
   msg = ('This command is equivalent to running '
          '`gcloud builds submit {build_flag} {source}` and '
-         '`gcloud run deploy {serv} --image [IMAGE]`\n')
+         '`gcloud run {subgroup}deploy {name} --image [IMAGE]`\n')
+  subgroup = 'jobs ' if is_job else ''
   return msg.format(
-      serv=serv,
+      name=name,
       build_flag=build_flag,
-      source=source)
+      source=source,
+      subgroup=subgroup)

@@ -257,7 +257,7 @@ class BatchProjectsLocationsJobsCreateRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -282,7 +282,7 @@ class BatchProjectsLocationsJobsDeleteRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -904,9 +904,10 @@ class Job(_messages.Message):
       central1/jobs/job01".
     notification: Deprecated: please use notifications instead.
     notifications: Notification configurations.
-    priority: Priority of the Job. The valid value range is [0, 100). A job
-      with higher priority value is more likely to run earlier if all other
-      requirements are satisfied.
+    priority: Priority of the Job. The valid value range is [0, 100). Default
+      value is 0. Higher value indicates higher priority. A job with higher
+      priority value is more likely to run earlier if all other requirements
+      are satisfied.
     schedulingPolicy: Scheduling policy for TaskGroups in the job.
     status: Output only. Job status. It is read only for users.
     taskGroups: Required. TaskGroups in the Job. Only one TaskGroup is
@@ -1150,15 +1151,27 @@ class LifecyclePolicy(_messages.Message):
 
   Enums:
     ActionValueValuesEnum: Action to execute when ActionCondition is true.
+      When RETRY_TASK is specified, we will retry failed tasks if we notice
+      any exit code match and fail tasks if no match is found. Likewise, when
+      FAIL_TASK is specified, we will fail tasks if we notice any exit code
+      match and retry tasks if no match is found.
 
   Fields:
-    action: Action to execute when ActionCondition is true.
+    action: Action to execute when ActionCondition is true. When RETRY_TASK is
+      specified, we will retry failed tasks if we notice any exit code match
+      and fail tasks if no match is found. Likewise, when FAIL_TASK is
+      specified, we will fail tasks if we notice any exit code match and retry
+      tasks if no match is found.
     actionCondition: Conditions that decide why a task failure is dealt with a
       specific action.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""Action to execute when ActionCondition is true.
+    r"""Action to execute when ActionCondition is true. When RETRY_TASK is
+    specified, we will retry failed tasks if we notice any exit code match and
+    fail tasks if no match is found. Likewise, when FAIL_TASK is specified, we
+    will fail tasks if we notice any exit code match and retry tasks if no
+    match is found.
 
     Values:
       ACTION_UNSPECIFIED: Action unspecified.
@@ -2192,11 +2205,9 @@ class TaskSpec(_messages.Message):
     environment: Environment variables to set before running the Task.
     environments: Deprecated: please use environment(non-plural) instead.
     lifecyclePolicies: Lifecycle management schema when any task in a task
-      group is failed. The valid size of lifecycle policies are [0, 10]. For
-      each lifecycle policy, when the condition is met, the action in that
-      policy will execute. If there are multiple policies that the task
-      execution result matches, we use the action from the first matched
-      policy. If task execution result does not meet with any of the defined
+      group is failed. Currently we only support one lifecycle policy. When
+      the lifecycle policy condition is met, the action in the policy will
+      execute. If task execution result does not meet with the defined
       lifecycle policy, we consider it as the default policy. Default policy
       means if the exit code is 0, exit task. If task ends with non-zero exit
       code, retry the task with max_retry_count.

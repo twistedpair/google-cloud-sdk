@@ -701,8 +701,6 @@ apis:
     v2alpha1:
       discovery_doc: genomics_v2alpha1.json
   gkebackup:
-    v1alpha1:
-      discovery_doc: gkebackup_v1alpha1.json
     v1:
       discovery_doc: gkebackup_v1.json
       default: true

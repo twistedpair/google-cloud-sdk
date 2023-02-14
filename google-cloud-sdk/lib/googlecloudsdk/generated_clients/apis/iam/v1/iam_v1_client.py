@@ -52,6 +52,8 @@ class IamV1(base_api.BaseApiClient):
     self.organizations_roles = self.OrganizationsRolesService(self)
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
+    self.projects_locations_workloadIdentityPools_namespaces_managedIdentities = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesService(self)
+    self.projects_locations_workloadIdentityPools_namespaces = self.ProjectsLocationsWorkloadIdentityPoolsNamespacesService(self)
     self.projects_locations_workloadIdentityPools_operations = self.ProjectsLocationsWorkloadIdentityPoolsOperationsService(self)
     self.projects_locations_workloadIdentityPools_providers_keys_operations = self.ProjectsLocationsWorkloadIdentityPoolsProvidersKeysOperationsService(self)
     self.projects_locations_workloadIdentityPools_providers_keys = self.ProjectsLocationsWorkloadIdentityPoolsProvidersKeysService(self)
@@ -1135,6 +1137,350 @@ class IamV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='QueryTestablePermissionsRequest',
         response_type_name='QueryTestablePermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools_namespaces_managedIdentities resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools_namespaces_managedIdentities'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['workloadIdentityPoolManagedIdentityId'],
+        relative_path='v1/{+parent}/managedIdentities',
+        request_field='workloadIdentityPoolManagedIdentity',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a WorkloadIdentityPoolManagedIdentity. You can undelete a managed identity for 30 days. After 30 days, deletion is permanent.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}',
+        http_method='DELETE',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an individual WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkloadIdentityPoolManagedIdentity) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetRequest',
+        response_type_name='WorkloadIdentityPoolManagedIdentity',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted WorkloadIdentityPoolManagedIdentitys in a namespace. If `show_deleted` is set to `true`, then deleted managed identites are also listed.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkloadIdentityPoolManagedIdentitiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/managedIdentities',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRequest',
+        response_type_name='ListWorkloadIdentityPoolManagedIdentitiesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}',
+        http_method='PATCH',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workloadIdentityPoolManagedIdentity',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkloadIdentityPoolManagedIdentity, as long as it was deleted fewer than 30 days ago.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:undelete',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkloadIdentityPoolManagedIdentityRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkloadIdentityPoolsNamespacesService(base_api.BaseApiService):
+    """Service class for the projects_locations_workloadIdentityPools_namespaces resource."""
+
+    _NAME = 'projects_locations_workloadIdentityPools_namespaces'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsLocationsWorkloadIdentityPoolsNamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkloadIdentityPoolNamespace in a WorkloadIdentityPool.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['workloadIdentityPoolNamespaceId'],
+        relative_path='v1/{+parent}/namespaces',
+        request_field='workloadIdentityPoolNamespace',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a WorkloadIdentityPoolNamespace. You can undelete a namespace for 30 days. After 30 days, deletion is permanent.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}',
+        http_method='DELETE',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an individual WorkloadIdentityPoolNamespace.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkloadIdentityPoolNamespace) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetRequest',
+        response_type_name='WorkloadIdentityPoolNamespace',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted WorkloadIdentityPoolNamespaces in a workload identity pool. If `show_deleted` is set to `true`, then deleted namespaces are also listed.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkloadIdentityPoolNamespacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/namespaces',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest',
+        response_type_name='ListWorkloadIdentityPoolNamespacesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing WorkloadIdentityPoolNamespace in a WorkloadIdentityPool.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}',
+        http_method='PATCH',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workloadIdentityPoolNamespace',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkloadIdentityPoolNamespace, as long as it was deleted fewer than 30 days ago.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:undelete',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkloadIdentityPoolNamespaceRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

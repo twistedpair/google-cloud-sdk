@@ -1564,8 +1564,9 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
       `ubuntu`.
     instancePlacement: Optional. Placement related info for this node. When
       unspecified, the VPC's default tenancy will be used.
-    instanceType: Optional. The AWS instance type. When unspecified, it uses a
-      default based on the node pool's version.
+    instanceType: Optional. The EC2 instance type when creating on-Demand
+      instances. If unspecified during node pool creation, a default will be
+      chosen based on the node pool version, and assigned to this field.
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.

@@ -792,9 +792,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
     financialContract: Financial contracts linked to this consent.
     name: The resource name of a consent. An examples of valid names would be
       in the format of: -
-      "billingAccounts/{billing_account}/consents/{consent}".
+      "billingAccounts/{billing_account}/consents/{consent}". -
+      "projects/{project_number}/consents/{consent}".
     offer: The name of the offer linked to this consent. It is in the format
-      of: - "billingAccounts/{billing_account}/offers/{offer_id}".
+      of: - "billingAccounts/{billing_account}/offers/{offer_id}". -
+      "services/{service}/offers/{offer_id}".
     state: Output only. State of current consent.
     updateTime: Output only. The update time of current consent.
   """

@@ -414,7 +414,8 @@
           "type": "string"
         },
         "availableVersion": {
-          "description": "Available versions that the instance can be upgraded to using UpdateInstanceRequest.",
+          "description": "Output only. Available versions that the instance can be upgraded to using UpdateInstanceRequest.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Version"
@@ -431,7 +432,8 @@
           "type": "string"
         },
         "accelerators": {
-          "description": "List of accelerators enabled for this CDF instance.",
+          "description": "Output only. List of accelerators enabled for this CDF instance.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Accelerator"

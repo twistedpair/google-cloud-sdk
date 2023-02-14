@@ -362,6 +362,10 @@
         "nodeAccessConfig": {
           "description": "Node access related configurations.",
           "$ref": "BareMetalNodeAccessConfig"
+        },
+        "osEnvironmentConfig": {
+          "description": "OS environment related configurations.",
+          "$ref": "BareMetalOsEnvironmentConfig"
         }
       }
     },
@@ -373,6 +377,10 @@
         "islandModeCidr": {
           "description": "Configuration for island mode CIDR. In an island-mode network, nodes have unique IP addresses, but pods don't have unique addresses across clusters. This doesn't cause problems because pods in one cluster never directly communicate with pods in another cluster. Instead, there are gateways that mediate between a pod in one cluster and a pod in another cluster.",
           "$ref": "BareMetalIslandModeCidrConfig"
+        },
+        "advancedNetworking": {
+          "description": "Enables the use of advanced Anthos networking features, such as Bundled Load Balancing with BGP or the egress NAT gateway. Setting configuration for advanced networking features will automatically set this flag.",
+          "type": "boolean"
         }
       }
     },
@@ -1028,6 +1036,17 @@
         "loginUser": {
           "description": "LoginUser is the user name used to access node machines. It defaults to \"root\" if not set.",
           "type": "string"
+        }
+      }
+    },
+    "BareMetalOsEnvironmentConfig": {
+      "id": "BareMetalOsEnvironmentConfig",
+      "description": "Specifies operating system settings for cluster provisioning.",
+      "type": "object",
+      "properties": {
+        "packageRepoExcluded": {
+          "description": "Whether the package repo should not be included when initializing bare metal machines.",
+          "type": "boolean"
         }
       }
     },
@@ -2643,6 +2662,10 @@
         "nodeAccessConfig": {
           "description": "Node access related configurations.",
           "$ref": "BareMetalAdminNodeAccessConfig"
+        },
+        "osEnvironmentConfig": {
+          "description": "OS environment related configurations.",
+          "$ref": "BareMetalAdminOsEnvironmentConfig"
         }
       }
     },
@@ -2922,6 +2945,17 @@
         "loginUser": {
           "description": "Required. LoginUser is the user name used to access node machines. It defaults to \"root\" if not set.",
           "type": "string"
+        }
+      }
+    },
+    "BareMetalAdminOsEnvironmentConfig": {
+      "id": "BareMetalAdminOsEnvironmentConfig",
+      "description": "Specifies operating system operation settings for cluster provisioning.",
+      "type": "object",
+      "properties": {
+        "packageRepoExcluded": {
+          "description": "Whether the package repo should be added when initializing bare metal machines.",
+          "type": "boolean"
         }
       }
     },

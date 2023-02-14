@@ -243,10 +243,13 @@ class ModelsClient(object):
     Returns:
       Response from calling upload model with given request arguments.
     """
-    container_spec = self.messages.GoogleCloudAiplatformV1beta1ModelContainerSpec(
-        healthRoute=container_health_route,
-        imageUri=container_image_uri,
-        predictRoute=container_predict_route)
+    container_spec = (
+        self.messages.GoogleCloudAiplatformV1beta1ModelContainerSpec(
+            healthRoute=container_health_route,
+            imageUri=container_image_uri,
+            predictRoute=container_predict_route,
+        )
+    )
     if container_command:
       container_spec.command = container_command
     if container_args:
@@ -574,8 +577,11 @@ class ModelsClient(object):
       Response from calling delete version with request containing given model
       version.
     """
-    request = self.messages.AiplatformProjectsLocationsModelsDeleteVersionRequest(
-        name=model_version_ref.RelativeName())
+    request = (
+        self.messages.AiplatformProjectsLocationsModelsDeleteVersionRequest(
+            name=model_version_ref.RelativeName()
+        )
+    )
     return self._service.DeleteVersion(request)
 
   def List(self, limit=None, region_ref=None):
@@ -636,7 +642,7 @@ class ModelsClient(object):
       destination_region_ref: the resource reference to the location into which
         to copy the Model.
       source_model: The resource name of the Model to copy.
-      kms_key_name: The KRM key name for specifying encryption spec.
+      kms_key_name: The KMS key name for specifying encryption spec.
       destination_model_id: The destination model resource name to copy the
         model into.
       destination_parent_model: The destination parent model to copy the model
@@ -661,3 +667,47 @@ class ModelsClient(object):
             parentModel=destination_parent_model,
             modelId=destination_model_id))
     return self._service.Copy(request)
+
+  def CopyV1(self,
+             destination_region_ref=None,
+             source_model=None,
+             kms_key_name=None,
+             destination_model_id=None,
+             destination_parent_model=None):
+    """Copies the given source model into specified location.
+
+    The source model is copied into specified location (including cross-region)
+    either as a new model or a new model version under given parent model.
+
+    Args:
+      destination_region_ref: the resource reference to the location into which
+        to copy the Model.
+      source_model: The resource name of the Model to copy.
+      kms_key_name: The name of the KMS key to use for model encryption.
+      destination_model_id: Optional. Thew custom ID to be used as the resource
+        name of the new model. This value may be up to 63 characters, and valid
+        characters are  `[a-z0-9_-]`. The first character cannot be a number or
+        hyphen.
+      destination_parent_model: The destination parent model to copy the model
+        as a model version into.
+
+    Returns:
+      Response from calling copy model.
+    """
+    encryption_spec = None
+    if kms_key_name:
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1EncryptionSpec(
+              kmsKeyName=kms_key_name
+          )
+      )
+    request = self.messages.AiplatformProjectsLocationsModelsCopyRequest(
+        parent=destination_region_ref.RelativeName(),
+        googleCloudAiplatformV1CopyModelRequest=self.messages
+        .GoogleCloudAiplatformV1CopyModelRequest(
+            sourceModel=source_model,
+            encryptionSpec=encryption_spec,
+            parentModel=destination_parent_model,
+            modelId=destination_model_id))
+    return self._service.Copy(request)
+

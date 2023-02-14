@@ -56,7 +56,7 @@ def LocationAttributeConfig(kms_prefix=True, region_fallthrough=False):
     fallthroughs.append(deps.ArgFallthrough('--region'))
   return concepts.ResourceParameterAttributeConfig(
       name=name,
-      help_text='The Cloud location for the {resource}.',
+      help_text='The Google Cloud location for the {resource}.',
       fallthroughs=fallthroughs)
 
 
@@ -64,7 +64,7 @@ def ProjectAttributeConfig(kms_prefix=True):
   name = 'kms-project' if kms_prefix else 'project'
   return concepts.ResourceParameterAttributeConfig(
       name=name,
-      help_text='The Cloud project for the {resource}.',
+      help_text='The Google Cloud project for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 

@@ -18,12 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
 import os
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import files
 
@@ -31,18 +31,35 @@ import six
 
 
 @function_result_cache.lru(maxsize=None)
-def cached_read_json_file(file_path):
-  """Convert JSON file to an in-memory dict."""
+def cached_read_yaml_json_file(file_path):
+  """Converts JSON or YAML file to an in-memory dict.
+
+  Args:
+    file_path (str): Path for the file to parse passed in by the user.
+
+  Returns:
+    parsed (dict): Parsed value from the provided file_path.
+
+  Raises:
+    InvalidUrlError: The provided file_path either failed to load or be parsed
+      as a dict.
+  """
   expanded_file_path = os.path.realpath(os.path.expanduser(file_path))
-  with files.FileReader(expanded_file_path) as file_reader:
-    try:
-      return json.load(file_reader)
-    except json.JSONDecodeError as e:
-      raise errors.InvalidUrlError(
-          'Found invalid JSON file {}\n\nOriginal JSONDecodeError: {}'.format(
-              file_path, six.text_type(e)
-          )
-      )
+  try:
+    # Since json is a subset of yaml, parse file as yaml.
+    parsed = yaml.load(files.ReadFileContents(expanded_file_path))
+    if isinstance(parsed, dict) or isinstance(parsed, list):
+      return parsed
+  except yaml.YAMLParseError as e:
+    raise errors.InvalidUrlError(
+        'Found invalid JSON/YAML file {}\n\nOriginal Error: {}'.format(
+            file_path, six.text_type(e)
+        )
+    )
+
+  raise errors.InvalidUrlError(
+      'Found invalid JSON/YAML file {}'.format(file_path)
+  )
 
 
 def get_updated_custom_fields(existing_custom_fields,

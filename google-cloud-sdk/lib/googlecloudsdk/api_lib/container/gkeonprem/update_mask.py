@@ -19,36 +19,23 @@ from __future__ import division
 from __future__ import unicode_literals
 
 VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
-    'description':
-        'description',
-    'version':
-        'on_prem_version',
-    'cpus':
-        'control_plane_node.cpus',
-    'memory':
-        'control_plane_node.memory',
-    'enable_auto_resize':
-        'control_plane_node.auto_resize_config.enabled',
-    'disable_auto_resize':
-        'control_plane_node.auto_resize_config.enabled',
-    'enable_aag_config':
-        'anti_affinity_groups.aag_config_disabled',
-    'disable_aag_config':
-        'anti_affinity_groups.aag_config_disabled',
-    'enable_vsphere_csi':
-        'storage.vsphere_csi_disabled',
-    'disable_vsphere_csi':
-        'storage.vsphere_csi_disabled',
-    'static_ip_config_from_file':
-        'network_config.static_ip_config',
-    'metal_lb_config_from_file':
-        'load_balancer.metal_lb_config',
-    'enable_auto_repair':
-        'auto_repair_config.enabled',
-    'disable_auto_repair':
-        'auto_repair_config.enabled',
-    'admin_users':
-        'authorization.admin_users',
+    'description': 'description',
+    'version': 'on_prem_version',
+    'cpus': 'control_plane_node.cpus',
+    'memory': 'control_plane_node.memory',
+    'enable_auto_resize': 'control_plane_node.auto_resize_config.enabled',
+    'disable_auto_resize': 'control_plane_node.auto_resize_config.enabled',
+    'enable_aag_config': 'anti_affinity_groups.aag_config_disabled',
+    'disable_aag_config': 'anti_affinity_groups.aag_config_disabled',
+    'enable_vsphere_csi': 'storage.vsphere_csi_disabled',
+    'disable_vsphere_csi': 'storage.vsphere_csi_disabled',
+    'static_ip_config_from_file': 'network_config.static_ip_config',
+    'static_ip_config_ip_blocks': 'network_config.static_ip_config',
+    'metal_lb_config_from_file': 'load_balancer.metal_lb_config',
+    'metal_lb_config_address_pools': 'load_balancer.metal_lb_config',
+    'enable_auto_repair': 'auto_repair_config.enabled',
+    'disable_auto_repair': 'auto_repair_config.enabled',
+    'admin_users': 'authorization.admin_users',
 }
 
 VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
@@ -76,12 +63,15 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'load_balancer.metal_lb_config.address_pools',
     'metal_lb_load_balancer_node_configs_from_file':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.node_configs',
+    'metal_lb_load_balancer_node_configs':
+        'load_balancer.metal_lb_config.node_pool_config.node_pool_config.node_configs',
     'metal_lb_load_balancer_node_labels':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.labels',
     'metal_lb_load_balancer_node_taints':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.taints',
     'control_plane_node_configs_from_file':
         'control_plane.node_pool_config.node_pool_config.node_configs',
+    'control_plane_node_configs': 'control_plane.node_pool_config.node_pool_config.node_configs',
     'control_plane_node_labels':
         'control_plane.node_pool_config.node_pool_config.labels',
     'control_plane_node_taints':

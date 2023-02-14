@@ -3745,7 +3745,7 @@ class NodePoolLoggingConfig(_messages.Message):
 
 
 class NodeTaint(_messages.Message):
-  r"""Kubernetes taint is comprised of three fields: key, value, and effect.
+  r"""Kubernetes taint is composed of three fields: key, value, and effect.
   Effect can only be one of three types: NoSchedule, PreferNoSchedule or
   NoExecute. See
   [here](https://kubernetes.io/docs/concepts/configuration/taint-and-

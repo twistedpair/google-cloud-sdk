@@ -24,6 +24,7 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.container.gkeonprem import flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -77,7 +78,8 @@ def GetOperationResourceSpec():
       'gkeonprem.projects.locations.operations',
       resource_name='operation',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def AddOperationResourceArg(parser, verb):
@@ -91,7 +93,8 @@ def AddOperationResourceArg(parser, verb):
       'operation_id',
       GetOperationResourceSpec(),
       'operation {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def LocationAttributeConfig():
@@ -101,7 +104,8 @@ def LocationAttributeConfig():
       help_text='Google Cloud location for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.container_vmware.location),
-      ])
+      ],
+  )
 
 
 def GetLocationResourceSpec():
@@ -126,7 +130,8 @@ def AddLocationResourceArg(parser, verb):
       '--location',
       GetLocationResourceSpec(),
       'Google Cloud location {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def ClusterAttributeConfig():
@@ -146,11 +151,9 @@ def GetClusterResourceSpec():
   )
 
 
-def AddClusterResourceArg(parser,
-                          verb,
-                          positional=True,
-                          required=True,
-                          flag_name_overrides=None):
+def AddClusterResourceArg(
+    parser, verb, positional=True, required=True, flag_name_overrides=None
+):
   """Adds a resource argument for an Anthos cluster on VMware.
 
   Args:
@@ -179,7 +182,8 @@ def GetAdminClusterResource(admin_cluster_name):
     relative_name = '/'.join(parts[3:])
   return resources.REGISTRY.ParseRelativeName(
       relative_name,
-      collection='gkeonprem.projects.locations.vmwareAdminClusters')
+      collection='gkeonprem.projects.locations.vmwareAdminClusters',
+  )
 
 
 def AdminClusterAttributeConfig():
@@ -199,11 +203,9 @@ def GetAdminClusterResourceSpec():
   )
 
 
-def AddAdminClusterResourceArg(parser,
-                               verb,
-                               positional=True,
-                               required=True,
-                               flag_name_overrides=None):
+def AddAdminClusterResourceArg(
+    parser, verb, positional=True, required=True, flag_name_overrides=None
+):
   """Adds a resource argument for an Anthos on VMware admin cluster.
 
   Args:
@@ -226,13 +228,17 @@ def AddAdminClusterResourceArg(parser,
 
 def GetAdminClusterMembershipResource(membership_name):
   return resources.REGISTRY.ParseRelativeName(
-      membership_name, collection='gkehub.projects.locations.memberships')
+      membership_name, collection='gkehub.projects.locations.memberships'
+  )
 
 
 def AdminClusterMembershipIdAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='admin_cluster_membership',
-      help_text='admin cluster membership of the {resource}, in the form of projects/PROJECT/locations/LOCATION/memberships/MEMBERSHIP. '
+      help_text=(
+          'admin cluster membership of the {resource}, in the form of'
+          ' projects/PROJECT/locations/LOCATION/memberships/MEMBERSHIP. '
+      ),
   )
 
 
@@ -262,9 +268,9 @@ def GetAdminClusterMembershipResourceSpec():
   )
 
 
-def AddAdminClusterMembershipResourceArg(parser,
-                                         positional=True,
-                                         required=True):
+def AddAdminClusterMembershipResourceArg(
+    parser, positional=True, required=True
+):
   """Adds a resource argument for a VMware admin cluster membership.
 
   Args:
@@ -272,21 +278,28 @@ def AddAdminClusterMembershipResourceArg(parser,
     positional: bool, whether the argument is positional or not.
     required: bool, whether the argument is required or not.
   """
-  name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  name = (
+      'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  )
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAdminClusterMembershipResourceSpec(),
-      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
+      (
+          'membership of the admin cluster. Membership can be the membership ID'
+          ' or the full resource name.'
+      ),
       required=required,
       flag_name_overrides={
           'project': '--admin-cluster-membership-project',
           'location': '--admin-cluster-membership-location',
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
 
 
 def NodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='node_pool', help_text='node pool of the {resource}.')
+      name='node_pool', help_text='node pool of the {resource}.'
+  )
 
 
 def GetNodePoolResourceSpec():
@@ -313,7 +326,8 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
       name,
       GetNodePoolResourceSpec(),
       'node pool {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddForceUnenrollCluster(parser):
@@ -325,7 +339,10 @@ def AddForceUnenrollCluster(parser):
   parser.add_argument(
       '--force',
       action='store_true',
-      help='If set, any child node pools will also be unenrolled. This flag is required if the cluster has any associated node pools.',
+      help=(
+          'If set, any child node pools will also be unenrolled. This flag is'
+          ' required if the cluster has any associated node pools.'
+      ),
   )
 
 
@@ -338,7 +355,10 @@ def AddForceDeleteCluster(parser):
   parser.add_argument(
       '--force',
       action='store_true',
-      help='If set, any node pools from the cluster will also be deleted. This flag is required if the cluster has any associated node pools.',
+      help=(
+          'If set, any node pools from the cluster will also be deleted. This'
+          ' flag is required if the cluster has any associated node pools.'
+      ),
   )
 
 
@@ -351,7 +371,10 @@ def AddAllowMissingDeleteNodePool(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the Vmware Node Pool is not found, the request will succeed but no action will be taken.',
+      help=(
+          'If set, and the Vmware Node Pool is not found, the request will'
+          ' succeed but no action will be taken.'
+      ),
   )
 
 
@@ -364,7 +387,10 @@ def AddAllowMissingDeleteCluster(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the Anthos cluster on VMware is not found, the request will succeed but no action will be taken.',
+      help=(
+          'If set, and the Anthos cluster on VMware is not found, the request'
+          ' will succeed but no action will be taken.'
+      ),
   )
 
 
@@ -383,7 +409,11 @@ def AddAllowMissingUpdateCluster(parser):
       '--allow-missing',
       action='store_true',
       hidden=True,
-      help='If set, and the Anthos cluster on VMware is not found, the update request will try to create a new cluster with the provided configuration.',
+      help=(
+          'If set, and the Anthos cluster on VMware is not found, the update'
+          ' request will try to create a new cluster with the provided'
+          ' configuration.'
+      ),
   )
 
 
@@ -399,7 +429,11 @@ def AddAllowMissingUnenrollCluster(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the VMware Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.'
+      help=(
+          'If set, and the VMware Cluster is not found, the request will'
+          ' succeed but no action will be taken on the server and return a'
+          ' completed LRO.'
+      ),
   )
 
 
@@ -413,7 +447,10 @@ def AddValidationOnly(parser, hidden=False):
   parser.add_argument(
       '--validate-only',
       action='store_true',
-      help='If set, only validate the request, but do not actually perform the operation.',
+      help=(
+          'If set, only validate the request, but do not actually perform the'
+          ' operation.'
+      ),
       hidden=hidden,
   )
 
@@ -465,7 +502,9 @@ def _AddEnableLoadBalancer(vmware_node_config_group, for_update=False):
       '--enable-load-balancer',
       action='store_const',
       const=True,
-      help='If set, enable the use of load balancer on the node pool instances.',
+      help=(
+          'If set, enable the use of load balancer on the node pool instances.'
+      ),
   )
 
   if for_update:
@@ -473,7 +512,10 @@ def _AddEnableLoadBalancer(vmware_node_config_group, for_update=False):
         '--disable-load-balancer',
         action='store_const',
         const=True,
-        help='If set, disable the use of load balancer on the node pool instances.',
+        help=(
+            'If set, disable the use of load balancer on the node pool'
+            ' instances.'
+        ),
     )
 
 
@@ -554,7 +596,9 @@ Examples:
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
 
-  help_text = node_pool_update_help_text if for_update else node_pool_create_help_text
+  help_text = (
+      node_pool_update_help_text if for_update else node_pool_create_help_text
+  )
   vmware_node_config_group.add_argument(
       '--node-taints',
       metavar='KEY=VALUE:EFFECT',
@@ -651,7 +695,8 @@ def _AddF5Config(lb_config_mutex_group, for_update=False):
     return
 
   f5_config_group = lb_config_mutex_group.add_group(
-      help='F5 Big IP Configuration',)
+      help='F5 Big IP Configuration',
+  )
   f5_config_group.add_argument(
       '--f5-config-address',
       type=str,
@@ -671,17 +716,16 @@ def _AddF5Config(lb_config_mutex_group, for_update=False):
   )
 
 
-def _AddMetalLbConfig(lb_config_mutex_group, for_update=False):
+def _AddMetalLbConfig(lb_config_mutex_group):
   """Adds flags for MetalLB load balancer.
 
   Args:
     lb_config_mutex_group: The parent mutex group to add the flags to.
-    for_update: bool, True to add flags for update command, False to add flags
-      for create command.
   """
-  required = False if for_update else True
-  metal_lb_config_group = lb_config_mutex_group.add_group(
-      'MetalLB Configuration')
+  metal_lb_config_mutex_group = lb_config_mutex_group.add_group(
+      help='MetalLB Configuration',
+      mutex=True,
+  )
 
   metal_lb_config_from_file_help_text = """
 Path of the YAML/JSON file that contains the MetalLB configurations.
@@ -718,11 +762,41 @@ avoidBuggyIPs | bool                  | optional, mutable, defaults to False
 manualAssign  | bool                  | optional, mutable, defaults to False
 
 """
-  metal_lb_config_group.add_argument(
+  metal_lb_config_mutex_group.add_argument(
       '--metal-lb-config-from-file',
-      required=required,
       help=metal_lb_config_from_file_help_text,
       type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+
+  metal_lb_config_address_pools_help_text = """
+MetalLB load balancer configurations.
+
+Examples:
+
+To specify MetalLB load balancer configurations for two address pools `pool1` and `pool2`,
+
+```
+$ gcloud {command}
+    --metal-lb-config-address-pools 'pool=pool1,avoid-buggy-ips=True,manual-assign=True,addresses=192.168.1.1/32;192.168.1.2-192.168.1.3'
+    --metal-lb-config-address-pools 'pool=pool2,avoid-buggy-ips=False,manual-assign=False,addresses=192.168.2.1/32;192.168.2.2-192.168.2.3'
+```
+
+Use quote around the flag value to escape semicolon in the terminal.
+"""
+  metal_lb_config_mutex_group.add_argument(
+      '--metal-lb-config-address-pools',
+      help=metal_lb_config_address_pools_help_text,
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'pool': str,
+              'avoid-buggy-ips': arg_parsers.ArgBoolean(),
+              'manual-assign': arg_parsers.ArgBoolean(),
+              'addresses': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['pool', 'addresses'],
+      ),
   )
 
 
@@ -737,15 +811,16 @@ def _AddManualLbConfig(lb_config_mutex_group, for_update=False):
   if for_update:
     return
   manual_lb_config_group = lb_config_mutex_group.add_group(
-      help='Manual load balancer configuration',)
+      help='Manual load balancer configuration',
+  )
   manual_lb_config_group.add_argument(
       '--ingress-http-node-port',
-      help='NodePort for ingress service\'s http.',
+      help="NodePort for ingress service's http.",
       type=int,
   )
   manual_lb_config_group.add_argument(
       '--ingress-https-node-port',
-      help='NodePort for ingress service\'s https.',
+      help="NodePort for ingress service's https.",
       type=int,
   )
   manual_lb_config_group.add_argument(
@@ -755,7 +830,10 @@ def _AddManualLbConfig(lb_config_mutex_group, for_update=False):
   )
   manual_lb_config_group.add_argument(
       '--konnectivity-server-node-port',
-      help='NodePort for konnectivity service running as a sidecar in each kube-apiserver pod.',
+      help=(
+          'NodePort for konnectivity service running as a sidecar in each'
+          ' kube-apiserver pod.'
+      ),
       type=int,
   )
 
@@ -808,7 +886,7 @@ def AddVmwareLoadBalancerConfig(parser, for_update=False):
       help='Populate one of the load balancers.',
       required=required,
   )
-  _AddMetalLbConfig(lb_config_mutex_group, for_update=for_update)
+  _AddMetalLbConfig(lb_config_mutex_group)
   _AddF5Config(lb_config_mutex_group, for_update=for_update)
   _AddManualLbConfig(lb_config_mutex_group, for_update=for_update)
 
@@ -820,7 +898,8 @@ def AddDescription(parser):
     parser: The argparse parser to add the flag to.
   """
   parser.add_argument(
-      '--description', type=str, help='Description for the resource.')
+      '--description', type=str, help='Description for the resource.'
+  )
 
 
 def AddNodePoolDisplayName(parser):
@@ -830,7 +909,8 @@ def AddNodePoolDisplayName(parser):
     parser: The argparse parser to add the flag to.
   """
   parser.add_argument(
-      '--display-name', type=str, help='Display name for the resource.')
+      '--display-name', type=str, help='Display name for the resource.'
+  )
 
 
 def AddNodePoolAnnotations(parser):
@@ -903,7 +983,8 @@ def AddVmwareNetworkConfig(parser, for_update=False):
       required=required,
   )
   _AddServiceAddressCidrBlocks(
-      vmware_network_config_group, for_update=for_update)
+      vmware_network_config_group, for_update=for_update
+  )
   _AddPodAddressCidrBlocks(vmware_network_config_group, for_update=for_update)
   _AddIpConfiguration(vmware_network_config_group, for_update=for_update)
   _AddVmwareHostConfig(vmware_network_config_group, for_update=for_update)
@@ -916,7 +997,7 @@ def AddConfigType(parser):
     parser: The argparse parser to add the flag to.
   """
   config_type_group = parser.add_group(
-      'Use cases for querying versions.', mutex=True, required=True
+      'Use cases for querying versions.', mutex=True, required=False
   )
   create_config = config_type_group.add_group(
       'Create an Anthos on VMware user cluster use case.'
@@ -969,7 +1050,8 @@ def _AddVmwareDhcpIpConfig(ip_configuration_mutex_group, for_update=False):
   if for_update:
     return
   dhcp_config_group = ip_configuration_mutex_group.add_group(
-      help='DHCP configuration group.')
+      help='DHCP configuration group.'
+  )
   dhcp_config_group.add_argument(
       '--enable-dhcp',
       help='Enable DHCP IP allocation for VMware user clusters.',
@@ -1025,12 +1107,54 @@ ip        | IP address  | required, immutable
 
 New `ips` fields can be added, existing `ips` fields cannot be removed or updated.
 """
-  static_ip_config_group = ip_configuration_mutex_group.add_group(
-      help='Static IP configuration group')
-  static_ip_config_group.add_argument(
+  static_ip_config_mutex_group = ip_configuration_mutex_group.add_group(
+      help='Static IP configuration group',
+      mutex=True,
+  )
+  static_ip_config_mutex_group.add_argument(
       '--static-ip-config-from-file',
       help=static_ip_config_from_file_help_text,
       type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+
+  def _ParseIPBlocks(value):
+    if ':' not in value:
+      raise InvalidValue(
+          'ips should be of format hostname-1:1.1.1.1;hostnam-2:2.2.2.2;...'
+      )
+    return value.split(':')
+
+  static_ip_config_ip_blocks_help_text = """
+  Static IP configurations.
+
+  Example:
+
+  To specify two Static IP blocks,
+
+  ```
+  $ gcloud {command}
+      --static-ip-config-ip-blocks 'gateway=192.168.0.1,netmask=255.255.255.0,ips=hostname-1:1.1.1.1;hostname-2:2.2.2.2'
+      --static-ip-config-ip-blocks 'gateway=192.168.1.1,netmask=255.255.0.0,ips=hostname-3:3.3.3.3;hostname-4:4.4.4.4'
+  ```
+
+  Use quote around the flag value to escape semicolon in the terminal.
+  """
+
+  static_ip_config_mutex_group.add_argument(
+      '--static-ip-config-ip-blocks',
+      help=static_ip_config_ip_blocks_help_text,
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'gateway': str,
+              'netmask': str,
+              'ips': arg_parsers.ArgList(
+                  element_type=_ParseIPBlocks,
+                  custom_delim_char=';',
+              ),
+          }
+      ),
   )
 
 
@@ -1062,7 +1186,8 @@ def _AddVmwareHostConfig(vmware_network_config_group, for_update=False):
     return
 
   vmware_host_config_group = vmware_network_config_group.add_group(
-      help='Common parameters for all hosts irrespective of their IP address')
+      help='Common parameters for all hosts irrespective of their IP address'
+  )
 
   vmware_host_config_group.add_argument(
       '--dns-servers',
@@ -1093,11 +1218,14 @@ def AddRequiredPlatformVersion(parser):
   parser.add_argument(
       '--required-platform-version',
       type=str,
-      help=('Platform version required for upgrading a user cluster. '
-            'If the current platform version is lower than the required '
-            'version, the platform version will be updated to the required '
-            'version. If it is not installed in the platform, '
-            'download the required version bundle.'))
+      help=(
+          'Platform version required for upgrading a user cluster. '
+          'If the current platform version is lower than the required '
+          'version, the platform version will be updated to the required '
+          'version. If it is not installed in the platform, '
+          'download the required version bundle.'
+      ),
+  )
 
 
 def AddClusterAnnotations(parser, for_update=False):
@@ -1137,29 +1265,42 @@ def AddVmwareControlPlaneNodeConfig(parser, for_update=False):
       for create command.
   """
   vmware_control_plane_node_config_group = parser.add_group(
-      help='Control plane node configurations',)
+      help='Control plane node configurations',
+  )
   vmware_control_plane_node_config_group.add_argument(
       '--cpus',
       type=int,
-      help='Number of CPUs for each admin cluster node that serve as control planes for this VMware user cluster. (default: 4 CPUs)',
+      help=(
+          'Number of CPUs for each admin cluster node that serve as control'
+          ' planes for this VMware user cluster. (default: 4 CPUs)'
+      ),
   )
   vmware_control_plane_node_config_group.add_argument(
       '--memory',
       type=arg_parsers.BinarySize(default_unit='MB', type_abbr='MB'),
-      help='Megabytes of memory for each admin cluster node that serves as a control plane for this VMware User Cluster (default: 8192 MB memory).',
+      help=(
+          'Megabytes of memory for each admin cluster node that serves as a'
+          ' control plane for this VMware User Cluster (default: 8192 MB'
+          ' memory).'
+      ),
   )
   if not for_update:
     vmware_control_plane_node_config_group.add_argument(
         '--replicas',
         type=int,
-        help='Number of control plane nodes for this VMware user cluster. (default: 1 replica).',
+        help=(
+            'Number of control plane nodes for this VMware user cluster.'
+            ' (default: 1 replica).'
+        ),
     )
   _AddVmwareAutoResizeConfig(
-      vmware_control_plane_node_config_group, for_update=for_update)
+      vmware_control_plane_node_config_group, for_update=for_update
+  )
 
 
-def _AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group,
-                               for_update=False):
+def _AddVmwareAutoResizeConfig(
+    vmware_control_plane_node_config_group, for_update=False
+):
   """Adds flags to specify control plane auto resizing configurations.
 
   Args:
@@ -1167,11 +1308,15 @@ def _AddVmwareAutoResizeConfig(vmware_control_plane_node_config_group,
     for_update: bool, True to add flags for update command, False to add flags
       for create command.
   """
-  vmware_auto_resize_config_group = vmware_control_plane_node_config_group.add_group(
-      help='Auto resize configurations')
+  vmware_auto_resize_config_group = (
+      vmware_control_plane_node_config_group.add_group(
+          help='Auto resize configurations'
+      )
+  )
   if for_update:
     enable_auto_resize_mutex_group = vmware_auto_resize_config_group.add_group(
-        mutex=True)
+        mutex=True
+    )
     surface = enable_auto_resize_mutex_group
   else:
     surface = vmware_auto_resize_config_group
@@ -1199,11 +1344,13 @@ def AddVmwareAAGConfig(parser, for_update=False):
       for create command.
   """
   vmware_aag_config_group = parser.add_group(
-      help='Anti-affinity group configurations',)
+      help='Anti-affinity group configurations',
+  )
 
   if for_update:
     enable_aag_config_mutex_group = vmware_aag_config_group.add_group(
-        mutex=True)
+        mutex=True
+    )
     surface = enable_aag_config_mutex_group
   else:
     surface = vmware_aag_config_group
@@ -1211,13 +1358,17 @@ def AddVmwareAAGConfig(parser, for_update=False):
   surface.add_argument(
       '--disable-aag-config',
       action='store_true',
-      help='If set, spread nodes across at least three physical hosts (requires at least three hosts). Enabled by default.',
+      help=(
+          'If set, spread nodes across at least three physical hosts (requires'
+          ' at least three hosts). Enabled by default.'
+      ),
   )
   if for_update:
     surface.add_argument(
         '--enable-aag-config',
         action='store_true',
-        help='If set, enable anti-affinity group config.')
+        help='If set, enable anti-affinity group config.',
+    )
 
 
 def AddVmwareStorageConfig(parser, for_update=False):
@@ -1239,13 +1390,19 @@ def AddVmwareStorageConfig(parser, for_update=False):
   surface.add_argument(
       '--disable-vsphere-csi',
       action='store_true',
-      help='If set, vSphere CSI components are not deployed in the VMware User Cluster. Enabled by default.',
+      help=(
+          'If set, vSphere CSI components are not deployed in the VMware User'
+          ' Cluster. Enabled by default.'
+      ),
   )
   if for_update:
     surface.add_argument(
         '--enable-vsphere-csi',
         action='store_true',
-        help='If set, vSphere CSI components are deployed in the VMware User Cluster.',
+        help=(
+            'If set, vSphere CSI components are deployed in the VMware User'
+            ' Cluster.'
+        ),
     )
 
 
@@ -1281,7 +1438,10 @@ def _AddAdvancedNetworking(vmware_dataplane_v2_config_group, for_update=False):
   vmware_dataplane_v2_config_group.add_argument(
       '--enable-advanced-networking',
       action='store_true',
-      help='If set, enable advanced networking. Requires dataplane_v2_enabled to be set true.',
+      help=(
+          'If set, enable advanced networking. Requires dataplane_v2_enabled to'
+          ' be set true.'
+      ),
   )
 
 
@@ -1296,10 +1456,12 @@ def AddVmwareDataplaneV2Config(parser, for_update=False):
   if for_update:
     return
   vmware_dataplane_v2_config_group = parser.add_group(
-      help='Dataplane V2 configurations')
+      help='Dataplane V2 configurations'
+  )
   _AddEnableDataplaneV2(vmware_dataplane_v2_config_group, for_update=for_update)
   _AddAdvancedNetworking(
-      vmware_dataplane_v2_config_group, for_update=for_update)
+      vmware_dataplane_v2_config_group, for_update=for_update
+  )
 
 
 def AddEnableVmwareTracking(parser, for_update=False):
@@ -1329,11 +1491,13 @@ def AddVmwareAutoRepairConfig(parser, for_update=False):
       for create command.
   """
   vmware_auto_repair_config_group = parser.add_group(
-      help='Auto-repair configurations')
+      help='Auto-repair configurations'
+  )
 
   if for_update:
     enable_auto_repair_mutex_group = vmware_auto_repair_config_group.add_group(
-        mutex=True)
+        mutex=True
+    )
     surface = enable_auto_repair_mutex_group
   else:
     surface = vmware_auto_repair_config_group
@@ -1358,10 +1522,22 @@ def AddAuthorization(parser):
     parser: The argparse parser to add the flag to.
   """
   authorization_group = parser.add_group(
-      help='User cluster authorization configurations to bootstrap onto the admin cluster'
+      help=(
+          'User cluster authorization configurations to bootstrap onto the'
+          ' admin cluster'
+      )
   )
   authorization_group.add_argument(
       '--admin-users',
-      help='Users that will be granted the cluster-admin role on the cluster, providing full access to the cluster.',
+      help=(
+          'Users that will be granted the cluster-admin role on the cluster,'
+          ' providing full access to the cluster.'
+      ),
       action='append',
   )
+
+
+class InvalidValue(exceptions.Error):
+  """Invalid Argument Value."""
+
+  pass

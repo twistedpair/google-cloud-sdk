@@ -1212,6 +1212,196 @@ class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource to create the namespace in. The only
+      supported location is `global`.
+    workloadIdentityPoolNamespace: A WorkloadIdentityPoolNamespace resource to
+      be passed as the request body.
+    workloadIdentityPoolNamespaceId: Required. The ID to use for the
+      namespace. Must conform to the SPIFFE spec which limits characters to
+      letters, numbers, dots, dashes, and underscores [a-zA-Z0-9.-_] (it
+      cannot include only periods) and sets a maximum length of the full
+      canonical identifier at 2048 bytes. The prefix "gcp-" will be reserved
+      for future uses.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workloadIdentityPoolNamespace = _messages.MessageField('WorkloadIdentityPoolNamespace', 2)
+  workloadIdentityPoolNamespaceId = _messages.StringField(3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the namespace to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetRequest object.
+
+  Fields:
+    name: Required. The name of the namespace to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of namespaces to return. If unspecified, at
+      most 50 namespaces are returned. The maximum value is 1000; values above
+      are 1000 truncated to 1000.
+    pageToken: A page token, received from a previous
+      `ListWorkloadIdentityPoolNamespaces` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The parent resource to list namespaces for.
+    showDeleted: Whether to return soft-deleted namespaces.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCr
+  eateRequest object.
+
+  Fields:
+    parent: Required. The parent resource to create the manage identity in.
+      The only supported location is `global`.
+    workloadIdentityPoolManagedIdentity: A WorkloadIdentityPoolManagedIdentity
+      resource to be passed as the request body.
+    workloadIdentityPoolManagedIdentityId: Required. The ID to use for the
+      managed identity. Must conform to the SPIFFE spec which limits
+      characters to letters, numbers, dots, dashes, and underscores
+      [a-zA-Z0-9.-_] (it cannot include only periods) and sets a maximum
+      length of the full canonical identifier at 2048 bytes. The prefix "gcp-"
+      will be reserved for future uses.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workloadIdentityPoolManagedIdentity = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 2)
+  workloadIdentityPoolManagedIdentityId = _messages.StringField(3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesDe
+  leteRequest object.
+
+  Fields:
+    name: Required. The name of the managed identity to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGe
+  tRequest object.
+
+  Fields:
+    name: Required. The name of the managed identity to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesLi
+  stRequest object.
+
+  Fields:
+    pageSize: The maximum number of managed identities to return. If
+      unspecified, at most 50 managed identities are returned. The maximum
+      value is 1000; values above are 1000 truncated to 1000.
+    pageToken: A page token, received from a previous
+      `ListWorkloadIdentityPoolManagedIdentities` call. Provide this to
+      retrieve the subsequent page.
+    parent: Required. The parent resource to list managed identities for.
+    showDeleted: Whether to return soft-deleted namespaces.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPa
+  tchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the managed identity.
+    updateMask: Required. The list of fields to update.
+    workloadIdentityPoolManagedIdentity: A WorkloadIdentityPoolManagedIdentity
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workloadIdentityPoolManagedIdentity = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUn
+  deleteRequest object.
+
+  Fields:
+    name: Required. The name of the managed identity to undelete.
+    undeleteWorkloadIdentityPoolManagedIdentityRequest: A
+      UndeleteWorkloadIdentityPoolManagedIdentityRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkloadIdentityPoolManagedIdentityRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolManagedIdentityRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest
+  object.
+
+  Fields:
+    name: Output only. The resource name of the namespace.
+    updateMask: Required. The list of fields to update.
+    workloadIdentityPoolNamespace: A WorkloadIdentityPoolNamespace resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workloadIdentityPoolNamespace = _messages.MessageField('WorkloadIdentityPoolNamespace', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the namespace to undelete.
+    undeleteWorkloadIdentityPoolNamespaceRequest: A
+      UndeleteWorkloadIdentityPoolNamespaceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkloadIdentityPoolNamespaceRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolNamespaceRequest', 2)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest object.
 
@@ -2581,6 +2771,32 @@ class ListWorkforcePoolsResponse(_messages.Message):
   workforcePools = _messages.MessageField('WorkforcePool', 2, repeated=True)
 
 
+class ListWorkloadIdentityPoolManagedIdentitiesResponse(_messages.Message):
+  r"""Response message for ListWorkloadIdentityPoolManagedIdentities.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workloadIdentityPoolManagedIdentities: A list of namespaces.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloadIdentityPoolManagedIdentities = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 2, repeated=True)
+
+
+class ListWorkloadIdentityPoolNamespacesResponse(_messages.Message):
+  r"""Response message for ListWorkloadIdentityPoolNamespaces.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workloadIdentityPoolNamespaces: A list of namespaces.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloadIdentityPoolNamespaces = _messages.MessageField('WorkloadIdentityPoolNamespace', 2, repeated=True)
+
+
 class ListWorkloadIdentityPoolProviderKeysResponse(_messages.Message):
   r"""Response message for ListWorkloadIdentityPoolProviderKeys.
 
@@ -3589,6 +3805,14 @@ class UndeleteWorkforcePoolSubjectRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePoolSubject."""
 
 
+class UndeleteWorkloadIdentityPoolManagedIdentityRequest(_messages.Message):
+  r"""Request message for UndeleteWorkloadIdentityPoolManagedIdentity."""
+
+
+class UndeleteWorkloadIdentityPoolNamespaceRequest(_messages.Message):
+  r"""Request message for UndeleteWorkloadIdentityPoolNamespace."""
+
+
 class UndeleteWorkloadIdentityPoolProviderKeyRequest(_messages.Message):
   r"""Request message for UndeleteWorkloadIdentityPoolProviderKey."""
 
@@ -3986,6 +4210,91 @@ class WorkloadIdentityPool(_messages.Message):
   name = _messages.StringField(4)
   sessionDuration = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class WorkloadIdentityPoolManagedIdentity(_messages.Message):
+  r"""Represents a managed identity for a workload identity pool namespace.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the managed identity.
+
+  Fields:
+    description: A description of the managed identity. Cannot exceed 256
+      characters.
+    disabled: Whether the managed identity is disabled. If disabled,
+      credentials may no longer be issued for this identity and this identity
+      will no longer be able to access Google Cloud APIs. Existing credentials
+      may continue to be accepted by third party APIs and workloads until they
+      expire.
+    expireTime: Output only. Time after which the managed identity will be
+      permanently purged and cannot be recovered.
+    name: Output only. The resource name of the managed identity.
+    state: Output only. The state of the managed identity.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the managed identity.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The managed identity is active.
+      DELETED: The managed identity is soft-deleted. Soft-deleted managed
+        identities are permanently deleted after approximately 30 days. You
+        can restore a soft-deleted managed identity using
+        UndeleteWorkloadIdentityPoolManagedIdentity. You cannot reuse the ID
+        of a soft-deleted managed identity until it is permanently deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  expireTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class WorkloadIdentityPoolNamespace(_messages.Message):
+  r"""Represents a namespace for a workload identity pool.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the namespace.
+
+  Fields:
+    description: A description of the namespace. Cannot exceed 256 characters.
+    disabled: Whether the namespace is disabled. If disabled, credentials may
+      no longer be issued for identities within this namespace (including
+      federated identities) and they will no longer be able to access Google
+      Cloud APIs. Existing credentials may continue to be accepted by third
+      party APIs and workloads until they expire.
+    expireTime: Output only. Time after which the namespace will be
+      permanently purged and cannot be recovered.
+    name: Output only. The resource name of the namespace.
+    state: Output only. The state of the namespace.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the namespace.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The namespace is active.
+      DELETED: The namespace is soft-deleted. Soft-deleted namespaces are
+        permanently deleted after approximately 30 days. You can restore a
+        soft-deleted namespace using UndeleteWorkloadIdentityPoolNamespace.
+        You cannot reuse the ID of a soft-deleted namespace until it is
+        permanently deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  expireTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class WorkloadIdentityPoolOperationMetadata(_messages.Message):

@@ -586,19 +586,18 @@ class GoogleCloudDatacatalogV1ImportEntriesResponse(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
-  r"""Metadata message for long-running operation returned by the
-  ReconcileTags.
+  r"""Long-running operation metadata message returned by the ReconcileTags.
 
   Enums:
     StateValueValuesEnum: State of the reconciliation operation.
 
   Messages:
-    ErrorsValue: Map that maps name of each tagged column (or empty string in
-      case of sole entry) to tagging operation status.
+    ErrorsValue: Maps the name of each tagged column (or empty string for a
+      sole entry) to tagging operation status.
 
   Fields:
-    errors: Map that maps name of each tagged column (or empty string in case
-      of sole entry) to tagging operation status.
+    errors: Maps the name of each tagged column (or empty string for a sole
+      entry) to tagging operation status.
     state: State of the reconciliation operation.
   """
 
@@ -619,8 +618,8 @@ class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ErrorsValue(_messages.Message):
-    r"""Map that maps name of each tagged column (or empty string in case of
-    sole entry) to tagging operation status.
+    r"""Maps the name of each tagged column (or empty string for a sole entry)
+    to tagging operation status.
 
     Messages:
       AdditionalProperty: An additional property for a ErrorsValue object.
@@ -647,8 +646,7 @@ class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1ReconcileTagsResponse(_messages.Message):
-  r"""Request message for long-running operation returned by the
-  ReconcileTags.
+  r"""Long-running operation response message returned by ReconcileTags.
 
   Fields:
     createdTagsCount: Number of tags created in the request.

@@ -18,11 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.api_lib.database_migration import filter_rewrite
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import files
 
 
 class UnsupportedConversionWorkspaceDBTypeError(core_exceptions.Error):
@@ -39,6 +43,9 @@ class ConversionWorkspacesClient(object):
     self.client = api_util.GetClientInstance(release_track)
     self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_conversionWorkspaces
+    self._mapping_rules_service = (
+        self.client.projects_locations_conversionWorkspaces_mappingRules
+    )
     self._release_track = release_track
 
   def _GetDatabaseEngine(self, database_engine):
@@ -109,6 +116,47 @@ class ConversionWorkspacesClient(object):
           destination_connection_profile_ref.RelativeName()
       )
     return seed_cw_request
+
+  def _GetRulesFiles(self, config_files):
+    """Returns the rules files to import rules from."""
+    rules_files = []
+    for config_file in config_files:
+      try:
+        data = files.ReadFileContents(config_file)
+      except files.MissingFileError:
+        raise exceptions.BadArgumentException(
+            '--config-flies',
+            'specified file [{}] does not exist.'.format(config_file),
+        )
+      rules_files.append(
+          self.messages.RulesFile(
+              rulesContent=data,
+              rulesSourceFilename=os.path.basename(config_file),
+          )
+      )
+    return rules_files
+
+  def _GetRulesFormat(self, file_format):
+    """Returns the file format enum to import rules from."""
+    if file_format == 'ORA2PG':
+      return (
+          self.messages.ImportMappingRulesRequest.RulesFormatValueValuesEnum.IMPORT_RULES_FILE_FORMAT_ORATOPG_CONFIG_FILE
+      )
+    if file_format == 'HARBOUR_BRIDGE':
+      return (
+          self.messages.ImportMappingRulesRequest.RulesFormatValueValuesEnum.IMPORT_RULES_FILE_FORMAT_HARBOUR_BRIDGE_SESSION_FILE
+      )
+    return (
+        self.messages.ImportMappingRulesRequest.RulesFormatValueValuesEnum.IMPORT_RULES_FILE_FORMAT_UNSPECIFIED
+    )
+
+  def _GetImportMappingRulesRequest(self, args):
+    """Returns import mapping rules request."""
+    return self.messages.ImportMappingRulesRequest(
+        autoCommit=args.auto_commit,
+        rulesFiles=self._GetRulesFiles(args.config_files),
+        rulesFormat=self._GetRulesFormat(args.file_format),
+    )
 
   def _GetConvertConversionWorkspaceRequest(self, args):
     """Returns convert conversion workspace request."""
@@ -312,6 +360,27 @@ class ConversionWorkspacesClient(object):
             args))
 
     return self._service.Seed(seed_req)
+
+  def ImportRules(self, name, args=None):
+    """Import rules in a conversion workspace.
+
+    Args:
+      name: str, the reference of the conversion workspace to import rules in.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      Operation: the operation for importing rules in the conversion workspace
+    """
+    import_rules_req_type = (
+        self.messages.DatamigrationProjectsLocationsConversionWorkspacesMappingRulesImportRequest
+    )
+    import_rules_req = import_rules_req_type(
+        parent=name,
+        importMappingRulesRequest=self._GetImportMappingRulesRequest(args),
+    )
+
+    return self._mapping_rules_service.Import(import_rules_req)
 
   def Convert(self, name, args=None):
     """Converts the source entities to draft entities in a conversion workspace.

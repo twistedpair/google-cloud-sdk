@@ -304,8 +304,10 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     tracker_file_util.delete_download_tracker_files(temporary_file_url)
 
     posix_util.set_posix_attributes_on_file_if_valid(
-        self._user_request_args, part_download_task_output.messages,
-        self._source_resource, self._destination_resource)
+        self._user_request_args,
+        self._source_resource,
+        self._destination_resource,
+    )
 
     if self._print_created_message:
       log.status.Print('Created: {}'.format(destination_url))

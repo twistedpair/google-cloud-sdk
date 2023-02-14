@@ -760,10 +760,11 @@ class Instance(_messages.Message):
       Data Fusion instance.
 
   Fields:
-    accelerators: List of accelerators enabled for this CDF instance.
+    accelerators: Output only. List of accelerators enabled for this CDF
+      instance.
     apiEndpoint: Output only. Endpoint on which the REST APIs is accessible.
-    availableVersion: Available versions that the instance can be upgraded to
-      using UpdateInstanceRequest.
+    availableVersion: Output only. Available versions that the instance can be
+      upgraded to using UpdateInstanceRequest.
     createTime: Output only. The time the instance was created.
     cryptoKeyConfig: The crypto key configuration. This field is used by the
       Customer-Managed Encryption Keys (CMEK) feature.

@@ -28,7 +28,7 @@ def process_acl_file(file_path):
   # { "Owner": {...}, "Grants": [...] }
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services
   # /s3.html#S3.Client.get_bucket_acl
-  return metadata_util.cached_read_json_file(file_path)
+  return metadata_util.cached_read_yaml_json_file(file_path)
 
 
 def process_cors(file_path):
@@ -36,11 +36,12 @@ def process_cors(file_path):
   if file_path == user_request_args_factory.CLEAR:
     return user_request_args_factory.CLEAR
 
+  cors_dict = metadata_util.cached_read_yaml_json_file(file_path)
   # Expect CORS file to already be in correct format for S3.
   # { "CORSRules": [...] }
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference
   # /services/s3.html#S3.Client.put_bucket_cors
-  return metadata_util.cached_read_json_file(file_path)
+  return cors_dict
 
 
 def process_labels(file_path):
@@ -48,7 +49,7 @@ def process_labels(file_path):
   if file_path == user_request_args_factory.CLEAR:
     return user_request_args_factory.CLEAR
 
-  labels_dict = metadata_util.cached_read_json_file(file_path)
+  labels_dict = metadata_util.cached_read_yaml_json_file(file_path)
   s3_tag_set_list = []
   for key, value in labels_dict.items():
     s3_tag_set_list.append({'Key': key, 'Value': value})
@@ -65,7 +66,7 @@ def process_lifecycle(file_path):
   # { "Rules": [...] }
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference
   # /services/s3.html#S3.Client.put_bucket_lifecycle_configuration
-  return metadata_util.cached_read_json_file(file_path)
+  return metadata_util.cached_read_yaml_json_file(file_path)
 
 
 def process_logging(log_bucket, log_object_prefix):

@@ -193,8 +193,9 @@ def GetRemoveShareWithFlag(custom_name=None):
 def GetResourcePolicyFlag(custom_name=None):
   """Gets the --resource-policies flag."""
   help_text = """\
-  Specify if this is reservation with resource policy. If you omit this flag,
-  no resource policy will be added to this reservation.
+  The resource policies to include in this reservation. If you omit this flag,
+  no resource policies are added. You can specify any string as the key, and
+  specify the name of a resource policy as the value.
   """
   return base.Argument(
       custom_name or '--resource-policies',
@@ -218,7 +219,6 @@ def GetSourceInstanceTemplateFlag(custom_name=None):
 def AddCreateFlags(parser,
                    support_fleet=False,
                    support_share_setting=False,
-                   support_resource_policies=False,
                    support_instance_template=False,
                    support_ssd_count=False):
   """Adds all flags needed for the create command."""
@@ -230,8 +230,7 @@ def AddCreateFlags(parser,
 
   specific_sku_group.AddArgument(GetRequireSpecificAllocation())
   specific_sku_group.AddArgument(GetVmCountFlag())
-  if support_resource_policies:
-    specific_sku_group.AddArgument(GetResourcePolicyFlag())
+  specific_sku_group.AddArgument(GetResourcePolicyFlag())
 
   # create the sku properties group for the SpecificSkuReservation
   # this group allows instance properties XOR source instance template

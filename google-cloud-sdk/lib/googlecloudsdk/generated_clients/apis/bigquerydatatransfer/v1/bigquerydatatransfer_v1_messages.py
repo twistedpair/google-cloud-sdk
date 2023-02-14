@@ -190,7 +190,7 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
       projects/{project_id}/locations/{location_id} or projects/{project_id}.
       If specified location and location of the destination bigquery dataset
       do not match - the request will fail.
-    serviceAccountName: Optional service account name. If this field is set,
+    serviceAccountName: Optional service account email. If this field is set,
       the transfer config will be created with this service account's
       credentials. It requires that the requesting user calling this API has
       permissions to act as this service account. Note that not all data
@@ -290,7 +290,7 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
       Where `config_id` is usually a uuid, even though it is not guaranteed or
       required. The name is ignored when creating a transfer config.
-    serviceAccountName: Optional service account name. If this field is set,
+    serviceAccountName: Optional service account email. If this field is set,
       the transfer config will be created with this service account's
       credentials. It requires that the requesting user calling this API has
       permissions to act as this service account. Note that not all data
@@ -512,7 +512,7 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
       projects/{project_id}/locations/{location_id} or projects/{project_id}.
       If specified location and location of the destination bigquery dataset
       do not match - the request will fail.
-    serviceAccountName: Optional service account name. If this field is set,
+    serviceAccountName: Optional service account email. If this field is set,
       the transfer config will be created with this service account's
       credentials. It requires that the requesting user calling this API has
       permissions to act as this service account. Note that not all data
@@ -609,7 +609,7 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
       Where `config_id` is usually a uuid, even though it is not guaranteed or
       required. The name is ignored when creating a transfer config.
-    serviceAccountName: Optional service account name. If this field is set,
+    serviceAccountName: Optional service account email. If this field is set,
       the transfer config will be created with this service account's
       credentials. It requires that the requesting user calling this API has
       permissions to act as this service account. Note that not all data
