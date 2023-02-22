@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run.integrations import deployment_states
+from googlecloudsdk.command_lib.run.integrations.formatters import cloudsql_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import redis_formatter
@@ -34,6 +35,7 @@ _FALLBACK_FORMATTER = fallback_formatter.FallbackFormatter()
 _INTEGRATION_FORMATTER_MAPS = frozendict({
     'custom-domains': domain_routing_formatter.DomainRoutingFormatter(),
     'redis': redis_formatter.RedisFormatter(),
+    'cloudsql': cloudsql_formatter.CloudSQLFormatter(),
 })
 
 

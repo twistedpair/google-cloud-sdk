@@ -17,13 +17,14 @@ class AWSV4Signature(_messages.Message):
   r"""The configuration needed to generate an AWS V4 Signature
 
   Fields:
-    accessKeyId: Required. The access key ID your origin uses to identify the
-      key.
+    accessKeyId: Required. The access key ID that your origin uses to identify
+      the key.
     originRegion: Required. The name of the AWS region that your origin is in.
     secretAccessKeyVersion: Required. The Secret Manager secret version of the
       secret access key used by your origin. This is the resource name of the
       secret version in the format `projects/*/secrets/*/versions/*` where the
-      `*` values are replaced by the project, secret, and version you require.
+      `*` values are replaced by the project, the secret, and the version that
+      you require.
   """
 
   accessKeyId = _messages.StringField(1)
@@ -125,7 +126,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -142,9 +145,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -155,42 +156,43 @@ class Binding(_messages.Message):
 
 
 class CDNPolicy(_messages.Message):
-  r"""The `CDNPolicy` to apply to the configured route.
+  r"""The CDN policy to apply to the configured route.
 
   Enums:
     CacheModeValueValuesEnum: Optional. Set the CacheMode used by this route.
       BYPASS_CACHE and USE_ORIGIN_HEADERS proxy the origin's headers. Other
       cache modes pass Cache-Control to the client. Use client_ttl to override
       what is sent to the client.
-    SignedRequestModeValueValuesEnum: Optional. Whether to enforce signed
-      requests. The default value is DISABLED, which means all content is
-      public, and does not authorize access. You must also set a
+    SignedRequestModeValueValuesEnum: Optional. Specifies whether to enforce
+      signed requests. The default value is DISABLED, which means all content
+      is public, and does not authorize access. You must also set a
       signed_request_keyset to enable signed requests. When set to
       REQUIRE_SIGNATURES or REQUIRE_TOKENS, all matching requests get their
       signature validated. Requests that aren't signed with the corresponding
       private key, or that are otherwise invalid (such as expired or do not
-      match the signature, IP address, or header) are rejected with a HTTP
-      403. If logging is turned on, then invalid requests are also logged.
+      match the signature, IP address, or header) are rejected with an HTTP
+      403 error. If logging is turned on, then invalid requests are also
+      logged.
 
   Messages:
-    NegativeCachingPolicyValue: Optional. Sets a cache TTL for the specified
-      HTTP status code. negative_caching must be enabled to configure
+    NegativeCachingPolicyValue: Optional. A cache TTL for the specified HTTP
+      status code. negative_caching must be enabled to configure
       `negative_caching_policy`. The following limitations apply: - Omitting
       the policy and leaving `negative_caching` enabled uses the default TTLs
       for each status code, defined in `negative_caching`. - TTLs must be >=
       `0` (where `0` is "always revalidate") and <= `86400s` (1 day) Only the
-      following status codes may be set: - HTTP redirection (3xx) - Client
+      following status codes can be set: - HTTP redirection (3xx) - Client
       error (4xx) - Server error (5xx) When you specify an explicit
       `negative_caching_policy`, ensure that you also specify a cache TTL for
       all response codes that you wish to cache. The CDNPolicy doesn't apply
       any default negative caching when a policy exists.
 
   Fields:
-    addSignatures: Optional. Enable signature generation or propagation on
-      this route. This field may only be specified when signed_request_mode is
+    addSignatures: Optional. Enables signature generation or propagation on
+      this route. This field can only be specified when signed_request_mode is
       set to REQUIRE_TOKENS.
-    cacheKeyPolicy: Optional. Defines the request parameters that contribute
-      to the cache key.
+    cacheKeyPolicy: Optional. The request parameters that contribute to the
+      cache key.
     cacheMode: Optional. Set the CacheMode used by this route. BYPASS_CACHE
       and USE_ORIGIN_HEADERS proxy the origin's headers. Other cache modes
       pass Cache-Control to the client. Use client_ttl to override what is
@@ -211,19 +213,19 @@ class CDNPolicy(_messages.Message):
       `default_ttl` cannot be set to a value greater than that of max_ttl. -
       Fractions of a second are not allowed. - When the CacheMode is set to
       FORCE_CACHE_ALL, the `default_ttl` overwrites the TTL set in all
-      responses. Infrequently accessed objects may be evicted from the cache
+      responses. Infrequently accessed objects might be evicted from the cache
       before the defined TTL. Objects that expire are revalidated with the
       origin. When the CacheMode is set to USE_ORIGIN_HEADERS or BYPASS_CACHE,
       you must omit this field.
-    maxTtl: Optional. Specifies the maximum allowed TTL for cached content
-      served by this origin. Defaults to `86400s` (1 day). Cache directives
-      that attempt to set a max-age or s-maxage higher than this, or an
-      Expires header more than `max_ttl` seconds in the future are capped at
-      the value of `max_ttl`, as if it were the value of an s-maxage Cache-
-      Control directive. - The TTL must be >= `0` and <= `31,536,000` seconds
-      (1 year) - Setting a TTL of `0` means "always revalidate" - The value of
+    maxTtl: Optional. The maximum allowed TTL for cached content served by
+      this origin. Defaults to `86400s` (1 day). Cache directives that attempt
+      to set a max-age or s-maxage higher than this, or an Expires header more
+      than `max_ttl` seconds in the future are capped at the value of
+      `max_ttl`, as if it were the value of an s-maxage Cache-Control
+      directive. - The TTL must be >= `0` and <= `31,536,000` seconds (1 year)
+      - Setting a TTL of `0` means "always revalidate" - The value of
       `max_ttl` must be equal to or greater than default_ttl. - Fractions of a
-      second are not allowed. When the CacheMode is set to
+      second are not allowed. When CacheMode is set to
       [USE_ORIGIN_HEADERS].[CacheMode.USE_ORIGIN_HEADERS], FORCE_CACHE_ALL, or
       BYPASS_CACHE, you must omit this field.
     negativeCaching: Optional. Negative caching allows setting per-status code
@@ -235,13 +237,13 @@ class CDNPolicy(_messages.Message):
       HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons) -
       **60s**: HTTP 405 (Method Not Found), 501 (Not Implemented) These
       defaults can be overridden in negative_caching_policy
-    negativeCachingPolicy: Optional. Sets a cache TTL for the specified HTTP
-      status code. negative_caching must be enabled to configure
+    negativeCachingPolicy: Optional. A cache TTL for the specified HTTP status
+      code. negative_caching must be enabled to configure
       `negative_caching_policy`. The following limitations apply: - Omitting
       the policy and leaving `negative_caching` enabled uses the default TTLs
       for each status code, defined in `negative_caching`. - TTLs must be >=
       `0` (where `0` is "always revalidate") and <= `86400s` (1 day) Only the
-      following status codes may be set: - HTTP redirection (3xx) - Client
+      following status codes can be set: - HTTP redirection (3xx) - Client
       error (4xx) - Server error (5xx) When you specify an explicit
       `negative_caching_policy`, ensure that you also specify a cache TTL for
       all response codes that you wish to cache. The CDNPolicy doesn't apply
@@ -252,25 +254,25 @@ class CDNPolicy(_messages.Message):
       `projects/project/locations/global/edgeCacheKeysets/yourKeyset` *
       `yourKeyset` SignedRequestMode must be set to a value other than
       DISABLED when a keyset is provided.
-    signedRequestMaximumExpirationTtl: Optional. Limit how far into the future
-      the expiration time of a signed request may be. When set, a signed
-      request is rejected if its expiration time is later than `now` +
+    signedRequestMaximumExpirationTtl: Optional. Limits how far into the
+      future the expiration time of a signed request can be. When set, a
+      signed request is rejected if its expiration time is later than `now` +
       `signed_request_maximum_expiration_ttl`, where `now` is the time at
       which the signed request is first handled by the CDN. - The TTL must be
       > 0. - Fractions of a second are not allowed. By default,
       `signed_request_maximum_expiration_ttl` is not set and the expiration
-      time of a signed request may be arbitrarily far into future.
-    signedRequestMode: Optional. Whether to enforce signed requests. The
-      default value is DISABLED, which means all content is public, and does
-      not authorize access. You must also set a signed_request_keyset to
+      time of a signed request might be arbitrarily far into future.
+    signedRequestMode: Optional. Specifies whether to enforce signed requests.
+      The default value is DISABLED, which means all content is public, and
+      does not authorize access. You must also set a signed_request_keyset to
       enable signed requests. When set to REQUIRE_SIGNATURES or
       REQUIRE_TOKENS, all matching requests get their signature validated.
       Requests that aren't signed with the corresponding private key, or that
       are otherwise invalid (such as expired or do not match the signature, IP
-      address, or header) are rejected with a HTTP 403. If logging is turned
-      on, then invalid requests are also logged.
-    signedTokenOptions: Optional. Additional options for signed tokens.
-      `signed_token_options` may only be specified when `signed_request_mode`
+      address, or header) are rejected with an HTTP 403 error. If logging is
+      turned on, then invalid requests are also logged.
+    signedTokenOptions: Optional. Any additional options for signed tokens.
+      `signed_token_options` can only be specified when `signed_request_mode`
       is `REQUIRE_TOKENS`.
   """
 
@@ -284,9 +286,9 @@ class CDNPolicy(_messages.Message):
       CACHE_MODE_UNSPECIFIED: Unspecified value. Defaults to
         `CACHE_ALL_STATIC`.
       CACHE_ALL_STATIC: Automatically cache static content, including common
-        image formats, media (video & audio), web assets (JavaScript & CSS).
-        Requests and responses that are marked as uncacheable, as well as
-        dynamic content (including HTML), aren't cached.
+        image formats, media (video and audio), and web assets (JavaScript and
+        CSS). Requests and responses that are marked as uncacheable, as well
+        as dynamic content (including HTML), aren't cached.
       USE_ORIGIN_HEADERS: Only cache responses with valid HTTP caching
         directives. Responses without these headers aren't cached at Google's
         edge, and require a full trip to the origin on every request,
@@ -294,7 +296,7 @@ class CDNPolicy(_messages.Message):
         server.
       FORCE_CACHE_ALL: Cache all content, ignoring any `private`, `no-store`
         or `no-cache` directives in Cache-Control response headers.
-        **Warning:** this may result in caching private, per-user (user
+        **Warning:** this might result in caching private, per-user (user
         identifiable) content. Only enable this on routes where the
         EdgeCacheOrigin doesn't serve private or dynamic content, such as
         storage buckets.
@@ -310,15 +312,15 @@ class CDNPolicy(_messages.Message):
     BYPASS_CACHE = 4
 
   class SignedRequestModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Whether to enforce signed requests. The default value is
-    DISABLED, which means all content is public, and does not authorize
-    access. You must also set a signed_request_keyset to enable signed
-    requests. When set to REQUIRE_SIGNATURES or REQUIRE_TOKENS, all matching
-    requests get their signature validated. Requests that aren't signed with
-    the corresponding private key, or that are otherwise invalid (such as
-    expired or do not match the signature, IP address, or header) are rejected
-    with a HTTP 403. If logging is turned on, then invalid requests are also
-    logged.
+    r"""Optional. Specifies whether to enforce signed requests. The default
+    value is DISABLED, which means all content is public, and does not
+    authorize access. You must also set a signed_request_keyset to enable
+    signed requests. When set to REQUIRE_SIGNATURES or REQUIRE_TOKENS, all
+    matching requests get their signature validated. Requests that aren't
+    signed with the corresponding private key, or that are otherwise invalid
+    (such as expired or do not match the signature, IP address, or header) are
+    rejected with an HTTP 403 error. If logging is turned on, then invalid
+    requests are also logged.
 
     Values:
       SIGNED_REQUEST_MODE_UNSPECIFIED: Unspecified value. Defaults to
@@ -340,12 +342,12 @@ class CDNPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NegativeCachingPolicyValue(_messages.Message):
-    r"""Optional. Sets a cache TTL for the specified HTTP status code.
+    r"""Optional. A cache TTL for the specified HTTP status code.
     negative_caching must be enabled to configure `negative_caching_policy`.
     The following limitations apply: - Omitting the policy and leaving
     `negative_caching` enabled uses the default TTLs for each status code,
     defined in `negative_caching`. - TTLs must be >= `0` (where `0` is "always
-    revalidate") and <= `86400s` (1 day) Only the following status codes may
+    revalidate") and <= `86400s` (1 day) Only the following status codes can
     be set: - HTTP redirection (3xx) - Client error (4xx) - Server error (5xx)
     When you specify an explicit `negative_caching_policy`, ensure that you
     also specify a cache TTL for all response codes that you wish to cache.
@@ -389,7 +391,7 @@ class CDNPolicy(_messages.Message):
 
 
 class CDNPolicyAddSignaturesOptions(_messages.Message):
-  r"""Configuration options for adding signatures to responses.
+  r"""The configuration options for adding signatures to responses.
 
   Enums:
     ActionsValueListEntryValuesEnum:
@@ -398,31 +400,31 @@ class CDNPolicyAddSignaturesOptions(_messages.Message):
     actions: Required. The actions to take to add signatures to responses. You
       must specify exactly one action.
     copiedParameters: Optional. The parameters to copy from the verified token
-      to the generated token. Only the following parameters may be copied: *
+      to the generated token. Only the following parameters can be copied: *
       `PathGlobs` * `paths` * `acl` * `URLPrefix` * `IPRanges` * `SessionID` *
-      `id` * `Data` * `data` * `payload` * `Headers` You may specify up to 6
+      `id` * `Data` * `data` * `payload` * `Headers` You can specify up to 6
       parameters to copy. A given parameter is be copied only if the parameter
       exists in the verified token. Parameter names are matched exactly as
       specified. The order of the parameters does not matter. Duplicates are
-      not allowed. This field may only be specified when the `GENERATE_COOKIE`
+      not allowed. This field can only be specified when the `GENERATE_COOKIE`
       or `GENERATE_TOKEN_HLS_COOKIELESS` actions are specified.
     keyset: Optional. The keyset to use for signature generation. The
       following are both valid paths to an EdgeCacheKeyset resource: *
       `projects/project/locations/global/edgeCacheKeysets/yourKeyset` *
       `yourKeyset` This must be specified when the `GENERATE_COOKIE` or
-      `GENERATE_TOKEN_HLS_COOKIELESS` actions are specified. This field may
+      `GENERATE_TOKEN_HLS_COOKIELESS` actions are specified. This field can
       not be specified otherwise.
     tokenQueryParameter: Optional. The query parameter in which to put the
       generated token. If not specified, defaults to `edge-cache-token`. If
       specified, the name must be 1-64 characters long and match the regular
       expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first character
       must be a letter, and all following characters must be a dash,
-      underscore, letter or digit. This field may only be set when the
+      underscore, letter or digit. This field can only be set when the
       `GENERATE_TOKEN_HLS_COOKIELESS` or `PROPAGATE_TOKEN_HLS_COOKIELESS`
       actions are specified.
-    tokenTtl: Optional. The duration the token is valid starting from the
+    tokenTtl: Optional. The duration the token is valid for starting from the
       moment the token is first generated. Defaults to `86400s` (1 day). The
-      TTL must be >= 0 and <= 604,800 seconds (1 week). This field may only be
+      TTL must be >= 0 and <= 604,800 seconds (1 week). This field can only be
       specified when the `GENERATE_COOKIE` or `GENERATE_TOKEN_HLS_COOKIELESS`
       actions are specified.
   """
@@ -457,12 +459,12 @@ class CDNPolicyAddSignaturesOptions(_messages.Message):
 
 
 class CDNPolicyCacheKeyPolicy(_messages.Message):
-  r"""Defines the request parameters that contribute to the cache key.
+  r"""The request parameters that contribute to the cache key.
 
   Fields:
     excludeHost: Optional. If `true`, requests to different hosts are cached
       separately. **Important:** Enable this only if the hosts share the same
-      origin and content. Removing the host from the cache key may
+      origin and content. Removing the host from the cache key might
       inadvertently result in different objects being cached than intended,
       depending on which route the first user matched.
     excludeQueryString: Optional. If `true`, exclude query string parameters
@@ -470,35 +472,36 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       parameters in the cache key according to included_query_parameters and
       excluded_query_parameters. If neither is set, the entire query string is
       included.
-    excludedQueryParameters: Optional. Names of query string parameters to
-      exclude from cache keys. All other parameters are included. Either
-      specify included_query_parameters or excluded_query_parameters, not
-      both. `&` and `=` are percent encoded and not treated as delimiters. You
-      may exclude up to 20 query parameters. Each query parameter name must be
+    excludedQueryParameters: Optional. The names of query string parameters to
+      exclude from cache keys. All other parameters are included. Specify
+      either included_query_parameters or excluded_query_parameters, not both.
+      `&` and `=` are percent encoded and not treated as delimiters. You can
+      exclude up to 20 query parameters. Each query parameter name must be
       between 1 and 32 characters long (inclusive).
     includeProtocol: Optional. If `true`, HTTP and HTTPS requests are cached
       separately.
-    includedCookieNames: Optional. Names of cookies to include in cache keys.
-      The cookie name and cookie value of each cookie named is used as part of
-      the cache key. The following limitations apply: - Must be valid RFC 6265
-      "cookie-name" tokens - Are case sensitive - Cannot start with "Edge-
-      Cache-" (case insensitive) Specifying several cookies or cookies that
-      have a large range of values, such as per-user, dramatically impacts the
-      cache hit rate, and may result in a higher eviction rate and reduced
-      performance. You may specify up to three cookie names.
-    includedHeaderNames: Optional. Names of HTTP request headers to include in
-      cache keys. The value of the header field is used as part of the cache
-      key. The following limitations apply: - Header names must be valid HTTP
-      RFC 7230 header field values. - Header field names are case insensitive
-      - You may specify up to five header names. - To include the HTTP method,
-      use `:method` Refer to the documentation for the allowed list of header
-      names. Specifying several headers or headers that have a large range of
-      values, such as per-user, dramatically impacts the cache hit rate, and
-      may result in a higher eviction rate and reduced performance.
-    includedQueryParameters: Optional. Names of query string parameters to
-      include in cache keys. All other parameters are excluded. Either specify
+    includedCookieNames: Optional. The names of cookies to include in cache
+      keys. The cookie name and cookie value of each cookie named is used as
+      part of the cache key. The following limitations apply: - Must be valid
+      RFC 6265 "cookie-name" tokens - Are case sensitive - Cannot start with
+      "Edge-Cache-" (case insensitive) Specifying several cookies or cookies
+      that have a large range of values, such as per-user, dramatically
+      impacts the cache hit rate, and might result in a higher eviction rate
+      and reduced performance. You can specify up to three cookie names.
+    includedHeaderNames: Optional. The names of HTTP request headers to
+      include in cache keys. The value of the header field is used as part of
+      the cache key. The following limitations apply: - Header names must be
+      valid HTTP RFC 7230 header field values. - Header field names are case
+      insensitive - You can specify up to five header names. - To include the
+      HTTP method, use `:method` Refer to the documentation for the allowed
+      list of header names. Specifying several headers or headers that have a
+      large range of values, such as per-user, dramatically impacts the cache
+      hit rate, and might result in a higher eviction rate and reduced
+      performance.
+    includedQueryParameters: Optional. The names of query string parameters to
+      include in cache keys. All other parameters are excluded. Specify either
       included_query_parameters or excluded_query_parameters, not both. `&`
-      and `=` are percent encoded and not treated as delimiters. You may
+      and `=` are percent encoded and not treated as delimiters. You can
       include up to 20 query parameters. Each query parameter name must be
       between 1 and 32 characters long (inclusive).
   """
@@ -513,14 +516,14 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
 
 
 class CDNPolicySignedTokenOptions(_messages.Message):
-  r"""Configuration options for signed tokens.
+  r"""The configuration options for signed tokens.
 
   Enums:
     AllowedSignatureAlgorithmsValueListEntryValuesEnum:
 
   Fields:
     allowedSignatureAlgorithms: Optional. The allowed signature algorithms to
-      use. Defaults to using only ED25519. You may specify up to 3 signature
+      use. Defaults to using only ED25519. You can specify up to 3 signature
       algorithms to use.
     tokenQueryParameter: Optional. The query parameter in which to find the
       token. The name must be 1-64 characters long and match the regular
@@ -552,35 +555,35 @@ class CDNPolicySignedTokenOptions(_messages.Message):
 
 
 class CORSPolicy(_messages.Message):
-  r"""`CORSPolicy` defines Cross-Origin-Resource-Sharing configuration,
-  including which CORS response headers are set.
+  r"""Defines Cross Origin Resource Sharing (CORS) configuration, including
+  which CORS response headers are set.
 
   Fields:
     allowCredentials: Optional. In response to a preflight request, setting
       this to `true` indicates that the actual request can include user
-      credentials. This translates to the Access-Control-Allow-Credentials
+      credentials. This translates to the `Access-Control-Allow-Credentials`
       response header.
-    allowHeaders: Optional. Specifies the content for the Access-Control-
-      Allow-Headers response header. You may specify up to 5 headers to
-      include in the Access-Control-Allow-Headers header.
-    allowMethods: Optional. Specifies the content for the Access-Control-
-      Allow-Methods response header. You may specify up to 5 allowed methods.
-    allowOrigins: Optional. Specifies the list of origins that are allowed to
-      do CORS requests. This translates to the Access-Control-Allow-Origin
-      response header. You may specify up to 25 allowed origins.
-    disabled: Optional. If `true`, specifies the CORS policy is disabled. The
-      default value is `false`, which indicates that the CORS policy is in
+    allowHeaders: Optional. The content for the `Access-Control-Allow-Headers`
+      response header. You can specify up to five headers to include in the
+      `Access-Control-Allow-Headers` header.
+    allowMethods: Optional. The content for the `Access-Control-Allow-Methods`
+      response header. You can specify up to five allowed methods.
+    allowOrigins: Optional. A list of origins that are allowed to do CORS
+      requests. This translates to the `Access-Control-Allow-Origin` response
+      header. You can specify up to 25 allowed origins.
+    disabled: Optional. If `true`, specifies that the CORS policy is disabled.
+      The default value is `false`, which indicates that the CORS policy is in
       effect.
-    exposeHeaders: Optional. Specifies the content for the Access-Control-
-      Expose-Headers response header. You may specify up to 5 headers to
-      expose in the Access-Control-Expose-Headers header.
+    exposeHeaders: Optional. The content for the Access-Control-Expose-Headers
+      response header. You can specify up to five headers to expose in the
+      `Access-Control-Expose-Headers` header.
     maxAge: Required. Specifies how long results of a preflight request can be
       cached by a client in seconds. Note that many browser clients enforce a
       maximum TTL of 600s (10 minutes). The following limitations apply: -
       Setting the value to `-1` forces a pre-flight check for all requests
-      (not recommended) - A maximum TTL of `86400s` can be set, however, some
-      clients may force pre-flight checks at a more regular interval. This
-      translates to the Access-Control-Max-Age header.
+      (not recommended) - A maximum TTL of `86400s` can be set; however, some
+      clients might force pre-flight checks at a more regular interval. This
+      translates to the `Access-Control-Max-Age` header.
   """
 
   allowCredentials = _messages.BooleanField(1)
@@ -597,35 +600,35 @@ class CancelOperationRequest(_messages.Message):
 
 
 class EdgeCacheKeyset(_messages.Message):
-  r"""EdgeCacheKeyset represents a collection of public keys used for
-  validating signed requests.
+  r"""Represents a collection of public keys used for validating signed
+  requests.
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the
+    LabelsValue: Optional. A set of label tags associated with the
       EdgeCacheKeyset resource.
 
   Fields:
-    createTime: Output only. Creation timestamp in RFC3339 text format.
+    createTime: Output only. The creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
-    labels: Optional. Set of label tags associated with the EdgeCacheKeyset
+    labels: Optional. A set of label tags associated with the EdgeCacheKeyset
       resource.
-    name: Required. Name of the resource; provided by the client when the
-      resource is created. The name must be 1-64 characters long, and match
-      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
-      character must be a letter, and all following characters must be a dash,
-      underscore, letter or digit.
+    name: Required. The name of the resource as provided by the client when
+      the resource is created. The name must be 1-64 characters long, and
+      match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the
+      first character must be a letter, and all following characters must be a
+      dash, an underscore, a letter, or a digit.
     publicKeys: Optional. An ordered list of Ed25519 public keys to use for
-      validating signed requests. Ed25519 public keys are not secret, and only
-      allow Google to validate a request was signed by your corresponding
-      private key. Ensure that the private key is kept secret, and that only
+      validating signed requests. Ed25519 public keys are not secret and only
+      allow Google to validate that a request was signed by your corresponding
+      private key. Ensure that the private key is kept secret and that only
       authorized users can add public keys to a keyset. You can rotate keys by
       appending (pushing) a new key to the list of public keys, and removing
       any superseded keys. You must specify `public_keys` or
       validation_shared_keys (or both). The keys in `public_keys` are checked
-      first. You may specify no more than one Google-managed public key. If
-      you specify `public_keys`, you must specify at least one key and may
-      specify up to three keys.
-    updateTime: Output only. Update timestamp in RFC3339 text format.
+      first. You can specify at most one Google-managed public key. If you
+      specify `public_keys`, you must specify at least one key and can specify
+      up to three keys.
+    updateTime: Output only. The update timestamp in RFC3339 text format.
     validationSharedKeys: Optional. An ordered list of shared keys to use for
       validating signed requests. Shared keys are secret. Ensure that only
       authorized users can add `validation_shared_keys` to a keyset. You can
@@ -633,13 +636,13 @@ class EdgeCacheKeyset(_messages.Message):
       `validation_shared_keys` and removing any superseded keys. You must
       specify public_keys or `validation_shared_keys` (or both). The keys in
       `public_keys` are checked first. If you specify
-      `validation_shared_keys`, you must specify at least one key and may have
-      up to three keys.
+      `validation_shared_keys`, you must specify at least one key and can
+      specify up to three keys.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the EdgeCacheKeyset
+    r"""Optional. A set of label tags associated with the EdgeCacheKeyset
     resource.
 
     Messages:
@@ -672,25 +675,24 @@ class EdgeCacheKeyset(_messages.Message):
 
 
 class EdgeCacheOrigin(_messages.Message):
-  r"""EdgeCacheOrigin represents a HTTP-reachable backend for an
-  EdgeCacheService.
+  r"""Represents an HTTP-reachable backend for an `EdgeCacheService` resource.
 
   Enums:
     ProtocolValueValuesEnum: Optional. The protocol to use to connect to the
-      configured origin. Defaults to HTTP2, and it is strongly recommended
-      that users use HTTP2 for both security & performance. When using HTTP2
-      or HTTPS as the protocol, a valid, publicly-signed, unexpired TLS (SSL)
-      certificate must be presented by the origin server.
+      configured origin. Defaults to HTTP2, which is strongly recommended for
+      both security and performance. When using HTTP2 or HTTPS as the
+      protocol, a valid, publicly-signed, unexpired TLS (SSL) certificate must
+      be presented by the origin server.
     RetryConditionsValueListEntryValuesEnum:
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the
+    LabelsValue: Optional. A set of label tags associated with the
       EdgeCacheOrigin resource.
 
   Fields:
     awsV4Authentication: Optional. Enable AWS Signature Version 4 origin
       authentication.
-    createTime: Output only. Creation timestamp in RFC3339 text format.
+    createTime: Output only. The creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
     failoverOrigin: Optional. The EdgeCacheOrigin resource to try when the
       current origin cannot be reached. After max_attempts is reached, the
@@ -698,29 +700,29 @@ class EdgeCacheOrigin(_messages.Message):
       are both valid paths to an `EdgeCacheOrigin` resource: * `projects/my-
       project/locations/global/edgeCacheOrigins/my-origin` * `my-origin` The
       value of max_attempts_timeout dictates the timeout across all origins.
-    labels: Optional. Set of label tags associated with the EdgeCacheOrigin
+    labels: Optional. A set of label tags associated with the EdgeCacheOrigin
       resource.
     maxAttempts: Optional. The maximum number of attempts to cache fill from
       this origin. Another attempt is made when a cache fill fails with one of
       the retry_conditions or following a redirect response matching one of
-      the origin_redirect.redirect_conditions. Once max_attempts to this
-      origin have failed the failover_origin is used, if one is specified.
-      That `failover_origin` may specify its own `max_attempts`,
-      `retry_conditions`, `redirect_conditions`, and `failover_origin` to
-      control its own cache fill failures. The total number of allowed
-      attempts to cache fill across this and failover origins is limited to
-      four. The total time allowed for cache fill attempts across this and
-      failover origins can be controlled with max_attempts_timeout. The last
-      valid, non-retried response from all origins is returned to the client.
-      If no origin returns a valid response, an HTTP 502 is returned to the
-      client. Defaults to 1. Must be a value greater than 0 and less than 5.
-    name: Required. Name of the resource; provided by the client when the
-      resource is created. The name must be 1-64 characters long, and match
-      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
-      character must be a letter, and all following characters must be a dash,
-      underscore, letter or digit.
+      the origin_redirect.redirect_conditions. Once the maximum attempts to
+      this origin have failed, the failover origin][], if specified, is used.
+      The failover origin can have its own `max_attempts`, `retry_conditions`,
+      `redirect_conditions`, and `failover_origin` values to control its cache
+      fill failures. The total number of allowed attempts to cache fill across
+      this and failover origins is limited to four. The total time allowed for
+      cache fill attempts across this and failover origins can be controlled
+      with `max_attempts_timeout`. The last valid, non-retried response from
+      all origins is returned to the client. If no origin returns a valid
+      response, an `HTTP 502` error is returned to the client. Defaults to 1.
+      Must be a value greater than 0 and less than 5.
+    name: Required. The name of the resource as provided by the client when
+      the resource is created. The name must be 1-64 characters long, and
+      match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*`, which means
+      that the first character must be a letter, and all following characters
+      must be a dash, an underscore, a letter, or a digit.
     originAddress: Required. A fully qualified domain name (FQDN), an IPv4 or
-      IPv6 address reachable over the public Internet, or the address of a
+      IPv6 address reachable over the public internet, or the address of a
       Google Cloud Storage bucket. This address is used as the origin for
       cache requests. The following are example origins: - **FQDN**: `media-
       backend.example.com` - **IPv4**: `35.218.1.1` - **IPv6**:
@@ -731,47 +733,47 @@ class EdgeCacheOrigin(_messages.Message):
       They must not contain any slashes. When providing an IP address, it must
       be publicly routable. IPv6 addresses must not be enclosed in square
       brackets.
-    originOverrideAction: Optional. The override actions, including
-      url_rewrites and header additions, for requests that use this origin.
+    originOverrideAction: Optional. The override actions, including URL
+      rewrites and header additions, for requests that use this origin.
     originRedirect: Optional. Follow redirects from this origin.
     port: Optional. The port to connect to the origin on. Defaults to port
-      **443** for HTTP2 and HTTPS protocols, and port **80** for HTTP.
+      **443** for HTTP2 and HTTPS protocols and port **80** for HTTP.
     protocol: Optional. The protocol to use to connect to the configured
-      origin. Defaults to HTTP2, and it is strongly recommended that users use
-      HTTP2 for both security & performance. When using HTTP2 or HTTPS as the
-      protocol, a valid, publicly-signed, unexpired TLS (SSL) certificate must
-      be presented by the origin server.
+      origin. Defaults to HTTP2, which is strongly recommended for both
+      security and performance. When using HTTP2 or HTTPS as the protocol, a
+      valid, publicly-signed, unexpired TLS (SSL) certificate must be
+      presented by the origin server.
     retryConditions: Optional. Specifies one or more retry conditions for the
       configured origin. If the failure mode during a connection attempt to
-      the origin matches the configured retryCondition(s), the origin request
-      retries up to max_attempts times. The failover_origin, if configured, is
-      then used to satisfy the request. The default `retry_conditions`
-      condition is `CONNECT_FAILURE`. `retry_conditions` apply to this origin,
-      and not to subsequent `failover_origin`s, which may specify their own
-      `retry_conditions` and `max_attempts`. For a list of valid values, see
-      RetryConditions.
+      the origin matches the configured `retryConditions` values, the origin
+      request retries up to max_attempts times. The failover origin, if
+      configured, is then used to satisfy the request. The default
+      `retry_conditions` value is `CONNECT_FAILURE`. `retry_conditions` values
+      apply to this origin, and not to subsequent failover origins, which can
+      specify their own `retry_conditions` and `max_attempts` values. For a
+      list of valid values, see RetryConditions.
     timeout: Optional. The connection and HTTP timeout configuration for this
       origin.
-    updateTime: Output only. Update timestamp in RFC3339 text format.
+    updateTime: Output only. The update timestamp in RFC3339 text format.
   """
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Optional. The protocol to use to connect to the configured origin.
-    Defaults to HTTP2, and it is strongly recommended that users use HTTP2 for
-    both security & performance. When using HTTP2 or HTTPS as the protocol, a
-    valid, publicly-signed, unexpired TLS (SSL) certificate must be presented
-    by the origin server.
+    Defaults to HTTP2, which is strongly recommended for both security and
+    performance. When using HTTP2 or HTTPS as the protocol, a valid, publicly-
+    signed, unexpired TLS (SSL) certificate must be presented by the origin
+    server.
 
     Values:
-      PROTOCOL_UNSPECIFIED: Unspecified value. Will default to HTTP2.
+      PROTOCOL_UNSPECIFIED: Unspecified value. Defaults to HTTP2.
       HTTP2: The HTTP/2 protocol. HTTP/2 refers to "h2", which requires TLS
-        (HTTPS). Requires a valid (public, unexpired) TLS certificate present
-        on the origin.
-      HTTPS: HTTP/1.1 with TLS (SSL). Requires a valid (public, unexpired) TLS
-        certificate present on the origin.
-      HTTP: HTTP without TLS (SSL). This is not recommended, as communication
-        outside of Google's network is unencrypted to the public endpoint
-        (origin).
+        (HTTPS). Requires a valid (public and unexpired) TLS certificate
+        present on the origin.
+      HTTPS: HTTP/1.1 with TLS (SSL). Requires a valid (public and unexpired)
+        TLS certificate present on the origin.
+      HTTP: HTTP without TLS (SSL). This is not recommended, because
+        communication outside of Google's network is unencrypted to the public
+        endpoint (origin).
     """
     PROTOCOL_UNSPECIFIED = 0
     HTTP2 = 1
@@ -785,17 +787,18 @@ class EdgeCacheOrigin(_messages.Message):
       RETRY_CONDITIONS_UNSPECIFIED: Unspecified
       CONNECT_FAILURE: Retry on failures connecting to origins include
         routing, DNS and TLS handshake errors, and TCP/UDP timeouts.
-      HTTP_5XX: Retry if the origin responds with any HTTP 5xx response code.
-      GATEWAY_ERROR: Similar to 5xx, but only applies to HTTP response codes
-        502, 503 or 504.
-      RETRIABLE_4XX: Retry for retriable 4xx response codes, which include
-        HTTP 409 (Conflict) and HTTP 429 (Too Many Requests).
-      NOT_FOUND: Retry if the origin returns an HTTP 404 (Not Found). This can
-        be useful when generating video content, and the segment is not
-        available yet.
-      FORBIDDEN: Retry if the origin returns an HTTP 403 (Forbidden). This can
-        be useful for origins that return 403 (instead of 404) for missing
-        content for security reasons.
+      HTTP_5XX: Retry if the origin responds with any `HTTP 5xx` response
+        code.
+      GATEWAY_ERROR: Similar to `5xx`, but only applies to HTTP response codes
+        `502`, `503`, or `504`.
+      RETRIABLE_4XX: Retry for retriable `4xx` response codes, which include
+        `HTTP 409 (Conflict)` and `HTTP 429 (Too Many Requests)`.
+      NOT_FOUND: Retry if the origin returns an `HTTP 404 (Not Found)` error.
+        This can be useful when generating video content when the segment is
+        not yet available.
+      FORBIDDEN: Retry if the origin returns an `HTTP 403 (Forbidden)` error.
+        This can be useful for origins that return `403` (instead of `404`)
+        for missing content for security reasons.
     """
     RETRY_CONDITIONS_UNSPECIFIED = 0
     CONNECT_FAILURE = 1
@@ -807,7 +810,7 @@ class EdgeCacheOrigin(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the EdgeCacheOrigin
+    r"""Optional. A set of label tags associated with the EdgeCacheOrigin
     resource.
 
     Messages:
@@ -848,62 +851,62 @@ class EdgeCacheOrigin(_messages.Message):
 
 
 class EdgeCacheService(_messages.Message):
-  r"""EdgeCacheService defines the IP addresses, protocols, security policies,
-  cache policies and routing configuration.
+  r"""Defines the IP addresses, protocols, security policies, cache policies,
+  and routing configuration.
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the EdgeCache
-      resource.
+    LabelsValue: Optional. A set of label tags associated with the
+      `EdgeCacheService` resource.
 
   Fields:
-    createTime: Output only. Creation timestamp in RFC3339 text format.
+    createTime: Output only. The creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
     disableHttp2: Optional. Disables HTTP/2. HTTP/2 (h2) is enabled by default
       and recommended for performance. HTTP/2 improves connection re-use and
       reduces connection setup overhead by sending multiple streams over the
-      same connection. Some legacy HTTP clients may have issues with HTTP/2
+      same connection. Some legacy HTTP clients might have issues with HTTP/2
       connections due to broken HTTP/2 implementations. Setting this to `true`
       prevents HTTP/2 from being advertised and negotiated.
     disableQuic: Optional. HTTP/3 (IETF QUIC) and Google QUIC are enabled by
       default.
-    edgeSecurityPolicy: Optional. Resource URL that points at the Cloud Armor
-      edge security policy that is applied on each request against the
-      EdgeCacheService.
+    edgeSecurityPolicy: Optional. The resource URL that points at the Cloud
+      Armor edge security policy that is applied on each request against the
+      EdgeCacheService resource.
     edgeSslCertificates: Optional. Certificate resources that are used to
-      authenticate connections between users and the EdgeCacheService. Note
-      that only global certificates with a scope of `EDGE_CACHE` can be
-      attached to an EdgeCacheService. The following are both valid paths to
-      an `edge_ssl_certificates` resource: *
+      authenticate connections between users and the EdgeCacheService
+      resource. Note that only global certificates with a scope of
+      `EDGE_CACHE` can be attached to an EdgeCacheService resource. The
+      following are both valid paths to an `edge_ssl_certificates` resource: *
       `projects/project/locations/global/certificates/media-example-com-cert`
-      * `media-example-com-cert` You may specify up to 5 SSL certificates.
+      * `media-example-com-cert` You can specify up to five SSL certificates.
     ipv4Addresses: Output only. The IPv4 addresses associated with this
       service. Addresses are static for the lifetime of the service. IP
       addresses provisioned via Bring-Your-Own-IP (BYOIP) are not supported.
     ipv6Addresses: Output only. The IPv6 addresses associated with this
       service. Addresses are static for the lifetime of the service. IP
       addresses provisioned via Bring-Your-Own-IP (BYOIP) are not supported.
-    labels: Optional. Set of label tags associated with the EdgeCache
-      resource.
-    logConfig: Optional. Specifies the logging options for the traffic served
-      by this service. If logging is enabled, logs are exported to Cloud
-      Logging.
-    name: Required. Name of the resource; provided by the client when the
-      resource is created. The name must be 1-64 characters long, and match
-      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
-      character must be a letter, and all following characters must be a dash,
-      underscore, letter or digit.
+    labels: Optional. A set of label tags associated with the
+      `EdgeCacheService` resource.
+    logConfig: Optional. The logging options for the traffic served by this
+      service. If logging is enabled, logs are exported to Cloud Logging.
+    name: Required. The name of the resource as provided by the client when
+      the resource is created. The name must be 1-64 characters long, and
+      match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the
+      first character must be a letter, and all following characters must be a
+      dash, an underscore, a letter, or a digit.
     requireTls: Optional. Require TLS (HTTPS) for all clients connecting to
-      this service. Clients who connect over HTTP (port 80) receive an HTTP
-      301 response to the same URL over HTTPS (port 443). You must have at
-      least one edge_ssl_certificates specified to enable this.
-    routing: Required. Defines how requests are routed, modified, cached, and
-      which origin content is filled from.
-    updateTime: Output only. Update timestamp in RFC3339 text format.
+      this service. Clients who connect over HTTP (port 80) see an `HTTP 301`
+      response to the same URL over HTTPS (port 443). You must have at least
+      one edge_ssl_certificates specified to enable this.
+    routing: Required. Defines how requests are routed, modified, and cached,
+      and which origin the content is filled from.
+    updateTime: Output only. The update timestamp in RFC3339 text format.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the EdgeCache resource.
+    r"""Optional. A set of label tags associated with the `EdgeCacheService`
+    resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1227,12 +1230,11 @@ class Gateway(_messages.Message):
       will receive traffic. The proxy binds to the specified ports. Gateways
       of type 'SECURE_WEB_GATEWAY' are limited to 1 port. Gateways of type
       'OPEN_MESH' listen on 0.0.0.0 and support multiple ports.
-    scope: Required. Immutable. Scope determines how configuration across
-      multiple Gateway instances are merged. The configuration for multiple
-      Gateway instances with the same scope will be merged as presented as a
-      single coniguration to the proxy/load balancer. Max length 64
-      characters. Scope should start with a letter and can only have letters,
-      numbers, hyphens.
+    scope: Optional. Scope determines how configuration across multiple
+      Gateway instances are merged. The configuration for multiple Gateway
+      instances with the same scope will be merged as presented as a single
+      coniguration to the proxy/load balancer. Max length 64 characters. Scope
+      should start with a letter and can only have letters, numbers, hyphens.
     securityPolicy: Optional. A fully-qualified GatewaySecurityPolicy URL
       reference. Defines how a server should apply security policy to inbound
       (VM to Proxy) initiated connections. This policy is specific to gateways
@@ -1625,24 +1627,24 @@ class GrpcRouteRouteRule(_messages.Message):
 
 
 class HeaderAction(_messages.Message):
-  r"""`HeaderAction` defines the addition and removal of HTTP headers for
-  requests / responses.
+  r"""Defines the addition and removal of HTTP headers for requests and
+  responses.
 
   Fields:
     requestHeadersToAdd: Optional. A list of headers to add to the request
-      prior to forwarding the request to the origin. You may add a maximum of
-      5 request headers.
+      prior to forwarding the request to the origin. You can add a maximum of
+      five request headers.
     requestHeadersToRemove: Optional. A list of header names to remove from
-      the request prior to forwarding the request to the origin. You may
-      specify up to 10 request headers to remove.
+      the request before forwarding the request to the origin. You can specify
+      up to 10 request headers to remove.
     responseHeadersToAdd: Optional. A list of headers to add to the response
-      prior to sending it back to the client. You may add a maximum of 5
+      before sending it back to the client. You can add a maximum of five
       response headers. Response headers are only sent to the client, and do
       not have an effect on the cache serving the response.
     responseHeadersToRemove: Optional. A list of headers to remove from the
-      response prior to sending it back to the client. Response headers are
-      only sent to the client, and do not have an effect on the cache serving
-      the response. You may specify up to 10 response headers to remove.
+      response before sending it back to the client. Response headers are only
+      sent to the client, and do not have an effect on the cache serving the
+      response. You can specify up to 10 response headers to remove.
   """
 
   requestHeadersToAdd = _messages.MessageField('HeaderActionAddHeader', 1, repeated=True)
@@ -1652,13 +1654,13 @@ class HeaderAction(_messages.Message):
 
 
 class HeaderActionAddHeader(_messages.Message):
-  r"""Describes a header to add.
+  r"""The header to add.
 
   Fields:
     headerName: Required. The name of the header to add.
     headerValue: Required. The value of the header to add.
-    replace: Optional. Whether to replace all existing headers with the same
-      name.
+    replace: Optional. Specifies whether to replace all existing headers with
+      the same name.
   """
 
   headerName = _messages.StringField(1)
@@ -1667,7 +1669,7 @@ class HeaderActionAddHeader(_messages.Message):
 
 
 class HeaderActionRemoveHeader(_messages.Message):
-  r"""Describes a header to remove.
+  r"""The header to remove.
 
   Fields:
     headerName: Required. The name of the header to remove.
@@ -1677,17 +1679,17 @@ class HeaderActionRemoveHeader(_messages.Message):
 
 
 class HeaderMatch(_messages.Message):
-  r"""`HeaderMatch` defines the match conditions for HTTP request headers.
+  r"""The match conditions for HTTP request headers.
 
   Fields:
     exactMatch: Optional. The value of the header must exactly match contents
       of `exact_match`. Only one of `exact_match`, prefix_match, suffix_match,
       or present_match must be set.
     headerName: Required. The header name to match on.
-    invertMatch: Optional. If set to `false`, the HeaderMatch is considered a
-      match if the match criteria above are met. If set to `true`, the
-      `HeaderMatch` is considered a match if the match criteria above are NOT
-      met. The default is `false`.
+    invertMatch: Optional. If set to `false`, HeaderMatch is considered a
+      match when the match criteria above are met. If set to `true`,
+      `HeaderMatch` is considered a match when the match criteria above are
+      not met. The default is `false`.
     prefixMatch: Optional. The value of the header must start with the
       contents of `prefix_match`. Only one of exact_match, `prefix_match`,
       suffix_match, or present_match must be set.
@@ -1696,8 +1698,8 @@ class HeaderMatch(_messages.Message):
       value. Only one of exact_match, prefix_match, suffix_match, or
       `present_match` must be set.
     suffixMatch: Optional. The value of the header must end with the contents
-      of `suffix_match`. Only one of exact_match, prefix_match, `suffix_match`
-      or present_match must be set.
+      of `suffix_match`. Only one of exact_match, prefix_match,
+      `suffix_match`, or present_match must be set.
   """
 
   exactMatch = _messages.StringField(1)
@@ -1709,17 +1711,18 @@ class HeaderMatch(_messages.Message):
 
 
 class HostRule(_messages.Message):
-  r"""The hostname configured for the EdgeCacheService. A `HostRule`
+  r"""The hostname configured for the EdgeCacheService. A `HostRule` value
   associates a hostname (or hostnames) with a set of routing rules, which
-  define path- and header- based configuration.
+  define configuration based on the path and header.
 
   Fields:
-    description: Optional. A human-readable description of the `HostRule`.
-    hosts: Required. The list of host patterns to match. Host patterns must be
+    description: Optional. A human-readable description of the `HostRule`
+      value.
+    hosts: Required. A list of host patterns to match. Host patterns must be
       valid hostnames. Ports are not allowed. Wildcard hosts are supported in
       the suffix or prefix form. `*` matches any string of `([a-z0-9-.]*)`. It
-      does not match the empty string. When multiple hosts are specified,
-      hosts are matched in the following priority: 1. Exact domain names:
+      does not match an empty string. When multiple hosts are specified, hosts
+      are matched in the following priority: 1. Exact domain names:
       `www.foo.com`. 2. Suffix domain wildcards: `*.foo.com` or
       `*-bar.foo.com`. 3. Prefix domain wildcards: `foo.*` or `foo-*`. 4.
       Special wildcard `*` matching any domain. The wildcard doesn't match the
@@ -1727,8 +1730,8 @@ class HostRule(_messages.Message):
       not `-bar.foo.com`. The longest wildcards match first. Only a single
       host in the entire service can match on ``*``. A domain must be unique
       across all configured hosts within a service. Hosts are matched against
-      the HTTP Host header, or for HTTP/2 and HTTP/3, the ":authority" header,
-      from the incoming request. You may specify up to 10 hosts.
+      the HTTP `Host` header, or for HTTP/2 and HTTP/3, the `:authority`
+      header, in the incoming request. You can specify up to 10 hosts.
     pathMatcher: Required. The name of the PathMatcher associated with this
       `HostRule`.
   """
@@ -2285,17 +2288,17 @@ class HttpRouteURLRewrite(_messages.Message):
 
 
 class InvalidateCacheRequest(_messages.Message):
-  r"""Request used by the `InvalidateCache` method.
+  r"""The request used by the `InvalidateCache` method.
 
   Fields:
     cacheTags: A list of cache tags used to identify cached objects. Cache
       tags are specified when the response is first cached, by setting the
-      "Cache-Tag" response header at the origin. By default, all objects have
+      `Cache-Tag` response header at the origin. By default, all objects have
       a cache tag representing the HTTP status code of the response, the MIME
       content-type, and the origin. Multiple cache tags in the same
       revalidation request are treated as Boolean `OR` - for example, `tag1 OR
       tag2 OR tag3`. If a host and path are also specified, these are treated
-      as Boolean `AND` with any tags. Up to 10 tags may be specified in a
+      as Boolean `AND` with any tags. Up to 10 tags can be specified in a
       single invalidation request.
     host: The hostname to invalidate against. You can specify an exact or
       wildcard host based on the host component. For example,
@@ -2311,14 +2314,14 @@ class InvalidateCacheRequest(_messages.Message):
 
 
 class InvalidateCacheResponse(_messages.Message):
-  r"""Response used by the InvalidateCache method."""
+  r"""The response used by the `InvalidateCache` method."""
 
 
 class ListEdgeCacheKeysetsResponse(_messages.Message):
-  r"""Response returned by the `ListEdgeCacheKeysets` method.
+  r"""The response returned by the `ListEdgeCacheKeysets` method.
 
   Fields:
-    edgeCacheKeysets: List of `EdgeCacheKeyset` resources.
+    edgeCacheKeysets: A list of `EdgeCacheKeyset` resources.
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
@@ -2330,10 +2333,10 @@ class ListEdgeCacheKeysetsResponse(_messages.Message):
 
 
 class ListEdgeCacheOriginsResponse(_messages.Message):
-  r"""Response returned by the ListEdgeCacheOrigins method.
+  r"""The response returned by the `ListEdgeCacheOrigins` method.
 
   Fields:
-    edgeCacheOrigins: List of EdgeCacheOrigin resources.
+    edgeCacheOrigins: A list of `EdgeCacheOrigin` resources.
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
@@ -2348,7 +2351,7 @@ class ListEdgeCacheServicesResponse(_messages.Message):
   r"""Response returned by the `list` method.
 
   Fields:
-    edgeCacheServices: List of EdgeCacheService resources.
+    edgeCacheServices: The list of EdgeCacheService resources.
     nextPageToken: If there might be more results than those appearing in this
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
@@ -2646,17 +2649,17 @@ class Location(_messages.Message):
 
 
 class LogConfig(_messages.Message):
-  r"""Specifies the logging options for the traffic served by this service. If
-  logging is enabled, logs are exported to Cloud Logging.
+  r"""The logging options for the traffic served by this service. If logging
+  is enabled, logs are exported to Cloud Logging.
 
   Fields:
     enable: Optional. Specifies whether to enable logging for traffic served
       by this service. Defaults to false.
-    sampleRate: Optional. Configures the sampling rate of requests, where
-      `1.0` means all logged requests are reported and `0.0` means no logged
-      requests are reported. The default value is `1.0`, and the value of the
-      field must be in `[0, 1]`. This field can only be specified if logging
-      is enabled for this service.
+    sampleRate: Optional. The sampling rate of requests, where `1.0` means all
+      logged requests are reported and `0.0` means no logged requests are
+      reported. The default value is `1.0`, and the value of the field must be
+      in `[0, 1]`. This field can be specified only if logging is enabled for
+      this service.
   """
 
   enable = _messages.BooleanField(1)
@@ -2664,38 +2667,38 @@ class LogConfig(_messages.Message):
 
 
 class MatchRule(_messages.Message):
-  r"""`MatchRule` is a collection of match conditions (such as query, header,
-  or URI) for a request.
+  r"""A collection of match conditions (such as query, header, or URI) for a
+  request.
 
   Fields:
-    fullPathMatch: Optional. For satisfying the `MatchRule` condition, the
-      path of the request must exactly match the value specified in
-      `full_path_match` after removing any query parameters and anchor that
-      may be part of the original URL. `full_path_match` must begin with a
-      `/`. The value must be between 1 and 1024 characters, (inclusive). One
-      of prefix_match, `full_path_match`, or path_template_match must be
-      specified.
-    headerMatches: Optional. Specifies a list of HeaderMatch criteria, all of
-      which must match corresponding headers in the request. You may specify
-      up to 3 headers to match on.
+    fullPathMatch: Optional. To satisfy the `MatchRule` condition, the path of
+      the request must exactly match the value specified in `full_path_match`
+      after removing any query parameters and anchors that might be part of
+      the original URL. `full_path_match` must begin with a `/`. The value
+      must be between 1 and 1024 characters, (inclusive). One of prefix_match,
+      `full_path_match`, or path_template_match must be specified.
+    headerMatches: Optional. A list of HeaderMatch criteria, all of which must
+      match corresponding headers in the request. You can specify up to three
+      headers to match on.
     ignoreCase: Optional. Specifies that prefix_match and full_path_match
-      matches are case sensitive. The default value is `false`.
-    pathTemplateMatch: Optional. For satisfying the `MatchRule` condition, the
+      matches are not case sensitive. The default value is `false`, which
+      means that matches are case sensitive.
+    pathTemplateMatch: Optional. To satisfy the `MatchRule` condition, the
       path of the request must match the wildcard pattern specified in
-      `path_template_match` after removing any query parameters and anchor
-      that may be part of the original URL. `path_template_match` must be
+      `path_template_match` after removing any query parameters and anchors
+      that might be part of the original URL. `path_template_match` must be
       between 1 and 255 characters (inclusive). The pattern specified by
-      `path_template_match` may have at most 5 wildcard operators and at most
-      5 variable captures in total. One of prefix_match, full_path_match, or
+      `path_template_match` can have at most five wildcard operators and five
+      variable captures. One of prefix_match, full_path_match, or
       `path_template_match` must be specified.
-    prefixMatch: Optional. For satisfying the `MatchRule` condition, the
-      request's path must begin with the specified `prefix_match`.
-      `prefix_match` must begin with a `/`. The value must be between 1 and
-      1024 characters (inclusive). One of `prefix_match`, full_path_match, or
+    prefixMatch: Optional. To satisfy the `MatchRule` condition, the request's
+      path must begin with the specified `prefix_match`. `prefix_match` must
+      begin with a `/`. The value must be between 1 and 1024 characters
+      (inclusive). One of `prefix_match`, full_path_match, or
       path_template_match must be specified.
-    queryParameterMatches: Optional. Specifies a list of QueryParameterMatcher
-      criteria, all of which must match corresponding query parameters in the
-      request. You may specify up to 5 query parameters to match on.
+    queryParameterMatches: Optional. A list of QueryParameterMatcher criteria,
+      all of which must match corresponding query parameters in the request.
+      You can specify up to five query parameters to match on.
   """
 
   fullPathMatch = _messages.StringField(1)
@@ -2816,6 +2819,7 @@ class MulticastDomainActivation(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    domain: Reference to the domain that is being activated.
     labels: Labels as key value pairs
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
@@ -2846,9 +2850,10 @@ class MulticastDomainActivation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  domain = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class MulticastGroup(_messages.Message):
@@ -2859,6 +2864,8 @@ class MulticastGroup(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    domainActivation: Reference to the domain activation in the same zone as
+      the group.
     labels: Labels as key value pairs
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
@@ -2889,9 +2896,10 @@ class MulticastGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  domainActivation = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class MulticastGroupDefinition(_messages.Message):
@@ -2943,10 +2951,10 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Me
   Fields:
     edgeCacheKeyset: A EdgeCacheKeyset resource to be passed as the request
       body.
-    edgeCacheKeysetId: Required. Short name of the EdgeCacheKeyset resource to
-      create, such as `MyEdgeCacheKeyset`.
-    parent: Required. The parent resource of the EdgeCacheKeyset. Must be in
-      the format `projects/*/locations/global`.
+    edgeCacheKeysetId: Required. The short name of the EdgeCacheKeyset
+      resource to create, such as `MyEdgeCacheKeyset`.
+    parent: Required. The parent resource of the EdgeCacheKeyset resource.
+      Must be in the format `projects/*/locations/global`.
   """
 
   edgeCacheKeyset = _messages.MessageField('EdgeCacheKeyset', 1)
@@ -2958,8 +2966,8 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsDeleteRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsEdgeCacheKeysetsDeleteRequest object.
 
   Fields:
-    name: Required. A name of the EdgeCacheKeyset to delete. Must be in the
-      format `projects/*/locations/global/edgeCacheKeysets/*`.
+    name: Required. The name of the EdgeCacheKeyset resource to delete. Must
+      be in the format `projects/*/locations/global/edgeCacheKeysets/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2996,8 +3004,8 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsGetRequest(_messages.Messa
   r"""A NetworkservicesProjectsLocationsEdgeCacheKeysetsGetRequest object.
 
   Fields:
-    name: Required. A name of the EdgeCacheKeyset to get. Must be in the
-      format `projects/*/locations/global/edgeCacheKeysets/*`.
+    name: Required. The name of the EdgeCacheKeyset resource to get. Must be
+      in the format `projects/*/locations/global/edgeCacheKeysets/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3007,12 +3015,14 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsListRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsEdgeCacheKeysetsListRequest object.
 
   Fields:
-    pageSize: Maximum number of EdgeCacheKeysets to return per call.
-    pageToken: The value returned by the last ListEdgeCacheKeysetsResponse.
-      Indicates that this is a continuation of a prior `ListEdgeCacheKeysets`
-      call, and that the system can return the next page of data.
-    parent: Required. The project and location to list EdgeCacheKeysets from,
-      specified in the format `projects/*/locations/global`.
+    pageSize: The maximum number of EdgeCacheKeyset resources to return per
+      call.
+    pageToken: The value returned by the last ListEdgeCacheKeysetsResponse
+      resource. Indicates that this is a continuation of a previous
+      `ListEdgeCacheKeysets` call, and that the system can return the next
+      page of data.
+    parent: Required. The project and location to list EdgeCacheKeyset
+      resources from, specified in the format `projects/*/locations/global`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3026,12 +3036,12 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsPatchRequest(_messages.Mes
   Fields:
     edgeCacheKeyset: A EdgeCacheKeyset resource to be passed as the request
       body.
-    name: Required. Name of the resource; provided by the client when the
-      resource is created. The name must be 1-64 characters long, and match
-      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
-      character must be a letter, and all following characters must be a dash,
-      underscore, letter or digit.
-    updateMask: Optional. Field mask is used to specify the fields to
+    name: Required. The name of the resource as provided by the client when
+      the resource is created. The name must be 1-64 characters long, and
+      match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the
+      first character must be a letter, and all following characters must be a
+      dash, an underscore, a letter, or a digit.
+    updateMask: Optional. `FieldMask` is used to specify the fields to
       overwrite in the EdgeCacheKeyset resource by the update. The fields
       specified in the `update_mask` are relative to the resource, not the
       full request. A field is overwritten if it is in the mask. If the user
@@ -3084,10 +3094,10 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsCreateRequest(_messages.Me
   Fields:
     edgeCacheOrigin: A EdgeCacheOrigin resource to be passed as the request
       body.
-    edgeCacheOriginId: Required. Short name of the EdgeCacheOrigin resource to
-      create, such as `MyEdgeCacheOrigin`.
-    parent: Required. The parent resource of the EdgeCacheOrigin. Must be in
-      the format `projects/*/locations/global`.
+    edgeCacheOriginId: Required. The short name of the EdgeCacheOrigin
+      resource to create, such as `MyEdgeCacheOrigin`.
+    parent: Required. The parent resource of the EdgeCacheOrigin resource.
+      Must be in the format `projects/*/locations/global`.
   """
 
   edgeCacheOrigin = _messages.MessageField('EdgeCacheOrigin', 1)
@@ -3099,7 +3109,7 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsDeleteRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsEdgeCacheOriginsDeleteRequest object.
 
   Fields:
-    name: Required. A name of the EdgeCacheOrigin to delete. Must be in the
+    name: Required. The name of the EdgeCacheOrigin to delete. Must be in the
       format `projects/*/locations/global/edgeCacheOrigins/*`.
   """
 
@@ -3137,8 +3147,8 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsGetRequest(_messages.Messa
   r"""A NetworkservicesProjectsLocationsEdgeCacheOriginsGetRequest object.
 
   Fields:
-    name: Required. A name of the EdgeCacheOrigin to get. Must be in the
-      format `projects/*/locations/global/edgeCacheOrigins/*`.
+    name: Required. The name of the EdgeCacheOrigin resource to get. Must be
+      in the format `projects/*/locations/global/edgeCacheOrigins/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3148,12 +3158,14 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsListRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsEdgeCacheOriginsListRequest object.
 
   Fields:
-    pageSize: Maximum number of EdgeCacheOrigins to return per call.
+    pageSize: The maximum number of EdgeCacheOrigin resources to return per
+      call.
     pageToken: The value returned by the last `ListEdgeCacheOriginsResponse`
-      Indicates that this is a continuation of a prior `ListEdgeCacheOrigins`
-      call, and that the system can return the next page of data.
-    parent: Required. The project and location to list EdgeCacheOrigins from,
-      specified in the format `projects/*/locations/global`.
+      resource. Indicates that this is a continuation of a previous
+      `ListEdgeCacheOrigins` call, and that the system can return the next
+      page of data.
+    parent: Required. The project and location to list EdgeCacheOrigin
+      resources from, specified in the format `projects/*/locations/global`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3167,16 +3179,16 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsPatchRequest(_messages.Mes
   Fields:
     edgeCacheOrigin: A EdgeCacheOrigin resource to be passed as the request
       body.
-    name: Required. Name of the resource; provided by the client when the
-      resource is created. The name must be 1-64 characters long, and match
-      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
-      character must be a letter, and all following characters must be a dash,
-      underscore, letter or digit.
-    updateMask: Optional. Field mask is used to specify the fields to
+    name: Required. The name of the resource as provided by the client when
+      the resource is created. The name must be 1-64 characters long, and
+      match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*`, which means
+      that the first character must be a letter, and all following characters
+      must be a dash, an underscore, a letter, or a digit.
+    updateMask: Optional. `FieldMask` is used to specify the fields to
       overwrite in the EdgeCacheOrigin resource by the update. The fields
-      specified in the `update_mask` are relative to the resource, not the
-      full request. A field is overwritten if it is in the mask. If the user
-      does not provide a mask then all fields are overwritten.
+      specified in `update_mask` are relative to the resource, not the full
+      request. A field is overwritten if it is in the mask. If the user does
+      not provide a mask value, then all fields are overwritten.
   """
 
   edgeCacheOrigin = _messages.MessageField('EdgeCacheOrigin', 1)
@@ -3225,10 +3237,10 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesCreateRequest(_messages.M
   Fields:
     edgeCacheService: A EdgeCacheService resource to be passed as the request
       body.
-    edgeCacheServiceId: Required. Short name of the EdgeCacheService resource
-      create, such as "MyEdgeService".
-    parent: Required. The parent resource of the EdgeCacheService. Must be in
-      the format `projects/*/locations/global`.
+    edgeCacheServiceId: Required. The short name of the EdgeCacheService
+      resource create, such as `MyEdgeService`.
+    parent: Required. The parent resource of the EdgeCacheService resource.
+      Must be in the format `projects/*/locations/global`.
   """
 
   edgeCacheService = _messages.MessageField('EdgeCacheService', 1)
@@ -3240,8 +3252,8 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesDeleteRequest(_messages.M
   r"""A NetworkservicesProjectsLocationsEdgeCacheServicesDeleteRequest object.
 
   Fields:
-    name: Required. A name of the EdgeCacheService to delete. Must be in the
-      format `projects/*/locations/global/edgeCacheServices/*`.
+    name: Required. The name of the EdgeCacheService resource to delete. Must
+      be in the format `projects/*/locations/global/edgeCacheServices/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3278,8 +3290,8 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesGetRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsEdgeCacheServicesGetRequest object.
 
   Fields:
-    name: Required. A name of the EdgeCacheService to get. Must be in the
-      format `projects/*/locations/global/edgeCacheServices/*`.
+    name: Required. The name of the EdgeCacheService resource to get. Must be
+      in the format `projects/*/locations/global/edgeCacheServices/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3291,8 +3303,8 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest(_m
   object.
 
   Fields:
-    edgeCacheService: Required. A name of the EdgeCacheService to apply the
-      invalidation request to. Must be in the format
+    edgeCacheService: Required. The name of the EdgeCacheService resource to
+      apply the invalidation request to. Must be in the format
       `projects/*/locations/global/edgeCacheServices/*`.
     invalidateCacheRequest: A InvalidateCacheRequest resource to be passed as
       the request body.
@@ -3306,12 +3318,13 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesListRequest(_messages.Mes
   r"""A NetworkservicesProjectsLocationsEdgeCacheServicesListRequest object.
 
   Fields:
-    pageSize: Maximum number of EdgeCacheService items to return per call.
+    pageSize: The maximum number of EdgeCacheService resources to return per
+      call.
     pageToken: The value returned by the last `list` response. Indicates that
-      this is a continuation of a prior `list` call, and that the system can
-      return the next page of data.
-    parent: Required. The project and location to list EdgeCacheService from,
-      specified in the format `projects/*/locations/global`.
+      this is a continuation of a previous `list` call, and that the system
+      can return the next page of data.
+    parent: Required. The project and location to list EdgeCacheService
+      resources from, specified in the format `projects/*/locations/global`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3325,16 +3338,16 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesPatchRequest(_messages.Me
   Fields:
     edgeCacheService: A EdgeCacheService resource to be passed as the request
       body.
-    name: Required. Name of the resource; provided by the client when the
-      resource is created. The name must be 1-64 characters long, and match
-      the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the first
-      character must be a letter, and all following characters must be a dash,
-      underscore, letter or digit.
-    updateMask: Optional. Field mask is used to specify the fields to
+    name: Required. The name of the resource as provided by the client when
+      the resource is created. The name must be 1-64 characters long, and
+      match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which means the
+      first character must be a letter, and all following characters must be a
+      dash, an underscore, a letter, or a digit.
+    updateMask: Optional. `FieldMask` is used to specify the fields to
       overwrite in the EdgeCacheService resource by the update. The fields
-      specified in the `update_mask` are relative to the resource, not the
-      full request. A field is overwritten if it is in the mask. If a mask is
-      not provided, then all fields are overwritten.
+      specified in `update_mask` are relative to the resource, not the full
+      request. A field is overwritten if it is in the mask. If a mask is not
+      provided, then all fields are overwritten.
   """
 
   edgeCacheService = _messages.MessageField('EdgeCacheService', 1)
@@ -4863,12 +4876,11 @@ class OperationMetadata(_messages.Message):
 
 
 class OriginHeaderAction(_messages.Message):
-  r"""OriginHeaderAction defines the addition and removal of HTTP headers for
-  requests/responses.
+  r"""Defines the addition and removal of HTTP headers for requests/responses.
 
   Fields:
-    requestHeadersToAdd: Optional. Describes a header to add. You may add a
-      maximum of 5 request headers.
+    requestHeadersToAdd: Optional. A header to add. You can add a maximum of
+      five request headers.
   """
 
   requestHeadersToAdd = _messages.MessageField('OriginHeaderActionAddHeader', 1, repeated=True)
@@ -4880,10 +4892,10 @@ class OriginHeaderActionAddHeader(_messages.Message):
   Fields:
     headerName: Required. The name of the header to add.
     headerValue: Required. The value of the header to add.
-    replace: Optional. Whether to replace all existing headers with the same
-      name. By default, added header values are appended to the response or
-      request headers with the same field names. The added values are
-      separated by commas. To overwrite existing values, set `replace` to
+    replace: Optional. Specifies whether to replace all existing headers with
+      the same name. By default, added header values are appended to the
+      response or request headers with the same field names. The added values
+      are separated by commas. To overwrite existing values, set `replace` to
       `true`.
   """
 
@@ -4893,11 +4905,11 @@ class OriginHeaderActionAddHeader(_messages.Message):
 
 
 class OriginOverrideAction(_messages.Message):
-  r"""OriginOverrideAction defines how requests and responses may be
-  manipulated on cache fill to this origin.
+  r"""Defines how requests and responses can be manipulated on cache fill to
+  this origin.
 
   Fields:
-    headerAction: Optional. The header actions, including adding & removing
+    headerAction: Optional. The header actions, including adding and removing
       headers, for requests handled by this origin.
     urlRewrite: Optional. The URL rewrite configuration for requests that are
       handled by this origin.
@@ -4908,7 +4920,7 @@ class OriginOverrideAction(_messages.Message):
 
 
 class OriginRedirect(_messages.Message):
-  r"""Options for following redirects from the origin.
+  r"""The options for following redirects from the origin.
 
   Enums:
     RedirectConditionsValueListEntryValuesEnum:
@@ -4923,12 +4935,12 @@ class OriginRedirect(_messages.Message):
 
     Values:
       REDIRECT_CONDITIONS_UNSPECIFIED: It is an error to specify
-        REDIRECT_CONDITIONS_UNSPECIFIED
-      MOVED_PERMANENTLY: Follow redirect on an HTTP 301.
-      FOUND: Follow redirect on an HTTP 302.
-      SEE_OTHER: Follow redirect on an HTTP 303.
-      TEMPORARY_REDIRECT: Follow redirect on an HTTP 307.
-      PERMANENT_REDIRECT: Follow redirect on an HTTP 308.
+        `REDIRECT_CONDITIONS_UNSPECIFIED`.
+      MOVED_PERMANENTLY: Follow redirect on an `HTTP 301` error.
+      FOUND: Follow redirect on an `HTTP 302` error.
+      SEE_OTHER: Follow redirect on an `HTTP 303` error.
+      TEMPORARY_REDIRECT: Follow redirect on an `HTTP 307` error.
+      PERMANENT_REDIRECT: Follow redirect on an `HTTP 308` error.
     """
     REDIRECT_CONDITIONS_UNSPECIFIED = 0
     MOVED_PERMANENTLY = 1
@@ -4941,13 +4953,13 @@ class OriginRedirect(_messages.Message):
 
 
 class OriginUrlRewrite(_messages.Message):
-  r"""OriginUrlRewrite defines the URL rewrite configuration for a given
-  request handled by this origin.
+  r"""The URL rewrite configuration for a given request handled by this
+  origin.
 
   Fields:
-    hostRewrite: Optional. Prior to forwarding the request to the selected
-      origin, the request's host header is replaced with contents of
-      hostRewrite. The host value must be between 1 and 255 characters.
+    hostRewrite: Optional. Before forwarding the request to the selected
+      origin, the request's `Host` header is replaced with the contents of
+      `hostRewrite`. The host value must be between 1 and 255 characters.
   """
 
   hostRewrite = _messages.StringField(1)
@@ -5058,8 +5070,8 @@ class PublicKey(_messages.Message):
     id: Required. The ID of the public key. The ID must be 1-64 characters
       long, and match the regular expression `[a-zA-Z]([a-zA-Z0-9_-])*` which
       means the first character must be a letter, and all following characters
-      must be a dash, underscore, letter or digit.
-    managed: Optional. Set to true to have the CDN automatically manage this
+      must be a dash, an underscore, a letter, or a digit.
+    managed: Optional. Set to `true` to have the CDN automatically manage this
       public key. Managed keys are used by the CDN for dual-token
       authentication. Media CDN internally generates, uses, and rotates the
       underlying public and private key pair. It is not possible to use a
@@ -5077,8 +5089,7 @@ class PublicKey(_messages.Message):
 
 
 class QueryParameterMatcher(_messages.Message):
-  r"""`QueryParameterMatcher` defines the match conditions for URI query
-  parameters.
+  r"""The match conditions for URI query parameters.
 
   Fields:
     exactMatch: Optional. The QueryParameterMatcher matches if the value of
@@ -5102,13 +5113,13 @@ class QueryParameterMatcher(_messages.Message):
 
 
 class RouteAction(_messages.Message):
-  r"""`RouteAction` defines the actions (such as rewrites, redirects, CORS
-  header injection, or header modification) to take for a given route match.
+  r"""The actions (such as rewrites, redirects, CORS header injection, and
+  header modification) to take for a given route match.
 
   Fields:
     cdnPolicy: Optional. The policy to use for defining caching and signed
       request behavior for requests that match this route.
-    corsPolicy: Optional. The CORS (Cross-Origin Resource Sharing) policy for
+    corsPolicy: Optional. The Cross-Origin Resource Sharing (CORS) policy for
       requests that match this route.
     urlRewrite: Optional. The URL rewrite configuration for requests that
       match this route.
@@ -5120,8 +5131,8 @@ class RouteAction(_messages.Message):
 
 
 class RouteRule(_messages.Message):
-  r"""`RouteRule` defines the priority of a given "route", including its match
-  conditions and the actions to take on a request that matches.
+  r"""The priority of a given route, including its match conditions and the
+  actions to take on a request that matches.
 
   Fields:
     description: Optional. A human-readable description of the `RouteRule`.
@@ -5132,10 +5143,10 @@ class RouteRule(_messages.Message):
       matches this `RouteRule` when any of the MatchRules are satisfied.
       However, predicates within a given `MatchRule` have `AND` semantics. All
       predicates within a `MatchRule` must match for the request to match the
-      rule. You may specify up to 5 match rules.
-    origin: Optional. Determines an alternate EdgeCacheOrigin resource that
-      this route responds with when a matching response is not in the cache.
-      The following are both valid paths to an `EdgeCacheOrigin` resource: *
+      rule. You can specify up to five match rules.
+    origin: Optional. An alternate EdgeCacheOrigin resource that this route
+      responds with when a matching response is not in the cache. The
+      following are both valid paths to an `EdgeCacheOrigin` resource: *
       `projects/my-project/locations/global/edgeCacheOrigins/my-origin` * `my-
       origin` Only one of `origin` or url_redirect can be set.
     priority: Required. The priority of this route rule, where `1` is the
@@ -5164,18 +5175,18 @@ class RouteRule(_messages.Message):
 
 
 class Routing(_messages.Message):
-  r"""Defines how requests are routed, modified, cached, and which origin
+  r"""Defines how requests are routed, modified, cached, and which origin the
   content is filled from.
 
   Fields:
     hostRules: Required. A list of HostRule rules to match against.
       `RouteRule` rules support advanced routing behavior, and can match on
       paths, headers and query parameters, as well as status codes and HTTP
-      methods. You may specify up to 5 host rules.
-    pathMatchers: Required. The list of PathMatchers referenced via name by
-      HostRules. `PathMatcher` is used to match the path portion of the URL
-      when a `HostRule` matches the URL's host portion. You may specify up to
-      10 path matchers.
+      methods. You can specify up to five host rules.
+    pathMatchers: Required. A list of PathMatcher values referenced by name by
+      HostRule values. `PathMatcher` is used to match the path portion of the
+      URL when a`HostRule` value matches the URL's host portion. You can
+      specify up to 10 path matchers.
   """
 
   hostRules = _messages.MessageField('HostRule', 1, repeated=True)
@@ -5183,16 +5194,16 @@ class Routing(_messages.Message):
 
 
 class Secret(_messages.Message):
-  r"""A `Secret` is a secret key stored in Secret Manager.
+  r"""A secret key stored in Secret Manager.
 
   Fields:
     secretVersion: Required. The name of the secret in Secret Manager. The
       resource name of the secret version must be in the format
       `projects/*/secrets/*/versions/*` where the `*` values are replaced by
-      the secrets themselves. The secrets must be at least 16 bytes large. The
-      recommended secret size depends on the signature algorithm you are
-      using. * If you are using HMAC-SHA1, we suggest 20-byte secrets. * If
-      you are using HMAC-SHA256, we suggest 32-byte secrets. See RFC 2104,
+      the name of the secret. The secrets must be at least 16 bytes. The
+      recommended secret size depends on the signature algorithm that you're
+      using. * If you're using `HMAC-SHA1`, we recommend 20-byte secrets. * If
+      you're using `HMAC-SHA256`, we recommend 32-byte secrets. See RFC 2104,
       Section 3 for more details on these recommendations.
   """
 
@@ -5555,29 +5566,30 @@ class Timeout(_messages.Message):
       TCP/QUIC connection establishment. Defaults to 5 seconds. The timeout
       must be a value between 1s and 15s. The `connect_timeout` capped by the
       deadline set by the request's max_attempts_timeout. The last connection
-      attempt may have a smaller `connect_timeout` in order to adhere to the
-      overall `max_attempts_timeout`.
+      attempt can have a smaller `connect_timeout` so that the total
+      `max_attempts_timeout` value is not exceeded.
     maxAttemptsTimeout: Optional. The maximum time across all connection
       attempts to all origins, including failover origins, before returning an
-      error to the client. A HTTP 504 is returned if the timeout is reached
-      before a response is returned. Defaults to 15 seconds. The timeout must
-      be a value between 1s and 30s. If a failover_origin is specified, the
-      `max_attempts_timeout` of the first configured origin sets the deadline
-      for all connection attempts across all failover_origins.
+      error to the client. An `HTTP 504` error is returned if the timeout is
+      reached before a response is returned. Defaults to 15 seconds. The
+      timeout must be a value between 1s and 30s. If a failover origin is
+      specified, the `max_attempts_timeout` value of the first configured
+      origin sets the deadline for all connection attempts across all failover
+      origins.
     readTimeout: Optional. The maximum duration to wait between reads of a
-      single HTTP connection/stream. Defaults to 15 seconds. The timeout must
-      be a value between 1s and 30s. The `read_timeout` is capped by the
-      response_timeout. All reads of the HTTP connection/stream must be
-      completed by the deadline set by the response_timeout. If the response
-      headers have already been written to the connection, the response is
-      truncated and logged.
+      single HTTP connection or stream. Defaults to 15 seconds. The timeout
+      must be a value between 1s and 30s. The `read_timeout` value is capped
+      by the response_timeout value. All reads of the HTTP connection or
+      stream must be completed by the deadline set by response_timeout. If the
+      response headers have already been written to the connection, the
+      response is truncated and logged.
     responseTimeout: Optional. The maximum duration to wait for the last byte
       of a response to arrive when reading from the HTTP connection/stream.
       Defaults to 30 seconds. The timeout must be a value between 1s and 120s.
       The `response_timeout` starts after the connection has been established.
       Origins that take longer to write additional bytes to the response than
-      the configured `response_timeout` result in an error returned to the
-      client. If the response headers have already been written to the
+      the configured `response_timeout` value result in an error returned to
+      the client. If the response headers have already been written to the
       connection, the response is truncated and logged.
   """
 
@@ -5698,7 +5710,7 @@ class TrafficPortSelector(_messages.Message):
 
 
 class UrlRedirect(_messages.Message):
-  r"""`UrlRedirect` defines HTTP redirect configuration for a given request.
+  r"""The HTTP redirect configuration for a given request.
 
   Enums:
     RedirectResponseCodeValueValuesEnum: Optional. The HTTP status code to use
@@ -5710,10 +5722,10 @@ class UrlRedirect(_messages.Message):
       instead of the one that was supplied in the request. The value must be
       between 1 and 255 characters.
     httpsRedirect: Optional. Determines whether the URL scheme in the
-      redirected request is adjusted to HTTPS or remains that of the request.
-      If it is set to `true` and at least one edge_ssl_certificates is set on
-      the service, then the URL scheme in the redirected request is set to
-      HTTPS. If it is set to `false`, then the URL scheme of the redirected
+      redirected request is adjusted to `HTTPS` or remains that of the
+      request. If it is set to `true` and at least one edge_ssl_certificates
+      is set on the service, the URL scheme in the redirected request is set
+      to `HTTPS`. If it is set to `false`, the URL scheme of the redirected
       request remains the same as that of the request.
     pathRedirect: Optional. The path that is used in the redirect response
       instead of the one that was supplied in the request. `path_redirect`
@@ -5722,8 +5734,8 @@ class UrlRedirect(_messages.Message):
       used for the redirect. The path value must be between 1 and 1024
       characters.
     prefixRedirect: Optional. The prefix that replaces the prefix_match
-      specified in the RouteRule, retaining the remaining portion of the URL
-      before redirecting the request. `prefix_redirect` cannot be supplied
+      specified in the RouteRule rule, retaining the remaining portion of the
+      URL before redirecting the request. `prefix_redirect` cannot be supplied
       together with path_redirect. Supply one alone or neither. If neither is
       supplied, the path of the original request is used for the redirect. The
       prefix value must be between 1 and 1024 characters.
@@ -5732,10 +5744,9 @@ class UrlRedirect(_messages.Message):
       RedirectResponseCode.
     stripQuery: Optional. Determines whether accompanying query portions of
       the original URL are removed prior to redirecting the request. If it is
-      set to `true`, then the accompanying query portion of the original URL
-      is removed prior to redirecting the request. If it is set to `false`,
-      the query portion of the original URL is retained. The default is
-      `false`.
+      set to `true`, the accompanying query portion of the original URL is
+      removed before redirecting the request. If it is set to `false`, the
+      query portion of the original URL is retained. The default is `false`.
   """
 
   class RedirectResponseCodeValueValuesEnum(_messages.Enum):
@@ -5743,12 +5754,12 @@ class UrlRedirect(_messages.Message):
     list of supported values, see RedirectResponseCode.
 
     Values:
-      MOVED_PERMANENTLY_DEFAULT: HTTP 301 Moved Permanently
+      MOVED_PERMANENTLY_DEFAULT: `HTTP 301 (Moved Permanently)`
       FOUND: HTTP 302 Found
       SEE_OTHER: HTTP 303 See Other
-      TEMPORARY_REDIRECT: HTTP 307 Temporary Redirect. In this case, the
+      TEMPORARY_REDIRECT: `HTTP 307 (Temporary Redirect)`. In this case, the
         request method is retained.
-      PERMANENT_REDIRECT: HTTP 308 Permanent Redirect. In this case, the
+      PERMANENT_REDIRECT: `HTTP 308 (Permanent Redirect)`. In this case, the
         request method is retained.
     """
     MOVED_PERMANENTLY_DEFAULT = 0
@@ -5766,28 +5777,28 @@ class UrlRedirect(_messages.Message):
 
 
 class UrlRewrite(_messages.Message):
-  r"""`UrlRewrite` defines URL rewrite configuration for a given request.
+  r"""Defines the URL rewrite configuration for a given request.
 
   Fields:
-    hostRewrite: Optional. Prior to forwarding the request to the selected
+    hostRewrite: Optional. Before forwarding the request to the selected
       origin, the request's host header is replaced with contents of
       `host_rewrite`. The host value must be between 1 and 255 characters.
-    pathPrefixRewrite: Optional. Prior to forwarding the request to the
-      selected origin, the matching portion of the request's path is replaced
-      by `path_prefix_rewrite`. If specified, the path value must start with a
+    pathPrefixRewrite: Optional. Before forwarding the request to the selected
+      origin, the matching portion of the request's path is replaced by
+      `path_prefix_rewrite`. If specified, the path value must start with a
       `/` and be between 1 and 1024 characters long (inclusive).
-      `path_prefix_rewrite` may only be used when all of a route's match_rules
+      `path_prefix_rewrite` can only be used when all of a route's match_rules
       specify prefix_match or full_path_match. Only one of
-      `path_prefix_rewrite` and path_template_rewrite may be specified.
-    pathTemplateRewrite: Optional. Prior to forwarding the request to the
+      `path_prefix_rewrite` and path_template_rewrite can be specified.
+    pathTemplateRewrite: Optional. Before forwarding the request to the
       selected origin, if the request matched a path_template_match, the
       matching portion of the request's path is replaced re-written using the
       pattern specified by `path_template_rewrite`. `path_template_rewrite`
       must be between 1 and 255 characters (inclusive), must start with a `/`,
       and must only use variables captured by the route's
-      `path_template_match`. `path_template_rewrite` may only be used when all
+      `path_template_match`. `path_template_rewrite` can only be used when all
       of a route's match_rules specify `path_template_match`. Only one of
-      path_prefix_rewrite and `path_template_rewrite` may be specified.
+      path_prefix_rewrite and `path_template_rewrite` can be specified.
   """
 
   hostRewrite = _messages.StringField(1)

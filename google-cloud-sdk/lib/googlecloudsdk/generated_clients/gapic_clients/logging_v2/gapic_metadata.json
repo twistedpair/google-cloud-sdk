@@ -20,6 +20,11 @@
                 "create_bucket"
               ]
             },
+            "CreateBucketAsync": {
+              "methods": [
+                "create_bucket_async"
+              ]
+            },
             "CreateExclusion": {
               "methods": [
                 "create_exclusion"
@@ -113,6 +118,11 @@
             "UpdateBucket": {
               "methods": [
                 "update_bucket"
+              ]
+            },
+            "UpdateBucketAsync": {
+              "methods": [
+                "update_bucket_async"
               ]
             },
             "UpdateCmekSettings": {
@@ -155,6 +165,11 @@
                 "create_bucket"
               ]
             },
+            "CreateBucketAsync": {
+              "methods": [
+                "create_bucket_async"
+              ]
+            },
             "CreateExclusion": {
               "methods": [
                 "create_exclusion"
@@ -248,6 +263,11 @@
             "UpdateBucket": {
               "methods": [
                 "update_bucket"
+              ]
+            },
+            "UpdateBucketAsync": {
+              "methods": [
+                "update_bucket_async"
               ]
             },
             "UpdateCmekSettings": {
@@ -290,6 +310,11 @@
                 "create_bucket"
               ]
             },
+            "CreateBucketAsync": {
+              "methods": [
+                "create_bucket_async"
+              ]
+            },
             "CreateExclusion": {
               "methods": [
                 "create_exclusion"
@@ -383,6 +408,11 @@
             "UpdateBucket": {
               "methods": [
                 "update_bucket"
+              ]
+            },
+            "UpdateBucketAsync": {
+              "methods": [
+                "update_bucket_async"
               ]
             },
             "UpdateCmekSettings": {

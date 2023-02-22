@@ -139,7 +139,7 @@ class BatchRecognizeRequest(_messages.Message):
       provided, config completely overrides and replaces the config in the
       recognizer for this recognition request.
     files: Audio files with file metadata for ASR. The maximum number of files
-      allowed to be specified is 1.
+      allowed to be specified is 5.
     recognitionOutputConfig: Configuration options for where to output the
       transcripts of each file.
     recognizer: Required. Resource name of the recognizer to be used for ASR.
@@ -869,8 +869,8 @@ class Phrase(_messages.Message):
       enabled, so negative boost values will return an error. Boost values
       must be between 0 and 20. Any values outside that range will return an
       error. We recommend using a binary search approach to finding the
-      optimal value for your use case. Speech recognition will skip PhraseSets
-      with a boost value of 0.
+      optimal value for your use case as well as adding phrases both with and
+      without boost to your requests.
     value: The phrase itself.
   """
 
@@ -900,7 +900,8 @@ class PhraseSet(_messages.Message):
       The higher the boost, the higher the chance of false positive
       recognition as well. Valid `boost` values are between 0 (exclusive) and
       20. We recommend using a binary search approach to finding the optimal
-      value for your use case.
+      value for your use case as well as adding phrases both with and without
+      boost to your requests.
     createTime: Output only. Creation time.
     deleteTime: Output only. The time at which this resource was requested for
       deletion.

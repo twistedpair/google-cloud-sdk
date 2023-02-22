@@ -1428,7 +1428,8 @@ class TranslateDocumentRequest(_messages.Message):
       input file's mime type.
     enableShadowRemovalNativePdf: Optional. If true, use the text removal
       server to remove the shadow text on background image for native pdf
-      translation.
+      translation. Shadow removal feature can only be enabled when
+      is_translate_native_pdf_only: false && pdf_native_only: false
     glossaryConfig: Optional. Glossary to be applied. The glossary must be
       within the same region (have the same location-id) as the model,
       otherwise an INVALID_ARGUMENT (400) error is returned.

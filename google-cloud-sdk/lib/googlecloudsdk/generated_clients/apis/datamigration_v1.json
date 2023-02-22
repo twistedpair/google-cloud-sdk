@@ -217,7 +217,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -465,7 +465,7 @@
     },
     "StaticIpConnectivity": {
       "id": "StaticIpConnectivity",
-      "description": "The source database will allow incoming connections from the destination database's public IP. You can retrieve the Cloud SQL instance's public IP from the Cloud SQL console or using Cloud SQL APIs. No additional configuration is required.",
+      "description": "The source database will allow incoming connections from the public IP of the destination database. You can retrieve the public IP of the Cloud SQL instance from the Cloud SQL console or using Cloud SQL APIs. No additional configuration is required.",
       "type": "object",
       "properties": {
       }
@@ -500,7 +500,7 @@
             "The source database engine of the migration job is unknown.",
             "The source engine is MySQL.",
             "The source engine is PostgreSQL.",
-            "The source engine is Oracle"
+            "The source engine is Oracle."
           ],
           "enum": [
             "DATABASE_ENGINE_UNSPECIFIED",
@@ -586,7 +586,7 @@
           "$ref": "VmSelectionConfig"
         },
         "vmPort": {
-          "description": "The port that will be open on the bastion host",
+          "description": "The port that will be open on the bastion host.",
           "type": "integer",
           "format": "int32"
         }
@@ -646,7 +646,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -1328,7 +1328,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource's name.",
+          "description": "The name of the resource.",
           "type": "string"
         },
         "createTime": {
@@ -1355,7 +1355,7 @@
           "type": "string"
         },
         "state": {
-          "description": "Output only. The state of the Private Connection.",
+          "description": "Output only. The state of the private connection.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1383,18 +1383,18 @@
           "$ref": "Status"
         },
         "vpcPeeringConfig": {
-          "description": "VPC Peering Config.",
+          "description": "VPC peering configuration.",
           "$ref": "VpcPeeringConfig"
         }
       }
     },
     "VpcPeeringConfig": {
       "id": "VpcPeeringConfig",
-      "description": "The VPC Peering configuration is used to create VPC peering with the consumer's VPC.",
+      "description": "The VPC peering configuration is used to create VPC peering with the consumer's VPC.",
       "type": "object",
       "properties": {
         "vpcName": {
-          "description": "Required. Fully qualified name of the VPC DMS will peer to.",
+          "description": "Required. Fully qualified name of the VPC that Database Migration Service will peer to.",
           "type": "string"
         },
         "subnet": {
@@ -1416,7 +1416,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -1453,12 +1453,12 @@
           }
         },
         "hasUncommittedChanges": {
-          "description": "Output only. Whether the workspace has uncommitted changes (changes which were made after the workspace was committed)",
+          "description": "Output only. Whether the workspace has uncommitted changes (changes which were made after the workspace was committed).",
           "readOnly": true,
           "type": "boolean"
         },
         "latestCommitId": {
-          "description": "Output only. The latest commit id",
+          "description": "Output only. The latest commit ID.",
           "readOnly": true,
           "type": "string"
         },
@@ -1481,24 +1481,24 @@
           "format": "google-datetime"
         },
         "displayName": {
-          "description": "The display name for the workspace",
+          "description": "The display name for the workspace.",
           "type": "string"
         }
       }
     },
     "DatabaseEngineInfo": {
       "id": "DatabaseEngineInfo",
-      "description": "The type and version of a source or destination DB.",
+      "description": "The type and version of a source or destination database.",
       "type": "object",
       "properties": {
         "engine": {
-          "description": "Required. Engine Type.",
+          "description": "Required. Engine type.",
           "type": "string",
           "enumDescriptions": [
             "The source database engine of the migration job is unknown.",
             "The source engine is MySQL.",
             "The source engine is PostgreSQL.",
-            "The source engine is Oracle"
+            "The source engine is Oracle."
           ],
           "enum": [
             "DATABASE_ENGINE_UNSPECIFIED",
@@ -1508,7 +1508,7 @@
           ]
         },
         "version": {
-          "description": "Required. Engine named version, for e.g. 12.c.1",
+          "description": "Required. Engine named version, for example 12.c.1.",
           "type": "string"
         }
       }
@@ -1526,7 +1526,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -1566,9 +1566,9 @@
           "description": "The format of the rules content file.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified Rules Format",
-            "Harbour Bridge Session file",
-            "ORA2PG config file"
+            "Unspecified rules format.",
+            "HarbourBridge session file.",
+            "Ora2Pg configuration file."
           ],
           "enum": [
             "IMPORT_RULES_FILE_FORMAT_UNSPECIFIED",
@@ -1577,7 +1577,7 @@
           ]
         },
         "rulesFiles": {
-          "description": "One or more rules files",
+          "description": "One or more rules files.",
           "type": "array",
           "items": {
             "$ref": "RulesFile"
@@ -1591,15 +1591,15 @@
     },
     "RulesFile": {
       "id": "RulesFile",
-      "description": "Details of a single rules file",
+      "description": "Details of a single rules file.",
       "type": "object",
       "properties": {
         "rulesSourceFilename": {
-          "description": "The filename of the rules that needs to be converted. This is used mainly so future logs of the import rules job will contain this detail and can therefore be searched by it later",
+          "description": "The filename of the rules that needs to be converted. The filename is used mainly so that future logs of the import rules job contain it, and can therefore be searched by it.",
           "type": "string"
         },
         "rulesContent": {
-          "description": "The text content of the rules that needs to be converted",
+          "description": "The text content of the rules that needs to be converted.",
           "type": "string"
         }
       }
@@ -1610,7 +1610,7 @@
       "type": "object",
       "properties": {
         "autoCommit": {
-          "description": "Should the conversion workspace be committed automatically after the conversion.",
+          "description": "Specifies whether the conversion workspace is to be committed automatically after the conversion.",
           "type": "boolean"
         },
         "filter": {
@@ -1665,14 +1665,14 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "A token which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
     },
     "DatabaseEntity": {
       "id": "DatabaseEntity",
-      "description": "The base entity type for all the database related entities The message contains the entity name, the name of its parent, its type and the specific details per its type",
+      "description": "The base entity type for all the database related entities. The message contains the entity name, the name of its parent, the entity type, and the specific details per entity type.",
       "type": "object",
       "properties": {
         "shortName": {
@@ -1687,7 +1687,7 @@
           "description": "The type of tree the entity belongs to.",
           "type": "string",
           "enumDescriptions": [
-            "Tree Type Unspecified.",
+            "Tree type unspecified.",
             "Tree of entities loaded from a source database.",
             "Tree of entities converted from the source tree using the mapping rules.",
             "Tree of entities observed on the destination database."
@@ -1703,21 +1703,21 @@
           "description": "The type of the database entity (table, view, index, ...).",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified database entity type",
-            "Schema",
-            "Table",
-            "Column",
-            "Constraint",
-            "Index",
-            "Trigger",
-            "View",
-            "Sequence",
-            "Stored Procedure",
-            "Function",
-            "Synonym",
-            "Package",
-            "UDT",
-            "Material View"
+            "Unspecified database entity type.",
+            "Schema.",
+            "Table.",
+            "Column.",
+            "Constraint.",
+            "Index.",
+            "Trigger.",
+            "View.",
+            "Sequence.",
+            "Stored Procedure.",
+            "Function.",
+            "Synonym.",
+            "Package.",
+            "UDT.",
+            "Material View."
           ],
           "enum": [
             "DATABASE_ENTITY_TYPE_UNSPECIFIED",
@@ -1753,27 +1753,27 @@
           "$ref": "TableEntity"
         },
         "view": {
-          "description": "View",
+          "description": "View.",
           "$ref": "ViewEntity"
         },
         "sequence": {
-          "description": "Sequence",
+          "description": "Sequence.",
           "$ref": "SequenceEntity"
         },
         "storedProcedure": {
-          "description": "Stored Procedure",
+          "description": "Stored procedure.",
           "$ref": "StoredProcedureEntity"
         },
         "databaseFunction": {
-          "description": "Function",
+          "description": "Function.",
           "$ref": "FunctionEntity"
         },
         "synonym": {
-          "description": "Synonym",
+          "description": "Synonym.",
           "$ref": "SynonymEntity"
         },
         "databasePackage": {
-          "description": "Package",
+          "description": "Package.",
           "$ref": "PackageEntity"
         }
       }
@@ -1784,15 +1784,15 @@
       "type": "object",
       "properties": {
         "sourceEntity": {
-          "description": "Source entity full name. The source entity can also be a column, index or constraint using the same naming notation schema.table.column",
+          "description": "Source entity full name. The source entity can also be a column, index or constraint using the same naming notation schema.table.column.",
           "type": "string"
         },
         "draftEntity": {
-          "description": "Target entity full name. The draft entity can also include a column, index or constraint using the same naming notation schema.table.column",
+          "description": "Target entity full name. The draft entity can also include a column, index or constraint using the same naming notation schema.table.column.",
           "type": "string"
         },
         "mappingLog": {
-          "description": "Entity mapping log entries. Multiple rules can be effective and contribute changes to a converted entity such as, a rule can handle the entity name, another rule can handle an entity type. In addition, rules which did not change the entity are also logged along the with the reason preventing them to do so.",
+          "description": "Entity mapping log entries. Multiple rules can be effective and contribute changes to a converted entity, such as a rule can handle the entity name, another rule can handle an entity type. In addition, rules which did not change the entity are also logged along with the reason preventing them to do so.",
           "type": "array",
           "items": {
             "$ref": "EntityMappingLogEntry"
@@ -1806,11 +1806,11 @@
       "type": "object",
       "properties": {
         "ruleId": {
-          "description": "Which rule caused it.",
+          "description": "Which rule caused this log entry.",
           "type": "string"
         },
         "ruleRevisionId": {
-          "description": "Rule revision id",
+          "description": "Rule revision ID.",
           "type": "string"
         },
         "mappingComment": {
@@ -1821,11 +1821,11 @@
     },
     "SchemaEntity": {
       "id": "SchemaEntity",
-      "description": "Schema typically has no parent entity, but can have a parent entity DatabaseInstance (for database engines which supports it). For some database engines the term schema and user can be used interchangeably when they refer to a namespace or a collection of other database entities. Can store additional information which is schema specific.",
+      "description": "Schema typically has no parent entity, but can have a parent entity DatabaseInstance (for database engines which support it). For some database engines, the terms schema and user can be used interchangeably when they refer to a namespace or a collection of other database entities. Can store additional information which is schema specific.",
       "type": "object",
       "properties": {
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1840,21 +1840,21 @@
       "type": "object",
       "properties": {
         "columns": {
-          "description": "Table Columns.",
+          "description": "Table columns.",
           "type": "array",
           "items": {
             "$ref": "ColumnEntity"
           }
         },
         "constraints": {
-          "description": "Table Constraints.",
+          "description": "Table constraints.",
           "type": "array",
           "items": {
             "$ref": "ConstraintEntity"
           }
         },
         "indices": {
-          "description": "Table Indices.",
+          "description": "Table indices.",
           "type": "array",
           "items": {
             "$ref": "IndexEntity"
@@ -1868,7 +1868,7 @@
           }
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1876,7 +1876,7 @@
           }
         },
         "comment": {
-          "description": "Comment associated with the table",
+          "description": "Comment associated with the table.",
           "type": "string"
         }
       }
@@ -1887,64 +1887,64 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Column name",
+          "description": "Column name.",
           "type": "string"
         },
         "dataType": {
-          "description": "Column data type",
+          "description": "Column data type.",
           "type": "string"
         },
         "charset": {
-          "description": "Charset override - instead of table level charset",
+          "description": "Charset override - instead of table level charset.",
           "type": "string"
         },
         "collation": {
-          "description": "Collation override - instead of table level collation",
+          "description": "Collation override - instead of table level collation.",
           "type": "string"
         },
         "length": {
-          "description": "Column length - e.g. varchar (50)",
+          "description": "Column length - e.g. varchar (50).",
           "type": "string",
           "format": "int64"
         },
         "precision": {
-          "description": "Column precision - when relevant",
+          "description": "Column precision - when relevant.",
           "type": "integer",
           "format": "int32"
         },
         "scale": {
-          "description": "Column scale - when relevant",
+          "description": "Column scale - when relevant.",
           "type": "integer",
           "format": "int32"
         },
         "fractionalSecondsPrecision": {
-          "description": "Column fractional second precision - used for timestamp based datatypes",
+          "description": "Column fractional second precision - used for timestamp based datatypes.",
           "type": "integer",
           "format": "int32"
         },
         "array": {
-          "description": "Is the column of array type",
+          "description": "Is the column of array type.",
           "type": "boolean"
         },
         "arrayLength": {
-          "description": "If the column is array, of which length",
+          "description": "If the column is array, of which length.",
           "type": "integer",
           "format": "int32"
         },
         "nullable": {
-          "description": "Is the column nullable",
+          "description": "Is the column nullable.",
           "type": "boolean"
         },
         "autoGenerated": {
-          "description": "Is the column auto-generated\/identity",
+          "description": "Is the column auto-generated\/identity.",
           "type": "boolean"
         },
         "udt": {
-          "description": "Is the column a UDT",
+          "description": "Is the column a UDT.",
           "type": "boolean"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1952,23 +1952,23 @@
           }
         },
         "setValues": {
-          "description": "Specifies the list of values allowed in the column. List is empty if set values is not required",
+          "description": "Specifies the list of values allowed in the column. List is empty if setValues is not required.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "comment": {
-          "description": "Comment associated with the column",
+          "description": "Comment associated with the column.",
           "type": "string"
         },
         "ordinalPosition": {
-          "description": "Column order in the table",
+          "description": "Column order in the table.",
           "type": "integer",
           "format": "int32"
         },
         "defaultValue": {
-          "description": "Default value of the column",
+          "description": "Default value of the column.",
           "type": "string"
         }
       }
@@ -1979,22 +1979,22 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the table constraint",
+          "description": "The name of the table constraint.",
           "type": "string"
         },
         "type": {
-          "description": "Type of constraint - e.g. unique, primary key, foreign key (currently only primary key is supported)",
+          "description": "Type of constraint, for example unique, primary key, foreign key (currently only primary key is supported).",
           "type": "string"
         },
         "tableColumns": {
-          "description": "Table columns used as part of the Constraint for e.g. primary key constraint should list the columns which constitutes the key",
+          "description": "Table columns used as part of the Constraint, for example primary key constraint should list the columns which constitutes the key.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2002,14 +2002,14 @@
           }
         },
         "referenceColumns": {
-          "description": "Reference Columns which may be associated with the constraint. eg: if the constraint is a FOREIGN_KEY, this represents the list of full names of referenced columns by the foreign key.",
+          "description": "Reference columns which may be associated with the constraint. For example, if the constraint is a FOREIGN_KEY, this represents the list of full names of referenced columns by the foreign key.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "referenceTable": {
-          "description": "Reference table which may be associated with the constraint. eg: if the constraint is a FOREIGN_KEY, this represents the list of full name of the referenced table by the foreign key.",
+          "description": "Reference table which may be associated with the constraint. For example, if the constraint is a FOREIGN_KEY, this represents the list of full name of the referenced table by the foreign key.",
           "type": "string"
         },
         "tableName": {
@@ -2024,26 +2024,26 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the index",
+          "description": "The name of the index.",
           "type": "string"
         },
         "type": {
-          "description": "Type of index - e.g. B-TREE",
+          "description": "Type of index, for example B-TREE.",
           "type": "string"
         },
         "tableColumns": {
-          "description": "Table columns used as part of the Index for e.g. B-TREE index should list the columns which constitutes the index.",
+          "description": "Table columns used as part of the Index, for example B-TREE index should list the columns which constitutes the index.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "unique": {
-          "description": "boolean value indicating whether the index is unique",
+          "description": "Boolean value indicating whether the index is unique.",
           "type": "boolean"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2058,26 +2058,26 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the trigger",
+          "description": "The name of the trigger.",
           "type": "string"
         },
         "triggeringEvents": {
-          "description": "The DML, DDL, or database events that fires the trigger, e.g. INSERT, UPDATE",
+          "description": "The DML, DDL, or database events that fire the trigger, for example INSERT, UPDATE.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "triggerType": {
-          "description": "Indicates when the trigger fires, e.g. BEFORE STATEMENT, AFTER EACH ROW",
+          "description": "Indicates when the trigger fires, for example BEFORE STATEMENT, AFTER EACH ROW.",
           "type": "string"
         },
         "sqlCode": {
-          "description": "The SQL code which creates the trigger",
+          "description": "The SQL code which creates the trigger.",
           "type": "string"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2096,7 +2096,7 @@
           "type": "string"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2104,7 +2104,7 @@
           }
         },
         "constraints": {
-          "description": "View Constraints.",
+          "description": "View constraints.",
           "type": "array",
           "items": {
             "$ref": "ConstraintEntity"
@@ -2118,36 +2118,36 @@
       "type": "object",
       "properties": {
         "increment": {
-          "description": "Increment value for the sequence",
+          "description": "Increment value for the sequence.",
           "type": "string",
           "format": "int64"
         },
         "startValue": {
-          "description": "Start number for the sequence represented as bytes to accommodate large numbers",
+          "description": "Start number for the sequence represented as bytes to accommodate large. numbers",
           "type": "string",
           "format": "byte"
         },
         "maxValue": {
-          "description": "Maximum number for the sequence represented as bytes to accommodate large numbers",
+          "description": "Maximum number for the sequence represented as bytes to accommodate large. numbers",
           "type": "string",
           "format": "byte"
         },
         "minValue": {
-          "description": "Minimum number for the sequence represented as bytes to accommodate large numbers",
+          "description": "Minimum number for the sequence represented as bytes to accommodate large. numbers",
           "type": "string",
           "format": "byte"
         },
         "cycle": {
-          "description": "Indicates whether the sequence value should cycle through",
+          "description": "Indicates whether the sequence value should cycle through.",
           "type": "boolean"
         },
         "cache": {
-          "description": "Indicates number of entries to cache \/ precreate",
+          "description": "Indicates number of entries to cache \/ precreate.",
           "type": "string",
           "format": "int64"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2162,11 +2162,11 @@
       "type": "object",
       "properties": {
         "sqlCode": {
-          "description": "The SQL code which creates the stored procedure",
+          "description": "The SQL code which creates the stored procedure.",
           "type": "string"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2181,11 +2181,11 @@
       "type": "object",
       "properties": {
         "sqlCode": {
-          "description": "The SQL code which creates the function",
+          "description": "The SQL code which creates the function.",
           "type": "string"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2200,28 +2200,28 @@
       "type": "object",
       "properties": {
         "sourceEntity": {
-          "description": "The name of the entity for which the synonym is being created (the source)",
+          "description": "The name of the entity for which the synonym is being created (the source).",
           "type": "string"
         },
         "sourceType": {
-          "description": "The type of the entity for which the synonym is being created (usually a table or a sequence)",
+          "description": "The type of the entity for which the synonym is being created (usually a table or a sequence).",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified database entity type",
-            "Schema",
-            "Table",
-            "Column",
-            "Constraint",
-            "Index",
-            "Trigger",
-            "View",
-            "Sequence",
-            "Stored Procedure",
-            "Function",
-            "Synonym",
-            "Package",
-            "UDT",
-            "Material View"
+            "Unspecified database entity type.",
+            "Schema.",
+            "Table.",
+            "Column.",
+            "Constraint.",
+            "Index.",
+            "Trigger.",
+            "View.",
+            "Sequence.",
+            "Stored Procedure.",
+            "Function.",
+            "Synonym.",
+            "Package.",
+            "UDT.",
+            "Material View."
           ],
           "enum": [
             "DATABASE_ENTITY_TYPE_UNSPECIFIED",
@@ -2242,7 +2242,7 @@
           ]
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2257,7 +2257,7 @@
       "type": "object",
       "properties": {
         "packageSqlCode": {
-          "description": "The SQL code which creates the package",
+          "description": "The SQL code which creates the package.",
           "type": "string"
         },
         "packageBody": {
@@ -2265,7 +2265,7 @@
           "type": "string"
         },
         "customFeatures": {
-          "description": "Custom engine specific features",
+          "description": "Custom engine specific features.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2294,18 +2294,18 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "The background job log entry id",
+          "description": "The background job log entry ID.",
           "type": "string"
         },
         "jobType": {
           "description": "The type of job that was executed.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified background job type",
-            "Job to seed from the source database",
-            "Job to convert the source database into a draft of the destination database",
-            "Job to apply the draft tree onto the destination",
-            "Job to import and convert mapping rules from an external source such as an ora2pg config file"
+            "Unspecified background job type.",
+            "Job to seed from the source database.",
+            "Job to convert the source database into a draft of the destination database.",
+            "Job to apply the draft tree onto the destination.",
+            "Job to import and convert mapping rules from an external source such as an ora2pg config file."
           ],
           "enum": [
             "BACKGROUND_JOB_TYPE_UNSPECIFIED",
@@ -2329,7 +2329,7 @@
           "description": "Job completion state, i.e. the final state after the job completed.",
           "type": "string",
           "enumDescriptions": [
-            "The status is not specified. This state will be used when job is not yet finished.",
+            "The status is not specified. This state is used when job is not yet finished.",
             "Success.",
             "Error."
           ],
@@ -2340,7 +2340,7 @@
           ]
         },
         "completionComment": {
-          "description": "Job completion comment, such as how many entities were seeded, how many warnings were found during conversion and similar information.",
+          "description": "Job completion comment, such as how many entities were seeded, how many warnings were found during conversion, and similar information.",
           "type": "string"
         },
         "requestAutocommit": {
@@ -2348,45 +2348,45 @@
           "type": "boolean"
         },
         "seedJobDetails": {
-          "description": "Seed job details",
+          "description": "Seed job details.",
           "$ref": "SeedJobDetails"
         },
         "importRulesJobDetails": {
-          "description": "Import rules job details",
+          "description": "Import rules job details.",
           "$ref": "ImportRulesJobDetails"
         }
       }
     },
     "SeedJobDetails": {
       "id": "SeedJobDetails",
-      "description": "Details regarding a Seed background job",
+      "description": "Details regarding a Seed background job.",
       "type": "object",
       "properties": {
         "connectionProfile": {
-          "description": "The connection profile which was used for the seed job",
+          "description": "The connection profile which was used for the seed job.",
           "type": "string"
         }
       }
     },
     "ImportRulesJobDetails": {
       "id": "ImportRulesJobDetails",
-      "description": "Details regarding an Import Rules background job",
+      "description": "Details regarding an Import Rules background job.",
       "type": "object",
       "properties": {
         "files": {
-          "description": "File names used for the import rules job",
+          "description": "File names used for the import rules job.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "fileFormat": {
-          "description": "The requested file format",
+          "description": "The requested file format.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified Rules Format",
-            "Harbour Bridge Session file",
-            "ORA2PG config file"
+            "Unspecified rules format.",
+            "HarbourBridge session file.",
+            "Ora2Pg configuration file."
           ],
           "enum": [
             "IMPORT_RULES_FILE_FORMAT_UNSPECIFIED",
@@ -2800,7 +2800,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Exposes the outgoing static IP addresses used by DMS for source for static-IP connectivity."
+              "description": "Fetches a set of static IP addresses that need to be allowlisted by the customer when using the static-IP connectivity method."
             },
             "list": {
               "id": "datamigration.projects.locations.list",
@@ -3003,14 +3003,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of migrationJobs.",
+                      "description": "Required. The parent which owns this collection of migrationJobs.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of migration jobs to return. The service may return fewer than this value. If unspecified, at most 50 migration jobs will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of migration jobs to return. The service may return fewer than this value. If unspecified, at most 50 migration jobs will be returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3074,7 +3074,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of migration jobs.",
+                      "description": "Required. The parent which owns this collection of migration jobs.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3086,7 +3086,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3119,13 +3119,13 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the migration job resource by the update.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten by the update in the conversion workspace resource.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3158,7 +3158,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3473,14 +3473,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of connection profiles.",
+                      "description": "Required. The parent which owns this collection of connection profiles.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of connection profiles to return. The service may return fewer than this value. If unspecified, at most 50 connection profiles will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of connection profiles to return. The service may return fewer than this value. If unspecified, at most 50 connection profiles will be returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3544,7 +3544,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of connection profiles.",
+                      "description": "Required. The parent which owns this collection of connection profiles.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3556,7 +3556,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3599,13 +3599,13 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the connection profile resource by the update.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten by the update in the conversion workspace resource.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3648,7 +3648,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3779,7 +3779,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -3842,7 +3842,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Maximum number of private connections to return. If unspecified, at most 50 private connections that will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "Maximum number of private connections to return. If unspecified, at most 50 private connections that are returned. The maximum value is 1000; values above 1000 are coerced to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3888,7 +3888,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3940,14 +3940,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of conversion workspaces.",
+                      "description": "Required. The parent which owns this collection of conversion workspaces.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of conversion workspaces to return. The service may return fewer than this value. If unspecified, at most 50 sets will be returned.",
+                      "description": "The maximum number of conversion workspaces to return. The service may return fewer than this value. If unspecified, at most 50 sets are returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3958,7 +3958,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that filters conversion workspaces listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, list conversion workspaces created this year by specifying **createTime %gt; 2020-01-01T00:00:00.000000000Z.** You can also filter nested fields. For example, you could specify **source.version = \"12.c.1\"** to select all conversion workspaces with source database version equal to 12.c.1",
+                      "description": "A filter expression that filters conversion workspaces listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, list conversion workspaces created this year by specifying **createTime %gt; 2020-01-01T00:00:00.000000000Z.** You can also filter nested fields. For example, you could specify **source.version = \"12.c.1\"** to select all conversion workspaces with source database version equal to 12.c.1.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3981,7 +3981,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of conversion workspaces.",
+                      "description": "Required. The parent which owns this collection of conversion workspaces.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3993,7 +3993,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4026,13 +4026,13 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the conversion workspace resource by the update.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten by the update in the conversion workspace resource.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4065,7 +4065,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique ID used to identify the request. If the server receives two requests with the same ID, then the second request is ignored. It is recommended to always set this value to a UUID. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4088,7 +4088,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Name of the conversion workspace resource to seed with new database structure. in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
+                      "description": "Name of the conversion workspace resource to seed with new database structure, in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversionWorkspaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4172,7 +4172,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the conversion workspace resource to rollback to.",
+                      "description": "Required. Name of the conversion workspace resource to roll back to.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversionWorkspaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4191,7 +4191,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rollbacks a conversion workspace to the last committed spanshot."
+                  "description": "Rolls back a conversion workspace to the last committed snapshot."
                 },
                 "apply": {
                   "id": "datamigration.projects.locations.conversionWorkspaces.apply",
@@ -4200,7 +4200,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the conversion workspace resource to apply draft to destination for. in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
+                      "description": "Required. The name of the conversion workspace resource for which to apply the draft tree. Must be in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversionWorkspaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4219,7 +4219,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Apply draft tree onto a specific destination database"
+                  "description": "Applies draft tree onto a specific destination database."
                 },
                 "describeDatabaseEntities": {
                   "id": "datamigration.projects.locations.conversionWorkspaces.describeDatabaseEntities",
@@ -4228,14 +4228,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "conversionWorkspace": {
-                      "description": "Required. Name of the conversion workspace resource whose DB entities are described in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
+                      "description": "Required. Name of the conversion workspace resource whose database entities are described. Must be in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversionWorkspaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of entities to return. The service may return fewer than this value.",
+                      "description": "The maximum number of entities to return. The service may return fewer entities than the value specifies.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -4250,10 +4250,10 @@
                       "location": "query",
                       "type": "string",
                       "enumDescriptions": [
-                        "Unspecified tree type",
-                        "The source database tree",
-                        "The draft database tree",
-                        "The destination database tree"
+                        "Unspecified tree type.",
+                        "The source database tree.",
+                        "The draft database tree.",
+                        "The destination database tree."
                       ],
                       "enum": [
                         "DB_TREE_TYPE_UNSPECIFIED",
@@ -4268,7 +4268,7 @@
                       "type": "boolean"
                     },
                     "commitId": {
-                      "description": "Request a specific commit id. If not specified, the entities from the latest commit are returned.",
+                      "description": "Request a specific commit ID. If not specified, the entities from the latest commit are returned.",
                       "location": "query",
                       "type": "string"
                     },
@@ -4287,7 +4287,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Use this method to describe the database entities tree for a specific conversion workspace and a specific tree type. The DB Entities are not a resource like conversion workspace or mapping rule, and they can not be created, updated or deleted like one. Instead they are simple data objects describing the structure of the client database."
+                  "description": "Describes the database entities tree for a specific conversion workspace and a specific tree type. Database entities are not resources like conversion workspaces or mapping rules, and they can't be created, updated or deleted. Instead, they are simple data objects describing the structure of the client database."
                 },
                 "searchBackgroundJobs": {
                   "id": "datamigration.projects.locations.conversionWorkspaces.searchBackgroundJobs",
@@ -4296,25 +4296,25 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "conversionWorkspace": {
-                      "description": "Required. Name of the conversion workspace resource whos jobs are listed. in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
+                      "description": "Required. Name of the conversion workspace resource whose jobs are listed, in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversionWorkspaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "returnMostRecentPerJobType": {
-                      "description": "Optional. Whether or not to return just the most recent job per job type",
+                      "description": "Optional. Whether or not to return just the most recent job per job type,",
                       "location": "query",
                       "type": "boolean"
                     },
                     "maxSize": {
-                      "description": "Optional. The maximum number of jobs to return. The service may return fewer than this value. If unspecified, at most 100 jobs will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                      "description": "Optional. The maximum number of jobs to return. The service may return fewer than this value. If unspecified, at most 100 jobs are returned. The maximum value is 100; values above 100 are coerced to 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "completedUntilTime": {
-                      "description": "Optional. If supplied, will only return jobs that completed until (not including) the given timestamp.",
+                      "description": "Optional. If provided, only returns jobs that completed until (not including) the given timestamp.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
@@ -4329,7 +4329,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Use this method to search\/list the background jobs for a specific conversion workspace. The background jobs are not a resource like conversion workspace or mapping rule, and they can not be created, updated or deleted like one. Instead they are a way to expose the data plane jobs log."
+                  "description": "Searches\/lists the background jobs for a specific conversion workspace. The background jobs are not resources like conversion workspaces or mapping rules, and they can't be created, updated or deleted. Instead, they are a way to expose the data plane jobs log."
                 },
                 "describeConversionWorkspaceRevisions": {
                   "id": "datamigration.projects.locations.conversionWorkspaces.describeConversionWorkspaceRevisions",
@@ -4338,14 +4338,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "conversionWorkspace": {
-                      "description": "Required. Name of the conversion workspace resource whose revisions are listed. in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
+                      "description": "Required. Name of the conversion workspace resource whose revisions are listed. Must be in the form of: projects\/{project}\/locations\/{location}\/conversionWorkspaces\/{conversion_workspace}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversionWorkspaces\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "commitId": {
-                      "description": "Optional. Optional filter to request a specific commit id",
+                      "description": "Optional. Optional filter to request a specific commit ID.",
                       "location": "query",
                       "type": "string"
                     }

@@ -3526,11 +3526,11 @@ class APIAdapter(object):
     if options.node_group is not None:
       node_config.nodeGroup = options.node_group
 
-    if options.enable_gcfs:
+    if options.enable_gcfs is not None:
       gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
       node_config.gcfsConfig = gcfs_config
 
-    if options.enable_image_streaming:
+    if options.enable_image_streaming is not None:
       gcfs_config = self.messages.GcfsConfig(
           enabled=options.enable_image_streaming)
       node_config.gcfsConfig = gcfs_config
@@ -3621,13 +3621,10 @@ class APIAdapter(object):
       pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
 
     if options.tpu_topology:
-      if options.placement_type and options.placement_type != 'COMPACT':
+      if options.placement_type is None or options.placement_type != 'COMPACT':
         raise util.Error(
-            'Please specify -placement-type=COMPACT for --tpu-topology'
+            'Please specify --placement-type=COMPACT for --tpu-topology'
         )
-      if pool.placementPolicy is None:
-        pool.placementPolicy = self.messages.PlacementPolicy()
-        pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
       pool.placementPolicy.tpuTopology = options.tpu_topology
 
     if options.enable_queued_provisioning:

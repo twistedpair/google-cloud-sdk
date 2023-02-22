@@ -278,9 +278,12 @@ class CompositeFilter(_messages.Message):
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
       AND: Documents are required to satisfy all of the combined filters.
+      OR: Documents are required to satisfy at least one of the combined
+        filters.
     """
     OPERATOR_UNSPECIFIED = 0
     AND = 1
+    OR = 2
 
   filters = _messages.MessageField('Filter', 1, repeated=True)
   op = _messages.EnumField('OpValueValuesEnum', 2)

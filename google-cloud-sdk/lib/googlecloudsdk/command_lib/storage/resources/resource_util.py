@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import calendar
 import datetime
 import enum
 import json
@@ -89,6 +90,15 @@ def get_formatted_timestamp_in_utc(datetime_object):
     return 'None'
   return convert_datetime_object_to_utc(datetime_object).strftime(
       '%Y-%m-%dT%H:%M:%SZ')
+
+
+def get_unix_timestamp_in_utc(datetime_object):
+  """Converts datetime to UTC and returns Unix seconds-since-epoch int."""
+  return int(
+      calendar.timegm(
+          convert_datetime_object_to_utc(datetime_object).timetuple()
+      )
+  )
 
 
 def get_metadata_json_section_string(key_string, value_to_convert_to_json,):

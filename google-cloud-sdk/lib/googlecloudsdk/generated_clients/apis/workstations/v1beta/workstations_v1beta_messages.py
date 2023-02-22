@@ -107,7 +107,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -124,9 +126,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -187,6 +187,27 @@ class Container(_messages.Message):
   image = _messages.StringField(4)
   runAsUser = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   workingDir = _messages.StringField(6)
+
+
+class CustomerEncryptionKey(_messages.Message):
+  r"""A customer-managed encryption key for the Compute Engine resources of
+  this workstation configuration.
+
+  Fields:
+    kmsKey: The name of the Google Cloud KMS encryption key. For example, `pro
+      jects/PROJECT_ID/locations/REGION/keyRings/KEY_RING/cryptoKeys/KEY_NAME`
+      .
+    kmsKeyServiceAccount: The service account to use with the specified KMS
+      key. We recommend that you use a separate service account and follow KMS
+      best practices. For more information, see [Separation of
+      duties](https://cloud.google.com/kms/docs/separation-of-duties) and
+      `gcloud kms keys add-iam-policy-binding`
+      [`--member`](https://cloud.google.com/sdk/gcloud/reference/kms/keys/add-
+      iam-policy-binding#--member).
+  """
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyServiceAccount = _messages.StringField(2)
 
 
 class Expr(_messages.Message):
@@ -282,6 +303,8 @@ class GceRegionalPersistentDisk(_messages.Message):
     reclaimPolicy: What should happen to the disk after the workstation is
       deleted. Defaults to DELETE.
     sizeGb: Size of the disk in GB. Must be empty if source_snapshot is set.
+    sourceSnapshot: Name of the snapshot to use as the source for the disk. If
+      set, size_gb and fs_type must be empty.
   """
 
   class ReclaimPolicyValueValuesEnum(_messages.Enum):
@@ -302,6 +325,7 @@ class GceRegionalPersistentDisk(_messages.Message):
   fsType = _messages.StringField(2)
   reclaimPolicy = _messages.EnumField('ReclaimPolicyValueValuesEnum', 3)
   sizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sourceSnapshot = _messages.StringField(5)
 
 
 class GceShieldedInstanceConfig(_messages.Message):
@@ -342,7 +366,7 @@ class GenerateAccessTokenResponse(_messages.Message):
   Fields:
     accessToken: The generated bearer access token. To use this token, include
       it in an Authorization header of an HTTP request sent to the associated
-      workstation's hostname, e.g. "Authorization: Bearer ".
+      workstation's hostname, for example, `Authorization: Bearer `.
     expireTime: Time at which the generated token will expire.
   """
 
@@ -419,7 +443,7 @@ class ListWorkstationClustersResponse(_messages.Message):
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
     unreachable: Unreachable resources.
-    workstationClusters: The requested clusters.
+    workstationClusters: The requested workstation clusters.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -684,6 +708,9 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
+    allowedProjects: Additional projects that are allowed to attach to the
+      workstation cluster's service attachment. By default, the workstation
+      cluster's project and the VPC host project (if different) are allowed.
     clusterHostname: Output only. Hostname for the workstation cluster. This
       field will be populated only when private endpoint is enabled. To access
       workstations in the cluster, create a new DNS zone mapping this domain
@@ -694,14 +721,15 @@ class PrivateClusterConfig(_messages.Message):
     serviceAttachmentUri: Output only. Service attachment URI for the
       workstation cluster. The service attachemnt is created when private
       endpoint is enabled. To access workstations in the cluster, configure
-      access to the managed service using (Private Service
-      Connect)[https://cloud.google.com/vpc/docs/configure-private-service-
-      connect-services].
+      access to the managed service using [Private Service
+      Connect](https://cloud.google.com/vpc/docs/configure-private-service-
+      connect-services).
   """
 
-  clusterHostname = _messages.StringField(1)
-  enablePrivateEndpoint = _messages.BooleanField(2)
-  serviceAttachmentUri = _messages.StringField(3)
+  allowedProjects = _messages.StringField(1, repeated=True)
+  clusterHostname = _messages.StringField(2)
+  enablePrivateEndpoint = _messages.BooleanField(3)
+  serviceAttachmentUri = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -911,7 +939,7 @@ class Workstation(_messages.Message):
       be received by the workstation. Authorized traffic will be received to
       the workstation as HTTP on port 80. To send traffic to a different port,
       clients may prefix the host with the destination port in the format
-      "{port}-{host}".
+      `{port}-{host}`.
     labels: Client-specified labels that are applied to the resource and that
       are also propagated to the underlying Compute Engine resources.
     name: Full name of this resource.
@@ -1132,6 +1160,18 @@ class WorkstationConfig(_messages.Message):
       can be found in the `conditions` field.
     deleteTime: Output only. Time when this resource was soft-deleted.
     displayName: Human-readable name for this resource.
+    encryptionKey: Encrypts resources of this workstation configuration using
+      a customer-managed encryption key. If specified, the boot disk of the
+      Compute Engine instance and the persistent disk are encrypted using this
+      encryption key. If this field is not set, the disks are encrypted using
+      a generated key. Customer-managed encryption keys do not protect disk
+      metadata. If the customer-managed encryption key is rotated, when the
+      workstation instance is stopped, the system attempts to recreate the
+      persistent disk with the new version of the key. Be sure to keep older
+      versions of the key until the persistent disk is recreated. Otherwise,
+      data on the persistent disk will be lost. If the encryption key is
+      revoked, the workstation session will automatically be stopped within 7
+      hours.
     etag: Checksum computed by the server. May be sent on update and delete
       requests to ensure that the client has an up-to-date value before
       proceeding.
@@ -1147,8 +1187,8 @@ class WorkstationConfig(_messages.Message):
       being updated to match its intended state.
     runningTimeout: How long to wait before automatically stopping a
       workstation after it started. A value of 0 indicates that workstations
-      using this config should never time out. Must be greater than 0 and less
-      than 24 hours if encryption_key is set. Defaults to 12 hours.
+      using this configuration should never time out. Must be greater than 0
+      and less than 24 hours if encryption_key is set. Defaults to 12 hours.
     uid: Output only. A system-assigned unique identified for this resource.
     updateTime: Output only. Time when this resource was most recently
       updated.
@@ -1211,16 +1251,17 @@ class WorkstationConfig(_messages.Message):
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  host = _messages.MessageField('Host', 9)
-  idleTimeout = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 13, repeated=True)
-  reconciling = _messages.BooleanField(14)
-  runningTimeout = _messages.StringField(15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
+  etag = _messages.StringField(9)
+  host = _messages.MessageField('Host', 10)
+  idleTimeout = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 14, repeated=True)
+  reconciling = _messages.BooleanField(15)
+  runningTimeout = _messages.StringField(16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -1281,7 +1322,7 @@ class WorkstationsProjectsLocationsWorkstationClustersCreateRequest(_messages.Me
       not actually apply it.
     workstationCluster: A WorkstationCluster resource to be passed as the
       request body.
-    workstationClusterId: Required. ID to use for the cluster.
+    workstationClusterId: Required. ID to use for the workstation cluster.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1295,13 +1336,13 @@ class WorkstationsProjectsLocationsWorkstationClustersDeleteRequest(_messages.Me
 
   Fields:
     etag: If set, the request will be rejected if the latest version of the
-      cluster on the server does not have this etag.
+      workstation cluster on the server does not have this etag.
     force: If set, any workstation configurations and workstations in the
-      cluster will also be deleted. Otherwise, the request will work only if
-      the cluster has no configurations or workstations.
-    name: Required. Name of the cluster to delete.
+      workstation cluster are also deleted. Otherwise, the request only works
+      if the workstation cluster has no configurations or workstations.
+    name: Required. Name of the workstation cluster to delete.
     validateOnly: If set, validate the request and preview the review, but do
-      not actually apply it.
+      not apply it.
   """
 
   etag = _messages.StringField(1)
@@ -1339,11 +1380,12 @@ class WorkstationsProjectsLocationsWorkstationClustersPatchRequest(_messages.Mes
   r"""A WorkstationsProjectsLocationsWorkstationClustersPatchRequest object.
 
   Fields:
-    allowMissing: If set, and the cluster is not found, a new cluster will be
-      created. In this situation, update_mask is ignored.
+    allowMissing: If set, and the workstation cluster is not found, a new
+      workstation cluster will be created. In this situation, update_mask is
+      ignored.
     name: Full name of this resource.
-    updateMask: Required. Mask specifying which fields in the cluster should
-      be updated.
+    updateMask: Required. Mask that specifies which fields in the workstation
+      cluster should be updated.
     validateOnly: If set, validate the request and preview the review, but do
       not actually apply it.
     workstationCluster: A WorkstationCluster resource to be passed as the

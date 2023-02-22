@@ -585,7 +585,7 @@ class AccessConfig(_messages.Message):
       with this instance, prefix length is stored in externalIpv6PrefixLength
       in ipv6AccessConfig. To use a static external IP address, it must be
       unused and in the same region as the instance's zone. If not specified,
-      GCP will automatically assign an external IPv6 address from the
+      Google Cloud will automatically assign an external IPv6 address from the
       instance's subnetwork.
     externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
@@ -1781,11 +1781,6 @@ class AttachedDiskInitializeParams(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
-    replicaZones: Required for each regional disk associated with the
-      instance. Specify the URLs of the zones where the disk should be
-      replicated to. You must provide exactly two replica zones, and one zone
-      must be the same as the instance zone. You can't use this option with
-      boot disks.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -1917,13 +1912,12 @@ class AttachedDiskInitializeParams(_messages.Message):
   licenses = _messages.StringField(7, repeated=True)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
   provisionedIops = _messages.IntegerField(9)
-  replicaZones = _messages.StringField(10, repeated=True)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 11)
-  resourcePolicies = _messages.StringField(12, repeated=True)
-  sourceImage = _messages.StringField(13)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceSnapshot = _messages.StringField(15)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 10)
+  resourcePolicies = _messages.StringField(11, repeated=True)
+  sourceImage = _messages.StringField(12)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceSnapshot = _messages.StringField(14)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
 
 
 class AuditConfig(_messages.Message):
@@ -32279,6 +32273,12 @@ class ForwardingRule(_messages.Message):
       rule sends traffic. Required for Internal TCP/UDP Load Balancing and
       Network Load Balancing; must be omitted for all other load balancer
       types.
+    baseForwardingRule: [Output Only] The URL for the corresponding base
+      Forwarding Rule. By base Forwarding Rule, we mean the Forwarding Rule
+      that has the same IP address, protocol, and port settings with the
+      current Forwarding Rule, but without sourceIPRanges specified. Always
+      empty if the current Forwarding Rule does not have sourceIPRanges
+      specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -32406,6 +32406,13 @@ class ForwardingRule(_messages.Message):
     serviceName: [Output Only] The internal fully qualified service name for
       this Forwarding Rule. This field is only used for internal load
       balancing.
+    sourceIpRanges: If not empty, this Forwarding Rule will only forward the
+      traffic when the source IP address matches one of the IP addresses or
+      CIDR ranges set here. Note that a Forwarding Rule can only have up to 64
+      source IP ranges, and this field can only be used with a regional
+      Forwarding Rule whose scheme is EXTERNAL. Each source_ip_range entry
+      should be either an IP address (for example, 1.2.3.4) or a CIDR range
+      (for example, 1.2.3.0/24).
     subnetwork: This field identifies the subnetwork that the load balanced IP
       should belong to for this Forwarding Rule, used in internal load
       balancing and network load balancing with IPv6. If the network specified
@@ -32556,32 +32563,34 @@ class ForwardingRule(_messages.Message):
   allPorts = _messages.BooleanField(3)
   allowGlobalAccess = _messages.BooleanField(4)
   backendService = _messages.StringField(5)
-  creationTimestamp = _messages.StringField(6)
-  description = _messages.StringField(7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 10)
-  isMirroringCollector = _messages.BooleanField(11)
-  kind = _messages.StringField(12, default='compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
-  metadataFilters = _messages.MessageField('MetadataFilter', 16, repeated=True)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
-  noAutomateDnsZone = _messages.BooleanField(20)
-  portRange = _messages.StringField(21)
-  ports = _messages.StringField(22, repeated=True)
-  pscConnectionId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 24)
-  region = _messages.StringField(25)
-  selfLink = _messages.StringField(26)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 27, repeated=True)
-  serviceLabel = _messages.StringField(28)
-  serviceName = _messages.StringField(29)
-  subnetwork = _messages.StringField(30)
-  target = _messages.StringField(31)
+  baseForwardingRule = _messages.StringField(6)
+  creationTimestamp = _messages.StringField(7)
+  description = _messages.StringField(8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 11)
+  isMirroringCollector = _messages.BooleanField(12)
+  kind = _messages.StringField(13, default='compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 16)
+  metadataFilters = _messages.MessageField('MetadataFilter', 17, repeated=True)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 20)
+  noAutomateDnsZone = _messages.BooleanField(21)
+  portRange = _messages.StringField(22)
+  ports = _messages.StringField(23, repeated=True)
+  pscConnectionId = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 25)
+  region = _messages.StringField(26)
+  selfLink = _messages.StringField(27)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 28, repeated=True)
+  serviceLabel = _messages.StringField(29)
+  serviceName = _messages.StringField(30)
+  sourceIpRanges = _messages.StringField(31, repeated=True)
+  subnetwork = _messages.StringField(32)
+  target = _messages.StringField(33)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -40659,9 +40668,7 @@ class Interconnect(_messages.Message):
       in this interconnect.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
-    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
-      separation organization policy constraints and false otherwise. Defaults
-      to false if the field is not present.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of Interconnect functionality,
       which can take one of the following values: - ACTIVE: The Interconnect
@@ -40956,9 +40963,7 @@ class InterconnectAttachment(_messages.Message):
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
-    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
-      separation organization policy constraints and false otherwise. Defaults
-      to false if the field is not present.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     stackType: The stack type for this interconnect attachment to identify
       whether the IPv6 feature is enabled or not. If not specified, IPV4_ONLY
@@ -42168,8 +42173,7 @@ class InterconnectLocation(_messages.Message):
       closed and is unavailable for provisioning new Interconnects. -
       AVAILABLE: The InterconnectLocation is available for provisioning new
       Interconnects.
-    supportsPzs: [Output Only] Set to true for locations that support physical
-      zone separation. Defaults to false if the field is not present.
+    supportsPzs: [Output Only] Reserved for future use.
   """
 
   class ContinentValueValuesEnum(_messages.Enum):
@@ -46537,8 +46541,9 @@ class NetworkInterface(_messages.Message):
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
     ipv6Address: An IPv6 internal network address for this network interface.
       To use a static internal IP address, it must be unused and in the same
-      region as the instance's zone. If not specified, GCP will automatically
-      assign an internal IPv6 address from the instance's subnetwork.
+      region as the instance's zone. If not specified, Google Cloud will
+      automatically assign an internal IPv6 address from the instance's
+      subnetwork.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -48000,10 +48005,7 @@ class NodeTemplate(_messages.Message):
       instance scheduling.
     nodeType: The node type to use for nodes group that are created from this
       template.
-    nodeTypeFlexibility: The flexible properties of the desired node type.
-      Node groups that use this node template will create nodes of a type that
-      matches these properties. This field is mutually exclusive with the
-      node_type property; you can only define one or the other, but not both.
+    nodeTypeFlexibility: Do not use. Instead, use the node_type property.
     region: [Output Only] The name of the region where the node template
       resides, such as us-central1.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -55645,7 +55647,7 @@ class ResourcePolicyInstanceSchedulePolicy(_messages.Message):
       string.
     timeZone: Specifies the time zone to be used in interpreting
       Schedule.schedule. The value of this field must be a time zone name from
-      the tz database: http://en.wikipedia.org/wiki/Tz_database.
+      the tz database: https://wikipedia.org/wiki/Tz_database.
     vmStartSchedule: Specifies the schedule for starting instances.
     vmStopSchedule: Specifies the schedule for stopping instances.
   """

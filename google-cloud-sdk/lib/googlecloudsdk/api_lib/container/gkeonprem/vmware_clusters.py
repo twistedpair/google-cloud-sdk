@@ -356,9 +356,51 @@ class ClustersClient(client.ClientBase):
       return self._messages.VmwareControlPlaneNodeConfig(**kwargs)
     return None
 
-  def _annotations(self, args):
-    """Constructs proto message AnnotationsValue."""
+  def _create_annotations(self, args):
+    """Constructs proto message AnnotationsValue for create command."""
     annotations = flags.Get(args, 'annotations')
+    return self._dict_to_annotations_message(annotations)
+
+  def _update_annotations(self, args):
+    """Constructs proto message AnnotationsValue for update command."""
+    annotation_flags = [
+        'add_annotations',
+        'clear_annotations',
+        'remove_annotations',
+        'set_annotations',
+    ]
+    if all(
+        flag not in args.GetSpecifiedArgsDict() for flag in annotation_flags
+    ):
+      return None
+
+    cluster_ref = args.CONCEPTS.cluster.Parse()
+    cluster_response = self.Describe(cluster_ref)
+
+    curr_annotations = {}
+    if cluster_response.annotations:
+      for annotation in cluster_response.annotations.additionalProperties:
+        curr_annotations[annotation.key] = annotation.value
+
+    if 'add_annotations' in args.GetSpecifiedArgsDict():
+      for key, value in args.add_annotations.items():
+        curr_annotations[key] = value
+      return self._dict_to_annotations_message(curr_annotations)
+    elif 'clear_annotations' in args.GetSpecifiedArgsDict():
+      return self._messages.VmwareCluster.AnnotationsValue()
+    elif 'remove_annotations' in args.GetSpecifiedArgsDict():
+      updated_annotations = {
+          key: value
+          for key, value in curr_annotations.items()
+          if key not in args.remove_annotations
+      }
+      return self._dict_to_annotations_message(updated_annotations)
+    elif 'set_annotations' in args.GetSpecifiedArgsDict():
+      return self._dict_to_annotations_message(args.set_annotations)
+
+    return None
+
+  def _dict_to_annotations_message(self, annotations):
     additional_property_messages = []
     if not annotations:
       return None
@@ -374,6 +416,14 @@ class ClustersClient(client.ClientBase):
         additionalProperties=additional_property_messages
     )
     return annotation_value_message
+
+  def _annotations(self, args):
+    """Constructs proto message AnnotationsValue."""
+    if args.command_path[-1] == 'create':
+      return self._create_annotations(args)
+    elif args.command_path[-1] == 'update':
+      return self._update_annotations(args)
+    return None
 
   def _vmware_host_ip(self, host_ip):
     """Constructs proto message VmwareHostIp."""

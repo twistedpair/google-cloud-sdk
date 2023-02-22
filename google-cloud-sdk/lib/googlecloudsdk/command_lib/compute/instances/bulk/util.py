@@ -57,6 +57,7 @@ class SupportedFeatures:
       support_confidential_compute_type,
       support_provisioned_throughput=False,
       support_max_count_per_zone=True,
+      support_stack_type=False,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -81,6 +82,7 @@ class SupportedFeatures:
     self.support_confidential_compute_type = support_confidential_compute_type
     self.support_provisioned_throughput = support_provisioned_throughput
     self.support_max_count_per_zone = support_max_count_per_zone
+    self.support_stack_type = support_stack_type
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -253,7 +255,8 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
       project=project,
       location=location,
       scope=scope,
-      skip_defaults=skip_defaults)
+      skip_defaults=skip_defaults,
+      support_stack_type=supported_features.support_stack_type)
 
   create_boot_disk = not (
       instance_utils.UseExistingBootDisk((args.disk or []) +

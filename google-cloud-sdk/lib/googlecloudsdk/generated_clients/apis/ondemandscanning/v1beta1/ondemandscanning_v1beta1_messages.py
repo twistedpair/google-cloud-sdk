@@ -2485,6 +2485,7 @@ class VulnerabilityOccurrence(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0 - 10 where 0 indicates low severity and 10 indicates
       high severity.
+    cvssV2: The cvss v2 score for the vulnerability.
     cvssVersion: Output only. CVSS version used to populate cvss_score and
       severity.
     cvssv3: The cvss v3 score for the vulnerability.
@@ -2570,16 +2571,17 @@ class VulnerabilityOccurrence(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 2)
-  cvssv3 = _messages.MessageField('CVSS', 3)
-  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 4)
-  fixAvailable = _messages.BooleanField(5)
-  longDescription = _messages.StringField(6)
-  packageIssue = _messages.MessageField('PackageIssue', 7, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 8, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
-  shortDescription = _messages.StringField(10)
-  type = _messages.StringField(11)
+  cvssV2 = _messages.MessageField('CVSS', 2)
+  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 3)
+  cvssv3 = _messages.MessageField('CVSS', 4)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
+  fixAvailable = _messages.BooleanField(6)
+  longDescription = _messages.StringField(7)
+  packageIssue = _messages.MessageField('PackageIssue', 8, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 9, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  shortDescription = _messages.StringField(11)
+  type = _messages.StringField(12)
 
 
 class WindowsUpdate(_messages.Message):

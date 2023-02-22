@@ -541,6 +541,10 @@
             "CVSS_VERSION_2",
             "CVSS_VERSION_3"
           ]
+        },
+        "cvssV2": {
+          "description": "The cvss v2 score for the vulnerability.",
+          "$ref": "CVSS"
         }
       }
     },

@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.command_lib.compute.resource_policies import flags as maintenance_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -128,6 +129,21 @@ def AddDistributionTargetShapeArgs(parser):
         region or to enforce placement of VMs in a single zone.
         The default shape is `ANY_SINGLE_ZONE`.
       """)
+
+
+def AddStackTypeArgs(parser):
+  """Adds bulk creation stack type arguments to parser."""
+  parser.add_argument(
+      '--stack-type',
+      choices={
+          'IPV4_ONLY':
+              'The network interface will be assigned IPv4 addresses',
+          'IPV4_IPV6':
+              'The network interface can have both IPv4 and IPv6 addresses'
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help=('Specifies whether IPv6 is enabled on the default network '
+            'interface. If not specified, IPV4_ONLY will be used.'))
 
 
 def AddBulkCreateArgs(
@@ -317,6 +333,7 @@ def AddCommonBulkInsertArgs(
     support_provisioned_throughput=False,
     support_no_address_in_networking=False,
     support_max_count_per_zone=False,
+    support_stack_type=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -409,6 +426,9 @@ def AddCommonBulkInsertArgs(
 
   if support_enable_target_shape:
     AddDistributionTargetShapeArgs(parser)
+
+  if support_stack_type:
+    AddStackTypeArgs(parser)
 
   instances_flags.AddMinCpuPlatformArgs(parser, release_track)
   instances_flags.AddPublicDnsArgs(parser, instance=True)

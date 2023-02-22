@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20230208",
+  "revision": "20230215",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -907,11 +907,13 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
-            "Documents are required to satisfy all of the combined filters."
+            "Documents are required to satisfy all of the combined filters.",
+            "Documents are required to satisfy at least one of the combined filters."
           ],
           "enum": [
             "OPERATOR_UNSPECIFIED",
-            "AND"
+            "AND",
+            "OR"
           ]
         },
         "filters": {

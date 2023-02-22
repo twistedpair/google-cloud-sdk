@@ -41,6 +41,9 @@ class SecuritycenterV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.folders_assets = self.FoldersAssetsService(self)
     self.folders_bigQueryExports = self.FoldersBigQueryExportsService(self)
+    self.folders_eventThreatDetectionSettings_customModules = self.FoldersEventThreatDetectionSettingsCustomModulesService(self)
+    self.folders_eventThreatDetectionSettings_effectiveCustomModules = self.FoldersEventThreatDetectionSettingsEffectiveCustomModulesService(self)
+    self.folders_eventThreatDetectionSettings = self.FoldersEventThreatDetectionSettingsService(self)
     self.folders_findings = self.FoldersFindingsService(self)
     self.folders_muteConfigs = self.FoldersMuteConfigsService(self)
     self.folders_notificationConfigs = self.FoldersNotificationConfigsService(self)
@@ -53,6 +56,9 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.folders = self.FoldersService(self)
     self.organizations_assets = self.OrganizationsAssetsService(self)
     self.organizations_bigQueryExports = self.OrganizationsBigQueryExportsService(self)
+    self.organizations_eventThreatDetectionSettings_customModules = self.OrganizationsEventThreatDetectionSettingsCustomModulesService(self)
+    self.organizations_eventThreatDetectionSettings_effectiveCustomModules = self.OrganizationsEventThreatDetectionSettingsEffectiveCustomModulesService(self)
+    self.organizations_eventThreatDetectionSettings = self.OrganizationsEventThreatDetectionSettingsService(self)
     self.organizations_findings = self.OrganizationsFindingsService(self)
     self.organizations_muteConfigs = self.OrganizationsMuteConfigsService(self)
     self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
@@ -66,6 +72,9 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.projects_assets = self.ProjectsAssetsService(self)
     self.projects_bigQueryExports = self.ProjectsBigQueryExportsService(self)
+    self.projects_eventThreatDetectionSettings_customModules = self.ProjectsEventThreatDetectionSettingsCustomModulesService(self)
+    self.projects_eventThreatDetectionSettings_effectiveCustomModules = self.ProjectsEventThreatDetectionSettingsEffectiveCustomModulesService(self)
+    self.projects_eventThreatDetectionSettings = self.ProjectsEventThreatDetectionSettingsService(self)
     self.projects_findings = self.ProjectsFindingsService(self)
     self.projects_muteConfigs = self.ProjectsMuteConfigsService(self)
     self.projects_notificationConfigs = self.ProjectsNotificationConfigsService(self)
@@ -310,6 +319,279 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1BigQueryExport',
         request_type_name='SecuritycenterFoldersBigQueryExportsPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
+  class FoldersEventThreatDetectionSettingsCustomModulesService(base_api.BaseApiService):
+    """Service class for the folders_eventThreatDetectionSettings_customModules resource."""
+
+    _NAME = 'folders_eventThreatDetectionSettings_customModules'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersEventThreatDetectionSettingsCustomModulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an ETD custom module at the given level. Creating a module has a side-effect of creating modules at all descendants.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/customModules',
+        http_method='POST',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.customModules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/customModules',
+        request_field='eventThreatDetectionCustomModule',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesCreateRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an ETD custom module. Deletion at resident level also deletes modules at all descendants. Deletion at any other level is not supported.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='DELETE',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.customModules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an ETD custom module. Retrieves the module at the given level.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='GET',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.customModules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesGetRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ETD custom modules. Retrieve all resident and inherited modules at the given level (no descendants).
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/customModules',
+        http_method='GET',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.customModules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customModules',
+        request_field='',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListRequest',
+        response_type_name='ListEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+    def ListDescendant(self, request, global_params=None):
+      r"""Lists current and descendant resident ETD custom modules. Retrieve all resident modules at the given level and descendant levels.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListDescendantRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDescendantEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListDescendant')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListDescendant.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/customModules:listDescendant',
+        http_method='GET',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.customModules.listDescendant',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customModules:listDescendant',
+        request_field='',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesListDescendantRequest',
+        response_type_name='ListDescendantEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an ETD custom module at the given level. All config fields can be updated when updating the module at resident level. Only enablement state can be updated when updating the module at inherited levels. Updating the module has a side-effect that it updates all descendants that are inherited from this module.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='PATCH',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.customModules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='eventThreatDetectionCustomModule',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsCustomModulesPatchRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+  class FoldersEventThreatDetectionSettingsEffectiveCustomModulesService(base_api.BaseApiService):
+    """Service class for the folders_eventThreatDetectionSettings_effectiveCustomModules resource."""
+
+    _NAME = 'folders_eventThreatDetectionSettings_effectiveCustomModules'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersEventThreatDetectionSettingsEffectiveCustomModulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an effective ETD custom module. Retrieves the effective module at the given level.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveEventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/effectiveCustomModules/{effectiveCustomModulesId}',
+        http_method='GET',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.effectiveCustomModules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesGetRequest',
+        response_type_name='EffectiveEventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists effective ETD custom modules. Retrieve all effective inherited and resident modules at the given level (no descendants).
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEffectiveEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings/effectiveCustomModules',
+        http_method='GET',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.effectiveCustomModules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/effectiveCustomModules',
+        request_field='',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsEffectiveCustomModulesListRequest',
+        response_type_name='ListEffectiveEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+  class FoldersEventThreatDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the folders_eventThreatDetectionSettings resource."""
+
+    _NAME = 'folders_eventThreatDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersEventThreatDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ValidateCustomModule(self, request, global_params=None):
+      r"""Validates the given Event Threat Detection Custom Module.
+
+      Args:
+        request: (SecuritycenterFoldersEventThreatDetectionSettingsValidateCustomModuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateEventThreatDetectionCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateCustomModule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateCustomModule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/eventThreatDetectionSettings:validateCustomModule',
+        http_method='POST',
+        method_id='securitycenter.folders.eventThreatDetectionSettings.validateCustomModule',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:validateCustomModule',
+        request_field='validateEventThreatDetectionCustomModuleRequest',
+        request_type_name='SecuritycenterFoldersEventThreatDetectionSettingsValidateCustomModuleRequest',
+        response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
         supports_download=False,
     )
 
@@ -1429,6 +1711,279 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1BigQueryExport',
         request_type_name='SecuritycenterOrganizationsBigQueryExportsPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
+  class OrganizationsEventThreatDetectionSettingsCustomModulesService(base_api.BaseApiService):
+    """Service class for the organizations_eventThreatDetectionSettings_customModules resource."""
+
+    _NAME = 'organizations_eventThreatDetectionSettings_customModules'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsEventThreatDetectionSettingsCustomModulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an ETD custom module at the given level. Creating a module has a side-effect of creating modules at all descendants.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/customModules',
+        http_method='POST',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.customModules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/customModules',
+        request_field='eventThreatDetectionCustomModule',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesCreateRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an ETD custom module. Deletion at resident level also deletes modules at all descendants. Deletion at any other level is not supported.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.customModules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an ETD custom module. Retrieves the module at the given level.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.customModules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesGetRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ETD custom modules. Retrieve all resident and inherited modules at the given level (no descendants).
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/customModules',
+        http_method='GET',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.customModules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customModules',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesListRequest',
+        response_type_name='ListEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+    def ListDescendant(self, request, global_params=None):
+      r"""Lists current and descendant resident ETD custom modules. Retrieve all resident modules at the given level and descendant levels.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesListDescendantRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDescendantEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListDescendant')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListDescendant.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/customModules:listDescendant',
+        http_method='GET',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.customModules.listDescendant',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customModules:listDescendant',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesListDescendantRequest',
+        response_type_name='ListDescendantEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an ETD custom module at the given level. All config fields can be updated when updating the module at resident level. Only enablement state can be updated when updating the module at inherited levels. Updating the module has a side-effect that it updates all descendants that are inherited from this module.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.customModules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='eventThreatDetectionCustomModule',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsCustomModulesPatchRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+  class OrganizationsEventThreatDetectionSettingsEffectiveCustomModulesService(base_api.BaseApiService):
+    """Service class for the organizations_eventThreatDetectionSettings_effectiveCustomModules resource."""
+
+    _NAME = 'organizations_eventThreatDetectionSettings_effectiveCustomModules'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsEventThreatDetectionSettingsEffectiveCustomModulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an effective ETD custom module. Retrieves the effective module at the given level.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsEffectiveCustomModulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveEventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/effectiveCustomModules/{effectiveCustomModulesId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.effectiveCustomModules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsEffectiveCustomModulesGetRequest',
+        response_type_name='EffectiveEventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists effective ETD custom modules. Retrieve all effective inherited and resident modules at the given level (no descendants).
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsEffectiveCustomModulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEffectiveEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings/effectiveCustomModules',
+        http_method='GET',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.effectiveCustomModules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/effectiveCustomModules',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsEffectiveCustomModulesListRequest',
+        response_type_name='ListEffectiveEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsEventThreatDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the organizations_eventThreatDetectionSettings resource."""
+
+    _NAME = 'organizations_eventThreatDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsEventThreatDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ValidateCustomModule(self, request, global_params=None):
+      r"""Validates the given Event Threat Detection Custom Module.
+
+      Args:
+        request: (SecuritycenterOrganizationsEventThreatDetectionSettingsValidateCustomModuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateEventThreatDetectionCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateCustomModule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateCustomModule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/eventThreatDetectionSettings:validateCustomModule',
+        http_method='POST',
+        method_id='securitycenter.organizations.eventThreatDetectionSettings.validateCustomModule',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:validateCustomModule',
+        request_field='validateEventThreatDetectionCustomModuleRequest',
+        request_type_name='SecuritycenterOrganizationsEventThreatDetectionSettingsValidateCustomModuleRequest',
+        response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
         supports_download=False,
     )
 
@@ -2882,6 +3437,279 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1BigQueryExport',
         request_type_name='SecuritycenterProjectsBigQueryExportsPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
+  class ProjectsEventThreatDetectionSettingsCustomModulesService(base_api.BaseApiService):
+    """Service class for the projects_eventThreatDetectionSettings_customModules resource."""
+
+    _NAME = 'projects_eventThreatDetectionSettings_customModules'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsEventThreatDetectionSettingsCustomModulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an ETD custom module at the given level. Creating a module has a side-effect of creating modules at all descendants.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/customModules',
+        http_method='POST',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.customModules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/customModules',
+        request_field='eventThreatDetectionCustomModule',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesCreateRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an ETD custom module. Deletion at resident level also deletes modules at all descendants. Deletion at any other level is not supported.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='DELETE',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.customModules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an ETD custom module. Retrieves the module at the given level.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='GET',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.customModules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesGetRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ETD custom modules. Retrieve all resident and inherited modules at the given level (no descendants).
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/customModules',
+        http_method='GET',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.customModules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customModules',
+        request_field='',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListRequest',
+        response_type_name='ListEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+    def ListDescendant(self, request, global_params=None):
+      r"""Lists current and descendant resident ETD custom modules. Retrieve all resident modules at the given level and descendant levels.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListDescendantRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDescendantEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListDescendant')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListDescendant.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/customModules:listDescendant',
+        http_method='GET',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.customModules.listDescendant',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/customModules:listDescendant',
+        request_field='',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesListDescendantRequest',
+        response_type_name='ListDescendantEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an ETD custom module at the given level. All config fields can be updated when updating the module at resident level. Only enablement state can be updated when updating the module at inherited levels. Updating the module has a side-effect that it updates all descendants that are inherited from this module.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/customModules/{customModulesId}',
+        http_method='PATCH',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.customModules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='eventThreatDetectionCustomModule',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsCustomModulesPatchRequest',
+        response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+  class ProjectsEventThreatDetectionSettingsEffectiveCustomModulesService(base_api.BaseApiService):
+    """Service class for the projects_eventThreatDetectionSettings_effectiveCustomModules resource."""
+
+    _NAME = 'projects_eventThreatDetectionSettings_effectiveCustomModules'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsEventThreatDetectionSettingsEffectiveCustomModulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an effective ETD custom module. Retrieves the effective module at the given level.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveEventThreatDetectionCustomModule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/effectiveCustomModules/{effectiveCustomModulesId}',
+        http_method='GET',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.effectiveCustomModules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesGetRequest',
+        response_type_name='EffectiveEventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists effective ETD custom modules. Retrieve all effective inherited and resident modules at the given level (no descendants).
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEffectiveEventThreatDetectionCustomModulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings/effectiveCustomModules',
+        http_method='GET',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.effectiveCustomModules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/effectiveCustomModules',
+        request_field='',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsEffectiveCustomModulesListRequest',
+        response_type_name='ListEffectiveEventThreatDetectionCustomModulesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsEventThreatDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the projects_eventThreatDetectionSettings resource."""
+
+    _NAME = 'projects_eventThreatDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsEventThreatDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ValidateCustomModule(self, request, global_params=None):
+      r"""Validates the given Event Threat Detection Custom Module.
+
+      Args:
+        request: (SecuritycenterProjectsEventThreatDetectionSettingsValidateCustomModuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateEventThreatDetectionCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateCustomModule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateCustomModule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/eventThreatDetectionSettings:validateCustomModule',
+        http_method='POST',
+        method_id='securitycenter.projects.eventThreatDetectionSettings.validateCustomModule',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:validateCustomModule',
+        request_field='validateEventThreatDetectionCustomModuleRequest',
+        request_type_name='SecuritycenterProjectsEventThreatDetectionSettingsValidateCustomModuleRequest',
+        response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
         supports_download=False,
     )
 

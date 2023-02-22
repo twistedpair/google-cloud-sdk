@@ -272,13 +272,16 @@
           "type": "string",
           "enumDescriptions": [
             "No state information available",
-            "The resource's create operation is in progress",
+            "The resource's create operation is in progress.",
             "The resource is active",
-            "The resource's Delete operation is in progress",
-            "The resource's Activate operation is in progress",
-            "The resource's Deactivate operation is in progress",
-            "The resource's Update operation is in progress",
-            "The resource is inactive"
+            "The resource's delete operation is in progress.",
+            "The resource's activate operation is in progress.",
+            "The resource's deactivate operation is in progress.",
+            "The resource's accept operation is in progress.",
+            "The resource's reject operation is in progress.",
+            "The resource's update operation is in progress.",
+            "The resource is inactive",
+            "The hub associated with this spoke resource has been deleted. This state applies to spoke resources only."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -287,8 +290,11 @@
             "DELETING",
             "ACTIVATING",
             "DEACTIVATING",
+            "ACCEPTING",
+            "REJECTING",
             "UPDATING",
-            "INACTIVE"
+            "INACTIVE",
+            "OBSOLETE"
           ]
         },
         "routingVpcs": {
@@ -297,6 +303,11 @@
           "items": {
             "$ref": "RoutingVPC"
           }
+        },
+        "spokeSummary": {
+          "description": "Output only. A summary of the spokes associated with a hub. The summary includes a count of spokes according to type and according to state. If any spokes are inactive, the summary also lists the reasons they are inactive, including a count for each reason.",
+          "readOnly": true,
+          "$ref": "SpokeSummary"
         }
       }
     },
@@ -316,20 +327,159 @@
         }
       }
     },
-    "ListSpokesResponse": {
-      "id": "ListSpokesResponse",
-      "description": "The response for HubService.ListSpokes.",
+    "SpokeSummary": {
+      "id": "SpokeSummary",
+      "description": "Summarizes information about the spokes associated with a hub. The summary includes a count of spokes according to type and according to state. If any spokes are inactive, the summary also lists the reasons they are inactive, including a count for each reason.",
+      "type": "object",
+      "properties": {
+        "spokeTypeCounts": {
+          "description": "Output only. Counts the number of spokes of each type that are associated with a specific hub.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "SpokeTypeCount"
+          }
+        },
+        "spokeStateCounts": {
+          "description": "Output only. Counts the number of spokes that are in each state and associated with a given hub.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "SpokeStateCount"
+          }
+        },
+        "spokeStateReasonCounts": {
+          "description": "Output only. Counts the number of spokes that are inactive for each possible reason and associated with a given hub.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "SpokeStateReasonCount"
+          }
+        }
+      }
+    },
+    "SpokeTypeCount": {
+      "id": "SpokeTypeCount",
+      "description": "The number of spokes of a given type that are associated with a specific hub. The type indicates what kind of resource is associated with the spoke.",
+      "type": "object",
+      "properties": {
+        "spokeType": {
+          "description": "Output only. The type of the spokes.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified spoke type.",
+            "Spokes associated with VPN tunnels.",
+            "Spokes associated with VLAN attachments.",
+            "Spokes associated with router appliance instances.",
+            "Spokes associated with VPC networks."
+          ],
+          "enum": [
+            "SPOKE_TYPE_UNSPECIFIED",
+            "VPN_TUNNEL",
+            "INTERCONNECT_ATTACHMENT",
+            "ROUTER_APPLIANCE",
+            "VPC_NETWORK"
+          ]
+        },
+        "count": {
+          "description": "Output only. The total number of spokes of this type that are associated with the hub.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SpokeStateCount": {
+      "id": "SpokeStateCount",
+      "description": "The number of spokes that are in a particular state and associated with a given hub.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The state of the spokes.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No state information available",
+            "The resource's create operation is in progress.",
+            "The resource is active",
+            "The resource's delete operation is in progress.",
+            "The resource's activate operation is in progress.",
+            "The resource's deactivate operation is in progress.",
+            "The resource's accept operation is in progress.",
+            "The resource's reject operation is in progress.",
+            "The resource's update operation is in progress.",
+            "The resource is inactive",
+            "The hub associated with this spoke resource has been deleted. This state applies to spoke resources only."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING",
+            "ACTIVATING",
+            "DEACTIVATING",
+            "ACCEPTING",
+            "REJECTING",
+            "UPDATING",
+            "INACTIVE",
+            "OBSOLETE"
+          ]
+        },
+        "count": {
+          "description": "Output only. The total number of spokes that are in this state and associated with a given hub.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SpokeStateReasonCount": {
+      "id": "SpokeStateReasonCount",
+      "description": "The number of spokes in the hub that are inactive for this reason.",
+      "type": "object",
+      "properties": {
+        "stateReasonCode": {
+          "description": "Output only. The reason that a spoke is inactive.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No information available.",
+            "The proposed spoke is pending review.",
+            "The proposed spoke has been rejected by the hub administrator.",
+            "The spoke has been deactivated internally.",
+            "Network Connectivity Center encountered errors while accepting the spoke."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "PENDING_REVIEW",
+            "REJECTED",
+            "PAUSED",
+            "FAILED"
+          ]
+        },
+        "count": {
+          "description": "Output only. The total number of spokes that are inactive for a particular reason and associated with a given hub.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListHubSpokesResponse": {
+      "id": "ListHubSpokesResponse",
+      "description": "The response for HubService.ListHubSpokes.",
       "type": "object",
       "properties": {
         "spokes": {
-          "description": "The requested spokes.",
+          "description": "The requested spokes. The spoke fields can be partially populated based on the `view` field in the request message.",
           "type": "array",
           "items": {
             "$ref": "Spoke"
           }
         },
         "nextPageToken": {
-          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "description": "The token for the next page of the response. To see more results, use this value as the page_token for your next request. If this value is empty, there are no more results.",
           "type": "string"
         },
         "unreachable": {
@@ -404,13 +554,16 @@
           "type": "string",
           "enumDescriptions": [
             "No state information available",
-            "The resource's create operation is in progress",
+            "The resource's create operation is in progress.",
             "The resource is active",
-            "The resource's Delete operation is in progress",
-            "The resource's Activate operation is in progress",
-            "The resource's Deactivate operation is in progress",
-            "The resource's Update operation is in progress",
-            "The resource is inactive"
+            "The resource's delete operation is in progress.",
+            "The resource's activate operation is in progress.",
+            "The resource's deactivate operation is in progress.",
+            "The resource's accept operation is in progress.",
+            "The resource's reject operation is in progress.",
+            "The resource's update operation is in progress.",
+            "The resource is inactive",
+            "The hub associated with this spoke resource has been deleted. This state applies to spoke resources only."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -419,9 +572,19 @@
             "DELETING",
             "ACTIVATING",
             "DEACTIVATING",
+            "ACCEPTING",
+            "REJECTING",
             "UPDATING",
-            "INACTIVE"
+            "INACTIVE",
+            "OBSOLETE"
           ]
+        },
+        "reasons": {
+          "description": "The reasons for current state of the spoke.",
+          "type": "array",
+          "items": {
+            "$ref": "StateReason"
+          }
         }
       }
     },
@@ -527,6 +690,64 @@
         }
       }
     },
+    "StateReason": {
+      "id": "StateReason",
+      "description": "The reason a spoke is inactive.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The code associated with this reason.",
+          "type": "string",
+          "enumDescriptions": [
+            "No information available.",
+            "The proposed spoke is pending review.",
+            "The proposed spoke has been rejected by the hub administrator.",
+            "The spoke has been deactivated internally.",
+            "Network Connectivity Center encountered errors while accepting the spoke."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "PENDING_REVIEW",
+            "REJECTED",
+            "PAUSED",
+            "FAILED"
+          ]
+        },
+        "message": {
+          "description": "Human-readable details about this reason.",
+          "type": "string"
+        },
+        "userDetails": {
+          "description": "Additional information provided by the user in the RejectSpoke call.",
+          "type": "string"
+        }
+      }
+    },
+    "ListSpokesResponse": {
+      "id": "ListSpokesResponse",
+      "description": "The response for HubService.ListSpokes.",
+      "type": "object",
+      "properties": {
+        "spokes": {
+          "description": "The requested spokes.",
+          "type": "array",
+          "items": {
+            "$ref": "Spoke"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "DeactivateSpokeRequest": {
       "id": "DeactivateSpokeRequest",
       "description": "The request for HubService.DeactivateSpoke.",
@@ -549,12 +770,38 @@
         }
       }
     },
+    "RejectSpokeRequest": {
+      "id": "RejectSpokeRequest",
+      "description": "The request for HubService.RejectSpoke.",
+      "type": "object",
+      "properties": {
+        "details": {
+          "description": "Optional. Additional Details behind the rejection",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. A unique request ID (optional). If you specify this ID, you can use it in cases when you need to retry your request. When you need to retry, this ID lets the server know that it can ignore the request if it has already been completed. The server guarantees that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check to see whether the original operation was received. If it was, the server ignores the second request. This behavior prevents clients from mistakenly creating duplicate commitments. The request ID must be a valid UUID, with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "AcceptSpokeRequest": {
+      "id": "AcceptSpokeRequest",
+      "description": "The request for HubService.AcceptSpoke.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. A unique request ID (optional). If you specify this ID, you can use it in cases when you need to retry your request. When you need to retry, this ID lets the server know that it can ignore the request if it has already been completed. The server guarantees that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check to see whether the original operation was received. If it was, the server ignores the second request. This behavior prevents clients from mistakenly creating duplicate commitments. The request ID must be a valid UUID, with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
     "RouteTable": {
       "id": "RouteTable",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The name of the route table. Route Table names must be unique. They use the following form: `projects\/{project_number}\/locations\/global\/hubs\/{hub}\/routeTables\/{route_table_id}",
+          "description": "Immutable. The name of the route table. Route Table names must be unique. They use the following form: `projects\/{project_number}\/locations\/global\/hubs\/{hub}\/routeTables\/{route_table_id}`",
           "type": "string"
         },
         "createTime": {
@@ -591,13 +838,16 @@
           "type": "string",
           "enumDescriptions": [
             "No state information available",
-            "The resource's create operation is in progress",
+            "The resource's create operation is in progress.",
             "The resource is active",
-            "The resource's Delete operation is in progress",
-            "The resource's Activate operation is in progress",
-            "The resource's Deactivate operation is in progress",
-            "The resource's Update operation is in progress",
-            "The resource is inactive"
+            "The resource's delete operation is in progress.",
+            "The resource's activate operation is in progress.",
+            "The resource's deactivate operation is in progress.",
+            "The resource's accept operation is in progress.",
+            "The resource's reject operation is in progress.",
+            "The resource's update operation is in progress.",
+            "The resource is inactive",
+            "The hub associated with this spoke resource has been deleted. This state applies to spoke resources only."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -606,8 +856,11 @@
             "DELETING",
             "ACTIVATING",
             "DEACTIVATING",
+            "ACCEPTING",
+            "REJECTING",
             "UPDATING",
-            "INACTIVE"
+            "INACTIVE",
+            "OBSOLETE"
           ]
         }
       }
@@ -678,13 +931,16 @@
           "type": "string",
           "enumDescriptions": [
             "No state information available",
-            "The resource's create operation is in progress",
+            "The resource's create operation is in progress.",
             "The resource is active",
-            "The resource's Delete operation is in progress",
-            "The resource's Activate operation is in progress",
-            "The resource's Deactivate operation is in progress",
-            "The resource's Update operation is in progress",
-            "The resource is inactive"
+            "The resource's delete operation is in progress.",
+            "The resource's activate operation is in progress.",
+            "The resource's deactivate operation is in progress.",
+            "The resource's accept operation is in progress.",
+            "The resource's reject operation is in progress.",
+            "The resource's update operation is in progress.",
+            "The resource is inactive",
+            "The hub associated with this spoke resource has been deleted. This state applies to spoke resources only."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -693,8 +949,11 @@
             "DELETING",
             "ACTIVATING",
             "DEACTIVATING",
+            "ACCEPTING",
+            "REJECTING",
             "UPDATING",
-            "INACTIVE"
+            "INACTIVE",
+            "OBSOLETE"
           ]
         },
         "spoke": {
@@ -1200,7 +1459,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1595,7 +1854,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of results per page that should be returned.",
+                          "description": "The maximum number of results per page to return.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -1759,6 +2018,73 @@
                       ],
                       "description": "Deletes a Network Connectivity Center hub."
                     },
+                    "listSpokes": {
+                      "id": "networkconnectivity.projects.locations.global.hubs.listSpokes",
+                      "path": "v1/{+name}:listSpokes",
+                      "flatPath": "v1/projects/{projectsId}/locations/global/hubs/{hubsId}:listSpokes",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the hub.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/hubs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "spokeLocations": {
+                          "description": "A list of locations. Specify a single region (`us-central1`), `global`, or a combination of values--for example, `[global, us-central1, us-west1]`. If the spoke_locations field is populated, the list of results includes only spokes in the specified location. If the spoke_locations field is not populated, the list of results includes spokes in all locations.",
+                          "location": "query",
+                          "repeated": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of results to return per page.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "An expression that filters the list of results.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort the results by name or create_time.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "The view of the spoke to return. The view you use determines which spoke fields are included in the response.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The spoke view is unspecified. When the spoke view is unspecified, the API returns the same fields as the `BASIC` view.",
+                            "Includes `name`, `create_time`, `hub`, `unique_id`, `state`, `state_reason`, and `spoke_type`. This is the default value.",
+                            "Include all spoke fields. You can use the `FULL` view only when you set the `spoke_locations` field to `[global]`."
+                          ],
+                          "enum": [
+                            "SPOKE_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ListHubSpokesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the Network Connectivity Center spokes associated with a specified hub and location. The list includes both spokes that are attached to the hub and spokes that have been proposed but not yet accepted."
+                    },
                     "setIamPolicy": {
                       "id": "networkconnectivity.projects.locations.global.hubs.setIamPolicy",
                       "path": "v1/{+resource}:setIamPolicy",
@@ -1890,7 +2216,7 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "The maximum number of results per page that should be returned.",
+                              "description": "The maximum number of results to return per page.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -1966,7 +2292,7 @@
                                   "type": "string"
                                 },
                                 "pageSize": {
-                                  "description": "The maximum number of results per page that should be returned.",
+                                  "description": "The maximum number of results to return per page.",
                                   "location": "query",
                                   "type": "integer",
                                   "format": "int32"
@@ -2096,7 +2422,7 @@
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         }
@@ -2129,7 +2455,7 @@
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         }
@@ -2252,7 +2578,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of results per page that should be returned.",
+                      "description": "The maximum number of results to return per page.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2441,6 +2767,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Activates a Network Connectivity Center spoke. By activating a spoke, you permit connectivity between it and other spokes that are attached to the same hub."
+                },
+                "reject": {
+                  "id": "networkconnectivity.projects.locations.spokes.reject",
+                  "path": "v1/{+name}:reject",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}:reject",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the spoke to reject.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RejectSpokeRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Does one of the following: * Rejects a proposal to attach a Network Connectivity Center spoke to the hub. * Rejects and removes a previously attached spoke from the hub."
+                },
+                "accept": {
+                  "id": "networkconnectivity.projects.locations.spokes.accept",
+                  "path": "v1/{+name}:accept",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}:accept",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the spoke to accept.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/spokes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AcceptSpokeRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Accepts a proposal to attach a Network Connectivity Center spoke to the hub."
                 },
                 "delete": {
                   "id": "networkconnectivity.projects.locations.spokes.delete",

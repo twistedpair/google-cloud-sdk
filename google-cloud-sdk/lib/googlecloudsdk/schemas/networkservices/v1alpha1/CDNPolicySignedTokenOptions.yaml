@@ -28,7 +28,7 @@ properties:
   allowedSignatureAlgorithms:
     description: |-
       The allowed signature algorithms to use. Defaults to using only ED25519.
-      You may specify up to 3 signature algorithms to use.
+      You can specify up to 3 signature algorithms to use.
     type: array
     items:
       type: string

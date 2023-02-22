@@ -273,13 +273,13 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                                   cloud_api.DownloadStrategy.RESUMABLE,
                                   start_byte, end_byte, write_mode, digesters)
 
-  def _get_output(self, digesters, api_download_result):
+  def _get_output(self, digesters, server_encoding):
     """Generates task.Output from download execution results.
 
     Args:
       digesters (dict): Contains hash objects for download checksums.
-      api_download_result (cloud_api.DownloadApiClientReturnValue|None): Generic
-        information from API client about the download results.
+      server_encoding (str|None): Generic information from API client about the
+        download results.
 
     Returns:
       task.Output: Data the parent download or finalize download class would
@@ -303,12 +303,16 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                   'length': self._length,
               }))
 
-    if (api_download_result and self._user_request_args and
-        self._user_request_args.system_posix_data):
+    if (
+        server_encoding
+        and self._user_request_args
+        and self._user_request_args.system_posix_data
+    ):
       messages.append(
           task.Message(
-              topic=task.Topic.API_DOWNLOAD_RESULT,
-              payload=api_download_result))
+              topic=task.Topic.API_DOWNLOAD_RESULT, payload=server_encoding
+          )
+      )
 
     return task.Output(additional_task_iterators=None, messages=messages)
 
@@ -377,8 +381,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     if self._source_resource.size and self._component_number is not None:
       try:
-        api_download_result = self._perform_component_download(
-            request_config, progress_callback, digesters)
+        server_encoding = self._perform_component_download(
+            request_config, progress_callback, digesters
+        )
       # pylint:disable=broad-except
       except Exception as e:
         # pylint:enable=broad-except
@@ -387,9 +392,11 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             messages=[task.Message(topic=task.Topic.ERROR, payload=e)])
 
     elif self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
-      api_download_result = self._perform_resumable_download(
-          request_config, progress_callback, digesters)
+      server_encoding = self._perform_resumable_download(
+          request_config, progress_callback, digesters
+      )
     else:
-      api_download_result = self._perform_retriable_download(
-          request_config, progress_callback, digesters)
-    return self._get_output(digesters, api_download_result)
+      server_encoding = self._perform_retriable_download(
+          request_config, progress_callback, digesters
+      )
+    return self._get_output(digesters, server_encoding)

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import collections
 import enum
 
 from googlecloudsdk.command_lib.storage import storage_url
@@ -42,22 +41,6 @@ class Capability(enum.Enum):
   # This value is used by daisy chain operation to determine if the upload
   # stream can be treated as seekable.
   DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM = 'DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM'
-
-
-# API-specific data made generic to pass back up to the task-level.
-#
-# Attributes:
-#   posix_attributes (posix_util.PosixAttributes|None): POSIX metadata that
-#     only API clients can extract from cloud resources. Needed so download
-#     tasks can set POSIX metadata on result files.
-#   server_reported_encoding (str|None): Useful for determining if an object's
-#     content-encoding changed in-flight (see if this value is different from
-#     the cloud resource's content-encoding). Currently relevant for only
-#     GCS gzip in-flight situations.
-DownloadApiClientReturnValue = collections.namedtuple(
-    'DownloadApiClientReturnValue',
-    ['posix_attributes', 'server_reported_encoding'],
-)
 
 
 class DownloadStrategy(enum.Enum):
@@ -457,14 +440,14 @@ class CloudApi(object):
     """Gets object data.
 
     Args:
-      cloud_resource (resource_reference.ObjectResource): Contains
-        metadata and information about object being downloaded.
+      cloud_resource (resource_reference.ObjectResource): Contains metadata and
+        information about object being downloaded.
       download_stream (stream): Stream to send the object data to.
       request_config (RequestConfig): Contains arguments for API calls.
       digesters (dict): Dict of {string : digester}, where string is the name of
         a hash algorithm, and digester is a validation digester object that
-        update(bytes) and digest() using that algorithm. Implementation can
-        set the digester value to None to indicate supports bytes were not
+        update(bytes) and digest() using that algorithm. Implementation can set
+        the digester value to None to indicate supports bytes were not
         successfully digested on-the-fly.
       do_not_decompress (bool): If true, gzipped objects will not be
         decompressed on-the-fly if supported by the API.
@@ -480,8 +463,8 @@ class CloudApi(object):
         requests). If None, download the rest of the object.
 
     Returns:
-      DownloadApiClientReturnValue: Contains API-agnostic data useful at higher
-        levels like the task-level.
+      server_encoding (str): Useful for determining what the server actually
+        sent versus what object metadata claims.
 
     Raises:
       CloudApiError: API returned an error.

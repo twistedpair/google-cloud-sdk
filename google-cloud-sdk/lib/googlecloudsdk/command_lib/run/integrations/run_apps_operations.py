@@ -456,7 +456,6 @@ class RunAppsOperations(object):
           messages_util.IntegrationNotFound(name))
 
     typekit = typekits_util.GetTypeKitByResource(existing_resource)
-    resource_type = typekit.resource_type
 
     flags.ValidateUpdateParameters(typekit.integration_type, parameters)
 
@@ -501,7 +500,7 @@ class RunAppsOperations(object):
       self.EnsureCloudRunResources(specified_services, resources_map)
       self.CheckCloudRunServicesExistence(specified_services)
 
-    if typekit.is_ingress_service or (self._IsBackingResource(resource_type) and
+    if typekit.is_ingress_service or (typekit.is_backing_service and
                                       add_service is None and
                                       remove_service is None):
       ref_svcs = typekit.GetRefServices(name, resource_config, resources_map)
@@ -652,12 +651,6 @@ class RunAppsOperations(object):
         appconfig=application.config,
         etag=application.etag)
     tracker.CompleteStage(stages.CLEANUP_CONFIGURATION)
-
-  def _IsIngressResource(self, resource_type):
-    return resource_type == 'router'
-
-  def _IsBackingResource(self, resource_type):
-    return resource_type == 'redis'
 
   def ListIntegrationTypes(self):
     """Returns the list of integration type definitions.

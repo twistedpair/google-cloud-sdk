@@ -312,10 +312,31 @@ class ConnectionInformation(_messages.Message):
   Node.
 
   Fields:
+    endpointInfo: Output only. The endpoint information through which to
+      interact with a Blockchain Node.
     ipInfo: A IpInformation attribute.
   """
 
-  ipInfo = _messages.MessageField('IpInformation', 1)
+  endpointInfo = _messages.MessageField('EndpointInfo', 1)
+  ipInfo = _messages.MessageField('IpInformation', 2)
+
+
+class EndpointInfo(_messages.Message):
+  r"""Contains endpoint information through which to interact with a
+  Blockchain Node.
+
+  Fields:
+    beaconApiEndpoint: Output only. The assigned URL for the node Beacon API
+      endpoint.
+    jsonRpcApiEndpoint: Output only. The assigned URL for the node JSON RPC
+      API endpoint.
+    websocketsApiEndpoint: Output only. The assigned URL for the node
+      websockets API endpoint.
+  """
+
+  beaconApiEndpoint = _messages.StringField(1)
+  jsonRpcApiEndpoint = _messages.StringField(2)
+  websocketsApiEndpoint = _messages.StringField(3)
 
 
 class EthereumDetails(_messages.Message):

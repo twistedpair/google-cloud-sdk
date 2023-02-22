@@ -102,6 +102,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_SNOOZES = (
+      'projects.snoozes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/snoozes/{snoozesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_UPTIMECHECKCONFIGS = (
       'projects.uptimeCheckConfigs',
       '{+name}',
@@ -109,6 +119,27 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/uptimeCheckConfigs/'
               '{uptimeCheckConfigsId}',
+      },
+      ['name'],
+      True
+  )
+  SERVICES = (
+      'services',
+      '{+name}',
+      {
+          '':
+              '{v3Id}/{v3Id1}/services/{servicesId}',
+      },
+      ['name'],
+      True
+  )
+  SERVICES_SERVICELEVELOBJECTIVES = (
+      'services.serviceLevelObjectives',
+      '{+name}',
+      {
+          '':
+              '{v3Id}/{v3Id1}/services/{servicesId}/serviceLevelObjectives/'
+              '{serviceLevelObjectivesId}',
       },
       ['name'],
       True

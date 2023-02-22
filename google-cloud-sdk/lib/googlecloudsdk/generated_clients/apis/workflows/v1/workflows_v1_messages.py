@@ -622,9 +622,15 @@ class WorkflowsProjectsLocationsWorkflowsGetRequest(_messages.Message):
     name: Required. Name of the workflow for which information should be
       retrieved. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
+    revisionId: Optional. Optional. The revision of the workflow to retrieve.
+      If the revision_id is empty, the latest revision is retrieved. The
+      format is "000001-a4d", where the first 6 characters define the zero-
+      padded decimal revision number. They are followed by a hyphen and 3
+      hexadecimal characters. (go/wf_adr_clh_1)
   """
 
   name = _messages.StringField(1, required=True)
+  revisionId = _messages.StringField(2)
 
 
 class WorkflowsProjectsLocationsWorkflowsListRequest(_messages.Message):

@@ -260,11 +260,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       instance. This can be mutated by rollout services.
 
   Fields:
-    consumerDefinedName: consumer_defined_name is the name that is set by the
-      consumer. On the other hand Name field represents system-assigned id of
-      an instance so consumers are not necessarily aware of it.
-      consumer_defined_name is used for notification/UI purposes for consumer
-      to recognize their instances.
+    consumerDefinedName: consumer_defined_name is the name of the instance set
+      by the service consumers. Generally this is different from the `name`
+      field which reperesents the system-assigned id of the instance which the
+      service consumers do not recognize. This is a required field for tenants
+      onboarding to Maintenance Window notifications (go/slm-rollout-
+      maintenance-policies#prerequisites).
     createTime: Output only. Timestamp when the resource was created.
     instanceType: Optional. The instance_type of this instance of format: proj
       ects/{project_number}/locations/{location_id}/instanceTypes/{instance_ty

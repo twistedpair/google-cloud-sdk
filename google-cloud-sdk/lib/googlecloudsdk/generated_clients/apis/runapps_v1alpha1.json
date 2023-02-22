@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Serverless Integrations API",
-  "description": "",
+  "description": "API for managing Cloud Run Integrations.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -306,6 +306,13 @@
           "description": "A byte array encapsulating the contents of the application config. This can be of any type of supported config (Simple Yaml, multi-file in-app config, etc.)",
           "type": "string",
           "format": "byte"
+        },
+        "resourceList": {
+          "description": "The list of resources defined using the type-agnostic Resource definitions.",
+          "type": "array",
+          "items": {
+            "$ref": "Resource"
+          }
         }
       }
     },
@@ -457,6 +464,84 @@
           "description": "The redis instance memory size, in GB.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "Resource": {
+      "id": "Resource",
+      "description": "Resource defines a Stacks resource.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Resource ID describes the resource that's bound.",
+          "$ref": "ResourceID"
+        },
+        "config": {
+          "description": "Configuration is the typekit-specified set of fields that define the resource. The configuration has an associated typekit-specified JSONSchema (https:\/\/json-schema.org\/) that defines the expected shape.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "subresources": {
+          "description": "Subresources is the set of subresources within this resource. Support for this field depends on the type of the Resource and is defined by the corresponding Typekit.",
+          "type": "array",
+          "items": {
+            "$ref": "Resource"
+          }
+        },
+        "bindings": {
+          "description": "Bindings describe the resources that this resource references. For Ingress Services, this includes Components. For Components, this includes Backing Services. For Backing Services, this is empty.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        }
+      }
+    },
+    "ResourceID": {
+      "id": "ResourceID",
+      "description": "ResourceID encapsulates the definition of the identity of a resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the name of the resource. This name must be unique within the type.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type is the name of the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Binding describes the edge between the Resource it's defined in and the specified Resource.",
+      "type": "object",
+      "properties": {
+        "targetRef": {
+          "description": "TargetRef describes the target resource.",
+          "$ref": "ResourceRef"
+        },
+        "config": {
+          "description": "Configuration allows the caller to provide configurations that are either specific to the binding or clarify *how* the binding works. The configuration has an associated typekit-specified JSONSchema (https:\/\/json-schema.org\/) that defines the expected shape.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "ResourceRef": {
+      "id": "ResourceRef",
+      "description": "ResourceRef encapsulates the definition of a reference to another resource.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The ID of another resource specified in the config.",
+          "$ref": "ResourceID"
         }
       }
     },

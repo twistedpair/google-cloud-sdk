@@ -322,7 +322,7 @@ class DatamigrationV1(base_api.BaseApiClient):
           }
 
     def Apply(self, request, global_params=None):
-      r"""Apply draft tree onto a specific destination database.
+      r"""Applies draft tree onto a specific destination database.
 
       Args:
         request: (DatamigrationProjectsLocationsConversionWorkspacesApplyRequest) input message
@@ -484,7 +484,7 @@ class DatamigrationV1(base_api.BaseApiClient):
     )
 
     def DescribeDatabaseEntities(self, request, global_params=None):
-      r"""Use this method to describe the database entities tree for a specific conversion workspace and a specific tree type. The DB Entities are not a resource like conversion workspace or mapping rule, and they can not be created, updated or deleted like one. Instead they are simple data objects describing the structure of the client database.
+      r"""Describes the database entities tree for a specific conversion workspace and a specific tree type. Database entities are not resources like conversion workspaces or mapping rules, and they can't be created, updated or deleted. Instead, they are simple data objects describing the structure of the client database.
 
       Args:
         request: (DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest) input message
@@ -619,7 +619,7 @@ class DatamigrationV1(base_api.BaseApiClient):
     )
 
     def Rollback(self, request, global_params=None):
-      r"""Rollbacks a conversion workspace to the last committed spanshot.
+      r"""Rolls back a conversion workspace to the last committed snapshot.
 
       Args:
         request: (DatamigrationProjectsLocationsConversionWorkspacesRollbackRequest) input message
@@ -646,7 +646,7 @@ class DatamigrationV1(base_api.BaseApiClient):
     )
 
     def SearchBackgroundJobs(self, request, global_params=None):
-      r"""Use this method to search/list the background jobs for a specific conversion workspace. The background jobs are not a resource like conversion workspace or mapping rule, and they can not be created, updated or deleted like one. Instead they are a way to expose the data plane jobs log.
+      r"""Searches/lists the background jobs for a specific conversion workspace. The background jobs are not resources like conversion workspaces or mapping rules, and they can't be created, updated or deleted. Instead, they are a way to expose the data plane jobs log.
 
       Args:
         request: (DatamigrationProjectsLocationsConversionWorkspacesSearchBackgroundJobsRequest) input message
@@ -1415,7 +1415,7 @@ class DatamigrationV1(base_api.BaseApiClient):
           }
 
     def FetchStaticIps(self, request, global_params=None):
-      r"""Exposes the outgoing static IP addresses used by DMS for source for static-IP connectivity.
+      r"""Fetches a set of static IP addresses that need to be allowlisted by the customer when using the static-IP connectivity method.
 
       Args:
         request: (DatamigrationProjectsLocationsFetchStaticIpsRequest) input message

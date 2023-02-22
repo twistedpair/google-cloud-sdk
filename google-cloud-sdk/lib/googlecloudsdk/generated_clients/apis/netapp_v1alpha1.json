@@ -603,6 +603,25 @@
         "restoreParameters": {
           "description": "Optional. Specifies the source of the volume to be created from.",
           "$ref": "RestoreParameters"
+        },
+        "kmsConfig": {
+          "description": "Optional. Specifies the KMS config to be used for volume encryption.",
+          "type": "string"
+        },
+        "encryptionType": {
+          "description": "Output only. Specified the current volume encryption key source.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The source of encryption key is not specified.",
+            "Google managed encryption key.",
+            "Customer managed encryption key, which is stored in KMS."
+          ],
+          "enum": [
+            "ENCRYPTION_TYPE_UNSPECIFIED",
+            "SERVICE_MANAGED",
+            "CLOUD_KMS"
+          ]
         }
       }
     },
@@ -626,7 +645,7 @@
       "type": "object",
       "properties": {
         "allowedClients": {
-          "description": "List of allowed clients IP addresses",
+          "description": "Comma separated list of allowed clients IP addresses",
           "type": "string"
         },
         "hasRootAccess": {

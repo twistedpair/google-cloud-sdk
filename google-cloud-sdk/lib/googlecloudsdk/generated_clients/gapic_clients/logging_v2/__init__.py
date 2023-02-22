@@ -38,6 +38,7 @@ from .types.logging import WriteLogEntriesPartialErrors
 from .types.logging import WriteLogEntriesRequest
 from .types.logging import WriteLogEntriesResponse
 from .types.logging_config import BigQueryOptions
+from .types.logging_config import BucketMetadata
 from .types.logging_config import CmekSettings
 from .types.logging_config import CopyLogEntriesMetadata
 from .types.logging_config import CopyLogEntriesRequest
@@ -93,6 +94,7 @@ __all__ = (
     'LoggingServiceV2AsyncClient',
     'MetricsServiceV2AsyncClient',
 'BigQueryOptions',
+'BucketMetadata',
 'CmekSettings',
 'ConfigServiceV2Client',
 'CopyLogEntriesMetadata',

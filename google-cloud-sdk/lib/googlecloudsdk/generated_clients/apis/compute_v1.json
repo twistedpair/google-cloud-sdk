@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20230208",
+  "revision": "20230215",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -4705,7 +4705,7 @@
           "type": "string"
         },
         "ipv6Address": {
-          "description": "An IPv6 internal network address for this network interface. To use a static internal IP address, it must be unused and in the same region as the instance's zone. If not specified, GCP will automatically assign an internal IPv6 address from the instance's subnetwork.",
+          "description": "An IPv6 internal network address for this network interface. To use a static internal IP address, it must be unused and in the same region as the instance's zone. If not specified, Google Cloud will automatically assign an internal IPv6 address from the instance's subnetwork.",
           "type": "string"
         },
         "internalIpv6PrefixLength": {
@@ -4824,7 +4824,7 @@
           "type": "string"
         },
         "externalIpv6": {
-          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static external IP address, it must be unused and in the same region as the instance's zone. If not specified, GCP will automatically assign an external IPv6 address from the instance's subnetwork.",
+          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static external IP address, it must be unused and in the same region as the instance's zone. If not specified, Google Cloud will automatically assign an external IPv6 address from the instance's subnetwork.",
           "type": "string"
         },
         "externalIpv6PrefixLength": {
@@ -5035,13 +5035,6 @@
         "description": {
           "description": "An optional description. Provide this property when creating the disk.",
           "type": "string"
-        },
-        "replicaZones": {
-          "description": "Required for each regional disk associated with the instance. Specify the URLs of the zones where the disk should be replicated to. You must provide exactly two replica zones, and one zone must be the same as the instance zone. You can't use this option with boot disks.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "resourcePolicies": {
           "description": "Resource policies applied to this disk for automatic snapshot creations. Specified using the full or partial URL. For instance template, specify only the resource policy name.",
@@ -15032,6 +15025,13 @@
           "description": "Indicates whether or not this load balancer can be used as a collector for packet mirroring. To prevent mirroring loops, instances behind this load balancer will not have their traffic mirrored even if a PacketMirroring rule applies to them. This can only be set to true for load balancers that have their loadBalancingScheme set to INTERNAL.",
           "type": "boolean"
         },
+        "sourceIpRanges": {
+          "description": "If not empty, this Forwarding Rule will only forward the traffic when the source IP address matches one of the IP addresses or CIDR ranges set here. Note that a Forwarding Rule can only have up to 64 source IP ranges, and this field can only be used with a regional Forwarding Rule whose scheme is EXTERNAL. Each source_ip_range entry should be either an IP address (for example, 1.2.3.4) or a CIDR range (for example, 1.2.3.0\/24).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "pscConnectionId": {
           "description": "[Output Only] The PSC connection id of the PSC Forwarding Rule.",
           "type": "string",
@@ -15055,6 +15055,10 @@
             "REJECTED",
             "STATUS_UNSPECIFIED"
           ]
+        },
+        "baseForwardingRule": {
+          "description": "[Output Only] The URL for the corresponding base Forwarding Rule. By base Forwarding Rule, we mean the Forwarding Rule that has the same IP address, protocol, and port settings with the current Forwarding Rule, but without sourceIPRanges specified. Always empty if the current Forwarding Rule does not have sourceIPRanges specified.",
+          "type": "string"
         },
         "noAutomateDnsZone": {
           "description": "This is used in PSC consumer ForwardingRule to control whether it should try to auto-generate a DNS zone or not. Non-PSC forwarding rules do not use this field.",
@@ -17469,7 +17473,7 @@
           "format": "int32"
         },
         "satisfiesPzs": {
-          "description": "[Output Only] Set to true if the resource satisfies the zone separation organization policy constraints and false otherwise. Defaults to false if the field is not present.",
+          "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
         },
         "stackType": {
@@ -17992,7 +17996,7 @@
           ]
         },
         "supportsPzs": {
-          "description": "[Output Only] Set to true for locations that support physical zone separation. Defaults to false if the field is not present.",
+          "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
         }
       }
@@ -18176,7 +18180,7 @@
           ]
         },
         "satisfiesPzs": {
-          "description": "[Output Only] Set to true if the resource satisfies the zone separation organization policy constraints and false otherwise. Defaults to false if the field is not present.",
+          "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
         }
       }
@@ -22978,7 +22982,7 @@
           "type": "string"
         },
         "nodeTypeFlexibility": {
-          "description": "The flexible properties of the desired node type. Node groups that use this node template will create nodes of a type that matches these properties. This field is mutually exclusive with the node_type property; you can only define one or the other, but not both.",
+          "description": "Do not use. Instead, use the node_type property.",
           "$ref": "NodeTemplateNodeTypeFlexibility"
         },
         "serverBinding": {
@@ -26393,7 +26397,7 @@
           "$ref": "ResourcePolicyInstanceSchedulePolicySchedule"
         },
         "timeZone": {
-          "description": "Specifies the time zone to be used in interpreting Schedule.schedule. The value of this field must be a time zone name from the tz database: http:\/\/en.wikipedia.org\/wiki\/Tz_database.",
+          "description": "Specifies the time zone to be used in interpreting Schedule.schedule. The value of this field must be a time zone name from the tz database: https:\/\/wikipedia.org\/wiki\/Tz_database.",
           "type": "string"
         },
         "startTime": {
@@ -37634,7 +37638,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified address resource. Gets a list of available addresses by making a list() request."
+          "description": "Returns the specified address resource."
         },
         "insert": {
           "id": "compute.globalAddresses.insert",
@@ -40556,7 +40560,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified image. Gets a list of available images by making a list() request."
+          "description": "Returns the specified image."
         },
         "getFromFamily": {
           "id": "compute.images.getFromFamily",
@@ -41988,7 +41992,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Instance resource. Gets a list of available instances by making a list() request."
+          "description": "Returns the specified Instance resource."
         },
         "insert": {
           "id": "compute.instances.insert",
@@ -45551,7 +45555,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request."
+          "description": "Returns all of the details about the specified managed instance group."
         },
         "insert": {
           "id": "compute.instanceGroupManagers.insert",
@@ -47557,7 +47561,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request."
+          "description": "Returns the specified autoscaler resource."
         },
         "insert": {
           "id": "compute.autoscalers.insert",
@@ -48131,7 +48135,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request."
+          "description": "Returns the specified BackendBucket resource."
         },
         "insert": {
           "id": "compute.backendBuckets.insert",
@@ -48569,7 +48573,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified BackendService resource. Gets a list of available backend services."
+          "description": "Returns the specified BackendService resource."
         },
         "insert": {
           "id": "compute.backendServices.insert",
@@ -49617,7 +49621,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified commitment resource. Gets a list of available commitments by making a list() request."
+          "description": "Returns the specified commitment resource."
         },
         "insert": {
           "id": "compute.regionCommitments.insert",
@@ -49890,7 +49894,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified disk type. Gets a list of available disk types by making a list() request."
+          "description": "Returns the specified disk type."
         }
       }
     },
@@ -50000,7 +50004,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified regional disk type. Gets a list of available disk types by making a list() request."
+          "description": "Returns the specified regional disk type."
         }
       }
     },
@@ -50094,7 +50098,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request."
+          "description": "Returns the specified Snapshot resource."
         },
         "insert": {
           "id": "compute.snapshots.insert",
@@ -50490,7 +50494,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns a specified persistent disk. Gets a list of available persistent disks by making a list() request."
+          "description": "Returns the specified persistent disk."
         },
         "insert": {
           "id": "compute.disks.insert",
@@ -53032,7 +53036,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request."
+          "description": "Returns the specified HealthCheck resource."
         },
         "insert": {
           "id": "compute.healthChecks.insert",
@@ -53299,7 +53303,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request."
+          "description": "Returns the specified HealthCheck resource."
         },
         "insert": {
           "id": "compute.regionHealthChecks.insert",
@@ -53582,7 +53586,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified HttpHealthCheck resource. Gets a list of available HTTP health checks by making a list() request."
+          "description": "Returns the specified HttpHealthCheck resource."
         },
         "insert": {
           "id": "compute.httpHealthChecks.insert",
@@ -53833,7 +53837,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified HttpsHealthCheck resource. Gets a list of available HTTPS health checks by making a list() request."
+          "description": "Returns the specified HttpsHealthCheck resource."
         },
         "insert": {
           "id": "compute.httpsHealthChecks.insert",
@@ -54084,7 +54088,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified instance template. Gets a list of available instance templates by making a list() request."
+          "description": "Returns the specified instance template."
         },
         "insert": {
           "id": "compute.instanceTemplates.insert",
@@ -54443,7 +54447,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified instance template. Gets a list of available instance templates by making a list() request."
+          "description": "Returns the specified instance template."
         },
         "insert": {
           "id": "compute.regionInstanceTemplates.insert",
@@ -55728,7 +55732,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified machine image. Gets a list of available machine images by making a list() request."
+          "description": "Returns the specified machine image."
         },
         "insert": {
           "id": "compute.machineImages.insert",
@@ -56092,7 +56096,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified machine type. Gets a list of available machine types by making a list() request."
+          "description": "Returns the specified machine type."
         }
       }
     },
@@ -56920,7 +56924,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request."
+          "description": "Returns the specified network endpoint group."
         },
         "insert": {
           "id": "compute.networkEndpointGroups.insert",
@@ -57313,7 +57317,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request."
+          "description": "Returns the specified network endpoint group."
         },
         "insert": {
           "id": "compute.globalNetworkEndpointGroups.insert",
@@ -57636,7 +57640,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request."
+          "description": "Returns the specified network endpoint group."
         },
         "insert": {
           "id": "compute.regionNetworkEndpointGroups.insert",
@@ -57816,7 +57820,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified network. Gets a list of available networks by making a list() request."
+          "description": "Returns the specified network."
         },
         "insert": {
           "id": "compute.networks.insert",
@@ -59065,7 +59069,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified node template. Gets a list of available node templates by making a list() request."
+          "description": "Returns the specified node template."
         },
         "insert": {
           "id": "compute.nodeTemplates.insert",
@@ -59464,7 +59468,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified node type. Gets a list of available node types by making a list() request."
+          "description": "Returns the specified node type."
         }
       }
     },
@@ -61310,7 +61314,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Region resource. Gets a list of available regions by making a list() request. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
+          "description": "Returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         }
       }
     },
@@ -61803,7 +61807,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Route resource. Gets a list of available routes by making a list() request."
+          "description": "Returns the specified Route resource."
         },
         "insert": {
           "id": "compute.routes.insert",
@@ -61923,7 +61927,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Router resource. Gets a list of available routers by making a list() request."
+          "description": "Returns the specified Router resource."
         },
         "insert": {
           "id": "compute.routers.insert",
@@ -62936,7 +62940,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request."
+          "description": "Returns the specified SslCertificate resource."
         },
         "insert": {
           "id": "compute.sslCertificates.insert",
@@ -63395,7 +63399,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request."
+          "description": "Returns the specified SSL policy resource."
         },
         "delete": {
           "id": "compute.sslPolicies.delete",
@@ -64123,7 +64127,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified subnetwork. Gets a list of available subnetworks list() request."
+          "description": "Returns the specified subnetwork."
         },
         "insert": {
           "id": "compute.subnetworks.insert",
@@ -64811,7 +64815,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request."
+          "description": "Returns the specified TargetHttpProxy resource."
         },
         "insert": {
           "id": "compute.targetHttpProxies.insert",
@@ -65138,7 +65142,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request."
+          "description": "Returns the specified TargetHttpProxy resource in the specified region."
         },
         "insert": {
           "id": "compute.regionTargetHttpProxies.insert",
@@ -65431,7 +65435,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request."
+          "description": "Returns the specified TargetHttpsProxy resource."
         },
         "insert": {
           "id": "compute.targetHttpsProxies.insert",
@@ -65863,7 +65867,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request."
+          "description": "Returns the specified TargetHttpsProxy resource in the specified region."
         },
         "insert": {
           "id": "compute.regionTargetHttpsProxies.insert",
@@ -66272,7 +66276,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request."
+          "description": "Returns the specified TargetInstance resource."
         },
         "insert": {
           "id": "compute.targetInstances.insert",
@@ -66531,7 +66535,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified target pool. Gets a list of available target pools by making a list() request."
+          "description": "Returns the specified target pool."
         },
         "insert": {
           "id": "compute.targetPools.insert",
@@ -67016,7 +67020,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request."
+          "description": "Returns the specified TargetSslProxy resource."
         },
         "insert": {
           "id": "compute.targetSslProxies.insert",
@@ -67451,7 +67455,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request."
+          "description": "Returns the specified TargetTcpProxy resource."
         },
         "insert": {
           "id": "compute.targetTcpProxies.insert",
@@ -67977,7 +67981,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request."
+          "description": "Returns the specified target VPN gateway."
         },
         "insert": {
           "id": "compute.targetVpnGateways.insert",
@@ -68270,7 +68274,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request."
+          "description": "Returns the specified UrlMap resource."
         },
         "insert": {
           "id": "compute.urlMaps.insert",
@@ -68616,7 +68620,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request."
+          "description": "Returns the specified UrlMap resource."
         },
         "insert": {
           "id": "compute.regionUrlMaps.insert",
@@ -69020,7 +69024,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request."
+          "description": "Returns the specified VPN gateway."
         },
         "getStatus": {
           "id": "compute.vpnGateways.getStatus",
@@ -69418,7 +69422,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request."
+          "description": "Returns the specified VpnTunnel resource."
         },
         "insert": {
           "id": "compute.vpnTunnels.insert",
@@ -69651,7 +69655,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Zone resource. Gets a list of available zones by making a list() request."
+          "description": "Returns the specified Zone resource."
         }
       }
     }

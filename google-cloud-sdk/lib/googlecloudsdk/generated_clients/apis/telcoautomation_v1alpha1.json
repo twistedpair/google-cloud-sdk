@@ -317,6 +317,25 @@
           "description": "Output only. Provides the TNA version installed on the cluster",
           "readOnly": true,
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the Orchestration Cluster",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "OrchestrationCluster is being created.",
+            "OrchestrationCluster has been created and is ready for use.",
+            "OrchestrationCluster is being deleted.",
+            "OrchestrationCluster encountered an error and is in an indeterministic state. User can still initiate a delete operation on this state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING",
+            "FAILED"
+          ]
         }
       }
     },
@@ -476,6 +495,10 @@
           "description": "name of resource",
           "type": "string"
         },
+        "orchestrationCluster": {
+          "description": "Reference to the orchestration cluster on which templates for this resources will be applied. This should be of format projects\/{project}\/locations\/{location}\/orchestrationClusters\/{orchestration_cluster}",
+          "type": "string"
+        },
         "createTime": {
           "description": "Output only. [Output only] Create time stamp",
           "readOnly": true,
@@ -494,6 +517,30 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "tnaVersion": {
+          "description": "Output only. Provides the active TNA version for this resource",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the EdgeSlm resource",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "EdgeSlm is being created.",
+            "EdgeSlm has been created and is ready for use.",
+            "EdgeSlm is being deleted.",
+            "EdgeSlm encountered an error and is in an indeterministic state. User can still initiate a delete operation on this state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING",
+            "FAILED"
+          ]
         }
       }
     },

@@ -13,6 +13,16 @@ from apitools.base.py import extra_types
 package = 'looker'
 
 
+class AdminSettings(_messages.Message):
+  r"""Looker instance Admin settings fields.
+
+  Fields:
+    allowedEmailDomains: Email domain allowlist for the instance.
+  """
+
+  allowedEmailDomains = _messages.StringField(1, repeated=True)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -140,7 +150,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -157,9 +169,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -572,13 +582,14 @@ class ImportInstanceRequest(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Looker instance. NEXT ID: 24
+  r"""A Looker instance. NEXT ID: 25
 
   Enums:
     PlatformEditionValueValuesEnum: Platform edition.
     StateValueValuesEnum: Output only. The state of the instance.
 
   Fields:
+    adminSettings: Looker Instance Admin settings.
     consumerNetwork: Network name in the consumer project. Format:
       projects/{project}/global/networks/{network} Note that the consumer
       network may be in a different GCP project than the consumer project that
@@ -625,11 +636,13 @@ class Instance(_messages.Message):
       STANDARD: Standard.
       ADVANCED: Advanced.
       ELITE: Elite.
+      LOOKER_CORE_TRIAL: Trial.
     """
     PLATFORM_EDITION_UNSPECIFIED = 0
     STANDARD = 1
     ADVANCED = 2
     ELITE = 3
+    LOOKER_CORE_TRIAL = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the instance.
@@ -655,30 +668,31 @@ class Instance(_messages.Message):
     DELETED = 7
     PURGING = 8
 
-  consumerNetwork = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  customDomain = _messages.MessageField('CustomDomain', 3)
-  deleteTime = _messages.StringField(4)
-  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 5)
-  egressPublicIp = _messages.StringField(6)
-  enablePrivateIp = _messages.BooleanField(7)
-  enablePublicIp = _messages.BooleanField(8)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
-  expireTime = _messages.StringField(10)
-  hostMetadata = _messages.MessageField('HostMetadata', 11)
-  ingressPrivateIp = _messages.StringField(12)
-  ingressPublicIp = _messages.StringField(13)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 14)
-  lookerUri = _messages.StringField(15)
-  lookerVersion = _messages.StringField(16)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
-  name = _messages.StringField(19)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
-  reservedRange = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
-  users = _messages.MessageField('Users', 24)
+  adminSettings = _messages.MessageField('AdminSettings', 1)
+  consumerNetwork = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  customDomain = _messages.MessageField('CustomDomain', 4)
+  deleteTime = _messages.StringField(5)
+  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 6)
+  egressPublicIp = _messages.StringField(7)
+  enablePrivateIp = _messages.BooleanField(8)
+  enablePublicIp = _messages.BooleanField(9)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
+  expireTime = _messages.StringField(11)
+  hostMetadata = _messages.MessageField('HostMetadata', 12)
+  ingressPrivateIp = _messages.StringField(13)
+  ingressPublicIp = _messages.StringField(14)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 15)
+  lookerUri = _messages.StringField(16)
+  lookerVersion = _messages.StringField(17)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 18)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 19)
+  name = _messages.StringField(20)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 21)
+  reservedRange = _messages.StringField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  updateTime = _messages.StringField(24)
+  users = _messages.MessageField('Users', 25)
 
 
 class InstanceBackup(_messages.Message):

@@ -1284,14 +1284,14 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messa
   r"""The request used for `CreateInstance`.
 
   Fields:
-    instance: Specifies the instance to create. The name in the instance, if
-      specified in the instance, is ignored.
-    instanceId: ID of the created instance. A valid `instance_id` must: be
-      6-50 characters long, contain only lowercase letters, digits, hyphens
-      and underscores, start with a lowercase letter, and end with a lowercase
-      letter or a digit.
-    parent: Resource name of the project containing the instance. Format:
-      `projects/[PROJECT_ID]`.
+    instance: Required. Specifies the instance to create. The name in the
+      instance, if specified in the instance, is ignored.
+    instanceId: Required. ID of the created instance. A valid `instance_id`
+      must: be 6-50 characters long, contain only lowercase letters, digits,
+      hyphens and underscores, start with a lowercase letter, and end with a
+      lowercase letter or a digit.
+    parent: Required. Resource name of the project containing the instance.
+      Format: `projects/[PROJECT_ID]`.
   """
 
   instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
@@ -1322,7 +1322,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteInstanceRequest(_messa
   r"""The request used for `DeleteInstance`.
 
   Fields:
-    name: Name of the instance to delete. Format:
+    name: Required. Name of the instance to delete. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
@@ -1583,7 +1583,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetInstanceRequest(_messages
   r"""The request used for `GetInstance`.
 
   Fields:
-    name: Name of the instance to retrieve. Format:
+    name: Required. Name of the instance to retrieve. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
@@ -1622,6 +1622,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`. Name should not be
       populated when creating an instance since it is provided in the
       `instance_id` field.
+    schedulerNotificationConfig: The instance's configuration for scheduler
+      notifications. Absence implies that this feature is not enabled for this
+      instance.
     state: Output only. State of the instance.
   """
 
@@ -1647,23 +1650,23 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   location = _messages.StringField(2)
   loggingEnabled = _messages.BooleanField(3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):
-  r"""A GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest
-  object.
+  r"""The request used for `ListInstances`.
 
   Fields:
-    parent: Resource name of the project. Format: `projects/[PROJECT_ID]`.
+    parent: Required. Resource name of the project. Format:
+      `projects/[PROJECT_ID]`.
   """
 
   parent = _messages.StringField(1)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse(_messages.Message):
-  r"""A GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse
-  object.
+  r"""The response used for `ListInstances`.
 
   Fields:
     instances: The list of instances in a given project.
@@ -1712,6 +1715,20 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_mes
   """
 
   workerPools = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 1, repeated=True)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig(_messages.Message):
+  r"""Defines configurations for an instance's scheduler notifications, where
+  a target Pub/Sub topic will be notified whenever a task (e.g. an action or
+  reservation) completes on this instance.
+
+  Fields:
+    topic: The Pub/Sub topic resource name to issue notifications to. Note
+      that the topic does not need to be owned by the same project as this
+      instance. Format: `projects//topics/`.
+  """
+
+  topic = _messages.StringField(1)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaTestNotifyInstanceRequest(_messages.Message):
@@ -2417,7 +2434,7 @@ class RemotebuildexecutionProjectsInstancesDeleteRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesDeleteRequest object.
 
   Fields:
-    name: Name of the instance to delete. Format:
+    name: Required. Name of the instance to delete. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
@@ -2428,7 +2445,7 @@ class RemotebuildexecutionProjectsInstancesGetRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesGetRequest object.
 
   Fields:
-    name: Name of the instance to retrieve. Format:
+    name: Required. Name of the instance to retrieve. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
@@ -2439,7 +2456,8 @@ class RemotebuildexecutionProjectsInstancesListRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesListRequest object.
 
   Fields:
-    parent: Resource name of the project. Format: `projects/[PROJECT_ID]`.
+    parent: Required. Resource name of the project. Format:
+      `projects/[PROJECT_ID]`.
   """
 
   parent = _messages.StringField(1, required=True)

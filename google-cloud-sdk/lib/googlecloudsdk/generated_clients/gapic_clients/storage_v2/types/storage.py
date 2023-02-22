@@ -31,11 +31,11 @@ __protobuf__ = proto.module(
         'ListBucketsResponse',
         'LockBucketRetentionPolicyRequest',
         'UpdateBucketRequest',
-        'DeleteNotificationRequest',
-        'GetNotificationRequest',
-        'CreateNotificationRequest',
-        'ListNotificationsRequest',
-        'ListNotificationsResponse',
+        'DeleteNotificationConfigRequest',
+        'GetNotificationConfigRequest',
+        'CreateNotificationConfigRequest',
+        'ListNotificationConfigsRequest',
+        'ListNotificationConfigsResponse',
         'ComposeObjectRequest',
         'DeleteObjectRequest',
         'CancelResumableWriteRequest',
@@ -69,7 +69,7 @@ __protobuf__ = proto.module(
         'ChecksummedData',
         'ObjectChecksums',
         'HmacKeyMetadata',
-        'Notification',
+        'NotificationConfig',
         'CustomerEncryption',
         'Object',
         'ObjectAccessControl',
@@ -394,13 +394,13 @@ class UpdateBucketRequest(proto.Message):
     )
 
 
-class DeleteNotificationRequest(proto.Message):
-    r"""Request message for DeleteNotification.
+class DeleteNotificationConfigRequest(proto.Message):
+    r"""Request message for DeleteNotificationConfig.
 
     Attributes:
         name (str):
             Required. The parent bucket of the
-            notification.
+            NotificationConfig.
     """
 
     name = proto.Field(
@@ -409,13 +409,14 @@ class DeleteNotificationRequest(proto.Message):
     )
 
 
-class GetNotificationRequest(proto.Message):
-    r"""Request message for GetNotification.
+class GetNotificationConfigRequest(proto.Message):
+    r"""Request message for GetNotificationConfig.
 
     Attributes:
         name (str):
-            Required. The parent bucket of the notification. Format:
-            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notification}``
+            Required. The parent bucket of the NotificationConfig.
+            Format:
+            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
     """
 
     name = proto.Field(
@@ -424,30 +425,30 @@ class GetNotificationRequest(proto.Message):
     )
 
 
-class CreateNotificationRequest(proto.Message):
-    r"""Request message for CreateNotification.
+class CreateNotificationConfigRequest(proto.Message):
+    r"""Request message for CreateNotificationConfig.
 
     Attributes:
         parent (str):
             Required. The bucket to which this
-            notification belongs.
-        notification (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Notification):
-            Required. Properties of the notification to
-            be inserted.
+            NotificationConfig belongs.
+        notification_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig):
+            Required. Properties of the
+            NotificationConfig to be inserted.
     """
 
     parent = proto.Field(
         proto.STRING,
         number=1,
     )
-    notification = proto.Field(
+    notification_config = proto.Field(
         proto.MESSAGE,
         number=2,
-        message='Notification',
+        message='NotificationConfig',
     )
 
 
-class ListNotificationsRequest(proto.Message):
+class ListNotificationConfigsRequest(proto.Message):
     r"""Request message for ListNotifications.
 
     Attributes:
@@ -455,17 +456,18 @@ class ListNotificationsRequest(proto.Message):
             Required. Name of a Google Cloud Storage
             bucket.
         page_size (int):
-            The maximum number of notifications to return. The service
-            may return fewer than this value. The default value is 100.
-            Specifying a value above 100 will result in a page_size of
-            100.
+            The maximum number of NotificationConfigs to return. The
+            service may return fewer than this value. The default value
+            is 100. Specifying a value above 100 will result in a
+            page_size of 100.
         page_token (str):
-            A page token, received from a previous ``ListNotifications``
-            call. Provide this to retrieve the subsequent page.
+            A page token, received from a previous
+            ``ListNotificationConfigs`` call. Provide this to retrieve
+            the subsequent page.
 
             When paginating, all other parameters provided to
-            ``ListNotifications`` must match the call that provided the
-            page token.
+            ``ListNotificationConfigs`` must match the call that
+            provided the page token.
     """
 
     parent = proto.Field(
@@ -482,11 +484,11 @@ class ListNotificationsRequest(proto.Message):
     )
 
 
-class ListNotificationsResponse(proto.Message):
-    r"""The result of a call to Notifications.ListNotifications
+class ListNotificationConfigsResponse(proto.Message):
+    r"""The result of a call to ListNotificationConfigs
 
     Attributes:
-        notifications (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Notification]):
+        notification_configs (Sequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig]):
             The list of items.
         next_page_token (str):
             A token, which can be sent as ``page_token`` to retrieve the
@@ -498,10 +500,10 @@ class ListNotificationsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    notifications = proto.RepeatedField(
+    notification_configs = proto.RepeatedField(
         proto.MESSAGE,
         number=1,
-        message='Notification',
+        message='NotificationConfig',
     )
     next_page_token = proto.Field(
         proto.STRING,
@@ -1303,17 +1305,17 @@ class ListObjectsRequest(proto.Message):
 
             This field is a member of `oneof`_ ``_read_mask``.
         lexicographic_start (str):
-            Filter results to objects whose names are lexicographically
-            equal to or after lexicographic_start. If lexicographic_end
-            is also set, the objects listed have names between
-            lexicographic_start (inclusive) and lexicographic_end
-            (exclusive).
+            Optional. Filter results to objects whose names are
+            lexicographically equal to or after lexicographic_start. If
+            lexicographic_end is also set, the objects listed have names
+            between lexicographic_start (inclusive) and
+            lexicographic_end (exclusive).
         lexicographic_end (str):
-            Filter results to objects whose names are lexicographically
-            before lexicographic_end. If lexicographic_start is also
-            set, the objects listed have names between
-            lexicographic_start (inclusive) and lexicographic_end
-            (exclusive).
+            Optional. Filter results to objects whose names are
+            lexicographically before lexicographic_end. If
+            lexicographic_start is also set, the objects listed have
+            names between lexicographic_start (inclusive) and
+            lexicographic_end (exclusive).
     """
 
     parent = proto.Field(
@@ -1744,7 +1746,7 @@ class StartResumableWriteRequest(proto.Message):
             The checksums of the complete object. This will be used to
             validate the uploaded object. For each upload,
             object_checksums can be provided with either
-            StartResumeableWriteRequest or the WriteObjectRequest with
+            StartResumableWriteRequest or the WriteObjectRequest with
             finish_write set to ``true``.
     """
 
@@ -3126,14 +3128,15 @@ class HmacKeyMetadata(proto.Message):
     )
 
 
-class Notification(proto.Message):
+class NotificationConfig(proto.Message):
     r"""A directive to publish Pub/Sub notifications upon changes to
     a bucket.
 
     Attributes:
         name (str):
-            Required. The resource name of this notification. Format:
-            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notification}``
+            Required. The resource name of this NotificationConfig.
+            Format:
+            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
             The ``{project}`` portion may be ``_`` for globally unique
             buckets.
         topic (str):
@@ -3141,11 +3144,11 @@ class Notification(proto.Message):
             subscription publishes. Formatted as:
             '//pubsub.googleapis.com/projects/{project-identifier}/topics/{my-topic}'
         etag (str):
-            The etag of the Notification.
+            The etag of the NotificationConfig.
             If included in the metadata of
-            GetNotificationRequest, the operation will only
-            be performed if the etag matches that of the
-            Notification.
+            GetNotificationConfigRequest, the operation will
+            only be performed if the etag matches that of
+            the NotificationConfig.
         event_types (Sequence[str]):
             If present, only send notifications about
             listed event types. If empty, sent notifications
@@ -3153,11 +3156,11 @@ class Notification(proto.Message):
         custom_attributes (Mapping[str, str]):
             A list of additional attributes to attach to
             each Pub/Sub message published for this
-            notification subscription.
+            NotificationConfig.
         object_name_prefix (str):
-            If present, only apply this notification
-            config to object names that begin with this
-            prefix.
+            If present, only apply this
+            NotificationConfig to object names that begin
+            with this prefix.
         payload_format (str):
             Required. The desired content of the Payload.
     """

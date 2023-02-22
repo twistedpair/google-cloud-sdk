@@ -6311,12 +6311,9 @@ class GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigSnapshotAnalysis(
       Explicitly Disable the snapshot analysis based monitoring.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
-      days. If both
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
-      are set when creating/updating EntityTypes/Features,
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      will be used.
+      days. If both monitoring_interval_days and the deprecated
+      `monitoring_interval` field are set when creating/updating
+      EntityTypes/Features, monitoring_interval_days will be used.
     stalenessDays: Customized export features time window for snapshot
       analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1
       day. Maximum value is 4000 days.
@@ -9408,12 +9405,9 @@ class GoogleCloudAiplatformUiFeaturestoreMonitoringConfigSnapshotAnalysis(_messa
       day.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
-      days. If both
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
-      are set when creating/updating EntityTypes/Features,
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      will be used.
+      days. If both monitoring_interval_days and the deprecated
+      `monitoring_interval` field are set when creating/updating
+      EntityTypes/Features, monitoring_interval_days will be used.
     stalenessDays: Customized export features time window for snapshot
       analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1
       day. Maximum value is 4000 days.
@@ -31095,12 +31089,9 @@ class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis(_
       day.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
-      days. If both
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
-      are set when creating/updating EntityTypes/Features,
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      will be used.
+      days. If both monitoring_interval_days and the deprecated
+      `monitoring_interval` field are set when creating/updating
+      EntityTypes/Features, monitoring_interval_days will be used.
     stalenessDays: Customized export features time window for snapshot
       analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1
       day. Maximum value is 4000 days.

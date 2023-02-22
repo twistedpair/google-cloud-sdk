@@ -135,6 +135,16 @@ class ConfigServiceV2Transport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.create_bucket_async: gapic_v1.method.wrap_method(
+                self.create_bucket_async,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.update_bucket_async: gapic_v1.method.wrap_method(
+                self.update_bucket_async,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.create_bucket: gapic_v1.method.wrap_method(
                 self.create_bucket,
                 default_timeout=None,
@@ -342,6 +352,24 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
             Union[
                 logging_config.LogBucket,
                 Awaitable[logging_config.LogBucket]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def create_bucket_async(self) -> Callable[
+            [logging_config.CreateBucketRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def update_bucket_async(self) -> Callable[
+            [logging_config.UpdateBucketRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
             ]]:
         raise NotImplementedError()
 

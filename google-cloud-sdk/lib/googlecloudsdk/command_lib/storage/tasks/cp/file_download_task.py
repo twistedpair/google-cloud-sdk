@@ -221,6 +221,10 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
 
   def execute(self, task_status_queue=None):
     """Creates appropriate download tasks."""
+    posix_util.raise_if_invalid_file_permissions(
+        self._user_request_args, self._source_resource
+    )
+
     destination_url = self._destination_resource.storage_url
     # We need to call os.remove here for two reasons:
     # 1. It saves on disk space during a transfer.
@@ -288,10 +292,10 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     ).execute(task_status_queue=task_status_queue)
 
     temporary_file_url = self._temporary_destination_resource.storage_url
-    download_result = task_util.get_first_matching_message_payload(
-        part_download_task_output.messages, task.Topic.API_DOWNLOAD_RESULT)
-    server_encoding = (
-        download_result.server_reported_encoding if download_result else None)
+    server_encoding = task_util.get_first_matching_message_payload(
+        part_download_task_output.messages, task.Topic.API_DOWNLOAD_RESULT
+    )
+
     download_util.decompress_or_rename_file(
         self._source_resource,
         temporary_file_url.object_name,

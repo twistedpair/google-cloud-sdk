@@ -35,6 +35,7 @@ from .logging import (
 )
 from .logging_config import (
     BigQueryOptions,
+    BucketMetadata,
     CmekSettings,
     CopyLogEntriesMetadata,
     CopyLogEntriesRequest,
@@ -106,6 +107,7 @@ __all__ = (
     'WriteLogEntriesRequest',
     'WriteLogEntriesResponse',
     'BigQueryOptions',
+    'BucketMetadata',
     'CmekSettings',
     'CopyLogEntriesMetadata',
     'CopyLogEntriesRequest',

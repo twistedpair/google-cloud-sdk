@@ -38,15 +38,31 @@ class Collections(enum.Enum):
       ['foldersId', 'locationsId'],
       True
   )
-  FOLDERS_LOCATIONS_REPLAYS = (
-      'folders.locations.replays',
+  FOLDERS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS = (
+      'folders.locations.orgPolicyViolationsPreviews',
+      'folders/{foldersId}/locations/{locationsId}/'
+      'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}',
+      {},
+      ['foldersId', 'locationsId', 'orgPolicyViolationsPreviewsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS_OPERATIONS = (
+      'folders.locations.orgPolicyViolationsPreviews.operations',
       '{+name}',
       {
           '':
-              'folders/{foldersId}/locations/{locationsId}/replays/'
-              '{replaysId}',
+              'folders/{foldersId}/locations/{locationsId}/'
+              'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/'
+              'operations/{operationsId}',
       },
       ['name'],
+      True
+  )
+  FOLDERS_LOCATIONS_REPLAYS = (
+      'folders.locations.replays',
+      'folders/{foldersId}/locations/{locationsId}/replays/{replaysId}',
+      {},
+      ['foldersId', 'locationsId', 'replaysId'],
       True
   )
   FOLDERS_LOCATIONS_REPLAYS_OPERATIONS = (
@@ -84,15 +100,32 @@ class Collections(enum.Enum):
       ['organizationsId', 'locationsId'],
       True
   )
-  ORGANIZATIONS_LOCATIONS_REPLAYS = (
-      'organizations.locations.replays',
+  ORGANIZATIONS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS = (
+      'organizations.locations.orgPolicyViolationsPreviews',
+      'organizations/{organizationsId}/locations/{locationsId}/'
+      'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}',
+      {},
+      ['organizationsId', 'locationsId', 'orgPolicyViolationsPreviewsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS_OPERATIONS = (
+      'organizations.locations.orgPolicyViolationsPreviews.operations',
       '{+name}',
       {
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
-              'replays/{replaysId}',
+              'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/'
+              'operations/{operationsId}',
       },
       ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_REPLAYS = (
+      'organizations.locations.replays',
+      'organizations/{organizationsId}/locations/{locationsId}/replays/'
+      '{replaysId}',
+      {},
+      ['organizationsId', 'locationsId', 'replaysId'],
       True
   )
   ORGANIZATIONS_LOCATIONS_REPLAYS_OPERATIONS = (
@@ -120,15 +153,31 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
-  PROJECTS_LOCATIONS_REPLAYS = (
-      'projects.locations.replays',
+  PROJECTS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS = (
+      'projects.locations.orgPolicyViolationsPreviews',
+      'projects/{projectsId}/locations/{locationsId}/'
+      'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}',
+      {},
+      ['projectsId', 'locationsId', 'orgPolicyViolationsPreviewsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS_OPERATIONS = (
+      'projects.locations.orgPolicyViolationsPreviews.operations',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/replays/'
-              '{replaysId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/'
+              'operations/{operationsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REPLAYS = (
+      'projects.locations.replays',
+      'projects/{projectsId}/locations/{locationsId}/replays/{replaysId}',
+      {},
+      ['projectsId', 'locationsId', 'replaysId'],
       True
   )
   PROJECTS_LOCATIONS_REPLAYS_OPERATIONS = (

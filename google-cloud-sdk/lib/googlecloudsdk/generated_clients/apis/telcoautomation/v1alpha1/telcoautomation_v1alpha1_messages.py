@@ -38,6 +38,9 @@ class EdgeSlm(_messages.Message):
   by TNA on edge are bundled as a single control plane resource :
   EdgeTNAComponent.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the EdgeSlm resource
+
   Messages:
     LabelsValue: Labels as key value pairs. The key and value should contain
       characters which are UTF-8 compliant and less than 50 characters.
@@ -47,8 +50,31 @@ class EdgeSlm(_messages.Message):
     labels: Labels as key value pairs. The key and value should contain
       characters which are UTF-8 compliant and less than 50 characters.
     name: name of resource
+    orchestrationCluster: Reference to the orchestration cluster on which
+      templates for this resources will be applied. This should be of format p
+      rojects/{project}/locations/{location}/orchestrationClusters/{orchestrat
+      ion_cluster}
+    state: Output only. State of the EdgeSlm resource
+    tnaVersion: Output only. Provides the active TNA version for this resource
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the EdgeSlm resource
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      CREATING: EdgeSlm is being created.
+      ACTIVE: EdgeSlm has been created and is ready for use.
+      DELETING: EdgeSlm is being deleted.
+      FAILED: EdgeSlm encountered an error and is in an indeterministic state.
+        User can still initiate a delete operation on this state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    FAILED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -78,7 +104,10 @@ class EdgeSlm(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  orchestrationCluster = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  tnaVersion = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Empty(_messages.Message):
@@ -435,6 +464,9 @@ class OperationMetadata(_messages.Message):
 class OrchestrationCluster(_messages.Message):
   r"""Message describing OrchestrationCluster object.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the Orchestration Cluster
+
   Messages:
     LabelsValue: Labels as key value pairs
 
@@ -443,9 +475,28 @@ class OrchestrationCluster(_messages.Message):
     labels: Labels as key value pairs
     managementConfig: Configuration of the cluster management
     name: name of resource
+    state: Output only. State of the Orchestration Cluster
     tnaVersion: Output only. Provides the TNA version installed on the cluster
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the Orchestration Cluster
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      CREATING: OrchestrationCluster is being created.
+      ACTIVE: OrchestrationCluster has been created and is ready for use.
+      DELETING: OrchestrationCluster is being deleted.
+      FAILED: OrchestrationCluster encountered an error and is in an
+        indeterministic state. User can still initiate a delete operation on
+        this state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    FAILED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -475,8 +526,9 @@ class OrchestrationCluster(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   managementConfig = _messages.MessageField('ManagementConfig', 3)
   name = _messages.StringField(4)
-  tnaVersion = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  tnaVersion = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class StandardManagementConfig(_messages.Message):

@@ -690,6 +690,17 @@ TRIGGERER_COUNT = base.Argument(
     """.format(MIN_TRIGGERER_COMPOSER_VERSION, MIN_TRIGGERER_AIRFLOW_VERSION),
 )
 
+ENABLE_HIGH_RESILIENCE = base.Argument(
+    '--enable-high-resilience',
+    default=None,
+    hidden=True,
+    const=True,
+    action='store_const',
+    help="""\
+    Enable use of a high resilience, supported in the Environments with Composer 2.X or greater.
+    """
+)
+
 ENABLE_TRIGGERER = base.Argument(
     '--enable-triggerer',
     default=None,

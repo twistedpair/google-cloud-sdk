@@ -1212,6 +1212,25 @@ class MonitoringProjectsLocationPrometheusApiV1MetadataListRequest(_messages.Mes
   name = _messages.StringField(4, required=True)
 
 
+class MonitoringProjectsLocationPrometheusApiV1QueryExemplarsRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1QueryExemplarsRequest object.
+
+  Fields:
+    location: Location of the resource information. Has to be "global" now.
+    name: The project on which to execute the request. Data associcated with
+      the project's workspace stored under the The format is:
+      projects/PROJECT_ID_OR_NUMBER. Open source API but used as a request
+      path prefix to distinguish different virtual Prometheus instances of
+      Google Prometheus Engine.
+    queryExemplarsRequest: A QueryExemplarsRequest resource to be passed as
+      the request body.
+  """
+
+  location = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
+  queryExemplarsRequest = _messages.MessageField('QueryExemplarsRequest', 3)
+
+
 class MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest(_messages.Message):
   r"""A MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest object.
 
@@ -1543,6 +1562,24 @@ class PickTimeSeriesFilter(_messages.Message):
   direction = _messages.EnumField('DirectionValueValuesEnum', 1)
   numTimeSeries = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 3)
+
+
+class QueryExemplarsRequest(_messages.Message):
+  r"""QueryExemplarsRequest holds all parameters of the Prometheus upstream
+  API for querying exemplars.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    query: A PromQL query string. Query lanauge documentation:
+      https://prometheus.io/docs/prometheus/latest/querying/basics/.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+  """
+
+  end = _messages.StringField(1)
+  query = _messages.StringField(2)
+  start = _messages.StringField(3)
 
 
 class QueryInstantRequest(_messages.Message):

@@ -97,11 +97,11 @@ class StorageRestInterceptor:
             def post_create_hmac_key(response):
                 logging.log(f"Received response: {response}")
 
-            def pre_create_notification(request, metadata):
+            def pre_create_notification_config(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_create_notification(response):
+            def post_create_notification_config(response):
                 logging.log(f"Received response: {response}")
 
             def pre_delete_bucket(request, metadata):
@@ -112,7 +112,7 @@ class StorageRestInterceptor:
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def pre_delete_notification(request, metadata):
+            def pre_delete_notification_config(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
@@ -141,11 +141,11 @@ class StorageRestInterceptor:
             def post_get_iam_policy(response):
                 logging.log(f"Received response: {response}")
 
-            def pre_get_notification(request, metadata):
+            def pre_get_notification_config(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_get_notification(response):
+            def post_get_notification_config(response):
                 logging.log(f"Received response: {response}")
 
             def pre_get_object(request, metadata):
@@ -176,11 +176,11 @@ class StorageRestInterceptor:
             def post_list_hmac_keys(response):
                 logging.log(f"Received response: {response}")
 
-            def pre_list_notifications(request, metadata):
+            def pre_list_notification_configs(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
 
-            def post_list_notifications(response):
+            def post_list_notification_configs(response):
                 logging.log(f"Received response: {response}")
 
             def pre_list_objects(request, metadata):
@@ -471,9 +471,9 @@ class StorageRestTransport(StorageTransport):
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
-    class _CreateNotification(StorageRestStub):
+    class _CreateNotificationConfig(StorageRestStub):
         def __hash__(self):
-            return hash("CreateNotification")
+            return hash("CreateNotificationConfig")
 
         __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
         }
@@ -483,11 +483,11 @@ class StorageRestTransport(StorageTransport):
             return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
-                request: storage.CreateNotificationRequest, *,
+                request: storage.CreateNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: float=None,
                 metadata: Sequence[Tuple[str, str]]=(),
-                ) -> storage.Notification:
+                ) -> storage.NotificationConfig:
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
@@ -531,9 +531,9 @@ class StorageRestTransport(StorageTransport):
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
-    class _DeleteNotification(StorageRestStub):
+    class _DeleteNotificationConfig(StorageRestStub):
         def __hash__(self):
-            return hash("DeleteNotification")
+            return hash("DeleteNotificationConfig")
 
         __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
         }
@@ -543,7 +543,7 @@ class StorageRestTransport(StorageTransport):
             return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
-                request: storage.DeleteNotificationRequest, *,
+                request: storage.DeleteNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: float=None,
                 metadata: Sequence[Tuple[str, str]]=(),
@@ -631,9 +631,9 @@ class StorageRestTransport(StorageTransport):
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
-    class _GetNotification(StorageRestStub):
+    class _GetNotificationConfig(StorageRestStub):
         def __hash__(self):
-            return hash("GetNotification")
+            return hash("GetNotificationConfig")
 
         __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
         }
@@ -643,11 +643,11 @@ class StorageRestTransport(StorageTransport):
             return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
-                request: storage.GetNotificationRequest, *,
+                request: storage.GetNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: float=None,
                 metadata: Sequence[Tuple[str, str]]=(),
-                ) -> storage.Notification:
+                ) -> storage.NotificationConfig:
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
@@ -731,9 +731,9 @@ class StorageRestTransport(StorageTransport):
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
-    class _ListNotifications(StorageRestStub):
+    class _ListNotificationConfigs(StorageRestStub):
         def __hash__(self):
-            return hash("ListNotifications")
+            return hash("ListNotificationConfigs")
 
         __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
         }
@@ -743,11 +743,11 @@ class StorageRestTransport(StorageTransport):
             return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
-                request: storage.ListNotificationsRequest, *,
+                request: storage.ListNotificationConfigsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
                 timeout: float=None,
                 metadata: Sequence[Tuple[str, str]]=(),
-                ) -> storage.ListNotificationsResponse:
+                ) -> storage.ListNotificationConfigsResponse:
             raise RuntimeError(
                 "Cannot define a method without a valid 'google.api.http' annotation.")
 
@@ -1017,12 +1017,12 @@ class StorageRestTransport(StorageTransport):
         return self._CreateHmacKey(self._session, self._host, self._interceptor) # type: ignore
 
     @property
-    def create_notification(self) -> Callable[
-            [storage.CreateNotificationRequest],
-            storage.Notification]:
+    def create_notification_config(self) -> Callable[
+            [storage.CreateNotificationConfigRequest],
+            storage.NotificationConfig]:
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
-        return self._CreateNotification(self._session, self._host, self._interceptor) # type: ignore
+        return self._CreateNotificationConfig(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def delete_bucket(self) -> Callable[
@@ -1041,12 +1041,12 @@ class StorageRestTransport(StorageTransport):
         return self._DeleteHmacKey(self._session, self._host, self._interceptor) # type: ignore
 
     @property
-    def delete_notification(self) -> Callable[
-            [storage.DeleteNotificationRequest],
+    def delete_notification_config(self) -> Callable[
+            [storage.DeleteNotificationConfigRequest],
             empty_pb2.Empty]:
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
-        return self._DeleteNotification(self._session, self._host, self._interceptor) # type: ignore
+        return self._DeleteNotificationConfig(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def delete_object(self) -> Callable[
@@ -1081,12 +1081,12 @@ class StorageRestTransport(StorageTransport):
         return self._GetIamPolicy(self._session, self._host, self._interceptor) # type: ignore
 
     @property
-    def get_notification(self) -> Callable[
-            [storage.GetNotificationRequest],
-            storage.Notification]:
+    def get_notification_config(self) -> Callable[
+            [storage.GetNotificationConfigRequest],
+            storage.NotificationConfig]:
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
-        return self._GetNotification(self._session, self._host, self._interceptor) # type: ignore
+        return self._GetNotificationConfig(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def get_object(self) -> Callable[
@@ -1121,12 +1121,12 @@ class StorageRestTransport(StorageTransport):
         return self._ListHmacKeys(self._session, self._host, self._interceptor) # type: ignore
 
     @property
-    def list_notifications(self) -> Callable[
-            [storage.ListNotificationsRequest],
-            storage.ListNotificationsResponse]:
+    def list_notification_configs(self) -> Callable[
+            [storage.ListNotificationConfigsRequest],
+            storage.ListNotificationConfigsResponse]:
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
-        return self._ListNotifications(self._session, self._host, self._interceptor) # type: ignore
+        return self._ListNotificationConfigs(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def list_objects(self) -> Callable[

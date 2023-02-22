@@ -178,15 +178,15 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Resource name of the project containing the instance. Format: `projects\/[PROJECT_ID]`.",
+          "description": "Required. Resource name of the project containing the instance. Format: `projects\/[PROJECT_ID]`.",
           "type": "string"
         },
         "instanceId": {
-          "description": "ID of the created instance. A valid `instance_id` must: be 6-50 characters long, contain only lowercase letters, digits, hyphens and underscores, start with a lowercase letter, and end with a lowercase letter or a digit.",
+          "description": "Required. ID of the created instance. A valid `instance_id` must: be 6-50 characters long, contain only lowercase letters, digits, hyphens and underscores, start with a lowercase letter, and end with a lowercase letter or a digit.",
           "type": "string"
         },
         "instance": {
-          "description": "Specifies the instance to create. The name in the instance, if specified in the instance, is ignored.",
+          "description": "Required. Specifies the instance to create. The name in the instance, if specified in the instance, is ignored.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance"
         }
       }
@@ -198,6 +198,7 @@
       "properties": {
         "name": {
           "description": "Output only. Instance resource name formatted as: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`. Name should not be populated when creating an instance since it is provided in the `instance_id` field.",
+          "readOnly": true,
           "type": "string"
         },
         "location": {
@@ -206,6 +207,7 @@
         },
         "state": {
           "description": "Output only. State of the instance.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not a valid state, but the default value of the enum.",
@@ -222,11 +224,16 @@
         },
         "loggingEnabled": {
           "description": "Output only. Whether stack driver logging is enabled for the instance.",
+          "readOnly": true,
           "type": "boolean"
         },
         "featurePolicy": {
           "description": "The policy to define whether or not RBE features can be used or how they can be used.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy"
+        },
+        "schedulerNotificationConfig": {
+          "description": "The instance's configuration for scheduler notifications. Absence implies that this feature is not enabled for this instance.",
+          "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig"
         }
       }
     },
@@ -407,8 +414,20 @@
         }
       }
     },
+    "GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig": {
+      "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig",
+      "description": "Defines configurations for an instance's scheduler notifications, where a target Pub\/Sub topic will be notified whenever a task (e.g. an action or reservation) completes on this instance.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "The Pub\/Sub topic resource name to issue notifications to. Note that the topic does not need to be owned by the same project as this instance. Format: `projects\/\/topics\/`.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse",
+      "description": "The response used for `ListInstances`.",
       "type": "object",
       "properties": {
         "instances": {
@@ -1596,7 +1615,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the instance to retrieve. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+          "description": "Required. Name of the instance to retrieve. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
           "type": "string"
         }
       }
@@ -1607,7 +1626,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the instance to delete. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+          "description": "Required. Name of the instance to delete. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
           "type": "string"
         }
       }
@@ -1638,10 +1657,11 @@
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest",
+      "description": "The request used for `ListInstances`.",
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Resource name of the project. Format: `projects\/[PROJECT_ID]`.",
+          "description": "Required. Resource name of the project. Format: `projects\/[PROJECT_ID]`.",
           "type": "string"
         }
       }
@@ -2043,7 +2063,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Resource name of the project containing the instance. Format: `projects\/[PROJECT_ID]`.",
+                  "description": "Required. Resource name of the project containing the instance. Format: `projects\/[PROJECT_ID]`.",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2071,7 +2091,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Name of the instance to retrieve. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                  "description": "Required. Name of the instance to retrieve. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2096,7 +2116,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Name of the instance to delete. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
+                  "description": "Required. Name of the instance to delete. Format: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2121,7 +2141,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Resource name of the project. Format: `projects\/[PROJECT_ID]`.",
+                  "description": "Required. Resource name of the project. Format: `projects\/[PROJECT_ID]`.",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,

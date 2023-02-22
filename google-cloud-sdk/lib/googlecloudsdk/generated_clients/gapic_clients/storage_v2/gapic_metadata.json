@@ -30,9 +30,9 @@
                 "create_hmac_key"
               ]
             },
-            "CreateNotification": {
+            "CreateNotificationConfig": {
               "methods": [
-                "create_notification"
+                "create_notification_config"
               ]
             },
             "DeleteBucket": {
@@ -45,9 +45,9 @@
                 "delete_hmac_key"
               ]
             },
-            "DeleteNotification": {
+            "DeleteNotificationConfig": {
               "methods": [
-                "delete_notification"
+                "delete_notification_config"
               ]
             },
             "DeleteObject": {
@@ -70,9 +70,9 @@
                 "get_iam_policy"
               ]
             },
-            "GetNotification": {
+            "GetNotificationConfig": {
               "methods": [
-                "get_notification"
+                "get_notification_config"
               ]
             },
             "GetObject": {
@@ -95,9 +95,9 @@
                 "list_hmac_keys"
               ]
             },
-            "ListNotifications": {
+            "ListNotificationConfigs": {
               "methods": [
-                "list_notifications"
+                "list_notification_configs"
               ]
             },
             "ListObjects": {
@@ -185,9 +185,9 @@
                 "create_hmac_key"
               ]
             },
-            "CreateNotification": {
+            "CreateNotificationConfig": {
               "methods": [
-                "create_notification"
+                "create_notification_config"
               ]
             },
             "DeleteBucket": {
@@ -200,9 +200,9 @@
                 "delete_hmac_key"
               ]
             },
-            "DeleteNotification": {
+            "DeleteNotificationConfig": {
               "methods": [
-                "delete_notification"
+                "delete_notification_config"
               ]
             },
             "DeleteObject": {
@@ -225,9 +225,9 @@
                 "get_iam_policy"
               ]
             },
-            "GetNotification": {
+            "GetNotificationConfig": {
               "methods": [
-                "get_notification"
+                "get_notification_config"
               ]
             },
             "GetObject": {
@@ -250,9 +250,9 @@
                 "list_hmac_keys"
               ]
             },
-            "ListNotifications": {
+            "ListNotificationConfigs": {
               "methods": [
-                "list_notifications"
+                "list_notification_configs"
               ]
             },
             "ListObjects": {
@@ -340,9 +340,9 @@
                 "create_hmac_key"
               ]
             },
-            "CreateNotification": {
+            "CreateNotificationConfig": {
               "methods": [
-                "create_notification"
+                "create_notification_config"
               ]
             },
             "DeleteBucket": {
@@ -355,9 +355,9 @@
                 "delete_hmac_key"
               ]
             },
-            "DeleteNotification": {
+            "DeleteNotificationConfig": {
               "methods": [
-                "delete_notification"
+                "delete_notification_config"
               ]
             },
             "DeleteObject": {
@@ -380,9 +380,9 @@
                 "get_iam_policy"
               ]
             },
-            "GetNotification": {
+            "GetNotificationConfig": {
               "methods": [
-                "get_notification"
+                "get_notification_config"
               ]
             },
             "GetObject": {
@@ -405,9 +405,9 @@
                 "list_hmac_keys"
               ]
             },
-            "ListNotifications": {
+            "ListNotificationConfigs": {
               "methods": [
-                "list_notifications"
+                "list_notification_configs"
               ]
             },
             "ListObjects": {

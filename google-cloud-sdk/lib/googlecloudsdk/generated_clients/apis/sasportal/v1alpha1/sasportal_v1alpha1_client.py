@@ -1057,6 +1057,32 @@ class SasportalV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ProvisionDeployment(self, request, global_params=None):
+      r"""Creates a new SAS deployment through the GCP workflow. Creates a SAS organization if an organization match is not found.
+
+      Args:
+        request: (SasPortalProvisionDeploymentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SasPortalProvisionDeploymentResponse) The response message.
+      """
+      config = self.GetMethodConfig('ProvisionDeployment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProvisionDeployment.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sasportal.customers.provisionDeployment',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1alpha1/customers:provisionDeployment',
+        request_field='<request>',
+        request_type_name='SasPortalProvisionDeploymentRequest',
+        response_type_name='SasPortalProvisionDeploymentResponse',
+        supports_download=False,
+    )
+
   class DeploymentsDevicesService(base_api.BaseApiService):
     """Service class for the deployments_devices resource."""
 

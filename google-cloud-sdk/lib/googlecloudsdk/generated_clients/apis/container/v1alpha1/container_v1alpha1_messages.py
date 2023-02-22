@@ -1277,7 +1277,7 @@ class ClusterUpdate(_messages.Message):
         Services
       PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE: Enables private IPv6 access to
         Google Services from GKE
-      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables priate IPv6 access to
+      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables private IPv6 access to
         and from Google Services
     """
     PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
@@ -2319,15 +2319,11 @@ class Fleet(_messages.Message):
   r"""Fleet is the fleet configuration for the cluster.
 
   Fields:
-    membership: The full resource name of the registered fleet membership of
-      the cluster, in the format
+    membership: [Output only] The full resource name of the registered fleet
+      membership of the cluster, in the format
       `//gkehub.googleapis.com/projects/*/locations/*/memberships/*`.
-    preRegistered: Whether the cluster has been previously registered. Setting
-      `pre_registered` as true will port the existing `membership` and
-      `project` back to the cluster. Specifing `pre_registered` is only
-      applicable during UPDATE but not CREATE. If `pre_registered` is set to
-      true, `membership` must be specified. Once set, `pre_registered` cannot
-      be modified.
+    preRegistered: [Output only] Whether the cluster has been registered
+      through the fleet API.
     project: The Fleet host project(project ID or project number) where this
       cluster will be registered to. This field cannot be changed after the
       cluster has been registered.
@@ -3605,7 +3601,7 @@ class NetworkConfig(_messages.Message):
         Services
       PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE: Enables private IPv6 access to
         Google Services from GKE
-      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables priate IPv6 access to
+      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables private IPv6 access to
         and from Google Services
     """
     PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
@@ -5115,7 +5111,7 @@ class SecurityPostureConfig(_messages.Message):
     Values:
       MODE_UNSPECIFIED: Default value not specified.
       DISABLED: Disables Security Posture features on the cluster.
-      BASIC: Applies basic Security Posture features on the cluster.
+      BASIC: Applies Security Posture features on the cluster.
     """
     MODE_UNSPECIFIED = 0
     DISABLED = 1

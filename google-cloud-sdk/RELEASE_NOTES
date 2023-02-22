@@ -5,117 +5,54 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 418.0.0 (2023-02-14)
+## 419.0.0 (2023-02-22)
 
-### Breaking Changes
+### App Engine
 
-*   **(Cloud Dataproc)** Modified `--job-id` and `--yarn_application_id` flags to `--job-ids` and
-  `--yarn-application-ids` respectively in `gcloud dataproc clusters diagnose`
-  command. These flags can now accept a comma separated list of job ids and yarn
-  app ids instead of a single value.
-
-
-### Google Cloud CLI
-
-* Defined "quota_project" in `gcloud auth application-default set-quota-project` command documentation.
-* Launched the enterprise-certificate-proxy component. See more at `$ gcloud topic client-certificate`.
-
-### AI
-
-* Added `gcloud ai models copy` which copies a model.
-
-### AlloyDB
-
-* Added `--clear-continuous-backup-encryption-key` flag to `gcloud beta alloydb clusters update` to support clearing a custom encryption configuration for Continuous Backups.
-* Added following flags of `gcloud alloydb instances create` and
-  `gcloud alloydb instances update` to alpha, beta and GA:
-   * `--insights-config-query-string-length`
-   * `--insights-config-query-plans-per-minute`
-   * `--insights-config-record-application-tags`
-   * `--insights-config-record-client-address`
+* Updated the Java SDK to version 2.0.11 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.11>.
 
 ### Artifact Registry
 
-* Adding new command `gcloud artifacts vpcsc-config allow --project=my-proj --location=us-west1`.
-* Adding new command `gcloud artifacts vpcsc-config deny --project=my-proj --location=us-west1`.
-* Adding new command `gcloud artifacts vpcsc-config describe --project=my-proj --location=us-west1`.
-* Adding new command `gcloud artifacts repositories create my-repo --project=my-project --repository-format=maven --location=us-east1  --description="My test repo" --mode=virtual-repository --upstream-policy-file=policy.json`.
-* Adding new command `gcloud artifacts repositories create my-repo --project=my-project --repository-format=python --location=us-east1  --description="My python repo" --mode=remote-repository --remote-repo-config-desc="test python remote repo" --remote-python-repo=PYPI`.
-* Adding new command `gcloud artifacts repositories create my-repo --project=my-project --repository-format=npm --location=us-east1  --description="My npm repo" --mode=remote-repository --remote-repo-config-desc="test npm remote repo" --remote-npm-repo=NPMJS`.
-* Adding new command `gcloud artifacts repositories create my-repo --project=my-project --repository-format=maven --location=us-east1  --description="My test repo" --mode=remote-repository --remote-repo-config-desc="test maven remote repo" --remote-mvn-repo=MAVEN-CENTRAL`.
-* Adding new command `gcloud artifacts repositories create my-repo --project=my-project --repository-format=docker --location=us-east1 --description="no CRM permission" --mode=remote-repository --remote-repo-config-desc="test docker remote repo" --remote-docker-repo=DOCKER-HUB`.
-
-### BigQuery
-
-* Added SPARK reservation assignment.
-* Added main class option for Spark procedures.
-* Added support for bi-engine reservation paths.
-
-### Cloud DNS
-
-* Fixed issue with `gcloud dns response-policies` being unable to update `gkeclusters` flag in GA.
-* Updated `gcloud dns record-sets create` and `gcloud dns record-sets update`
-  to allow referencing forwarding rules by their full resource path.
+*  Fix issue where `artifacts repositories create` failed unconditionally.
 
 ### Cloud Datastream
 
-* Modified Create/Update Stream flags that use a JSON/YAML file to use camelCase field naming instead of snake_case, to match the REST API.
-Old snake_case configuration files will still be supported.
+* Added new `--full-hierarchy` and `--hierarchy-depth` flags for connection-profiles discover.
+* Deprecated `--recursive` and `--recursive-depth` flags for connection-profiles-discover.
 
-### Cloud Filestore
+### Cloud Functions
 
-*   Added `--location` flag to `gcloud filestore instances snapshots create`, which
-    accepts either a zone or region and allows clients to create Enterprise and HighScale snapshots.
-*   Added `--location` flag to `gcloud filestore instances snapshots delete`, which
-    accepts either a zone or region and allows clients to delete Enterprise and HighScale snapshots.
-*   Added `--location` flag to `gcloud filestore instances snapshots list`, which
-    accepts either a zone or region and allows clients to list Enterprise and HighScale snapshots.
-*   Added `--location` flag to `gcloud filestore instances snapshots update`, which
-    accepts either a zone or region and allows clients to update Enterprise and HighScale snapshots.
-*   Added `--location` flag to `gcloud filestore instances snapshots describe`, which
-    accepts either a zone or region and allows clients to describe Enterprise and HighScale snapshots.
-
-### Cloud Firestore
-
-* Added `--api-scope` and `--query-scope` support for Firestore Index Create.
-
-### Cloud Key Management Service
-
-* Set `--location` and `--keyring` as required flags for commands
-  `set-primary-version`, `set-rotation-schedule`, `get-rotation-schedule`,
-  `set-iam-policy`, `get-iam-policy`.
+* Added support for Docker package format
+`{location}-docker.pkg.dev/{project}/{repository}` to `--docker-repository` flag
+of `gcloud functions deploy`.
+* Fixed issue where `gcloud functions deploy` fails if the user doesn't have
+  the permission `serviceusage.services.get`.
 
 ### Cloud Logging
 
-* Allow for protocols `TCP`, `UDP` and `UNSPECIFIED` in `gcloud compute backend-services create` and `gcloud compute backend-services update`.
-* Added `--logging-optional` and `--logging-optional-fields` flags of `gcloud compute backend-services create` and `gcloud compute backend-services update` in beta to specify the optional fields to be added to the reported logs.
+* Promote `--logging-optional` and `--logging-optional-fields` flags of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
 
 ### Cloud Run
 
-* Fixed an issue where `gcloud run` delete commands report error sometimes even
-though the deletion succeeded.
+* Promoted `gcloud beta run jobs executions logs read` to beta, which reads logs from a selected resource.
+* Promoted `gcloud beta run jobs executions logs tail` to beta, which tail logs from a selected resource.
 
 ### Cloud Storage
 
-* Updated gsutil component to 5.20.
-* All `gcloud storage` commands that accept JSON files now also support YAML.
+* `gcloud storage cp` will now silently ignore the Content-MD5 header for parallel composite uploads.
+* `gcloud storage hash` has been promoted to GA.
 
-### Compute Engine
+### Firebase Test Lab
 
-* Promoted `--resource-policies` flag for `glcloud compute reservations create`to to GA.
+* Promoted `--client-details` flag of `gcloud firebase test [android|ios] run`
+  to GA. This flag can be used to provide additional details to attach to the
+  test matrix, including a `matrixLabel` to help you identify and locate your
+  test in the Firebase console.
 
-### Distributed Cloud Edge
+### Recaptcha
 
-*  Introduced the GDCE version for cluster, machine, and node-pool as output during list and describe operations.
-* Added `gcloud edge-cloud networking` which allows users to configure the
-  networking configurations on the ToRs to support customer workloads which are
-  running in Google Distributed Cloud Edge Clusters.
-
-### Stackdriver Debugger
-
-*   Deprecated `gcloud deploy`.  Cloud Debugger is deprecated and will be shut
-    down May 31, 2023.  For more information, see
-    <https://cloud.google.com/debugger/docs/deprecations>.
+* Support creating Fastly enabled site keys using `recaptcha keys create --waf-service=fastly`.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -214,8 +151,6 @@ though the deletion succeeded.
 ### Cloud Storage
 
 * Updated gsutil component to 5.20.
-* Show formatted resources for `describe` and `list` commands. The new format standardizes field keys across API providers. Use `--raw` flag to get the old API-specific format.
-* `gcloud storage buckets set-iam-policy` now sets policy version properly.
 * All `gcloud storage` commands that accept JSON files now also support YAML.
 
 ### Compute Engine

@@ -34,6 +34,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
+      'folders.eventThreatDetectionSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/eventThreatDetectionSettings/'
+              'customModules/{customModulesId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_EVENTTHREATDETECTIONSETTINGS_EFFECTIVECUSTOMMODULES = (
+      'folders.eventThreatDetectionSettings.effectiveCustomModules',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/eventThreatDetectionSettings/'
+              'effectiveCustomModules/{effectiveCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_MUTECONFIGS = (
       'folders.muteConfigs',
       '{+name}',
@@ -105,6 +127,28 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/bigQueryExports/'
               '{bigQueryExportId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
+      'organizations.eventThreatDetectionSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/eventThreatDetectionSettings/'
+              'customModules/{customModulesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_EVENTTHREATDETECTIONSETTINGS_EFFECTIVECUSTOMMODULES = (
+      'organizations.eventThreatDetectionSettings.effectiveCustomModules',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/eventThreatDetectionSettings/'
+              'effectiveCustomModules/{effectiveCustomModulesId}',
       },
       ['name'],
       True
@@ -195,6 +239,28 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
+      'projects.eventThreatDetectionSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/eventThreatDetectionSettings/'
+              'customModules/{customModulesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_EVENTTHREATDETECTIONSETTINGS_EFFECTIVECUSTOMMODULES = (
+      'projects.eventThreatDetectionSettings.effectiveCustomModules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/eventThreatDetectionSettings/'
+              'effectiveCustomModules/{effectiveCustomModulesId}',
       },
       ['name'],
       True

@@ -27,50 +27,50 @@ properties:
       type: string
   fullPathMatch:
     description: |-
-      For satisfying the `MatchRule` condition, the path of the request must
-      exactly match the value specified in `full_path_match` after removing any
-      query parameters and anchor that may be part of the original URL.
+      To satisfy the `MatchRule` condition, the path of the request must exactly
+      match the value specified in `full_path_match` after removing any query
+      parameters and anchors that might be part of the original URL.
       `full_path_match` must begin with a `/`. The value must be between 1 and
       1024 characters, (inclusive). One of prefix_match, `full_path_match`, or
       path_template_match must be specified.
     type: string
   headerMatches:
     description: |-
-      Specifies a list of HeaderMatch criteria, all of which must match
-      corresponding headers in the request. You may specify up to 3 headers to
-      match on.
+      A list of HeaderMatch criteria, all of which must match corresponding
+      headers in the request. You can specify up to three headers to match on.
     type: array
     items:
       $ref: HeaderMatch.yaml
   ignoreCase:
     description: |-
-      Specifies that prefix_match and full_path_match matches are case
-      sensitive. The default value is `false`.
+      Specifies that prefix_match and full_path_match matches are not case
+      sensitive. The default value is `false`, which means that matches are
+      case sensitive.
     type: boolean
   pathTemplateMatch:
     description: |-
-      For satisfying the `MatchRule` condition, the path of the request must
+      To satisfy the `MatchRule` condition, the path of the request must
       match the wildcard pattern specified in `path_template_match` after
-      removing any query parameters and anchor that may be part of the
+      removing any query parameters and anchors that might be part of the
       original URL. `path_template_match` must be between 1 and 255
       characters (inclusive). The pattern specified by `path_template_match`
-      may have at most 5 wildcard operators and at most 5 variable captures
-      in total. One of prefix_match, full_path_match, or
-      `path_template_match` must be specified.
+      can have at most five wildcard operators and five variable captures.
+      One of prefix_match, full_path_match, or `path_template_match` must be
+      specified.
     type: string
   prefixMatch:
     description: |-
-      For satisfying the `MatchRule` condition, the request's path must
-      begin with the specified `prefix_match`. `prefix_match` must begin
-      with a `/`. The value must be between 1 and 1024 characters
-      (inclusive). One of `prefix_match`, full_path_match, or
-      path_template_match must be specified.
+      To satisfy the `MatchRule` condition, the request's path must begin
+      with the specified `prefix_match`. `prefix_match` must begin with a
+      `/`. The value must be between 1 and 1024 characters (inclusive). One
+      of `prefix_match`, full_path_match, or path_template_match must be
+      specified.
     type: string
   queryParameterMatches:
     description: |-
-      Specifies a list of QueryParameterMatcher criteria, all of which must
-      match corresponding query parameters in the request. You may specify
-      up to 5 query parameters to match on.
+      A list of QueryParameterMatcher criteria, all of which must match
+      corresponding query parameters in the request. You can specify up to
+      five query parameters to match on.
     type: array
     items:
       $ref: QueryParameterMatcher.yaml

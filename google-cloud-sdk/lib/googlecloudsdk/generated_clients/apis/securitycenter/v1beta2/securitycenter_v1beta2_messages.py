@@ -52,12 +52,15 @@ class Access(_messages.Message):
       ys/{key}"
     serviceName: This is the API service that the service account made a call
       to, e.g. "iam.googleapis.com"
-    userAgentFamily: What kind of user agent is associated, e.g. operating
-      system shells, embedded or stand-alone applications, etc.
-    userName: A string representing a username. This is likely not an IAM
-      principal. For instance, this may be the system user name if the finding
-      is VM-related, or this may be some type of application login user name,
-      depending on the type of finding.
+    userAgentFamily: What kind of user agent is associated, for example
+      operating system shells, embedded or stand-alone applications, etc.
+    userName: A string that represents the username of a user, user account,
+      or other entity involved in the access event. What the entity is and
+      what its role in the access event is depends on the finding that this
+      field appears in. The entity is likely not an IAM principal, but could
+      be a user that is logged into an operating system, if the finding is VM-
+      related, or a user that is logged into some type of application that is
+      involved in the access event.
   """
 
   callerIp = _messages.StringField(1)

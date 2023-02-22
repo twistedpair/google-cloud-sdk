@@ -45,13 +45,14 @@ class PrivateCloudsClient(util.VmwareClientBase):
       nodes_configs,
       network_cidr,
       vmware_engine_network_id,
-      description=None,
-  ):
+      private_cloud_type,
+      description=None):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
     private_cloud = self.messages.PrivateCloud(description=description)
-
+    private_cloud.type = self.messages.PrivateCloud.TypeValueValuesEnum(
+        private_cloud_type)
     ven = self.networks_client.GetByID(project, vmware_engine_network_id)
     network_config = self.messages.NetworkConfig(
         managementCidr=network_cidr, vmwareEngineNetwork=ven.name)

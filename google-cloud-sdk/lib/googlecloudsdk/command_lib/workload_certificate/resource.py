@@ -39,7 +39,7 @@ def Project(number=False):
 
 
 def LocationResourceName(location='global', use_number=False):
-  # See command_lib/workload_certificate/resources.yaml
+  # Location resource name.
   return resources.REGISTRY.Create(
       'workloadcertificate.projects.locations',
       projectsId=Project(use_number),
@@ -48,7 +48,7 @@ def LocationResourceName(location='global', use_number=False):
 
 
 def WorkloadCertificateFeatureResourceName(project):
-  # See command_lib/workload_certificate/resources.yaml
+  # Workload Certificate Feature resource name.
   return resources.REGISTRY.Create(
       'workloadcertificate.projects.locations.workloadCertificateFeature',
       projectsId=project,
@@ -59,3 +59,13 @@ def OperationName(name):
   return resources.REGISTRY.ParseRelativeName(
       name, 'workloadcertificate.projects.locations.operations'
   )
+
+
+def RegistrationResourceName(project, location, workload_registrations_id):
+  # Workload Registration resource name.
+  return resources.REGISTRY.Create(
+      'workloadcertificate.projects.locations.workloadRegistrations',
+      projectsId=project,
+      locationsId=location,
+      workloadRegistrationsId=workload_registrations_id,
+  ).RelativeName()

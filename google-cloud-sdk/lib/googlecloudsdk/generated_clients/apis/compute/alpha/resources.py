@@ -209,6 +209,13 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instanceGroup'],
       True
   )
+  INSTANCESETTINGS = (
+      'instanceSettings',
+      'projects/{project}/zones/{zone}/instanceSettings',
+      {},
+      ['project', 'zone'],
+      True
+  )
   INSTANCETEMPLATES = (
       'instanceTemplates',
       'projects/{project}/global/instanceTemplates/{instanceTemplate}',

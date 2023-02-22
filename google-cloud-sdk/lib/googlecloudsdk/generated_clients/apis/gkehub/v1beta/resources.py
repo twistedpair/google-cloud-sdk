@@ -74,6 +74,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NAMESPACES = (
+      'projects.locations.namespaces',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/namespaces/'
+              '{namespacesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NAMESPACES_RBACROLEBINDINGS = (
+      'projects.locations.namespaces.rbacrolebindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/namespaces/'
+              '{namespacesId}/rbacrolebindings/{rbacrolebindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

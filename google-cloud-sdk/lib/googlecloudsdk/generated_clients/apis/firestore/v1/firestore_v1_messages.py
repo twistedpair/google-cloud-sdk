@@ -278,9 +278,12 @@ class CompositeFilter(_messages.Message):
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
       AND: Documents are required to satisfy all of the combined filters.
+      OR: Documents are required to satisfy at least one of the combined
+        filters.
     """
     OPERATOR_UNSPECIFIED = 0
     AND = 1
+    OR = 2
 
   filters = _messages.MessageField('Filter', 1, repeated=True)
   op = _messages.EnumField('OpValueValuesEnum', 2)
@@ -825,11 +828,8 @@ class FirestoreProjectsDatabasesCreateRequest(_messages.Message):
 
   Fields:
     databaseId: Required. The ID to use for the database, which will become
-      the final component of the database's resource name. This value should
-      be 4-63 characters. Valid characters are /a-z-/ with first character a
-      letter and the last a letter or a number. Must not be UUID-like
-      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
-      also valid.
+      the final component of the database's resource name. The value must be
+      set to "(default)".
     googleFirestoreAdminV1Database: A GoogleFirestoreAdminV1Database resource
       to be passed as the request body.
     parent: Required. A parent name of the form `projects/{project_id}`

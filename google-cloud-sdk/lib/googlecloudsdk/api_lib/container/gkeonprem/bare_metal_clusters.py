@@ -95,7 +95,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return None
 
-  def _address_pools(self, args):
+  def _address_pools_from_file(self, args):
     """Constructs proto message field address_pools."""
     if not args.metal_lb_address_pools_from_file:
       return []
@@ -137,6 +137,21 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return self._messages.BareMetalLoadBalancerAddressPool(**kwargs)
 
+  def _address_pools_from_flag(self, args):
+    if not args.metal_lb_address_pools:
+      return []
+
+    address_pools = []
+    for address_pool in args.metal_lb_address_pools:
+      address_pools.append(self._messages.BareMetalLoadBalancerAddressPool(
+          addresses=address_pool.get('addresses', []),
+          avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
+          manualAssign=address_pool.get('manual-assign', None),
+          pool=address_pool.get('pool', None),
+      ))
+
+    return address_pools
+
   def _metal_lb_node_config(self, metal_lb_node_config):
     """Constructs proto message BareMetalNodeConfig."""
     node_ip = metal_lb_node_config.get('nodeIP', '')
@@ -175,7 +190,7 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return metal_lb_node_configs_messages
 
-  def _parse_node_labels(self, node_labels):
+  def parse_node_labels(self, node_labels):
     """Validates and parses a node label object.
 
     Args:
@@ -211,11 +226,11 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return labels_value_message
 
-  def _node_config(self, node_config_args):
+  def node_config(self, node_config_args):
     """Constructs proto message BareMetalNodeConfig."""
     kwargs = {
         'nodeIp': node_config_args.get('node-ip', ''),
-        'labels': self._parse_node_labels(node_config_args),
+        'labels': self.parse_node_labels(node_config_args),
     }
 
     if any(kwargs.values()):
@@ -230,7 +245,7 @@ class _BareMetalClusterClient(client.ClientBase):
     ) if args.metal_lb_load_balancer_node_configs else []
 
     return [
-        self._node_config(node_config)
+        self.node_config(node_config)
         for node_config in node_config_flag_value
     ]
 
@@ -302,8 +317,12 @@ class _BareMetalClusterClient(client.ClientBase):
 
   def _metal_lb_config(self, args):
     """Constructs proto message BareMetalMetalLbConfig."""
+    if 'metal_lb_address_pools_from_file' in args.GetSpecifiedArgsDict():
+      address_pools = self._address_pools_from_file(args)
+    else:
+      address_pools = self._address_pools_from_flag(args)
     kwargs = {
-        'addressPools': self._address_pools(args),
+        'addressPools': address_pools,
         'nodePoolConfig': self._metal_lb_node_pool_config(args),
     }
 
@@ -447,7 +466,7 @@ class _BareMetalClusterClient(client.ClientBase):
                                      None)
     if node_config_flag_value:
       for node_config in node_config_flag_value:
-        node_configs.append(self._node_config(node_config))
+        node_configs.append(self.node_config(node_config))
 
     return node_configs
 

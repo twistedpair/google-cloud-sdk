@@ -1330,6 +1330,25 @@
         }
       }
     },
+    "QueryExemplarsRequest": {
+      "id": "QueryExemplarsRequest",
+      "description": "QueryExemplarsRequest holds all parameters of the Prometheus upstream API for querying exemplars.",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "A PromQL query string. Query lanauge documentation: https:\/\/prometheus.io\/docs\/prometheus\/latest\/querying\/basics\/.",
+          "type": "string"
+        },
+        "start": {
+          "description": "The start time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+          "type": "string"
+        },
+        "end": {
+          "description": "The end time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+          "type": "string"
+        }
+      }
+    },
     "Type": {
       "id": "Type",
       "description": "A protocol buffer message type.",
@@ -2082,6 +2101,92 @@
                             "https://www.googleapis.com/auth/monitoring.read"
                           ],
                           "description": "Lists metadata for metrics."
+                        },
+                        "query_exemplars": {
+                          "id": "monitoring.projects.location.prometheus.api.v1.query_exemplars",
+                          "path": "v1/{+name}/location/{location}/prometheus/api/v1/query_exemplars",
+                          "flatPath": "v1/projects/{projectsId}/location/{location}/prometheus/api/v1/query_exemplars",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The project on which to execute the request. Data associcated with the project's workspace stored under the The format is: projects\/PROJECT_ID_OR_NUMBER. Open source API but used as a request path prefix to distinguish different virtual Prometheus instances of Google Prometheus Engine.",
+                              "pattern": "^projects\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "location": {
+                              "description": "Location of the resource information. Has to be \"global\" now.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "query": {
+                              "description": "A PromQL query string. Query lanauge documentation: https:\/\/prometheus.io\/docs\/prometheus\/latest\/querying\/basics\/.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "start": {
+                              "description": "The start time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "end": {
+                              "description": "The end time to evaluate the query for. Either floating point UNIX seconds or RFC3339 formatted timestamp.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name",
+                            "location"
+                          ],
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/monitoring",
+                            "https://www.googleapis.com/auth/monitoring.read"
+                          ],
+                          "description": "Lists exemplars relevant to a given PromQL query,"
+                        },
+                        "query_exemplars": {
+                          "id": "monitoring.projects.location.prometheus.api.v1.query_exemplars",
+                          "path": "v1/{+name}/location/{location}/prometheus/api/v1/query_exemplars",
+                          "flatPath": "v1/projects/{projectsId}/location/{location}/prometheus/api/v1/query_exemplars",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The project on which to execute the request. Data associcated with the project's workspace stored under the The format is: projects\/PROJECT_ID_OR_NUMBER. Open source API but used as a request path prefix to distinguish different virtual Prometheus instances of Google Prometheus Engine.",
+                              "pattern": "^projects\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "location": {
+                              "description": "Location of the resource information. Has to be \"global\" now.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name",
+                            "location"
+                          ],
+                          "request": {
+                            "$ref": "QueryExemplarsRequest"
+                          },
+                          "response": {
+                            "$ref": "HttpBody"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/monitoring",
+                            "https://www.googleapis.com/auth/monitoring.read"
+                          ],
+                          "description": "Lists exemplars relevant to a given PromQL query,"
                         }
                       }
                       ,

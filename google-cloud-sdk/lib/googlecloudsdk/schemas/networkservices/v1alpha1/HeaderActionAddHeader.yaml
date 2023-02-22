@@ -35,5 +35,6 @@ properties:
     description: The value of the header to add.
     type: string
   replace:
-    description: Whether to replace all existing headers with the same name.
+    description: |-
+      Specifies whether to replace all existing headers with the same name.
     type: boolean

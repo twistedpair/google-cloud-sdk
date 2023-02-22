@@ -21,10 +21,10 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope.exceptions import InvalidArgumentException
 from googlecloudsdk.command_lib.container.gkeonprem import flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -1119,11 +1119,35 @@ New `ips` fields can be added, existing `ips` fields cannot be removed or update
   )
 
   def _ParseIPBlocks(value):
-    if ':' not in value:
-      raise InvalidValue(
-          'ips should be of format hostname-1:1.1.1.1;hostnam-2:2.2.2.2;...'
-      )
-    return value.split(':')
+    """Parse the given value in IP block format.
+
+    Args:
+      value: str, supports either IP, IP hostname, or a CIDR range.
+
+    Returns:
+      tuple: of structure (IP, hostname).
+
+    Raises:
+      InvalidArgumentException: raise parsing error.
+    """
+
+    parsing_error = """Malformed IP block [{}].
+  Expect an individual IP address, an individual IP address with a hostname, or a CIDR block.
+  Examples: ips=192.168.1.1;0.0.0.0 localhost;192.168.1.2/16
+""".format(
+        value
+    )
+
+    if ' ' not in value:
+      return (None, value)
+    else:
+      ip_block = value.split(' ')
+      if len(ip_block) != 2:
+        raise InvalidArgumentException(
+            '--static-ip-config-ip-blocks', message=parsing_error
+        )
+      else:
+        return (ip_block[0], ip_block[1])
 
   static_ip_config_ip_blocks_help_text = """
   Static IP configurations.
@@ -1537,7 +1561,38 @@ def AddAuthorization(parser):
   )
 
 
-class InvalidValue(exceptions.Error):
-  """Invalid Argument Value."""
+def AddUpdateAnnotations(parser):
+  """Adds flags to update annotations.
 
-  pass
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  annotations_mutex_group = parser.add_group(mutex=True)
+  annotations_mutex_group.add_argument(
+      '--add-annotations',
+      metavar='KEY1=VALUE1,KEY2=VALUE2',
+      help=(
+          'Add the given key-value pairs to the current annotations, or update'
+          ' its value if the key already exists.'
+      ),
+      type=arg_parsers.ArgDict(),
+  )
+  annotations_mutex_group.add_argument(
+      '--remove-annotations',
+      metavar='KEY1,KEY2',
+      help='Remove annotations of the given keys.',
+      type=arg_parsers.ArgList(),
+  )
+  annotations_mutex_group.add_argument(
+      '--clear-annotations',
+      hidden=True,
+      action='store_true',
+      help='Clear all the current annotations',
+  )
+  annotations_mutex_group.add_argument(
+      '--set-annotations',
+      hidden=True,
+      metavar='KEY1=VALUE1,KEY2=VALUE2',
+      type=arg_parsers.ArgDict(),
+      help='Replace all the current annotations',
+  )

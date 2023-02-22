@@ -307,6 +307,10 @@
           "description": "The specification for RBAC Role Binding Actuation.",
           "$ref": "RBACRoleBindingActuationFeatureSpec"
         },
+        "dataplanev2FeatureSpec": {
+          "description": "The specification for multi-cluster dataplane-v2.",
+          "$ref": "DataplaneV2FeatureSpec"
+        },
         "fleetobservabilityFeatureSpec": {
           "description": "The specification for FleetObservability feature.",
           "$ref": "FleetObservabilityFeatureSpec"
@@ -1353,6 +1357,17 @@
         }
       }
     },
+    "DataplaneV2FeatureSpec": {
+      "id": "DataplaneV2FeatureSpec",
+      "description": "Spec for multi-cluster dataplane-v2 feature. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+        "enableEncryption": {
+          "description": "Enable dataplane-v2 based encryption for the multiple clusters.",
+          "type": "boolean"
+        }
+      }
+    },
     "FleetObservabilityFeatureSpec": {
       "id": "FleetObservabilityFeatureSpec",
       "description": "Spec for FleetObservability feature. This is required since Feature proto requires a spec.",
@@ -1533,6 +1548,10 @@
         "rbacrolebindingactuationFeatureState": {
           "description": "State for RBAC Role Binding Actuation.",
           "$ref": "RBACRoleBindingActuationFeatureState"
+        },
+        "dataplanev2FeatureState": {
+          "description": "State for multi-cluster dataplane-v2 feature.",
+          "$ref": "DataplaneV2FeatureState"
         },
         "fleetobservabilityFeatureState": {
           "description": "State for the FleetObservability Feature.",
@@ -2714,6 +2733,13 @@
     "RBACRoleBindingActuationFeatureState": {
       "id": "RBACRoleBindingActuationFeatureState",
       "description": "**RBAC RoleBinding Actuation**: An empty state left as an example Hub-wide Feature state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DataplaneV2FeatureState": {
+      "id": "DataplaneV2FeatureState",
+      "description": "An empty state for multi-cluster dataplane-v2 feature. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

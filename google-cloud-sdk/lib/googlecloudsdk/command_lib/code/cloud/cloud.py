@@ -55,9 +55,8 @@ def _IsGcpBaseBuilder(bldr):
 def _BuilderFromArg(builder_arg):
   is_gcp_base_builder = _IsGcpBaseBuilder(builder_arg)
   return builders.BuildpackBuilder(
-      builder=builder_arg,
-      trust=is_gcp_base_builder,
-      devmode=False)
+      builder=builder_arg, trust=is_gcp_base_builder, devmode=False
+  )
 
 
 class Settings(dataobject.DataObject):
@@ -75,10 +74,23 @@ class Settings(dataobject.DataObject):
     cpu: the amount of CPU to be used
     memory: the amount of memory to be specified.
     ar_repo: the Artifact Registry Docker repo to deploy to.
+    local_port: the local port to forward the request for.
+    service_account: the service identity to use for the deployed service.
   """
+
   NAMES = [
-      'image', 'project', 'region', 'builder', 'service_name', 'service',
-      'context', 'cpu', 'memory', 'ar_repo'
+      'image',
+      'project',
+      'region',
+      'builder',
+      'service_name',
+      'service',
+      'context',
+      'cpu',
+      'memory',
+      'ar_repo',
+      'local_port',
+      'service_account',
   ]
 
   @classmethod
@@ -87,14 +99,16 @@ class Settings(dataobject.DataObject):
     # Service names may not include space, _ and upper case characters.
     service_name = dir_name.replace('_', '-').replace(' ', '-').lower()
     service = RUN_MESSAGES_MODULE.Service(
-        apiVersion='serving.knative.dev/v1', kind='Service')
+        apiVersion='serving.knative.dev/v1', kind='Service'
+    )
     dockerfile_arg_default = 'Dockerfile'
     bldr = builders.DockerfileBuilder(dockerfile=dockerfile_arg_default)
     return cls(
         service_name=service_name,
         service=service,
         builder=bldr,
-        context=os.path.abspath(files.GetCWD()))
+        context=os.path.abspath(files.GetCWD()),
+    )
 
   def WithServiceYaml(self, yaml_path):
     """Use a pre-written service yaml for deployment."""
@@ -119,14 +133,18 @@ class Settings(dataobject.DataObject):
 
     try:
       service = messages_util.DictToMessageWithErrorCheck(
-          service_dict, RUN_MESSAGES_MODULE.Service)
+          service_dict, RUN_MESSAGES_MODULE.Service
+      )
     except messages_util.ScalarTypeMismatchError as e:
       exceptions.MaybeRaiseCustomFieldMismatch(
           e,
-          help_text='Please make sure that the YAML file matches the Knative '
-          'service definition spec in https://kubernetes.io/docs/'
-          'reference/kubernetes-api/services-resources/service-v1/'
-          '#Service.')
+          help_text=(
+              'Please make sure that the YAML file matches the Knative '
+              'service definition spec in https://kubernetes.io/docs/'
+              'reference/kubernetes-api/services-resources/service-v1/'
+              '#Service.'
+          ),
+      )
     if self.project:
       service.metadata.namespace = str(self.project)
     replacements = {'service': service}
@@ -146,10 +164,16 @@ class Settings(dataobject.DataObject):
     region = run_flags.GetRegion(args, prompt=False)
     replacements = {'project': project, 'region': region}
 
-    if args.IsKnownAndSpecified('cpu'):
-      replacements['cpu'] = args.cpu
-    elif args.IsKnownAndSpecified('memory'):
-      replacements['memory'] = args.memory
+    for override_arg in [
+        'local_port',
+        'memory',
+        'cpu',
+        'image',
+        'service_name',
+        'service_account',
+    ]:
+      if args.IsKnownAndSpecified(override_arg):
+        replacements[override_arg] = getattr(args, override_arg)
 
     context = self.context
     if args.source:
@@ -160,7 +184,8 @@ class Settings(dataobject.DataObject):
       replacements['builder'] = _BuilderFromArg(args.builder)
     elif args.IsKnownAndSpecified('dockerfile'):
       replacements['builder'] = builders.DockerfileBuilder(
-          dockerfile=args.dockerfile)
+          dockerfile=args.dockerfile
+      )
     else:
       if isinstance(self.builder, builders.DockerfileBuilder):
         try:
@@ -178,7 +203,8 @@ class Settings(dataobject.DataObject):
     ar_repo = docker_util.DockerRepo(
         project_id=self.project,
         location_id=self.region,
-        repo_id='cloud-run-source-deploy')
+        repo_id='cloud-run-source-deploy',
+    )
     replacements = {'ar_repo': ar_repo}
     if not self.image:
       replacements['image'] = _DefaultImageName(ar_repo, self.service_name)
@@ -204,6 +230,8 @@ def GenerateService(settings):
   metadata.namespace = str(settings.project)
   service.metadata = metadata
   _BuildSpecTemplate(service)
+  if settings.service_account:
+    service.spec.template.spec.serviceAccountName = settings.service_account
   container = service.spec.template.spec.containers[0]
   container.image = settings.image
   _FillContainerRequirements(container, settings)
@@ -223,7 +251,8 @@ def _BuildSpecTemplate(service):
 
 def _DefaultImageName(ar_repo, service_name):
   return '{repo}/{service}'.format(
-      repo=ar_repo.GetDockerString(), service=service_name)
+      repo=ar_repo.GetDockerString(), service=service_name
+  )
 
 
 def _FillContainerRequirements(container, settings):
@@ -231,8 +260,8 @@ def _FillContainerRequirements(container, settings):
   found = set()
   resources = container.resources or RUN_MESSAGES_MODULE.ResourceRequirements()
   limits = (
-      resources.limits or
-      RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue())
+      resources.limits or RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue()
+  )
   for limit in limits.additionalProperties:
     if limit.key == 'cpu' and settings.cpu:
       limit.value = settings.cpu
@@ -242,12 +271,18 @@ def _FillContainerRequirements(container, settings):
 
   # if requirements weren't already specified add them
   if 'cpu' not in found and settings.cpu:
-    cpu = RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue.AdditionalProperty(
-        key='cpu', value=str(settings.cpu))
+    cpu = (
+        RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue.AdditionalProperty(
+            key='cpu', value=str(settings.cpu)
+        )
+    )
     limits.additionalProperties.append(cpu)
   if 'memory' not in found and settings.memory:
-    mem = RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue.AdditionalProperty(
-        key='memory', value=str(settings.memory))
+    mem = (
+        RUN_MESSAGES_MODULE.ResourceRequirements.LimitsValue.AdditionalProperty(
+            key='memory', value=str(settings.memory)
+        )
+    )
     limits.additionalProperties.append(mem)
   resources.limits = limits
   container.resources = resources

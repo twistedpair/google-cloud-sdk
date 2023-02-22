@@ -193,13 +193,19 @@ class VolumesClient(object):
         delete_op.name, collection=OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
-  def RevertVolume(self, volume_ref, snapshot_id):
+  def RevertVolume(self, volume_ref, snapshot_id, async_):
     """Reverts an existing Cloud NetApp Volume."""
     request = self.messages.NetappProjectsLocationsVolumesRevertRequest(
         name=volume_ref.RelativeName(),
         revertVolumeRequest=self.messages.RevertVolumeRequest(
             snapshotId=snapshot_id))
-    return self.client.projects_locations_volumes.Revert(request)
+    revert_op = self.client.projects_locations_volumes.Revert(request)
+    if async_:
+      return revert_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        revert_op.name, collection=OPERATIONS_COLLECTION
+    )
+    return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedVolumeConfig(self,
                                volume_config,

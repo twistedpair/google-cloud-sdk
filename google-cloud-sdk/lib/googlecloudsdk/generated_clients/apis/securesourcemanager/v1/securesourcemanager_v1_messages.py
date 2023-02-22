@@ -107,7 +107,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -124,9 +126,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -343,6 +343,8 @@ class Instance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the instance.
+    StateNoteValueValuesEnum: Output only. state_note is an optional field
+      providing information about the current instance state.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -350,6 +352,15 @@ class Instance(_messages.Message):
   Fields:
     createTime: Output only. Create timestamp.
     hostConfig: Output only. A list of hostnames for this Instance.
+    kmsKey: Immutable. kms_key_name is the customer-specified CMEK key
+      (optional). It must exist in the same region as the instance. User must
+      have granted the following permissions on this key (typically via role
+      roles/cloudkms.cryptoKeyEncrypterDecrypter) to the Secure Source Manager
+      service account: - permissions/cloudkms.cryptoKeyVersions.useToDecrypt -
+      permissions/cloudkms.cryptoKeyVersions.useToEncrypt Format:
+      projects/*/locations/*/keyRings/*/cryptoKeys/*
+    kmsKeyVersion: Output only. kms_key_version is an output field indicating
+      the version of the key resolved when the instance was created.
     labels: Optional. Labels as key value pairs.
     name: Optional. A unique identifier for an instance. The name should be of
       the format: `projects/{project_number}/locations/{location_id}/instances
@@ -361,8 +372,25 @@ class Instance(_messages.Message):
       provided name for the instance, must be unique for a project_number and
       location_id combination.
     state: Output only. Current state of the instance.
+    stateNote: Output only. state_note is an optional field providing
+      information about the current instance state.
     updateTime: Output only. Update timestamp.
   """
+
+  class StateNoteValueValuesEnum(_messages.Enum):
+    r"""Output only. state_note is an optional field providing information
+    about the current instance state.
+
+    Values:
+      STATE_NOTE_UNSPECIFIED: STATE_NOTE_UNSPECIFIED as the first value of
+        State.
+      PAUSED_CMEK_UNAVAILABLE: PAUSED_CMEK_UNAVAILABLE indicates that CMEK
+        access is unavailable so we no longer have access to the instance.
+        This might be due to user revokeing our access or user deleting the
+        KMS key.
+    """
+    STATE_NOTE_UNSPECIFIED = 0
+    PAUSED_CMEK_UNAVAILABLE = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the instance.
@@ -373,11 +401,13 @@ class Instance(_messages.Message):
       CREATING: Instance is being created.
       ACTIVE: Instance is ready.
       DELETING: Instance is being deleted.
+      PAUSED: Instance is paused.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    PAUSED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -405,10 +435,13 @@ class Instance(_messages.Message):
 
   createTime = _messages.StringField(1)
   hostConfig = _messages.MessageField('HostConfig', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  kmsKey = _messages.StringField(3)
+  kmsKeyVersion = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  stateNote = _messages.EnumField('StateNoteValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class IssueRedirectTicketInternalRequest(_messages.Message):

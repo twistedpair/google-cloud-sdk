@@ -27,7 +27,7 @@ from googlecloudsdk.core import properties
 CLOUDSDK_AUTH_LOGIN_CONFIG_FILE = 'CLOUDSDK_AUTH_LOGIN_CONFIG_FILE'
 
 
-def DoWorkforceHeadfulLogin(login_config_file, **kwargs):
+def DoWorkforceHeadfulLogin(login_config_file, is_adc=False, **kwargs):
   """DoWorkforceHeadfulLogin attempts to log in with appropriate login configuration.
 
   It will return the account and credentials of the user if it succeeds
@@ -35,6 +35,7 @@ def DoWorkforceHeadfulLogin(login_config_file, **kwargs):
   Args:
     login_config_file (str): The path to the workforce headful login
       configuration file.
+    is_adc (str): Whether the flow is initiated via application-default login.
     **kwargs (Mapping): Extra Arguments to pass to the method creating the flow.
 
   Returns:
@@ -49,7 +50,7 @@ def DoWorkforceHeadfulLogin(login_config_file, **kwargs):
         'file types are supported for Workforce Identity Federation login '
         'configurations.')
 
-  client_config = _MakeThirdPartyClientConfig(login_config_data)
+  client_config = _MakeThirdPartyClientConfig(login_config_data, is_adc)
   audience = login_config_data['audience']
   path_start = audience.find('/locations/')
   provider_name = None
@@ -93,7 +94,7 @@ def GetWorkforceLoginConfig():
   return properties.VALUES.auth.login_config_file.Get()
 
 
-def _MakeThirdPartyClientConfig(login_config_data):
+def _MakeThirdPartyClientConfig(login_config_data, is_adc):
   client_id = config.CLOUDSDK_CLIENT_ID
   client_secret = config.CLOUDSDK_CLIENT_NOTSOSECRET
   return {
@@ -107,5 +108,6 @@ def _MakeThirdPartyClientConfig(login_config_data):
           # audience field during credential creation.
           'audience': login_config_data['audience'],
           '3pi': True,
+          'is_adc': is_adc,
       }
   }

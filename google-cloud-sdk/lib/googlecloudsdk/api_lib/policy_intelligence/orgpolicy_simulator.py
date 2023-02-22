@@ -23,7 +23,9 @@ import abc
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
 
 _API_NAME = 'policysimulator'
 _MAX_WAIT_TIME_MS = 60 * 60 * 1000  # 60 minutes.
@@ -53,13 +55,34 @@ class OrgPolicySimulatorApi(object):
     self.client = apis.GetClientInstance(_API_NAME, self.api_version)
     self.messages = apis.GetMessagesModule(_API_NAME, self.api_version)
 
+  # TODO(b/263303705): Remove the legacy operation name support
+  def _IsLegacyOperationName(self, operation_name):
+    return operation_name.startswith('operations/')
+
+  # New operation name has format: organizations/<orgID>/locations/<locationID>/
+  # orgPolicyViolationsPreviews/<orgPolicyPreviewID>/operations/<operationID>
+  def GetViolationsPreviewId(self, operation_name):
+    return operation_name.split('/')[-3]
+
   def WaitForOperation(self, operation, message):
+    """Wait for the operation to complete."""
     # Use "GetOperation" from policysimulator v1
     v1_client = apis.GetClientInstance(_API_NAME, 'v1')
     registry = resources.REGISTRY.Clone()
     registry.RegisterApiByName('policysimulator', 'v1')
-    operation_ref = registry.Parse(
-        operation.name, collection='policysimulator.operations')
+    # TODO(b/263303705): Remove the legacy operation name support
+    if self._IsLegacyOperationName(operation.name):
+      operation_ref = registry.Parse(
+          operation.name, collection='policysimulator.operations')
+    else:
+      operation_ref = registry.Parse(
+          operation.name,
+          params={
+              'organizationsId': properties.VALUES.access_context_manager.organization.GetOrFail,
+              'locationsId': 'global',
+              'orgPolicyViolationsPreviewsId': self.GetViolationsPreviewId(operation.name),
+          },
+          collection='policysimulator.organizations.locations.orgPolicyViolationsPreviews.operations')
     poller = waiter.CloudOperationPollerNoResources(v1_client.operations)
     return waiter.WaitFor(
         poller, operation_ref, message, wait_ceiling_ms=_MAX_WAIT_TIME_MS)

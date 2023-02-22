@@ -349,6 +349,11 @@
         "workloadSelector": {
           "description": "Criteria used to select the specific group of workloads in the registry on which this patch configuration should be applied. required.",
           "$ref": "WorkloadSelector"
+        },
+        "status": {
+          "description": "Output only. The status of the workloadregistration resource.",
+          "readOnly": true,
+          "$ref": "RegistrationStatus"
         }
       }
     },
@@ -412,6 +417,33 @@
       "properties": {
         "serviceAccount": {
           "description": "Selects workloads with the GCP service account. It matches the \u201Cemail\u201D claim.",
+          "type": "string"
+        }
+      }
+    },
+    "RegistrationStatus": {
+      "id": "RegistrationStatus",
+      "description": "RegistrationStatus describes the certificate provisioning status of a workload registration resource.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "state represents the current state of registration.",
+          "type": "string",
+          "enumDescriptions": [
+            "REGISTRATION_STATE_UNSPECIFIED is the default value.",
+            "REGISTRATION_STATE_READY indicates that the registration is ready.",
+            "REGISTRATION_STATE_IN_PROGRESS indicates that the registration is in progress.",
+            "REGISTRATION_STATE_INTERNAL_ERROR indicates that the registration fails because of some internal errors."
+          ],
+          "enum": [
+            "REGISTRATION_STATE_UNSPECIFIED",
+            "REGISTRATION_STATE_READY",
+            "REGISTRATION_STATE_IN_PROGRESS",
+            "REGISTRATION_STATE_INTERNAL_ERROR"
+          ]
+        },
+        "error": {
+          "description": "error describes the details when a certificate provisioning process fails.",
           "type": "string"
         }
       }

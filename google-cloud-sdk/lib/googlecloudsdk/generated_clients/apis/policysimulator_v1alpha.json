@@ -292,11 +292,11 @@
     },
     "GoogleCloudOrgpolicyV2Policy": {
       "id": "GoogleCloudOrgpolicyV2Policy",
-      "description": "Defines a Cloud Organization `Policy` which is used to specify `Constraints` for configurations of Cloud Platform resources.",
+      "description": "Defines an organization policy which is used to specify constraints for configurations of Google Cloud resources.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The resource name of the Policy. Must be one of the following forms, where constraint_name is the name of the constraint which this Policy configures: * `projects\/{project_number}\/policies\/{constraint_name}` * `folders\/{folder_id}\/policies\/{constraint_name}` * `organizations\/{organization_id}\/policies\/{constraint_name}` For example, \"projects\/123\/policies\/compute.disableSerialPortAccess\". Note: `projects\/{project_id}\/policies\/{constraint_name}` is also an acceptable name for API requests, but responses will return the name using the equivalent project number.",
+          "description": "Immutable. The resource name of the policy. Must be one of the following forms, where constraint_name is the name of the constraint which this policy configures: * `projects\/{project_number}\/policies\/{constraint_name}` * `folders\/{folder_id}\/policies\/{constraint_name}` * `organizations\/{organization_id}\/policies\/{constraint_name}` For example, \"projects\/123\/policies\/compute.disableSerialPortAccess\". Note: `projects\/{project_id}\/policies\/{constraint_name}` is also an acceptable name for API requests, but responses will return the name using the equivalent project number.",
           "type": "string"
         },
         "spec": {
@@ -308,39 +308,39 @@
           "$ref": "GoogleCloudOrgpolicyV2AlternatePolicySpec"
         },
         "dryRunSpec": {
-          "description": "dry-run policy. go\/op-dryrun-dd",
+          "description": "Dry-run policy. Audit-only policy, can be used to monitor how the policy would have impacted the existing and future resources if it's enforced.",
           "$ref": "GoogleCloudOrgpolicyV2PolicySpec"
         }
       }
     },
     "GoogleCloudOrgpolicyV2PolicySpec": {
       "id": "GoogleCloudOrgpolicyV2PolicySpec",
-      "description": "Defines a Cloud Organization `PolicySpec` which is used to specify `Constraints` for configurations of Cloud Platform resources.",
+      "description": "Defines a Google Cloud policy specification which is used to specify constraints for configurations of Google Cloud resources.",
       "type": "object",
       "properties": {
         "etag": {
-          "description": "An opaque tag indicating the current version of the `Policy`, used for concurrency control. This field is ignored if used in a `CreatePolicy` request. When the `Policy` is returned from either a `GetPolicy` or a `ListPolicies` request, this `etag` indicates the version of the current `Policy` to use when executing a read-modify-write loop. When the `Policy` is returned from a `GetEffectivePolicy` request, the `etag` will be unset.",
+          "description": "An opaque tag indicating the current version of the policy, used for concurrency control. This field is ignored if used in a `CreatePolicy` request. When the policy` is returned from either a `GetPolicy` or a `ListPolicies` request, this `etag` indicates the version of the current policy to use when executing a read-modify-write loop. When the policy is returned from a `GetEffectivePolicy` request, the `etag` will be unset.",
           "type": "string"
         },
         "updateTime": {
-          "description": "Output only. The time stamp this was previously updated. This represents the last time a call to `CreatePolicy` or `UpdatePolicy` was made for that `Policy`.",
+          "description": "Output only. The time stamp this was previously updated. This represents the last time a call to `CreatePolicy` or `UpdatePolicy` was made for that policy.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "rules": {
-          "description": "Up to 10 PolicyRules are allowed. In Policies for boolean constraints, the following requirements apply: - There must be one and only one PolicyRule where condition is unset. - BooleanPolicyRules with conditions must set `enforced` to the opposite of the PolicyRule without a condition. - During policy evaluation, PolicyRules with conditions that are true for a target resource take precedence.",
+          "description": "Up to 10 policy rules are allowed. In policies for boolean constraints, the following requirements apply: - There must be one and only one policy rule where condition is unset. - Boolean policy rules with conditions must set `enforced` to the opposite of the policy rule without a condition. - During policy evaluation, policy rules with conditions that are true for a target resource take precedence.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudOrgpolicyV2PolicySpecPolicyRule"
           }
         },
         "inheritFromParent": {
-          "description": "Determines the inheritance behavior for this `Policy`. If `inherit_from_parent` is true, PolicyRules set higher up in the hierarchy (up to the closest root) are inherited and present in the effective policy. If it is false, then no rules are inherited, and this Policy becomes the new root for evaluation. This field can be set only for Policies which configure list constraints.",
+          "description": "Determines the inheritance behavior for this policy. If `inherit_from_parent` is true, policy rules set higher up in the hierarchy (up to the closest root) are inherited and present in the effective policy. If it is false, then no rules are inherited, and this policy becomes the new root for evaluation. This field can be set only for policies which configure list constraints.",
           "type": "boolean"
         },
         "reset": {
-          "description": "Ignores policies set above this resource and restores the `constraint_default` enforcement behavior of the specific `Constraint` at this resource. This field can be set in policies for either list or boolean constraints. If set, `rules` must be empty and `inherit_from_parent` must be set to false.",
+          "description": "Ignores policies set above this resource and restores the `constraint_default` enforcement behavior of the specific constraint at this resource. This field can be set in policies for either list or boolean constraints. If set, `rules` must be empty and `inherit_from_parent` must be set to false.",
           "type": "boolean"
         }
       }
@@ -351,19 +351,19 @@
       "type": "object",
       "properties": {
         "values": {
-          "description": "List of values to be used for this PolicyRule. This field can be set only in Policies for list constraints.",
+          "description": "List of values to be used for this policy rule. This field can be set only in policies for list constraints.",
           "$ref": "GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues"
         },
         "allowAll": {
-          "description": "Setting this to true means that all values are allowed. This field can be set only in Policies for list constraints.",
+          "description": "Setting this to true means that all values are allowed. This field can be set only in policies for list constraints.",
           "type": "boolean"
         },
         "denyAll": {
-          "description": "Setting this to true means that all values are denied. This field can be set only in Policies for list constraints.",
+          "description": "Setting this to true means that all values are denied. This field can be set only in policies for list constraints.",
           "type": "boolean"
         },
         "enforce": {
-          "description": "If `true`, then the `Policy` is enforced. If `false`, then any configuration is acceptable. This field can be set only in Policies for boolean constraints.",
+          "description": "If `true`, then the policy is enforced. If `false`, then any configuration is acceptable. This field can be set only in policies for boolean constraints.",
           "type": "boolean"
         },
         "condition": {
@@ -374,7 +374,7 @@
     },
     "GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues": {
       "id": "GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues",
-      "description": "A message that holds specific allowed and denied values. This message can define specific values and subtrees of Cloud Resource Manager resource hierarchy (`Organizations`, `Folders`, `Projects`) that are allowed or denied. This is achieved by using the `under:` and optional `is:` prefixes. The `under:` prefix is used to denote resource subtree values. The `is:` prefix is used to denote specific values, and is required only if the value contains a \":\". Values prefixed with \"is:\" are treated the same as values with no prefix. Ancestry subtrees must be in one of the following formats: - \"projects\/\", e.g. \"projects\/tokyo-rain-123\" - \"folders\/\", e.g. \"folders\/1234\" - \"organizations\/\", e.g. \"organizations\/1234\" The `supports_under` field of the associated `Constraint` defines whether ancestry prefixes can be used.",
+      "description": "A message that holds specific allowed and denied values. This message can define specific values and subtrees of the Resource Manager resource hierarchy (`Organizations`, `Folders`, `Projects`) that are allowed or denied. This is achieved by using the `under:` and optional `is:` prefixes. The `under:` prefix is used to denote resource subtree values. The `is:` prefix is used to denote specific values, and is required only if the value contains a \":\". Values prefixed with \"is:\" are treated the same as values with no prefix. Ancestry subtrees must be in one of the following formats: - \"projects\/\", e.g. \"projects\/tokyo-rain-123\" - \"folders\/\", e.g. \"folders\/1234\" - \"organizations\/\", e.g. \"organizations\/1234\" The `supports_under` field of the associated `Constraint` defines whether ancestry prefixes can be used.",
       "type": "object",
       "properties": {
         "allowedValues": {
@@ -426,7 +426,7 @@
           "type": "string"
         },
         "spec": {
-          "description": "Specify `Constraint` for configurations of Cloud Platform resources.",
+          "description": "Specify constraint for configurations of Google Cloud resources.",
           "$ref": "GoogleCloudOrgpolicyV2PolicySpec"
         }
       }
@@ -448,15 +448,15 @@
     },
     "GoogleCloudOrgpolicyV2CustomConstraint": {
       "id": "GoogleCloudOrgpolicyV2CustomConstraint",
-      "description": "A custom constraint defined by customers which can *only* be applied to the given resource types and organization. By creating a custom constraint, customers can applied policies of this custom constraint. *Creating a custom constraint itself does NOT apply any policy enforcement*.",
+      "description": "A custom constraint defined by customers which can *only* be applied to the given resource types and organization. By creating a custom constraint, customers can apply policies of this custom constraint. *Creating a custom constraint itself does NOT apply any policy enforcement*.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Name of the constraint. This is unique within the organization. Format of the name should be * `organizations\/{organization_id}\/customConstraints\/{custom_constraint_id}` Example : \"organizations\/123\/customConstraints\/custom.createOnlyE2TypeVms\" The max length is 70 characters and the min length is 1. Note that the prefix \"organizations\/{organization_id}\/customConstraints\/\" is not counted.",
+          "description": "Immutable. Name of the constraint. This is unique within the organization. Format of the name should be * `organizations\/{organization_id}\/customConstraints\/{custom_constraint_id}` Example: `organizations\/123\/customConstraints\/custom.createOnlyE2TypeVms` The max length is 70 characters and the minimum length is 1. Note that the prefix `organizations\/{organization_id}\/customConstraints\/` is not counted.",
           "type": "string"
         },
         "resourceTypes": {
-          "description": "Immutable. The Resource Instance type on which this policy applies to. Format will be of the form : \"\/\" Example: * `compute.googleapis.com\/Instance`.",
+          "description": "Immutable. The resource instance type on which this policy applies. Format will be of the form : \"\/\" Example: * `compute.googleapis.com\/Instance`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -468,7 +468,7 @@
           "items": {
             "type": "string",
             "enumDescriptions": [
-              "Unspecified. Will results in user error.",
+              "Unspecified. Results in an error.",
               "Constraint applied when creating the resource.",
               "Constraint applied when updating the resource.",
               "Constraint applied when deleting the resource. Not supported yet."
@@ -489,7 +489,7 @@
           "description": "Allow or deny type.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified. Will results in user error.",
+            "Unspecified. Results in an error.",
             "Allowed action type.",
             "Deny action type."
           ],
@@ -606,14 +606,6 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
-        },
-        "resourceData": {
-          "description": "The resource data stored by CAIS. This is the same data defined by google.cloud.asset.v1.Resource.data.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object."
           }
         }
       }
@@ -744,7 +736,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1299,6 +1291,185 @@
           "format": "int32"
         }
       }
+    },
+    "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreview": {
+      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreview",
+      "description": "OrgPolicyViolationsPreview is a resource providing a preview of the violations that will exist if an OrgPolicy change is made. The list of violations are modeled as child resources and retrieved via a ListOrgPolicyViolations API call. There are potentially more OrgPolicyViolations than could fit in an embedded field. Thus, the use of a child resource instead of a field.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the `OrgPolicyViolationsPreview`. It has the following format: `organizations\/{organization}\/locations\/{location}\/orgPolicyViolationsPreviews\/{orgPolicyViolationsPreview}` Example: `organizations\/my-example-org\/locations\/global\/orgPolicyViolationsPreviews\/506a5f7f`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the `OrgPolicyViolationsPreview`.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state is unspecified.",
+            "The OrgPolicyViolationsPreview has not been created yet.",
+            "The OrgPolicyViolationsPreview is currently being created.",
+            "The OrgPolicyViolationsPreview creation finished successfully.",
+            "The OrgPolicyViolationsPreview creation failed with an error."
+          ],
+          "enum": [
+            "PREVIEW_STATE_UNSPECIFIED",
+            "PREVIEW_PENDING",
+            "PREVIEW_RUNNING",
+            "PREVIEW_SUCCEEDED",
+            "PREVIEW_FAILED"
+          ]
+        },
+        "overlay": {
+          "description": "Required. The proposed changes we are previewing violations for.",
+          "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay"
+        },
+        "violationsCount": {
+          "description": "Output only. The number of OrgPolicyViolations in this `OrgPolicyViolationsPreview`. This count may differ from `resource_summary.noncompliant_count` because each OrgPolicyViolation is specific to a resource **and** constraint. If there are multiple constraints being evaluated (i.e. multiple policies in the overlay), a single resource may violate multiple constraints.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourceCounts": {
+          "description": "Output only. A summary of the state of all resources scanned for compliance with the changed OrgPolicy.",
+          "readOnly": true,
+          "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay": {
+      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay",
+      "description": "The proposed changes to OrgPolicy.",
+      "type": "object",
+      "properties": {
+        "policies": {
+          "description": "The OrgPolicy changes to preview violations for. Any existing OrgPolicies with the same name will be overridden in the simulation. That is, violations will be determined as if all policies in the overlay were created or updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay"
+          }
+        },
+        "customConstraints": {
+          "description": "The OrgPolicy CustomConstraint changes to preview violations for. Any existing CustomConstraints with the same name will be overridden in the simulation. That is, violations will be determined as if all custom constraints in the overlay were instantiated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay"
+          }
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay": {
+      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay",
+      "description": "A change to an OrgPolicy.",
+      "type": "object",
+      "properties": {
+        "policyParent": {
+          "description": "The parent of the policy we are attaching to. Example: \"projects\/123456\"",
+          "type": "string"
+        },
+        "policy": {
+          "description": "The new or updated OrgPolicy.",
+          "$ref": "GoogleCloudOrgpolicyV2Policy"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay": {
+      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay",
+      "description": "A change to an OrgPolicy custom constraint.",
+      "type": "object",
+      "properties": {
+        "customConstraintParent": {
+          "description": "Resource the constraint is attached to. Example: \"organization\/987654\"",
+          "type": "string"
+        },
+        "customConstraint": {
+          "description": "The new or updated custom constraint.",
+          "$ref": "GoogleCloudOrgpolicyV2CustomConstraint"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts": {
+      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts",
+      "description": "A summary of the state of all resources scanned for compliance with the changed OrgPolicy.",
+      "type": "object",
+      "properties": {
+        "scanned": {
+          "description": "Number of resources checked for compliance. Must equal: unenforced + noncompliant + compliant + error",
+          "type": "integer",
+          "format": "int32"
+        },
+        "noncompliant": {
+          "description": "Number of scanned resources with at least one violation.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "compliant": {
+          "description": "Number of scanned resources with zero violations.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "unenforced": {
+          "description": "Number of resources where the constraint was not enforced, i.e. the Policy set `enforced: false` for that resource.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "errors": {
+          "description": "Number of resources that returned an error when scanned.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1alphaGenerateOrgPolicyViolationsPreviewOperationMetadata": {
+      "id": "GoogleCloudPolicysimulatorV1alphaGenerateOrgPolicyViolationsPreviewOperationMetadata",
+      "description": "GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an OrgPolicyViolationsPreview generations operation.",
+      "type": "object",
+      "properties": {
+        "requestTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "Time when the request started processing, i.e. when the state was set to RUNNING.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "The current state of the operation.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state is unspecified.",
+            "The OrgPolicyViolationsPreview has not been created yet.",
+            "The OrgPolicyViolationsPreview is currently being created.",
+            "The OrgPolicyViolationsPreview creation finished successfully.",
+            "The OrgPolicyViolationsPreview creation failed with an error."
+          ],
+          "enum": [
+            "PREVIEW_STATE_UNSPECIFIED",
+            "PREVIEW_PENDING",
+            "PREVIEW_RUNNING",
+            "PREVIEW_SUCCEEDED",
+            "PREVIEW_FAILED"
+          ]
+        },
+        "resourcesFound": {
+          "description": "Total number of resources that need scanning. Should equal resource_scanned + resources_pending",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourcesScanned": {
+          "description": "Number of resources already scanned.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourcesPending": {
+          "description": "Number of resources still to scan.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
     }
   },
   "resources": {
@@ -1449,6 +1620,39 @@
                   }
                 }
               }
+            },
+            "orgPolicyViolationsPreviews": {
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "get": {
+                      "id": "policysimulator.projects.locations.orgPolicyViolationsPreviews.operations.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/orgPolicyViolationsPreviews\/[^\/]+\/operations\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -1512,6 +1716,39 @@
                         "name": {
                           "description": "The name of the operation resource.",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/replays\/[^\/]+\/operations\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                }
+              }
+            },
+            "orgPolicyViolationsPreviews": {
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "get": {
+                      "id": "policysimulator.folders.locations.orgPolicyViolationsPreviews.operations.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/folders/{foldersId}/locations/{locationsId}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/orgPolicyViolationsPreviews\/[^\/]+\/operations\/.*$",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -1711,6 +1948,35 @@
               }
               ,
               "resources": {
+                "operations": {
+                  "methods": {
+                    "get": {
+                      "id": "policysimulator.organizations.locations.orgPolicyViolationsPreviews.operations.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/organizations/{organizationsId}/locations/{locationsId}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/orgPolicyViolationsPreviews\/[^\/]+\/operations\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                },
                 "orgPolicyViolations": {
                   "methods": {
                     "list": {

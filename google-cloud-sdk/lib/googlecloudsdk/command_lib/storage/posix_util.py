@@ -27,9 +27,6 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 
-SETTING_INVALID_POSIX_ERROR = ValueError(
-    'Setting preserved POSIX data will result in invalid file metadata.')
-
 _MISSING_UID_FORMAT = (
     "UID in {} metadata doesn't exist on current system. UID: {}")
 _MISSING_GID_FORMAT = (
@@ -157,56 +154,68 @@ def get_system_posix_data():
   return SystemPosixData(default_mode, user_groups)
 
 
-def are_file_permissions_valid(url_string,
-                               system_posix_data,
-                               posix_attributes=None):
-  """Checks if setting permissions on a file results in a valid accessible file.
+def _raise_error_and_maybe_delete_file(error, delete_path):
+  """Deletes file before raising error if file path provided."""
+  if delete_path:
+    os.remove(delete_path)
+  raise error
 
-  Logs explanatory error if copy will result in invalid file.
+
+def raise_if_invalid_file_permissions(
+    user_request_args, resource, delete_path=None
+):
+  """Detects permissions causing inaccessibility.
+
+  Can delete invalid file.
 
   Args:
-    url_string (str): URL of source object being considered for copy.
-    system_posix_data (SystemPosixData): Relevant default system settings.
-    posix_attributes (PosixAttributes|None): POSIX metadata being considered to
-      set on file.
+    user_request_args (UserRequestArgs): Contains SystemPosixData used to
+      determine if file will be made inaccessible in local environment.
+    resource (ObjectResource): Contains URL used for messages and custom POSIX
+      metadata used to determine if setting invalid file permissions.
+    delete_path (str|None): If present, will delete file before raising error.
+      Useful if file has been downloaded and needs to be cleaned up.
 
-  Returns:
-    bool: True if copy will result in a valid file.
+  Raises:
+    PermissionError: Has explanatory message about permissions issue.
   """
-  uid = getattr(posix_attributes, 'uid', None)
-  gid = getattr(posix_attributes, 'gid', None)
-  mode = getattr(posix_attributes, 'mode', None)
+  if not (user_request_args and user_request_args.system_posix_data):
+    # User not preserving POSIX metadata that may cause permissions issues.
+    return
+
+  _, _, uid, gid, mode = get_posix_attributes_from_resource(resource)
   if (uid is gid is mode is None) or platforms.OperatingSystem.IsWindows():
     # If the user isn't setting anything, the system's new file defaults
     # are used, which we assume are valid.
     # Windows doesn't use POSIX for file permissions, so files will validate.
-    return True
+    return
 
   # POSIX modules, os.geteuid, and os.getuid not available on Windows.
   if os.geteuid() == 0:
     # The root user can access files regardless of their permissions.
-    return True
+    return
 
   # pylint:disable=g-import-not-at-top
   import grp
   import pwd
   # pylint:enable=g-import-not-at-top
 
+  url_string = resource.storage_url.url_string
   if uid is not None:
     try:
       pwd.getpwuid(uid)
     except KeyError:
-      log.error(_MISSING_UID_FORMAT.format(url_string, uid))
-      return False
+      error = PermissionError(_MISSING_UID_FORMAT.format(url_string, uid))
+      _raise_error_and_maybe_delete_file(error, delete_path)
   if gid is not None:
     try:
       grp.getgrgid(gid)
     except (KeyError, OverflowError):
-      log.error(_MISSING_GID_FORMAT.format(url_string, gid))
-      return False
+      error = PermissionError(_MISSING_GID_FORMAT.format(url_string, gid))
+      _raise_error_and_maybe_delete_file(error, delete_path)
 
   if mode is None:
-    mode_to_set = system_posix_data.default_mode
+    mode_to_set = user_request_args.system_posix_data.default_mode
   else:
     mode_to_set = mode
 
@@ -215,31 +224,38 @@ def are_file_permissions_valid(url_string,
     # No UID causes system to default to current user as owner.
     # Owner permissions take priority over group and "other".
     if mode_to_set.base_ten_int & stat.S_IRUSR:
-      return True
-    log.error(
+      return
+    error = PermissionError(
         _INSUFFICIENT_USER_READ_ACCESS_FORMAT.format(
-            url_string, uid_to_set, mode_to_set.base_eight_str))
-    return False
+            url_string, uid_to_set, mode_to_set.base_eight_str
+        )
+    )
+    _raise_error_and_maybe_delete_file(error, delete_path)
 
-  if gid is None or gid in system_posix_data.user_groups:
+  if gid is None or gid in user_request_args.system_posix_data.user_groups:
     # No GID causes system to create file owned by user's primary group.
     # Group permissions take priority over "other" if user is member of group.
     if mode_to_set.base_ten_int & stat.S_IRGRP:
-      return True
+      return
 
-    log.error(
+    error = PermissionError(
         _INSUFFICIENT_GROUP_READ_ACCESS_FORMAT.format(
-            url_string, '[user primary group]' if gid is None else gid,
-            mode_to_set.base_eight_str))
-    return False
+            url_string,
+            '[user primary group]' if gid is None else gid,
+            mode_to_set.base_eight_str,
+        )
+    )
+    _raise_error_and_maybe_delete_file(error, delete_path)
 
   if mode_to_set.base_ten_int & stat.S_IROTH:
     # User is not owner and not in relevant group. User is "other".
-    return True
-  log.error(
-      _INSUFFICIENT_OTHER_READ_ACCESS_FORMAT.format(url_string, uid_to_set,
-                                                    mode_to_set.base_eight_str))
-  return False
+    return
+  error = PermissionError(
+      _INSUFFICIENT_OTHER_READ_ACCESS_FORMAT.format(
+          url_string, uid_to_set, mode_to_set.base_eight_str
+      )
+  )
+  _raise_error_and_maybe_delete_file(error, delete_path)
 
 
 # Holds custom POSIX information we may extract or apply to a file.
@@ -263,97 +279,103 @@ def get_posix_attributes_from_file(file_path):
                          PosixMode.from_base_ten_int(mode))
 
 
-def _set_posix_attributes_on_file(file_path, custom_posix_attributes):
-  """Sets custom POSIX attributes on file.
-
-  Call "after are_file_permissions_valid" function before running this.
-  Raised errors may signify invalid metadata or missing permissions.
-
-  Args:
-    file_path (str): File to set custom POSIX attributes on.
-    custom_posix_attributes (PosixAttributes): Metadata to set on file if valid.
-
-  Raises:
-    PermissionError: Custom metadata called for file ownership change that user
-      did not have permission to perform. Other permission errors while calling
-      OS functions are also possible.
-  """
-  existing_posix_attributes = get_posix_attributes_from_file(file_path)
-  if custom_posix_attributes.atime is None or custom_posix_attributes.atime < 0:
-    # Set only valid times on a file.
-    atime = existing_posix_attributes.atime
-  else:
-    atime = custom_posix_attributes.atime
-  if custom_posix_attributes.mtime is None or custom_posix_attributes.mtime < 0:
-    mtime = existing_posix_attributes.mtime
-  else:
-    mtime = custom_posix_attributes.mtime
-
-  os.utime(file_path, (atime, mtime))
-
-  if platforms.OperatingSystem.IsWindows():
-    # Windows does not use the remaining POSIX attributes.
-    return
-
-  if custom_posix_attributes.uid is None or custom_posix_attributes.uid < 0:
-    # Allow only valid UIDs.
-    uid = existing_posix_attributes.uid
-  else:
-    uid = custom_posix_attributes.uid
-
-    if uid != existing_posix_attributes.uid and os.geteuid() != 0:
-      # Custom may equal existing if user is uploading and downloading on the
-      # same machine and account.
-      raise PermissionError(
-          'Root permissions required to set UID {}.'.format(uid))
-
-  if custom_posix_attributes.gid is None or custom_posix_attributes.gid < 0:
-    gid = existing_posix_attributes.gid
-  else:
-    gid = custom_posix_attributes.gid
-
-  # Note: chown doesn't do anything for negative numbers like _INVALID_ID.
-  os.chown(file_path, uid, gid)
-
-  mode = custom_posix_attributes.mode or existing_posix_attributes.mode
-  os.chmod(file_path, mode.base_ten_int)
-
-
 def set_posix_attributes_on_file_if_valid(
     user_request_args, source_resource, destination_resource
 ):
   """Sets custom POSIX attributes on file if the final metadata will be valid.
 
+  This function is typically called after downloads.
+  `raise_if_invalid_file_permissions` should have been called before initiating
+  a download, but we call it again here to be safe.
+
   Args:
-    user_request_args (user_request_args_factory._UserRequestArgs): Determines
+    user_request_args (user_request_args_factory._UserRequestArgs|None): Checks
       if user intended to preserve file POSIX data and get system-wide POSIX.
     source_resource (resource_reference.ObjectResource): Copy source.
     destination_resource (resource_reference.FileObjectResource): Copy
       destination.
 
   Raises:
-    PermissionError: See _set_posix_attribute_on_file docstring.
-    ValueError: From SETTING_INVALID_POSIX_ERROR, predetermined from metadata
-      that preserving POSIX will result in corrupt file permissions.
+    PermissionError: Custom metadata asked for file ownership change that user
+      did not have permission to perform. Other permission errors from calling
+      OS functions are possible. Also see `raise_if_invalid_file_permissions`.
   """
   if not (user_request_args and user_request_args.system_posix_data):
-    # Check if user typed "--preserve-posix" flag.
     return
-  posix_attributes = get_posix_attributes_from_resource(source_resource)
   destination_path = destination_resource.storage_url.object_name
+  raise_if_invalid_file_permissions(
+      user_request_args, source_resource, destination_path
+  )
 
-  if not are_file_permissions_valid(source_resource.storage_url.url_string,
-                                    user_request_args.system_posix_data,
-                                    posix_attributes):
-    os.remove(destination_path)
-    raise SETTING_INVALID_POSIX_ERROR
+  custom_posix_attributes = get_posix_attributes_from_resource(source_resource)
+  existing_posix_attributes = get_posix_attributes_from_file(destination_path)
 
-  _set_posix_attributes_on_file(destination_path, posix_attributes)
+  if custom_posix_attributes.atime is None:
+    atime = existing_posix_attributes.atime
+    need_utime_call = False
+  else:
+    atime = custom_posix_attributes.atime
+    need_utime_call = (
+        custom_posix_attributes.atime != existing_posix_attributes.atime
+    )
+  if custom_posix_attributes.mtime is None:
+    mtime = existing_posix_attributes.mtime
+  else:
+    mtime = custom_posix_attributes.mtime
+    need_utime_call = (
+        need_utime_call
+        or custom_posix_attributes.mtime != existing_posix_attributes.mtime
+    )
+
+  if need_utime_call:
+    os.utime(destination_path, (atime, mtime))
+
+  if platforms.OperatingSystem.IsWindows():
+    # Windows does not use the remaining POSIX attributes.
+    return
+
+  if custom_posix_attributes.uid is None:
+    # Allow only valid UIDs.
+    uid = existing_posix_attributes.uid
+    need_chown_call = False
+  else:
+    uid = custom_posix_attributes.uid
+    need_chown_call = (
+        custom_posix_attributes.uid != existing_posix_attributes.uid
+    )
+
+    if uid != existing_posix_attributes.uid and os.geteuid() != 0:
+      # Clean up file we can't set proper metadata on.
+      os.remove(destination_path)
+      # Custom may equal existing if user is uploading and downloading on the
+      # same machine and account.
+      raise PermissionError(
+          'Root permissions required to set UID {}.'.format(uid)
+      )
+
+  if custom_posix_attributes.gid is None:
+    gid = existing_posix_attributes.gid
+  else:
+    gid = custom_posix_attributes.gid
+    need_chown_call = (
+        need_chown_call
+        or custom_posix_attributes.gid != existing_posix_attributes.gid
+    )
+
+  if need_chown_call:
+    # Note: chown doesn't do anything for negative numbers like _INVALID_ID.
+    os.chown(destination_path, uid, gid)
+
+  if custom_posix_attributes.mode is not None and (
+      custom_posix_attributes.mode.base_ten_int
+      != existing_posix_attributes.mode.base_ten_int
+  ):
+    os.chmod(destination_path, custom_posix_attributes.mode.base_ten_int)
 
 
 def _extract_time_from_custom_metadata(resource, key):
   """Finds, validates, and returns a POSIX time value."""
-  if not resource.custom_fields or key not in resource.custom_fields:
+  if not resource.custom_fields or resource.custom_fields.get(key) is None:
     return None
   try:
     timestamp = int(resource.custom_fields[key])
@@ -383,7 +405,7 @@ def _extract_time_from_custom_metadata(resource, key):
 
 def _extract_id_from_custom_metadata(resource, key):
   """Finds, validates, and returns a POSIX ID value."""
-  if not resource.custom_fields or key not in resource.custom_fields:
+  if not resource.custom_fields or resource.custom_fields.get(key) is None:
     return None
   try:
     posix_id = int(resource.custom_fields[key])
@@ -408,7 +430,7 @@ def _extract_mode_from_custom_metadata(resource):
   """Finds, validates, and returns a POSIX mode value."""
   if (
       not resource.custom_fields
-      or _MODE_METADATA_KEY not in resource.custom_fields
+      or resource.custom_fields.get(_MODE_METADATA_KEY) is None
   ):
     return None
   try:

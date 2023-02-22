@@ -154,7 +154,7 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         method_id='workflowexecutions.projects.locations.workflows.executions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'view'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/executions',
         request_field='',
         request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest',

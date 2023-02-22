@@ -3552,6 +3552,29 @@
           "description": "Token that identifies a product so that it can be referred to from other parts in the document. There is no predefined format as long as it uniquely identifies a group in the context of the current document.",
           "type": "string"
         },
+        "identifierHelper": {
+          "description": "Helps in identifying the underlying product.",
+          "$ref": "IdentifierHelper"
+        }
+      }
+    },
+    "IdentifierHelper": {
+      "id": "IdentifierHelper",
+      "description": "Helps in identifying the underlying product. This should be treated like a one-of field. Only one field should be set in this proto. This is a workaround because spanner indexes on one-of fields restrict addition and deletion of fields.",
+      "type": "object",
+      "properties": {
+        "field": {
+          "description": "The field that is set in the API proto.",
+          "type": "string",
+          "enumDescriptions": [
+            "The helper isn't set.",
+            "The generic_uri one-of field is set."
+          ],
+          "enum": [
+            "IDENTIFIER_HELPER_FIELD_UNSPECIFIED",
+            "GENERIC_URI"
+          ]
+        },
         "genericUri": {
           "description": "Contains a URI which is vendor-specific. Example: The artifact repository URL of an image.",
           "type": "string"

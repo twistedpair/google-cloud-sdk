@@ -30,8 +30,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -132,7 +132,7 @@ class Backup(_messages.Message):
       created manually by a user or via a schedule in the BackupPlan. A value
       of True means that the Backup was created manually.
     name: Output only. The fully qualified name of the Backup.
-      projects/*/locations/*/backupPlans/*/backups/*
+      `projects/*/locations/*/backupPlans/*/backups/*`
     podCount: Output only. The total number of Kubernetes Pods contained in
       the Backup.
     resourceCount: Output only. The total number of Kubernetes resources
@@ -140,8 +140,9 @@ class Backup(_messages.Message):
     retainDays: The age (in days) after which this Backup will be
       automatically deleted. Must be an integer value >= 0: - If 0, no
       automatic deletion will occur for this Backup. - If not 0, this must be
-      >= delete_lock_days. Once a Backup is created, this value may only be
-      increased. Defaults to the parent BackupPlan's backup_retain_days value.
+      >= delete_lock_days and <= 365. Once a Backup is created, this value may
+      only be increased. Defaults to the parent BackupPlan's
+      backup_retain_days value.
     retainExpireTime: Output only. The time at which this Backup will be
       automatically deleted (calculated from create_time + retain_days).
     selectedApplications: Output only. If set, the list of
@@ -280,7 +281,7 @@ class BackupPlan(_messages.Message):
       BackupPlan.
     cluster: Required. Immutable. The source cluster from which Backups will
       be created via this BackupPlan. Valid formats: -
-      projects/*/locations/*/clusters/* - projects/*/zones/*/clusters/*
+      `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
     createTime: Output only. The timestamp when this BackupPlan resource was
       created.
     deactivated: This flag indicates whether this BackupPlan has been
@@ -300,7 +301,7 @@ class BackupPlan(_messages.Message):
       that their change will be applied to the same version of the resource.
     labels: A set of custom labels supplied by user.
     name: Output only. The full name of the BackupPlan resource. Format:
-      projects/*/locations/*/backupPlans/*
+      `projects/*/locations/*/backupPlans/*`
     protectedPodCount: Output only. The number of Kubernetes Pods backed up in
       the last successful Backup created via this BackupPlan.
     retentionPolicy: RetentionPolicy governs lifecycle of Backups created
@@ -369,12 +370,22 @@ class Binding(_messages.Message):
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -391,9 +402,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -415,8 +424,8 @@ class ClusterMetadata(_messages.Message):
     backupCrdVersions: A list of the Backup for GKE CRD versions found in the
       cluster.
     cluster: The source cluster from which this Backup was created. Valid
-      formats: - projects/*/locations/*/clusters/* -
-      projects/*/zones/*/clusters/* This is inherited from the parent
+      formats: - `projects/*/locations/*/clusters/*` -
+      `projects/*/zones/*/clusters/*` This is inherited from the parent
       BackupPlan's cluster field.
     gkeVersion: GKE version
     k8sVersion: The Kubernetes server version of the source cluster.
@@ -456,13 +465,21 @@ class ClusterMetadata(_messages.Message):
 
 
 class ClusterResourceRestoreScope(_messages.Message):
-  r"""Identifies the cluster-scoped resources to restore from the Backup.
+  r"""Defines the scope of cluster-scoped resources to restore. Some group
+  kinds are not reasonable choices for a restore, and will cause an error if
+  selected here. Any scope selection that would restore "all valid" resources
+  automatically excludes these group kinds. - gkebackup.gke.io/BackupJob -
+  gkebackup.gke.io/RestoreJob - metrics.k8s.io/NodeMetrics -
+  migration.k8s.io/StorageState - migration.k8s.io/StorageVersionMigration -
+  Node - snapshot.storage.k8s.io/VolumeSnapshotContent -
+  storage.k8s.io/CSINode Some group kinds are driven by restore configuration
+  elsewhere, and will cause an error if selected here. - Namespace -
+  PersistentVolume
 
   Fields:
-    selectedGroupKinds: A list of "types" of cluster-scoped resources to be
-      restored from the Backup. An empty list means that NO cluster-scoped
-      resources will be restored. Note that Namespaces and PersistentVolume
-      restoration is handled separately and is not governed by this field.
+    selectedGroupKinds: A list of cluster-scoped resource group kinds to
+      restore from the backup. If specified, only the selected resources will
+      be restored. Mutually exclusive to any other field in the message.
   """
 
   selectedGroupKinds = _messages.MessageField('GroupKind', 1, repeated=True)
@@ -483,7 +500,7 @@ class EncryptionKey(_messages.Message):
 
   Fields:
     gcpKmsEncryptionKey: Google Cloud KMS encryption key. Format:
-      projects/*/locations/*/keyRings/*/cryptoKeys/*
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`
   """
 
   gcpKmsEncryptionKey = _messages.StringField(1)
@@ -536,7 +553,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsCreateRequest(_messages.Messag
       lower-case letter - end with a lower-case letter or number - be unique
       within the set of Backups in this BackupPlan
     parent: Required. The BackupPlan within which to create the Backup.
-      Format: projects/*/locations/*/backupPlans/*
+      Format: `projects/*/locations/*/backupPlans/*`
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -554,7 +571,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsDeleteRequest(_messages.Messag
       deleted. Otherwise, the request will only succeed if the Backup has no
       VolumeBackups.
     name: Required. Name of the Backup resource. Format:
-      projects/*/locations/*/backupPlans/*/backups/*
+      `projects/*/locations/*/backupPlans/*/backups/*`
   """
 
   etag = _messages.StringField(1)
@@ -580,8 +597,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsGetIamPolicyRequest(_messages.
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -593,7 +611,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Full name of the Backup resource. Format:
-      projects/*/locations/*/backupPlans/*/backups/*
+      `projects/*/locations/*/backupPlans/*/backups/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -616,7 +634,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsListRequest(_messages.Message)
       provided to `ListBackups` must match the call that provided the page
       token.
     parent: Required. The BackupPlan that contains the Backups to list.
-      Format: projects/*/locations/*/backupPlans/*
+      Format: `projects/*/locations/*/backupPlans/*`
   """
 
   filter = _messages.StringField(1)
@@ -632,7 +650,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsPatchRequest(_messages.Message
   Fields:
     backup: A Backup resource to be passed as the request body.
     name: Output only. The fully qualified name of the Backup.
-      projects/*/locations/*/backupPlans/*/backups/*
+      `projects/*/locations/*/backupPlans/*/backups/*`
     updateMask: This is used to specify the fields to be overwritten in the
       Backup targeted for update. The values for each of these updated fields
       will be taken from the `backup_plan` provided with this request. Field
@@ -653,8 +671,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsSetIamPolicyRequest(_messages.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -669,8 +688,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsTestIamPermissionsRequest(_mes
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -698,8 +718,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetIamPolicyReque
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -712,7 +733,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetRequest(_messa
 
   Fields:
     name: Required. Full name of the VolumeBackup resource. Format:
-      projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*
+      `projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -736,7 +757,7 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsListRequest(_mess
       provided to `ListVolumeBackups` must match the call that provided the
       page token.
     parent: Required. The Backup that contains the VolumeBackups to list.
-      Format: projects/*/locations/*/backupPlans/*/backups/*
+      Format: `projects/*/locations/*/backupPlans/*/backups/*`
   """
 
   filter = _messages.StringField(1)
@@ -753,8 +774,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsSetIamPolicyReque
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -769,8 +791,9 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsTestIamPermission
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -790,7 +813,7 @@ class GkebackupProjectsLocationsBackupPlansCreateRequest(_messages.Message):
       dashes - start with a lower-case letter - end with a lower-case letter
       or number - be unique within the set of BackupPlans in this location
     parent: Required. The location within which to create the BackupPlan.
-      Format: projects/*/locations/*
+      Format: `projects/*/locations/*`
   """
 
   backupPlan = _messages.MessageField('BackupPlan', 1)
@@ -805,7 +828,7 @@ class GkebackupProjectsLocationsBackupPlansDeleteRequest(_messages.Message):
     etag: If provided, this value must match the current value of the target
       BackupPlan's etag field or the request is rejected.
     name: Required. Fully qualified BackupPlan name. Format:
-      projects/*/locations/*/backupPlans/*
+      `projects/*/locations/*/backupPlans/*`
   """
 
   etag = _messages.StringField(1)
@@ -829,8 +852,9 @@ class GkebackupProjectsLocationsBackupPlansGetIamPolicyRequest(_messages.Message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -842,7 +866,7 @@ class GkebackupProjectsLocationsBackupPlansGetRequest(_messages.Message):
 
   Fields:
     name: Required. Fully qualified BackupPlan name. Format:
-      projects/*/locations/*/backupPlans/*
+      `projects/*/locations/*/backupPlans/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -865,7 +889,7 @@ class GkebackupProjectsLocationsBackupPlansListRequest(_messages.Message):
       provided to `ListBackupPlans` must match the call that provided the page
       token.
     parent: Required. The location that contains the BackupPlans to list.
-      Format: projects/*/locations/*
+      Format: `projects/*/locations/*`
   """
 
   filter = _messages.StringField(1)
@@ -881,7 +905,7 @@ class GkebackupProjectsLocationsBackupPlansPatchRequest(_messages.Message):
   Fields:
     backupPlan: A BackupPlan resource to be passed as the request body.
     name: Output only. The full name of the BackupPlan resource. Format:
-      projects/*/locations/*/backupPlans/*
+      `projects/*/locations/*/backupPlans/*`
     updateMask: This is used to specify the fields to be overwritten in the
       BackupPlan targeted for update. The values for each of these updated
       fields will be taken from the `backup_plan` provided with this request.
@@ -903,8 +927,9 @@ class GkebackupProjectsLocationsBackupPlansSetIamPolicyRequest(_messages.Message
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -918,8 +943,9 @@ class GkebackupProjectsLocationsBackupPlansTestIamPermissionsRequest(_messages.M
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1013,7 +1039,7 @@ class GkebackupProjectsLocationsRestorePlansCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The location within which to create the RestorePlan.
-      Format: projects/*/locations/*
+      Format: `projects/*/locations/*`
     restorePlan: A RestorePlan resource to be passed as the request body.
     restorePlanId: Required. The client-provided short name for the
       RestorePlan resource. This name must: - be between 1 and 63 characters
@@ -1038,7 +1064,7 @@ class GkebackupProjectsLocationsRestorePlansDeleteRequest(_messages.Message):
       deleted. Otherwise, the request will only succeed if the RestorePlan has
       no Restores.
     name: Required. Fully qualified RestorePlan name. Format:
-      projects/*/locations/*/restorePlans/*
+      `projects/*/locations/*/restorePlans/*`
   """
 
   etag = _messages.StringField(1)
@@ -1063,8 +1089,9 @@ class GkebackupProjectsLocationsRestorePlansGetIamPolicyRequest(_messages.Messag
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1076,7 +1103,7 @@ class GkebackupProjectsLocationsRestorePlansGetRequest(_messages.Message):
 
   Fields:
     name: Required. Fully qualified RestorePlan name. Format:
-      projects/*/locations/*/restorePlans/*
+      `projects/*/locations/*/restorePlans/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1099,7 +1126,7 @@ class GkebackupProjectsLocationsRestorePlansListRequest(_messages.Message):
       provided to `ListRestorePlans` must match the call that provided the
       page token.
     parent: Required. The location that contains the RestorePlans to list.
-      Format: projects/*/locations/*
+      Format: `projects/*/locations/*`
   """
 
   filter = _messages.StringField(1)
@@ -1114,7 +1141,7 @@ class GkebackupProjectsLocationsRestorePlansPatchRequest(_messages.Message):
 
   Fields:
     name: Output only. The full name of the RestorePlan resource. Format:
-      projects/*/locations/*/restorePlans/*.
+      `projects/*/locations/*/restorePlans/*`.
     restorePlan: A RestorePlan resource to be passed as the request body.
     updateMask: This is used to specify the fields to be overwritten in the
       RestorePlan targeted for update. The values for each of these updated
@@ -1136,7 +1163,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresCreateRequest(_messages.Mess
 
   Fields:
     parent: Required. The RestorePlan within which to create the Restore.
-      Format: projects/*/locations/*/restorePlans/*
+      Format: `projects/*/locations/*/restorePlans/*`
     restore: A Restore resource to be passed as the request body.
     restoreId: Required. The client-provided short name for the Restore
       resource. This name must: - be between 1 and 63 characters long
@@ -1160,7 +1187,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresDeleteRequest(_messages.Mess
       deleted. Otherwise, the request will only succeed if the restore has no
       VolumeRestores.
     name: Required. Full name of the Restore Format:
-      projects/*/locations/*/restorePlans/*/restores/*
+      `projects/*/locations/*/restorePlans/*/restores/*`
   """
 
   etag = _messages.StringField(1)
@@ -1186,8 +1213,9 @@ class GkebackupProjectsLocationsRestorePlansRestoresGetIamPolicyRequest(_message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1199,7 +1227,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresGetRequest(_messages.Message
 
   Fields:
     name: Required. Name of the restore resource. Format:
-      projects/*/locations/*/restorePlans/*/restores/*
+      `projects/*/locations/*/restorePlans/*/restores/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1222,7 +1250,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresListRequest(_messages.Messag
       provided to `ListRestores` must match the call that provided the page
       token.
     parent: Required. The RestorePlan that contains the Restores to list.
-      Format: projects/*/locations/*/restorePlans/*
+      Format: `projects/*/locations/*/restorePlans/*`
   """
 
   filter = _messages.StringField(1)
@@ -1237,7 +1265,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresPatchRequest(_messages.Messa
 
   Fields:
     name: Output only. The full name of the Restore resource. Format:
-      projects/*/locations/*/restorePlans/*/restores/*
+      `projects/*/locations/*/restorePlans/*/restores/*`
     restore: A Restore resource to be passed as the request body.
     updateMask: This is used to specify the fields to be overwritten in the
       Restore targeted for update. The values for each of these updated fields
@@ -1259,8 +1287,9 @@ class GkebackupProjectsLocationsRestorePlansRestoresSetIamPolicyRequest(_message
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1276,8 +1305,9 @@ class GkebackupProjectsLocationsRestorePlansRestoresTestIamPermissionsRequest(_m
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1304,8 +1334,9 @@ class GkebackupProjectsLocationsRestorePlansRestoresVolumeRestoresGetIamPolicyRe
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1318,7 +1349,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresVolumeRestoresGetRequest(_me
 
   Fields:
     name: Required. Full name of the VolumeRestore resource. Format:
-      projects/*/locations/*/restorePlans/*/restores/*/volumeRestores/*
+      `projects/*/locations/*/restorePlans/*/restores/*/volumeRestores/*`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1343,7 +1374,7 @@ class GkebackupProjectsLocationsRestorePlansRestoresVolumeRestoresListRequest(_m
       provided to `ListVolumeRestores` must match the call that provided the
       page token.
     parent: Required. The Restore that contains the VolumeRestores to list.
-      Format: projects/*/locations/*/restorePlans/*/restores/*
+      Format: `projects/*/locations/*/restorePlans/*/restores/*`
   """
 
   filter = _messages.StringField(1)
@@ -1359,8 +1390,9 @@ class GkebackupProjectsLocationsRestorePlansRestoresVolumeRestoresSetIamPolicyRe
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1375,8 +1407,9 @@ class GkebackupProjectsLocationsRestorePlansRestoresVolumeRestoresTestIamPermiss
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1390,8 +1423,9 @@ class GkebackupProjectsLocationsRestorePlansSetIamPolicyRequest(_messages.Messag
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -1406,8 +1440,9 @@ class GkebackupProjectsLocationsRestorePlansTestIamPermissionsRequest(_messages.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -1943,10 +1978,10 @@ class Restore(_messages.Message):
     backup: Required. Immutable. A reference to the Backup used as the source
       from which this Restore will restore. Note that this Backup must be a
       sub-resource of the RestorePlan's backup_plan. Format:
-      projects/*/locations/*/backupPlans/*/backups/*.
+      `projects/*/locations/*/backupPlans/*/backups/*`.
     cluster: Output only. The target cluster into which this Restore will
-      restore data. Valid formats: - projects/*/locations/*/clusters/* -
-      projects/*/zones/*/clusters/* Inherited from parent RestorePlan's
+      restore data. Valid formats: - `projects/*/locations/*/clusters/*` -
+      `projects/*/zones/*/clusters/*` Inherited from parent RestorePlan's
       cluster value.
     completeTime: Output only. Timestamp of when the restore operation
       completed.
@@ -1963,7 +1998,7 @@ class Restore(_messages.Message):
       be applied to the same version of the resource.
     labels: A set of custom labels supplied by user.
     name: Output only. The full name of the Restore resource. Format:
-      projects/*/locations/*/restorePlans/*/restores/*
+      `projects/*/locations/*/restorePlans/*/restores/*`
     resourcesExcludedCount: Output only. Number of resources excluded during
       the restore execution.
     resourcesFailedCount: Output only. Number of resources that failed to be
@@ -2050,7 +2085,7 @@ class Restore(_messages.Message):
 
 
 class RestoreConfig(_messages.Message):
-  r"""Configuration of a restore. Next id: 9
+  r"""Configuration of a restore. Next id: 11
 
   Enums:
     ClusterResourceConflictPolicyValueValuesEnum: Defines the behavior for
@@ -2189,11 +2224,11 @@ class RestorePlan(_messages.Message):
   Fields:
     backupPlan: Required. Immutable. A reference to the BackupPlan from which
       Backups may be used as the source for Restores created via this
-      RestorePlan. Format: projects/*/locations/*/backupPlans/*.
+      RestorePlan. Format: `projects/*/locations/*/backupPlans/*`.
     cluster: Required. Immutable. The target cluster into which Restores
       created via this RestorePlan will restore data. NOTE: the cluster's
       region must be the same as the RestorePlan. Valid formats: -
-      projects/*/locations/*/clusters/* - projects/*/zones/*/clusters/*
+      `projects/*/locations/*/clusters/*` - `projects/*/zones/*/clusters/*`
     createTime: Output only. The timestamp when this RestorePlan resource was
       created.
     description: User specified descriptive string for this RestorePlan.
@@ -2207,7 +2242,7 @@ class RestorePlan(_messages.Message):
       their change will be applied to the same version of the resource.
     labels: A set of custom labels supplied by user.
     name: Output only. The full name of the RestorePlan resource. Format:
-      projects/*/locations/*/restorePlans/*.
+      `projects/*/locations/*/restorePlans/*`.
     restoreConfig: Required. Configuration of Restores created via this
       RestorePlan.
     uid: Output only. Server generated global unique identifier of
@@ -2265,14 +2300,15 @@ class RetentionPolicy(_messages.Message):
       created AFTER a successful update will inherit the new value. Default: 0
       (no delete blocking)
     backupRetainDays: The default maximum age of a Backup created via this
-      BackupPlan. This field MUST be an integer value >= 0. If specified, a
-      Backup created under this BackupPlan will be automatically deleted after
-      its age reaches (create_time + backup_retain_days). If not specified,
-      Backups created under this BackupPlan will NOT be subject to automatic
-      deletion. Updating this field does NOT affect existing Backups under it.
-      Backups created AFTER a successful update will automatically pick up the
-      new value. NOTE: backup_retain_days must be >= backup_delete_lock_days.
-      Default: 0 (no automatic deletion)
+      BackupPlan. This field MUST be an integer value >= 0 and <= 365. If
+      specified, a Backup created under this BackupPlan will be automatically
+      deleted after its age reaches (create_time + backup_retain_days). If not
+      specified, Backups created under this BackupPlan will NOT be subject to
+      automatic deletion. Updating this field does NOT affect existing Backups
+      under it. Backups created AFTER a successful update will automatically
+      pick up the new value. NOTE: backup_retain_days must be >=
+      backup_delete_lock_days. If cron_schedule is defined, then this must be
+      <= 360 * the creation interval. Default: 0 (no automatic deletion)
     locked: This flag denotes whether the retention policy of this BackupPlan
       is locked. If set to True, no further update is allowed on this policy,
       including the `locked` field itself. Default: False
@@ -2290,7 +2326,8 @@ class Schedule(_messages.Message):
   Fields:
     cronSchedule: A standard [cron](https://wikipedia.com/wiki/cron) string
       that defines a repeating schedule for creating Backups via this
-      BackupPlan. Default (empty): no automatic backup creation will occur.
+      BackupPlan. If this is defined, then backup_retain_days must also be
+      defined. Default (empty): no automatic backup creation will occur.
     paused: This flag denotes whether automatic Backup creation is paused for
       this BackupPlan. Default: False
   """
@@ -2396,8 +2433,8 @@ class SubstitutionRule(_messages.Message):
       performed against fields whose value does not match this expression. If
       this field is NOT specified, then ALL fields matched by the
       target_json_path expression will undergo substitution. Note that an
-      empty (e.g., "", rather than unspecified) value for for this field will
-      only match empty fields.
+      empty (e.g., "", rather than unspecified) value for this field will only
+      match empty fields.
     targetGroupKinds: (Filtering parameter) Any resource subject to
       substitution must belong to one of the listed "types". If this field is
       not provided, no type filtering will be performed (all resources of all
@@ -2473,7 +2510,7 @@ class VolumeBackup(_messages.Message):
       updates in order to avoid race conditions.
     format: Output only. The format used for the volume backup.
     name: Output only. The full name of the VolumeBackup resource. Format:
-      projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*.
+      `projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*`.
     sourcePvc: Output only. A reference to the source Kubernetes PVC from
       which this VolumeBackup was created.
     state: Output only. The current state of this VolumeBackup.
@@ -2566,7 +2603,7 @@ class VolumeRestore(_messages.Message):
       of the `etag` in the read-modify-write cycle to perform volume restore
       updates in order to avoid race conditions.
     name: Output only. Full name of the VolumeRestore resource. Format:
-      projects/*/locations/*/restorePlans/*/restores/*/volumeRestores/*.
+      `projects/*/locations/*/restorePlans/*/restores/*/volumeRestores/*`
     state: Output only. The current state of this VolumeRestore.
     stateMessage: Output only. A human readable message explaining why the
       VolumeRestore is in its current state.
@@ -2579,7 +2616,7 @@ class VolumeRestore(_messages.Message):
       was last updated.
     volumeBackup: Output only. The full name of the VolumeBackup from which
       the volume will be restored. Format:
-      projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*.
+      `projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*`.
     volumeHandle: Output only. A storage system-specific opaque handler to the
       underlying volume created for the target PVC from the volume backup.
     volumeType: Output only. The type of volume provisioned

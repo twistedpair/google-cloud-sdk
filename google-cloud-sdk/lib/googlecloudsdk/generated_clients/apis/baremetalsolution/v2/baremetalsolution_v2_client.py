@@ -391,7 +391,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request: (BaremetalsolutionProjectsLocationsInstancesRenameRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (Instance) The response message.
       """
       config = self.GetMethodConfig('Rename')
       return self._RunMethod(
@@ -407,7 +407,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         relative_path='v2/{+name}:rename',
         request_field='renameInstanceRequest',
         request_type_name='BaremetalsolutionProjectsLocationsInstancesRenameRequest',
-        response_type_name='Operation',
+        response_type_name='Instance',
         supports_download=False,
     )
 

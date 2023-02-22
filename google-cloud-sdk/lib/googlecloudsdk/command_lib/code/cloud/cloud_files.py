@@ -78,4 +78,13 @@ class CloudRuntimeFiles(object):
     artifacts.append(artifact)
     skaffold_yaml['deploy']['cloudrun']['projectid'] = self._settings.project
     skaffold_yaml['deploy']['cloudrun']['region'] = self._settings.region
+
+    if self._settings.local_port:
+      port_forward_config = {
+          'resourceType': 'service',
+          'resourceName': self._settings.service_name,
+          'port': 8080,
+          'localPort': self._settings.local_port,
+      }
+      skaffold_yaml['portForward'] = [port_forward_config]
     return yaml.dump(skaffold_yaml)

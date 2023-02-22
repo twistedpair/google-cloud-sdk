@@ -96,7 +96,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -113,9 +115,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1676,6 +1676,20 @@ class NotebooksProjectsLocationsInstancesRegisterRequest(_messages.Message):
   registerInstanceRequest = _messages.MessageField('RegisterInstanceRequest', 2)
 
 
+class NotebooksProjectsLocationsInstancesReportEventRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesReportEventRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    reportInstanceEventRequest: A ReportInstanceEventRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reportInstanceEventRequest = _messages.MessageField('ReportInstanceEventRequest', 2)
+
+
 class NotebooksProjectsLocationsInstancesReportRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesReportRequest object.
 
@@ -2535,6 +2549,20 @@ class RegisterInstanceRequest(_messages.Message):
   instanceId = _messages.StringField(1)
 
 
+class ReportInstanceEventRequest(_messages.Message):
+  r"""Request for reporting a Managed Notebook Event.
+
+  Fields:
+    event: Required. The Event to be reported.
+    vmId: Required. The VM hardware token for authenticating the VM.
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity
+  """
+
+  event = _messages.MessageField('Event', 1)
+  vmId = _messages.StringField(2)
+
+
 class ReportInstanceInfoRequest(_messages.Message):
   r"""Request for notebook instances to report information to Notebooks API.
 
@@ -2973,6 +3001,8 @@ class RuntimeSoftwareConfig(_messages.Message):
     installGpuDriver: Install Nvidia Driver automatically. Default: True
     kernels: Optional. Use a list of container images to use as Kernels in the
       notebook instance.
+    mixerDisabled: Bool indicating whether mixer client should be disabled.
+      Default: False
     notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
       instance auto upgrade. Please follow the [cron
       format](https://en.wikipedia.org/wiki/Cron).
@@ -3008,11 +3038,12 @@ class RuntimeSoftwareConfig(_messages.Message):
   idleShutdownTimeout = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   installGpuDriver = _messages.BooleanField(6)
   kernels = _messages.MessageField('ContainerImage', 7, repeated=True)
-  notebookUpgradeSchedule = _messages.StringField(8)
-  postStartupScript = _messages.StringField(9)
-  postStartupScriptBehavior = _messages.EnumField('PostStartupScriptBehaviorValueValuesEnum', 10)
-  upgradeable = _messages.BooleanField(11)
-  version = _messages.StringField(12)
+  mixerDisabled = _messages.BooleanField(8)
+  notebookUpgradeSchedule = _messages.StringField(9)
+  postStartupScript = _messages.StringField(10)
+  postStartupScriptBehavior = _messages.EnumField('PostStartupScriptBehaviorValueValuesEnum', 11)
+  upgradeable = _messages.BooleanField(12)
+  version = _messages.StringField(13)
 
 
 class Schedule(_messages.Message):

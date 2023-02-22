@@ -181,6 +181,10 @@ class AddSubnetworkRequest(_messages.Message):
       range names are provided all ranges associated with this connection will
       be considered. If a CIDR range with the specified IP prefix length is
       not available within these ranges, the call fails.
+    role: Optional. Defines the role field of the subnet, e.g. 'ACTIVE'. For
+      information about the roles that can be set using this field, see [subne
+      twork](https://cloud.google.com/compute/docs/reference/rest/v1/subnetwor
+      ks) in the Compute API documentation.
     secondaryIpRangeSpecs: Optional. A list of secondary IP ranges to be
       created within the new subnetwork.
     subnetwork: Required. A name for the new subnet. For information about the
@@ -210,10 +214,11 @@ class AddSubnetworkRequest(_messages.Message):
   region = _messages.StringField(11)
   requestedAddress = _messages.StringField(12)
   requestedRanges = _messages.StringField(13, repeated=True)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 14, repeated=True)
-  subnetwork = _messages.StringField(15)
-  subnetworkUsers = _messages.StringField(16, repeated=True)
-  useCustomComputeIdempotencyWindow = _messages.BooleanField(17)
+  role = _messages.StringField(14)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 15, repeated=True)
+  subnetwork = _messages.StringField(16)
+  subnetworkUsers = _messages.StringField(17, repeated=True)
+  useCustomComputeIdempotencyWindow = _messages.BooleanField(18)
 
 
 class Api(_messages.Message):
@@ -416,6 +421,10 @@ class BackendRule(_messages.Message):
   Enums:
     PathTranslationValueValuesEnum:
 
+  Messages:
+    OverridesByRequestProtocolValue: The map between request protocol and the
+      backend address.
+
   Fields:
     address: The address of the API backend. The scheme is used to determine
       the backend protocol and security. The following schemes are accepted:
@@ -437,6 +446,8 @@ class BackendRule(_messages.Message):
     minDeadline: Deprecated, do not use.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
+    overridesByRequestProtocol: The map between request protocol and the
+      backend address.
     pathTranslation: A PathTranslationValueValuesEnum attribute.
     protocol: The protocol used for sending a request to the backend. The
       supported values are "http/1.1" and "h2". The default value is inferred
@@ -485,15 +496,42 @@ class BackendRule(_messages.Message):
     CONSTANT_ADDRESS = 1
     APPEND_PATH_TO_ADDRESS = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OverridesByRequestProtocolValue(_messages.Message):
+    r"""The map between request protocol and the backend address.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        OverridesByRequestProtocolValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        OverridesByRequestProtocolValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OverridesByRequestProtocolValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BackendRule attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BackendRule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
   disableAuth = _messages.BooleanField(3)
   jwtAudience = _messages.StringField(4)
   minDeadline = _messages.FloatField(5)
   operationDeadline = _messages.FloatField(6)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 7)
-  protocol = _messages.StringField(8)
-  selector = _messages.StringField(9)
+  overridesByRequestProtocol = _messages.MessageField('OverridesByRequestProtocolValue', 7)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 8)
+  protocol = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class Billing(_messages.Message):

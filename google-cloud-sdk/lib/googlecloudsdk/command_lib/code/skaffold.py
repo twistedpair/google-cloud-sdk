@@ -113,7 +113,7 @@ def Skaffold(skaffold_config,
   if debug:
     cmd += ['-vdebug']
   if events_port:
-    cmd += ['--enable-rpc', '--rpc-http-port=%s' % events_port]
+    cmd += ['--rpc-http-port=%s' % events_port]
 
   # Supress the current Ctrl-C handler and pass the signal to the child
   # process.

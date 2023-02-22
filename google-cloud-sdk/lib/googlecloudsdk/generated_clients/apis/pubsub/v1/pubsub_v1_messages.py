@@ -129,7 +129,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -146,9 +148,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -519,6 +519,18 @@ class ModifyPushConfigRequest(_messages.Message):
   pushConfig = _messages.MessageField('PushConfig', 1)
 
 
+class NoWrapper(_messages.Message):
+  r"""Sets the `data` field as the HTTP body for delivery.
+
+  Fields:
+    writeMetadata: When true, writes the Pub/Sub message metadata to `x-goog-
+      pubsub-:` headers of the HTTP request. Writes the Pub/Sub message
+      attributes to `:` headers of the HTTP request.
+  """
+
+  writeMetadata = _messages.BooleanField(1)
+
+
 class OidcToken(_messages.Message):
   r"""Contains information needed for generating an [OpenID Connect
   token](https://developers.google.com/identity/protocols/OpenIDConnect).
@@ -760,10 +772,11 @@ class PubsubProjectsSchemasDeleteRevisionRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the schema revision to be deleted, with a
-      revision ID explicitly included. Example: projects/123/schemas/my-
-      schema@c7cfa2a8
-    revisionId: Required. The revision ID to roll back to. It must be a
-      revision of the same schema. Example: c7cfa2a8
+      revision ID explicitly included. Example: `projects/123/schemas/my-
+      schema@c7cfa2a8`
+    revisionId: Optional. This field is deprecated and should not be used for
+      specifying the revision ID. The revision ID should be specified via the
+      `name` parameter.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1469,6 +1482,14 @@ class PubsubProjectsTopicsTestIamPermissionsRequest(_messages.Message):
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class PubsubWrapper(_messages.Message):
+  r"""The payload to the push endpoint is in the form of the JSON
+  representation of a PubsubMessage (https://cloud.google.com/pubsub/docs/refe
+  rence/rpc/google.pubsub.v1#pubsubmessage).
+  """
+
+
+
 class PullRequest(_messages.Message):
   r"""Request for the `Pull` method.
 
@@ -1538,9 +1559,13 @@ class PushConfig(_messages.Message):
       attribute are: * `v1beta1`: uses the push format defined in the v1beta1
       Pub/Sub API. * `v1` or `v1beta2`: uses the push format defined in the v1
       Pub/Sub API. For example: `attributes { "x-goog-version": "v1" }`
+    noWrapper: When set, the payload to the push endpoint is not wrapped.
     oidcToken: If specified, Pub/Sub will generate and attach an OIDC JWT
       token as an `Authorization` header in the HTTP request for every pushed
       message.
+    pubsubWrapper: When set, the payload to the push endpoint is in the form
+      of the JSON representation of a PubsubMessage (https://cloud.google.com/
+      pubsub/docs/reference/rpc/google.pubsub.v1#pubsubmessage).
     pushEndpoint: A URL locating the endpoint to which messages should be
       pushed. For example, a Webhook endpoint might use
       `https://example.com/push`.
@@ -1584,8 +1609,10 @@ class PushConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributes = _messages.MessageField('AttributesValue', 1)
-  oidcToken = _messages.MessageField('OidcToken', 2)
-  pushEndpoint = _messages.StringField(3)
+  noWrapper = _messages.MessageField('NoWrapper', 2)
+  oidcToken = _messages.MessageField('OidcToken', 3)
+  pubsubWrapper = _messages.MessageField('PubsubWrapper', 4)
+  pushEndpoint = _messages.StringField(5)
 
 
 class ReceivedMessage(_messages.Message):

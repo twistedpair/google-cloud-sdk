@@ -366,6 +366,14 @@
         },
         "vexAssessment": {
           "$ref": "VexAssessment"
+        },
+        "cvssV2": {
+          "description": "The cvss v2 score for the vulnerability.",
+          "$ref": "CVSS"
+        },
+        "cvssV3": {
+          "description": "The cvss v3 score for the vulnerability.",
+          "$ref": "CVSS"
         }
       }
     },
@@ -603,6 +611,180 @@
         "remediationUri": {
           "description": "Contains the URL where to obtain the remediation.",
           "$ref": "RelatedUrl"
+        }
+      }
+    },
+    "CVSS": {
+      "id": "CVSS",
+      "description": "Common Vulnerability Scoring System. This message is compatible with CVSS v2 and v3. For CVSS v2 details, see https:\/\/www.first.org\/cvss\/v2\/guide CVSS v2 calculator: https:\/\/nvd.nist.gov\/vuln-metrics\/cvss\/v2-calculator For CVSS v3 details, see https:\/\/www.first.org\/cvss\/specification-document CVSS v3 calculator: https:\/\/nvd.nist.gov\/vuln-metrics\/cvss\/v3-calculator",
+      "type": "object",
+      "properties": {
+        "baseScore": {
+          "description": "The base score is a function of the base metric scores.",
+          "type": "number",
+          "format": "float"
+        },
+        "exploitabilityScore": {
+          "type": "number",
+          "format": "float"
+        },
+        "impactScore": {
+          "type": "number",
+          "format": "float"
+        },
+        "attackVector": {
+          "description": "Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. Defined in CVSS v3, CVSS v2",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3"
+          ],
+          "enum": [
+            "ATTACK_VECTOR_UNSPECIFIED",
+            "ATTACK_VECTOR_NETWORK",
+            "ATTACK_VECTOR_ADJACENT",
+            "ATTACK_VECTOR_LOCAL",
+            "ATTACK_VECTOR_PHYSICAL"
+          ]
+        },
+        "attackComplexity": {
+          "description": "Defined in CVSS v3, CVSS v2",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v2"
+          ],
+          "enum": [
+            "ATTACK_COMPLEXITY_UNSPECIFIED",
+            "ATTACK_COMPLEXITY_LOW",
+            "ATTACK_COMPLEXITY_HIGH",
+            "ATTACK_COMPLEXITY_MEDIUM"
+          ]
+        },
+        "authentication": {
+          "description": "Defined in CVSS v2",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v2",
+            "Defined in CVSS v2",
+            "Defined in CVSS v2",
+            "Defined in CVSS v2"
+          ],
+          "enum": [
+            "AUTHENTICATION_UNSPECIFIED",
+            "AUTHENTICATION_MULTIPLE",
+            "AUTHENTICATION_SINGLE",
+            "AUTHENTICATION_NONE"
+          ]
+        },
+        "privilegesRequired": {
+          "description": "Defined in CVSS v3",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3"
+          ],
+          "enum": [
+            "PRIVILEGES_REQUIRED_UNSPECIFIED",
+            "PRIVILEGES_REQUIRED_NONE",
+            "PRIVILEGES_REQUIRED_LOW",
+            "PRIVILEGES_REQUIRED_HIGH"
+          ]
+        },
+        "userInteraction": {
+          "description": "Defined in CVSS v3",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3"
+          ],
+          "enum": [
+            "USER_INTERACTION_UNSPECIFIED",
+            "USER_INTERACTION_NONE",
+            "USER_INTERACTION_REQUIRED"
+          ]
+        },
+        "scope": {
+          "description": "Defined in CVSS v3",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3"
+          ],
+          "enum": [
+            "SCOPE_UNSPECIFIED",
+            "SCOPE_UNCHANGED",
+            "SCOPE_CHANGED"
+          ]
+        },
+        "confidentialityImpact": {
+          "description": "Defined in CVSS v3, CVSS v2",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v2",
+            "Defined in CVSS v2"
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE",
+            "IMPACT_PARTIAL",
+            "IMPACT_COMPLETE"
+          ]
+        },
+        "integrityImpact": {
+          "description": "Defined in CVSS v3, CVSS v2",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v2",
+            "Defined in CVSS v2"
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE",
+            "IMPACT_PARTIAL",
+            "IMPACT_COMPLETE"
+          ]
+        },
+        "availabilityImpact": {
+          "description": "Defined in CVSS v3, CVSS v2",
+          "type": "string",
+          "enumDescriptions": [
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3",
+            "Defined in CVSS v3, CVSS v2",
+            "Defined in CVSS v2",
+            "Defined in CVSS v2"
+          ],
+          "enum": [
+            "IMPACT_UNSPECIFIED",
+            "IMPACT_HIGH",
+            "IMPACT_LOW",
+            "IMPACT_NONE",
+            "IMPACT_PARTIAL",
+            "IMPACT_COMPLETE"
+          ]
         }
       }
     },
@@ -2335,180 +2517,6 @@
         "url": {
           "description": "A link to the KB in the Windows update catalog - https:\/\/www.catalog.update.microsoft.com\/",
           "type": "string"
-        }
-      }
-    },
-    "CVSS": {
-      "id": "CVSS",
-      "description": "Common Vulnerability Scoring System. This message is compatible with CVSS v2 and v3. For CVSS v2 details, see https:\/\/www.first.org\/cvss\/v2\/guide CVSS v2 calculator: https:\/\/nvd.nist.gov\/vuln-metrics\/cvss\/v2-calculator For CVSS v3 details, see https:\/\/www.first.org\/cvss\/specification-document CVSS v3 calculator: https:\/\/nvd.nist.gov\/vuln-metrics\/cvss\/v3-calculator",
-      "type": "object",
-      "properties": {
-        "baseScore": {
-          "description": "The base score is a function of the base metric scores.",
-          "type": "number",
-          "format": "float"
-        },
-        "exploitabilityScore": {
-          "type": "number",
-          "format": "float"
-        },
-        "impactScore": {
-          "type": "number",
-          "format": "float"
-        },
-        "attackVector": {
-          "description": "Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. Defined in CVSS v3, CVSS v2",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3"
-          ],
-          "enum": [
-            "ATTACK_VECTOR_UNSPECIFIED",
-            "ATTACK_VECTOR_NETWORK",
-            "ATTACK_VECTOR_ADJACENT",
-            "ATTACK_VECTOR_LOCAL",
-            "ATTACK_VECTOR_PHYSICAL"
-          ]
-        },
-        "attackComplexity": {
-          "description": "Defined in CVSS v3, CVSS v2",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v2"
-          ],
-          "enum": [
-            "ATTACK_COMPLEXITY_UNSPECIFIED",
-            "ATTACK_COMPLEXITY_LOW",
-            "ATTACK_COMPLEXITY_HIGH",
-            "ATTACK_COMPLEXITY_MEDIUM"
-          ]
-        },
-        "authentication": {
-          "description": "Defined in CVSS v2",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v2",
-            "Defined in CVSS v2",
-            "Defined in CVSS v2",
-            "Defined in CVSS v2"
-          ],
-          "enum": [
-            "AUTHENTICATION_UNSPECIFIED",
-            "AUTHENTICATION_MULTIPLE",
-            "AUTHENTICATION_SINGLE",
-            "AUTHENTICATION_NONE"
-          ]
-        },
-        "privilegesRequired": {
-          "description": "Defined in CVSS v3",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3"
-          ],
-          "enum": [
-            "PRIVILEGES_REQUIRED_UNSPECIFIED",
-            "PRIVILEGES_REQUIRED_NONE",
-            "PRIVILEGES_REQUIRED_LOW",
-            "PRIVILEGES_REQUIRED_HIGH"
-          ]
-        },
-        "userInteraction": {
-          "description": "Defined in CVSS v3",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3"
-          ],
-          "enum": [
-            "USER_INTERACTION_UNSPECIFIED",
-            "USER_INTERACTION_NONE",
-            "USER_INTERACTION_REQUIRED"
-          ]
-        },
-        "scope": {
-          "description": "Defined in CVSS v3",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3"
-          ],
-          "enum": [
-            "SCOPE_UNSPECIFIED",
-            "SCOPE_UNCHANGED",
-            "SCOPE_CHANGED"
-          ]
-        },
-        "confidentialityImpact": {
-          "description": "Defined in CVSS v3, CVSS v2",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v2",
-            "Defined in CVSS v2"
-          ],
-          "enum": [
-            "IMPACT_UNSPECIFIED",
-            "IMPACT_HIGH",
-            "IMPACT_LOW",
-            "IMPACT_NONE",
-            "IMPACT_PARTIAL",
-            "IMPACT_COMPLETE"
-          ]
-        },
-        "integrityImpact": {
-          "description": "Defined in CVSS v3, CVSS v2",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v2",
-            "Defined in CVSS v2"
-          ],
-          "enum": [
-            "IMPACT_UNSPECIFIED",
-            "IMPACT_HIGH",
-            "IMPACT_LOW",
-            "IMPACT_NONE",
-            "IMPACT_PARTIAL",
-            "IMPACT_COMPLETE"
-          ]
-        },
-        "availabilityImpact": {
-          "description": "Defined in CVSS v3, CVSS v2",
-          "type": "string",
-          "enumDescriptions": [
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3",
-            "Defined in CVSS v3, CVSS v2",
-            "Defined in CVSS v2",
-            "Defined in CVSS v2"
-          ],
-          "enum": [
-            "IMPACT_UNSPECIFIED",
-            "IMPACT_HIGH",
-            "IMPACT_LOW",
-            "IMPACT_NONE",
-            "IMPACT_PARTIAL",
-            "IMPACT_COMPLETE"
-          ]
         }
       }
     },

@@ -178,487 +178,6 @@ class GoogleCloudPolicysimulatorV1ReplayResultsSummary(_messages.Message):
   unchangedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
-class GoogleCloudPolicysimulatorV1beta1AccessStateDiff(_messages.Message):
-  r"""A summary and comparison of the member's access under the current
-  (baseline) policies and the proposed (simulated) policies for a single
-  access tuple.
-
-  Enums:
-    AccessChangeValueValuesEnum: How the member's access, specified in the
-      AccessState field, changed between the current (baseline) policies and
-      proposed (simulated) policies.
-
-  Fields:
-    accessChange: How the member's access, specified in the AccessState field,
-      changed between the current (baseline) policies and proposed (simulated)
-      policies.
-    baseline: The results of evaluating the access tuple under the current
-      (baseline) policies. If the AccessState couldn't be fully evaluated,
-      this field explains why.
-    simulated: The results of evaluating the access tuple under the proposed
-      (simulated) policies. If the AccessState couldn't be fully evaluated,
-      this field explains why.
-  """
-
-  class AccessChangeValueValuesEnum(_messages.Enum):
-    r"""How the member's access, specified in the AccessState field, changed
-    between the current (baseline) policies and proposed (simulated) policies.
-
-    Values:
-      ACCESS_CHANGE_TYPE_UNSPECIFIED: The access change is unspecified.
-      NO_CHANGE: The member's access did not change. This includes the case
-        where both baseline and simulated are UNKNOWN, but the unknown
-        information is equivalent.
-      UNKNOWN_CHANGE: The member's access under both the current policies and
-        the proposed policies is `UNKNOWN`, but the unknown information
-        differs between them.
-      ACCESS_REVOKED: The member had access under the current policies
-        (`GRANTED`), but will no longer have access after the proposed changes
-        (`NOT_GRANTED`).
-      ACCESS_GAINED: The member did not have access under the current policies
-        (`NOT_GRANTED`), but will have access after the proposed changes
-        (`GRANTED`).
-      ACCESS_MAYBE_REVOKED: This result can occur for the following reasons: *
-        The member had access under the current policies (`GRANTED`), but
-        their access after the proposed changes is `UNKNOWN`. * The member's
-        access under the current policies is `UNKNOWN`, but they will not have
-        access after the proposed changes (`NOT_GRANTED`).
-      ACCESS_MAYBE_GAINED: This result can occur for the following reasons: *
-        The member did not have access under the current policies
-        (`NOT_GRANTED`), but their access after the proposed changes is
-        `UNKNOWN`. * The member's access under the current policies is
-        `UNKNOWN`, but they will have access after the proposed changes
-        (`GRANTED`).
-    """
-    ACCESS_CHANGE_TYPE_UNSPECIFIED = 0
-    NO_CHANGE = 1
-    UNKNOWN_CHANGE = 2
-    ACCESS_REVOKED = 3
-    ACCESS_GAINED = 4
-    ACCESS_MAYBE_REVOKED = 5
-    ACCESS_MAYBE_GAINED = 6
-
-  accessChange = _messages.EnumField('AccessChangeValueValuesEnum', 1)
-  baseline = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1ExplainedAccess', 2)
-  simulated = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1ExplainedAccess', 3)
-
-
-class GoogleCloudPolicysimulatorV1beta1AccessTuple(_messages.Message):
-  r"""Information about the principal, resource, and permission to check.
-
-  Fields:
-    fullResourceName: Required. The full resource name that identifies the
-      resource. For example, `//compute.googleapis.com/projects/my-
-      project/zones/us-central1-a/instances/my-instance`. For examples of full
-      resource names for Google Cloud services, see
-      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
-    permission: Required. The IAM permission to check for the specified
-      principal and resource. For a complete list of IAM permissions, see
-      https://cloud.google.com/iam/help/permissions/reference. For a complete
-      list of predefined IAM roles and the permissions in each role, see
-      https://cloud.google.com/iam/help/roles/reference.
-    principal: Required. The principal whose access you want to check, in the
-      form of the email address that represents that principal. For example,
-      `alice@example.com` or `my-service-account@my-
-      project.iam.gserviceaccount.com`. The principal must be a Google Account
-      or a service account. Other types of principals are not supported.
-  """
-
-  fullResourceName = _messages.StringField(1)
-  permission = _messages.StringField(2)
-  principal = _messages.StringField(3)
-
-
-class GoogleCloudPolicysimulatorV1beta1BindingExplanation(_messages.Message):
-  r"""Details about how a binding in a policy affects a principal's ability to
-  use a permission.
-
-  Enums:
-    AccessValueValuesEnum: Required. Indicates whether _this binding_ provides
-      the specified permission to the specified principal for the specified
-      resource. This field does _not_ indicate whether the principal actually
-      has the permission for the resource. There might be another binding that
-      overrides this binding. To determine whether the principal actually has
-      the permission, use the `access` field in the
-      TroubleshootIamPolicyResponse.
-    RelevanceValueValuesEnum: The relevance of this binding to the overall
-      determination for the entire policy.
-    RolePermissionValueValuesEnum: Indicates whether the role granted by this
-      binding contains the specified permission.
-    RolePermissionRelevanceValueValuesEnum: The relevance of the permission's
-      existence, or nonexistence, in the role to the overall determination for
-      the entire policy.
-
-  Messages:
-    MembershipsValue: Indicates whether each principal in the binding includes
-      the principal specified in the request, either directly or indirectly.
-      Each key identifies a principal in the binding, and each value indicates
-      whether the principal in the binding includes the principal in the
-      request. For example, suppose that a binding includes the following
-      principals: * `user:alice@example.com` * `group:product-eng@example.com`
-      The principal in the replayed access tuple is `user:bob@example.com`.
-      This user is a principal of the group `group:product-eng@example.com`.
-      For the first principal in the binding, the key is
-      `user:alice@example.com`, and the `membership` field in the value is set
-      to `MEMBERSHIP_NOT_INCLUDED`. For the second principal in the binding,
-      the key is `group:product-eng@example.com`, and the `membership` field
-      in the value is set to `MEMBERSHIP_INCLUDED`.
-
-  Fields:
-    access: Required. Indicates whether _this binding_ provides the specified
-      permission to the specified principal for the specified resource. This
-      field does _not_ indicate whether the principal actually has the
-      permission for the resource. There might be another binding that
-      overrides this binding. To determine whether the principal actually has
-      the permission, use the `access` field in the
-      TroubleshootIamPolicyResponse.
-    condition: A condition expression that prevents this binding from granting
-      access unless the expression evaluates to `true`. To learn about IAM
-      Conditions, see https://cloud.google.com/iam/docs/conditions-overview.
-    memberships: Indicates whether each principal in the binding includes the
-      principal specified in the request, either directly or indirectly. Each
-      key identifies a principal in the binding, and each value indicates
-      whether the principal in the binding includes the principal in the
-      request. For example, suppose that a binding includes the following
-      principals: * `user:alice@example.com` * `group:product-eng@example.com`
-      The principal in the replayed access tuple is `user:bob@example.com`.
-      This user is a principal of the group `group:product-eng@example.com`.
-      For the first principal in the binding, the key is
-      `user:alice@example.com`, and the `membership` field in the value is set
-      to `MEMBERSHIP_NOT_INCLUDED`. For the second principal in the binding,
-      the key is `group:product-eng@example.com`, and the `membership` field
-      in the value is set to `MEMBERSHIP_INCLUDED`.
-    relevance: The relevance of this binding to the overall determination for
-      the entire policy.
-    role: The role that this binding grants. For example,
-      `roles/compute.serviceAgent`. For a complete list of predefined IAM
-      roles, as well as the permissions in each role, see
-      https://cloud.google.com/iam/help/roles/reference.
-    rolePermission: Indicates whether the role granted by this binding
-      contains the specified permission.
-    rolePermissionRelevance: The relevance of the permission's existence, or
-      nonexistence, in the role to the overall determination for the entire
-      policy.
-  """
-
-  class AccessValueValuesEnum(_messages.Enum):
-    r"""Required. Indicates whether _this binding_ provides the specified
-    permission to the specified principal for the specified resource. This
-    field does _not_ indicate whether the principal actually has the
-    permission for the resource. There might be another binding that overrides
-    this binding. To determine whether the principal actually has the
-    permission, use the `access` field in the TroubleshootIamPolicyResponse.
-
-    Values:
-      ACCESS_STATE_UNSPECIFIED: Default value. This value is unused.
-      GRANTED: The principal has the permission.
-      NOT_GRANTED: The principal does not have the permission.
-      UNKNOWN_CONDITIONAL: The principal has the permission only if a
-        condition expression evaluates to `true`.
-      UNKNOWN_INFO_DENIED: The user who created the Replay does not have
-        access to all of the policies that Policy Simulator needs to evaluate.
-    """
-    ACCESS_STATE_UNSPECIFIED = 0
-    GRANTED = 1
-    NOT_GRANTED = 2
-    UNKNOWN_CONDITIONAL = 3
-    UNKNOWN_INFO_DENIED = 4
-
-  class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this binding to the overall determination for the
-    entire policy.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
-      NORMAL: The data point has a limited effect on the result. Changing the
-        data point is unlikely to affect the overall determination.
-      HIGH: The data point has a strong effect on the result. Changing the
-        data point is likely to affect the overall determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    NORMAL = 1
-    HIGH = 2
-
-  class RolePermissionRelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the permission's existence, or nonexistence, in the
-    role to the overall determination for the entire policy.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
-      NORMAL: The data point has a limited effect on the result. Changing the
-        data point is unlikely to affect the overall determination.
-      HIGH: The data point has a strong effect on the result. Changing the
-        data point is likely to affect the overall determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    NORMAL = 1
-    HIGH = 2
-
-  class RolePermissionValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the role granted by this binding contains the
-    specified permission.
-
-    Values:
-      ROLE_PERMISSION_UNSPECIFIED: Default value. This value is unused.
-      ROLE_PERMISSION_INCLUDED: The permission is included in the role.
-      ROLE_PERMISSION_NOT_INCLUDED: The permission is not included in the
-        role.
-      ROLE_PERMISSION_UNKNOWN_INFO_DENIED: The user who created the Replay is
-        not allowed to access the binding.
-    """
-    ROLE_PERMISSION_UNSPECIFIED = 0
-    ROLE_PERMISSION_INCLUDED = 1
-    ROLE_PERMISSION_NOT_INCLUDED = 2
-    ROLE_PERMISSION_UNKNOWN_INFO_DENIED = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MembershipsValue(_messages.Message):
-    r"""Indicates whether each principal in the binding includes the principal
-    specified in the request, either directly or indirectly. Each key
-    identifies a principal in the binding, and each value indicates whether
-    the principal in the binding includes the principal in the request. For
-    example, suppose that a binding includes the following principals: *
-    `user:alice@example.com` * `group:product-eng@example.com` The principal
-    in the replayed access tuple is `user:bob@example.com`. This user is a
-    principal of the group `group:product-eng@example.com`. For the first
-    principal in the binding, the key is `user:alice@example.com`, and the
-    `membership` field in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For
-    the second principal in the binding, the key is `group:product-
-    eng@example.com`, and the `membership` field in the value is set to
-    `MEMBERSHIP_INCLUDED`.
-
-    Messages:
-      AdditionalProperty: An additional property for a MembershipsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type MembershipsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MembershipsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A
-          GoogleCloudPolicysimulatorV1beta1BindingExplanationAnnotatedMembersh
-          ip attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1BindingExplanationAnnotatedMembership', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  access = _messages.EnumField('AccessValueValuesEnum', 1)
-  condition = _messages.MessageField('GoogleTypeExpr', 2)
-  memberships = _messages.MessageField('MembershipsValue', 3)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
-  role = _messages.StringField(5)
-  rolePermission = _messages.EnumField('RolePermissionValueValuesEnum', 6)
-  rolePermissionRelevance = _messages.EnumField('RolePermissionRelevanceValueValuesEnum', 7)
-
-
-class GoogleCloudPolicysimulatorV1beta1BindingExplanationAnnotatedMembership(_messages.Message):
-  r"""Details about whether the binding includes the principal.
-
-  Enums:
-    MembershipValueValuesEnum: Indicates whether the binding includes the
-      principal.
-    RelevanceValueValuesEnum: The relevance of the principal's status to the
-      overall determination for the binding.
-
-  Fields:
-    membership: Indicates whether the binding includes the principal.
-    relevance: The relevance of the principal's status to the overall
-      determination for the binding.
-  """
-
-  class MembershipValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the binding includes the principal.
-
-    Values:
-      MEMBERSHIP_UNSPECIFIED: Default value. This value is unused.
-      MEMBERSHIP_INCLUDED: The binding includes the principal. The principal
-        can be included directly or indirectly. For example: * A principal is
-        included directly if that principal is listed in the binding. * A
-        principal is included indirectly if that principal is in a Google
-        group or Google Workspace domain that is listed in the binding.
-      MEMBERSHIP_NOT_INCLUDED: The binding does not include the principal.
-      MEMBERSHIP_UNKNOWN_INFO_DENIED: The user who created the Replay is not
-        allowed to access the binding.
-      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The principal is an unsupported type.
-        Only Google Accounts and service accounts are supported.
-    """
-    MEMBERSHIP_UNSPECIFIED = 0
-    MEMBERSHIP_INCLUDED = 1
-    MEMBERSHIP_NOT_INCLUDED = 2
-    MEMBERSHIP_UNKNOWN_INFO_DENIED = 3
-    MEMBERSHIP_UNKNOWN_UNSUPPORTED = 4
-
-  class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the principal's status to the overall determination
-    for the binding.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
-      NORMAL: The data point has a limited effect on the result. Changing the
-        data point is unlikely to affect the overall determination.
-      HIGH: The data point has a strong effect on the result. Changing the
-        data point is likely to affect the overall determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    NORMAL = 1
-    HIGH = 2
-
-  membership = _messages.EnumField('MembershipValueValuesEnum', 1)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
-
-
-class GoogleCloudPolicysimulatorV1beta1ExplainedAccess(_messages.Message):
-  r"""Details about how a set of policies, listed in ExplainedPolicy, resulted
-  in a certain AccessState when replaying an access tuple.
-
-  Enums:
-    AccessStateValueValuesEnum: Whether the member in the access tuple has
-      permission to access the resource in the access tuple under the given
-      policies.
-
-  Fields:
-    accessState: Whether the member in the access tuple has permission to
-      access the resource in the access tuple under the given policies.
-    errors: If the AccessState is `UNKNOWN`, this field contains a list of
-      errors explaining why the result is `UNKNOWN`. If the `AccessState` is
-      `GRANTED` or `NOT_GRANTED`, this field is omitted.
-    policies: If the AccessState is `UNKNOWN`, this field contains the
-      policies that led to that result. If the `AccessState` is `GRANTED` or
-      `NOT_GRANTED`, this field is omitted.
-  """
-
-  class AccessStateValueValuesEnum(_messages.Enum):
-    r"""Whether the member in the access tuple has permission to access the
-    resource in the access tuple under the given policies.
-
-    Values:
-      ACCESS_STATE_UNSPECIFIED: Default value. This value is unused.
-      GRANTED: The principal has the permission.
-      NOT_GRANTED: The principal does not have the permission.
-      UNKNOWN_CONDITIONAL: The principal has the permission only if a
-        condition expression evaluates to `true`.
-      UNKNOWN_INFO_DENIED: The user who created the Replay does not have
-        access to all of the policies that Policy Simulator needs to evaluate.
-    """
-    ACCESS_STATE_UNSPECIFIED = 0
-    GRANTED = 1
-    NOT_GRANTED = 2
-    UNKNOWN_CONDITIONAL = 3
-    UNKNOWN_INFO_DENIED = 4
-
-  accessState = _messages.EnumField('AccessStateValueValuesEnum', 1)
-  errors = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
-  policies = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1ExplainedPolicy', 3, repeated=True)
-
-
-class GoogleCloudPolicysimulatorV1beta1ExplainedPolicy(_messages.Message):
-  r"""Details about how a specific IAM Policy contributed to the access check.
-
-  Enums:
-    AccessValueValuesEnum: Indicates whether _this policy_ provides the
-      specified permission to the specified principal for the specified
-      resource. This field does _not_ indicate whether the principal actually
-      has the permission for the resource. There might be another policy that
-      overrides this policy. To determine whether the principal actually has
-      the permission, use the `access` field in the
-      TroubleshootIamPolicyResponse.
-    RelevanceValueValuesEnum: The relevance of this policy to the overall
-      determination in the TroubleshootIamPolicyResponse. If the user who
-      created the Replay does not have access to the policy, this field is
-      omitted.
-
-  Fields:
-    access: Indicates whether _this policy_ provides the specified permission
-      to the specified principal for the specified resource. This field does
-      _not_ indicate whether the principal actually has the permission for the
-      resource. There might be another policy that overrides this policy. To
-      determine whether the principal actually has the permission, use the
-      `access` field in the TroubleshootIamPolicyResponse.
-    bindingExplanations: Details about how each binding in the policy affects
-      the principal's ability, or inability, to use the permission for the
-      resource. If the user who created the Replay does not have access to the
-      policy, this field is omitted.
-    fullResourceName: The full resource name that identifies the resource. For
-      example, `//compute.googleapis.com/projects/my-project/zones/us-
-      central1-a/instances/my-instance`. If the user who created the Replay
-      does not have access to the policy, this field is omitted. For examples
-      of full resource names for Google Cloud services, see
-      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
-    policy: The IAM policy attached to the resource. If the user who created
-      the Replay does not have access to the policy, this field is empty.
-    relevance: The relevance of this policy to the overall determination in
-      the TroubleshootIamPolicyResponse. If the user who created the Replay
-      does not have access to the policy, this field is omitted.
-  """
-
-  class AccessValueValuesEnum(_messages.Enum):
-    r"""Indicates whether _this policy_ provides the specified permission to
-    the specified principal for the specified resource. This field does _not_
-    indicate whether the principal actually has the permission for the
-    resource. There might be another policy that overrides this policy. To
-    determine whether the principal actually has the permission, use the
-    `access` field in the TroubleshootIamPolicyResponse.
-
-    Values:
-      ACCESS_STATE_UNSPECIFIED: Default value. This value is unused.
-      GRANTED: The principal has the permission.
-      NOT_GRANTED: The principal does not have the permission.
-      UNKNOWN_CONDITIONAL: The principal has the permission only if a
-        condition expression evaluates to `true`.
-      UNKNOWN_INFO_DENIED: The user who created the Replay does not have
-        access to all of the policies that Policy Simulator needs to evaluate.
-    """
-    ACCESS_STATE_UNSPECIFIED = 0
-    GRANTED = 1
-    NOT_GRANTED = 2
-    UNKNOWN_CONDITIONAL = 3
-    UNKNOWN_INFO_DENIED = 4
-
-  class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of this policy to the overall determination in the
-    TroubleshootIamPolicyResponse. If the user who created the Replay does not
-    have access to the policy, this field is omitted.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
-      NORMAL: The data point has a limited effect on the result. Changing the
-        data point is unlikely to affect the overall determination.
-      HIGH: The data point has a strong effect on the result. Changing the
-        data point is likely to affect the overall determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    NORMAL = 1
-    HIGH = 2
-
-  access = _messages.EnumField('AccessValueValuesEnum', 1)
-  bindingExplanations = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1BindingExplanation', 2, repeated=True)
-  fullResourceName = _messages.StringField(3)
-  policy = _messages.MessageField('GoogleIamV1Policy', 4)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 5)
-
-
-class GoogleCloudPolicysimulatorV1beta1ListReplayResultsResponse(_messages.Message):
-  r"""Response message for Simulator.ListReplayResults.
-
-  Fields:
-    nextPageToken: A token that you can use to retrieve the next page of
-      ReplayResult objects. If this field is omitted, there are no subsequent
-      pages.
-    replayResults: The results of running a Replay.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  replayResults = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1ReplayResult', 2, repeated=True)
-
-
 class GoogleCloudPolicysimulatorV1beta1Replay(_messages.Message):
   r"""A resource describing a `Replay`, or simulation.
 
@@ -785,22 +304,6 @@ class GoogleCloudPolicysimulatorV1beta1ReplayConfig(_messages.Message):
   policyOverlay = _messages.MessageField('PolicyOverlayValue', 2)
 
 
-class GoogleCloudPolicysimulatorV1beta1ReplayDiff(_messages.Message):
-  r"""The difference between the results of evaluating an access tuple under
-  the current (baseline) policies and under the proposed (simulated) policies.
-  This difference explains how a member's access could change if the proposed
-  policies were applied.
-
-  Fields:
-    accessDiff: A summary and comparison of the member's access under the
-      current (baseline) policies and the proposed (simulated) policies for a
-      single access tuple. The evaluation of the member's access is reported
-      in the AccessState field.
-  """
-
-  accessDiff = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1AccessStateDiff', 1)
-
-
 class GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata(_messages.Message):
   r"""Metadata about a Replay operation.
 
@@ -809,38 +312,6 @@ class GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata(_messages.Message
   """
 
   startTime = _messages.StringField(1)
-
-
-class GoogleCloudPolicysimulatorV1beta1ReplayResult(_messages.Message):
-  r"""The result of replaying a single access tuple against a simulated state.
-
-  Fields:
-    accessTuple: The access tuple that was replayed. This field includes
-      information about the member, resource, and permission that were
-      involved in the access attempt.
-    diff: The difference between the member's access under the current
-      (baseline) policies and the member's access under the proposed
-      (simulated) policies. This field is only included for access tuples that
-      were successfully replayed and had different results under the current
-      policies and the proposed policies.
-    error: The error that caused the access tuple replay to fail. This field
-      is only included for access tuples that were not replayed successfully.
-    lastSeenDate: The latest date this access tuple was seen in the logs.
-    name: The resource name of the `ReplayResult`, in the following format:
-      `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}/results/{replay-result-id}`,
-      where `{resource-id}` is the ID of the project, folder, or organization
-      that owns the Replay. Example: `projects/my-example-project/locations/gl
-      obal/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36/results/1234`
-    parent: The Replay that the access tuple was included in.
-  """
-
-  accessTuple = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1AccessTuple', 1)
-  diff = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1ReplayDiff', 2)
-  error = _messages.MessageField('GoogleRpcStatus', 3)
-  lastSeenDate = _messages.MessageField('GoogleTypeDate', 4)
-  name = _messages.StringField(5)
-  parent = _messages.StringField(6)
 
 
 class GoogleCloudPolicysimulatorV1beta1ReplayResultsSummary(_messages.Message):
@@ -959,7 +430,9 @@ class GoogleIamV1Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -976,9 +449,7 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1300,32 +771,12 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class PolicysimulatorFoldersLocationsReplaysCreateRequest(_messages.Message):
-  r"""A PolicysimulatorFoldersLocationsReplaysCreateRequest object.
+class PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGe
+  tRequest object.
 
   Fields:
-    googleCloudPolicysimulatorV1beta1Replay: A
-      GoogleCloudPolicysimulatorV1beta1Replay resource to be passed as the
-      request body.
-    parent: Required. The parent resource where this Replay will be created.
-      This resource must be a project, folder, or organization with a
-      location. Example: `projects/my-example-project/locations/global`
-  """
-
-  googleCloudPolicysimulatorV1beta1Replay = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1Replay', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class PolicysimulatorFoldersLocationsReplaysGetRequest(_messages.Message):
-  r"""A PolicysimulatorFoldersLocationsReplaysGetRequest object.
-
-  Fields:
-    name: Required. The name of the Replay to retrieve, in the following
-      format: `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}`, where `{resource-id}` is the
-      ID of the project, folder, or organization that owns the `Replay`.
-      Example: `projects/my-example-
-      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
+    name: The name of the operation resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1357,29 +808,6 @@ class PolicysimulatorFoldersLocationsReplaysOperationsListRequest(_messages.Mess
   pageToken = _messages.StringField(4)
 
 
-class PolicysimulatorFoldersLocationsReplaysResultsListRequest(_messages.Message):
-  r"""A PolicysimulatorFoldersLocationsReplaysResultsListRequest object.
-
-  Fields:
-    pageSize: The maximum number of ReplayResult objects to return. Defaults
-      to 5000. The maximum value is 5000; values above 5000 are rounded down
-      to 5000.
-    pageToken: A page token, received from a previous
-      Simulator.ListReplayResults call. Provide this token to retrieve the
-      next page of results. When paginating, all other parameters provided to
-      [Simulator.ListReplayResults[] must match the call that provided the
-      page token.
-    parent: Required. The Replay whose results are listed, in the following
-      format: `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}` Example: `projects/my-
-      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class PolicysimulatorOperationsGetRequest(_messages.Message):
   r"""A PolicysimulatorOperationsGetRequest object.
 
@@ -1406,32 +834,12 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class PolicysimulatorOrganizationsLocationsReplaysCreateRequest(_messages.Message):
-  r"""A PolicysimulatorOrganizationsLocationsReplaysCreateRequest object.
+class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperat
+  ionsGetRequest object.
 
   Fields:
-    googleCloudPolicysimulatorV1beta1Replay: A
-      GoogleCloudPolicysimulatorV1beta1Replay resource to be passed as the
-      request body.
-    parent: Required. The parent resource where this Replay will be created.
-      This resource must be a project, folder, or organization with a
-      location. Example: `projects/my-example-project/locations/global`
-  """
-
-  googleCloudPolicysimulatorV1beta1Replay = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1Replay', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class PolicysimulatorOrganizationsLocationsReplaysGetRequest(_messages.Message):
-  r"""A PolicysimulatorOrganizationsLocationsReplaysGetRequest object.
-
-  Fields:
-    name: Required. The name of the Replay to retrieve, in the following
-      format: `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}`, where `{resource-id}` is the
-      ID of the project, folder, or organization that owns the `Replay`.
-      Example: `projects/my-example-
-      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
+    name: The name of the operation resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1465,55 +873,12 @@ class PolicysimulatorOrganizationsLocationsReplaysOperationsListRequest(_message
   pageToken = _messages.StringField(4)
 
 
-class PolicysimulatorOrganizationsLocationsReplaysResultsListRequest(_messages.Message):
-  r"""A PolicysimulatorOrganizationsLocationsReplaysResultsListRequest object.
+class PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsG
+  etRequest object.
 
   Fields:
-    pageSize: The maximum number of ReplayResult objects to return. Defaults
-      to 5000. The maximum value is 5000; values above 5000 are rounded down
-      to 5000.
-    pageToken: A page token, received from a previous
-      Simulator.ListReplayResults call. Provide this token to retrieve the
-      next page of results. When paginating, all other parameters provided to
-      [Simulator.ListReplayResults[] must match the call that provided the
-      page token.
-    parent: Required. The Replay whose results are listed, in the following
-      format: `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}` Example: `projects/my-
-      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class PolicysimulatorProjectsLocationsReplaysCreateRequest(_messages.Message):
-  r"""A PolicysimulatorProjectsLocationsReplaysCreateRequest object.
-
-  Fields:
-    googleCloudPolicysimulatorV1beta1Replay: A
-      GoogleCloudPolicysimulatorV1beta1Replay resource to be passed as the
-      request body.
-    parent: Required. The parent resource where this Replay will be created.
-      This resource must be a project, folder, or organization with a
-      location. Example: `projects/my-example-project/locations/global`
-  """
-
-  googleCloudPolicysimulatorV1beta1Replay = _messages.MessageField('GoogleCloudPolicysimulatorV1beta1Replay', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class PolicysimulatorProjectsLocationsReplaysGetRequest(_messages.Message):
-  r"""A PolicysimulatorProjectsLocationsReplaysGetRequest object.
-
-  Fields:
-    name: Required. The name of the Replay to retrieve, in the following
-      format: `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}`, where `{resource-id}` is the
-      ID of the project, folder, or organization that owns the `Replay`.
-      Example: `projects/my-example-
-      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
+    name: The name of the operation resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1543,29 +908,6 @@ class PolicysimulatorProjectsLocationsReplaysOperationsListRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class PolicysimulatorProjectsLocationsReplaysResultsListRequest(_messages.Message):
-  r"""A PolicysimulatorProjectsLocationsReplaysResultsListRequest object.
-
-  Fields:
-    pageSize: The maximum number of ReplayResult objects to return. Defaults
-      to 5000. The maximum value is 5000; values above 5000 are rounded down
-      to 5000.
-    pageToken: A page token, received from a previous
-      Simulator.ListReplayResults call. Provide this token to retrieve the
-      next page of results. When paginating, all other parameters provided to
-      [Simulator.ListReplayResults[] must match the call that provided the
-      page token.
-    parent: Required. The Replay whose results are listed, in the following
-      format: `{projects|folders|organizations}/{resource-
-      id}/locations/global/replays/{replay-id}` Example: `projects/my-
-      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

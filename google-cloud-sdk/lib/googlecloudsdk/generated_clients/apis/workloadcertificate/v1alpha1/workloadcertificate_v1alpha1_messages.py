@@ -356,6 +356,41 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class RegistrationStatus(_messages.Message):
+  r"""RegistrationStatus describes the certificate provisioning status of a
+  workload registration resource.
+
+  Enums:
+    StateValueValuesEnum: state represents the current state of registration.
+
+  Fields:
+    error: error describes the details when a certificate provisioning process
+      fails.
+    state: state represents the current state of registration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""state represents the current state of registration.
+
+    Values:
+      REGISTRATION_STATE_UNSPECIFIED: REGISTRATION_STATE_UNSPECIFIED is the
+        default value.
+      REGISTRATION_STATE_READY: REGISTRATION_STATE_READY indicates that the
+        registration is ready.
+      REGISTRATION_STATE_IN_PROGRESS: REGISTRATION_STATE_IN_PROGRESS indicates
+        that the registration is in progress.
+      REGISTRATION_STATE_INTERNAL_ERROR: REGISTRATION_STATE_INTERNAL_ERROR
+        indicates that the registration fails because of some internal errors.
+    """
+    REGISTRATION_STATE_UNSPECIFIED = 0
+    REGISTRATION_STATE_READY = 1
+    REGISTRATION_STATE_IN_PROGRESS = 2
+    REGISTRATION_STATE_INTERNAL_ERROR = 3
+
+  error = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -591,6 +626,7 @@ class WorkloadRegistration(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: A LabelsValue attribute.
     name: name of resource
+    status: Output only. The status of the workloadregistration resource.
     updateTime: Output only. [Output only] Update time stamp
     workloadNamespace: workload_namespace specifies the namespace (which must
       exist in the same project) the workloads are registered to. It's skipped
@@ -627,9 +663,10 @@ class WorkloadRegistration(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-  workloadNamespace = _messages.StringField(5)
-  workloadSelector = _messages.MessageField('WorkloadSelector', 6)
+  status = _messages.MessageField('RegistrationStatus', 4)
+  updateTime = _messages.StringField(5)
+  workloadNamespace = _messages.StringField(6)
+  workloadSelector = _messages.MessageField('WorkloadSelector', 7)
 
 
 class WorkloadSelector(_messages.Message):

@@ -61,7 +61,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists `Constraints` that could be applied on the specified resource.
+      r"""Lists constraints that could be applied on the specified resource.
 
       Args:
         request: (OrgpolicyFoldersConstraintsListRequest) input message
@@ -98,7 +98,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def Check(self, request, global_params=None):
-      r"""Checks an org policy's conformance to a specified value at a particular node in the hierarchy.
+      r"""Checks an organization policy's conformance to a specified value at a particular node in the hierarchy.
 
       Args:
         request: (OrgpolicyFoldersPoliciesCheckRequest) input message
@@ -125,7 +125,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Cloud resource.
+      r"""Creates a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Google Cloud resource.
 
       Args:
         request: (OrgpolicyFoldersPoliciesCreateRequest) input message
@@ -152,7 +152,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist.
+      r"""Deletes a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or organization policy does not exist.
 
       Args:
         request: (OrgpolicyFoldersPoliciesDeleteRequest) input message
@@ -179,7 +179,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a `Policy` on a resource. If no `Policy` is set on the resource, NOT_FOUND is returned. The `etag` value can be used with `UpdatePolicy()` to update a `Policy` during read-modify-write.
+      r"""Gets a policy on a resource. If no policy is set on the resource, `NOT_FOUND` is returned. The `etag` value can be used with `UpdatePolicy()` to update a policy during read-modify-write.
 
       Args:
         request: (OrgpolicyFoldersPoliciesGetRequest) input message
@@ -206,7 +206,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def GetEffectivePolicy(self, request, global_params=None):
-      r"""Gets the effective `Policy` on a resource. This is the result of merging `Policies` in the resource hierarchy and evaluating conditions. The returned `Policy` will not have an `etag` or `condition` set because it is a computed `Policy` across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
+      r"""Gets the effective policy on a resource. This is the result of merging policies in the resource hierarchy and evaluating conditions. The returned policy will not have an `etag` or `condition` set because it is an evaluated policy across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
 
       Args:
         request: (OrgpolicyFoldersPoliciesGetEffectivePolicyRequest) input message
@@ -233,7 +233,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves all of the `Policies` that exist on a particular resource.
+      r"""Retrieves all of the policies that exist on a particular resource.
 
       Args:
         request: (OrgpolicyFoldersPoliciesListRequest) input message
@@ -260,7 +260,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
+      r"""Updates a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
         request: (OrgpolicyFoldersPoliciesPatchRequest) input message
@@ -307,7 +307,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists `Constraints` that could be applied on the specified resource.
+      r"""Lists constraints that could be applied on the specified resource.
 
       Args:
         request: (OrgpolicyOrganizationsConstraintsListRequest) input message
@@ -344,7 +344,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a CustomConstraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the organization does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the constraint already exists on the given organization.
+      r"""Creates a custom constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the organization does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the constraint already exists on the given organization.
 
       Args:
         request: (OrgpolicyOrganizationsCustomConstraintsCreateRequest) input message
@@ -371,7 +371,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Custom Constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist.
+      r"""Deletes a custom constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist.
 
       Args:
         request: (OrgpolicyOrganizationsCustomConstraintsDeleteRequest) input message
@@ -398,7 +398,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a CustomConstraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the CustomConstraint does not exist.
+      r"""Gets a custom constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the custom constraint does not exist.
 
       Args:
         request: (OrgpolicyOrganizationsCustomConstraintsGetRequest) input message
@@ -425,7 +425,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves all of the `CustomConstraints` that exist on a particular organization resource.
+      r"""Retrieves all of the custom constraints that exist on a particular organization resource.
 
       Args:
         request: (OrgpolicyOrganizationsCustomConstraintsListRequest) input message
@@ -452,7 +452,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Custom Constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Note: the supplied policy will perform a full overwrite of all fields.
+      r"""Updates a custom constraint. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
         request: (OrgpolicyOrganizationsCustomConstraintsPatchRequest) input message
@@ -489,7 +489,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def Check(self, request, global_params=None):
-      r"""Checks an org policy's conformance to a specified value at a particular node in the hierarchy.
+      r"""Checks an organization policy's conformance to a specified value at a particular node in the hierarchy.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesCheckRequest) input message
@@ -516,7 +516,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Cloud resource.
+      r"""Creates a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Google Cloud resource.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesCreateRequest) input message
@@ -543,7 +543,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist.
+      r"""Deletes a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or organization policy does not exist.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesDeleteRequest) input message
@@ -570,7 +570,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a `Policy` on a resource. If no `Policy` is set on the resource, NOT_FOUND is returned. The `etag` value can be used with `UpdatePolicy()` to update a `Policy` during read-modify-write.
+      r"""Gets a policy on a resource. If no policy is set on the resource, `NOT_FOUND` is returned. The `etag` value can be used with `UpdatePolicy()` to update a policy during read-modify-write.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesGetRequest) input message
@@ -597,7 +597,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def GetEffectivePolicy(self, request, global_params=None):
-      r"""Gets the effective `Policy` on a resource. This is the result of merging `Policies` in the resource hierarchy and evaluating conditions. The returned `Policy` will not have an `etag` or `condition` set because it is a computed `Policy` across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
+      r"""Gets the effective policy on a resource. This is the result of merging policies in the resource hierarchy and evaluating conditions. The returned policy will not have an `etag` or `condition` set because it is an evaluated policy across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesGetEffectivePolicyRequest) input message
@@ -624,7 +624,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves all of the `Policies` that exist on a particular resource.
+      r"""Retrieves all of the policies that exist on a particular resource.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesListRequest) input message
@@ -651,7 +651,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
+      r"""Updates a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
         request: (OrgpolicyOrganizationsPoliciesPatchRequest) input message
@@ -698,7 +698,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists `Constraints` that could be applied on the specified resource.
+      r"""Lists constraints that could be applied on the specified resource.
 
       Args:
         request: (OrgpolicyProjectsConstraintsListRequest) input message
@@ -735,7 +735,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
           }
 
     def Check(self, request, global_params=None):
-      r"""Checks an org policy's conformance to a specified value at a particular node in the hierarchy.
+      r"""Checks an organization policy's conformance to a specified value at a particular node in the hierarchy.
 
       Args:
         request: (OrgpolicyProjectsPoliciesCheckRequest) input message
@@ -762,7 +762,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Cloud resource.
+      r"""Creates a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Google Cloud resource.
 
       Args:
         request: (OrgpolicyProjectsPoliciesCreateRequest) input message
@@ -789,7 +789,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist.
+      r"""Deletes a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or organization policy does not exist.
 
       Args:
         request: (OrgpolicyProjectsPoliciesDeleteRequest) input message
@@ -816,7 +816,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a `Policy` on a resource. If no `Policy` is set on the resource, NOT_FOUND is returned. The `etag` value can be used with `UpdatePolicy()` to update a `Policy` during read-modify-write.
+      r"""Gets a policy on a resource. If no policy is set on the resource, `NOT_FOUND` is returned. The `etag` value can be used with `UpdatePolicy()` to update a policy during read-modify-write.
 
       Args:
         request: (OrgpolicyProjectsPoliciesGetRequest) input message
@@ -843,7 +843,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def GetEffectivePolicy(self, request, global_params=None):
-      r"""Gets the effective `Policy` on a resource. This is the result of merging `Policies` in the resource hierarchy and evaluating conditions. The returned `Policy` will not have an `etag` or `condition` set because it is a computed `Policy` across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
+      r"""Gets the effective policy on a resource. This is the result of merging policies in the resource hierarchy and evaluating conditions. The returned policy will not have an `etag` or `condition` set because it is an evaluated policy across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
 
       Args:
         request: (OrgpolicyProjectsPoliciesGetEffectivePolicyRequest) input message
@@ -870,7 +870,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves all of the `Policies` that exist on a particular resource.
+      r"""Retrieves all of the policies that exist on a particular resource.
 
       Args:
         request: (OrgpolicyProjectsPoliciesListRequest) input message
@@ -897,7 +897,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
+      r"""Updates a policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
         request: (OrgpolicyProjectsPoliciesPatchRequest) input message

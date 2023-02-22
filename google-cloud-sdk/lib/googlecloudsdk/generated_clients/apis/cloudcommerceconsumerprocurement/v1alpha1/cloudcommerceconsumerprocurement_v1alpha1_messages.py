@@ -759,11 +759,16 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_message
       request will fail. Please follow BCP 47
       (https://www.w3.org/International/articles/bcp47/) for the language
       string.
+    offer: Offer associated with the consent. Formats include "commerceofferca
+      talog.googleapis.com/billingAccounts/{billing_account}/offers/{offer_id}
+      ". "commerceoffercatalog.googleapis.com/services/{service}/offers/{offer
+      _id}".
   """
 
   agreement = _messages.StringField(1)
   financialContract = _messages.StringField(2)
   languageCode = _messages.StringField(3)
+  offer = _messages.StringField(4)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse(_messages.Message):
@@ -795,8 +800,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
       "billingAccounts/{billing_account}/consents/{consent}". -
       "projects/{project_number}/consents/{consent}".
     offer: The name of the offer linked to this consent. It is in the format
-      of: - "billingAccounts/{billing_account}/offers/{offer_id}". -
-      "services/{service}/offers/{offer_id}".
+      of: "commerceoffercatalog.googleapis.com/billingAccounts/{billing_accoun
+      t}/offers/{offer_id}". "commerceoffercatalog.googleapis.com/services/{se
+      rvice}/offers/{offer_id}".
     state: Output only. State of current consent.
     updateTime: Output only. The update time of current consent.
   """

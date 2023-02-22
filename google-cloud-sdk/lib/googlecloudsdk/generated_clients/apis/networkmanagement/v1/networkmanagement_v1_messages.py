@@ -221,7 +221,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -238,9 +240,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -541,6 +541,9 @@ class DropInfo(_messages.Message):
       GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped because there is
         no peering between the originating network and the Google Managed
         Services Network.
+      GKE_PSC_ENDPOINT_MISSING: Packet was dropped because the GKE cluster
+        uses Private Service Connect (PSC), but the PSC endpoint is not found
+        in the project.
       CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
         SQL instance has neither a private nor a public IP address.
       GKE_CONTROL_PLANE_REGION_MISMATCH: Packet was dropped because a GKE
@@ -569,6 +572,8 @@ class DropInfo(_messages.Message):
         a project that is not approved to connect to the service.
       CLOUD_RUN_REVISION_NOT_READY: Packet sent from a Cloud Run revision that
         is not ready.
+      DROPPED_INSIDE_PSC_SERVICE_PRODUCER: Packet was dropped inside Private
+        Service Connect service producer.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -594,18 +599,20 @@ class DropInfo(_messages.Message):
     DROPPED_INSIDE_GKE_SERVICE = 21
     DROPPED_INSIDE_CLOUD_SQL_SERVICE = 22
     GOOGLE_MANAGED_SERVICE_NO_PEERING = 23
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 24
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 25
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 26
-    GKE_CONTROL_PLANE_NO_ROUTE = 27
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 28
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 29
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 30
-    CLOUD_FUNCTION_NOT_ACTIVE = 31
-    VPC_CONNECTOR_NOT_SET = 32
-    VPC_CONNECTOR_NOT_RUNNING = 33
-    PSC_CONNECTION_NOT_ACCEPTED = 34
-    CLOUD_RUN_REVISION_NOT_READY = 35
+    GKE_PSC_ENDPOINT_MISSING = 24
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 25
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 26
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 27
+    GKE_CONTROL_PLANE_NO_ROUTE = 28
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 29
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 30
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 31
+    CLOUD_FUNCTION_NOT_ACTIVE = 32
+    VPC_CONNECTOR_NOT_SET = 33
+    VPC_CONNECTOR_NOT_RUNNING = 34
+    PSC_CONNECTION_NOT_ACCEPTED = 35
+    CLOUD_RUN_REVISION_NOT_READY = 36
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 37
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)

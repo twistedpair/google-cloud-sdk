@@ -1739,6 +1739,10 @@
         "timeZone": {
           "description": "Server timezone, relevant only for Cloud SQL for SQL Server.",
           "type": "string"
+        },
+        "advancedMachineFeatures": {
+          "description": "Specifies advance machine configuration for the instance relevant only for SQL Server.",
+          "$ref": "AdvancedMachineFeatures"
         }
       }
     },
@@ -2094,6 +2098,18 @@
           "description": "How often to upload generated audit files.",
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "AdvancedMachineFeatures": {
+      "id": "AdvancedMachineFeatures",
+      "description": "Specifies options for controlling advanced machine features.",
+      "type": "object",
+      "properties": {
+        "threadsPerCore": {
+          "description": "The number of threads per physical core.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

@@ -4597,9 +4597,9 @@ class GoogleCloudDialogflowCxV3Environment(_messages.Message):
     testCasesConfig: The test cases config for continuous tests of this
       environment.
     updateTime: Output only. Update time of this environment.
-    versionConfigs: Required. A list of configurations for flow versions. You
-      should include version configs for all flows that are reachable from
-      `Start Flow` in the agent. Otherwise, an error will be returned.
+    versionConfigs: A list of configurations for flow versions. You should
+      include version configs for all flows that are reachable from `Start
+      Flow` in the agent. Otherwise, an error will be returned.
     webhookConfig: The webhook configuration for this environment.
   """
 
@@ -6773,9 +6773,9 @@ class GoogleCloudDialogflowCxV3beta1Environment(_messages.Message):
     testCasesConfig: The test cases config for continuous tests of this
       environment.
     updateTime: Output only. Update time of this environment.
-    versionConfigs: Required. A list of configurations for flow versions. You
-      should include version configs for all flows that are reachable from
-      `Start Flow` in the agent. Otherwise, an error will be returned.
+    versionConfigs: A list of configurations for flow versions. You should
+      include version configs for all flows that are reachable from `Start
+      Flow` in the agent. Otherwise, an error will be returned.
     webhookConfig: The webhook configuration for this environment.
   """
 
@@ -9950,6 +9950,10 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
     timeZone: The time zone of this conversational profile from the [time zone
       database](https://www.iana.org/time-zones), e.g., America/New_York,
       Europe/Paris. Defaults to America/New_York.
+    ttsConfig: Configuration for Text-to-Speech synthesization. Used by Phone
+      Gateway to specify synthesization options. If agent defines
+      synthesization options as well, agent settings overrides the option
+      here.
     updateTime: Output only. Update time of the conversation profile.
   """
 
@@ -9966,7 +9970,8 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
   securitySettings = _messages.StringField(11)
   sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 12)
   timeZone = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  ttsConfig = _messages.MessageField('GoogleCloudDialogflowV2SynthesizeSpeechConfig', 14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudDialogflowV2CreateConversationDatasetOperationMetadata(_messages.Message):
@@ -13770,6 +13775,7 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
   r"""The request message for Conversations.SuggestConversationSummary.
 
   Fields:
+    assistQueryParams: Parameters for a human assist query.
     contextSize: Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 500 and at most 1000.
@@ -13779,8 +13785,9 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
       `projects//locations//conversations//messages/`.
   """
 
-  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  latestMessage = _messages.StringField(2)
+  assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
+  contextSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2SuggestConversationSummaryResponse(_messages.Message):

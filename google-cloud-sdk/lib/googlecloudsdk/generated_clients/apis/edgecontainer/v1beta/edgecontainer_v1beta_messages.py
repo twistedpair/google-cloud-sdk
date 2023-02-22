@@ -64,6 +64,8 @@ class Cluster(_messages.Message):
     controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneVersion: Output only. The control plane release version
     createTime: Output only. The time when the cluster was created.
+    dataPlaneLoadBalancerIpv4AddressPools: Optional. Address pools for cluster
+      data plane load balancing.
     defaultMaxPodsPerNode: Optional. The default maximum number of pods per
       node used if a maximum value is not specified explicitly for a node pool
       in this cluster. If unspecified, the Kubernetes default value will be
@@ -111,16 +113,17 @@ class Cluster(_messages.Message):
   controlPlane = _messages.MessageField('ControlPlane', 3)
   controlPlaneVersion = _messages.StringField(4)
   createTime = _messages.StringField(5)
-  defaultMaxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(7)
-  fleet = _messages.MessageField('Fleet', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
-  name = _messages.StringField(11)
-  networking = _messages.MessageField('ClusterNetworking', 12)
-  nodeVersion = _messages.StringField(13)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 14)
-  updateTime = _messages.StringField(15)
+  dataPlaneLoadBalancerIpv4AddressPools = _messages.StringField(6, repeated=True)
+  defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(8)
+  fleet = _messages.MessageField('Fleet', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 11)
+  name = _messages.StringField(12)
+  networking = _messages.MessageField('ClusterNetworking', 13)
+  nodeVersion = _messages.StringField(14)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 15)
+  updateTime = _messages.StringField(16)
 
 
 class ClusterNetworking(_messages.Message):
@@ -600,9 +603,11 @@ class Ingress(_messages.Message):
 
   Fields:
     disabled: Optional. Whether Ingress is disabled.
+    ipv4Vip: Optional. Ingress VIP.
   """
 
   disabled = _messages.BooleanField(1)
+  ipv4Vip = _messages.StringField(2)
 
 
 class ListClustersResponse(_messages.Message):

@@ -962,7 +962,7 @@ class SimpleExportPolicyRule(_messages.Message):
 
   Fields:
     accessType: Access type (ReadWrite, ReadOnly, None)
-    allowedClients: List of allowed clients IP addresses
+    allowedClients: Comma separated list of allowed clients IP addresses
     hasRootAccess: Whether Unix root access will be granted.
     kerberos5ReadOnly: If enabled (true) the rule defines a read only access
       for clients matching the 'allowedClients' specification. It enables nfs
@@ -1324,6 +1324,8 @@ class Volume(_messages.Message):
   r"""Volume Volume provides a filesystem that you can mount.
 
   Enums:
+    EncryptionTypeValueValuesEnum: Output only. Specified the current volume
+      encryption key source.
     ProtocolsValueListEntryValuesEnum:
     SecurityStyleValueValuesEnum: Optional. Security Style of the Volume
     ServiceLevelValueValuesEnum: Output only. Service level of the volume
@@ -1339,10 +1341,14 @@ class Volume(_messages.Message):
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
+    encryptionType: Output only. Specified the current volume encryption key
+      source.
     exportPolicy: Optional. Export policy of the volume
     kerberosEnabled: Optional. Flag indicating if the volume is a kerberos
       volume or not, export policy rules control kerberos security modes
       (krb5, krb5i, krb5p).
+    kmsConfig: Optional. Specifies the KMS config to be used for volume
+      encryption.
     labels: Optional. Labels as key value pairs
     ldapEnabled: Optional. Flag indicating if the volume is NFS LDAP enabled
       or not.
@@ -1373,6 +1379,19 @@ class Volume(_messages.Message):
     usedGib: Output only. Used capacity in GIB of the volume. This is not
       realtime usage, periodically computed by SDE.
   """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Specified the current volume encryption key source.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: The source of encryption key is not
+        specified.
+      SERVICE_MANAGED: Google managed encryption key.
+      CLOUD_KMS: Customer managed encryption key, which is stored in KMS.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    SERVICE_MANAGED = 1
+    CLOUD_KMS = 2
 
   class ProtocolsValueListEntryValuesEnum(_messages.Enum):
     r"""ProtocolsValueListEntryValuesEnum enum type.
@@ -1489,28 +1508,30 @@ class Volume(_messages.Message):
   capacityGib = _messages.IntegerField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  exportPolicy = _messages.MessageField('ExportPolicy', 5)
-  kerberosEnabled = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  ldapEnabled = _messages.BooleanField(8)
-  mountOptions = _messages.MessageField('MountOption', 9, repeated=True)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 12, repeated=True)
-  psaRange = _messages.StringField(13)
-  restoreParameters = _messages.MessageField('RestoreParameters', 14)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 15)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 16)
-  shareName = _messages.StringField(17)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 18, repeated=True)
-  snapReserve = _messages.FloatField(19)
-  snapshotDirectory = _messages.BooleanField(20)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  stateDetails = _messages.StringField(23)
-  storagePool = _messages.StringField(24)
-  unixPermissions = _messages.StringField(25)
-  usedGib = _messages.IntegerField(26)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 5)
+  exportPolicy = _messages.MessageField('ExportPolicy', 6)
+  kerberosEnabled = _messages.BooleanField(7)
+  kmsConfig = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  ldapEnabled = _messages.BooleanField(10)
+  mountOptions = _messages.MessageField('MountOption', 11, repeated=True)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 14, repeated=True)
+  psaRange = _messages.StringField(15)
+  restoreParameters = _messages.MessageField('RestoreParameters', 16)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 17)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 18)
+  shareName = _messages.StringField(19)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 20, repeated=True)
+  snapReserve = _messages.FloatField(21)
+  snapshotDirectory = _messages.BooleanField(22)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  stateDetails = _messages.StringField(25)
+  storagePool = _messages.StringField(26)
+  unixPermissions = _messages.StringField(27)
+  usedGib = _messages.IntegerField(28)
 
 
 class WeeklySchedule(_messages.Message):

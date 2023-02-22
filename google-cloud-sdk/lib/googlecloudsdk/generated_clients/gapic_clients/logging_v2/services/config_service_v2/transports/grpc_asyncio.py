@@ -301,6 +301,67 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
         return self._stubs['get_bucket']
 
     @property
+    def create_bucket_async(self) -> Callable[
+            [logging_config.CreateBucketRequest],
+            Awaitable[operations_pb2.Operation]]:
+        r"""Return a callable for the create bucket async method over gRPC.
+
+        Creates a log bucket asynchronously that can be used
+        to store log entries.
+        After a bucket has been created, the bucket's location
+        cannot be changed.
+
+        Returns:
+            Callable[[~.CreateBucketRequest],
+                    Awaitable[~.Operation]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'create_bucket_async' not in self._stubs:
+            self._stubs['create_bucket_async'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/CreateBucketAsync',
+                request_serializer=logging_config.CreateBucketRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['create_bucket_async']
+
+    @property
+    def update_bucket_async(self) -> Callable[
+            [logging_config.UpdateBucketRequest],
+            Awaitable[operations_pb2.Operation]]:
+        r"""Return a callable for the update bucket async method over gRPC.
+
+        Updates a log bucket asynchronously.
+
+        If the bucket has a ``lifecycle_state`` of ``DELETE_REQUESTED``,
+        then ``FAILED_PRECONDITION`` will be returned.
+
+        After a bucket has been created, the bucket's location cannot be
+        changed.
+
+        Returns:
+            Callable[[~.UpdateBucketRequest],
+                    Awaitable[~.Operation]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'update_bucket_async' not in self._stubs:
+            self._stubs['update_bucket_async'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/UpdateBucketAsync',
+                request_serializer=logging_config.UpdateBucketRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['update_bucket_async']
+
+    @property
     def create_bucket(self) -> Callable[
             [logging_config.CreateBucketRequest],
             Awaitable[logging_config.LogBucket]]:
@@ -334,12 +395,7 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
             Awaitable[logging_config.LogBucket]]:
         r"""Return a callable for the update bucket method over gRPC.
 
-        Updates a log bucket. This method replaces the following fields
-        in the existing bucket with values from the new bucket:
-        ``retention_period``
-
-        If the retention period is decreased and the bucket is locked,
-        ``FAILED_PRECONDITION`` will be returned.
+        Updates a log bucket.
 
         If the bucket has a ``lifecycle_state`` of ``DELETE_REQUESTED``,
         then ``FAILED_PRECONDITION`` will be returned.

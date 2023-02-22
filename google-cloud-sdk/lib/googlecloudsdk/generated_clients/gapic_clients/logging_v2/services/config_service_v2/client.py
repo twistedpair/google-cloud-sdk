@@ -639,6 +639,208 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         # Done; return the response.
         return response
 
+    def create_bucket_async(self,
+            request: Union[logging_config.CreateBucketRequest, dict] = None,
+            *,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: float = None,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> operation.Operation:
+        r"""Creates a log bucket asynchronously that can be used
+        to store log entries.
+        After a bucket has been created, the bucket's location
+        cannot be changed.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_create_bucket_async():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.CreateBucketRequest(
+                    parent="parent_value",
+                    bucket_id="bucket_id_value",
+                )
+
+                # Make the request
+                operation = client.create_bucket_async(request=request)
+
+                print("Waiting for operation to complete...")
+
+                response = operation.result()
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateBucketRequest, dict]):
+                The request object. The parameters to `CreateBucket`.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            google.api_core.operation.Operation:
+                An object representing a long-running operation.
+
+                The result type for the operation will be
+                :class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogBucket`
+                Describes a repository in which log entries are stored.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Minor optimization to avoid making a copy if the user passes
+        # in a logging_config.CreateBucketRequest.
+        # There's no risk of modifying the input as we've already verified
+        # there are no flattened fields.
+        if not isinstance(request, logging_config.CreateBucketRequest):
+            request = logging_config.CreateBucketRequest(request)
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.create_bucket_async]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("parent", request.parent),
+            )),
+        )
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Wrap the response in an operation future.
+        response = operation.from_gapic(
+            response,
+            self._transport.operations_client,
+            logging_config.LogBucket,
+            metadata_type=logging_config.BucketMetadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def update_bucket_async(self,
+            request: Union[logging_config.UpdateBucketRequest, dict] = None,
+            *,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: float = None,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> operation.Operation:
+        r"""Updates a log bucket asynchronously.
+
+        If the bucket has a ``lifecycle_state`` of ``DELETE_REQUESTED``,
+        then ``FAILED_PRECONDITION`` will be returned.
+
+        After a bucket has been created, the bucket's location cannot be
+        changed.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_update_bucket_async():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.UpdateBucketRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                operation = client.update_bucket_async(request=request)
+
+                print("Waiting for operation to complete...")
+
+                response = operation.result()
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateBucketRequest, dict]):
+                The request object. The parameters to `UpdateBucket`.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            google.api_core.operation.Operation:
+                An object representing a long-running operation.
+
+                The result type for the operation will be
+                :class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogBucket`
+                Describes a repository in which log entries are stored.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Minor optimization to avoid making a copy if the user passes
+        # in a logging_config.UpdateBucketRequest.
+        # There's no risk of modifying the input as we've already verified
+        # there are no flattened fields.
+        if not isinstance(request, logging_config.UpdateBucketRequest):
+            request = logging_config.UpdateBucketRequest(request)
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.update_bucket_async]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Wrap the response in an operation future.
+        response = operation.from_gapic(
+            response,
+            self._transport.operations_client,
+            logging_config.LogBucket,
+            metadata_type=logging_config.BucketMetadata,
+        )
+
+        # Done; return the response.
+        return response
+
     def create_bucket(self,
             request: Union[logging_config.CreateBucketRequest, dict] = None,
             *,
@@ -730,12 +932,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
-        r"""Updates a log bucket. This method replaces the following fields
-        in the existing bucket with values from the new bucket:
-        ``retention_period``
-
-        If the retention period is decreased and the bucket is locked,
-        ``FAILED_PRECONDITION`` will be returned.
+        r"""Updates a log bucket.
 
         If the bucket has a ``lifecycle_state`` of ``DELETE_REQUESTED``,
         then ``FAILED_PRECONDITION`` will be returned.

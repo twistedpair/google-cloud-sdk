@@ -29,7 +29,6 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
-from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
@@ -142,9 +141,13 @@ class S3Api(cloud_api.CloudApi):
     else:
       client = self.client
       location_constraint = boto3.session.Session().region_name
-    metadata = client.create_bucket(
-        Bucket=bucket_resource.storage_url.bucket_name,
-        CreateBucketConfiguration={'LocationConstraint': location_constraint})
+    if location_constraint:
+      metadata = client.create_bucket(
+          Bucket=bucket_resource.storage_url.bucket_name,
+          CreateBucketConfiguration={'LocationConstraint': location_constraint})
+    else:
+      metadata = client.create_bucket(
+          Bucket=bucket_resource.storage_url.bucket_name)
 
     if (resource_args.cors_file_path or resource_args.labels_file_path or
         resource_args.lifecycle_file_path or resource_args.log_bucket or
@@ -472,22 +475,11 @@ class S3Api(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    # TODO(b/267654163): Remove POSIX handling.
-    if request_config.system_posix_data:
-      posix_attributes_to_set = posix_util.get_posix_attributes_from_resource(
-          cloud_resource
-      )
-    else:
-      posix_attributes_to_set = None
-
-    if (not posix_util.are_file_permissions_valid(
-        cloud_resource.storage_url.url_string, request_config.system_posix_data,
-        posix_attributes_to_set) or
-        download_util.return_and_report_if_nothing_to_download(
-            cloud_resource, progress_callback)):
-      return cloud_api.DownloadApiClientReturnValue(
-          posix_attributes=posix_attributes_to_set,
-          server_reported_encoding=None)
+    del request_config, do_not_decompress, end_byte  # Unused.
+    if download_util.return_and_report_if_nothing_to_download(
+        cloud_resource, progress_callback
+    ):
+      return None
 
     if digesters is not None:
       digesters_dict = digesters
@@ -503,9 +495,7 @@ class S3Api(cloud_api.CloudApi):
           cloud_resource, download_stream, digesters_dict, progress_callback,
           start_byte)
 
-    return cloud_api.DownloadApiClientReturnValue(
-        posix_attributes=posix_attributes_to_set,
-        server_reported_encoding=content_encoding)
+    return content_encoding
 
   @_catch_client_error_raise_s3_api_error()
   def get_object_metadata(self,

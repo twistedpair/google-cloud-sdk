@@ -33,6 +33,9 @@ _DOCKER_REPOSITORY_RE = re.compile(
     r'^projects/(?P<project>[^/]+)/locations/(?P<location>[^/]+)'
     '/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$'
 )
+_DOCKER_REPOSITORY_DOCKER_FORMAT_RE = re.compile(
+    r'^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)'
+)
 
 
 def ValidateKMSKeyForFunction(kms_key, function_ref):
@@ -71,12 +74,26 @@ def ValidateDockerRepositoryForFunction(docker_repository, function_ref):
     InvalidArgumentException: If the specified Docker repository is not
       compatible with the function.
   """
+  if docker_repository is None:
+    return
+
   function_project = function_ref.projectsId
   function_location = function_ref.locationsId
+
+  repo_project, repo_location = None, None
   repo_match = _DOCKER_REPOSITORY_RE.search(docker_repository)
   if repo_match:
     repo_project = repo_match.group('project')
     repo_location = repo_match.group('location')
+  else:
+    repo_match_docker_format = _DOCKER_REPOSITORY_DOCKER_FORMAT_RE.search(
+        docker_repository
+    )
+    if repo_match_docker_format:
+      repo_project = repo_match_docker_format.group('project')
+      repo_location = repo_match_docker_format.group('location')
+
+  if repo_match or repo_match_docker_format:
     if (
         function_project != repo_project
         and function_project.isdigit() == repo_project.isdigit()
@@ -89,6 +106,32 @@ def ValidateDockerRepositoryForFunction(docker_repository, function_ref):
           '--docker-repository',
           'Cross-location repositories are not supported.',
       )
+
+
+def NormalizeDockerRepositoryFormat(docker_repository):
+  """Normalizes the docker repository name to the standard resource format.
+
+  Args:
+    docker_repository: Fully qualified Docker repository name.
+
+  Returns:
+    The name in a standard format supported by the API.
+  """
+  if docker_repository is None:
+    return docker_repository
+
+  repo_match_docker_format = _DOCKER_REPOSITORY_DOCKER_FORMAT_RE.search(
+      docker_repository
+  )
+  if repo_match_docker_format:
+    project = repo_match_docker_format.group('project')
+    location = repo_match_docker_format.group('location')
+    name = repo_match_docker_format.group('repo')
+    return 'projects/{}/locations/{}/repositories/{}'.format(
+        project, location, name
+    )
+
+  return docker_repository
 
 
 def ProcessException(http_exception, kms_key=None):

@@ -1472,7 +1472,7 @@
           "type": "string"
         },
         "azureClient": {
-          "description": "Optional. Name of the AzureClient that contains authentication configuration for how the Anthos Multi-Cloud API connects to Azure APIs. The `AzureClient` resource must reside on the same Google Cloud Platform project and region as the `AzureCluster`. `AzureClient` names are formatted as `projects\/\/locations\/\/azureClients\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+          "description": "Optional. Name of the AzureClient that contains authentication configuration for how the Anthos Multi-Cloud API connects to Azure APIs. Either azure_client or azure_services_authentication should be provided. The `AzureClient` resource must reside on the same Google Cloud Platform project and region as the `AzureCluster`. `AzureClient` names are formatted as `projects\/\/locations\/\/azureClients\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
           "type": "string"
         },
         "networking": {
@@ -1488,7 +1488,7 @@
           "$ref": "GoogleCloudGkemulticloudV1AzureAuthorization"
         },
         "azureServicesAuthentication": {
-          "description": "Optional. Authentication configuration for management of Azure resources.",
+          "description": "Optional. Authentication configuration for management of Azure resources. Either azure_client or azure_services_authentication should be provided.",
           "$ref": "GoogleCloudGkemulticloudV1AzureServicesAuthentication"
         },
         "state": {

@@ -1272,3 +1272,21 @@ class CustomAudiencesChanges(ConfigChanger):
       elif k8s_object.CUSTOM_AUDIENCES_ANNOTATION in resource.annotations:
         del resource.annotations[k8s_object.CUSTOM_AUDIENCES_ANNOTATION]
     return resource
+
+
+class RuntimeChange(ConfigChanger):
+  """Sets the runtime annotation on the service template."""
+
+  def __init__(self, runtime):
+    super(RuntimeChange, self).__init__(adjusts_template=True)
+    self._runtime = runtime
+
+  def Adjust(self, resource):
+    if self._runtime == 'default':
+      if k8s_object.RUNTIME_ANNOTATION in resource.template.annotations:
+        del resource.template.annotations[k8s_object.RUNTIME_ANNOTATION]
+    else:
+      resource.template.annotations[k8s_object.RUNTIME_ANNOTATION] = str(
+          self._runtime
+      )
+    return resource

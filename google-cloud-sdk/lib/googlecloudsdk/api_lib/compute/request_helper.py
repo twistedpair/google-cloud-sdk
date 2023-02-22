@@ -147,6 +147,16 @@ def _ListCore(
     Resources encapsulated in format chosen by response_handler as they are
       received from the server.
   """
+  if requests:
+    service, method, _ = requests[0]
+    # TODO(b/241230388): testing single request feature on disks.list and
+    # disk.aggregatedList APIs will remove this line after single request
+    # feature fully rollout
+    if type(service) is type(service.client.disks) and method in (
+        'List',
+        'AggregatedList',
+    ):
+      enable_single_request = True
 
   while requests:
     if (

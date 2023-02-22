@@ -293,7 +293,7 @@ def _GetSourceLocal(
     source,
     stage_bucket_arg,
     ignore_file_arg,
-    kms_key=None
+    kms_key=None,
 ):
   """Constructs a `Source` message from a local file system path.
 
@@ -342,7 +342,7 @@ def _GetSourceLocal(
                 ),
             )
         )
-      except exceptions.HttpError as e:
+      except apitools_exceptions.HttpError as e:
         cmek_util.ProcessException(e, kms_key)
         raise e
 
@@ -360,7 +360,7 @@ def _GetSource(
     stage_bucket_arg,
     ignore_file_arg,
     existing_function,
-    kms_key=None
+    kms_key=None,
 ):
   """Parses the source bucket and object from the --source flag.
 
@@ -876,7 +876,7 @@ def _GetBuildConfig(
       args.stage_bucket,
       args.ignore_file,
       existing_function,
-      kms_key
+      kms_key,
   )
 
   old_build_env_vars = {}
@@ -1156,21 +1156,26 @@ def _SetDockerRepositoryConfig(
       if existing_function
       else None
   )
+  if args.IsSpecified('docker_repository'):
+    cmek_util.ValidateDockerRepositoryForFunction(
+        args.docker_repository, function_ref
+    )
   if args.IsSpecified('docker_repository') or args.IsSpecified(
       'clear_docker_repository'
   ):
+    updated_docker_repository = (
+        None
+        if args.IsSpecified('clear_docker_repository')
+        else args.docker_repository
+    )
     function.buildConfig.dockerRepository = (
-        None if args.clear_docker_repository else args.docker_repository
+        cmek_util.NormalizeDockerRepositoryFormat(updated_docker_repository)
     )
     if (
         existing_function is None
         or function.buildConfig.dockerRepository
         != existing_function.buildConfig.dockerRepository
     ):
-      if function.buildConfig.dockerRepository:
-        cmek_util.ValidateDockerRepositoryForFunction(
-            function.buildConfig.dockerRepository, function_ref
-        )
       updated_fields.add('build_config.docker_repository')
   if function.kmsKeyName and not function.buildConfig.dockerRepository:
     raise calliope_exceptions.RequiredArgumentException(

@@ -384,12 +384,14 @@ class FleetClient(object):
         name=util.NamespaceResourceName(project, name))
     return self.client.projects_locations_namespaces.Delete(req)
 
-  def UpdateNamespace(self, name, project):
+  def UpdateNamespace(self, name, scope, project, mask):
     """Updates a namespace resource in the fleet.
 
     Args:
       name: the namespace name.
+      scope: the scope containing the namespace.
       project: the project containing the namespace.
+      mask: a mask of the fields to update.
 
     Returns:
       An operation
@@ -399,13 +401,13 @@ class FleetClient(object):
     """
     # Namespace containing fields with updated value(s)
     namespace = self.messages.Namespace(
-        name=util.NamespaceResourceName(project, name))
-    # Fields to be updated (currently no fields, only update_time is changed)
-    mask = ''
+        name=util.NamespaceResourceName(project, name), scope=scope
+    )
     req = self.messages.GkehubProjectsLocationsNamespacesPatchRequest(
         namespace=namespace,
         name=util.NamespaceResourceName(project, name),
-        updateMask=mask)
+        updateMask=mask,
+    )
     return self.client.projects_locations_namespaces.Patch(req)
 
   def ListNamespaces(self, project):

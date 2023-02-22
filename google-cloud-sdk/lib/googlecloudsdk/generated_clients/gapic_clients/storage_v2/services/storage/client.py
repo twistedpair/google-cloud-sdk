@@ -214,14 +214,14 @@ class StorageClient(metaclass=StorageClientMeta):
         return m.groupdict() if m else {}
 
     @staticmethod
-    def notification_path(project: str,bucket: str,notification: str,) -> str:
-        """Returns a fully-qualified notification string."""
-        return "projects/{project}/buckets/{bucket}/notificationConfigs/{notification}".format(project=project, bucket=bucket, notification=notification, )
+    def notification_config_path(project: str,bucket: str,notification_config: str,) -> str:
+        """Returns a fully-qualified notification_config string."""
+        return "projects/{project}/buckets/{bucket}/notificationConfigs/{notification_config}".format(project=project, bucket=bucket, notification_config=notification_config, )
 
     @staticmethod
-    def parse_notification_path(path: str) -> Dict[str,str]:
-        """Parses a notification path into its component segments."""
-        m = re.match(r"^projects/(?P<project>.+?)/buckets/(?P<bucket>.+?)/notificationConfigs/(?P<notification>.+?)$", path)
+    def parse_notification_config_path(path: str) -> Dict[str,str]:
+        """Parses a notification_config path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/buckets/(?P<bucket>.+?)/notificationConfigs/(?P<notification_config>.+?)$", path)
         return m.groupdict() if m else {}
 
     @staticmethod
@@ -726,6 +726,11 @@ class StorageClient(metaclass=StorageClientMeta):
 
         routing_param_regex = re.compile('^(?P<project>.*)$')
         regex_match = routing_param_regex.match(request.parent)
+        if regex_match and regex_match.group("project"):
+            header_params["project"] = regex_match.group("project")
+
+        routing_param_regex = re.compile('^(?P<project>.*)$')
+        regex_match = routing_param_regex.match(request.bucket.project)
         if regex_match and regex_match.group("project"):
             header_params["project"] = regex_match.group("project")
 
@@ -1551,15 +1556,15 @@ class StorageClient(metaclass=StorageClientMeta):
         # Done; return the response.
         return response
 
-    def delete_notification(self,
-            request: Union[storage.DeleteNotificationRequest, dict] = None,
+    def delete_notification_config(self,
+            request: Union[storage.DeleteNotificationConfigRequest, dict] = None,
             *,
             name: str = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
-        r"""Permanently deletes a notification subscription.
+        r"""Permanently deletes a NotificationConfig.
 
         .. code-block:: python
 
@@ -1572,25 +1577,25 @@ class StorageClient(metaclass=StorageClientMeta):
             #   https://googleapis.dev/python/google-api-core/latest/client_options.html
             from googlecloudsdk.generated_clients.gapic_clients import storage_v2
 
-            def sample_delete_notification():
+            def sample_delete_notification_config():
                 # Create a client
                 client = storage_v2.StorageClient()
 
                 # Initialize request argument(s)
-                request = storage_v2.DeleteNotificationRequest(
+                request = storage_v2.DeleteNotificationConfigRequest(
                     name="name_value",
                 )
 
                 # Make the request
-                client.delete_notification(request=request)
+                client.delete_notification_config(request=request)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteNotificationRequest, dict]):
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteNotificationConfigRequest, dict]):
                 The request object. Request message for
-                DeleteNotification.
+                DeleteNotificationConfig.
             name (str):
                 Required. The parent bucket of the
-                notification.
+                NotificationConfig.
 
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1610,11 +1615,11 @@ class StorageClient(metaclass=StorageClientMeta):
                              'the individual field arguments should be set.')
 
         # Minor optimization to avoid making a copy if the user passes
-        # in a storage.DeleteNotificationRequest.
+        # in a storage.DeleteNotificationConfigRequest.
         # There's no risk of modifying the input as we've already verified
         # there are no flattened fields.
-        if not isinstance(request, storage.DeleteNotificationRequest):
-            request = storage.DeleteNotificationRequest(request)
+        if not isinstance(request, storage.DeleteNotificationConfigRequest):
+            request = storage.DeleteNotificationConfigRequest(request)
             # If we have keyword arguments corresponding to fields on the
             # request, apply these.
             if name is not None:
@@ -1622,7 +1627,7 @@ class StorageClient(metaclass=StorageClientMeta):
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = self._transport._wrapped_methods[self._transport.delete_notification]
+        rpc = self._transport._wrapped_methods[self._transport.delete_notification_config]
 
         header_params = {}
 
@@ -1644,15 +1649,15 @@ class StorageClient(metaclass=StorageClientMeta):
             metadata=metadata,
         )
 
-    def get_notification(self,
-            request: Union[storage.GetNotificationRequest, dict] = None,
+    def get_notification_config(self,
+            request: Union[storage.GetNotificationConfigRequest, dict] = None,
             *,
             name: str = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
-            ) -> storage.Notification:
-        r"""View a notification config.
+            ) -> storage.NotificationConfig:
+        r"""View a NotificationConfig.
 
         .. code-block:: python
 
@@ -1665,27 +1670,29 @@ class StorageClient(metaclass=StorageClientMeta):
             #   https://googleapis.dev/python/google-api-core/latest/client_options.html
             from googlecloudsdk.generated_clients.gapic_clients import storage_v2
 
-            def sample_get_notification():
+            def sample_get_notification_config():
                 # Create a client
                 client = storage_v2.StorageClient()
 
                 # Initialize request argument(s)
-                request = storage_v2.GetNotificationRequest(
+                request = storage_v2.GetNotificationConfigRequest(
                     name="name_value",
                 )
 
                 # Make the request
-                response = client.get_notification(request=request)
+                response = client.get_notification_config(request=request)
 
                 # Handle the response
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetNotificationRequest, dict]):
-                The request object. Request message for GetNotification.
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetNotificationConfigRequest, dict]):
+                The request object. Request message for
+                GetNotificationConfig.
             name (str):
-                Required. The parent bucket of the notification. Format:
-                ``projects/{project}/buckets/{bucket}/notificationConfigs/{notification}``
+                Required. The parent bucket of the NotificationConfig.
+                Format:
+                ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
 
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1697,7 +1704,7 @@ class StorageClient(metaclass=StorageClientMeta):
                 sent along with the request as metadata.
 
         Returns:
-            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Notification:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig:
                 A directive to publish Pub/Sub
                 notifications upon changes to a bucket.
 
@@ -1711,11 +1718,11 @@ class StorageClient(metaclass=StorageClientMeta):
                              'the individual field arguments should be set.')
 
         # Minor optimization to avoid making a copy if the user passes
-        # in a storage.GetNotificationRequest.
+        # in a storage.GetNotificationConfigRequest.
         # There's no risk of modifying the input as we've already verified
         # there are no flattened fields.
-        if not isinstance(request, storage.GetNotificationRequest):
-            request = storage.GetNotificationRequest(request)
+        if not isinstance(request, storage.GetNotificationConfigRequest):
+            request = storage.GetNotificationConfigRequest(request)
             # If we have keyword arguments corresponding to fields on the
             # request, apply these.
             if name is not None:
@@ -1723,7 +1730,7 @@ class StorageClient(metaclass=StorageClientMeta):
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = self._transport._wrapped_methods[self._transport.get_notification]
+        rpc = self._transport._wrapped_methods[self._transport.get_notification_config]
 
         header_params = {}
 
@@ -1748,19 +1755,18 @@ class StorageClient(metaclass=StorageClientMeta):
         # Done; return the response.
         return response
 
-    def create_notification(self,
-            request: Union[storage.CreateNotificationRequest, dict] = None,
+    def create_notification_config(self,
+            request: Union[storage.CreateNotificationConfigRequest, dict] = None,
             *,
             parent: str = None,
-            notification: storage.Notification = None,
+            notification_config: storage.NotificationConfig = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
-            ) -> storage.Notification:
-        r"""Creates a notification subscription for a given
-        bucket. These notifications, when triggered, publish
-        messages to the specified Pub/Sub topics.
-        See
+            ) -> storage.NotificationConfig:
+        r"""Creates a NotificationConfig for a given bucket.
+        These NotificationConfigs, when triggered, publish
+        messages to the specified Pub/Sub topics. See
         https://cloud.google.com/storage/docs/pubsub-notifications.
 
         .. code-block:: python
@@ -1774,43 +1780,43 @@ class StorageClient(metaclass=StorageClientMeta):
             #   https://googleapis.dev/python/google-api-core/latest/client_options.html
             from googlecloudsdk.generated_clients.gapic_clients import storage_v2
 
-            def sample_create_notification():
+            def sample_create_notification_config():
                 # Create a client
                 client = storage_v2.StorageClient()
 
                 # Initialize request argument(s)
-                notification = storage_v2.Notification()
-                notification.name = "name_value"
-                notification.topic = "topic_value"
-                notification.payload_format = "payload_format_value"
+                notification_config = storage_v2.NotificationConfig()
+                notification_config.name = "name_value"
+                notification_config.topic = "topic_value"
+                notification_config.payload_format = "payload_format_value"
 
-                request = storage_v2.CreateNotificationRequest(
+                request = storage_v2.CreateNotificationConfigRequest(
                     parent="parent_value",
-                    notification=notification,
+                    notification_config=notification_config,
                 )
 
                 # Make the request
-                response = client.create_notification(request=request)
+                response = client.create_notification_config(request=request)
 
                 # Handle the response
                 print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateNotificationRequest, dict]):
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateNotificationConfigRequest, dict]):
                 The request object. Request message for
-                CreateNotification.
+                CreateNotificationConfig.
             parent (str):
                 Required. The bucket to which this
-                notification belongs.
+                NotificationConfig belongs.
 
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            notification (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Notification):
+            notification_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig):
                 Required. Properties of the
-                notification to be inserted.
+                NotificationConfig to be inserted.
 
-                This corresponds to the ``notification`` field
+                This corresponds to the ``notification_config`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
@@ -1820,7 +1826,7 @@ class StorageClient(metaclass=StorageClientMeta):
                 sent along with the request as metadata.
 
         Returns:
-            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Notification:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig:
                 A directive to publish Pub/Sub
                 notifications upon changes to a bucket.
 
@@ -1828,27 +1834,27 @@ class StorageClient(metaclass=StorageClientMeta):
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent, notification])
+        has_flattened_params = any([parent, notification_config])
         if request is not None and has_flattened_params:
             raise ValueError('If the `request` argument is set, then none of '
                              'the individual field arguments should be set.')
 
         # Minor optimization to avoid making a copy if the user passes
-        # in a storage.CreateNotificationRequest.
+        # in a storage.CreateNotificationConfigRequest.
         # There's no risk of modifying the input as we've already verified
         # there are no flattened fields.
-        if not isinstance(request, storage.CreateNotificationRequest):
-            request = storage.CreateNotificationRequest(request)
+        if not isinstance(request, storage.CreateNotificationConfigRequest):
+            request = storage.CreateNotificationConfigRequest(request)
             # If we have keyword arguments corresponding to fields on the
             # request, apply these.
             if parent is not None:
                 request.parent = parent
-            if notification is not None:
-                request.notification = notification
+            if notification_config is not None:
+                request.notification_config = notification_config
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = self._transport._wrapped_methods[self._transport.create_notification]
+        rpc = self._transport._wrapped_methods[self._transport.create_notification_config]
 
         header_params = {}
 
@@ -1873,16 +1879,16 @@ class StorageClient(metaclass=StorageClientMeta):
         # Done; return the response.
         return response
 
-    def list_notifications(self,
-            request: Union[storage.ListNotificationsRequest, dict] = None,
+    def list_notification_configs(self,
+            request: Union[storage.ListNotificationConfigsRequest, dict] = None,
             *,
             parent: str = None,
             retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
-            ) -> pagers.ListNotificationsPager:
-        r"""Retrieves a list of notification subscriptions for a
-        given bucket.
+            ) -> pagers.ListNotificationConfigsPager:
+        r"""Retrieves a list of NotificationConfigs for a given
+        bucket.
 
         .. code-block:: python
 
@@ -1895,24 +1901,24 @@ class StorageClient(metaclass=StorageClientMeta):
             #   https://googleapis.dev/python/google-api-core/latest/client_options.html
             from googlecloudsdk.generated_clients.gapic_clients import storage_v2
 
-            def sample_list_notifications():
+            def sample_list_notification_configs():
                 # Create a client
                 client = storage_v2.StorageClient()
 
                 # Initialize request argument(s)
-                request = storage_v2.ListNotificationsRequest(
+                request = storage_v2.ListNotificationConfigsRequest(
                     parent="parent_value",
                 )
 
                 # Make the request
-                page_result = client.list_notifications(request=request)
+                page_result = client.list_notification_configs(request=request)
 
                 # Handle the response
                 for response in page_result:
                     print(response)
 
         Args:
-            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListNotificationsRequest, dict]):
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListNotificationConfigsRequest, dict]):
                 The request object. Request message for
                 ListNotifications.
             parent (str):
@@ -1929,9 +1935,9 @@ class StorageClient(metaclass=StorageClientMeta):
                 sent along with the request as metadata.
 
         Returns:
-            googlecloudsdk.generated_clients.gapic_clients.storage_v2.services.storage.pagers.ListNotificationsPager:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.services.storage.pagers.ListNotificationConfigsPager:
                 The result of a call to
-                Notifications.ListNotifications
+                ListNotificationConfigs
                 Iterating over this object will yield
                 results and resolve additional pages
                 automatically.
@@ -1946,11 +1952,11 @@ class StorageClient(metaclass=StorageClientMeta):
                              'the individual field arguments should be set.')
 
         # Minor optimization to avoid making a copy if the user passes
-        # in a storage.ListNotificationsRequest.
+        # in a storage.ListNotificationConfigsRequest.
         # There's no risk of modifying the input as we've already verified
         # there are no flattened fields.
-        if not isinstance(request, storage.ListNotificationsRequest):
-            request = storage.ListNotificationsRequest(request)
+        if not isinstance(request, storage.ListNotificationConfigsRequest):
+            request = storage.ListNotificationConfigsRequest(request)
             # If we have keyword arguments corresponding to fields on the
             # request, apply these.
             if parent is not None:
@@ -1958,7 +1964,7 @@ class StorageClient(metaclass=StorageClientMeta):
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = self._transport._wrapped_methods[self._transport.list_notifications]
+        rpc = self._transport._wrapped_methods[self._transport.list_notification_configs]
 
         header_params = {}
 
@@ -1982,7 +1988,7 @@ class StorageClient(metaclass=StorageClientMeta):
 
         # This method is paged; wrap the response in a pager, which provides
         # an `__iter__` convenience method.
-        response = pagers.ListNotificationsPager(
+        response = pagers.ListNotificationConfigsPager(
             method=rpc,
             request=request,
             response=response,
@@ -2728,6 +2734,8 @@ class StorageClient(metaclass=StorageClientMeta):
            will skip data at offsets that were already persisted
            (without checking that it matches the previously written
            data), and write only the data starting from the persisted
+           offset. Even though the data isn't written, it may still
+           incur a performance cost over resuming at the correct write
            offset. This behavior can make client-side handling simpler
            in some cases.
 

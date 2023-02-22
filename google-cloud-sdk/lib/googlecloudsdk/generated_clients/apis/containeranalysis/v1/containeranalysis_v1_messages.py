@@ -4871,6 +4871,7 @@ class VulnerabilityNote(_messages.Message):
   Fields:
     cvssScore: The CVSS score of this vulnerability. CVSS score is on a scale
       of 0 - 10 where 0 indicates low severity and 10 indicates high severity.
+    cvssV2: The full description of the v2 CVSS for this vulnerability.
     cvssV3: The full description of the CVSSv3 for this vulnerability.
     cvssVersion: CVSS version used to populate cvss_score and severity.
     details: Details of all known distros and packages affected by this
@@ -4917,12 +4918,13 @@ class VulnerabilityNote(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  cvssV3 = _messages.MessageField('CVSSv3', 2)
-  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 3)
-  details = _messages.MessageField('Detail', 4, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
-  sourceUpdateTime = _messages.StringField(6)
-  windowsDetails = _messages.MessageField('WindowsDetail', 7, repeated=True)
+  cvssV2 = _messages.MessageField('CVSS', 2)
+  cvssV3 = _messages.MessageField('CVSSv3', 3)
+  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 4)
+  details = _messages.MessageField('Detail', 5, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  sourceUpdateTime = _messages.StringField(7)
+  windowsDetails = _messages.MessageField('WindowsDetail', 8, repeated=True)
 
 
 class VulnerabilityOccurrence(_messages.Message):
@@ -4947,6 +4949,7 @@ class VulnerabilityOccurrence(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0 - 10 where 0 indicates low severity and 10 indicates
       high severity.
+    cvssV2: The cvss v2 score for the vulnerability.
     cvssVersion: Output only. CVSS version used to populate cvss_score and
       severity.
     cvssv3: The cvss v3 score for the vulnerability.
@@ -5032,16 +5035,17 @@ class VulnerabilityOccurrence(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 2)
-  cvssv3 = _messages.MessageField('CVSS', 3)
-  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 4)
-  fixAvailable = _messages.BooleanField(5)
-  longDescription = _messages.StringField(6)
-  packageIssue = _messages.MessageField('PackageIssue', 7, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 8, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
-  shortDescription = _messages.StringField(10)
-  type = _messages.StringField(11)
+  cvssV2 = _messages.MessageField('CVSS', 2)
+  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 3)
+  cvssv3 = _messages.MessageField('CVSS', 4)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
+  fixAvailable = _messages.BooleanField(6)
+  longDescription = _messages.StringField(7)
+  packageIssue = _messages.MessageField('PackageIssue', 8, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 9, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  shortDescription = _messages.StringField(11)
+  type = _messages.StringField(12)
 
 
 class VulnerabilityOccurrencesSummary(_messages.Message):

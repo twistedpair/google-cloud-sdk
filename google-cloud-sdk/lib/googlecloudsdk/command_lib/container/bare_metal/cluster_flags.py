@@ -469,6 +469,11 @@ def _AddMetalLBAddressPools(metal_lb_config_group, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
+  metal_lb_address_pools_mutex_group = metal_lb_config_group.add_group(
+      help='MetalLB address pools configuration.',
+      mutex=True,
+      required=required,
+  )
   metal_lb_address_pools_from_file_help_text = """
 Path of the YAML/JSON file that contains the MetalLB address pools.
 
@@ -497,11 +502,25 @@ avoidBuggyIPs | bool                  | optional, mutable, defaults to False
 manualAssign  | bool                  | optional, mutable, defaults to False
 
 """
-  metal_lb_config_group.add_argument(
+  metal_lb_address_pools_mutex_group.add_argument(
       '--metal-lb-address-pools-from-file',
-      required=required,
       help=metal_lb_address_pools_from_file_help_text,
       type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  metal_lb_address_pools_mutex_group.add_argument(
+      '--metal-lb-address-pools',
+      help='MetalLB address pools configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'pool': str,
+              'avoid-buggy-ips': arg_parsers.ArgBoolean(),
+              'manual-assign': arg_parsers.ArgBoolean(),
+              'addresses': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['pool', 'addresses'],
+      ),
   )
 
 

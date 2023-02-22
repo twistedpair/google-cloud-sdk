@@ -343,6 +343,315 @@
         }
       }
     },
+    "QueryDataRequest": {
+      "id": "QueryDataRequest",
+      "description": "The parameters to QueryData. See go\/oa:query-api-design for the design of this endpoint and the related ValidateQuery and ReadQueryResults endpoints.",
+      "type": "object",
+      "properties": {
+        "resourceNames": {
+          "description": "Required. Names of one or more log views to run a SQL query. In the future, resource paths for metrics and other data types will be supported here as well.Examples: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]Requires appropriate permissions on each resource such as 'logging.views.access' on log view resources.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "timeRestriction": {
+          "description": "The time range in which to execute the query. May be absent; if so, no time restriction will be applied.",
+          "$ref": "Interval"
+        },
+        "querySteps": {
+          "description": "The query steps to execute. Each query step will correspond to a handle in the result proto.",
+          "type": "array",
+          "items": {
+            "$ref": "QueryStep"
+          }
+        },
+        "disableQueryCaching": {
+          "description": "If set to true, turns off all query caching on both the Log Analytics and BigQuery sides.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Interval": {
+      "id": "Interval",
+      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive).The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Optional. Inclusive start of the interval.If specified, a Timestamp matching this interval will have to be the same or after the start.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. Exclusive end of the interval.If specified, a Timestamp matching this interval will have to be before the end.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "QueryStep": {
+      "id": "QueryStep",
+      "description": "One step of the query. Each query step other than the first implicitly takes the output of the previous step as its input. Steps will be executed in sequence and will return their results independently (in other words, each step will finish at a different time and potentially return a different schema).",
+      "type": "object",
+      "properties": {
+        "sqlQueryStep": {
+          "description": "A query step containing a SQL query.",
+          "$ref": "SqlQueryStep"
+        },
+        "handleQueryStep": {
+          "description": "A query step that refers to a step within a previously-executed query.",
+          "$ref": "HandleQueryStep"
+        },
+        "chartingQueryStep": {
+          "description": "A query step that builds a charting query from configuration data.",
+          "$ref": "ChartingQueryStep"
+        }
+      }
+    },
+    "SqlQueryStep": {
+      "id": "SqlQueryStep",
+      "description": "A query step defined in raw SQL.",
+      "type": "object",
+      "properties": {
+        "sqlQuery": {
+          "description": "Required. A query string, following the BigQuery SQL query syntax. The FROM clause should specify a fully qualified log view corresponding to the log view in the resource_names in dot separated format like PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT count(*) FROM my_project.us.my_bucket._AllLogs;If any of the dot separated components have special characters, that component needs to be escaped separately like the following example:SELECT count(*) FROM company.com:abc.us.my-bucket._AllLogs;",
+          "type": "string"
+        }
+      }
+    },
+    "HandleQueryStep": {
+      "id": "HandleQueryStep",
+      "description": "A query step that reads the results of a step in a previous query operation as its input.",
+      "type": "object",
+      "properties": {
+        "queryStepHandle": {
+          "description": "Required. A handle to a query step from a previous call to QueryData.",
+          "type": "string"
+        }
+      }
+    },
+    "ChartingQueryStep": {
+      "id": "ChartingQueryStep",
+      "description": "A query step defined as a set of charting configuration options. This may not be used as the first step in a query.",
+      "type": "object",
+      "properties": {
+        "dimensions": {
+          "description": "The dimension columns. How many dimensions to choose and how they're configured will depend on the chart type.",
+          "type": "array",
+          "items": {
+            "$ref": "Dimension"
+          }
+        },
+        "dataSeries": {
+          "description": "The requested data series for the chart.",
+          "type": "array",
+          "items": {
+            "$ref": "DataSeries"
+          }
+        }
+      }
+    },
+    "Dimension": {
+      "id": "Dimension",
+      "description": "A definition for the (one) dimension column in the output. Multiple dimensions can be defined, but only a single column will be generated, containing the cross-product of the defined dimensions.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Required. The column name within the output of the previous step to use.",
+          "type": "string"
+        },
+        "timeBinSize": {
+          "description": "Used for a Timestamp column.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "integerBinSize": {
+          "description": "Used for an integer column.",
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "description": "If this value is nonzero, the number of bins to generate. If zero, all possible bins will be generated.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sortColumn": {
+          "description": "The column name to sort on. This may be set to this dimension column or any measure column. If the field is empty, it will sort on the dimension column. If sort_order is SORT_ORDER_NONE, this value is not used.",
+          "type": "string"
+        },
+        "sortOrder": {
+          "description": "The sort order. If limit is not zero, this may not be set to SORT_ORDER_NONE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value, do not use.",
+            "No sorting will be applied.",
+            "The lowest-valued entries will be selected.",
+            "The highest-valued entries will be selected."
+          ],
+          "enum": [
+            "SORT_ORDER_UNSPECIFIED",
+            "SORT_ORDER_NONE",
+            "SORT_ORDER_ASCENDING",
+            "SORT_ORDER_DESCENDING"
+          ]
+        }
+      }
+    },
+    "DataSeries": {
+      "id": "DataSeries",
+      "description": "A definition for a data series within the output. A data series is defined as a set of measures and breakdowns for those measures (see Measure and Breakdown above for descriptions of how those interact). The exact rendering of a data series will depend on the chart type chosen.",
+      "type": "object",
+      "properties": {
+        "measures": {
+          "description": "The measures within the data series.",
+          "type": "array",
+          "items": {
+            "$ref": "Measure"
+          }
+        },
+        "breakdowns": {
+          "description": "The breakdowns within the data series.",
+          "type": "array",
+          "items": {
+            "$ref": "Breakdown"
+          }
+        }
+      }
+    },
+    "Measure": {
+      "id": "Measure",
+      "description": "A definition for a single measure column in the output table. Multiple measure columns will produce multiple curves, stacked bars, etc. depending on chart type.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Required. The column name within the output of the previous step to use. May be the same column as the dimension.",
+          "type": "string"
+        },
+        "aggregation": {
+          "description": "The aggregation to apply to the input column. May not be set to \"none\" unless binning is disabled in the dimension.",
+          "$ref": "ChartingAggregation"
+        }
+      }
+    },
+    "ChartingAggregation": {
+      "id": "ChartingAggregation",
+      "description": "An identifier for an aggregation. Aggregations are used for cases where we need to collapse a set of values into a single value, such as multiple points in a measure into a single bin.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of aggregation to apply. Legal values for this string are: \"none\" - No aggregation is applied, all values are returned. Not legal in all cases, see the comment on the specific field. \"percentile\" - Generates an APPROX_QUANTILES. Requires one integer or double parameter. Applies only to numeric values. \"average\" - Generates AVG(). Applies only to numeric values. \"count\" - Generates COUNT(). \"count-distinct\" - Generates COUNT(DISTINCT). \"count-distinct-approx\" - Generates APPROX_COUNT_DISTINCT(). \"max\" - Generates MAX(). Applies only to numeric values. \"min\" - Generates MIN(). Applies only to numeric values. \"sum\" - Generates SUM(). Applies only to numeric values.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "Parameters to be applied to the aggregation. Aggregations that support or require parameters are listed above.",
+          "type": "array",
+          "items": {
+            "$ref": "Parameter"
+          }
+        }
+      }
+    },
+    "Parameter": {
+      "id": "Parameter",
+      "description": "A parameter value to be applied to an aggregation.",
+      "type": "object",
+      "properties": {
+        "intValue": {
+          "description": "An integer parameter value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "doubleValue": {
+          "description": "A floating-point parameter value.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "Breakdown": {
+      "id": "Breakdown",
+      "description": "Columns within the output of the previous step to use to break down the measures. We will generate one output measure for each value in the cross product of measure_columns plus the top N values in each of the breakdown columns. The value of N is currently TBD but will be small, less than 10.In other words, if there is one measure columns \"foo\" containing values \"foo1\" and \"foo2\", and there are two breakdown columns \"bar\" and \"baz\" containing the values \"bar1\", \"bar2\", \"baz1\", and \"baz2\", we will end up with eight output measures with all combinations of the above values: (foo1, bar1, baz1), (foo1, bar1, baz2), (foo1, bar2, baz1), ...",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Required. The name of the column containing the breakdown values.",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Values to choose how many breakdowns to create for each measure. If limit is zero, all possible breakdowns will be generated. If not, limit determines how many breakdowns, and sort_aggregation determines the function we will use to sort the breakdowns.For example, if limit is 3, we will generate at most three breakdowns per measure. If sort_aggregation is \"average\" and sort_order is DESCENDING, those three will be chosen as the ones where the average of all the points in the breakdown set is the greatest.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sortAggregation": {
+          "description": "The aggregation to apply to the measure values when choosing which breakdowns to generate. If sort_order is SORT_ORDER_NONE, this is not used.",
+          "$ref": "ChartingAggregation"
+        },
+        "sortOrder": {
+          "description": "The sort order. If limit is not zero, this may not be set to SORT_ORDER_NONE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value, do not use.",
+            "No sorting will be applied.",
+            "The lowest-valued entries will be selected.",
+            "The highest-valued entries will be selected."
+          ],
+          "enum": [
+            "SORT_ORDER_UNSPECIFIED",
+            "SORT_ORDER_NONE",
+            "SORT_ORDER_ASCENDING",
+            "SORT_ORDER_DESCENDING"
+          ]
+        }
+      }
+    },
+    "ValidateQueryResponse": {
+      "id": "ValidateQueryResponse",
+      "description": "The response data from ValidateQuery.",
+      "type": "object",
+      "properties": {
+        "validateResults": {
+          "description": "One set of query metadata per query step in the request. Result rows will not be populated.",
+          "type": "array",
+          "items": {
+            "$ref": "QueryResults"
+          }
+        }
+      }
+    },
+    "QueryDataResponse": {
+      "id": "QueryDataResponse",
+      "description": "The response data from QueryData.",
+      "type": "object",
+      "properties": {
+        "queryStepHandle": {
+          "description": "Handles to each of the query steps described in the request. These may be passed to ReadQueryDataResults or used in a HandleQueryStep in a subsequent call to QueryData.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ReadQueryResultsRequest": {
+      "id": "ReadQueryResultsRequest",
+      "description": "Parameters to ReadQueryResults.",
+      "type": "object",
+      "properties": {
+        "queryStepHandle": {
+          "description": "Required. A query step handle returned by QueryData.",
+          "type": "string"
+        },
+        "pageToken": {
+          "description": "Optional. Page token returned by a previous call to ReadQueryResults to paginate through the response rows.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "Optional. The maximum number of rows to return in the results. Responses are limited to 10 MB in size.By default, there is no maximum row count, and only the byte limit applies. When the byte limit is reached, the rest of query results will be paginated.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ListBucketsResponse": {
       "id": "ListBucketsResponse",
       "description": "The response from ListBuckets.",
@@ -420,7 +729,7 @@
           ]
         },
         "analyticsEnabled": {
-          "description": "Whether advanced log analytics is enabled for this bucket.This field may only be set at bucket creation and cannot be changed later.",
+          "description": "Whether log analytics is enabled for this bucket.Once enabled, log analytics features cannot be disabled.",
           "type": "boolean"
         },
         "logLink": {
@@ -2541,6 +2850,52 @@
           ],
           "description": "Runs a SQL query synchronously and returns query results if the query completes within a specified timeout. The results from a previous query can also be fetched by specifying a result reference."
         },
+        "queryData": {
+          "id": "logging.entries.queryData",
+          "path": "v2/entries:queryData",
+          "flatPath": "v2/entries:queryData",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryDataRequest"
+          },
+          "response": {
+            "$ref": "QueryDataResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Runs a (possibly multi-step) SQL query asynchronously and returns handles that can be used to fetch the results of each step."
+        },
+        "readQueryResults": {
+          "id": "logging.entries.readQueryResults",
+          "path": "v2/entries:readQueryResults",
+          "flatPath": "v2/entries:readQueryResults",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "ReadQueryResultsRequest"
+          },
+          "response": {
+            "$ref": "QueryResults"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Retrieves the results from a single step of a previous call to QueryData."
+        },
         "copy": {
           "id": "logging.entries.copy",
           "path": "v2/entries:copy",
@@ -2650,6 +3005,33 @@
             "https://www.googleapis.com/auth/logging.read"
           ],
           "description": "Streaming read of log entries as they are ingested. Until the stream is terminated, it will continue reading logs."
+        }
+      }
+    },
+    "query": {
+      "methods": {
+        "validate": {
+          "id": "logging.query.validate",
+          "path": "v2/query:validate",
+          "flatPath": "v2/query:validate",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryDataRequest"
+          },
+          "response": {
+            "$ref": "ValidateQueryResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Validates a query before passing it to QueryData and returns query metadata synchronously."
         }
       }
     },
@@ -3824,6 +4206,75 @@
                   ],
                   "description": "Gets a log bucket."
                 },
+                "createAsync": {
+                  "id": "logging.projects.locations.buckets.createAsync",
+                  "path": "v2/{+parent}/buckets:createAsync",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets:createAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "bucketId": {
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed."
+                },
+                "updateAsync": {
+                  "id": "logging.projects.locations.buckets.updateAsync",
+                  "path": "v2/{+name}:updateAsync",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                },
                 "create": {
                   "id": "logging.projects.locations.buckets.create",
                   "path": "v2/{+parent}/buckets",
@@ -3891,7 +4342,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                  "description": "Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.projects.locations.buckets.delete",
@@ -5337,6 +5788,75 @@
                   ],
                   "description": "Gets a log bucket."
                 },
+                "createAsync": {
+                  "id": "logging.organizations.locations.buckets.createAsync",
+                  "path": "v2/{+parent}/buckets:createAsync",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets:createAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "bucketId": {
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed."
+                },
+                "updateAsync": {
+                  "id": "logging.organizations.locations.buckets.updateAsync",
+                  "path": "v2/{+name}:updateAsync",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                },
                 "create": {
                   "id": "logging.organizations.locations.buckets.create",
                   "path": "v2/{+parent}/buckets",
@@ -5404,7 +5924,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                  "description": "Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.organizations.locations.buckets.delete",
@@ -6657,6 +7177,75 @@
                   ],
                   "description": "Gets a log bucket."
                 },
+                "createAsync": {
+                  "id": "logging.folders.locations.buckets.createAsync",
+                  "path": "v2/{+parent}/buckets:createAsync",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets:createAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "bucketId": {
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed."
+                },
+                "updateAsync": {
+                  "id": "logging.folders.locations.buckets.updateAsync",
+                  "path": "v2/{+name}:updateAsync",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                },
                 "create": {
                   "id": "logging.folders.locations.buckets.create",
                   "path": "v2/{+parent}/buckets",
@@ -6724,7 +7313,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                  "description": "Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.folders.locations.buckets.delete",
@@ -7942,6 +8531,75 @@
                   ],
                   "description": "Gets a log bucket."
                 },
+                "createAsync": {
+                  "id": "logging.billingAccounts.locations.buckets.createAsync",
+                  "path": "v2/{+parent}/buckets:createAsync",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets:createAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "bucketId": {
+                      "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed."
+                },
+                "updateAsync": {
+                  "id": "logging.billingAccounts.locations.buckets.updateAsync",
+                  "path": "v2/{+name}:updateAsync",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "LogBucket"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                },
                 "create": {
                   "id": "logging.billingAccounts.locations.buckets.create",
                   "path": "v2/{+parent}/buckets",
@@ -8009,7 +8667,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+                  "description": "Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.billingAccounts.locations.buckets.delete",
@@ -8779,6 +9437,75 @@
               ],
               "description": "Gets a log bucket."
             },
+            "createAsync": {
+              "id": "logging.locations.buckets.createAsync",
+              "path": "v2/{+parent}/buckets:createAsync",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets:createAsync",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "bucketId": {
+                  "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "LogBucket"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed."
+            },
+            "updateAsync": {
+              "id": "logging.locations.buckets.updateAsync",
+              "path": "v2/{+name}:updateAsync",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:updateAsync",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "LogBucket"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+            },
             "create": {
               "id": "logging.locations.buckets.create",
               "path": "v2/{+parent}/buckets",
@@ -8846,7 +9573,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
+              "description": "Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
             },
             "delete": {
               "id": "logging.locations.buckets.delete",

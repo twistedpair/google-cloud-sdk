@@ -237,9 +237,12 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
       'clear_docker_repository'
   ):
     old_docker_repository = function.dockerRepository
-    function.dockerRepository = (
-        None if args.clear_docker_repository else args.docker_repository
+    new_docker_repository = (
+        None
+        if args.IsSpecified('clear_docker_repository')
+        else cmek_util.NormalizeDockerRepositoryFormat(args.docker_repository)
     )
+    function.dockerRepository = new_docker_repository
     if function.dockerRepository != old_docker_repository:
       if function.dockerRepository:
         cmek_util.ValidateDockerRepositoryForFunction(

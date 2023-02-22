@@ -20,12 +20,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.container.gkeonprem import client
+from googlecloudsdk.api_lib.container.gkeonprem import bare_metal_clusters as clusters
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
 from googlecloudsdk.calliope import exceptions
 
 
-class _BareMetalNodePoolsClient(client.ClientBase):
+class _BareMetalNodePoolsClient(clusters.ClustersClient):
   """Base class for GKE OnPrem Bare Metal API clients."""
 
   def _node_taints(self, args):
@@ -59,7 +59,7 @@ class _BareMetalNodePoolsClient(client.ClientBase):
 
     return labels_value_message
 
-  def _node_configs(self, args):
+  def _node_configs_from_file(self, args):
     """Constructs proto message field node_configs."""
     if not args.node_configs_from_file:
       return []
@@ -109,10 +109,26 @@ class _BareMetalNodePoolsClient(client.ClientBase):
 
     return labels_value_message
 
+  def _node_configs_from_flag(self, args):
+    """Constructs proto message field node_configs."""
+    node_configs = []
+    node_config_flag_value = getattr(
+        args, 'node_configs', None
+    )
+    if node_config_flag_value:
+      for node_config in node_config_flag_value:
+        node_configs.append(self.node_config(node_config))
+
+    return node_configs
+
   def _node_pool_config(self, args):
     """Constructs proto message BareMetalNodePoolConfig."""
+    if 'node_configs_from_file' in args.GetSpecifiedArgsDict():
+      node_configs = self._node_configs_from_file(args)
+    else:
+      node_configs = self._node_configs_from_flag(args)
     kwargs = {
-        'nodeConfigs': self._node_configs(args),
+        'nodeConfigs': node_configs,
         'labels': self._node_labels(args),
         'taints': self._node_taints(args),
     }

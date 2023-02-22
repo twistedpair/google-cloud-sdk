@@ -558,6 +558,33 @@ class MonitoringV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def QueryExemplars(self, request, global_params=None):
+      r"""Lists exemplars relevant to a given PromQL query,.
+
+      Args:
+        request: (MonitoringProjectsLocationPrometheusApiV1QueryExemplarsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('QueryExemplars')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryExemplars.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/query_exemplars',
+        http_method='POST',
+        method_id='monitoring.projects.location.prometheus.api.v1.query_exemplars',
+        ordered_params=['name', 'location'],
+        path_params=['location', 'name'],
+        query_params=[],
+        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/query_exemplars',
+        request_field='queryExemplarsRequest',
+        request_type_name='MonitoringProjectsLocationPrometheusApiV1QueryExemplarsRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
     def QueryRange(self, request, global_params=None):
       r"""Evaluate a PromQL query with start, end time range.
 

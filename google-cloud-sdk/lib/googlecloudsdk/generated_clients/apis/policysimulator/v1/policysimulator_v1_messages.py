@@ -960,7 +960,9 @@ class GoogleIamV1Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -977,9 +979,7 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1301,6 +1301,17 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGe
+  tRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PolicysimulatorFoldersLocationsReplaysCreateRequest(_messages.Message):
   r"""A PolicysimulatorFoldersLocationsReplaysCreateRequest object.
 
@@ -1406,6 +1417,17 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperat
+  ionsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PolicysimulatorOrganizationsLocationsReplaysCreateRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsReplaysCreateRequest object.
 
@@ -1485,6 +1507,17 @@ class PolicysimulatorOrganizationsLocationsReplaysResultsListRequest(_messages.M
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsG
+  etRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class PolicysimulatorProjectsLocationsReplaysCreateRequest(_messages.Message):

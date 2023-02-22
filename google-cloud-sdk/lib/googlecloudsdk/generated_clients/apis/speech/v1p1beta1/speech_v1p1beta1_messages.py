@@ -345,8 +345,8 @@ class Phrase(_messages.Message):
   Speech-to-Text supports three locations: `global`, `us` (US North America),
   and `eu` (Europe). If you are calling the `speech.googleapis.com` endpoint,
   use the `global` location. To specify a region, use a [regional
-  endpoint](/speech-to-text/docs/endpoints) with matching `us` or `eu`
-  location value.
+  endpoint](https://cloud.google.com/speech-to-text/docs/endpoints) with
+  matching `us` or `eu` location value.
 
   Fields:
     boost: Hint Boost. Overrides the boost set at the phrase set level.
@@ -356,8 +356,8 @@ class Phrase(_messages.Message):
       boost will simply be ignored. Though `boost` can accept a wide range of
       positive values, most use cases are best served with values between 0
       and 20. We recommend using a binary search approach to finding the
-      optimal value for your use case. Speech recognition will skip PhraseSets
-      with a boost value of 0.
+      optimal value for your use case as well as adding phrases both with and
+      without boost to your requests.
     value: The phrase itself.
   """
 
@@ -378,8 +378,8 @@ class PhraseSet(_messages.Message):
       ignored. Though `boost` can accept a wide range of positive values, most
       use cases are best served with values between 0 (exclusive) and 20. We
       recommend using a binary search approach to finding the optimal value
-      for your use case. Speech recognition will skip PhraseSets with a boost
-      value of 0.
+      for your use case as well as adding phrases both with and without boost
+      to your requests.
     name: The resource name of the phrase set.
     phrases: A list of word and phrases.
   """

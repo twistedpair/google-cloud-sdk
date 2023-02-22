@@ -3483,6 +3483,8 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0-10 where 0 indicates low severity and 10 indicates
       high severity.
+    cvssV2: The cvss v2 score for the vulnerability.
+    cvssV3: The cvss v3 score for the vulnerability.
     cvssVersion: Output only. CVSS version used to populate cvss_score and
       severity.
     effectiveSeverity: The distro assigned severity for this vulnerability
@@ -3566,15 +3568,17 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 2)
-  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 3)
-  longDescription = _messages.StringField(4)
-  packageIssue = _messages.MessageField('PackageIssue', 5, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 6, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
-  shortDescription = _messages.StringField(8)
-  type = _messages.StringField(9)
-  vexAssessment = _messages.MessageField('VexAssessment', 10)
+  cvssV2 = _messages.MessageField('CVSS', 2)
+  cvssV3 = _messages.MessageField('CVSS', 3)
+  cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 4)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
+  longDescription = _messages.StringField(6)
+  packageIssue = _messages.MessageField('PackageIssue', 7, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 8, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
+  shortDescription = _messages.StringField(10)
+  type = _messages.StringField(11)
+  vexAssessment = _messages.MessageField('VexAssessment', 12)
 
 
 class Hash(_messages.Message):

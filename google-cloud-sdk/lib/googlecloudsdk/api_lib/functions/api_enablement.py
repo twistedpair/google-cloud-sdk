@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import api_enablement
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
@@ -32,7 +34,13 @@ def PromptToEnableApiIfDisabled(service_name):
     service_name: The name of the service to enable.
   """
   project_id = properties.VALUES.core.project.GetOrFail()
-  if console_io.CanPrompt() and not enable_api.IsServiceEnabled(
-      project_id, service_name
-  ):
-    api_enablement.PromptToEnableApi(project_id, service_name)
+  try:
+    if console_io.CanPrompt() and not enable_api.IsServiceEnabled(
+        project_id, service_name
+    ):
+      api_enablement.PromptToEnableApi(project_id, service_name)
+  except exceptions.GetServicePermissionDeniedException:
+    log.info(
+        "Could not verify if service {} is enabled: missing permission"
+        " 'serviceusage.services.get'.".format(service_name)
+    )

@@ -65,6 +65,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.instanceGroupManagerResizeRequests = self.InstanceGroupManagerResizeRequestsService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
+    self.instanceSettings = self.InstanceSettingsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
     self.instantSnapshots = self.InstantSnapshotsService(self)
@@ -507,7 +508,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.
+      r"""Returns the specified autoscaler resource.
 
       Args:
         request: (ComputeAutoscalersGetRequest) input message
@@ -751,7 +752,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
+      r"""Returns the specified BackendBucket resource.
 
       Args:
         request: (ComputeBackendBucketsGetRequest) input message
@@ -1099,7 +1100,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendService resource. Gets a list of available backend services.
+      r"""Returns the specified BackendService resource.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -1421,7 +1422,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified disk type. Gets a list of available disk types by making a list() request.
+      r"""Returns the specified disk type.
 
       Args:
         request: (ComputeDiskTypesGetRequest) input message
@@ -1613,7 +1614,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
+      r"""Returns the specified persistent disk.
 
       Args:
         request: (ComputeDisksGetRequest) input message
@@ -3259,7 +3260,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified address resource. Gets a list of available addresses by making a list() request.
+      r"""Returns the specified address resource.
 
       Args:
         request: (ComputeGlobalAddressesGetRequest) input message
@@ -3747,7 +3748,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+      r"""Returns the specified network endpoint group.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsGetRequest) input message
@@ -4281,7 +4282,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
+      r"""Returns the specified HealthCheck resource.
 
       Args:
         request: (ComputeHealthChecksGetRequest) input message
@@ -4473,7 +4474,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HttpHealthCheck resource. Gets a list of available HTTP health checks by making a list() request.
+      r"""Returns the specified HttpHealthCheck resource.
 
       Args:
         request: (ComputeHttpHealthChecksGetRequest) input message
@@ -4665,7 +4666,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HttpsHealthCheck resource. Gets a list of available HTTPS health checks by making a list() request.
+      r"""Returns the specified HttpsHealthCheck resource.
 
       Args:
         request: (ComputeHttpsHealthChecksGetRequest) input message
@@ -4919,7 +4920,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified image. Gets a list of available images by making a list() request.
+      r"""Returns the specified image.
 
       Args:
         request: (ComputeImagesGetRequest) input message
@@ -5459,7 +5460,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
+      r"""Returns all of the details about the specified managed instance group.
 
       Args:
         request: (ComputeInstanceGroupManagersGetRequest) input message
@@ -6274,6 +6275,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class InstanceSettingsService(base_api.BaseApiService):
+    """Service class for the instanceSettings resource."""
+
+    _NAME = 'instanceSettings'
+
+    def __init__(self, client):
+      super(ComputeAlpha.InstanceSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Instance settings.
+
+      Args:
+        request: (ComputeInstanceSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceSettings.get',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceSettings',
+        request_field='',
+        request_type_name='ComputeInstanceSettingsGetRequest',
+        response_type_name='InstanceSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Instance settings.
+
+      Args:
+        request: (ComputeInstanceSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.instanceSettings.patch',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/instanceSettings',
+        request_field='instanceSettings',
+        request_type_name='ComputeInstanceSettingsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class InstanceTemplatesService(base_api.BaseApiService):
     """Service class for the instanceTemplates resource."""
 
@@ -6337,7 +6400,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified instance template. Gets a list of available instance templates by making a list() request.
+      r"""Returns the specified instance template.
 
       Args:
         request: (ComputeInstanceTemplatesGetRequest) input message
@@ -6711,7 +6774,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Instance resource. Gets a list of available instances by making a list() request.
+      r"""Returns the specified Instance resource.
 
       Args:
         request: (ComputeInstancesGetRequest) input message
@@ -9157,7 +9220,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified machine image. Gets a list of available machine images by making a list() request.
+      r"""Returns the specified machine image.
 
       Args:
         request: (ComputeMachineImagesGetRequest) input message
@@ -9349,7 +9412,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified machine type. Gets a list of available machine types by making a list() request.
+      r"""Returns the specified machine type.
 
       Args:
         request: (ComputeMachineTypesGetRequest) input message
@@ -9873,7 +9936,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+      r"""Returns the specified network endpoint group.
 
       Args:
         request: (ComputeNetworkEndpointGroupsGetRequest) input message
@@ -10491,7 +10554,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network. Gets a list of available networks by making a list() request.
+      r"""Returns the specified network.
 
       Args:
         request: (ComputeNetworksGetRequest) input message
@@ -11239,7 +11302,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified node template. Gets a list of available node templates by making a list() request.
+      r"""Returns the specified node template.
 
       Args:
         request: (ComputeNodeTemplatesGetRequest) input message
@@ -11431,7 +11494,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified node type. Gets a list of available node types by making a list() request.
+      r"""Returns the specified node type.
 
       Args:
         request: (ComputeNodeTypesGetRequest) input message
@@ -13383,7 +13446,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified commitment resource. Gets a list of available commitments by making a list() request.
+      r"""Returns the specified commitment resource.
 
       Args:
         request: (ComputeRegionCommitmentsGetRequest) input message
@@ -13549,7 +13612,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified regional disk type. Gets a list of available disk types by making a list() request.
+      r"""Returns the specified regional disk type.
 
       Args:
         request: (ComputeRegionDiskTypesGetRequest) input message
@@ -14281,7 +14344,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
+      r"""Returns the specified HealthCheck resource.
 
       Args:
         request: (ComputeRegionHealthChecksGetRequest) input message
@@ -15325,7 +15388,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified instance template. Gets a list of available instance templates by making a list() request.
+      r"""Returns the specified instance template.
 
       Args:
         request: (ComputeRegionInstanceTemplatesGetRequest) input message
@@ -15771,7 +15834,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+      r"""Returns the specified network endpoint group.
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsGetRequest) input message
@@ -17219,7 +17282,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+      r"""Returns the specified TargetHttpProxy resource in the specified region.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesGetRequest) input message
@@ -17385,7 +17448,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+      r"""Returns the specified TargetHttpsProxy resource in the specified region.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesGetRequest) input message
@@ -17743,7 +17806,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
+      r"""Returns the specified UrlMap resource.
 
       Args:
         request: (ComputeRegionUrlMapsGetRequest) input message
@@ -17961,7 +18024,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Region resource. Gets a list of available regions by making a list() request. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.
+      r"""Returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.
 
       Args:
         request: (ComputeRegionsGetRequest) input message
@@ -18589,7 +18652,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Router resource. Gets a list of available routers by making a list() request.
+      r"""Returns the specified Router resource.
 
       Args:
         request: (ComputeRoutersGetRequest) input message
@@ -18859,7 +18922,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Route resource. Gets a list of available routes by making a list() request.
+      r"""Returns the specified Route resource.
 
       Args:
         request: (ComputeRoutesGetRequest) input message
@@ -19494,7 +19557,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.patch',
         ordered_params=['project', 'region', 'serviceAttachment'],
         path_params=['project', 'region', 'serviceAttachment'],
-        query_params=['requestId'],
+        query_params=['reconcileConnections', 'requestId'],
         relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
         request_field='serviceAttachmentResource',
         request_type_name='ComputeServiceAttachmentsPatchRequest',
@@ -19591,7 +19654,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.
+      r"""Returns the specified Snapshot resource.
 
       Args:
         request: (ComputeSnapshotsGetRequest) input message
@@ -19835,7 +19898,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
+      r"""Returns the specified SslCertificate resource.
 
       Args:
         request: (ComputeSslCertificatesGetRequest) input message
@@ -20027,7 +20090,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
+      r"""Returns the specified SSL policy resource.
 
       Args:
         request: (ComputeSslPoliciesInsertRequest) input message
@@ -20245,7 +20308,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified subnetwork. Gets a list of available subnetworks list() request.
+      r"""Returns the specified subnetwork.
 
       Args:
         request: (ComputeSubnetworksGetRequest) input message
@@ -20707,7 +20770,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request.
+      r"""Returns the specified TargetHttpProxy resource.
 
       Args:
         request: (ComputeTargetHttpProxiesGetRequest) input message
@@ -20925,7 +20988,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.
+      r"""Returns the specified TargetHttpsProxy resource.
 
       Args:
         request: (ComputeTargetHttpsProxiesGetRequest) input message
@@ -21247,7 +21310,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
+      r"""Returns the specified TargetInstance resource.
 
       Args:
         request: (ComputeTargetInstancesGetRequest) input message
@@ -21465,7 +21528,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified target pool. Gets a list of available target pools by making a list() request.
+      r"""Returns the specified target pool.
 
       Args:
         request: (ComputeTargetPoolsGetRequest) input message
@@ -21709,7 +21772,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
+      r"""Returns the specified TargetSslProxy resource.
 
       Args:
         request: (ComputeTargetSslProxiesGetRequest) input message
@@ -22005,7 +22068,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
+      r"""Returns the specified TargetTcpProxy resource.
 
       Args:
         request: (ComputeTargetTcpProxiesGetRequest) input message
@@ -22223,7 +22286,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
+      r"""Returns the specified target VPN gateway.
 
       Args:
         request: (ComputeTargetVpnGatewaysGetRequest) input message
@@ -22415,7 +22478,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
+      r"""Returns the specified UrlMap resource.
 
       Args:
         request: (ComputeUrlMapsGetRequest) input message
@@ -22685,7 +22748,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.
+      r"""Returns the specified VPN gateway.
 
       Args:
         request: (ComputeVpnGatewaysGetRequest) input message
@@ -22903,7 +22966,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
+      r"""Returns the specified VpnTunnel resource.
 
       Args:
         request: (ComputeVpnTunnelsGetRequest) input message
@@ -23323,7 +23386,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Zone resource. Gets a list of available zones by making a list() request.
+      r"""Returns the specified Zone resource.
 
       Args:
         request: (ComputeZonesGetRequest) input message

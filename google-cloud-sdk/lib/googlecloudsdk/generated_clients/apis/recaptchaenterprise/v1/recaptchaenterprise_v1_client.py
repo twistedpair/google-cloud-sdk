@@ -122,7 +122,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new FirewallPolicy, specifying conditions at which reCAPTCHA actions can be executed. A project may have a maximum of 1000 policies.
+      r"""Creates a new FirewallPolicy, specifying conditions at which reCAPTCHA Enterprise actions can be executed. A project may have a maximum of 1000 policies.
 
       Args:
         request: (RecaptchaenterpriseProjectsFirewallpoliciesCreateRequest) input message

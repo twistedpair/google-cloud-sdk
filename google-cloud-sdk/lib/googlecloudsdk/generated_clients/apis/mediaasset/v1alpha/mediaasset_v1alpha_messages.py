@@ -350,6 +350,8 @@ class Asset(_messages.Message):
     assetId: Output only. The assetID of an asset.
     createTime: Output only. The creation time.
     etag: Etag of the resource used in output and update requests.
+    expirationTime: The expiration time of the asset, asset will be deleted
+      after this time.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     linkInfo: Information about the links.
@@ -560,16 +562,17 @@ class Asset(_messages.Message):
   assetId = _messages.StringField(1)
   createTime = _messages.StringField(2)
   etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  linkInfo = _messages.MessageField('LinkInfoValue', 5)
-  linkSets = _messages.MessageField('LinkSetsValue', 6)
-  links = _messages.MessageField('LinksValue', 7)
-  metadata = _messages.MessageField('MetadataValue', 8)
-  metadataInfo = _messages.MessageField('MetadataInfoValue', 9)
-  name = _messages.StringField(10)
-  owner = _messages.MessageField('Owner', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  expirationTime = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  linkInfo = _messages.MessageField('LinkInfoValue', 6)
+  linkSets = _messages.MessageField('LinkSetsValue', 7)
+  links = _messages.MessageField('LinksValue', 8)
+  metadata = _messages.MessageField('MetadataValue', 9)
+  metadataInfo = _messages.MessageField('MetadataInfoValue', 10)
+  name = _messages.StringField(11)
+  owner = _messages.MessageField('Owner', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class AssetChange(_messages.Message):
@@ -1552,7 +1555,9 @@ class GoogleIamV1Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -1569,9 +1574,7 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """

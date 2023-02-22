@@ -312,6 +312,11 @@
         "ipInfo": {
           "readOnly": true,
           "$ref": "IpInformation"
+        },
+        "endpointInfo": {
+          "description": "Output only. The endpoint information through which to interact with a Blockchain Node.",
+          "readOnly": true,
+          "$ref": "EndpointInfo"
         }
       }
     },
@@ -337,6 +342,28 @@
         },
         "rpcIpv6Address": {
           "description": "Output only. The IPv6 address for the node RPC API endpoint.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "EndpointInfo": {
+      "id": "EndpointInfo",
+      "description": "Contains endpoint information through which to interact with a Blockchain Node.",
+      "type": "object",
+      "properties": {
+        "jsonRpcApiEndpoint": {
+          "description": "Output only. The assigned URL for the node JSON RPC API endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "websocketsApiEndpoint": {
+          "description": "Output only. The assigned URL for the node websockets API endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "beaconApiEndpoint": {
+          "description": "Output only. The assigned URL for the node Beacon API endpoint.",
           "readOnly": true,
           "type": "string"
         }

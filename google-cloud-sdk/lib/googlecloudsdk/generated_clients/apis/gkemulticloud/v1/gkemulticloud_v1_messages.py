@@ -2045,17 +2045,20 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
       settings.
     azureClient: Optional. Name of the AzureClient that contains
       authentication configuration for how the Anthos Multi-Cloud API connects
-      to Azure APIs. The `AzureClient` resource must reside on the same Google
-      Cloud Platform project and region as the `AzureCluster`. `AzureClient`
-      names are formatted as `projects//locations//azureClients/`. See
-      [Resource Names](https://cloud.google.com/apis/design/resource_names)
-      for more details on Google Cloud resource names.
+      to Azure APIs. Either azure_client or azure_services_authentication
+      should be provided. The `AzureClient` resource must reside on the same
+      Google Cloud Platform project and region as the `AzureCluster`.
+      `AzureClient` names are formatted as
+      `projects//locations//azureClients/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
     azureRegion: Required. The Azure region where the cluster runs. Each
       Google Cloud region supports a subset of nearby Azure regions. You can
       call GetAzureServerConfig to list all supported Azure regions within a
       given Google Cloud region.
     azureServicesAuthentication: Optional. Authentication configuration for
-      management of Azure resources.
+      management of Azure resources. Either azure_client or
+      azure_services_authentication should be provided.
     clusterCaCertificate: Output only. PEM encoded x509 certificate of the
       cluster root of trust.
     controlPlane: Required. Configuration related to the cluster control

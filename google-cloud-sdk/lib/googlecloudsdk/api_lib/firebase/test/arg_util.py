@@ -99,6 +99,33 @@ def AddCommonTestRunArgs(parser):
       '- *--timeout 5m* is 5 minutes\n'
       '- *--timeout 200s* is 200 seconds\n'
       '- *--timeout 100* is 100 seconds')
+  parser.add_argument(
+      '--client-details',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      help="""\
+      Comma-separated, KEY=VALUE map of additional details to attach to the test
+      matrix. Arbitrary KEY=VALUE pairs may be attached to a test matrix to
+      provide additional context about the tests being run. When consuming the
+      test results, such as in Cloud Functions or a CI system, these details can
+      add additional context such as a link to the corresponding pull request.
+
+      Example:
+
+      ```
+      --client-details=buildNumber=1234,pullRequest=https://example.com/link/to/pull-request
+      ```
+
+      To help you identify and locate your test matrix in the Firebase console,
+      use the matrixLabel key.
+
+      Example:
+
+      ```
+      --client-details=matrixLabel="Example matrix label"
+      ```
+      """,
+  )
 
 
 def AddAndroidTestArgs(parser):
@@ -458,23 +485,7 @@ def AddBetaArgs(parser):
   Args:
     parser: An argparse parser used to add args that follow a command.
   """
-  parser.add_argument(
-      '--client-details',
-      type=arg_parsers.ArgDict(),
-      metavar='KEY=VALUE',
-      help="""\
-      Comma-separated, KEY=VALUE map of additional details to attach to the test
-      matrix. Arbitrary KEY=VALUE pairs may be attached to a test matrix to
-      provide additional context about the tests being run. When consuming the
-      test results, such as in Cloud Functions or a CI system, these details can
-      add additional context such as a link to the corresponding pull request.
-
-      Example:
-
-      ```
-      --client-details=buildNumber=1234,pullRequest=https://example.com/link/to/pull-request
-      ```
-      """)
+  del parser  # Unused by AddBetaArgs
 
 
 def AddGaArgs(parser):

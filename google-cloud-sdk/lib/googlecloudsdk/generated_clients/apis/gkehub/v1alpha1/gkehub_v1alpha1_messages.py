@@ -1190,6 +1190,25 @@ class DataPlaneManagement(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
+class DataplaneV2FeatureSpec(_messages.Message):
+  r"""Spec for multi-cluster dataplane-v2 feature. This is required since
+  Feature proto requires a spec.
+
+  Fields:
+    enableEncryption: Enable dataplane-v2 based encryption for the multiple
+      clusters.
+  """
+
+  enableEncryption = _messages.BooleanField(1)
+
+
+class DataplaneV2FeatureState(_messages.Message):
+  r"""An empty state for multi-cluster dataplane-v2 feature. This is required
+  since FeatureStateDetails requires a state.
+  """
+
+
+
 class DeleteReferenceRequest(_messages.Message):
   r"""The DeleteReferenceRequest request.
 
@@ -1286,6 +1305,7 @@ class Feature(_messages.Message):
     configmanagementFeatureSpec: The specification for Anthos Config
       Management.
     createTime: Output only. When the Feature was created.
+    dataplanev2FeatureSpec: The specification for multi-cluster dataplane-v2.
     deleteTime: Output only. When the Feature was deleted.
     description: Description of the feature, limited to 63 characters.
     featureState: Output only. State of the Feature resource itself.
@@ -1346,25 +1366,26 @@ class Feature(_messages.Message):
   cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 5)
   configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 6)
   createTime = _messages.StringField(7)
-  deleteTime = _messages.StringField(8)
-  description = _messages.StringField(9)
-  featureState = _messages.MessageField('FeatureState', 10)
-  fleetDefaultMemberConfig = _messages.MessageField('FleetDefaultMemberConfig', 11)
-  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 12)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 13)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 16)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 17)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 18)
-  name = _messages.StringField(19)
-  namespaceactuationFeatureSpec = _messages.MessageField('NamespaceActuationFeatureSpec', 20)
-  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 21)
-  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 22)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 23)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 24)
-  updateTime = _messages.StringField(25)
-  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 26)
+  dataplanev2FeatureSpec = _messages.MessageField('DataplaneV2FeatureSpec', 8)
+  deleteTime = _messages.StringField(9)
+  description = _messages.StringField(10)
+  featureState = _messages.MessageField('FeatureState', 11)
+  fleetDefaultMemberConfig = _messages.MessageField('FleetDefaultMemberConfig', 12)
+  fleetobservabilityFeatureSpec = _messages.MessageField('FleetObservabilityFeatureSpec', 13)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 14)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 17)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 18)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 19)
+  name = _messages.StringField(20)
+  namespaceactuationFeatureSpec = _messages.MessageField('NamespaceActuationFeatureSpec', 21)
+  policycontrollerFeatureSpec = _messages.MessageField('PolicyControllerFeatureSpec', 22)
+  rbacrolebindingactuationFeatureSpec = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 23)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 24)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 25)
+  updateTime = _messages.StringField(26)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 27)
 
 
 class FeatureState(_messages.Message):
@@ -1462,6 +1483,7 @@ class FeatureStateDetails(_messages.Message):
       describing what actions (if any) need to be taken to return the Feature
       to `OK`.
     configmanagementFeatureState: State for the Config Management Feature.
+    dataplanev2FeatureState: State for multi-cluster dataplane-v2 feature.
     description: Human readable description of the issue.
     fleetobservabilityFeatureState: State for the FleetObservability Feature.
     helloworldFeatureState: State for the Hello World Feature.
@@ -1508,20 +1530,21 @@ class FeatureStateDetails(_messages.Message):
   cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 4)
   code = _messages.EnumField('CodeValueValuesEnum', 5)
   configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 6)
-  description = _messages.StringField(7)
-  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 8)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 9)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 10)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 11)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 12)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 13)
-  namespaceactuationFeatureState = _messages.MessageField('NamespaceActuationFeatureState', 14)
-  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 15)
-  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 16)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 17)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 18)
-  updateTime = _messages.StringField(19)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 20)
+  dataplanev2FeatureState = _messages.MessageField('DataplaneV2FeatureState', 7)
+  description = _messages.StringField(8)
+  fleetobservabilityFeatureState = _messages.MessageField('FleetObservabilityFeatureState', 9)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 10)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 11)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 12)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
+  namespaceactuationFeatureState = _messages.MessageField('NamespaceActuationFeatureState', 15)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 16)
+  rbacrolebindingactuationFeatureState = _messages.MessageField('RBACRoleBindingActuationFeatureState', 17)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 18)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 19)
+  updateTime = _messages.StringField(20)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 21)
 
 
 class FeatureTest(_messages.Message):

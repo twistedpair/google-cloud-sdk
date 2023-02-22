@@ -22,10 +22,21 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
 
-def ConstructNotAuthorizedError(project=None):
-  """Constructs a new Error for reporting when accessing this Feature is not authorized."""
+def ConstructNotAuthorizedError(resource_name, project=None):
+  """Constructs a new Error for reporting when it is not authorized to access the resource."""
   project = project or properties.VALUES.core.project.GetOrFail()
   return exceptions.Error(
-      'Not authorized to access workloadcertificate Feature for project [{}]'
-      .format(project)
+      'Not authorized to access {} for project [{}]'.format(
+          resource_name, project
+      )
+  )
+
+
+def ConstructResourceNotFoundError(resource_name, project=None):
+  """Constructs a new Error for reporting when this resource is not found."""
+  project = project or properties.VALUES.core.project.GetOrFail()
+  return exceptions.Error(
+      'Resource [{}] for project [{}] is not found'.format(
+          resource_name, project
+      )
   )

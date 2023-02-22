@@ -21,7 +21,7 @@ class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
   Fields:
     launch: Reference to the launch that will be used while audit logging and
       to control the launch. Should be set only in the alternate policy.
-    spec: Specify `Constraint` for configurations of Cloud Platform resources.
+    spec: Specify constraint for configurations of Google Cloud resources.
   """
 
   launch = _messages.StringField(1)
@@ -30,8 +30,8 @@ class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
 
 class GoogleCloudOrgpolicyV2CheckOrgPolicyResponse(_messages.Message):
   r"""The response returned from the CheckOrgPolicy method. For list
-  constraints, the Result will be ALLOWED/DENIED. For boolean constraints, the
-  Result will be ENFORCED/NOT_ENFORCED.
+  constraints, the result will be `ALLOWED/DENIED`. For boolean constraints,
+  the result will be `ENFORCED/NOT_ENFORCED`.
 
   Enums:
     ResultValueValuesEnum: The result of the org policy being checked
@@ -60,33 +60,33 @@ class GoogleCloudOrgpolicyV2CheckOrgPolicyResponse(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
-  r"""A `constraint` describes a way to restrict resource's configuration. For
-  example, you could enforce a constraint that controls which cloud services
-  can be activated across an organization, or whether a Compute Engine
-  instance can have serial port connections established. `Constraints` can be
-  configured by the organization's policy administrator to fit the needs of
-  the organization by setting a `policy` that includes `constraints` at
+  r"""A constraint describes a way to restrict resource's configuration. For
+  example, you could enforce a constraint that controls which Google Cloud
+  services can be activated across an organization, or whether a Compute
+  Engine instance can have serial port connections established. Constraints
+  can be configured by the organization policy administrator to fit the needs
+  of the organization by setting a policy that includes constraints at
   different locations in the organization's resource hierarchy. Policies are
   inherited down the resource hierarchy from higher levels, but can also be
   overridden. For details about the inheritance rules please read about
-  `policies`. `Constraints` have a default behavior determined by the
+  `policies`. Constraints have a default behavior determined by the
   `constraint_default` field, which is the enforcement behavior that is used
-  in the absence of a `policy` being defined or inherited for the resource in
+  in the absence of a policy being defined or inherited for the resource in
   question.
 
   Enums:
     ConstraintDefaultValueValuesEnum: The evaluation behavior of this
-      constraint in the absence of 'Policy'.
+      constraint in the absence of a policy.
 
   Fields:
     booleanConstraint: Defines this constraint as being a BooleanConstraint.
     constraintDefault: The evaluation behavior of this constraint in the
-      absence of 'Policy'.
-    description: Detailed description of what this `Constraint` controls as
-      well as how and where it is enforced. Mutable.
+      absence of a policy.
+    description: Detailed description of what this constraint controls as well
+      as how and where it is enforced. Mutable.
     displayName: The human readable name. Mutable.
     listConstraint: Defines this constraint as being a ListConstraint.
-    name: Immutable. The resource name of the Constraint. Must be in one of
+    name: Immutable. The resource name of the constraint. Must be in one of
       the following forms: *
       `projects/{project_number}/constraints/{constraint_name}` *
       `folders/{folder_id}/constraints/{constraint_name}` *
@@ -95,7 +95,7 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
   """
 
   class ConstraintDefaultValueValuesEnum(_messages.Enum):
-    r"""The evaluation behavior of this constraint in the absence of 'Policy'.
+    r"""The evaluation behavior of this constraint in the absence of a policy.
 
     Values:
       CONSTRAINT_DEFAULT_UNSPECIFIED: This is only used for distinguishing
@@ -118,7 +118,7 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2ConstraintBooleanConstraint(_messages.Message):
-  r"""A `Constraint` that is either enforced or not. For example a constraint
+  r"""A constraint that is either enforced or not. For example, a constraint
   `constraints/compute.disableSerialPortAccess`. If it is enforced on a VM
   instance, serial port connections will not be opened to that instance.
   """
@@ -126,8 +126,8 @@ class GoogleCloudOrgpolicyV2ConstraintBooleanConstraint(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2ConstraintListConstraint(_messages.Message):
-  r"""A `Constraint` that allows or disallows a list of string values, which
-  are configured by an Organization's policy administrator with a `Policy`.
+  r"""A constraint that allows or disallows a list of string values, which are
+  configured by an Organization Policy administrator with a policy.
 
   Fields:
     supportsExpr: Indicates whether CEL expression values can be used in
@@ -137,8 +137,8 @@ class GoogleCloudOrgpolicyV2ConstraintListConstraint(_messages.Message):
     supportsIn: Indicates whether values grouped into categories can be used
       in `Policy.allowed_values` and `Policy.denied_values`. For example,
       `"in:Python"` would match any value in the 'Python' group.
-    supportsUnder: Indicates whether subtrees of Cloud Resource Manager
-      resource hierarchy can be used in `Policy.allowed_values` and
+    supportsUnder: Indicates whether subtrees of the Resource Manager resource
+      hierarchy can be used in `Policy.allowed_values` and
       `Policy.denied_values`. For example, `"under:folders/123"` would match
       any resource under the 'folders/123' folder.
   """
@@ -151,7 +151,7 @@ class GoogleCloudOrgpolicyV2ConstraintListConstraint(_messages.Message):
 class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
   r"""A custom constraint defined by customers which can *only* be applied to
   the given resource types and organization. By creating a custom constraint,
-  customers can applied policies of this custom constraint. *Creating a custom
+  customers can apply policies of this custom constraint. *Creating a custom
   constraint itself does NOT apply any policy enforcement*.
 
   Enums:
@@ -171,12 +171,13 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     methodTypes: All the operations being applied for this constraint.
     name: Immutable. Name of the constraint. This is unique within the
       organization. Format of the name should be * `organizations/{organizatio
-      n_id}/customConstraints/{custom_constraint_id}` Example :
-      "organizations/123/customConstraints/custom.createOnlyE2TypeVms" The max
-      length is 70 characters and the min length is 1. Note that the prefix
-      "organizations/{organization_id}/customConstraints/" is not counted.
-    resourceTypes: Immutable. The Resource Instance type on which this policy
-      applies to. Format will be of the form : "/" Example: *
+      n_id}/customConstraints/{custom_constraint_id}` Example:
+      `organizations/123/customConstraints/custom.createOnlyE2TypeVms` The max
+      length is 70 characters and the minimum length is 1. Note that the
+      prefix `organizations/{organization_id}/customConstraints/` is not
+      counted.
+    resourceTypes: Immutable. The resource instance type on which this policy
+      applies. Format will be of the form : "/" Example: *
       `compute.googleapis.com/Instance`.
     updateTime: Output only. The last time this custom constraint was updated.
       This represents the last time that the `CreateCustomConstraint` or
@@ -187,7 +188,7 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     r"""Allow or deny type.
 
     Values:
-      ACTION_TYPE_UNSPECIFIED: Unspecified. Will results in user error.
+      ACTION_TYPE_UNSPECIFIED: Unspecified. Results in an error.
       ALLOW: Allowed action type.
       DENY: Deny action type.
     """
@@ -199,7 +200,7 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
     r"""MethodTypesValueListEntryValuesEnum enum type.
 
     Values:
-      METHOD_TYPE_UNSPECIFIED: Unspecified. Will results in user error.
+      METHOD_TYPE_UNSPECIFIED: Unspecified. Results in an error.
       CREATE: Constraint applied when creating the resource.
       UPDATE: Constraint applied when updating the resource.
       DELETE: Constraint applied when deleting the resource. Not supported
@@ -236,11 +237,11 @@ class GoogleCloudOrgpolicyV2ListConstraintsResponse(_messages.Message):
 
 class GoogleCloudOrgpolicyV2ListCustomConstraintsResponse(_messages.Message):
   r"""The response returned from the ListCustomConstraints method. It will be
-  empty if no `CustomConstraints` are set on the organization resource.
+  empty if no custom constraints are set on the organization resource.
 
   Fields:
-    customConstraints: All `CustomConstraints` that exist on the organization
-      resource. It will be empty if no `CustomConstraints` are set.
+    customConstraints: All custom constraints that exist on the organization
+      resource. It will be empty if no custom constraints are set.
     nextPageToken: Page token used to retrieve the next page. This is
       currently not used, but the server may at any point start supplying a
       valid token.
@@ -252,14 +253,14 @@ class GoogleCloudOrgpolicyV2ListCustomConstraintsResponse(_messages.Message):
 
 class GoogleCloudOrgpolicyV2ListPoliciesResponse(_messages.Message):
   r"""The response returned from the ListPolicies method. It will be empty if
-  no `Policies` are set on the resource.
+  no policies are set on the resource.
 
   Fields:
     nextPageToken: Page token used to retrieve the next page. This is
       currently not used, but the server may at any point start supplying a
       valid token.
-    policies: All `Policies` that exist on the resource. It will be empty if
-      no `Policies` are set.
+    policies: All policies that exist on the resource. It will be empty if no
+      policies are set.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -267,15 +268,17 @@ class GoogleCloudOrgpolicyV2ListPoliciesResponse(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2Policy(_messages.Message):
-  r"""Defines a Cloud Organization `Policy` which is used to specify
-  `Constraints` for configurations of Cloud Platform resources.
+  r"""Defines an organization policy which is used to specify constraints for
+  configurations of Google Cloud resources.
 
   Fields:
     alternate: Deprecated.
-    dryRunSpec: dry-run policy. go/op-dryrun-dd
-    name: Immutable. The resource name of the Policy. Must be one of the
+    dryRunSpec: Dry-run policy. Audit-only policy, can be used to monitor how
+      the policy would have impacted the existing and future resources if it's
+      enforced.
+    name: Immutable. The resource name of the policy. Must be one of the
       following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
+      which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
@@ -293,37 +296,37 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
-  r"""Defines a Cloud Organization `PolicySpec` which is used to specify
-  `Constraints` for configurations of Cloud Platform resources.
+  r"""Defines a Google Cloud policy specification which is used to specify
+  constraints for configurations of Google Cloud resources.
 
   Fields:
-    etag: An opaque tag indicating the current version of the `Policy`, used
-      for concurrency control. This field is ignored if used in a
-      `CreatePolicy` request. When the `Policy` is returned from either a
-      `GetPolicy` or a `ListPolicies` request, this `etag` indicates the
-      version of the current `Policy` to use when executing a read-modify-
-      write loop. When the `Policy` is returned from a `GetEffectivePolicy`
-      request, the `etag` will be unset.
-    inheritFromParent: Determines the inheritance behavior for this `Policy`.
-      If `inherit_from_parent` is true, PolicyRules set higher up in the
+    etag: An opaque tag indicating the current version of the policy, used for
+      concurrency control. This field is ignored if used in a `CreatePolicy`
+      request. When the policy` is returned from either a `GetPolicy` or a
+      `ListPolicies` request, this `etag` indicates the version of the current
+      policy to use when executing a read-modify-write loop. When the policy
+      is returned from a `GetEffectivePolicy` request, the `etag` will be
+      unset.
+    inheritFromParent: Determines the inheritance behavior for this policy. If
+      `inherit_from_parent` is true, policy rules set higher up in the
       hierarchy (up to the closest root) are inherited and present in the
       effective policy. If it is false, then no rules are inherited, and this
-      Policy becomes the new root for evaluation. This field can be set only
-      for Policies which configure list constraints.
+      policy becomes the new root for evaluation. This field can be set only
+      for policies which configure list constraints.
     reset: Ignores policies set above this resource and restores the
-      `constraint_default` enforcement behavior of the specific `Constraint`
-      at this resource. This field can be set in policies for either list or
+      `constraint_default` enforcement behavior of the specific constraint at
+      this resource. This field can be set in policies for either list or
       boolean constraints. If set, `rules` must be empty and
       `inherit_from_parent` must be set to false.
-    rules: Up to 10 PolicyRules are allowed. In Policies for boolean
+    rules: Up to 10 policy rules are allowed. In policies for boolean
       constraints, the following requirements apply: - There must be one and
-      only one PolicyRule where condition is unset. - BooleanPolicyRules with
-      conditions must set `enforced` to the opposite of the PolicyRule without
-      a condition. - During policy evaluation, PolicyRules with conditions
-      that are true for a target resource take precedence.
+      only one policy rule where condition is unset. - Boolean policy rules
+      with conditions must set `enforced` to the opposite of the policy rule
+      without a condition. - During policy evaluation, policy rules with
+      conditions that are true for a target resource take precedence.
     updateTime: Output only. The time stamp this was previously updated. This
       represents the last time a call to `CreatePolicy` or `UpdatePolicy` was
-      made for that `Policy`.
+      made for that policy.
   """
 
   etag = _messages.StringField(1)
@@ -338,7 +341,7 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
 
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
-      field can be set only in Policies for list constraints.
+      field can be set only in policies for list constraints.
     condition: A condition which determines whether this rule is used in the
       evaluation of the policy. When set, the `expression` field in the `Expr'
       must include from 1 to 10 subexpressions, joined by the "||" or "&&"
@@ -350,12 +353,12 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
       example expression is: "resource.matchTag('123456789/environment,
       'prod')". or "resource.matchTagId('tagKeys/123', 'tagValues/456')".
     denyAll: Setting this to true means that all values are denied. This field
-      can be set only in Policies for list constraints.
-    enforce: If `true`, then the `Policy` is enforced. If `false`, then any
-      configuration is acceptable. This field can be set only in Policies for
+      can be set only in policies for list constraints.
+    enforce: If `true`, then the policy is enforced. If `false`, then any
+      configuration is acceptable. This field can be set only in policies for
       boolean constraints.
-    values: List of values to be used for this PolicyRule. This field can be
-      set only in Policies for list constraints.
+    values: List of values to be used for this policy rule. This field can be
+      set only in policies for list constraints.
   """
 
   allowAll = _messages.BooleanField(1)
@@ -367,7 +370,7 @@ class GoogleCloudOrgpolicyV2PolicySpecPolicyRule(_messages.Message):
 
 class GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(_messages.Message):
   r"""A message that holds specific allowed and denied values. This message
-  can define specific values and subtrees of Cloud Resource Manager resource
+  can define specific values and subtrees of the Resource Manager resource
   hierarchy (`Organizations`, `Folders`, `Projects`) that are allowed or
   denied. This is achieved by using the `under:` and optional `is:` prefixes.
   The `under:` prefix is used to denote resource subtree values. The `is:`
@@ -443,8 +446,8 @@ class OrgpolicyFoldersConstraintsListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The Cloud resource that parents the constraint. Must be
-      in one of the following forms: * `projects/{project_number}` *
+    parent: Required. The Google Cloud resource that parents the constraint.
+      Must be in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
   """
@@ -458,10 +461,11 @@ class OrgpolicyFoldersPoliciesCheckRequest(_messages.Message):
   r"""A OrgpolicyFoldersPoliciesCheckRequest object.
 
   Fields:
-    listValue: For List canned constraints, set the literal field. Custom
+    listValue: For predefined list constraints, set the literal field. Custom
       constraints (NOT YET SUPPORTED).
-    name: Required. The CRM resource name. Can be a project, folder or
-      organization. Ex: "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+    name: Required. The Google Cloud resource name. Can be a project, folder
+      or organization. For example:
+      "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
       "folders/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
       "organizations/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
   """
@@ -476,10 +480,10 @@ class OrgpolicyFoldersPoliciesCreateRequest(_messages.Message):
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    parent: Required. The Cloud resource that will parent the new Policy. Must
-      be in one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+    parent: Required. The Google Cloud resource that will parent the new
+      policy. Must be in one of the following forms: *
+      `projects/{project_number}` * `projects/{project_id}` *
+      `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -490,8 +494,8 @@ class OrgpolicyFoldersPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyFoldersPoliciesDeleteRequest object.
 
   Fields:
-    name: Required. Name of the policy to delete. See `Policy` for naming
-      rules.
+    name: Required. Name of the policy to delete. See the policy entry for
+      naming rules.
   """
 
   name = _messages.StringField(1, required=True)
@@ -529,7 +533,7 @@ class OrgpolicyFoldersPoliciesListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The target Cloud resource that parents the set of
+    parent: Required. The target Google Cloud resource that parents the set of
       constraints and policies that will be returned from this call. Must be
       in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
@@ -547,9 +551,9 @@ class OrgpolicyFoldersPoliciesPatchRequest(_messages.Message):
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    name: Immutable. The resource name of the Policy. Must be one of the
+    name: Immutable. The resource name of the policy. Must be one of the
       following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
+      which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
@@ -577,8 +581,8 @@ class OrgpolicyOrganizationsConstraintsListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The Cloud resource that parents the constraint. Must be
-      in one of the following forms: * `projects/{project_number}` *
+    parent: Required. The Google Cloud resource that parents the constraint.
+      Must be in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
   """
@@ -610,8 +614,8 @@ class OrgpolicyOrganizationsCustomConstraintsDeleteRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsCustomConstraintsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the custom constraint to delete. See
-      `CustomConstraint` for naming rules.
+    name: Required. Name of the custom constraint to delete. See the custom
+      constraint entry for naming rules.
   """
 
   name = _messages.StringField(1, required=True)
@@ -621,8 +625,8 @@ class OrgpolicyOrganizationsCustomConstraintsGetRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsCustomConstraintsGetRequest object.
 
   Fields:
-    name: Required. Resource name of the custom constraint. See
-      `CustomConstraint` for naming requirements.
+    name: Required. Resource name of the custom constraint. See the custom
+      constraint entry for naming requirements.
   """
 
   name = _messages.StringField(1, required=True)
@@ -638,9 +642,9 @@ class OrgpolicyOrganizationsCustomConstraintsListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The target Cloud resource that parents the set of custom
-      constraints that will be returned from this call. Must be in one of the
-      following forms: * `organizations/{organization_id}`
+    parent: Required. The target Google Cloud resource that parents the set of
+      custom constraints that will be returned from this call. Must be in one
+      of the following forms: * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -657,10 +661,11 @@ class OrgpolicyOrganizationsCustomConstraintsPatchRequest(_messages.Message):
       request body.
     name: Immutable. Name of the constraint. This is unique within the
       organization. Format of the name should be * `organizations/{organizatio
-      n_id}/customConstraints/{custom_constraint_id}` Example :
-      "organizations/123/customConstraints/custom.createOnlyE2TypeVms" The max
-      length is 70 characters and the min length is 1. Note that the prefix
-      "organizations/{organization_id}/customConstraints/" is not counted.
+      n_id}/customConstraints/{custom_constraint_id}` Example:
+      `organizations/123/customConstraints/custom.createOnlyE2TypeVms` The max
+      length is 70 characters and the minimum length is 1. Note that the
+      prefix `organizations/{organization_id}/customConstraints/` is not
+      counted.
     validateOnly: Optional. Only validates the request, but do not perform any
       mutations. The default is false.
   """
@@ -674,10 +679,11 @@ class OrgpolicyOrganizationsPoliciesCheckRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsPoliciesCheckRequest object.
 
   Fields:
-    listValue: For List canned constraints, set the literal field. Custom
+    listValue: For predefined list constraints, set the literal field. Custom
       constraints (NOT YET SUPPORTED).
-    name: Required. The CRM resource name. Can be a project, folder or
-      organization. Ex: "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+    name: Required. The Google Cloud resource name. Can be a project, folder
+      or organization. For example:
+      "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
       "folders/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
       "organizations/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
   """
@@ -692,10 +698,10 @@ class OrgpolicyOrganizationsPoliciesCreateRequest(_messages.Message):
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    parent: Required. The Cloud resource that will parent the new Policy. Must
-      be in one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+    parent: Required. The Google Cloud resource that will parent the new
+      policy. Must be in one of the following forms: *
+      `projects/{project_number}` * `projects/{project_id}` *
+      `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -706,8 +712,8 @@ class OrgpolicyOrganizationsPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsPoliciesDeleteRequest object.
 
   Fields:
-    name: Required. Name of the policy to delete. See `Policy` for naming
-      rules.
+    name: Required. Name of the policy to delete. See the policy entry for
+      naming rules.
   """
 
   name = _messages.StringField(1, required=True)
@@ -745,7 +751,7 @@ class OrgpolicyOrganizationsPoliciesListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The target Cloud resource that parents the set of
+    parent: Required. The target Google Cloud resource that parents the set of
       constraints and policies that will be returned from this call. Must be
       in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
@@ -763,9 +769,9 @@ class OrgpolicyOrganizationsPoliciesPatchRequest(_messages.Message):
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    name: Immutable. The resource name of the Policy. Must be one of the
+    name: Immutable. The resource name of the policy. Must be one of the
       following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
+      which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For
@@ -793,8 +799,8 @@ class OrgpolicyProjectsConstraintsListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The Cloud resource that parents the constraint. Must be
-      in one of the following forms: * `projects/{project_number}` *
+    parent: Required. The Google Cloud resource that parents the constraint.
+      Must be in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
   """
@@ -808,10 +814,11 @@ class OrgpolicyProjectsPoliciesCheckRequest(_messages.Message):
   r"""A OrgpolicyProjectsPoliciesCheckRequest object.
 
   Fields:
-    listValue: For List canned constraints, set the literal field. Custom
+    listValue: For predefined list constraints, set the literal field. Custom
       constraints (NOT YET SUPPORTED).
-    name: Required. The CRM resource name. Can be a project, folder or
-      organization. Ex: "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
+    name: Required. The Google Cloud resource name. Can be a project, folder
+      or organization. For example:
+      "projects/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
       "folders/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
       "organizations/ID_OR_NUMBER/policies/CONSTRAINT_NAME"
   """
@@ -826,10 +833,10 @@ class OrgpolicyProjectsPoliciesCreateRequest(_messages.Message):
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    parent: Required. The Cloud resource that will parent the new Policy. Must
-      be in one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+    parent: Required. The Google Cloud resource that will parent the new
+      policy. Must be in one of the following forms: *
+      `projects/{project_number}` * `projects/{project_id}` *
+      `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   googleCloudOrgpolicyV2Policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -840,8 +847,8 @@ class OrgpolicyProjectsPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyProjectsPoliciesDeleteRequest object.
 
   Fields:
-    name: Required. Name of the policy to delete. See `Policy` for naming
-      rules.
+    name: Required. Name of the policy to delete. See the policy entry for
+      naming rules.
   """
 
   name = _messages.StringField(1, required=True)
@@ -879,7 +886,7 @@ class OrgpolicyProjectsPoliciesListRequest(_messages.Message):
     pageToken: Page token used to retrieve the next page. This is currently
       unsupported and will be ignored. The server may at any point start using
       this field.
-    parent: Required. The target Cloud resource that parents the set of
+    parent: Required. The target Google Cloud resource that parents the set of
       constraints and policies that will be returned from this call. Must be
       in one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
@@ -897,9 +904,9 @@ class OrgpolicyProjectsPoliciesPatchRequest(_messages.Message):
   Fields:
     googleCloudOrgpolicyV2Policy: A GoogleCloudOrgpolicyV2Policy resource to
       be passed as the request body.
-    name: Immutable. The resource name of the Policy. Must be one of the
+    name: Immutable. The resource name of the policy. Must be one of the
       following forms, where constraint_name is the name of the constraint
-      which this Policy configures: *
+      which this policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
       `organizations/{organization_id}/policies/{constraint_name}` For

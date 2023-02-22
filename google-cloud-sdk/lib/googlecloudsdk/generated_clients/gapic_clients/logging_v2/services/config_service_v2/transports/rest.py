@@ -83,6 +83,13 @@ class ConfigServiceV2RestInterceptor:
             def post_create_bucket(response):
                 logging.log(f"Received response: {response}")
 
+            def pre_create_bucket_async(request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_create_bucket_async(response):
+                logging.log(f"Received response: {response}")
+
             def pre_create_exclusion(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -201,6 +208,13 @@ class ConfigServiceV2RestInterceptor:
             def post_update_bucket(response):
                 logging.log(f"Received response: {response}")
 
+            def pre_update_bucket_async(request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_update_bucket_async(response):
+                logging.log(f"Received response: {response}")
+
             def pre_update_cmek_settings(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -267,6 +281,22 @@ class ConfigServiceV2RestInterceptor:
 
     def post_create_bucket(self, response: logging_config.LogBucket) -> logging_config.LogBucket:
         """Post-rpc interceptor for create_bucket
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_create_bucket_async(self, request: logging_config.CreateBucketRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.CreateBucketRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for create_bucket_async
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_create_bucket_async(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
+        """Post-rpc interceptor for create_bucket_async
 
         Override in a subclass to manipulate the response
         after it is returned by the ConfigServiceV2 server but before
@@ -531,6 +561,22 @@ class ConfigServiceV2RestInterceptor:
 
     def post_update_bucket(self, response: logging_config.LogBucket) -> logging_config.LogBucket:
         """Post-rpc interceptor for update_bucket
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_update_bucket_async(self, request: logging_config.UpdateBucketRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.UpdateBucketRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for update_bucket_async
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_update_bucket_async(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
+        """Post-rpc interceptor for update_bucket_async
 
         Override in a subclass to manipulate the response
         after it is returned by the ConfigServiceV2 server but before
@@ -934,6 +980,112 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
             resp = self._interceptor.post_create_bucket(resp)
+            return resp
+
+    class _CreateBucketAsync(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("CreateBucketAsync")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+            "bucketId" : "",        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.CreateBucketRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: float=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> operations_pb2.Operation:
+            r"""Call the create bucket async method over HTTP.
+
+            Args:
+                request (~.logging_config.CreateBucketRequest):
+                    The request object. The parameters to ``CreateBucket``.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.operations_pb2.Operation:
+                    This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v2/{parent=*/*/locations/*}/buckets:createAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=projects/*/locations/*}/buckets:createAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=organizations/*/locations/*}/buckets:createAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=folders/*/locations/*}/buckets:createAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=billingAccounts/*/locations/*}/buckets:createAsync',
+                'body': 'bucket',
+            },
+            ]
+            request, metadata = self._interceptor.pre_create_bucket_async(request, metadata)
+            pb_request = logging_config.CreateBucketRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = operations_pb2.Operation()
+            json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_create_bucket_async(resp)
             return resp
 
     class _CreateExclusion(ConfigServiceV2RestStub):
@@ -2769,6 +2921,112 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             resp = self._interceptor.post_update_bucket(resp)
             return resp
 
+    class _UpdateBucketAsync(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("UpdateBucketAsync")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+            "updateMask" : {},        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.UpdateBucketRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: float=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> operations_pb2.Operation:
+            r"""Call the update bucket async method over HTTP.
+
+            Args:
+                request (~.logging_config.UpdateBucketRequest):
+                    The request object. The parameters to ``UpdateBucket``.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.operations_pb2.Operation:
+                    This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v2/{name=*/*/locations/*/buckets/*}:updateAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{name=projects/*/locations/*/buckets/*}:updateAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{name=organizations/*/locations/*/buckets/*}:updateAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{name=folders/*/locations/*/buckets/*}:updateAsync',
+                'body': 'bucket',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{name=billingAccounts/*/locations/*/buckets/*}:updateAsync',
+                'body': 'bucket',
+            },
+            ]
+            request, metadata = self._interceptor.pre_update_bucket_async(request, metadata)
+            pb_request = logging_config.UpdateBucketRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = operations_pb2.Operation()
+            json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_update_bucket_async(resp)
+            return resp
+
     class _UpdateCmekSettings(ConfigServiceV2RestStub):
         def __hash__(self):
             return hash("UpdateCmekSettings")
@@ -3351,6 +3609,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         return self._CreateBucket(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def create_bucket_async(self) -> Callable[
+            [logging_config.CreateBucketRequest],
+            operations_pb2.Operation]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._CreateBucketAsync(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def create_exclusion(self) -> Callable[
             [logging_config.CreateExclusionRequest],
             logging_config.LogExclusion]:
@@ -3501,6 +3767,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._UpdateBucket(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def update_bucket_async(self) -> Callable[
+            [logging_config.UpdateBucketRequest],
+            operations_pb2.Operation]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._UpdateBucketAsync(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def update_cmek_settings(self) -> Callable[

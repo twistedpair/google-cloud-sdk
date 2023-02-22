@@ -60,6 +60,8 @@ BINAUTHZ_BREAKGLASS_ANNOTATION = RUN_GROUP + '/binary-authorization-breakglass'
 
 EXECUTION_ENVIRONMENT_ANNOTATION = RUN_GROUP + '/execution-environment'
 CUSTOM_AUDIENCES_ANNOTATION = RUN_GROUP + '/custom-audiences'
+# Use un-prefixed annotation until the control plane supports runtimeClassName
+RUNTIME_ANNOTATION = 'runtime-class-name'
 
 NETWORK_INTERFACES_ANNOTATION = RUN_GROUP + '/network-interfaces'
 

@@ -2338,7 +2338,7 @@
           "format": "google-duration"
         },
         "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
         },
@@ -7818,6 +7818,209 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsRequest",
+      "description": "Request message for ModelService.BatchImportEvaluatedAnnotations",
+      "type": "object",
+      "properties": {
+        "evaluatedAnnotations": {
+          "description": "Required. Evaluated annotations resource to be imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1EvaluatedAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1EvaluatedAnnotation": {
+      "id": "GoogleCloudAiplatformV1beta1EvaluatedAnnotation",
+      "description": "True positive, false positive, or false negative. EvaluatedAnnotation is only available under ModelEvaluationSlice with slice of `annotationSpec` dimension.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Output only. Type of the EvaluatedAnnotation.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value.",
+            "The EvaluatedAnnotation is a true positive. It has a prediction created by the Model and a ground truth Annotation which the prediction matches.",
+            "The EvaluatedAnnotation is false positive. It has a prediction created by the Model which does not match any ground truth annotation.",
+            "The EvaluatedAnnotation is false negative. It has a ground truth annotation which is not matched by any of the model created predictions."
+          ],
+          "enum": [
+            "EVALUATED_ANNOTATION_TYPE_UNSPECIFIED",
+            "TRUE_POSITIVE",
+            "FALSE_POSITIVE",
+            "FALSE_NEGATIVE"
+          ]
+        },
+        "predictions": {
+          "description": "Output only. The model predicted annotations. For true positive, there is one and only one prediction, which matches the only one ground truth annotation in ground_truths. For false positive, there is one and only one prediction, which doesn't match any ground truth annotation of the corresponding data_item_view_id. For false negative, there are zero or more predictions which are similar to the only ground truth annotation in ground_truths but not enough for a match. The schema of the prediction is stored in ModelEvaluation.annotation_schema_uri",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        },
+        "groundTruths": {
+          "description": "Output only. The ground truth Annotations, i.e. the Annotations that exist in the test data the Model is evaluated on. For true positive, there is one and only one ground truth annotation, which matches the only prediction in predictions. For false positive, there are zero or more ground truth annotations that are similar to the only prediction in predictions, but not enough for a match. For false negative, there is one and only one ground truth annotation, which doesn't match any predictions created by the model. The schema of the ground truth is stored in ModelEvaluation.annotation_schema_uri",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        },
+        "dataItemPayload": {
+          "description": "Output only. The data item payload that the Model predicted this EvaluatedAnnotation on.",
+          "readOnly": true,
+          "type": "any"
+        },
+        "evaluatedDataItemViewId": {
+          "description": "Output only. ID of the EvaluatedDataItemView under the same ancestor ModelEvaluation. The EvaluatedDataItemView consists of all ground truths and predictions on data_item_payload. Can be passed in GetEvaluatedDataItemView's[] id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "explanations": {
+          "description": "Explanations of predictions. Each element of the explanations indicates the explanation for one explanation Method. The attributions list in the EvaluatedAnnotationExplanation.explanation object corresponds to the predictions list. For example, the second element in the attributions list explains the second element in the predictions list.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1EvaluatedAnnotationExplanation"
+          }
+        },
+        "errorAnalysisAnnotations": {
+          "description": "Annotations of model error analysis results.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotation"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1EvaluatedAnnotationExplanation": {
+      "id": "GoogleCloudAiplatformV1beta1EvaluatedAnnotationExplanation",
+      "description": "Explanation result of the prediction produced by the Model.",
+      "type": "object",
+      "properties": {
+        "explanationType": {
+          "description": "Explanation type. For AutoML Image Classification models, possible values are: * `image-integrated-gradients` * `image-xrai`",
+          "type": "string"
+        },
+        "explanation": {
+          "description": "Explanation attribution response details.",
+          "$ref": "GoogleCloudAiplatformV1beta1Explanation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Explanation": {
+      "id": "GoogleCloudAiplatformV1beta1Explanation",
+      "description": "Explanation of a prediction (provided in PredictResponse.predictions) produced by the Model on a given instance.",
+      "type": "object",
+      "properties": {
+        "attributions": {
+          "description": "Output only. Feature attributions grouped by predicted outputs. For Models that predict only one output, such as regression Models that predict only one score, there is only one attibution that explains the predicted output. For Models that predict multiple outputs, such as multiclass Models that predict multiple classes, each element explains one specific item. Attribution.output_index can be used to identify which output this attribution is explaining. If users set ExplanationParameters.top_k, the attributions are sorted by instance_output_value in descending order. If ExplanationParameters.output_indices is specified, the attributions are stored by Attribution.output_index in the same order as they appear in the output_indices.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Attribution"
+          }
+        },
+        "neighbors": {
+          "description": "Output only. List of the nearest neighbors for example-based explanations. For models deployed with the examples explanations feature enabled, the attributions field is empty and instead the neighbors field is populated.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Neighbor"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Neighbor": {
+      "id": "GoogleCloudAiplatformV1beta1Neighbor",
+      "description": "Neighbors for example-based explanations.",
+      "type": "object",
+      "properties": {
+        "neighborId": {
+          "description": "Output only. The neighbor id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "neighborDistance": {
+          "description": "Output only. The neighbor distance.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotation": {
+      "id": "GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotation",
+      "description": "LINT.IfChange Model error analysis for each annotation.",
+      "type": "object",
+      "properties": {
+        "attributedItems": {
+          "description": "Attributed items for a given annotation, typically representing neighbors from the training sets constrained by the query type.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotationAttributedItem"
+          }
+        },
+        "queryType": {
+          "description": "The query type used for finding the attributed items.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified query type for model error analysis.",
+            "Query similar samples across all classes in the dataset.",
+            "Query similar samples from the same class of the input sample.",
+            "Query dissimilar samples from the same class of the input sample."
+          ],
+          "enum": [
+            "QUERY_TYPE_UNSPECIFIED",
+            "ALL_SIMILAR",
+            "SAME_CLASS_SIMILAR",
+            "SAME_CLASS_DISSIMILAR"
+          ]
+        },
+        "outlierScore": {
+          "description": "The outlier score of this annotated item. Usually defined as the min of all distances from attributed items.",
+          "type": "number",
+          "format": "double"
+        },
+        "outlierThreshold": {
+          "description": "The threshold used to determine if this annotation is an outlier or not.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotationAttributedItem": {
+      "id": "GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotationAttributedItem",
+      "description": "Attributed items for a given annotation, typically representing neighbors from the training sets constrained by the query type.",
+      "type": "object",
+      "properties": {
+        "annotationResourceName": {
+          "description": "The unique ID for each annotation. Used by FE to allocate the annotation in DB.",
+          "type": "string"
+        },
+        "distance": {
+          "description": "The distance of this item to the annotation.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsResponse",
+      "description": "Response message for ModelService.BatchImportEvaluatedAnnotations",
+      "type": "object",
+      "properties": {
+        "importedEvaluatedAnnotationsCount": {
+          "description": "Output only. Number of EvaluatedAnnotations imported.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse": {
       "id": "GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse",
       "description": "Response message for ModelService.ListModelEvaluations.",
@@ -8902,47 +9105,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1Explanation": {
-      "id": "GoogleCloudAiplatformV1beta1Explanation",
-      "description": "Explanation of a prediction (provided in PredictResponse.predictions) produced by the Model on a given instance.",
-      "type": "object",
-      "properties": {
-        "attributions": {
-          "description": "Output only. Feature attributions grouped by predicted outputs. For Models that predict only one output, such as regression Models that predict only one score, there is only one attibution that explains the predicted output. For Models that predict multiple outputs, such as multiclass Models that predict multiple classes, each element explains one specific item. Attribution.output_index can be used to identify which output this attribution is explaining. If users set ExplanationParameters.top_k, the attributions are sorted by instance_output_value in descending order. If ExplanationParameters.output_indices is specified, the attributions are stored by Attribution.output_index in the same order as they appear in the output_indices.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1Attribution"
-          }
-        },
-        "neighbors": {
-          "description": "Output only. List of the nearest neighbors for example-based explanations. For models deployed with the examples explanations feature enabled, the attributions field is empty and instead the neighbors field is populated.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1Neighbor"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1Neighbor": {
-      "id": "GoogleCloudAiplatformV1beta1Neighbor",
-      "description": "Neighbors for example-based explanations.",
-      "type": "object",
-      "properties": {
-        "neighborId": {
-          "description": "Output only. The neighbor id.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "neighborDistance": {
-          "description": "Output only. The neighbor distance.",
-          "readOnly": true,
-          "type": "number",
-          "format": "double"
-        }
-      }
-    },
     "GoogleCloudAiplatformV1beta1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1beta1SpecialistPool",
       "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
@@ -9064,7 +9226,7 @@
     },
     "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse": {
       "id": "GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponse",
-      "description": "Response message for TensorboardService.GetTensorboardUsage.",
+      "description": "Response message for TensorboardService.ReadTensorboardUsage.",
       "type": "object",
       "properties": {
         "monthlyUsageData": {
@@ -10084,7 +10246,7 @@
           "type": "boolean"
         },
         "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
         },
@@ -13237,7 +13399,7 @@
           "format": "google-duration"
         },
         "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
           "type": "integer",
           "format": "int32"
         },
@@ -38732,6 +38894,34 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Imports a list of externally generated ModelEvaluationSlice."
+                        },
+                        "batchImport": {
+                          "id": "aiplatform.projects.locations.models.evaluations.slices.batchImport",
+                          "path": "v1beta1/{+parent}:batchImport",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations/{evaluationsId}/slices/{slicesId}:batchImport",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the parent ModelEvaluationSlice resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}\/evaluations\/{evaluation}\/slices\/{slice}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+\/evaluations\/[^\/]+\/slices\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Imports a list of externally generated EvaluatedAnnotations."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.models.evaluations.slices.get",

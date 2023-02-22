@@ -12,7 +12,7 @@ class MonitoringV3(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://monitoring.googleapis.com/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://monitoring.mtls.googleapis.com/'
 
   _PACKAGE = 'monitoring'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/monitoring', 'https://www.googleapis.com/auth/monitoring.read', 'https://www.googleapis.com/auth/monitoring.write']
@@ -39,6 +39,10 @@ class MonitoringV3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_timeSeries = self.FoldersTimeSeriesService(self)
+    self.folders = self.FoldersService(self)
+    self.organizations_timeSeries = self.OrganizationsTimeSeriesService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_alertPolicies = self.ProjectsAlertPoliciesService(self)
     self.projects_collectdTimeSeries = self.ProjectsCollectdTimeSeriesService(self)
     self.projects_groups_members = self.ProjectsGroupsMembersService(self)
@@ -47,10 +51,107 @@ class MonitoringV3(base_api.BaseApiClient):
     self.projects_monitoredResourceDescriptors = self.ProjectsMonitoredResourceDescriptorsService(self)
     self.projects_notificationChannelDescriptors = self.ProjectsNotificationChannelDescriptorsService(self)
     self.projects_notificationChannels = self.ProjectsNotificationChannelsService(self)
+    self.projects_snoozes = self.ProjectsSnoozesService(self)
     self.projects_timeSeries = self.ProjectsTimeSeriesService(self)
     self.projects_uptimeCheckConfigs = self.ProjectsUptimeCheckConfigsService(self)
     self.projects = self.ProjectsService(self)
+    self.services_serviceLevelObjectives = self.ServicesServiceLevelObjectivesService(self)
+    self.services = self.ServicesService(self)
     self.uptimeCheckIps = self.UptimeCheckIpsService(self)
+
+  class FoldersTimeSeriesService(base_api.BaseApiService):
+    """Service class for the folders_timeSeries resource."""
+
+    _NAME = 'folders_timeSeries'
+
+    def __init__(self, client):
+      super(MonitoringV3.FoldersTimeSeriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists time series that match a filter.
+
+      Args:
+        request: (MonitoringFoldersTimeSeriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTimeSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/folders/{foldersId}/timeSeries',
+        http_method='GET',
+        method_id='monitoring.folders.timeSeries.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['aggregation_alignmentPeriod', 'aggregation_crossSeriesReducer', 'aggregation_groupByFields', 'aggregation_perSeriesAligner', 'filter', 'interval_endTime', 'interval_startTime', 'orderBy', 'pageSize', 'pageToken', 'secondaryAggregation_alignmentPeriod', 'secondaryAggregation_crossSeriesReducer', 'secondaryAggregation_groupByFields', 'secondaryAggregation_perSeriesAligner', 'view'],
+        relative_path='v3/{+name}/timeSeries',
+        request_field='',
+        request_type_name='MonitoringFoldersTimeSeriesListRequest',
+        response_type_name='ListTimeSeriesResponse',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(MonitoringV3.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsTimeSeriesService(base_api.BaseApiService):
+    """Service class for the organizations_timeSeries resource."""
+
+    _NAME = 'organizations_timeSeries'
+
+    def __init__(self, client):
+      super(MonitoringV3.OrganizationsTimeSeriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists time series that match a filter.
+
+      Args:
+        request: (MonitoringOrganizationsTimeSeriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTimeSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/timeSeries',
+        http_method='GET',
+        method_id='monitoring.organizations.timeSeries.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['aggregation_alignmentPeriod', 'aggregation_crossSeriesReducer', 'aggregation_groupByFields', 'aggregation_perSeriesAligner', 'filter', 'interval_endTime', 'interval_startTime', 'orderBy', 'pageSize', 'pageToken', 'secondaryAggregation_alignmentPeriod', 'secondaryAggregation_crossSeriesReducer', 'secondaryAggregation_groupByFields', 'secondaryAggregation_perSeriesAligner', 'view'],
+        relative_path='v3/{+name}/timeSeries',
+        request_field='',
+        request_type_name='MonitoringOrganizationsTimeSeriesListRequest',
+        response_type_name='ListTimeSeriesResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(MonitoringV3.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsAlertPoliciesService(base_api.BaseApiService):
     """Service class for the projects_alertPolicies resource."""
@@ -63,7 +164,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new alerting policy.
+      r"""Creates a new alerting policy.Design your application to single-thread API calls that modify the state of alerting policies in a single project. This includes calls to CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesCreateRequest) input message
@@ -90,7 +191,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an alerting policy.
+      r"""Deletes an alerting policy.Design your application to single-thread API calls that modify the state of alerting policies in a single project. This includes calls to CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesDeleteRequest) input message
@@ -144,7 +245,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the existing alerting policies for the project.
+      r"""Lists the existing alerting policies for the workspace.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesListRequest) input message
@@ -171,7 +272,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an alerting policy. You can either replace the entire policy with a new one or replace only certain fields in the current alerting policy by specifying the fields to be updated via updateMask. Returns the updated alerting policy.
+      r"""Updates an alerting policy. You can either replace the entire policy with a new one or replace only certain fields in the current alerting policy by specifying the fields to be updated via updateMask. Returns the updated alerting policy.Design your application to single-thread API calls that modify the state of alerting policies in a single project. This includes calls to CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesPatchRequest) input message
@@ -208,7 +309,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Stackdriver Monitoring Agent only: Creates a new time series.<aside class="caution">This method is only for use by the Stackdriver Monitoring Agent. Use projects.timeSeries.create instead.</aside>.
+      r"""Cloud Monitoring Agent only: Creates a new time series.This method is only for use by the Cloud Monitoring Agent. Use projects.timeSeries.create instead.
 
       Args:
         request: (MonitoringProjectsCollectdTimeSeriesCreateRequest) input message
@@ -327,7 +428,7 @@ class MonitoringV3(base_api.BaseApiClient):
         method_id='monitoring.projects.groups.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['recursive'],
         relative_path='v3/{+name}',
         request_field='',
         request_type_name='MonitoringProjectsGroupsDeleteRequest',
@@ -427,7 +528,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new metric descriptor. User-created metric descriptors define custom metrics.
+      r"""Creates a new metric descriptor. The creation is executed asynchronously. User-created metric descriptors define custom metrics (https://cloud.google.com/monitoring/custom-metrics). The metric descriptor is updated if it already exists, except that metric labels are never removed.
 
       Args:
         request: (MetricDescriptor) input message
@@ -454,7 +555,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a metric descriptor. Only user-created custom metrics can be deleted.
+      r"""Deletes a metric descriptor. Only user-created custom metrics (https://cloud.google.com/monitoring/custom-metrics) can be deleted.
 
       Args:
         request: (MonitoringProjectsMetricDescriptorsDeleteRequest) input message
@@ -481,7 +582,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a single metric descriptor. This method does not require a Stackdriver account.
+      r"""Gets a single metric descriptor.
 
       Args:
         request: (MonitoringProjectsMetricDescriptorsGetRequest) input message
@@ -508,7 +609,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists metric descriptors that match a filter. This method does not require a Stackdriver account.
+      r"""Lists metric descriptors that match a filter.
 
       Args:
         request: (MonitoringProjectsMetricDescriptorsListRequest) input message
@@ -545,7 +646,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a single monitored resource descriptor. This method does not require a Stackdriver account.
+      r"""Gets a single monitored resource descriptor.
 
       Args:
         request: (MonitoringProjectsMonitoredResourceDescriptorsGetRequest) input message
@@ -572,7 +673,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
+      r"""Lists monitored resource descriptors that match a filter.
 
       Args:
         request: (MonitoringProjectsMonitoredResourceDescriptorsListRequest) input message
@@ -673,7 +774,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new notification channel, representing a single notification endpoint such as an email address, SMS number, or pagerduty service.
+      r"""Creates a new notification channel, representing a single notification endpoint such as an email address, SMS number, or PagerDuty service.Design your application to single-thread API calls that modify the state of notification channels in a single project. This includes calls to CreateNotificationChannel, DeleteNotificationChannel and UpdateNotificationChannel.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsCreateRequest) input message
@@ -700,7 +801,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a notification channel.
+      r"""Deletes a notification channel.Design your application to single-thread API calls that modify the state of notification channels in a single project. This includes calls to CreateNotificationChannel, DeleteNotificationChannel and UpdateNotificationChannel.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsDeleteRequest) input message
@@ -808,7 +909,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a notification channel. Fields not specified in the field mask remain unchanged.
+      r"""Updates a notification channel. Fields not specified in the field mask remain unchanged.Design your application to single-thread API calls that modify the state of notification channels in a single project. This includes calls to CreateNotificationChannel, DeleteNotificationChannel and UpdateNotificationChannel.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsPatchRequest) input message
@@ -888,6 +989,124 @@ class MonitoringV3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsSnoozesService(base_api.BaseApiService):
+    """Service class for the projects_snoozes resource."""
+
+    _NAME = 'projects_snoozes'
+
+    def __init__(self, client):
+      super(MonitoringV3.ProjectsSnoozesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Snooze that will prevent alerts, which match the provided criteria, from being opened. The Snooze applies for a specific time interval.
+
+      Args:
+        request: (MonitoringProjectsSnoozesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snooze) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/snoozes',
+        http_method='POST',
+        method_id='monitoring.projects.snoozes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}/snoozes',
+        request_field='snooze',
+        request_type_name='MonitoringProjectsSnoozesCreateRequest',
+        response_type_name='Snooze',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a Snooze by name.
+
+      Args:
+        request: (MonitoringProjectsSnoozesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snooze) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/snoozes/{snoozesId}',
+        http_method='GET',
+        method_id='monitoring.projects.snoozes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='MonitoringProjectsSnoozesGetRequest',
+        response_type_name='Snooze',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Snoozes associated with a project. Can optionally pass in filter, which specifies predicates to match Snoozes.
+
+      Args:
+        request: (MonitoringProjectsSnoozesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSnoozesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/snoozes',
+        http_method='GET',
+        method_id='monitoring.projects.snoozes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/snoozes',
+        request_field='',
+        request_type_name='MonitoringProjectsSnoozesListRequest',
+        response_type_name='ListSnoozesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Snooze, identified by its name, with the parameters in the given Snooze object.
+
+      Args:
+        request: (MonitoringProjectsSnoozesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snooze) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/snoozes/{snoozesId}',
+        http_method='PATCH',
+        method_id='monitoring.projects.snoozes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='snooze',
+        request_type_name='MonitoringProjectsSnoozesPatchRequest',
+        response_type_name='Snooze',
+        supports_download=False,
+    )
+
   class ProjectsTimeSeriesService(base_api.BaseApiService):
     """Service class for the projects_timeSeries resource."""
 
@@ -925,8 +1144,35 @@ class MonitoringV3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateService(self, request, global_params=None):
+      r"""Creates or adds data to one or more service time series. A service time series is a time series for a metric from a Google Cloud service. The response is empty if all time series in the request were written. If any time series could not be written, a corresponding failure message is included in the error response. This endpoint rejects writes to user-defined metrics. This method is only for use by Google Cloud services. Use projects.timeSeries.create instead.
+
+      Args:
+        request: (MonitoringProjectsTimeSeriesCreateServiceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('CreateService')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateService.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/timeSeries:createService',
+        http_method='POST',
+        method_id='monitoring.projects.timeSeries.createService',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}/timeSeries:createService',
+        request_field='createTimeSeriesRequest',
+        request_type_name='MonitoringProjectsTimeSeriesCreateServiceRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
-      r"""Lists time series that match a filter. This method does not require a Stackdriver account.
+      r"""Lists time series that match a filter.
 
       Args:
         request: (MonitoringProjectsTimeSeriesListRequest) input message
@@ -944,11 +1190,38 @@ class MonitoringV3(base_api.BaseApiClient):
         method_id='monitoring.projects.timeSeries.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['aggregation_alignmentPeriod', 'aggregation_crossSeriesReducer', 'aggregation_groupByFields', 'aggregation_perSeriesAligner', 'filter', 'interval_endTime', 'interval_startTime', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        query_params=['aggregation_alignmentPeriod', 'aggregation_crossSeriesReducer', 'aggregation_groupByFields', 'aggregation_perSeriesAligner', 'filter', 'interval_endTime', 'interval_startTime', 'orderBy', 'pageSize', 'pageToken', 'secondaryAggregation_alignmentPeriod', 'secondaryAggregation_crossSeriesReducer', 'secondaryAggregation_groupByFields', 'secondaryAggregation_perSeriesAligner', 'view'],
         relative_path='v3/{+name}/timeSeries',
         request_field='',
         request_type_name='MonitoringProjectsTimeSeriesListRequest',
         response_type_name='ListTimeSeriesResponse',
+        supports_download=False,
+    )
+
+    def Query(self, request, global_params=None):
+      r"""Queries time series using Monitoring Query Language.
+
+      Args:
+        request: (MonitoringProjectsTimeSeriesQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryTimeSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Query')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Query.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/timeSeries:query',
+        http_method='POST',
+        method_id='monitoring.projects.timeSeries.query',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}/timeSeries:query',
+        request_field='queryTimeSeriesRequest',
+        request_type_name='MonitoringProjectsTimeSeriesQueryRequest',
+        response_type_name='QueryTimeSeriesResponse',
         supports_download=False,
     )
 
@@ -963,7 +1236,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new uptime check configuration.
+      r"""Creates a new Uptime check configuration.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsCreateRequest) input message
@@ -990,7 +1263,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an uptime check configuration. Note that this method will fail if the uptime check configuration is referenced by an alert policy or other dependent configs that would be rendered invalid by the deletion.
+      r"""Deletes an Uptime check configuration. Note that this method will fail if the Uptime check configuration is referenced by an alert policy or other dependent configs that would be rendered invalid by the deletion.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsDeleteRequest) input message
@@ -1017,7 +1290,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a single uptime check configuration.
+      r"""Gets a single Uptime check configuration.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsGetRequest) input message
@@ -1044,7 +1317,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the existing valid uptime check configurations for the project, leaving out any invalid configurations.
+      r"""Lists the existing valid Uptime check configurations for the project (leaving out any invalid configurations).
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsListRequest) input message
@@ -1062,7 +1335,7 @@ class MonitoringV3(base_api.BaseApiClient):
         method_id='monitoring.projects.uptimeCheckConfigs.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v3/{+parent}/uptimeCheckConfigs',
         request_field='',
         request_type_name='MonitoringProjectsUptimeCheckConfigsListRequest',
@@ -1071,7 +1344,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an uptime check configuration. You can either replace the entire configuration with a new one or replace only certain fields in the current configuration by specifying the fields to be updated via "updateMask". Returns the updated configuration.
+      r"""Updates an Uptime check configuration. You can either replace the entire configuration with a new one or replace only certain fields in the current configuration by specifying the fields to be updated via updateMask. Returns the updated configuration.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsPatchRequest) input message
@@ -1107,6 +1380,296 @@ class MonitoringV3(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ServicesServiceLevelObjectivesService(base_api.BaseApiService):
+    """Service class for the services_serviceLevelObjectives resource."""
+
+    _NAME = 'services_serviceLevelObjectives'
+
+    def __init__(self, client):
+      super(MonitoringV3.ServicesServiceLevelObjectivesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a ServiceLevelObjective for the given Service.
+
+      Args:
+        request: (MonitoringServicesServiceLevelObjectivesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceLevelObjective) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}/serviceLevelObjectives',
+        http_method='POST',
+        method_id='monitoring.services.serviceLevelObjectives.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['serviceLevelObjectiveId'],
+        relative_path='v3/{+parent}/serviceLevelObjectives',
+        request_field='serviceLevelObjective',
+        request_type_name='MonitoringServicesServiceLevelObjectivesCreateRequest',
+        response_type_name='ServiceLevelObjective',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete the given ServiceLevelObjective.
+
+      Args:
+        request: (MonitoringServicesServiceLevelObjectivesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}/serviceLevelObjectives/{serviceLevelObjectivesId}',
+        http_method='DELETE',
+        method_id='monitoring.services.serviceLevelObjectives.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='MonitoringServicesServiceLevelObjectivesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a ServiceLevelObjective by name.
+
+      Args:
+        request: (MonitoringServicesServiceLevelObjectivesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceLevelObjective) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}/serviceLevelObjectives/{serviceLevelObjectivesId}',
+        http_method='GET',
+        method_id='monitoring.services.serviceLevelObjectives.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='MonitoringServicesServiceLevelObjectivesGetRequest',
+        response_type_name='ServiceLevelObjective',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List the ServiceLevelObjectives for the given Service.
+
+      Args:
+        request: (MonitoringServicesServiceLevelObjectivesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceLevelObjectivesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}/serviceLevelObjectives',
+        http_method='GET',
+        method_id='monitoring.services.serviceLevelObjectives.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v3/{+parent}/serviceLevelObjectives',
+        request_field='',
+        request_type_name='MonitoringServicesServiceLevelObjectivesListRequest',
+        response_type_name='ListServiceLevelObjectivesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the given ServiceLevelObjective.
+
+      Args:
+        request: (MonitoringServicesServiceLevelObjectivesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceLevelObjective) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}/serviceLevelObjectives/{serviceLevelObjectivesId}',
+        http_method='PATCH',
+        method_id='monitoring.services.serviceLevelObjectives.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='serviceLevelObjective',
+        request_type_name='MonitoringServicesServiceLevelObjectivesPatchRequest',
+        response_type_name='ServiceLevelObjective',
+        supports_download=False,
+    )
+
+  class ServicesService(base_api.BaseApiService):
+    """Service class for the services resource."""
+
+    _NAME = 'services'
+
+    def __init__(self, client):
+      super(MonitoringV3.ServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a Service.
+
+      Args:
+        request: (MonitoringServicesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services',
+        http_method='POST',
+        method_id='monitoring.services.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['serviceId'],
+        relative_path='v3/{+parent}/services',
+        request_field='service',
+        request_type_name='MonitoringServicesCreateRequest',
+        response_type_name='Service',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Soft delete this Service.
+
+      Args:
+        request: (MonitoringServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}',
+        http_method='DELETE',
+        method_id='monitoring.services.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='MonitoringServicesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the named Service.
+
+      Args:
+        request: (MonitoringServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}',
+        http_method='GET',
+        method_id='monitoring.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='MonitoringServicesGetRequest',
+        response_type_name='Service',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List Services for this Metrics Scope.
+
+      Args:
+        request: (MonitoringServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services',
+        http_method='GET',
+        method_id='monitoring.services.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/services',
+        request_field='',
+        request_type_name='MonitoringServicesListRequest',
+        response_type_name='ListServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update this Service.
+
+      Args:
+        request: (MonitoringServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Service) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/{v3Id}/{v3Id1}/services/{servicesId}',
+        http_method='PATCH',
+        method_id='monitoring.services.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v3/{+name}',
+        request_field='service',
+        request_type_name='MonitoringServicesPatchRequest',
+        response_type_name='Service',
+        supports_download=False,
+    )
+
   class UptimeCheckIpsService(base_api.BaseApiService):
     """Service class for the uptimeCheckIps resource."""
 
@@ -1118,7 +1681,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Returns the list of IPs that checkers run from.
+      r"""Returns the list of IP addresses that checkers run from.
 
       Args:
         request: (MonitoringUptimeCheckIpsListRequest) input message

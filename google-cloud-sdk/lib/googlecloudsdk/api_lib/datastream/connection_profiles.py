@@ -565,10 +565,14 @@ class ConnectionProfilesClient:
           args.connection_profile_object_file, release_track
       )
 
-    if args.recursive:
-      request.recursive = True
-    else:
+    if args.recursive or args.full_hierarchy:
+      request.fullHierarchy = True
+    elif args.recursive_depth:
       request.hierarchyDepth = (int)(args.recursive_depth)
+    elif args.hierarchy_depth:
+      request.hierarchyDepth = (int)(args.hierarchy_depth)
+    else:
+      request.fullHierarchy = False
 
     if args.mysql_rdbms_file:
       request.mysqlRdbms = util.ParseMysqlRdbmsFile(self._messages,

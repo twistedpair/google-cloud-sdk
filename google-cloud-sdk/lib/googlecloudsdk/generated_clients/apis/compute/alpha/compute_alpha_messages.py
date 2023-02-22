@@ -614,7 +614,7 @@ class AccessConfig(_messages.Message):
       with this instance, prefix length is stored in externalIpv6PrefixLength
       in ipv6AccessConfig. To use a static external IP address, it must be
       unused and in the same region as the instance's zone. If not specified,
-      GCP will automatically assign an external IPv6 address from the
+      Google Cloud will automatically assign an external IPv6 address from the
       instance's subnetwork.
     externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
@@ -14138,6 +14138,47 @@ class ComputeInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceSettingsGetRequest(_messages.Message):
+  r"""A ComputeInstanceSettingsGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    zone: Name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  zone = _messages.StringField(2, required=True)
+
+
+class ComputeInstanceSettingsPatchRequest(_messages.Message):
+  r"""A ComputeInstanceSettingsPatchRequest object.
+
+  Fields:
+    instanceSettings: A InstanceSettings resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+    zone: The zone scoping this request. It should conform to RFC1035.
+  """
+
+  instanceSettings = _messages.MessageField('InstanceSettings', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
@@ -29116,6 +29157,17 @@ class ComputeServiceAttachmentsPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
+    reconcileConnections: This flag determines how to change the status of
+      consumer connections, when the connection policy for the corresponding
+      project or network is modified. If the flag is false, the default case,
+      then existing ACCEPTED and REJECTED consumer connections stay in that
+      state. For example, even if the project is removed from the accept list,
+      existing ACCEPTED connections will stay the same. If the flag is true,
+      then the connection can change from ACCEPTED or REJECTED to pending when
+      the connection policy is modified. For example, if a project is removed
+      from the reject list, its existing REJECTED connections will move to the
+      PENDING state. If the project is also added to the accept list, then
+      those connections will move to the ACCEPTED state.
     region: The region scoping this request and should conform to RFC1035.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -29135,10 +29187,11 @@ class ComputeServiceAttachmentsPatchRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  serviceAttachment = _messages.StringField(4, required=True)
-  serviceAttachmentResource = _messages.MessageField('ServiceAttachment', 5)
+  reconcileConnections = _messages.BooleanField(2)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  serviceAttachment = _messages.StringField(5, required=True)
+  serviceAttachmentResource = _messages.MessageField('ServiceAttachment', 6)
 
 
 class ComputeServiceAttachmentsSetIamPolicyRequest(_messages.Message):
@@ -47223,6 +47276,32 @@ class InstanceReference(_messages.Message):
   instance = _messages.StringField(1)
 
 
+class InstanceSettings(_messages.Message):
+  r"""Represents a Instance Settings resource. You can use instance settings
+  to configure default settings for Compute Engine VM instances. For example,
+  you can use it to configure default machine type of Compute Engine VM
+  instances.
+
+  Fields:
+    email: Email address of the service account.
+    kind: [Output Only] Type of the resource. Always compute#instance_settings
+      for instance settings.
+    machineType: Partial URL of the machine type resource to use for this
+      instance, in the format: machineTypes/machine-type. This is either
+      provided by the client or chosen by the system. For example, the
+      following is a valid partial url to a predefined machine type:
+      machineTypes/n2-standard-1
+    zone: [Output Only] URL of the zone where the resource resides You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
+  """
+
+  email = _messages.StringField(1)
+  kind = _messages.StringField(2, default='compute#instanceSettings')
+  machineType = _messages.StringField(3)
+  zone = _messages.StringField(4)
+
+
 class InstanceTemplate(_messages.Message):
   r"""Represents an Instance Template resource. You can use instance templates
   to create VM instances and managed instance groups. For more information,
@@ -49032,9 +49111,7 @@ class Interconnect(_messages.Message):
       interconnect is connected to.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
-    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
-      separation organization policy constraints and false otherwise. Defaults
-      to false if the field is not present.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -49387,9 +49464,7 @@ class InterconnectAttachment(_messages.Message):
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
-    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
-      separation organization policy constraints and false otherwise. Defaults
-      to false if the field is not present.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -50727,8 +50802,7 @@ class InterconnectLocation(_messages.Message):
       closed and is unavailable for provisioning new Interconnects. -
       AVAILABLE: The InterconnectLocation is available for provisioning new
       Interconnects.
-    supportsPzs: [Output Only] Set to true for locations that support physical
-      zone separation. Defaults to false if the field is not present.
+    supportsPzs: [Output Only] Reserved for future use.
   """
 
   class ContinentValueValuesEnum(_messages.Enum):
@@ -56277,8 +56351,9 @@ class NetworkInterface(_messages.Message):
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
     ipv6Address: An IPv6 internal network address for this network interface.
       To use a static internal IP address, it must be unused and in the same
-      region as the instance's zone. If not specified, GCP will automatically
-      assign an internal IPv6 address from the instance's subnetwork.
+      region as the instance's zone. If not specified, Google Cloud will
+      automatically assign an internal IPv6 address from the instance's
+      subnetwork.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -57850,10 +57925,7 @@ class NodeTemplate(_messages.Message):
       instance scheduling.
     nodeType: The node type to use for nodes group that are created from this
       template.
-    nodeTypeFlexibility: The flexible properties of the desired node type.
-      Node groups that use this node template will create nodes of a type that
-      matches these properties. This field is mutually exclusive with the
-      node_type property; you can only define one or the other, but not both.
+    nodeTypeFlexibility: Do not use. Instead, use the node_type property.
     region: [Output Only] The name of the region where the node template
       resides, such as us-central1.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -63818,6 +63890,8 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_T4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
+      PREEMPTIBLE_TPU_LITE_DEVICE_V4: <no description>
+      PREEMPTIBLE_TPU_PODSLICE_V4: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK: <no description>
       PSC_INTERNAL_LB_FORWARDING_RULES: <no description>
@@ -63856,6 +63930,8 @@ class Quota(_messages.Message):
       TARGET_SSL_PROXIES: <no description>
       TARGET_TCP_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
+      TPU_LITE_DEVICE_V4: <no description>
+      TPU_PODSLICE_V4: <no description>
       URL_MAPS: <no description>
       VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
@@ -63966,48 +64042,52 @@ class Quota(_messages.Message):
     PREEMPTIBLE_NVIDIA_T4_GPUS = 102
     PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 103
     PREEMPTIBLE_NVIDIA_V100_GPUS = 104
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 105
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 106
-    PSC_INTERNAL_LB_FORWARDING_RULES = 107
-    PUBLIC_ADVERTISED_PREFIXES = 108
-    PUBLIC_DELEGATED_PREFIXES = 109
-    QUEUED_RESOURCES = 110
-    REGIONAL_AUTOSCALERS = 111
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 112
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 113
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 114
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 115
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 116
-    RESERVATIONS = 117
-    RESOURCE_POLICIES = 118
-    ROUTERS = 119
-    ROUTES = 120
-    SECURITY_POLICIES = 121
-    SECURITY_POLICIES_PER_REGION = 122
-    SECURITY_POLICY_CEVAL_RULES = 123
-    SECURITY_POLICY_RULES = 124
-    SECURITY_POLICY_RULES_PER_REGION = 125
-    SERVICE_ATTACHMENTS = 126
-    SNAPSHOTS = 127
-    SSD_TOTAL_GB = 128
-    SSL_CERTIFICATES = 129
-    STATIC_ADDRESSES = 130
-    STATIC_BYOIP_ADDRESSES = 131
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 132
-    SUBNETWORKS = 133
-    T2A_CPUS = 134
-    T2D_CPUS = 135
-    TARGET_HTTPS_PROXIES = 136
-    TARGET_HTTP_PROXIES = 137
-    TARGET_INSTANCES = 138
-    TARGET_POOLS = 139
-    TARGET_SSL_PROXIES = 140
-    TARGET_TCP_PROXIES = 141
-    TARGET_VPN_GATEWAYS = 142
-    URL_MAPS = 143
-    VPN_GATEWAYS = 144
-    VPN_TUNNELS = 145
-    XPN_SERVICE_PROJECTS = 146
+    PREEMPTIBLE_TPU_LITE_DEVICE_V4 = 105
+    PREEMPTIBLE_TPU_PODSLICE_V4 = 106
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 107
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 108
+    PSC_INTERNAL_LB_FORWARDING_RULES = 109
+    PUBLIC_ADVERTISED_PREFIXES = 110
+    PUBLIC_DELEGATED_PREFIXES = 111
+    QUEUED_RESOURCES = 112
+    REGIONAL_AUTOSCALERS = 113
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 114
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 115
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 116
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 117
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 118
+    RESERVATIONS = 119
+    RESOURCE_POLICIES = 120
+    ROUTERS = 121
+    ROUTES = 122
+    SECURITY_POLICIES = 123
+    SECURITY_POLICIES_PER_REGION = 124
+    SECURITY_POLICY_CEVAL_RULES = 125
+    SECURITY_POLICY_RULES = 126
+    SECURITY_POLICY_RULES_PER_REGION = 127
+    SERVICE_ATTACHMENTS = 128
+    SNAPSHOTS = 129
+    SSD_TOTAL_GB = 130
+    SSL_CERTIFICATES = 131
+    STATIC_ADDRESSES = 132
+    STATIC_BYOIP_ADDRESSES = 133
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 134
+    SUBNETWORKS = 135
+    T2A_CPUS = 136
+    T2D_CPUS = 137
+    TARGET_HTTPS_PROXIES = 138
+    TARGET_HTTP_PROXIES = 139
+    TARGET_INSTANCES = 140
+    TARGET_POOLS = 141
+    TARGET_SSL_PROXIES = 142
+    TARGET_TCP_PROXIES = 143
+    TARGET_VPN_GATEWAYS = 144
+    TPU_LITE_DEVICE_V4 = 145
+    TPU_PODSLICE_V4 = 146
+    URL_MAPS = 147
+    VPN_GATEWAYS = 148
+    VPN_TUNNELS = 149
+    XPN_SERVICE_PROJECTS = 150
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -67195,7 +67275,7 @@ class ResourcePolicyInstanceSchedulePolicy(_messages.Message):
       string.
     timeZone: Specifies the time zone to be used in interpreting
       Schedule.schedule. The value of this field must be a time zone name from
-      the tz database: http://en.wikipedia.org/wiki/Tz_database.
+      the tz database: https://wikipedia.org/wiki/Tz_database.
     vmStartSchedule: Specifies the schedule for starting instances.
     vmStopSchedule: Specifies the schedule for stopping instances.
   """
@@ -81121,9 +81201,7 @@ class Uint128(_messages.Message):
 
 
 class UpcomingMaintenance(_messages.Message):
-  r"""Upcoming Maintenance notification information. TODO(b/242069500)
-  Deprecate this proto once it's fully migrated to be under proto
-  ResourceStatus.UpcomingMaintenance.
+  r"""Upcoming Maintenance notification information.
 
   Enums:
     TypeValueValuesEnum: Defines the type of maintenance.
@@ -81132,12 +81210,12 @@ class UpcomingMaintenance(_messages.Message):
     canReschedule: Indicates if the maintenance can be customer triggered.
       From more detail, see go/sf-ctm-design.
     date: [Output Only] The date when the maintenance will take place. This
-      value is in RFC3339 text format. DEPRECATED: Use start_time_window
+      value is in RFC3339 text format. DEPRECATED: Use window_start_time
       instead.
     startTimeWindow: [Output Only] The start time window of the maintenance
-      disruption.
+      disruption. DEPRECATED: Use window_start_time instead.
     time: [Output Only] The time when the maintenance will take place. This
-      value is in RFC3339 text format. DEPRECATED: Use start_time_window
+      value is in RFC3339 text format. DEPRECATED: Use window_start_time
       instead.
     type: Defines the type of maintenance.
   """

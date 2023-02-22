@@ -243,7 +243,10 @@ class InstalledAppFlow(
   @property
   def _for_adc(self):
     """If the flow is for application default credentials."""
-    return self.client_config.get('client_id') != config.CLOUDSDK_CLIENT_ID
+    return (
+        self.client_config.get('is_adc')
+        or self.client_config.get('client_id') != config.CLOUDSDK_CLIENT_ID
+    )
 
   @property
   def _target_command(self):
@@ -513,6 +516,7 @@ class NoBrowserFlow(InstalledAppFlow):
   (exchanging for the refresh/access tokens).
   """
 
+  _REQUIRED_GCLOUD_VERSION_FOR_BYOID = '420.0.0'
   _REQUIRED_GCLOUD_VERSION = '372.0.0'
   _HELPER_MSG = ('You are authorizing {target} without access to a web '
                  'browser. Please run the following command on a machine with '
@@ -546,7 +550,9 @@ class NoBrowserFlow(InstalledAppFlow):
       command = 'gcloud auth application-default login'
     helper_msg = self._HELPER_MSG.format(
         target=target,
-        version=self._REQUIRED_GCLOUD_VERSION,
+        version=self._REQUIRED_GCLOUD_VERSION_FOR_BYOID
+        if self.client_config.get('3pi')
+        else self._REQUIRED_GCLOUD_VERSION,
         command=command,
         partial_url=partial_url,
     )

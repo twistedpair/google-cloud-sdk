@@ -68,6 +68,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -86,7 +87,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class Authority(_messages.Message):
@@ -124,10 +126,41 @@ class Authority(_messages.Message):
   workloadIdentityPool = _messages.StringField(4)
 
 
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -179,13 +212,164 @@ class Binding(_messages.Message):
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
+        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
 
 
 class ConnectAgentResource(_messages.Message):
@@ -199,6 +383,127 @@ class ConnectAgentResource(_messages.Message):
 
   manifest = _messages.StringField(1)
   type = _messages.MessageField('TypeMeta', 2)
+
+
+class CounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended. Field names
+  correspond to IAM request parameters and field values are their respective
+  values. Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields. Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CreateReferenceRequest(_messages.Message):
+  r"""The CreateReferenceRequest request.
+
+  Fields:
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+    reference: Required. The reference to be created.
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
+      field is currently required but id auto generation might be added in the
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  parent = _messages.StringField(1)
+  reference = _messages.MessageField('Reference', 2)
+  referenceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum:
+
+  Fields:
+    logMode: A LogModeValueValuesEnum attribute.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""LogModeValueValuesEnum enum type.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds. If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class DeleteReferenceRequest(_messages.Message):
+  r"""The DeleteReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class EdgeCluster(_messages.Message):
@@ -270,6 +575,20 @@ class GenerateConnectManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GetReferenceRequest(_messages.Message):
+  r"""The GetReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+  """
+
+  name = _messages.StringField(1)
+
+
 class GkeCluster(_messages.Message):
   r"""GkeCluster contains information specific to GKE clusters.
 
@@ -317,6 +636,8 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -325,9 +646,10 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
@@ -355,9 +677,8 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
 
   Fields:
     force: Optional. If set to true, any subresource from this Membership will
-      also be deleted. (Otherwise, the request will only work if the
-      Membership has no subresource.) following go/ccfe-nested-
-      collections#cascading-deletion.
+      also be deleted. Otherwise, the request will only work if the Membership
+      has no subresource.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
   """
@@ -751,6 +1072,39 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListReferencesRequest(_messages.Message):
+  r"""The ListResourceMetadataRequest request.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more References left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class ListReferencesResponse(_messages.Message):
+  r"""The ListReferencesResponse response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    references: The list of references.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -829,6 +1183,20 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class Membership(_messages.Message):
@@ -1266,6 +1634,13 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
@@ -1288,7 +1663,71 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class Reference(_messages.Message):
+  r"""Represents a reference to a resource.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    createTime: Output only. The creation time.
+    details: Details of the reference type with no implied semantics.
+      Cumulative size of the field must not be more than 1KiB. Note: For the
+      Arcus Reference API, you must add the proto you store in this field to
+      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+    name: Output only. Relative resource name of the reference. Includes
+      target resource as a parent and reference uid
+      `{target_resource}/references/{reference_id}`. For example,
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    sourceResource: Required. Full resource name of the resource which refers
+      the target resource. For example:
+      //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
+    type: Required. Type of the reference. A service might impose limits on
+      number of references of a specific type. Note: It's recommended to use
+      CAPITALS_WITH_UNDERSCORES style for a type name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceResource = _messages.StringField(4)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class ResourceManifest(_messages.Message):
@@ -1327,6 +1766,59 @@ class ResourceOptions(_messages.Message):
   connectVersion = _messages.StringField(1)
   k8sVersion = _messages.StringField(2)
   v1beta1Crd = _messages.BooleanField(3)
+
+
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1446,6 +1938,8 @@ class TypeMeta(_messages.Message):
   kind = _messages.StringField(2)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

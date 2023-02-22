@@ -3863,7 +3863,7 @@ class WorkforcePool(_messages.Message):
       (43200s). If `session_duration` is not configured, minted credentials
       have a default duration of one hour (3600s). For SAML providers, the
       lifetime of the token is the minimum of the `session_duration` and the
-      SessionNotOnOrAfter claim in the SAML assertion.
+      `SessionNotOnOrAfter` claim in the SAML assertion.
     state: Output only. The state of the pool.
   """
 

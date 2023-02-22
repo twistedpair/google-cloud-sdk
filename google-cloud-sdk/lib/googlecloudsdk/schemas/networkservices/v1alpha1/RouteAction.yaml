@@ -32,7 +32,7 @@ properties:
     $ref: CDNPolicy.yaml
   corsPolicy:
     description: |-
-      The CORS (Cross-Origin Resource Sharing) policy for requests that match
+      The Cross-Origin Resource Sharing (CORS) policy for requests that match
       this route.
     $ref: CORSPolicy.yaml
   urlRewrite:
@@ -41,6 +41,6 @@ properties:
     $ref: UrlRewrite.yaml
   wasmAction:
     description: |-
-      Reference to a WasmAction resource in the format:
+      A WasmAction resource in the format:
       `projects/{project}/locations/{location}/wasmActions/{wasm_action}`
     type: string

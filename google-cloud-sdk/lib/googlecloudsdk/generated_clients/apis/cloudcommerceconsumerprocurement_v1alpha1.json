@@ -1512,7 +1512,7 @@
           "type": "string"
         },
         "offer": {
-          "description": "The name of the offer linked to this consent. It is in the format of: - \"billingAccounts\/{billing_account}\/offers\/{offer_id}\". - \"services\/{service}\/offers\/{offer_id}\".",
+          "description": "The name of the offer linked to this consent. It is in the format of: \"commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer_id}\". \"commerceoffercatalog.googleapis.com\/services\/{service}\/offers\/{offer_id}\".",
           "type": "string"
         }
       }
@@ -1539,6 +1539,10 @@
         },
         "financialContract": {
           "description": "Financial contract this consent applies to. This is a system full resource name. E.g.: \/\/commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer-id}",
+          "type": "string"
+        },
+        "offer": {
+          "description": "Offer associated with the consent. Formats include \"commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer_id}\". \"commerceoffercatalog.googleapis.com\/services\/{service}\/offers\/{offer_id}\".",
           "type": "string"
         }
       }

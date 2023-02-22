@@ -60,7 +60,9 @@ class WIPClient(object):
     # GetWorkloadCertificateFeature never returns NotFound error when it works
     # as intended, since we model it as a singleton that always exists.
     except apitools_exceptions.HttpUnauthorizedError:
-      raise error.ConstructNotAuthorizedError()
+      raise error.ConstructNotAuthorizedError(
+          'WorkloadCertificateFeature resource'
+      )
 
   # TODO(b/265384705): Print the consequence of disabling feature and ask the
   # user to confirm before proceeding.
@@ -91,7 +93,7 @@ class WIPClient(object):
           ' succeed. You may check the operation status for the following'
           ' operation  [{}]'.format(op.name)
       )
-      return
+      return None
     log.status.Print(
         'Successfully disabled WorkloadCertificate feature: {}'.format(
             result.name
@@ -126,12 +128,118 @@ class WIPClient(object):
           ' You may check the operation status for the following operation '
           ' [{}]'.format(op.name)
       )
-      return
+      return None
     log.status.Print(
         'Successfully enabled WorkloadCertificate feature: {}'.format(
             result.name
         )
     )
+
+  def GetRegistration(self, resource_name):
+    """Get a Workload Registration."""
+    try:
+      return self.client.projects_locations_workloadRegistrations.Get(
+          self.messages.WorkloadcertificateProjectsLocationsWorkloadRegistrationsGetRequest(
+              name=resource_name
+          )
+      )
+    except apitools_exceptions.HttpNotFoundError:
+      raise error.ConstructResourceNotFoundError(resource_name)
+    except apitools_exceptions.HttpUnauthorizedError:
+      raise error.ConstructNotAuthorizedError('WorkloadRegistration resource')
+
+  def DeleteRegistration(self, resource_name):
+    """Delete a Workload Registration."""
+    op = self.client.projects_locations_workloadRegistrations.Delete(
+        self.messages.WorkloadcertificateProjectsLocationsWorkloadRegistrationsDeleteRequest(
+            name=resource_name
+        )
+    )
+
+    op_resource = resource.OperationName(op.name)
+
+    poller = waiter.CloudOperationPollerNoResources(
+        self.client.projects_locations_operations
+    )
+
+    log.status.Print(
+        'Waiting for workload registration deletion operation to complete.'
+    )
+
+    try:
+      waiter.WaitFor(poller, op_resource, 'Operation: [{}]'.format(op.name))
+    except waiter.TimeoutError:
+      log.status.Print(
+          'The operations may still be underway remotely and may still'
+          ' succeed. You may check the operation status for the following'
+          ' operation  [{}]'.format(op.name)
+      )
+      return None
+
+    log.status.Print(
+        'Successfully deleted WorkloadRegistration:\n{}'.format(resource_name)
+    )
+
+  def ListRegistrations(self, location):
+    """List Workload Registrations."""
+    try:
+      result = self.client.projects_locations_workloadRegistrations.List(
+          self.messages.WorkloadcertificateProjectsLocationsWorkloadRegistrationsListRequest(
+              parent=resource.LocationResourceName(location)
+          )
+      )
+      if not result.workloadRegistrations:
+        return None
+    except apitools_exceptions.HttpUnauthorizedError:
+      raise error.ConstructNotAuthorizedError('WorkloadRegistration resource')
+    return result
+
+  def CreateRegistration(
+      self, location, fleet_membership, workload_registration_id
+  ):
+    """Create a Workload Registration."""
+
+    op = self.client.projects_locations_workloadRegistrations.Create(
+        self.messages.WorkloadcertificateProjectsLocationsWorkloadRegistrationsCreateRequest(
+            parent=resource.LocationResourceName(location),
+            workloadRegistration=self.messages.WorkloadRegistration(
+                workloadSelector=self.messages.WorkloadSelector(
+                    k8sWorkloadSelector=self.messages.K8SWorkloadSelector(
+                        fleetMemberId=fleet_membership,
+                    )
+                )
+            ),
+            workloadRegistrationId=workload_registration_id,
+        )
+    )
+
+    op_resource = resource.OperationName(op.name)
+
+    log.status.Print(
+        'Waiting for workload registration creation operation to complete.'
+    )
+
+    poller = waiter.CloudOperationPoller(
+        self.client.projects_locations_workloadRegistrations,
+        self.client.projects_locations_operations,
+    )
+
+    try:
+      result = waiter.WaitFor(
+          poller, op_resource, 'Operation: [{}]  '.format(op.name)
+      )
+    except waiter.TimeoutError:
+      log.status.Print(
+          'The operations may still be underway remotely and may still succeed.'
+          ' You may check the operation status for the following operation '
+          ' [{}]'.format(op.name)
+      )
+      return None
+
+    log.status.Print(
+        'Successfully created WorkloadRegistration:\n{}'.format(result)
+    )
+    return result
 
 
 class WorkloadCertificateFeaturePoller(waiter.CloudOperationPoller):

@@ -958,13 +958,21 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       `GroupView.BASIC` or 500 for `GroupView.FULL`.
     pageToken: The `next_page_token` value returned from a previous search
       request, if any.
-    query: Required. The search query. Must be specified in [Common Expression
-      Language](https://opensource.google/projects/cel). May only contain
-      equality operators on the parent and inclusion operators on labels
-      (e.g., `parent == 'customers/{customer_id}' &&
-      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`). The
-      `customer_id` must begin with "C" (for example, 'C046psxkn'). [Find your
-      customer ID.] (https://support.google.com/cloudidentity/answer/10070793)
+    query: Required. The search query. * Must be specified in [Common
+      Expression Language](https://opensource.google/projects/cel). * Must
+      contain equality operators on the parent, e.g. `parent ==
+      'customers/{customer_id}'`. The `customer_id` must begin with "C" (for
+      example, 'C046psxkn'). [Find your customer ID.]
+      (https://support.google.com/cloudidentity/answer/10070793) * Can contain
+      optional inclusion operators on `labels` such as
+      `'cloudidentity.googleapis.com/groups.discussion_forum' in labels`). *
+      Can contain an optional equality operator on `domain_name`. e.g.
+      `domain_name == 'abc.com'` * Can contain optional
+      `startsWith/contains/equality` operators on `group_key`, e.g.
+      `group_key.startsWith('dev')`, `group_key.contains('dev'), group_key ==
+      'dev@abc.com'` * Can contain optional `startsWith/contains/equality`
+      operators on `display_name`, such as `display_name.startsWith('dev')` ,
+      `display_name.contains('dev')`, `display_name == 'dev'`
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -1095,11 +1103,11 @@ class CloudidentityInboundSamlSsoProfilesListRequest(_messages.Message):
 
   Fields:
     filter: A [Common Expression Language](https://github.com/google/cel-spec)
-      expression to filter the results. The only currently-supported filter is
-      filtering by customer. For example: `customer=="customers/C0123abc"`.
-      Omitting the filter or specifying a filter of
-      `customer=="customers/my_customer"` will return the profiles for the
-      customer that the caller (authenticated user) belongs to.
+      expression to filter the results. The only supported filter is filtering
+      by customer. For example: `customer=="customers/C0123abc"`. Omitting the
+      filter or specifying a filter of `customer=="customers/my_customer"`
+      will return the profiles for the customer that the caller (authenticated
+      user) belongs to.
     pageSize: The maximum number of InboundSamlSsoProfiles to return. The
       service may return fewer than this value. If omitted (or defaulted to
       zero) the server will use a sensible default. This default may change
@@ -1165,11 +1173,11 @@ class CloudidentityInboundSsoAssignmentsListRequest(_messages.Message):
   r"""A CloudidentityInboundSsoAssignmentsListRequest object.
 
   Fields:
-    filter: A CEL expression to filter the results. The only currently-
-      supported filter is filtering by customer. For example:
-      `customer==customers/C0123abc`. Omitting the filter or specifying a
-      filter of `customer==customers/my_customer` will return the assignments
-      for the customer that the caller (authenticated user) belongs to.
+    filter: A CEL expression to filter the results. The only supported filter
+      is filtering by customer. For example: `customer==customers/C0123abc`.
+      Omitting the filter or specifying a filter of
+      `customer==customers/my_customer` will return the assignments for the
+      customer that the caller (authenticated user) belongs to.
     pageSize: The maximum number of assignments to return. The service may
       return fewer than this value. If omitted (or defaulted to zero) the
       server will use a sensible default. This default may change over time.
@@ -2174,6 +2182,8 @@ class Group(_messages.Message):
       an empty value.
 
   Fields:
+    additionalGroupKeys: Output only. Additional group keys associated with
+      the Group.
     createTime: Output only. The time when the `Group` was created.
     description: An extended description to help users determine the purpose
       of a `Group`. Must not be longer than 4,096 characters.
@@ -2239,15 +2249,16 @@ class Group(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 4)
-  groupKey = _messages.MessageField('EntityKey', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  parent = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  additionalGroupKeys = _messages.MessageField('EntityKey', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 5)
+  groupKey = _messages.MessageField('EntityKey', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  parent = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GroupRelation(_messages.Message):
@@ -2917,12 +2928,12 @@ class SamlIdpConfig(_messages.Message):
     logoutRedirectUri: The **Logout Redirect URL** (sign-out page URL) of the
       identity provider. When a user clicks the sign-out link on a Google
       page, they will be redirected to this URL. This is a pure redirect with
-      no attached SAML `LogoutRequest` i.e. SAML single logout is currently
-      not supported. Must use `HTTPS`.
+      no attached SAML `LogoutRequest` i.e. SAML single logout is not
+      supported. Must use `HTTPS`.
     singleSignOnServiceUri: Required. The `SingleSignOnService` endpoint
       location (sign-in page URL) of the identity provider. This is the URL
-      where the `AuthnRequest` will be sent. Must use `HTTPS`. Currently
-      assumed to accept the `HTTP-Redirect` binding.
+      where the `AuthnRequest` will be sent. Must use `HTTPS`. Assumed to
+      accept the `HTTP-Redirect` binding.
   """
 
   changePasswordUri = _messages.StringField(1)
@@ -2936,8 +2947,8 @@ class SamlSpConfig(_messages.Message):
 
   Fields:
     assertionConsumerServiceUri: Output only. The SAML **Assertion Consumer
-      Service (ACS) URL** to be used for the IDP-initiated login. Currently
-      assumed to accept response messages via the `HTTP-POST` binding.
+      Service (ACS) URL** to be used for the IDP-initiated login. Assumed to
+      accept response messages via the `HTTP-POST` binding.
     entityId: Output only. The SAML **Entity ID** for this service provider.
   """
 

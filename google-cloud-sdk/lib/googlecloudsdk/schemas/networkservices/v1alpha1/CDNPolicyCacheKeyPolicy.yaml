@@ -29,9 +29,9 @@ properties:
     description: |-
       If `true`, requests to different hosts are cached separately.
       **Important:** Enable this only if the hosts share the same origin and
-      content. Removing the host from the cache key may inadvertently result in
-      different objects being cached than intended, depending on which route the
-      first user matched.
+      content. Removing the host from the cache key might inadvertently result
+      in different objects being cached than intended, depending on which route
+      the first user matched.
     type: boolean
   excludeQueryString:
     description: |-
@@ -42,10 +42,10 @@ properties:
     type: boolean
   excludedQueryParameters:
     description: |-
-      Names of query string parameters to exclude from cache keys. All other
-      parameters are included. Either specify included_query_parameters or
+      The names of query string parameters to exclude from cache keys. All other
+      parameters are included. Specify either included_query_parameters or
       excluded_query_parameters, not both. `&` and `=` are percent encoded and
-      not treated as delimiters. You may exclude up to 10 query parameters. Each
+      not treated as delimiters. You can exclude up to 20 query parameters. Each
       query parameter name must be between 1 and 32 characters long (inclusive).
     type: array
     items:
@@ -62,39 +62,39 @@ properties:
     type: boolean
   includedCookieNames:
     description: |-
-      Names of cookies to include in cache keys. The cookie name and cookie
-      value of each cookie named is used as part of the cache key. The
-      following limitations apply: - Must be valid RFC 6265 "cookie-name"
-      tokens - Are case sensitive - Cannot start with "Edge- Cache-" (case
-      insensitive) Specifying several cookies or cookies that have a large
-      range of values, such as per-user, dramatically impacts the cache hit
-      rate, and may result in a higher eviction rate and reduced
-      performance. You may specify up to three cookie names.
+      The names of cookies to include in cache keys. The cookie name and
+      cookie value of each cookie named is used as part of the cache key.
+      The following limitations apply: - Must be valid RFC 6265 "cookie-
+      name" tokens - Are case sensitive - Cannot start with "Edge-Cache-"
+      (case insensitive) Specifying several cookies or cookies that have a
+      large range of values, such as per-user, dramatically impacts the
+      cache hit rate, and might result in a higher eviction rate and reduced
+      performance. You can specify up to three cookie names.
     type: array
     items:
       type: string
   includedHeaderNames:
     description: |-
-      Names of HTTP request headers to include in cache keys. The value
-      of the header field is used as part of the cache key. The
+      The names of HTTP request headers to include in cache keys. The
+      value of the header field is used as part of the cache key. The
       following limitations apply: - Header names must be valid HTTP RFC
       7230 header field values. - Header field names are case
-      insensitive - You may specify up to five header names. - To
+      insensitive - You can specify up to five header names. - To
       include the HTTP method, use `:method` Refer to the documentation
       for the allowed list of header names. Specifying several headers
       or headers that have a large range of values, such as per-user,
-      dramatically impacts the cache hit rate, and may result in a
+      dramatically impacts the cache hit rate, and might result in a
       higher eviction rate and reduced performance.
     type: array
     items:
       type: string
   includedQueryParameters:
     description: |-
-      Names of query string parameters to include in cache keys. All
-      other parameters are excluded. Either specify
+      The names of query string parameters to include in cache keys.
+      All other parameters are excluded. Specify either
       included_query_parameters or excluded_query_parameters, not
       both. `&` and `=` are percent encoded and not treated as
-      delimiters. You may include up to 10 query parameters. Each
+      delimiters. You can include up to 20 query parameters. Each
       query parameter name must be between 1 and 32 characters long
       (inclusive).
     type: array

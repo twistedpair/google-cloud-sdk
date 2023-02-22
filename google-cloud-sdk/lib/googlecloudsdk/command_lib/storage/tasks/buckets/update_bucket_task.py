@@ -111,7 +111,8 @@ class UpdateBucketTask(task.Task):
       else:
         raise
 
-    if request_config.resource_args.retention_period_to_be_locked:
+    if getattr(
+        request_config.resource_args, 'retention_period_to_be_locked', None):
       self._confirm_and_lock_retention_policy(
           api_client, bucket_metadata, request_config)
 

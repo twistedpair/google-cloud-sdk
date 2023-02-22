@@ -778,6 +778,28 @@ class SasPortalPolicy(_messages.Message):
   etag = _messages.BytesField(2)
 
 
+class SasPortalProvisionDeploymentRequest(_messages.Message):
+  r"""Request for [ProvisionDeployment].
+  [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. No input is
+  needed, because GCP Project, Organization Info, and caller's GAIA ID should
+  be retrieved from the RPC handler, and used as inputs to create a new SAS
+  organization (if not exists) and a new SAS deployment.
+  """
+
+
+
+class SasPortalProvisionDeploymentResponse(_messages.Message):
+  r"""Response for [ProvisionDeployment].
+  [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment].
+
+  Fields:
+    errorMessage: Optional. Optional error message if the provisioning request
+      is not successful.
+  """
+
+  errorMessage = _messages.StringField(1)
+
+
 class SasPortalSetPolicyRequest(_messages.Message):
   r"""Request message for `SetPolicy` method.
 

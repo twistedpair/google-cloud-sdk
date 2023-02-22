@@ -14,6 +14,27 @@ from apitools.base.py import extra_types
 package = 'networkconnectivity'
 
 
+class AcceptSpokeRequest(_messages.Message):
+  r"""The request for HubService.AcceptSpoke.
+
+  Fields:
+    requestId: Optional. A unique request ID (optional). If you specify this
+      ID, you can use it in cases when you need to retry your request. When
+      you need to retry, this ID lets the server know that it can ignore the
+      request if it has already been completed. The server guarantees that for
+      at least 60 minutes after the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check to see whether the original operation was received. If it was, the
+      server ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class ActivateSpokeRequest(_messages.Message):
   r"""The request for HubService.ActivateSpoke.
 
@@ -129,7 +150,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -146,9 +169,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -467,6 +488,10 @@ class Hub(_messages.Message):
     routingVpcs: The VPC networks associated with this hub's spokes. This
       field is read-only. Network Connectivity Center automatically populates
       it based on the set of spokes attached to the hub.
+    spokeSummary: Output only. A summary of the spokes associated with a hub.
+      The summary includes a count of spokes according to type and according
+      to state. If any spokes are inactive, the summary also lists the reasons
+      they are inactive, including a count for each reason.
     state: Output only. The current lifecycle state of this hub.
     uniqueId: Output only. The Google-generated UUID for the hub. This value
       is unique across all hub resources. If a hub is deleted and another with
@@ -479,13 +504,17 @@ class Hub(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: No state information available
-      CREATING: The resource's create operation is in progress
+      CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
-      DELETING: The resource's Delete operation is in progress
-      ACTIVATING: The resource's Activate operation is in progress
-      DEACTIVATING: The resource's Deactivate operation is in progress
-      UPDATING: The resource's Update operation is in progress
+      DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
       INACTIVE: The resource is inactive
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -493,8 +522,11 @@ class Hub(_messages.Message):
     DELETING = 3
     ACTIVATING = 4
     DEACTIVATING = 5
-    UPDATING = 6
-    INACTIVE = 7
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -527,9 +559,10 @@ class Hub(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   routingVpcs = _messages.MessageField('RoutingVPC', 5, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  uniqueId = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  spokeSummary = _messages.MessageField('SpokeSummary', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -769,6 +802,23 @@ class LinkedVpnTunnels(_messages.Message):
   siteToSiteDataTransfer = _messages.BooleanField(1)
   uris = _messages.StringField(2, repeated=True)
   vpcNetwork = _messages.StringField(3)
+
+
+class ListHubSpokesResponse(_messages.Message):
+  r"""The response for HubService.ListHubSpokes.
+
+  Fields:
+    nextPageToken: The token for the next page of the response. To see more
+      results, use this value as the page_token for your next request. If this
+      value is empty, there are no more results.
+    spokes: The requested spokes. The spoke fields can be partially populated
+      based on the `view` field in the request message.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  spokes = _messages.MessageField('Spoke', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListHubsResponse(_messages.Message):
@@ -1090,7 +1140,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsListRequest(_messages.Messag
   Fields:
     filter: An expression that filters the results listed in the response.
     orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
+    pageSize: The maximum number of results per page to return.
     pageToken: The page token.
     parent: Required. The parent resource's name.
   """
@@ -1100,6 +1150,56 @@ class NetworkconnectivityProjectsLocationsGlobalHubsListRequest(_messages.Messag
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest
+  object.
+
+  Enums:
+    ViewValueValuesEnum: The view of the spoke to return. The view you use
+      determines which spoke fields are included in the response.
+
+  Fields:
+    filter: An expression that filters the list of results.
+    name: Required. The name of the hub.
+    orderBy: Sort the results by name or create_time.
+    pageSize: The maximum number of results to return per page.
+    pageToken: The page token.
+    spokeLocations: A list of locations. Specify a single region (`us-
+      central1`), `global`, or a combination of values--for example, `[global,
+      us-central1, us-west1]`. If the spoke_locations field is populated, the
+      list of results includes only spokes in the specified location. If the
+      spoke_locations field is not populated, the list of results includes
+      spokes in all locations.
+    view: The view of the spoke to return. The view you use determines which
+      spoke fields are included in the response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view of the spoke to return. The view you use determines which
+    spoke fields are included in the response.
+
+    Values:
+      SPOKE_VIEW_UNSPECIFIED: The spoke view is unspecified. When the spoke
+        view is unspecified, the API returns the same fields as the `BASIC`
+        view.
+      BASIC: Includes `name`, `create_time`, `hub`, `unique_id`, `state`,
+        `state_reason`, and `spoke_type`. This is the default value.
+      FULL: Include all spoke fields. You can use the `FULL` view only when
+        you set the `spoke_locations` field to `[global]`.
+    """
+    SPOKE_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  spokeLocations = _messages.StringField(6, repeated=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Message):
@@ -1153,7 +1253,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesListRequest(_mess
   Fields:
     filter: An expression that filters the results listed in the response.
     orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
+    pageSize: The maximum number of results to return per page.
     pageToken: The page token.
     parent: Required. The parent resource's name.
   """
@@ -1185,7 +1285,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesListRequest
   Fields:
     filter: An expression that filters the results listed in the response.
     orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
+    pageSize: The maximum number of results to return per page.
     pageToken: The page token.
     parent: Required. The parent resource's name.
   """
@@ -1248,7 +1348,7 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1274,7 +1374,7 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1747,6 +1847,19 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesTestIamPermis
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkconnectivityProjectsLocationsSpokesAcceptRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesAcceptRequest object.
+
+  Fields:
+    acceptSpokeRequest: A AcceptSpokeRequest resource to be passed as the
+      request body.
+    name: Required. The name of the spoke to accept.
+  """
+
+  acceptSpokeRequest = _messages.MessageField('AcceptSpokeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsSpokesActivateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsSpokesActivateRequest object.
 
@@ -1865,7 +1978,7 @@ class NetworkconnectivityProjectsLocationsSpokesListRequest(_messages.Message):
   Fields:
     filter: An expression that filters the results listed in the response.
     orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
+    pageSize: The maximum number of results to return per page.
     pageToken: The page token.
     parent: Required. The parent resource.
   """
@@ -1908,6 +2021,19 @@ class NetworkconnectivityProjectsLocationsSpokesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   spoke = _messages.MessageField('Spoke', 3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsSpokesRejectRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesRejectRequest object.
+
+  Fields:
+    name: Required. The name of the spoke to reject.
+    rejectSpokeRequest: A RejectSpokeRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rejectSpokeRequest = _messages.MessageField('RejectSpokeRequest', 2)
 
 
 class NetworkconnectivityProjectsLocationsSpokesSetIamPolicyRequest(_messages.Message):
@@ -2140,6 +2266,29 @@ class PolicyBasedRoute(_messages.Message):
   warnings = _messages.MessageField('Warnings', 14, repeated=True)
 
 
+class RejectSpokeRequest(_messages.Message):
+  r"""The request for HubService.RejectSpoke.
+
+  Fields:
+    details: Optional. Additional Details behind the rejection
+    requestId: Optional. A unique request ID (optional). If you specify this
+      ID, you can use it in cases when you need to retry your request. When
+      you need to retry, this ID lets the server know that it can ignore the
+      request if it has already been completed. The server guarantees that for
+      at least 60 minutes after the first request. For example, consider a
+      situation where you make an initial request and the request times out.
+      If you make the request again with the same request ID, the server can
+      check to see whether the original operation was received. If it was, the
+      server ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  details = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Route(_messages.Message):
   r"""A route defines a path from VM instances within a spoke to a specific
   destination resource. Only VPC spokes have routes.
@@ -2188,13 +2337,17 @@ class Route(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: No state information available
-      CREATING: The resource's create operation is in progress
+      CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
-      DELETING: The resource's Delete operation is in progress
-      ACTIVATING: The resource's Activate operation is in progress
-      DEACTIVATING: The resource's Deactivate operation is in progress
-      UPDATING: The resource's Update operation is in progress
+      DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
       INACTIVE: The resource is inactive
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2202,8 +2355,11 @@ class Route(_messages.Message):
     DELETING = 3
     ACTIVATING = 4
     DEACTIVATING = 5
-    UPDATING = 6
-    INACTIVE = 7
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The route's type. Its type is determined by the
@@ -2281,7 +2437,7 @@ class RouteTable(_messages.Message):
       manager/docs/creating-managing-labels#requirements).
     name: Immutable. The name of the route table. Route Table names must be
       unique. They use the following form: `projects/{project_number}/location
-      s/global/hubs/{hub}/routeTables/{route_table_id}
+      s/global/hubs/{hub}/routeTables/{route_table_id}`
     state: Output only. The current lifecycle state of this route table.
     uid: Output only. The Google-generated UUID for the route table. This
       value is unique across all route table resources. If a route table is
@@ -2295,13 +2451,17 @@ class RouteTable(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: No state information available
-      CREATING: The resource's create operation is in progress
+      CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
-      DELETING: The resource's Delete operation is in progress
-      ACTIVATING: The resource's Activate operation is in progress
-      DEACTIVATING: The resource's Deactivate operation is in progress
-      UPDATING: The resource's Update operation is in progress
+      DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
       INACTIVE: The resource is inactive
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2309,8 +2469,11 @@ class RouteTable(_messages.Message):
     DELETING = 3
     ACTIVATING = 4
     DEACTIVATING = 5
-    UPDATING = 6
-    INACTIVE = 7
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2430,6 +2593,7 @@ class Spoke(_messages.Message):
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
+    reasons: The reasons for current state of the spoke.
     state: Output only. The current lifecycle state of this spoke.
     uniqueId: Output only. The Google-generated UUID for the spoke. This value
       is unique across all spoke resources. If a spoke is deleted and another
@@ -2443,13 +2607,17 @@ class Spoke(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: No state information available
-      CREATING: The resource's create operation is in progress
+      CREATING: The resource's create operation is in progress.
       ACTIVE: The resource is active
-      DELETING: The resource's Delete operation is in progress
-      ACTIVATING: The resource's Activate operation is in progress
-      DEACTIVATING: The resource's Deactivate operation is in progress
-      UPDATING: The resource's Update operation is in progress
+      DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
       INACTIVE: The resource is inactive
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2457,8 +2625,11 @@ class Spoke(_messages.Message):
     DELETING = 3
     ACTIVATING = 4
     DEACTIVATING = 5
-    UPDATING = 6
-    INACTIVE = 7
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2495,9 +2666,143 @@ class Spoke(_messages.Message):
   linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 7)
   linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 8)
   name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  uniqueId = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  reasons = _messages.MessageField('StateReason', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+
+
+class SpokeStateCount(_messages.Message):
+  r"""The number of spokes that are in a particular state and associated with
+  a given hub.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the spokes.
+
+  Fields:
+    count: Output only. The total number of spokes that are in this state and
+      associated with a given hub.
+    state: Output only. The state of the spokes.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the spokes.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress.
+      ACTIVE: The resource is active
+      DELETING: The resource's delete operation is in progress.
+      ACTIVATING: The resource's activate operation is in progress.
+      DEACTIVATING: The resource's deactivate operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
+      INACTIVE: The resource is inactive
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    ACTIVATING = 4
+    DEACTIVATING = 5
+    ACCEPTING = 6
+    REJECTING = 7
+    UPDATING = 8
+    INACTIVE = 9
+    OBSOLETE = 10
+
+  count = _messages.IntegerField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class SpokeStateReasonCount(_messages.Message):
+  r"""The number of spokes in the hub that are inactive for this reason.
+
+  Enums:
+    StateReasonCodeValueValuesEnum: Output only. The reason that a spoke is
+      inactive.
+
+  Fields:
+    count: Output only. The total number of spokes that are inactive for a
+      particular reason and associated with a given hub.
+    stateReasonCode: Output only. The reason that a spoke is inactive.
+  """
+
+  class StateReasonCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason that a spoke is inactive.
+
+    Values:
+      CODE_UNSPECIFIED: No information available.
+      PENDING_REVIEW: The proposed spoke is pending review.
+      REJECTED: The proposed spoke has been rejected by the hub administrator.
+      PAUSED: The spoke has been deactivated internally.
+      FAILED: Network Connectivity Center encountered errors while accepting
+        the spoke.
+    """
+    CODE_UNSPECIFIED = 0
+    PENDING_REVIEW = 1
+    REJECTED = 2
+    PAUSED = 3
+    FAILED = 4
+
+  count = _messages.IntegerField(1)
+  stateReasonCode = _messages.EnumField('StateReasonCodeValueValuesEnum', 2)
+
+
+class SpokeSummary(_messages.Message):
+  r"""Summarizes information about the spokes associated with a hub. The
+  summary includes a count of spokes according to type and according to state.
+  If any spokes are inactive, the summary also lists the reasons they are
+  inactive, including a count for each reason.
+
+  Fields:
+    spokeStateCounts: Output only. Counts the number of spokes that are in
+      each state and associated with a given hub.
+    spokeStateReasonCounts: Output only. Counts the number of spokes that are
+      inactive for each possible reason and associated with a given hub.
+    spokeTypeCounts: Output only. Counts the number of spokes of each type
+      that are associated with a specific hub.
+  """
+
+  spokeStateCounts = _messages.MessageField('SpokeStateCount', 1, repeated=True)
+  spokeStateReasonCounts = _messages.MessageField('SpokeStateReasonCount', 2, repeated=True)
+  spokeTypeCounts = _messages.MessageField('SpokeTypeCount', 3, repeated=True)
+
+
+class SpokeTypeCount(_messages.Message):
+  r"""The number of spokes of a given type that are associated with a specific
+  hub. The type indicates what kind of resource is associated with the spoke.
+
+  Enums:
+    SpokeTypeValueValuesEnum: Output only. The type of the spokes.
+
+  Fields:
+    count: Output only. The total number of spokes of this type that are
+      associated with the hub.
+    spokeType: Output only. The type of the spokes.
+  """
+
+  class SpokeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the spokes.
+
+    Values:
+      SPOKE_TYPE_UNSPECIFIED: Unspecified spoke type.
+      VPN_TUNNEL: Spokes associated with VPN tunnels.
+      INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
+      ROUTER_APPLIANCE: Spokes associated with router appliance instances.
+      VPC_NETWORK: Spokes associated with VPC networks.
+    """
+    SPOKE_TYPE_UNSPECIFIED = 0
+    VPN_TUNNEL = 1
+    INTERCONNECT_ATTACHMENT = 2
+    ROUTER_APPLIANCE = 3
+    VPC_NETWORK = 4
+
+  count = _messages.IntegerField(1)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2561,6 +2866,41 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class StateReason(_messages.Message):
+  r"""The reason a spoke is inactive.
+
+  Enums:
+    CodeValueValuesEnum: The code associated with this reason.
+
+  Fields:
+    code: The code associated with this reason.
+    message: Human-readable details about this reason.
+    userDetails: Additional information provided by the user in the
+      RejectSpoke call.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The code associated with this reason.
+
+    Values:
+      CODE_UNSPECIFIED: No information available.
+      PENDING_REVIEW: The proposed spoke is pending review.
+      REJECTED: The proposed spoke has been rejected by the hub administrator.
+      PAUSED: The spoke has been deactivated internally.
+      FAILED: Network Connectivity Center encountered errors while accepting
+        the spoke.
+    """
+    CODE_UNSPECIFIED = 0
+    PENDING_REVIEW = 1
+    REJECTED = 2
+    PAUSED = 3
+    FAILED = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  userDetails = _messages.StringField(3)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -3442,6 +3442,10 @@
         "securitySettings": {
           "description": "Name of the CX SecuritySettings reference for the agent. Format: `projects\/\/locations\/\/securitySettings\/`.",
           "type": "string"
+        },
+        "ttsConfig": {
+          "description": "Configuration for Text-to-Speech synthesization. Used by Phone Gateway to specify synthesization options. If agent defines synthesization options as well, agent settings overrides the option here.",
+          "$ref": "GoogleCloudDialogflowV2SynthesizeSpeechConfig"
         }
       }
     },
@@ -4003,6 +4007,10 @@
           "description": "Max number of messages prior to and including [latest_message] to use as context when compiling the suggestion. By default 500 and at most 1000.",
           "type": "integer",
           "format": "int32"
+        },
+        "assistQueryParams": {
+          "description": "Parameters for a human assist query.",
+          "$ref": "GoogleCloudDialogflowV2AssistQueryParameters"
         }
       }
     },
@@ -6311,7 +6319,7 @@
           "type": "string"
         },
         "versionConfigs": {
-          "description": "Required. A list of configurations for flow versions. You should include version configs for all flows that are reachable from `Start Flow` in the agent. Otherwise, an error will be returned.",
+          "description": "A list of configurations for flow versions. You should include version configs for all flows that are reachable from `Start Flow` in the agent. Otherwise, an error will be returned.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowCxV3EnvironmentVersionConfig"
@@ -8175,7 +8183,7 @@
           "type": "string"
         },
         "versionConfigs": {
-          "description": "Required. A list of configurations for flow versions. You should include version configs for all flows that are reachable from `Start Flow` in the agent. Otherwise, an error will be returned.",
+          "description": "A list of configurations for flow versions. You should include version configs for all flows that are reachable from `Start Flow` in the agent. Otherwise, an error will be returned.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig"

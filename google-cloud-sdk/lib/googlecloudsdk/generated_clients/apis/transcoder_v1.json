@@ -854,6 +854,14 @@
           "description": "The audio sample rate in Hertz. The default is 48000 Hertz.",
           "type": "integer",
           "format": "int32"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as `en-US` or `sr-Latn`. For more information, see https:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The name for this particular audio stream that will be added to the HLS\/DASH manifest.",
+          "type": "string"
         }
       }
     },
@@ -901,12 +909,20 @@
           "description": "The codec for this text stream. The default is `webvtt`. Supported text codecs: - `srt` - `ttml` - `cea608` - `cea708` - `webvtt`",
           "type": "string"
         },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as `en-US` or `sr-Latn`. For more information, see https:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
         "mapping": {
           "description": "The mapping for the `Job.edit_list` atoms with text `EditAtom.inputs`.",
           "type": "array",
           "items": {
             "$ref": "TextMapping"
           }
+        },
+        "displayName": {
+          "description": "The name for this particular text stream that will be added to the HLS\/DASH manifest.",
+          "type": "string"
         }
       }
     },

@@ -46,7 +46,6 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import gzip_util
-from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
@@ -731,22 +730,10 @@ class GcsApi(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    # TODO(b/267654163): Remove POSIX handling.
-    if request_config.system_posix_data:
-      posix_attributes_to_set = posix_util.get_posix_attributes_from_resource(
-          cloud_resource
-      )
-    else:
-      posix_attributes_to_set = None
-
-    if (not posix_util.are_file_permissions_valid(
-        cloud_resource.storage_url.url_string, request_config.system_posix_data,
-        posix_attributes_to_set) or
-        download_util.return_and_report_if_nothing_to_download(
-            cloud_resource, progress_callback)):
-      return cloud_api.DownloadApiClientReturnValue(
-          posix_attributes=posix_attributes_to_set,
-          server_reported_encoding=None)
+    if download_util.return_and_report_if_nothing_to_download(
+        cloud_resource, progress_callback
+    ):
+      return None
 
     if properties.VALUES.storage.use_grpc.GetBool():
       log.debug('Using GRPC client')
@@ -759,9 +746,7 @@ class GcsApi(cloud_api.CloudApi):
           start_byte=start_byte,
           end_byte=end_byte)
       # TODO(b/261180916) Return server encoding.
-      return cloud_api.DownloadApiClientReturnValue(
-          posix_attributes=posix_attributes_to_set,
-          server_reported_encoding=None)
+      return None
 
     serialization_data = get_download_serialization_data(
         cloud_resource, start_byte)
@@ -809,9 +794,7 @@ class GcsApi(cloud_api.CloudApi):
           end_byte=end_byte,
           additional_headers=additional_headers)
 
-    return cloud_api.DownloadApiClientReturnValue(
-        posix_attributes=posix_attributes_to_set,
-        server_reported_encoding=server_reported_encoding)
+    return server_reported_encoding
 
   @gcs_error_util.catch_http_error_raise_gcs_api_error()
   def get_object_iam_policy(self, bucket_name, object_name, generation=None):

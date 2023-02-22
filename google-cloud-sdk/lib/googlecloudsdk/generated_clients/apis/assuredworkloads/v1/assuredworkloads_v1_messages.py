@@ -274,6 +274,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
         create production workloads.
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners
       ISR_REGIONS: Assured Workloads for Israel Regions
+      ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
@@ -290,7 +291,8 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     AU_REGIONS_AND_US_SUPPORT = 11
     ASSURED_WORKLOADS_FOR_PARTNERS = 12
     ISR_REGIONS = 13
-    CA_PROTECTED_B = 14
+    ISR_REGIONS_AND_SUPPORT = 14
+    CA_PROTECTED_B = 15
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -631,6 +633,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
         create production workloads.
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners
       ISR_REGIONS: Assured Workloads for Israel Regions
+      ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
@@ -647,7 +650,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     AU_REGIONS_AND_US_SUPPORT = 11
     ASSURED_WORKLOADS_FOR_PARTNERS = 12
     ISR_REGIONS = 13
-    CA_PROTECTED_B = 14
+    ISR_REGIONS_AND_SUPPORT = 14
+    CA_PROTECTED_B = 15
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

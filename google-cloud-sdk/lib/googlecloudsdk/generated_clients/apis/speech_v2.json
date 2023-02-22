@@ -535,7 +535,7 @@
           }
         },
         "boost": {
-          "description": "Hint Boost. Positive value will increase the probability that a specific phrase will be recognized over other similar sounding phrases. The higher the boost, the higher the chance of false positive recognition as well. Valid `boost` values are between 0 (exclusive) and 20. We recommend using a binary search approach to finding the optimal value for your use case.",
+          "description": "Hint Boost. Positive value will increase the probability that a specific phrase will be recognized over other similar sounding phrases. The higher the boost, the higher the chance of false positive recognition as well. Valid `boost` values are between 0 (exclusive) and 20. We recommend using a binary search approach to finding the optimal value for your use case as well as adding phrases both with and without boost to your requests.",
           "type": "number",
           "format": "float"
         },
@@ -621,7 +621,7 @@
           "type": "string"
         },
         "boost": {
-          "description": "Hint Boost. Overrides the boost set at the phrase set level. Positive value will increase the probability that a specific phrase will be recognized over other similar sounding phrases. The higher the boost, the higher the chance of false positive recognition as well. Negative boost values would correspond to anti-biasing. Anti-biasing is not enabled, so negative boost values will return an error. Boost values must be between 0 and 20. Any values outside that range will return an error. We recommend using a binary search approach to finding the optimal value for your use case. Speech recognition will skip PhraseSets with a boost value of 0.",
+          "description": "Hint Boost. Overrides the boost set at the phrase set level. Positive value will increase the probability that a specific phrase will be recognized over other similar sounding phrases. The higher the boost, the higher the chance of false positive recognition as well. Negative boost values would correspond to anti-biasing. Anti-biasing is not enabled, so negative boost values will return an error. Boost values must be between 0 and 20. Any values outside that range will return an error. We recommend using a binary search approach to finding the optimal value for your use case as well as adding phrases both with and without boost to your requests.",
           "type": "number",
           "format": "float"
         }
@@ -925,7 +925,7 @@
           "format": "google-fieldmask"
         },
         "files": {
-          "description": "Audio files with file metadata for ASR. The maximum number of files allowed to be specified is 1.",
+          "description": "Audio files with file metadata for ASR. The maximum number of files allowed to be specified is 5.",
           "type": "array",
           "items": {
             "$ref": "BatchRecognizeFileMetadata"

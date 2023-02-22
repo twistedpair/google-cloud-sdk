@@ -112,6 +112,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -130,7 +131,8 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
 class Authority(_messages.Message):
@@ -167,10 +169,41 @@ class Authority(_messages.Message):
   workloadIdentityPool = _messages.StringField(4)
 
 
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
   Fields:
+    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -222,13 +255,318 @@ class Binding(_messages.Message):
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class ClusterUpgradeGKEUpgrade(_messages.Message):
+  r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
+  upgrade.
+
+  Fields:
+    name: Name of the upgrade, e.g., "k8s_control_plane". It should be a valid
+      upgrade name. It must not exceet 99 characters.
+    version: Version of the upgrade, e.g., "1.22.1-gke.100". It should be a
+      valid version. It must not exceet 99 characters.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class ClusterUpgradeGKEUpgradeFeatureCondition(_messages.Message):
+  r"""GKEUpgradeFeatureCondition describes the condition of the feature for
+  GKE clusters at a certain point of time.
+
+  Fields:
+    reason: Reason why the feature is in this status.
+    status: Status of the condition, one of True, False, Unknown.
+    type: Type of the condition, for example, "ready".
+    updateTime: Last timestamp the condition was updated.
+  """
+
+  reason = _messages.StringField(1)
+  status = _messages.StringField(2)
+  type = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
+  r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
+  scope.
+
+  Fields:
+    conditions: Current conditions of the feature.
+    state: Upgrade state.
+  """
+
+  conditions = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureCondition', 1, repeated=True)
+  state = _messages.MessageField('ClusterUpgradeScopeGKEUpgradeState', 2, repeated=True)
+
+
+class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
+  r"""Properties of a GKE upgrade that can be overridden by the user. For
+  example, a user can skip soaking by overriding the soaking to 0.
+
+  Fields:
+    postConditions: Required. Post conditions to override for the specified
+      upgrade (name + version). Required.
+    upgrade: Required. Which upgrade to override. Required.
+  """
+
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+
+
+class ClusterUpgradeIgnoredMembership(_messages.Message):
+  r"""IgnoredMembership represents a membership ignored by the feature. A
+  membership can be ignored because it was manually upgraded to a newer
+  version than RC default.
+
+  Fields:
+    ignoredTime: Time when the membership was first set to ignored.
+    reason: Reason why the membership is ignored.
+  """
+
+  ignoredTime = _messages.StringField(1)
+  reason = _messages.StringField(2)
+
+
+class ClusterUpgradeMembershipGKEUpgradeState(_messages.Message):
+  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state per-membership.
+
+  Fields:
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 1)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+
+
+class ClusterUpgradeMembershipState(_messages.Message):
+  r"""Per-membership state for this feature.
+
+  Fields:
+    ignored: Whether this membership is ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel.
+    scopes: Fully qualified scope names that this clusters is bound to which
+      also have rollout sequencing enabled.
+    upgrades: Actual upgrade state against desired.
+  """
+
+  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 1)
+  scopes = _messages.StringField(2, repeated=True)
+  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 3, repeated=True)
+
+
+class ClusterUpgradePostConditions(_messages.Message):
+  r"""Post conditional checks after an upgrade has been applied on all
+  eligible clusters.
+
+  Fields:
+    soaking: Required. Amount of time to "soak" after a rollout has been
+      finished before marking it COMPLETE. Cannot exceed 30 days. Required.
+  """
+
+  soaking = _messages.StringField(1)
+
+
+class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
+  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state at the scope level.
+
+  Messages:
+    StatsValue: Number of GKE clusters in each status code.
+
+  Fields:
+    stats: Number of GKE clusters in each status code.
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StatsValue(_messages.Message):
+    r"""Number of GKE clusters in each status code.
+
+    Messages:
+      AdditionalProperty: An additional property for a StatsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StatsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  stats = _messages.MessageField('StatsValue', 1)
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
+
+
+class ClusterUpgradeScopeSpec(_messages.Message):
+  r"""**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    postConditions: Required. Post conditions to evaluate to mark an upgrade
+      COMPLETE. Required.
+    upstreamScopes: This scope consumes upgrades that have COMPLETE status
+      code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
+      definitions. The scope name should be in the form:
+      `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
+      is a valid Scope in this project. {p} WILL match the Feature's project.
+      This is defined as repeated for future proof reasons. Initial
+      implementation will enforce at most one upstream scope.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
+  upstreamScopes = _messages.StringField(3, repeated=True)
+
+
+class ClusterUpgradeScopeState(_messages.Message):
+  r"""**ClusterUpgrade**: The state for the ClusterUpgrade feature.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+
+  Fields:
+    downstreamScopes: This scopes whose upstream_scopes contain the current
+      scope. The scope name should be in the form:
+      `projects/{p}/locations/gloobal/scopes/{s}` Where {p} is the project,
+      {s} is a valid Scope in this project. {p} WILL match the Feature's
+      project.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/{p}/locations/{l}/membership/{m}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ClusterUpgradeIgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamScopes = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
+
+
+class ClusterUpgradeUpgradeStatus(_messages.Message):
+  r"""UpgradeStatus provides status information for each upgrade.
+
+  Enums:
+    CodeValueValuesEnum: Status code of the upgrade.
+
+  Fields:
+    code: Status code of the upgrade.
+    reason: Reason for this status.
+    updateTime: Last timestamp the status was updated.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Status code of the upgrade.
+
+    Values:
+      CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
+      INELIGIBLE: The upgrade is ineligible. At the scope level, this means
+        the upgrade is ineligible for all the clusters in the scope.
+      PENDING: The upgrade is pending. At the scope level, this means the
+        upgrade is pending for all the clusters in the scope.
+      IN_PROGRESS: The upgrade is in progress. At the scope level, this means
+        the upgrade is in progress for at least one cluster in the scope.
+      SOAKING: The upgrade has finished and is soaking until the soaking time
+        is up. At the scope level, this means at least one cluster is in
+        soaking while the rest are either soaking or complete.
+      FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
+        doesn't finish within a certain limit, despite it's actual status.
+      COMPLETE: The upgrade has passed all post conditions (soaking). At the
+        scope level, this means all eligible clusters are in COMPLETE status.
+    """
+    CODE_UNSPECIFIED = 0
+    INELIGIBLE = 1
+    PENDING = 2
+    IN_PROGRESS = 3
+    SOAKING = 4
+    FORCED_SOAKING = 5
+    COMPLETE = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  reason = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
 
 
 class CommonFeatureSpec(_messages.Message):
@@ -240,6 +578,7 @@ class CommonFeatureSpec(_messages.Message):
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
+    workloadmigration: The specification for WorkloadMigration feature.
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
@@ -247,6 +586,7 @@ class CommonFeatureSpec(_messages.Message):
   fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 3)
   helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 6)
 
 
 class CommonFeatureState(_messages.Message):
@@ -276,6 +616,127 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
 
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 1)
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 2)
+
+
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
+        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
 
 
 class ConfigManagementBinauthzConfig(_messages.Message):
@@ -1038,6 +1499,127 @@ class ConnectAgentResource(_messages.Message):
   type = _messages.MessageField('TypeMeta', 2)
 
 
+class CounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended. Field names
+  correspond to IAM request parameters and field values are their respective
+  values. Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields. Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CreateReferenceRequest(_messages.Message):
+  r"""The CreateReferenceRequest request.
+
+  Fields:
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+    reference: Required. The reference to be created.
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
+      field is currently required but id auto generation might be added in the
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  parent = _messages.StringField(1)
+  reference = _messages.MessageField('Reference', 2)
+  referenceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum:
+
+  Fields:
+    logMode: A LogModeValueValuesEnum attribute.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""LogModeValueValuesEnum enum type.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds. If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class DeleteReferenceRequest(_messages.Message):
+  r"""The DeleteReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
@@ -1476,6 +2058,20 @@ class GenerateConnectManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GetReferenceRequest(_messages.Message):
+  r"""The GetReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+  """
+
+  name = _messages.StringField(1)
+
+
 class GkeCluster(_messages.Message):
   r"""GkeCluster contains information specific to GKE clusters.
 
@@ -1688,6 +2284,8 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -1696,9 +2294,10 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class GkehubProjectsLocationsMembershipsBindingsCreateRequest(_messages.Message):
@@ -1814,9 +2413,8 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
 
   Fields:
     force: Optional. If set to true, any subresource from this Membership will
-      also be deleted. (Otherwise, the request will only work if the
-      Membership has no subresource.) following go/ccfe-nested-
-      collections#cascading-deletion.
+      also be deleted. Otherwise, the request will only work if the Membership
+      has no subresource.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -2000,6 +2598,163 @@ class GkehubProjectsLocationsMembershipsTestIamPermissionsRequest(_messages.Mess
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class GkehubProjectsLocationsNamespacesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesCreateRequest object.
+
+  Fields:
+    namespace: A Namespace resource to be passed as the request body.
+    namespaceId: Required. Client chosen ID for the Namespace. `namespace_id`
+      must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters
+      in length 2. It must consist of lower case alphanumeric characters or
+      `-` 3. It must start and end with an alphanumeric character Which can be
+      expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum
+      length of 63 characters.
+    parent: Required. The parent (project and location) where the Namespace
+      will be created. Specified in the format `projects/*/locations/*`.
+  """
+
+  namespace = _messages.MessageField('Namespace', 1)
+  namespaceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsNamespacesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesDeleteRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesGetRequest object.
+
+  Fields:
+    name: Required. The Namespace resource name in the format
+      `projects/*/locations/*/namespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsNamespacesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesPatchRequest object.
+
+  Fields:
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    namespace: A Namespace resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/namespaces/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/namespaces/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/namespaces/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListRBACRoleBindings` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/namespaces/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      `
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  updateMask = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A GkehubProjectsLocationsOperationsCancelRequest object.
 
@@ -2104,6 +2859,21 @@ class GkehubProjectsLocationsScopesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesPatchRequest object.
+
+  Fields:
+    name: The resource name for the scope
+      `projects/{project}/locations/{location}/scopes/{scope}`
+    scope: A Scope resource to be passed as the request body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  scope = _messages.MessageField('Scope', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -2300,6 +3070,27 @@ class HelloWorldMembershipSpec(_messages.Message):
 
 class HelloWorldMembershipState(_messages.Message):
   r"""**Hello World**: An empty state left as an example membership-specific
+  Feature state.
+  """
+
+
+
+class HelloWorldScopeSpec(_messages.Message):
+  r"""**Hello World**: The scope-specific input for HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for individual memberships. This should be a
+      textpb string.
+    featureTest: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+
+
+class HelloWorldScopeState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example scope-specific
   Feature state.
   """
 
@@ -2564,6 +3355,20 @@ class ListMembershipsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListNamespacesResponse(_messages.Message):
+  r"""List of fleet namespaces.
+
+  Fields:
+    namespaces: The list of fleet namespaces
+    nextPageToken: A token to request the next page of resources from the
+      `ListNamespaces` method. The value of an empty string means that there
+      are no more resources to return.
+  """
+
+  namespaces = _messages.MessageField('Namespace', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -2575,6 +3380,53 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListRBACRoleBindingsResponse(_messages.Message):
+  r"""List of RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListRBACRoleBindings` method. The value of an empty string means that
+      there are no more resources to return.
+    rbacrolebindings: The list of RBACRoleBindings
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
+
+
+class ListReferencesRequest(_messages.Message):
+  r"""The ListResourceMetadataRequest request.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more References left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class ListReferencesResponse(_messages.Message):
+  r"""The ListReferencesResponse response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    references: The list of references.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
 
 
 class ListScopesResponse(_messages.Message):
@@ -2671,6 +3523,20 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
+
+
 class Membership(_messages.Message):
   r"""Membership contains information about a member cluster.
 
@@ -2704,6 +3570,8 @@ class Membership(_messages.Message):
       is updated every several minutes, not continuously. For clusters that do
       not use GKE Connect, or that have never connected successfully, this
       field will be unset.
+    monitoringConfig: Optional. The monitoring config information for this
+      membership.
     name: Output only. The full, unique name of this Membership resource in
       the format `projects/*/locations/*/memberships/{membership_id}`, set
       during creation. `membership_id` must be a valid RFC 1123 compliant DNS
@@ -2768,10 +3636,11 @@ class Membership(_messages.Message):
   infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 7)
   labels = _messages.MessageField('LabelsValue', 8)
   lastConnectionTime = _messages.StringField(9)
-  name = _messages.StringField(10)
-  state = _messages.MessageField('MembershipState', 11)
-  uniqueId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 10)
+  name = _messages.StringField(11)
+  state = _messages.MessageField('MembershipState', 12)
+  uniqueId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class MembershipBinding(_messages.Message):
@@ -2921,6 +3790,7 @@ class MembershipFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
+    clusterupgrade: ClusterUpgrade state.
     configmanagement: Config Management-specific state.
     fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
@@ -2932,14 +3802,15 @@ class MembershipFeatureState(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 3)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
-  metering = _messages.MessageField('MeteringMembershipState', 6)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 7)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 8)
-  state = _messages.MessageField('FeatureState', 9)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 4)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
+  metering = _messages.MessageField('MeteringMembershipState', 7)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 8)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 9)
+  state = _messages.MessageField('FeatureState', 10)
 
 
 class MembershipSpec(_messages.Message):
@@ -3018,6 +3889,35 @@ class MeteringMembershipState(_messages.Message):
   preciseLastMeasuredClusterVcpuCapacity = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
+class MonitoringConfig(_messages.Message):
+  r"""This field informs Fleet-based applications/services/UIs with the
+  necessary information for where each underlying Cluster reports its metrics.
+
+  Fields:
+    cluster: Output only. Cluster name used to report metrics. For Anthos on
+      VMWare/Baremetal, it would be in format `memberClusters/cluster_name`;
+      And for Anthos on MultiCloud, it would be in format `{azureClusters,
+      awsClusters}/cluster_name`.
+    clusterHash: Immutable. Cluster hash, this is a unique string generated by
+      google code, which does not contain any PII, which we can use to
+      reference the cluster. This is expected to be created by the monitoring
+      stack and persisted into the Cluster object as well as to GKE-Hub.
+    kubernetesMetricsPrefix: Kubernetes system metrics, if available, are
+      written to this prefix. This defaults to kubernetes.io for GKE, and
+      kubernetes.io/anthos for Anthos eventually. Noted: Anthos MultiCloud
+      will have kubernetes.io prefix today but will migration to be under
+      kubernetes.io/anthos
+    location: Output only. Location used to report Metrics
+    projectId: Output only. Project used to report Metrics
+  """
+
+  cluster = _messages.StringField(1)
+  clusterHash = _messages.StringField(2)
+  kubernetesMetricsPrefix = _messages.StringField(3)
+  location = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+
+
 class MultiCloudCluster(_messages.Message):
   r"""MultiCloudCluster contains information specific to GKE Multi-Cloud
   clusters.
@@ -3070,6 +3970,63 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
 
   billing = _messages.EnumField('BillingValueValuesEnum', 1)
   configMembership = _messages.StringField(2)
+
+
+class Namespace(_messages.Message):
+  r"""Namespace represents a namespace across the Fleet
+
+  Fields:
+    createTime: Output only. When the namespace was created.
+    deleteTime: Output only. When the namespace was deleted.
+    name: The resource name for the namespace
+      `projects/{project}/locations/{location}/namespaces/{namespace}`
+    scope: Optional. Scope associated with the namespace
+    state: Output only. State of the namespace resource.
+    tenancyProject: Tenancy Project associated with the namespace
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all namespace resources. If a namespace resource is deleted and
+      another resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the namespace was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  scope = _messages.StringField(4)
+  state = _messages.MessageField('NamespaceLifecycleState', 5)
+  tenancyProject = _messages.IntegerField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class NamespaceLifecycleState(_messages.Message):
+  r"""NamespaceLifecycleState describes the state of a Namespace resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Namespace
+      resource.
+
+  Fields:
+    code: Output only. The current state of the Namespace resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Namespace resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The namespace is being created.
+      READY: The namespace active.
+      DELETING: The namespace is being deleted.
+      UPDATING: The namespace is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 class OnPremCluster(_messages.Message):
@@ -3300,6 +4257,13 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
@@ -3322,7 +4286,8 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class PolicyControllerBundleInstallSpec(_messages.Message):
@@ -3790,6 +4755,132 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
   included = _messages.BooleanField(1)
 
 
+class RBACRoleBinding(_messages.Message):
+  r"""RBACRoleBinding represents a rbacrolebinding across the Fleet
+
+  Fields:
+    createTime: Output only. When the rbacrolebinding was created.
+    deleteTime: Output only. When the rbacrolebinding was deleted.
+    group: group is the group, as seen by the kubernetes cluster.
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      `
+    role: Required. Role to bind to the principal
+    state: Output only. State of the rbacrolebinding resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all rbacrolebinding resources. If a rbacrolebinding resource is
+      deleted and another resource with the same name is created, it gets a
+      different uid.
+    updateTime: Output only. When the rbacrolebinding was last updated.
+    user: user is the name of the user as seen by the kubernetes cluster,
+      example "alice" or "alice@domain.tld"
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  group = _messages.StringField(3)
+  name = _messages.StringField(4)
+  role = _messages.MessageField('Role', 5)
+  state = _messages.MessageField('RBACRoleBindingLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  user = _messages.StringField(9)
+
+
+class RBACRoleBindingLifecycleState(_messages.Message):
+  r"""RBACRoleBindingLifecycleState describes the state of a RbacRoleBinding
+  resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the rbacrolebinding
+      resource.
+
+  Fields:
+    code: Output only. The current state of the rbacrolebinding resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the rbacrolebinding resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The rbacrolebinding is being created.
+      READY: The rbacrolebinding active.
+      DELETING: The rbacrolebinding is being deleted.
+      UPDATING: The rbacrolebinding is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class Reference(_messages.Message):
+  r"""Represents a reference to a resource.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    createTime: Output only. The creation time.
+    details: Details of the reference type with no implied semantics.
+      Cumulative size of the field must not be more than 1KiB. Note: For the
+      Arcus Reference API, you must add the proto you store in this field to
+      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+    name: Output only. Relative resource name of the reference. Includes
+      target resource as a parent and reference uid
+      `{target_resource}/references/{reference_id}`. For example,
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    sourceResource: Required. Full resource name of the resource which refers
+      the target resource. For example:
+      //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
+    type: Required. Type of the reference. A service might impose limits on
+      number of references of a specific type. Note: It's recommended to use
+      CAPITALS_WITH_UNDERSCORES style for a type name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceResource = _messages.StringField(4)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
+
+
 class ResourceManifest(_messages.Message):
   r"""ResourceManifest represents a single Kubernetes resource to be applied
   to the cluster.
@@ -3828,6 +4919,87 @@ class ResourceOptions(_messages.Message):
   v1beta1Crd = _messages.BooleanField(3)
 
 
+class Role(_messages.Message):
+  r"""Role is the type for Kubernetes roles
+
+  Enums:
+    PredefinedRoleValueValuesEnum: predefined_role is the Kubernetes default
+      role to use
+
+  Fields:
+    predefinedRole: predefined_role is the Kubernetes default role to use
+  """
+
+  class PredefinedRoleValueValuesEnum(_messages.Enum):
+    r"""predefined_role is the Kubernetes default role to use
+
+    Values:
+      UNKNOWN: UNKNOWN
+      ADMIN: ADMIN has EDIT and RBAC permissions
+      EDIT: EDIT can edit all resources except RBAC
+      VIEW: VIEW can only read resources
+    """
+    UNKNOWN = 0
+    ADMIN = 1
+    EDIT = 2
+    VIEW = 3
+
+  predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
+
+
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
 class Scope(_messages.Message):
   r"""Scope represents a Scope in a Fleet.
 
@@ -3852,17 +5024,29 @@ class Scope(_messages.Message):
 
 
 class ScopeFeatureSpec(_messages.Message):
-  r"""ScopeFeatureSpec contains feature specs for a fleet scope."""
+  r"""ScopeFeatureSpec contains feature specs for a fleet scope.
+
+  Fields:
+    clusterupgrade: A ClusterUpgradeScopeSpec attribute.
+    helloworld: A HelloWorldScopeSpec attribute.
+  """
+
+  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeSpec', 1)
+  helloworld = _messages.MessageField('HelloWorldScopeSpec', 2)
 
 
 class ScopeFeatureState(_messages.Message):
   r"""ScopeFeatureState contains Scope-wide Feature status information.
 
   Fields:
+    clusterupgrade: A ClusterUpgradeScopeState attribute.
+    helloworld: A HelloWorldScopeState attribute.
     state: Output only. The "running state" of the Feature in this Scope.
   """
 
-  state = _messages.MessageField('FeatureState', 1)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeScopeState', 1)
+  helloworld = _messages.MessageField('HelloWorldScopeState', 2)
+  state = _messages.MessageField('FeatureState', 3)
 
 
 class ScopeLifecycleState(_messages.Message):
@@ -4200,6 +5384,15 @@ class TypeMeta(_messages.Message):
   kind = _messages.StringField(2)
 
 
+class WorkloadMigrationFeatureSpec(_messages.Message):
+  r"""**WorkloadMigration**: The Hub-wide input for the WorkloadMigration
+  feature. This is currently empty, but is used to restrict API visibility.
+  """
+
+
+
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

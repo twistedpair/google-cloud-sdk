@@ -291,6 +291,10 @@ class BackendRule(_messages.Message):
   Enums:
     PathTranslationValueValuesEnum:
 
+  Messages:
+    OverridesByRequestProtocolValue: The map between request protocol and the
+      backend address.
+
   Fields:
     address: The address of the API backend. The scheme is used to determine
       the backend protocol and security. The following schemes are accepted:
@@ -312,6 +316,8 @@ class BackendRule(_messages.Message):
     minDeadline: Deprecated, do not use.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
+    overridesByRequestProtocol: The map between request protocol and the
+      backend address.
     pathTranslation: A PathTranslationValueValuesEnum attribute.
     protocol: The protocol used for sending a request to the backend. The
       supported values are "http/1.1" and "h2". The default value is inferred
@@ -360,15 +366,42 @@ class BackendRule(_messages.Message):
     CONSTANT_ADDRESS = 1
     APPEND_PATH_TO_ADDRESS = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OverridesByRequestProtocolValue(_messages.Message):
+    r"""The map between request protocol and the backend address.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        OverridesByRequestProtocolValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        OverridesByRequestProtocolValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OverridesByRequestProtocolValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BackendRule attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BackendRule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
   disableAuth = _messages.BooleanField(3)
   jwtAudience = _messages.StringField(4)
   minDeadline = _messages.FloatField(5)
   operationDeadline = _messages.FloatField(6)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 7)
-  protocol = _messages.StringField(8)
-  selector = _messages.StringField(9)
+  overridesByRequestProtocol = _messages.MessageField('OverridesByRequestProtocolValue', 7)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 8)
+  protocol = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class Billing(_messages.Message):
@@ -445,7 +478,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -462,9 +497,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """

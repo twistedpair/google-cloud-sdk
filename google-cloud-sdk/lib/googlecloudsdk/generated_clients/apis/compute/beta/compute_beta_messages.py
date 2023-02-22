@@ -611,7 +611,7 @@ class AccessConfig(_messages.Message):
       with this instance, prefix length is stored in externalIpv6PrefixLength
       in ipv6AccessConfig. To use a static external IP address, it must be
       unused and in the same region as the instance's zone. If not specified,
-      GCP will automatically assign an external IPv6 address from the
+      Google Cloud will automatically assign an external IPv6 address from the
       instance's subnetwork.
     externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
@@ -1899,11 +1899,6 @@ class AttachedDiskInitializeParams(_messages.Message):
     provisionedThroughput: Indicates how much throughput to provision for the
       disk. This sets the number of throughput mb per second that the disk can
       handle. Values must be between 1 and 7,124.
-    replicaZones: Required for each regional disk associated with the
-      instance. Specify the URLs of the zones where the disk should be
-      replicated to. You must provide exactly two replica zones, and one zone
-      must be the same as the instance zone. You can't use this option with
-      boot disks.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -2038,13 +2033,12 @@ class AttachedDiskInitializeParams(_messages.Message):
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 10)
   provisionedIops = _messages.IntegerField(11)
   provisionedThroughput = _messages.IntegerField(12)
-  replicaZones = _messages.StringField(13, repeated=True)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 14)
-  resourcePolicies = _messages.StringField(15, repeated=True)
-  sourceImage = _messages.StringField(16)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceSnapshot = _messages.StringField(18)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 13)
+  resourcePolicies = _messages.StringField(14, repeated=True)
+  sourceImage = _messages.StringField(15)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceSnapshot = _messages.StringField(17)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
 
 
 class AuditConfig(_messages.Message):
@@ -42960,9 +42954,7 @@ class Interconnect(_messages.Message):
       in this interconnect.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
-    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
-      separation organization policy constraints and false otherwise. Defaults
-      to false if the field is not present.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of Interconnect functionality,
       which can take one of the following values: - ACTIVE: The Interconnect
@@ -43301,9 +43293,7 @@ class InterconnectAttachment(_messages.Message):
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
-    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
-      separation organization policy constraints and false otherwise. Defaults
-      to false if the field is not present.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     stackType: The stack type for this interconnect attachment to identify
       whether the IPv6 feature is enabled or not. If not specified, IPV4_ONLY
@@ -44541,8 +44531,7 @@ class InterconnectLocation(_messages.Message):
       closed and is unavailable for provisioning new Interconnects. -
       AVAILABLE: The InterconnectLocation is available for provisioning new
       Interconnects.
-    supportsPzs: [Output Only] Set to true for locations that support physical
-      zone separation. Defaults to false if the field is not present.
+    supportsPzs: [Output Only] Reserved for future use.
   """
 
   class ContinentValueValuesEnum(_messages.Enum):
@@ -48986,8 +48975,9 @@ class NetworkInterface(_messages.Message):
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
     ipv6Address: An IPv6 internal network address for this network interface.
       To use a static internal IP address, it must be unused and in the same
-      region as the instance's zone. If not specified, GCP will automatically
-      assign an internal IPv6 address from the instance's subnetwork.
+      region as the instance's zone. If not specified, Google Cloud will
+      automatically assign an internal IPv6 address from the instance's
+      subnetwork.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -50474,10 +50464,7 @@ class NodeTemplate(_messages.Message):
       instance scheduling.
     nodeType: The node type to use for nodes group that are created from this
       template.
-    nodeTypeFlexibility: The flexible properties of the desired node type.
-      Node groups that use this node template will create nodes of a type that
-      matches these properties. This field is mutually exclusive with the
-      node_type property; you can only define one or the other, but not both.
+    nodeTypeFlexibility: Do not use. Instead, use the node_type property.
     region: [Output Only] The name of the region where the node template
       resides, such as us-central1.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -58352,7 +58339,7 @@ class ResourcePolicyInstanceSchedulePolicy(_messages.Message):
       string.
     timeZone: Specifies the time zone to be used in interpreting
       Schedule.schedule. The value of this field must be a time zone name from
-      the tz database: http://en.wikipedia.org/wiki/Tz_database.
+      the tz database: https://wikipedia.org/wiki/Tz_database.
     vmStartSchedule: Specifies the schedule for starting instances.
     vmStopSchedule: Specifies the schedule for stopping instances.
   """

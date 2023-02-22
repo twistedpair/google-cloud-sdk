@@ -721,13 +721,17 @@
           "$ref": "QueueingPolicy"
         },
         "state": {
-          "description": "Output only. State of the QueuedResource request",
+          "description": "Output only. State of the QueuedResource request.",
           "readOnly": true,
           "$ref": "QueuedResourceState"
         },
         "trafficConfig": {
           "description": "Network traffic configuration.",
           "$ref": "TrafficConfig"
+        },
+        "reservationName": {
+          "description": "Name of the reservation in which the resource should be provisioned. Format: projects\/{project}\/locations\/{zone}\/reservations\/{reservation}",
+          "type": "string"
         }
       }
     },

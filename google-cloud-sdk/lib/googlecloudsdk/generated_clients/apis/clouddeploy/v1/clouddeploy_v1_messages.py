@@ -2739,6 +2739,7 @@ class Release(_messages.Message):
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     buildArtifacts: List of artifacts to pass through to Skaffold command.
+    condition: Output only. Information around the state of the Release.
     createTime: Output only. Time at which the `Release` was created.
     deliveryPipelineSnapshot: Output only. Snapshot of the parent pipeline
       taken at release creation time.
@@ -2906,22 +2907,36 @@ class Release(_messages.Message):
   abandoned = _messages.BooleanField(1)
   annotations = _messages.MessageField('AnnotationsValue', 2)
   buildArtifacts = _messages.MessageField('BuildArtifact', 3, repeated=True)
-  createTime = _messages.StringField(4)
-  deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 5)
-  description = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  renderEndTime = _messages.StringField(10)
-  renderStartTime = _messages.StringField(11)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 12)
-  skaffoldConfigPath = _messages.StringField(13)
-  skaffoldConfigUri = _messages.StringField(14)
-  skaffoldVersion = _messages.StringField(15)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 16)
-  targetRenders = _messages.MessageField('TargetRendersValue', 17)
-  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
-  uid = _messages.StringField(19)
+  condition = _messages.MessageField('ReleaseCondition', 4)
+  createTime = _messages.StringField(5)
+  deliveryPipelineSnapshot = _messages.MessageField('DeliveryPipeline', 6)
+  description = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  renderEndTime = _messages.StringField(11)
+  renderStartTime = _messages.StringField(12)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 13)
+  skaffoldConfigPath = _messages.StringField(14)
+  skaffoldConfigUri = _messages.StringField(15)
+  skaffoldVersion = _messages.StringField(16)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 17)
+  targetRenders = _messages.MessageField('TargetRendersValue', 18)
+  targetSnapshots = _messages.MessageField('Target', 19, repeated=True)
+  uid = _messages.StringField(20)
+
+
+class ReleaseCondition(_messages.Message):
+  r"""ReleaseCondition contains all conditions relevant to a Release.
+
+  Fields:
+    releaseReadyCondition: Details around the Releases's overall status.
+    skaffoldSupportedCondition: Details around the support state of the
+      release's skaffold version.
+  """
+
+  releaseReadyCondition = _messages.MessageField('ReleaseReadyCondition', 1)
+  skaffoldSupportedCondition = _messages.MessageField('SkaffoldSupportedCondition', 2)
 
 
 class ReleaseNotificationEvent(_messages.Message):
@@ -2956,6 +2971,21 @@ class ReleaseNotificationEvent(_messages.Message):
   message = _messages.StringField(1)
   release = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class ReleaseReadyCondition(_messages.Message):
+  r"""ReleaseReadyCondition contains information around the status of the
+  Release. If a release is not ready, you cannot create a rollout with the
+  release.
+
+  Fields:
+    status: True if the Release is in a valid state. Otherwise at least one
+      condition in `ReleaseCondition` is in an invalid state. Iterate over
+      those conditions and see which condition(s) has status = false to find
+      out what is wrong with the Release.
+  """
+
+  status = _messages.BooleanField(1)
 
 
 class ReleaseRenderEvent(_messages.Message):
@@ -3212,6 +3242,7 @@ class Rollout(_messages.Message):
         rendered.
       CANCELLING: The `Rollout` is in the process of being cancelled.
       CANCELLED: The `Rollout` has been cancelled.
+      HALTED: The `Rollout` is halted.
     """
     STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
@@ -3223,6 +3254,7 @@ class Rollout(_messages.Message):
     PENDING_RELEASE = 7
     CANCELLING = 8
     CANCELLED = 9
+    HALTED = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -3400,17 +3432,64 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SkaffoldSupportedCondition(_messages.Message):
+  r"""SkaffoldSupportedCondition contains information about when support for
+  the release's version of skaffold ends.
+
+  Enums:
+    SkaffoldSupportStateValueValuesEnum: The skaffold support state for this
+      release's version of skaffold.
+
+  Fields:
+    maintenanceModeTime: The time at which this release's version of skaffold
+      will enter maintenance mode.
+    skaffoldSupportState: The skaffold support state for this release's
+      version of skaffold.
+    status: True if the version of skaffold used by this release is supported.
+    supportExpirationTime: The time at which this release's version of
+      skaffold will no longer be supported.
+  """
+
+  class SkaffoldSupportStateValueValuesEnum(_messages.Enum):
+    r"""The skaffold support state for this release's version of skaffold.
+
+    Values:
+      SKAFFOLD_SUPPORT_STATE_UNSPECIFIED: Default value. This value is unused.
+      SKAFFOLD_SUPPORT_STATE_SUPPORTED: This skaffold version is currently
+        supported.
+      SKAFFOLD_SUPPORT_STATE_MAINTENANCE_MODE: This skaffold version is in
+        maintenance mode.
+      SKAFFOLD_SUPPORT_STATE_UNSUPPORTED: This skaffold version is no longer
+        supported.
+    """
+    SKAFFOLD_SUPPORT_STATE_UNSPECIFIED = 0
+    SKAFFOLD_SUPPORT_STATE_SUPPORTED = 1
+    SKAFFOLD_SUPPORT_STATE_MAINTENANCE_MODE = 2
+    SKAFFOLD_SUPPORT_STATE_UNSUPPORTED = 3
+
+  maintenanceModeTime = _messages.StringField(1)
+  skaffoldSupportState = _messages.EnumField('SkaffoldSupportStateValueValuesEnum', 2)
+  status = _messages.BooleanField(3)
+  supportExpirationTime = _messages.StringField(4)
+
+
 class SkaffoldVersion(_messages.Message):
   r"""Details of a supported Skaffold version.
 
   Fields:
+    maintenanceModeTime: The time at which this version of skaffold will enter
+      maintenance mode.
     supportEndDate: Date when this version is expected to no longer be
       supported.
+    supportExpirationTime: The time at which this version of skaffold will no
+      longer be supported.
     version: Release version number. For example, "1.20.3".
   """
 
-  supportEndDate = _messages.MessageField('Date', 1)
-  version = _messages.StringField(2)
+  maintenanceModeTime = _messages.StringField(1)
+  supportEndDate = _messages.MessageField('Date', 2)
+  supportExpirationTime = _messages.StringField(3)
+  version = _messages.StringField(4)
 
 
 class Stage(_messages.Message):

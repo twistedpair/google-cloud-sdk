@@ -305,9 +305,16 @@
           "type": "string"
         },
         "serviceAttachmentUri": {
-          "description": "Output only. Service attachment URI for the workstation cluster. The service attachemnt is created when private endpoint is enabled. To access workstations in the cluster, configure access to the managed service using (Private Service Connect)[https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services].",
+          "description": "Output only. Service attachment URI for the workstation cluster. The service attachemnt is created when private endpoint is enabled. To access workstations in the cluster, configure access to the managed service using [Private Service Connect](https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services).",
           "readOnly": true,
           "type": "string"
+        },
+        "allowedProjects": {
+          "description": "Additional projects that are allowed to attach to the workstation cluster's service attachment. By default, the workstation cluster's project and the VPC host project (if different) are allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -317,7 +324,7 @@
       "type": "object",
       "properties": {
         "workstationClusters": {
-          "description": "The requested clusters.",
+          "description": "The requested workstation clusters.",
           "type": "array",
           "items": {
             "$ref": "WorkstationCluster"
@@ -401,7 +408,7 @@
           "format": "google-duration"
         },
         "runningTimeout": {
-          "description": "How long to wait before automatically stopping a workstation after it started. A value of 0 indicates that workstations using this config should never time out. Must be greater than 0 and less than 24 hours if encryption_key is set. Defaults to 12 hours.",
+          "description": "How long to wait before automatically stopping a workstation after it started. A value of 0 indicates that workstations using this configuration should never time out. Must be greater than 0 and less than 24 hours if encryption_key is set. Defaults to 12 hours.",
           "type": "string",
           "format": "google-duration"
         },
@@ -419,6 +426,10 @@
         "container": {
           "description": "Container that will be run for each workstation using this configuration when that workstation is started.",
           "$ref": "Container"
+        },
+        "encryptionKey": {
+          "description": "Encrypts resources of this workstation configuration using a customer-managed encryption key. If specified, the boot disk of the Compute Engine instance and the persistent disk are encrypted using this encryption key. If this field is not set, the disks are encrypted using a generated key. Customer-managed encryption keys do not protect disk metadata. If the customer-managed encryption key is rotated, when the workstation instance is stopped, the system attempts to recreate the persistent disk with the new version of the key. Be sure to keep older versions of the key until the persistent disk is recreated. Otherwise, data on the persistent disk will be lost. If the encryption key is revoked, the workstation session will automatically be stopped within 7 hours.",
+          "$ref": "CustomerEncryptionKey"
         },
         "degraded": {
           "description": "Output only. Whether this resource is in degraded mode, in which case it may require user action to restore full functionality. Details can be found in the `conditions` field.",
@@ -553,6 +564,10 @@
           "description": "Type of the disk to use.",
           "type": "string"
         },
+        "sourceSnapshot": {
+          "description": "Name of the snapshot to use as the source for the disk. If set, size_gb and fs_type must be empty.",
+          "type": "string"
+        },
         "reclaimPolicy": {
           "description": "What should happen to the disk after the workstation is deleted. Defaults to DELETE.",
           "type": "string",
@@ -607,6 +622,21 @@
           "description": "If set, overrides the USER specified in the image with the given uid.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "CustomerEncryptionKey": {
+      "id": "CustomerEncryptionKey",
+      "description": "A customer-managed encryption key for the Compute Engine resources of this workstation configuration.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "The name of the Google Cloud KMS encryption key. For example, `projects\/PROJECT_ID\/locations\/REGION\/keyRings\/KEY_RING\/cryptoKeys\/KEY_NAME`.",
+          "type": "string"
+        },
+        "kmsKeyServiceAccount": {
+          "description": "The service account to use with the specified KMS key. We recommend that you use a separate service account and follow KMS best practices. For more information, see [Separation of duties](https:\/\/cloud.google.com\/kms\/docs\/separation-of-duties) and `gcloud kms keys add-iam-policy-binding` [`--member`](https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/kms\/keys\/add-iam-policy-binding#--member).",
+          "type": "string"
         }
       }
     },
@@ -739,7 +769,7 @@
           ]
         },
         "host": {
-          "description": "Output only. Host to which clients can send HTTPS traffic that will be received by the workstation. Authorized traffic will be received to the workstation as HTTP on port 80. To send traffic to a different port, clients may prefix the host with the destination port in the format \"{port}-{host}\".",
+          "description": "Output only. Host to which clients can send HTTPS traffic that will be received by the workstation. Authorized traffic will be received to the workstation as HTTP on port 80. To send traffic to a different port, clients may prefix the host with the destination port in the format `{port}-{host}`.",
           "readOnly": true,
           "type": "string"
         }
@@ -848,7 +878,7 @@
       "type": "object",
       "properties": {
         "accessToken": {
-          "description": "The generated bearer access token. To use this token, include it in an Authorization header of an HTTP request sent to the associated workstation's hostname, e.g. \"Authorization: Bearer \".",
+          "description": "The generated bearer access token. To use this token, include it in an Authorization header of an HTTP request sent to the associated workstation's hostname, for example, `Authorization: Bearer `.",
           "type": "string"
         },
         "expireTime": {
@@ -915,7 +945,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Google Cloud resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. Does not include identities that come from external identity providers (IdPs) through identity federation. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a Google service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `serviceAccount:{projectid}.svc.id.goog[{namespace}\/{kubernetes-sa}]`: An identifier for a [Kubernetes service account](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/kubernetes-service-accounts). For example, `my-project.svc.id.goog[my-namespace\/my-kubernetes-sa]`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1276,7 +1306,7 @@
                       "type": "string"
                     },
                     "workstationClusterId": {
-                      "description": "Required. ID to use for the cluster.",
+                      "description": "Required. ID to use for the workstation cluster.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1314,7 +1344,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Mask specifying which fields in the cluster should be updated.",
+                      "description": "Required. Mask that specifies which fields in the workstation cluster should be updated.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1325,7 +1355,7 @@
                       "type": "boolean"
                     },
                     "allowMissing": {
-                      "description": "If set, and the cluster is not found, a new cluster will be created. In this situation, update_mask is ignored.",
+                      "description": "If set, and the workstation cluster is not found, a new workstation cluster will be created. In this situation, update_mask is ignored.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1351,24 +1381,24 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the cluster to delete.",
+                      "description": "Required. Name of the workstation cluster to delete.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workstationClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "validateOnly": {
-                      "description": "If set, validate the request and preview the review, but do not actually apply it.",
+                      "description": "If set, validate the request and preview the review, but do not apply it.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "etag": {
-                      "description": "If set, the request will be rejected if the latest version of the cluster on the server does not have this etag.",
+                      "description": "If set, the request will be rejected if the latest version of the workstation cluster on the server does not have this etag.",
                       "location": "query",
                       "type": "string"
                     },
                     "force": {
-                      "description": "If set, any workstation configurations and workstations in the cluster will also be deleted. Otherwise, the request will work only if the cluster has no configurations or workstations.",
+                      "description": "If set, any workstation configurations and workstations in the workstation cluster are also deleted. Otherwise, the request only works if the workstation cluster has no configurations or workstations.",
                       "location": "query",
                       "type": "boolean"
                     }

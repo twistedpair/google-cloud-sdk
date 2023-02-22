@@ -137,7 +137,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -154,9 +156,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -319,6 +319,7 @@ class Container(_messages.Message):
     command: Entrypoint array. Not executed within a shell. The docker image's
       ENTRYPOINT is used if this is not provided. Variable references are not
       supported in Cloud Run.
+    dependsOn: Container names which must start before this container.
     env: List of environment variables to set in the container. EnvVar with
       duplicate names are generally allowed; if referencing a secret, the name
       must be unique for the container. For non-secret EnvVar names, the
@@ -377,21 +378,38 @@ class Container(_messages.Message):
 
   args = _messages.StringField(1, repeated=True)
   command = _messages.StringField(2, repeated=True)
-  env = _messages.MessageField('EnvVar', 3, repeated=True)
-  envFrom = _messages.MessageField('EnvFromSource', 4, repeated=True)
-  image = _messages.StringField(5)
-  imagePullPolicy = _messages.StringField(6)
-  livenessProbe = _messages.MessageField('Probe', 7)
-  name = _messages.StringField(8)
-  ports = _messages.MessageField('ContainerPort', 9, repeated=True)
-  readinessProbe = _messages.MessageField('Probe', 10)
-  resources = _messages.MessageField('ResourceRequirements', 11)
-  securityContext = _messages.MessageField('SecurityContext', 12)
-  startupProbe = _messages.MessageField('Probe', 13)
-  terminationMessagePath = _messages.StringField(14)
-  terminationMessagePolicy = _messages.StringField(15)
-  volumeMounts = _messages.MessageField('VolumeMount', 16, repeated=True)
-  workingDir = _messages.StringField(17)
+  dependsOn = _messages.StringField(3, repeated=True)
+  env = _messages.MessageField('EnvVar', 4, repeated=True)
+  envFrom = _messages.MessageField('EnvFromSource', 5, repeated=True)
+  image = _messages.StringField(6)
+  imagePullPolicy = _messages.StringField(7)
+  livenessProbe = _messages.MessageField('Probe', 8)
+  name = _messages.StringField(9)
+  ports = _messages.MessageField('ContainerPort', 10, repeated=True)
+  readinessProbe = _messages.MessageField('Probe', 11)
+  resources = _messages.MessageField('ResourceRequirements', 12)
+  securityContext = _messages.MessageField('SecurityContext', 13)
+  startupProbe = _messages.MessageField('Probe', 14)
+  terminationMessagePath = _messages.StringField(15)
+  terminationMessagePolicy = _messages.StringField(16)
+  volumeMounts = _messages.MessageField('VolumeMount', 17, repeated=True)
+  workingDir = _messages.StringField(18)
+
+
+class ContainerOverride(_messages.Message):
+  r"""Per container override specification.
+
+  Fields:
+    args: Arguments to the entrypoint. Will replace existing args for
+      override.
+    env: List of environment variables to set in the container. Will be merged
+      with existing env for override.
+    name: The name of the container specified as a DNS_LABEL.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  env = _messages.MessageField('EnvVar', 2, repeated=True)
+  name = _messages.StringField(3)
 
 
 class ContainerPort(_messages.Message):
@@ -1517,6 +1535,27 @@ class ObjectMeta(_messages.Message):
   uid = _messages.StringField(15)
 
 
+class Overrides(_messages.Message):
+  r"""RunJob Overrides that contains Execution fields to be overridden on the
+
+  go.
+
+  Fields:
+    containerOverrides: Per container override specification.
+    taskCount: The desired number of tasks the execution should run. Will
+      replace existing task_count value.
+    timeoutSeconds: Duration in seconds the task may be active before the
+      system will actively try to mark it failed and kill associated
+      containers. Will replace existing timeout_seconds value.
+  """
+
+  containerOverrides = _messages.MessageField(
+      'ContainerOverride', 1, repeated=True
+  )
+  taskCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class OwnerReference(_messages.Message):
   r"""This is not supported or used by Cloud Run.
 
@@ -2046,7 +2085,15 @@ class RunApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
 
 
 class RunJobRequest(_messages.Message):
-  r"""Request message for creating a new execution of a job."""
+  r"""Request message for creating a new execution of a job.
+
+  Fields:
+    overrides: Optional. Overrides specification for a given execution of a
+      job. If provided, overrides will be applied to update the execution or
+      task spec.
+  """
+
+  overrides = _messages.MessageField('Overrides', 1)
 
 
 class RunNamespacesAuthorizeddomainsListRequest(_messages.Message):

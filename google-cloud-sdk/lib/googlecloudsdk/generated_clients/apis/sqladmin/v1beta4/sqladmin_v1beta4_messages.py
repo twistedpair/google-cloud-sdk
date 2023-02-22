@@ -31,6 +31,16 @@ class AclEntry(_messages.Message):
   value = _messages.StringField(4)
 
 
+class AdvancedMachineFeatures(_messages.Message):
+  r"""Specifies options for controlling advanced machine features.
+
+  Fields:
+    threadsPerCore: The number of threads per physical core.
+  """
+
+  threadsPerCore = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class ApiWarning(_messages.Message):
   r"""An Admin API warning message.
 
@@ -2320,6 +2330,8 @@ class Settings(_messages.Message):
       not activated, even if a connection request arrives.
     activeDirectoryConfig: Active Directory configuration, relevant only for
       Cloud SQL for SQL Server.
+    advancedMachineFeatures: Specifies advance machine configuration for the
+      instance relevant only for SQL Server.
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. (Deprecated) Applied to First Generation instances only.
     availabilityType: Availability type. Potential values: * `ZONAL`: The
@@ -2541,36 +2553,37 @@ class Settings(_messages.Message):
 
   activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
   activeDirectoryConfig = _messages.MessageField('SqlActiveDirectoryConfig', 2)
-  authorizedGaeApplications = _messages.StringField(3, repeated=True)
-  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 4)
-  backupConfiguration = _messages.MessageField('BackupConfiguration', 5)
-  collation = _messages.StringField(6)
-  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 7)
-  crashSafeReplicationEnabled = _messages.BooleanField(8)
-  dataDiskSizeGb = _messages.IntegerField(9)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 10)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 11, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(12)
-  deletionProtectionEnabled = _messages.BooleanField(13)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 14, repeated=True)
-  insightsConfig = _messages.MessageField('InsightsConfig', 15)
-  instanceVersion = _messages.StringField(16)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 17)
-  kind = _messages.StringField(18)
-  locationPreference = _messages.MessageField('LocationPreference', 19)
-  maintenanceVersion = _messages.StringField(20)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 21)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 22)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 23)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 24)
-  settingsVersion = _messages.IntegerField(25)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 26)
-  storageAutoResize = _messages.BooleanField(27)
-  storageAutoResizeLimit = _messages.IntegerField(28)
-  tier = _messages.StringField(29)
-  timeZone = _messages.StringField(30)
-  userLabels = _messages.MessageField('UserLabelsValue', 31)
-  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 32)
+  advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 3)
+  authorizedGaeApplications = _messages.StringField(4, repeated=True)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 5)
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 6)
+  collation = _messages.StringField(7)
+  connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 8)
+  crashSafeReplicationEnabled = _messages.BooleanField(9)
+  dataDiskSizeGb = _messages.IntegerField(10)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 11)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 12, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(13)
+  deletionProtectionEnabled = _messages.BooleanField(14)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 15, repeated=True)
+  insightsConfig = _messages.MessageField('InsightsConfig', 16)
+  instanceVersion = _messages.StringField(17)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 18)
+  kind = _messages.StringField(19)
+  locationPreference = _messages.MessageField('LocationPreference', 20)
+  maintenanceVersion = _messages.StringField(21)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 22)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 23)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 24)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 25)
+  settingsVersion = _messages.IntegerField(26)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 27)
+  storageAutoResize = _messages.BooleanField(28)
+  storageAutoResizeLimit = _messages.IntegerField(29)
+  tier = _messages.StringField(30)
+  timeZone = _messages.StringField(31)
+  userLabels = _messages.MessageField('UserLabelsValue', 32)
+  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 33)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

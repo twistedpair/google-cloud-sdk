@@ -170,6 +170,11 @@ class AudioStream(_messages.Message):
       channel - `fc` - Front center channel - `lfe` - Low frequency
     codec: The codec for this audio stream. The default is `aac`. Supported
       audio codecs: - `aac` - `aac-he` - `aac-he-v2` - `mp3` - `ac3` - `eac3`
+    displayName: The name for this particular audio stream that will be added
+      to the HLS/DASH manifest.
+    languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
+      more information, see
+      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
     mapping: The mapping for the `Job.edit_list` atoms with audio
       `EditAtom.inputs`.
     sampleRateHertz: The audio sample rate in Hertz. The default is 48000
@@ -180,8 +185,10 @@ class AudioStream(_messages.Message):
   channelCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   channelLayout = _messages.StringField(3, repeated=True)
   codec = _messages.StringField(4)
-  mapping = _messages.MessageField('AudioMapping', 5, repeated=True)
-  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(5)
+  languageCode = _messages.StringField(6)
+  mapping = _messages.MessageField('AudioMapping', 7, repeated=True)
+  sampleRateHertz = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class BwdifConfig(_messages.Message):
@@ -1161,12 +1168,19 @@ class TextStream(_messages.Message):
   Fields:
     codec: The codec for this text stream. The default is `webvtt`. Supported
       text codecs: - `srt` - `ttml` - `cea608` - `cea708` - `webvtt`
+    displayName: The name for this particular text stream that will be added
+      to the HLS/DASH manifest.
+    languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
+      more information, see
+      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
     mapping: The mapping for the `Job.edit_list` atoms with text
       `EditAtom.inputs`.
   """
 
   codec = _messages.StringField(1)
-  mapping = _messages.MessageField('TextMapping', 2, repeated=True)
+  displayName = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
+  mapping = _messages.MessageField('TextMapping', 4, repeated=True)
 
 
 class TranscoderProjectsLocationsJobTemplatesCreateRequest(_messages.Message):

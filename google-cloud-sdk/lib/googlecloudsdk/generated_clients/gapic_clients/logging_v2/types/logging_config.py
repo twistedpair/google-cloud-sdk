@@ -65,6 +65,7 @@ __protobuf__ = proto.module(
         'CopyLogEntriesRequest',
         'CopyLogEntriesMetadata',
         'CopyLogEntriesResponse',
+        'BucketMetadata',
     },
 )
 
@@ -91,6 +92,9 @@ class LifecycleState(proto.Enum):
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
     DELETE_REQUESTED = 2
+    UPDATING = 3
+    CREATING = 4
+    FAILED = 5
 
 
 class IndexType(proto.Enum):
@@ -182,6 +186,11 @@ class LogBucket(proto.Message):
             if they are empty.
         lifecycle_state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LifecycleState):
             Output only. The bucket lifecycle state.
+        analytics_enabled (bool):
+            Whether log analytics is enabled for this
+            bucket.
+            Once enabled, log analytics features cannot be
+            disabled.
         restricted_fields (Sequence[str]):
             Log entry field paths that are denied access in this bucket.
 
@@ -235,6 +244,10 @@ class LogBucket(proto.Message):
         proto.ENUM,
         number=12,
         enum='LifecycleState',
+    )
+    analytics_enabled = proto.Field(
+        proto.BOOL,
+        number=14,
     )
     restricted_fields = proto.RepeatedField(
         proto.STRING,
@@ -1978,6 +1991,62 @@ class CopyLogEntriesResponse(proto.Message):
     log_entries_copied_count = proto.Field(
         proto.INT64,
         number=1,
+    )
+
+
+class BucketMetadata(proto.Message):
+    r"""Metadata for LongRunningUpdateBucket Operations.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        start_time (google.protobuf.timestamp_pb2.Timestamp):
+            The create time of an operation.
+        end_time (google.protobuf.timestamp_pb2.Timestamp):
+            The end time of an operation.
+        state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OperationState):
+            State of an operation.
+        create_bucket_request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateBucketRequest):
+            LongRunningCreateBucket RPC request.
+
+            This field is a member of `oneof`_ ``request``.
+        update_bucket_request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateBucketRequest):
+            LongRunningUpdateBucket RPC request.
+
+            This field is a member of `oneof`_ ``request``.
+    """
+
+    start_time = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message=timestamp_pb2.Timestamp,
+    )
+    end_time = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=timestamp_pb2.Timestamp,
+    )
+    state = proto.Field(
+        proto.ENUM,
+        number=3,
+        enum='OperationState',
+    )
+    create_bucket_request = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='request',
+        message='CreateBucketRequest',
+    )
+    update_bucket_request = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='request',
+        message='UpdateBucketRequest',
     )
 
 

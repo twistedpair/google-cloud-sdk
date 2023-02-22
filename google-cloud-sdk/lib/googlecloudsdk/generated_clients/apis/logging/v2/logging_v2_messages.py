@@ -52,6 +52,59 @@ class BigQueryOptions(_messages.Message):
   usesTimestampColumnPartitioning = _messages.BooleanField(2)
 
 
+class Breakdown(_messages.Message):
+  r"""Columns within the output of the previous step to use to break down the
+  measures. We will generate one output measure for each value in the cross
+  product of measure_columns plus the top N values in each of the breakdown
+  columns. The value of N is currently TBD but will be small, less than 10.In
+  other words, if there is one measure columns "foo" containing values "foo1"
+  and "foo2", and there are two breakdown columns "bar" and "baz" containing
+  the values "bar1", "bar2", "baz1", and "baz2", we will end up with eight
+  output measures with all combinations of the above values: (foo1, bar1,
+  baz1), (foo1, bar1, baz2), (foo1, bar2, baz1), ...
+
+  Enums:
+    SortOrderValueValuesEnum: The sort order. If limit is not zero, this may
+      not be set to SORT_ORDER_NONE.
+
+  Fields:
+    column: Required. The name of the column containing the breakdown values.
+    limit: Values to choose how many breakdowns to create for each measure. If
+      limit is zero, all possible breakdowns will be generated. If not, limit
+      determines how many breakdowns, and sort_aggregation determines the
+      function we will use to sort the breakdowns.For example, if limit is 3,
+      we will generate at most three breakdowns per measure. If
+      sort_aggregation is "average" and sort_order is DESCENDING, those three
+      will be chosen as the ones where the average of all the points in the
+      breakdown set is the greatest.
+    sortAggregation: The aggregation to apply to the measure values when
+      choosing which breakdowns to generate. If sort_order is SORT_ORDER_NONE,
+      this is not used.
+    sortOrder: The sort order. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.
+  """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""The sort order. If limit is not zero, this may not be set to
+    SORT_ORDER_NONE.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  column = _messages.StringField(1)
+  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sortAggregation = _messages.MessageField('ChartingAggregation', 3)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
+
+
 class BucketMetadata(_messages.Message):
   r"""Metadata for LongRunningUpdateBucket Operations.
 
@@ -123,6 +176,44 @@ class BucketOptions(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class ChartingAggregation(_messages.Message):
+  r"""An identifier for an aggregation. Aggregations are used for cases where
+  we need to collapse a set of values into a single value, such as multiple
+  points in a measure into a single bin.
+
+  Fields:
+    parameters: Parameters to be applied to the aggregation. Aggregations that
+      support or require parameters are listed above.
+    type: The type of aggregation to apply. Legal values for this string are:
+      "none" - No aggregation is applied, all values are returned. Not legal
+      in all cases, see the comment on the specific field. "percentile" -
+      Generates an APPROX_QUANTILES. Requires one integer or double parameter.
+      Applies only to numeric values. "average" - Generates AVG(). Applies
+      only to numeric values. "count" - Generates COUNT(). "count-distinct" -
+      Generates COUNT(DISTINCT). "count-distinct-approx" - Generates
+      APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only to
+      numeric values. "min" - Generates MIN(). Applies only to numeric values.
+      "sum" - Generates SUM(). Applies only to numeric values.
+  """
+
+  parameters = _messages.MessageField('Parameter', 1, repeated=True)
+  type = _messages.StringField(2)
+
+
+class ChartingQueryStep(_messages.Message):
+  r"""A query step defined as a set of charting configuration options. This
+  may not be used as the first step in a query.
+
+  Fields:
+    dataSeries: The requested data series for the chart.
+    dimensions: The dimension columns. How many dimensions to choose and how
+      they're configured will depend on the chart type.
+  """
+
+  dataSeries = _messages.MessageField('DataSeries', 1, repeated=True)
+  dimensions = _messages.MessageField('Dimension', 2, repeated=True)
 
 
 class CmekSettings(_messages.Message):
@@ -295,6 +386,21 @@ class CreateLinkRequest(_messages.Message):
   parent = _messages.StringField(3)
 
 
+class DataSeries(_messages.Message):
+  r"""A definition for a data series within the output. A data series is
+  defined as a set of measures and breakdowns for those measures (see Measure
+  and Breakdown above for descriptions of how those interact). The exact
+  rendering of a data series will depend on the chart type chosen.
+
+  Fields:
+    breakdowns: The breakdowns within the data series.
+    measures: The measures within the data series.
+  """
+
+  breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
+  measures = _messages.MessageField('Measure', 2, repeated=True)
+
+
 class DeleteLinkRequest(_messages.Message):
   r"""The parameters to DeleteLink.
 
@@ -308,6 +414,53 @@ class DeleteLinkRequest(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class Dimension(_messages.Message):
+  r"""A definition for the (one) dimension column in the output. Multiple
+  dimensions can be defined, but only a single column will be generated,
+  containing the cross-product of the defined dimensions.
+
+  Enums:
+    SortOrderValueValuesEnum: The sort order. If limit is not zero, this may
+      not be set to SORT_ORDER_NONE.
+
+  Fields:
+    column: Required. The column name within the output of the previous step
+      to use.
+    integerBinSize: Used for an integer column.
+    limit: If this value is nonzero, the number of bins to generate. If zero,
+      all possible bins will be generated.
+    sortColumn: The column name to sort on. This may be set to this dimension
+      column or any measure column. If the field is empty, it will sort on the
+      dimension column. If sort_order is SORT_ORDER_NONE, this value is not
+      used.
+    sortOrder: The sort order. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.
+    timeBinSize: Used for a Timestamp column.
+  """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""The sort order. If limit is not zero, this may not be set to
+    SORT_ORDER_NONE.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  column = _messages.StringField(1)
+  integerBinSize = _messages.IntegerField(2)
+  limit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sortColumn = _messages.StringField(4)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 5)
+  timeBinSize = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -351,6 +504,18 @@ class Exponential(_messages.Message):
   growthFactor = _messages.FloatField(1)
   numFiniteBuckets = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   scale = _messages.FloatField(3)
+
+
+class HandleQueryStep(_messages.Message):
+  r"""A query step that reads the results of a step in a previous query
+  operation as its input.
+
+  Fields:
+    queryStepHandle: Required. A handle to a query step from a previous call
+      to QueryData.
+  """
+
+  queryStepHandle = _messages.StringField(1)
 
 
 class HttpRequest(_messages.Message):
@@ -444,6 +609,24 @@ class IndexConfig(_messages.Message):
   createTime = _messages.StringField(1)
   fieldPath = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive).The start must be less than or equal to the end.
+  When the start equals the end, the interval is empty (matches no time). When
+  both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval.If specified, a Timestamp
+      matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval.If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class LabelDescriptor(_messages.Message):
@@ -915,9 +1098,8 @@ class LogBucket(_messages.Message):
     UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum:
 
   Fields:
-    analyticsEnabled: Whether advanced log analytics is enabled for this
-      bucket.This field may only be set at bucket creation and cannot be
-      changed later.
+    analyticsEnabled: Whether log analytics is enabled for this bucket.Once
+      enabled, log analytics features cannot be disabled.
     analyticsUpgradeTime: Output only. The time that the bucket was upgraded
       to enable analytics. This will eventually be deprecated once there is
       not a need to upgrade existing buckets (i.e. when analytics becomes
@@ -1906,6 +2088,24 @@ class LoggingBillingAccountsGetSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingBillingAccountsLocationsBucketsCreateAsyncRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsCreateAsyncRequest object.
+
+  Fields:
+    bucketId: Required. A client-assigned identifier such as "my-bucket".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsCreateRequest object.
 
@@ -2096,6 +2296,32 @@ class LoggingBillingAccountsLocationsBucketsUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingBillingAccountsLocationsBucketsUpdateAsyncRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsUpdateAsyncRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see:
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingBillingAccountsLocationsBucketsViewsCreateRequest(_messages.Message):
@@ -2724,6 +2950,24 @@ class LoggingFoldersGetSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingFoldersLocationsBucketsCreateAsyncRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsCreateAsyncRequest object.
+
+  Fields:
+    bucketId: Required. A client-assigned identifier such as "my-bucket".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingFoldersLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsCreateRequest object.
 
@@ -2914,6 +3158,32 @@ class LoggingFoldersLocationsBucketsUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingFoldersLocationsBucketsUpdateAsyncRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsUpdateAsyncRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see:
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingFoldersLocationsBucketsViewsCreateRequest(_messages.Message):
@@ -3384,6 +3654,24 @@ class LoggingGetSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingLocationsBucketsCreateAsyncRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsCreateAsyncRequest object.
+
+  Fields:
+    bucketId: Required. A client-assigned identifier such as "my-bucket".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingLocationsBucketsCreateRequest object.
 
@@ -3574,6 +3862,32 @@ class LoggingLocationsBucketsUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingLocationsBucketsUpdateAsyncRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsUpdateAsyncRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see:
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingLocationsBucketsViewsCreateRequest(_messages.Message):
@@ -3924,6 +4238,24 @@ class LoggingOrganizationsGetSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingOrganizationsLocationsBucketsCreateAsyncRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsCreateAsyncRequest object.
+
+  Fields:
+    bucketId: Required. A client-assigned identifier such as "my-bucket".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingOrganizationsLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsBucketsCreateRequest object.
 
@@ -4114,6 +4446,32 @@ class LoggingOrganizationsLocationsBucketsUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingOrganizationsLocationsBucketsUpdateAsyncRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsUpdateAsyncRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see:
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingOrganizationsLocationsBucketsViewsCreateRequest(_messages.Message):
@@ -4699,6 +5057,24 @@ class LoggingProjectsGetSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingProjectsLocationsBucketsCreateAsyncRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsCreateAsyncRequest object.
+
+  Fields:
+    bucketId: Required. A client-assigned identifier such as "my-bucket".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
+    logBucket: A LogBucket resource to be passed as the request body.
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
+  """
+
+  bucketId = _messages.StringField(1)
+  logBucket = _messages.MessageField('LogBucket', 2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingProjectsLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingProjectsLocationsBucketsCreateRequest object.
 
@@ -4889,6 +5265,32 @@ class LoggingProjectsLocationsBucketsUndeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingProjectsLocationsBucketsUpdateAsyncRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsUpdateAsyncRequest object.
+
+  Fields:
+    logBucket: A LogBucket resource to be passed as the request body.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see:
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
+  """
+
+  logBucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingProjectsLocationsBucketsViewsCreateRequest(_messages.Message):
@@ -5546,6 +5948,22 @@ class LoggingUpdateSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   settings = _messages.MessageField('Settings', 2)
   updateMask = _messages.StringField(3)
+
+
+class Measure(_messages.Message):
+  r"""A definition for a single measure column in the output table. Multiple
+  measure columns will produce multiple curves, stacked bars, etc. depending
+  on chart type.
+
+  Fields:
+    aggregation: The aggregation to apply to the input column. May not be set
+      to "none" unless binning is disabled in the dimension.
+    column: Required. The column name within the output of the previous step
+      to use. May be the same column as the dimension.
+  """
+
+  aggregation = _messages.MessageField('ChartingAggregation', 1)
+  column = _messages.StringField(2)
 
 
 class MetricDescriptor(_messages.Message):
@@ -6222,6 +6640,59 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class Parameter(_messages.Message):
+  r"""A parameter value to be applied to an aggregation.
+
+  Fields:
+    doubleValue: A floating-point parameter value.
+    intValue: An integer parameter value.
+  """
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+
+
+class QueryDataRequest(_messages.Message):
+  r"""The parameters to QueryData. See go/oa:query-api-design for the design
+  of this endpoint and the related ValidateQuery and ReadQueryResults
+  endpoints.
+
+  Fields:
+    disableQueryCaching: If set to true, turns off all query caching on both
+      the Log Analytics and BigQuery sides.
+    querySteps: The query steps to execute. Each query step will correspond to
+      a handle in the result proto.
+    resourceNames: Required. Names of one or more log views to run a SQL
+      query. In the future, resource paths for metrics and other data types
+      will be supported here as well.Examples: projects/[PROJECT_ID]/locations
+      /[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizations/[ORGANI
+      ZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] b
+      illingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUC
+      KET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
+      resource such as 'logging.views.access' on log view resources.
+    timeRestriction: The time range in which to execute the query. May be
+      absent; if so, no time restriction will be applied.
+  """
+
+  disableQueryCaching = _messages.BooleanField(1)
+  querySteps = _messages.MessageField('QueryStep', 2, repeated=True)
+  resourceNames = _messages.StringField(3, repeated=True)
+  timeRestriction = _messages.MessageField('Interval', 4)
+
+
+class QueryDataResponse(_messages.Message):
+  r"""The response data from QueryData.
+
+  Fields:
+    queryStepHandle: Handles to each of the query steps described in the
+      request. These may be passed to ReadQueryDataResults or used in a
+      HandleQueryStep in a subsequent call to QueryData.
+  """
+
+  queryStepHandle = _messages.StringField(1, repeated=True)
+
+
 class QueryLogEntriesRequest(_messages.Message):
   r"""The parameters to QueryLogEntries.
 
@@ -6331,6 +6802,44 @@ class QueryResults(_messages.Message):
   schema = _messages.MessageField('TableSchema', 5)
   totalBytesProcessed = _messages.IntegerField(6)
   totalRows = _messages.IntegerField(7)
+
+
+class QueryStep(_messages.Message):
+  r"""One step of the query. Each query step other than the first implicitly
+  takes the output of the previous step as its input. Steps will be executed
+  in sequence and will return their results independently (in other words,
+  each step will finish at a different time and potentially return a different
+  schema).
+
+  Fields:
+    chartingQueryStep: A query step that builds a charting query from
+      configuration data.
+    handleQueryStep: A query step that refers to a step within a previously-
+      executed query.
+    sqlQueryStep: A query step containing a SQL query.
+  """
+
+  chartingQueryStep = _messages.MessageField('ChartingQueryStep', 1)
+  handleQueryStep = _messages.MessageField('HandleQueryStep', 2)
+  sqlQueryStep = _messages.MessageField('SqlQueryStep', 3)
+
+
+class ReadQueryResultsRequest(_messages.Message):
+  r"""Parameters to ReadQueryResults.
+
+  Fields:
+    pageSize: Optional. The maximum number of rows to return in the results.
+      Responses are limited to 10 MB in size.By default, there is no maximum
+      row count, and only the byte limit applies. When the byte limit is
+      reached, the rest of query results will be paginated.
+    pageToken: Optional. Page token returned by a previous call to
+      ReadQueryResults to paginate through the response rows.
+    queryStepHandle: Required. A query step handle returned by QueryData.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  queryStepHandle = _messages.StringField(3)
 
 
 class RedactLogEntriesImpact(_messages.Message):
@@ -6600,6 +7109,23 @@ class SourceReference(_messages.Message):
   revisionId = _messages.StringField(2)
 
 
+class SqlQueryStep(_messages.Message):
+  r"""A query step defined in raw SQL.
+
+  Fields:
+    sqlQuery: Required. A query string, following the BigQuery SQL query
+      syntax. The FROM clause should specify a fully qualified log view
+      corresponding to the log view in the resource_names in dot separated
+      format like PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT
+      count(*) FROM my_project.us.my_bucket._AllLogs;If any of the dot
+      separated components have special characters, that component needs to be
+      escaped separately like the following example:SELECT count(*) FROM
+      company.com:abc.us.my-bucket._AllLogs;
+  """
+
+  sqlQuery = _messages.StringField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -6859,6 +7385,17 @@ class UpdateBucketRequest(_messages.Message):
   bucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2)
   updateMask = _messages.StringField(3)
+
+
+class ValidateQueryResponse(_messages.Message):
+  r"""The response data from ValidateQuery.
+
+  Fields:
+    validateResults: One set of query metadata per query step in the request.
+      Result rows will not be populated.
+  """
+
+  validateResults = _messages.MessageField('QueryResults', 1, repeated=True)
 
 
 class WriteLogEntriesRequest(_messages.Message):

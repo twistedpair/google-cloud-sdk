@@ -21,6 +21,10 @@ from __future__ import unicode_literals
 VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'description': 'description',
     'version': 'on_prem_version',
+    'add_annotations': 'annotations',
+    'clear_annotations': 'annotations',
+    'remove_annotations': 'annotations',
+    'set_annotations': 'annotations',
     'cpus': 'control_plane_node.cpus',
     'memory': 'control_plane_node.memory',
     'enable_auto_resize': 'control_plane_node.auto_resize_config.enabled',
@@ -61,6 +65,8 @@ VMWARE_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
 BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'metal_lb_address_pools_from_file':
         'load_balancer.metal_lb_config.address_pools',
+    'metal_lb_address_pools':
+        'load_balancer.metal_lb_config.address_pools',
     'metal_lb_load_balancer_node_configs_from_file':
         'load_balancer.metal_lb_config.node_pool_config.node_pool_config.node_configs',
     'metal_lb_load_balancer_node_configs':
@@ -93,6 +99,7 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'node_configs_from_file': 'node_pool_config.node_configs',
+    'node_configs': 'node_pool_config.node_configs',
     'node_labels': 'node_pool_config.labels',
     'node_taints': 'node_pool_config.taints',
     'display_name': 'display_name',

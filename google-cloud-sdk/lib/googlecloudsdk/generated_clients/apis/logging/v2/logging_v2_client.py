@@ -89,6 +89,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects_metrics = self.ProjectsMetricsService(self)
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
+    self.query = self.QueryService(self)
     self.sinks = self.SinksService(self)
     self.v2 = self.V2Service(self)
 
@@ -574,6 +575,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateAsync(self, request, global_params=None):
+      r"""Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsCreateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets:createAsync',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.buckets.createAsync',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets:createAsync',
+        request_field='logBucket',
+        request_type_name='LoggingBillingAccountsLocationsBucketsCreateAsyncRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
@@ -683,7 +711,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+      r"""Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsPatchRequest) input message
@@ -733,6 +761,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingBillingAccountsLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def UpdateAsync(self, request, global_params=None):
+      r"""Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsUpdateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.buckets.updateAsync',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}:updateAsync',
+        request_field='logBucket',
+        request_type_name='LoggingBillingAccountsLocationsBucketsUpdateAsyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1275,6 +1330,58 @@ class LoggingV2(base_api.BaseApiClient):
         relative_path='v2/entries:query',
         request_field='<request>',
         request_type_name='QueryLogEntriesRequest',
+        response_type_name='QueryResults',
+        supports_download=False,
+    )
+
+    def QueryData(self, request, global_params=None):
+      r"""Runs a (possibly multi-step) SQL query asynchronously and returns handles that can be used to fetch the results of each step.
+
+      Args:
+        request: (QueryDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryData.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.entries.queryData',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/entries:queryData',
+        request_field='<request>',
+        request_type_name='QueryDataRequest',
+        response_type_name='QueryDataResponse',
+        supports_download=False,
+    )
+
+    def ReadQueryResults(self, request, global_params=None):
+      r"""Retrieves the results from a single step of a previous call to QueryData.
+
+      Args:
+        request: (ReadQueryResultsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryResults) The response message.
+      """
+      config = self.GetMethodConfig('ReadQueryResults')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadQueryResults.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.entries.readQueryResults',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/entries:readQueryResults',
+        request_field='<request>',
+        request_type_name='ReadQueryResultsRequest',
         response_type_name='QueryResults',
         supports_download=False,
     )
@@ -1984,6 +2091,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateAsync(self, request, global_params=None):
+      r"""Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsCreateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets:createAsync',
+        http_method='POST',
+        method_id='logging.folders.locations.buckets.createAsync',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets:createAsync',
+        request_field='logBucket',
+        request_type_name='LoggingFoldersLocationsBucketsCreateAsyncRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
@@ -2093,7 +2227,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+      r"""Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingFoldersLocationsBucketsPatchRequest) input message
@@ -2143,6 +2277,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingFoldersLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def UpdateAsync(self, request, global_params=None):
+      r"""Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsUpdateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync',
+        http_method='POST',
+        method_id='logging.folders.locations.buckets.updateAsync',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}:updateAsync',
+        request_field='logBucket',
+        request_type_name='LoggingFoldersLocationsBucketsUpdateAsyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -2928,6 +3089,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateAsync(self, request, global_params=None):
+      r"""Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingLocationsBucketsCreateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets:createAsync',
+        http_method='POST',
+        method_id='logging.locations.buckets.createAsync',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets:createAsync',
+        request_field='logBucket',
+        request_type_name='LoggingLocationsBucketsCreateAsyncRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
@@ -3037,7 +3225,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+      r"""Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingLocationsBucketsPatchRequest) input message
@@ -3087,6 +3275,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def UpdateAsync(self, request, global_params=None):
+      r"""Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingLocationsBucketsUpdateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:updateAsync',
+        http_method='POST',
+        method_id='logging.locations.buckets.updateAsync',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}:updateAsync',
+        request_field='logBucket',
+        request_type_name='LoggingLocationsBucketsUpdateAsyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -3827,6 +4042,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateAsync(self, request, global_params=None):
+      r"""Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsCreateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets:createAsync',
+        http_method='POST',
+        method_id='logging.organizations.locations.buckets.createAsync',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets:createAsync',
+        request_field='logBucket',
+        request_type_name='LoggingOrganizationsLocationsBucketsCreateAsyncRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
@@ -3936,7 +4178,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+      r"""Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsPatchRequest) input message
@@ -3986,6 +4228,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingOrganizationsLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def UpdateAsync(self, request, global_params=None):
+      r"""Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsUpdateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync',
+        http_method='POST',
+        method_id='logging.organizations.locations.buckets.updateAsync',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}:updateAsync',
+        request_field='logBucket',
+        request_type_name='LoggingOrganizationsLocationsBucketsUpdateAsyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -4980,6 +5249,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateAsync(self, request, global_params=None):
+      r"""Creates a log bucket asynchronously that can be used to store log entries.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsCreateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets:createAsync',
+        http_method='POST',
+        method_id='logging.projects.locations.buckets.createAsync',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bucketId'],
+        relative_path='v2/{+parent}/buckets:createAsync',
+        request_field='logBucket',
+        request_type_name='LoggingProjectsLocationsBucketsCreateAsyncRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
@@ -5089,7 +5385,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+      r"""Updates a log bucket.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingProjectsLocationsBucketsPatchRequest) input message
@@ -5139,6 +5435,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingProjectsLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def UpdateAsync(self, request, global_params=None):
+      r"""Updates a log bucket asynchronously.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsUpdateAsyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAsync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAsync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:updateAsync',
+        http_method='POST',
+        method_id='logging.projects.locations.buckets.updateAsync',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}:updateAsync',
+        request_field='logBucket',
+        request_type_name='LoggingProjectsLocationsBucketsUpdateAsyncRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -5739,6 +6062,42 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingProjectsGetSettingsRequest',
         response_type_name='Settings',
+        supports_download=False,
+    )
+
+  class QueryService(base_api.BaseApiService):
+    """Service class for the query resource."""
+
+    _NAME = 'query'
+
+    def __init__(self, client):
+      super(LoggingV2.QueryService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Validate(self, request, global_params=None):
+      r"""Validates a query before passing it to QueryData and returns query metadata synchronously.
+
+      Args:
+        request: (QueryDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('Validate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Validate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.query.validate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/query:validate',
+        request_field='<request>',
+        request_type_name='QueryDataRequest',
+        response_type_name='ValidateQueryResponse',
         supports_download=False,
     )
 

@@ -501,15 +501,15 @@ class StorageGrpcTransport(StorageTransport):
         return self._stubs['update_bucket']
 
     @property
-    def delete_notification(self) -> Callable[
-            [storage.DeleteNotificationRequest],
+    def delete_notification_config(self) -> Callable[
+            [storage.DeleteNotificationConfigRequest],
             empty_pb2.Empty]:
-        r"""Return a callable for the delete notification method over gRPC.
+        r"""Return a callable for the delete notification config method over gRPC.
 
-        Permanently deletes a notification subscription.
+        Permanently deletes a NotificationConfig.
 
         Returns:
-            Callable[[~.DeleteNotificationRequest],
+            Callable[[~.DeleteNotificationConfigRequest],
                     ~.Empty]:
                 A function that, when called, will call the underlying RPC
                 on the server.
@@ -518,25 +518,25 @@ class StorageGrpcTransport(StorageTransport):
         # the request.
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
-        if 'delete_notification' not in self._stubs:
-            self._stubs['delete_notification'] = self.grpc_channel.unary_unary(
-                '/google.storage.v2.Storage/DeleteNotification',
-                request_serializer=storage.DeleteNotificationRequest.serialize,
+        if 'delete_notification_config' not in self._stubs:
+            self._stubs['delete_notification_config'] = self.grpc_channel.unary_unary(
+                '/google.storage.v2.Storage/DeleteNotificationConfig',
+                request_serializer=storage.DeleteNotificationConfigRequest.serialize,
                 response_deserializer=empty_pb2.Empty.FromString,
             )
-        return self._stubs['delete_notification']
+        return self._stubs['delete_notification_config']
 
     @property
-    def get_notification(self) -> Callable[
-            [storage.GetNotificationRequest],
-            storage.Notification]:
-        r"""Return a callable for the get notification method over gRPC.
+    def get_notification_config(self) -> Callable[
+            [storage.GetNotificationConfigRequest],
+            storage.NotificationConfig]:
+        r"""Return a callable for the get notification config method over gRPC.
 
-        View a notification config.
+        View a NotificationConfig.
 
         Returns:
-            Callable[[~.GetNotificationRequest],
-                    ~.Notification]:
+            Callable[[~.GetNotificationConfigRequest],
+                    ~.NotificationConfig]:
                 A function that, when called, will call the underlying RPC
                 on the server.
         """
@@ -544,29 +544,28 @@ class StorageGrpcTransport(StorageTransport):
         # the request.
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
-        if 'get_notification' not in self._stubs:
-            self._stubs['get_notification'] = self.grpc_channel.unary_unary(
-                '/google.storage.v2.Storage/GetNotification',
-                request_serializer=storage.GetNotificationRequest.serialize,
-                response_deserializer=storage.Notification.deserialize,
+        if 'get_notification_config' not in self._stubs:
+            self._stubs['get_notification_config'] = self.grpc_channel.unary_unary(
+                '/google.storage.v2.Storage/GetNotificationConfig',
+                request_serializer=storage.GetNotificationConfigRequest.serialize,
+                response_deserializer=storage.NotificationConfig.deserialize,
             )
-        return self._stubs['get_notification']
+        return self._stubs['get_notification_config']
 
     @property
-    def create_notification(self) -> Callable[
-            [storage.CreateNotificationRequest],
-            storage.Notification]:
-        r"""Return a callable for the create notification method over gRPC.
+    def create_notification_config(self) -> Callable[
+            [storage.CreateNotificationConfigRequest],
+            storage.NotificationConfig]:
+        r"""Return a callable for the create notification config method over gRPC.
 
-        Creates a notification subscription for a given
-        bucket. These notifications, when triggered, publish
-        messages to the specified Pub/Sub topics.
-        See
+        Creates a NotificationConfig for a given bucket.
+        These NotificationConfigs, when triggered, publish
+        messages to the specified Pub/Sub topics. See
         https://cloud.google.com/storage/docs/pubsub-notifications.
 
         Returns:
-            Callable[[~.CreateNotificationRequest],
-                    ~.Notification]:
+            Callable[[~.CreateNotificationConfigRequest],
+                    ~.NotificationConfig]:
                 A function that, when called, will call the underlying RPC
                 on the server.
         """
@@ -574,26 +573,26 @@ class StorageGrpcTransport(StorageTransport):
         # the request.
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
-        if 'create_notification' not in self._stubs:
-            self._stubs['create_notification'] = self.grpc_channel.unary_unary(
-                '/google.storage.v2.Storage/CreateNotification',
-                request_serializer=storage.CreateNotificationRequest.serialize,
-                response_deserializer=storage.Notification.deserialize,
+        if 'create_notification_config' not in self._stubs:
+            self._stubs['create_notification_config'] = self.grpc_channel.unary_unary(
+                '/google.storage.v2.Storage/CreateNotificationConfig',
+                request_serializer=storage.CreateNotificationConfigRequest.serialize,
+                response_deserializer=storage.NotificationConfig.deserialize,
             )
-        return self._stubs['create_notification']
+        return self._stubs['create_notification_config']
 
     @property
-    def list_notifications(self) -> Callable[
-            [storage.ListNotificationsRequest],
-            storage.ListNotificationsResponse]:
-        r"""Return a callable for the list notifications method over gRPC.
+    def list_notification_configs(self) -> Callable[
+            [storage.ListNotificationConfigsRequest],
+            storage.ListNotificationConfigsResponse]:
+        r"""Return a callable for the list notification configs method over gRPC.
 
-        Retrieves a list of notification subscriptions for a
-        given bucket.
+        Retrieves a list of NotificationConfigs for a given
+        bucket.
 
         Returns:
-            Callable[[~.ListNotificationsRequest],
-                    ~.ListNotificationsResponse]:
+            Callable[[~.ListNotificationConfigsRequest],
+                    ~.ListNotificationConfigsResponse]:
                 A function that, when called, will call the underlying RPC
                 on the server.
         """
@@ -601,13 +600,13 @@ class StorageGrpcTransport(StorageTransport):
         # the request.
         # gRPC handles serialization and deserialization, so we just need
         # to pass in the functions for each.
-        if 'list_notifications' not in self._stubs:
-            self._stubs['list_notifications'] = self.grpc_channel.unary_unary(
-                '/google.storage.v2.Storage/ListNotifications',
-                request_serializer=storage.ListNotificationsRequest.serialize,
-                response_deserializer=storage.ListNotificationsResponse.deserialize,
+        if 'list_notification_configs' not in self._stubs:
+            self._stubs['list_notification_configs'] = self.grpc_channel.unary_unary(
+                '/google.storage.v2.Storage/ListNotificationConfigs',
+                request_serializer=storage.ListNotificationConfigsRequest.serialize,
+                response_deserializer=storage.ListNotificationConfigsResponse.deserialize,
             )
-        return self._stubs['list_notifications']
+        return self._stubs['list_notification_configs']
 
     @property
     def compose_object(self) -> Callable[
@@ -820,6 +819,8 @@ class StorageGrpcTransport(StorageTransport):
            will skip data at offsets that were already persisted
            (without checking that it matches the previously written
            data), and write only the data starting from the persisted
+           offset. Even though the data isn't written, it may still
+           incur a performance cost over resuming at the correct write
            offset. This behavior can make client-side handling simpler
            in some cases.
 

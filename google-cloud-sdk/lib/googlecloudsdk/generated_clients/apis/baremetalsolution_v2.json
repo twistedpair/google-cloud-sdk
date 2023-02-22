@@ -2628,7 +2628,7 @@
                     "$ref": "RenameInstanceRequest"
                   },
                   "response": {
-                    "$ref": "Operation"
+                    "$ref": "Instance"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

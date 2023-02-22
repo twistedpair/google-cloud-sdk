@@ -6738,29 +6738,29 @@ class AiplatformV1beta1(base_api.BaseApiClient):
           }
 
     def BatchImport(self, request, global_params=None):
-      r"""Imports a list of externally generated ModelEvaluationSlice.
+      r"""Imports a list of externally generated EvaluatedAnnotations.
 
       Args:
         request: (AiplatformProjectsLocationsModelsEvaluationsSlicesBatchImportRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesResponse) The response message.
+        (GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsResponse) The response message.
       """
       config = self.GetMethodConfig('BatchImport')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     BatchImport.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations/{evaluationsId}/slices:batchImport',
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}/evaluations/{evaluationsId}/slices/{slicesId}:batchImport',
         http_method='POST',
         method_id='aiplatform.projects.locations.models.evaluations.slices.batchImport',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1beta1/{+parent}/slices:batchImport',
-        request_field='googleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesRequest',
+        relative_path='v1beta1/{+parent}:batchImport',
+        request_field='googleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsRequest',
         request_type_name='AiplatformProjectsLocationsModelsEvaluationsSlicesBatchImportRequest',
-        response_type_name='GoogleCloudAiplatformV1beta1BatchImportModelEvaluationSlicesResponse',
+        response_type_name='GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsResponse',
         supports_download=False,
     )
 

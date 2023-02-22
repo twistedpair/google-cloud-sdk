@@ -305,6 +305,13 @@
         "systemAddonsConfig": {
           "description": "Optional. The configuration of the system add-ons.",
           "$ref": "SystemAddonsConfig"
+        },
+        "dataPlaneLoadBalancerIpv4AddressPools": {
+          "description": "Optional. Address pools for cluster data plane load balancing.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -496,6 +503,10 @@
         "disabled": {
           "description": "Optional. Whether Ingress is disabled.",
           "type": "boolean"
+        },
+        "ipv4Vip": {
+          "description": "Optional. Ingress VIP.",
+          "type": "string"
         }
       }
     },

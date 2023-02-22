@@ -351,7 +351,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -368,9 +370,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -801,6 +801,7 @@ class DeliverInfo(_messages.Message):
       PSC_VPC_SC: Target is a VPC-SC that uses [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
+      SERVERLESS_NEG: Target is a serverless network endpoint group.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -811,6 +812,7 @@ class DeliverInfo(_messages.Message):
     PSC_PUBLISHED_SERVICE = 6
     PSC_GOOGLE_API = 7
     PSC_VPC_SC = 8
+    SERVERLESS_NEG = 9
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -943,6 +945,8 @@ class DropInfo(_messages.Message):
         a project that is not approved to connect to the service.
       CLOUD_RUN_REVISION_NOT_READY: Packet sent from a Cloud Run revision that
         is not ready.
+      DROPPED_INSIDE_PSC_SERVICE_PRODUCER: Packet was dropped inside Private
+        Service Connect service producer.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -981,6 +985,7 @@ class DropInfo(_messages.Message):
     VPC_CONNECTOR_NOT_RUNNING = 34
     PSC_CONNECTION_NOT_ACCEPTED = 35
     CLOUD_RUN_REVISION_NOT_READY = 36
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 37
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)

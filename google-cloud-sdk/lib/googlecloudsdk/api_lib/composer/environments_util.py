@@ -156,6 +156,8 @@ class CreateEnvironmentFlags:
       interpret snapshot_creation_schedule
     enable_cloud_data_lineage_integration: bool or None, whether Cloud Data
       Lineage integration should be enabled
+    enable_high_resilience: bool or None, whether high resilience
+      should be enabled
   """
 
   # TODO(b/154131605): This a type that is an immutable data object. Can't use
@@ -227,7 +229,8 @@ class CreateEnvironmentFlags:
                snapshot_creation_schedule=None,
                snapshot_location=None,
                snapshot_schedule_timezone=None,
-               enable_cloud_data_lineage_integration=None):
+               enable_cloud_data_lineage_integration=None,
+               enable_high_resilience=None):
     self.node_count = node_count
     self.environment_size = environment_size
     self.labels = labels
@@ -292,6 +295,7 @@ class CreateEnvironmentFlags:
     self.snapshot_location = snapshot_location
     self.snapshot_schedule_timezone = snapshot_schedule_timezone
     self.enable_cloud_data_lineage_integration = enable_cloud_data_lineage_integration
+    self.enable_high_resilience = enable_high_resilience
 
 
 def _CreateNodeConfig(messages, flags):
@@ -470,6 +474,10 @@ def _CreateConfig(messages, flags, is_composer_v1):
     config.webServerNetworkAccessControl = BuildWebServerNetworkAccessControl(
         flags.web_server_access_control, flags.release_track)
 
+  if flags.enable_high_resilience:
+    config.resilienceMode = (
+        messages.EnvironmentConfig.ResilienceModeValueValuesEnum.HIGH_RESILIENCE
+    )
   if flags.cloud_sql_machine_type:
     config.databaseConfig = messages.DatabaseConfig(
         machineType=flags.cloud_sql_machine_type)
@@ -678,6 +686,27 @@ def LoadSnapshot(environment_ref,
           skipGcsDataCopying=skip_gcs_data_copying,
           snapshotPath=snapshot_path))
   return GetService(release_track=release_track).LoadSnapshot(request_message)
+
+
+def DatabaseFailover(environment_ref, release_track=base.ReleaseTrack.ALPHA):
+  """Triggers the database failover (only for highly resilient environments).
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to trigger the
+      database failover for.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    Operation: the operation corresponding to triggering a database failover.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsDatabaseFailoverRequest(
+      environment=environment_ref.RelativeName(),
+      databaseFailoverRequest=message_module.DatabaseFailoverRequest())
+  return GetService(release_track=release_track).DatabaseFailover(
+      request_message
+  )
 
 
 def CheckUpgrade(environment_ref,

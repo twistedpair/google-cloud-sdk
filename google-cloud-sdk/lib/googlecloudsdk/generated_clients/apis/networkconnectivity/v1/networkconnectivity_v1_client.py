@@ -326,6 +326,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListSpokes(self, request, global_params=None):
+      r"""Lists the Network Connectivity Center spokes associated with a specified hub and location. The list includes both spokes that are attached to the hub and spokes that have been proposed but not yet accepted.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListHubSpokesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListSpokes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListSpokes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}:listSpokes',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.listSpokes',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'spokeLocations', 'view'],
+        relative_path='v1/{+name}:listSpokes',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest',
+        response_type_name='ListHubSpokesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the description and/or labels of a Network Connectivity Center hub.
 
@@ -1162,6 +1189,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Accept(self, request, global_params=None):
+      r"""Accepts a proposal to attach a Network Connectivity Center spoke to the hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesAcceptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Accept')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Accept.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}:accept',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.spokes.accept',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:accept',
+        request_field='acceptSpokeRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesAcceptRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Activate(self, request, global_params=None):
       r"""Activates a Network Connectivity Center spoke. By activating a spoke, you permit connectivity between it and other spokes that are attached to the same hub.
 
@@ -1374,6 +1428,33 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='spoke',
         request_type_name='NetworkconnectivityProjectsLocationsSpokesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Reject(self, request, global_params=None):
+      r"""Does one of the following: * Rejects a proposal to attach a Network Connectivity Center spoke to the hub. * Rejects and removes a previously attached spoke from the hub.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsSpokesRejectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Reject')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reject.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/spokes/{spokesId}:reject',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.spokes.reject',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:reject',
+        request_field='rejectSpokeRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsSpokesRejectRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

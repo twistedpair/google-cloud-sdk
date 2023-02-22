@@ -2042,7 +2042,6 @@ class PipelineRef(_messages.Message):
       perform resolution of the referenced Tekton resource.
 
   Fields:
-    bundle: Bundle url reference to a Tekton Bundle.
     name: Name of the Pipeline.
     params: Params contains the parameters used to identify the referenced
       Tekton resource. Example entries might include "repo" or "path" but the
@@ -2068,10 +2067,9 @@ class PipelineRef(_messages.Message):
     GCB_REPO = 2
     GIT = 3
 
-  bundle = _messages.StringField(1)
-  name = _messages.StringField(2)
-  params = _messages.MessageField('Param', 3, repeated=True)
-  resolver = _messages.EnumField('ResolverValueValuesEnum', 4)
+  name = _messages.StringField(1)
+  params = _messages.MessageField('Param', 2, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 3)
 
 
 class PipelineRun(_messages.Message):
@@ -2915,7 +2913,6 @@ class TaskRef(_messages.Message):
       perform resolution of the referenced Tekton resource.
 
   Fields:
-    bundle: Bundle url reference to a Tekton Bundle.
     name: Name of the task.
     params: Params contains the parameters used to identify the referenced
       Tekton resource. Example entries might include "repo" or "path" but the
@@ -2941,10 +2938,9 @@ class TaskRef(_messages.Message):
     GCB_REPO = 2
     GIT = 3
 
-  bundle = _messages.StringField(1)
-  name = _messages.StringField(2)
-  params = _messages.MessageField('Param', 3, repeated=True)
-  resolver = _messages.EnumField('ResolverValueValuesEnum', 4)
+  name = _messages.StringField(1)
+  params = _messages.MessageField('Param', 2, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 3)
 
 
 class TaskResult(_messages.Message):
@@ -3294,9 +3290,6 @@ class Workflow(_messages.Message):
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
-    bundle: A Tekton Bundle is an OCI Image that Tekton understands. OCI is
-      the spec for container images that docker and others (such as Tekton
-      Bundles) follow. This field deprecated; please use `ref` instead.
     createTime: Output only. Server assigned timestamp for when the workflow
       was created.
     deleteTime: Output only. Server assigned timestamp for when the workflow
@@ -3398,23 +3391,22 @@ class Workflow(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  bundle = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  options = _messages.MessageField('WorkflowOptions', 8)
-  params = _messages.MessageField('ParamSpec', 9, repeated=True)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 10)
-  ref = _messages.MessageField('PipelineRef', 11)
-  resources = _messages.MessageField('ResourcesValue', 12)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 13, repeated=True)
-  serviceAccount = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  workflowTriggers = _messages.MessageField('WorkflowTrigger', 17, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceBinding', 18, repeated=True)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  options = _messages.MessageField('WorkflowOptions', 7)
+  params = _messages.MessageField('ParamSpec', 8, repeated=True)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 9)
+  ref = _messages.MessageField('PipelineRef', 10)
+  resources = _messages.MessageField('ResourcesValue', 11)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 12, repeated=True)
+  serviceAccount = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workflowTriggers = _messages.MessageField('WorkflowTrigger', 16, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceBinding', 17, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):

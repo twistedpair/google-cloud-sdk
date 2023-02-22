@@ -1149,6 +1149,16 @@ def AddSessionAffinityFlag(parser):
       help='Whether to enable session affinity for connections to the service.')
 
 
+def AddRuntimeFlag(parser):
+  """Add flags for Wasm runtime."""
+  parser.add_argument(
+      '--runtime',
+      metavar='RUNTIME',
+      hidden=True,
+      help='The runtime to use. "wasm" for WebAssembly runtime, '
+      '"default" for the default Linux runtime.')
+
+
 def _HasChanges(args, flags):
   """True iff any of the passed flags are set."""
   return any(FlagIsExplicitlySet(args, flag) for flag in flags)
@@ -1625,6 +1635,9 @@ def GetServiceConfigurationChanges(args):
       changes.append(
           config_changes.DeleteTemplateAnnotationChange(
               revision.SESSION_AFFINITY_ANNOTATION))
+  if FlagIsExplicitlySet(args, 'runtime'):
+    changes.append(
+        config_changes.RuntimeChange(runtime=args.runtime))
 
   _PrependClientNameAndVersionChange(args, changes)
   return changes

@@ -862,6 +862,8 @@ class Dataset(_messages.Message):
       timePartitioning.expirationMs when creating or updating a partitioned
       table, that value takes precedence over the default partition expiration
       time indicated by this property.
+    defaultRoundingMode: [Output-only] The default rounding mode of the
+      dataset.
     defaultTableExpirationMs: [Optional] The default lifetime of all tables in
       the dataset, in milliseconds. The minimum value is 3600000 milliseconds
       (one hour). Once this property is set, all newly-created tables in the
@@ -1003,21 +1005,22 @@ class Dataset(_messages.Message):
   defaultCollation = _messages.StringField(4)
   defaultEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
   defaultPartitionExpirationMs = _messages.IntegerField(6)
-  defaultTableExpirationMs = _messages.IntegerField(7)
-  description = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  friendlyName = _messages.StringField(10)
-  id = _messages.StringField(11)
-  isCaseInsensitive = _messages.BooleanField(12)
-  kind = _messages.StringField(13, default='bigquery#dataset')
-  labels = _messages.MessageField('LabelsValue', 14)
-  lastModifiedTime = _messages.IntegerField(15)
-  location = _messages.StringField(16)
-  maxTimeTravelHours = _messages.IntegerField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  selfLink = _messages.StringField(19)
-  storageBillingModel = _messages.StringField(20)
-  tags = _messages.MessageField('TagsValueListEntry', 21, repeated=True)
+  defaultRoundingMode = _messages.StringField(7)
+  defaultTableExpirationMs = _messages.IntegerField(8)
+  description = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  friendlyName = _messages.StringField(11)
+  id = _messages.StringField(12)
+  isCaseInsensitive = _messages.BooleanField(13)
+  kind = _messages.StringField(14, default='bigquery#dataset')
+  labels = _messages.MessageField('LabelsValue', 15)
+  lastModifiedTime = _messages.IntegerField(16)
+  location = _messages.StringField(17)
+  maxTimeTravelHours = _messages.IntegerField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  selfLink = _messages.StringField(20)
+  storageBillingModel = _messages.StringField(21)
+  tags = _messages.MessageField('TagsValueListEntry', 22, repeated=True)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -3294,6 +3297,7 @@ class Table(_messages.Message):
     creationTime: [Output-only] The time when this table was created, in
       milliseconds since the epoch.
     defaultCollation: [Output-only] The default collation of the table.
+    defaultRoundingMode: [Output-only] The default rounding mode of the table.
     description: [Optional] A user-friendly description of this table.
     encryptionConfiguration: Custom encryption configuration (e.g., Cloud KMS
       keys).
@@ -3423,42 +3427,43 @@ class Table(_messages.Message):
   clustering = _messages.MessageField('Clustering', 2)
   creationTime = _messages.IntegerField(3)
   defaultCollation = _messages.StringField(4)
-  description = _messages.StringField(5)
-  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 6)
-  etag = _messages.StringField(7)
-  expirationTime = _messages.IntegerField(8)
-  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 9)
-  friendlyName = _messages.StringField(10)
-  id = _messages.StringField(11)
-  kind = _messages.StringField(12, default='bigquery#table')
-  labels = _messages.MessageField('LabelsValue', 13)
-  lastModifiedTime = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
-  location = _messages.StringField(15)
-  materializedView = _messages.MessageField('MaterializedViewDefinition', 16)
-  maxStaleness = _messages.BytesField(17)
-  model = _messages.MessageField('ModelDefinition', 18)
-  numBytes = _messages.IntegerField(19)
-  numLongTermBytes = _messages.IntegerField(20)
-  numPhysicalBytes = _messages.IntegerField(21)
-  numRows = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  num_active_logical_bytes = _messages.IntegerField(23)
-  num_active_physical_bytes = _messages.IntegerField(24)
-  num_long_term_logical_bytes = _messages.IntegerField(25)
-  num_long_term_physical_bytes = _messages.IntegerField(26)
-  num_partitions = _messages.IntegerField(27)
-  num_time_travel_physical_bytes = _messages.IntegerField(28)
-  num_total_logical_bytes = _messages.IntegerField(29)
-  num_total_physical_bytes = _messages.IntegerField(30)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 31)
-  requirePartitionFilter = _messages.BooleanField(32, default=False)
-  schema = _messages.MessageField('TableSchema', 33)
-  selfLink = _messages.StringField(34)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 35)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 36)
-  tableReference = _messages.MessageField('TableReference', 37)
-  timePartitioning = _messages.MessageField('TimePartitioning', 38)
-  type = _messages.StringField(39)
-  view = _messages.MessageField('ViewDefinition', 40)
+  defaultRoundingMode = _messages.StringField(5)
+  description = _messages.StringField(6)
+  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 7)
+  etag = _messages.StringField(8)
+  expirationTime = _messages.IntegerField(9)
+  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 10)
+  friendlyName = _messages.StringField(11)
+  id = _messages.StringField(12)
+  kind = _messages.StringField(13, default='bigquery#table')
+  labels = _messages.MessageField('LabelsValue', 14)
+  lastModifiedTime = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
+  location = _messages.StringField(16)
+  materializedView = _messages.MessageField('MaterializedViewDefinition', 17)
+  maxStaleness = _messages.BytesField(18)
+  model = _messages.MessageField('ModelDefinition', 19)
+  numBytes = _messages.IntegerField(20)
+  numLongTermBytes = _messages.IntegerField(21)
+  numPhysicalBytes = _messages.IntegerField(22)
+  numRows = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  num_active_logical_bytes = _messages.IntegerField(24)
+  num_active_physical_bytes = _messages.IntegerField(25)
+  num_long_term_logical_bytes = _messages.IntegerField(26)
+  num_long_term_physical_bytes = _messages.IntegerField(27)
+  num_partitions = _messages.IntegerField(28)
+  num_time_travel_physical_bytes = _messages.IntegerField(29)
+  num_total_logical_bytes = _messages.IntegerField(30)
+  num_total_physical_bytes = _messages.IntegerField(31)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 32)
+  requirePartitionFilter = _messages.BooleanField(33, default=False)
+  schema = _messages.MessageField('TableSchema', 34)
+  selfLink = _messages.StringField(35)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 36)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 37)
+  tableReference = _messages.MessageField('TableReference', 38)
+  timePartitioning = _messages.MessageField('TimePartitioning', 39)
+  type = _messages.StringField(40)
+  view = _messages.MessageField('ViewDefinition', 41)
 
 
 class TableCell(_messages.Message):
@@ -3617,6 +3622,8 @@ class TableFieldSchema(_messages.Message):
       be equal to zero): - If type = "NUMERIC": 1 \u2264 precision \u2264 29.
       - If type = "BIGNUMERIC": 1 \u2264 precision \u2264 38. If scale is
       specified but not precision, then it is invalid.
+    roundingMode: Optional. Rounding Mode specification of the field. It only
+      can be set on NUMERIC or BIGNUMERIC type fields.
     scale: [Optional] See documentation for precision.
     type: [Required] The field data type. Possible values include STRING,
       BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT),
@@ -3658,8 +3665,9 @@ class TableFieldSchema(_messages.Message):
   name = _messages.StringField(8)
   policyTags = _messages.MessageField('PolicyTagsValue', 9)
   precision = _messages.IntegerField(10)
-  scale = _messages.IntegerField(11)
-  type = _messages.StringField(12)
+  roundingMode = _messages.StringField(11)
+  scale = _messages.IntegerField(12)
+  type = _messages.StringField(13)
 
 
 class TableList(_messages.Message):

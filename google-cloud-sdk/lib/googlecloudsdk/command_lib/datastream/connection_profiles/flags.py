@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 
 
@@ -177,12 +178,43 @@ def AddDepthGroup(parser):
   depth_parser = parser.add_group(mutex=True)
   depth_parser.add_argument(
       '--recursive',
-      action='store_true',
-      help="""Whether to retrieve the full hierarchy of data objects (TRUE) or only the current level (FALSE)."""
+      help="""Whether to retrieve the full hierarchy of data objects (TRUE) or only the current level (FALSE).""",
+      action=actions.DeprecationAction(
+          '--recursive',
+          warn=(
+              'The {flag_name} option is deprecated; use `--full-hierarchy`'
+              ' instead.'
+          ),
+          removed=False,
+          action='store_true',
+      ),
   )
   depth_parser.add_argument(
       '--recursive-depth',
-      help="""The number of hierarchy levels below the current level to be retrieved."""
+      help="""The number of hierarchy levels below the current level to be retrieved.""",
+      action=actions.DeprecationAction(
+          '--recursive-depth',
+          warn=(
+              'The {flag_name} option is deprecated; use `--hierarchy-depth`'
+              ' instead.'
+          ),
+          removed=False,
+      ),
+  )
+
+
+def AddHierarchyGroup(parser):
+  """Adds necessary hierarchy flags for discover command parser."""
+  hierarchy_parser = parser.add_group(mutex=True)
+  hierarchy_parser.add_argument(
+      '--full-hierarchy',
+      help="""Whether to retrieve the full hierarchy of data objects (TRUE) or only the current level (FALSE).""",
+      action='store_true',
+  )
+
+  hierarchy_parser.add_argument(
+      '--hierarchy-depth',
+      help="""The number of hierarchy levels below the current level to be retrieved.""",
   )
 
 

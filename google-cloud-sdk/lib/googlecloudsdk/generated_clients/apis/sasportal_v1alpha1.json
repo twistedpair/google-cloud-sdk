@@ -149,6 +149,24 @@
         }
       }
     },
+    "SasPortalProvisionDeploymentRequest": {
+      "id": "SasPortalProvisionDeploymentRequest",
+      "description": "Request for [ProvisionDeployment]. [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. No input is needed, because GCP Project, Organization Info, and caller\u2019s GAIA ID should be retrieved from the RPC handler, and used as inputs to create a new SAS organization (if not exists) and a new SAS deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SasPortalProvisionDeploymentResponse": {
+      "id": "SasPortalProvisionDeploymentResponse",
+      "description": "Response for [ProvisionDeployment]. [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment].",
+      "type": "object",
+      "properties": {
+        "errorMessage": {
+          "description": "Optional. Optional error message if the provisioning request is not successful.",
+          "type": "string"
+        }
+      }
+    },
     "SasPortalDevice": {
       "id": "SasPortalDevice",
       "type": "object",
@@ -1138,6 +1156,26 @@
             "https://www.googleapis.com/auth/sasportal"
           ],
           "description": "Updates an existing customer."
+        },
+        "provisionDeployment": {
+          "id": "sasportal.customers.provisionDeployment",
+          "path": "v1alpha1/customers:provisionDeployment",
+          "flatPath": "v1alpha1/customers:provisionDeployment",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "SasPortalProvisionDeploymentRequest"
+          },
+          "response": {
+            "$ref": "SasPortalProvisionDeploymentResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/sasportal"
+          ],
+          "description": "Creates a new SAS deployment through the GCP workflow. Creates a SAS organization if an organization match is not found."
         }
       }
       ,

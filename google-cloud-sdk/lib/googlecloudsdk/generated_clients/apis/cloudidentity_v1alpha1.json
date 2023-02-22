@@ -1175,6 +1175,22 @@
             "PROFILE_OWNER",
             "DEVICE_OWNER"
           ]
+        },
+        "verifiedBoot": {
+          "description": "Whether Android verified boot status is GREEN.",
+          "type": "boolean"
+        },
+        "ctsProfileMatch": {
+          "description": "Whether the device passes Android CTS compliance.",
+          "type": "boolean"
+        },
+        "verifyAppsEnabled": {
+          "description": "Whether Google Play Protect Verify Apps is enabled.",
+          "type": "boolean"
+        },
+        "hasPotentiallyHarmfulApps": {
+          "description": "Whether any potentially harmful apps were detected on the device.",
+          "type": "boolean"
         }
       }
     },
@@ -2446,7 +2462,7 @@
           "httpMethod": "GET",
           "parameters": {
             "query": {
-              "description": "Required. The search query. * Must be specified in [Common Expression Language](https:\/\/opensource.google\/projects\/cel). * Must contain equality operators on the parent, e.g. `parent == 'customers\/{customer_id}'`. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https:\/\/support.google.com\/cloudidentity\/answer\/10070793) * Can contain optional inclusion operators on `labels` such as `cloudidentity.googleapis.com\/groups.discussion_forum' in labels`). * Can contain an optional equality operator on `domain_name` or `startsWith\/contains\/equality` operator on `group_key`, e.g. `domain_name == 'abc.com'`, `group_key.startsWith('dev')`, `group_key.contains('dev'), group_key == 'dev@abc.com'` * Can contain an optional `startsWith\/contains\/equality` operator on `display_name`, such as `display_name.startsWith('dev')` , `display_name.contains('dev')`, `display_name == 'dev'`",
+              "description": "Required. The search query. * Must be specified in [Common Expression Language](https:\/\/opensource.google\/projects\/cel). * Must contain equality operators on the parent, e.g. `parent == 'customers\/{customer_id}'`. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https:\/\/support.google.com\/cloudidentity\/answer\/10070793) * Can contain optional inclusion operators on `labels` such as `'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`). * Can contain an optional equality operator on `domain_name`. e.g. `domain_name == 'abc.com'` * Can contain optional `startsWith\/contains\/equality` operators on `group_key`, e.g. `group_key.startsWith('dev')`, `group_key.contains('dev'), group_key == 'dev@abc.com'` * Can contain optional `startsWith\/contains\/equality` operators on `display_name`, such as `display_name.startsWith('dev')` , `display_name.contains('dev')`, `display_name == 'dev'`",
               "location": "query",
               "type": "string"
             },
@@ -2837,7 +2853,7 @@
                   "type": "string"
                 },
                 "query": {
-                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Identity-mapped groups are uniquely identified by both a `member_key_id` and a `member_key_namespace`, which requires an additional query input: `member_key_namespace`. Example query: member_key_id == 'member_key_id_value' [ && member_key_namespace == 'member_key_namespace_value' ] && in labels Query may optionally contain equality operators on the parent of the group restricting the search within a particular customer, e.g. `parent == 'customers\/{customer_id}'`. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). This filtering is only supported for Admins with groups read permissons on the input customer. Example query: `member_key_id == \u2018member_key_id_value\u2019 && in labels && parent == 'customers\/C046psxkn'`",
+                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Identity-mapped groups are uniquely identified by both a `member_key_id` and a `member_key_namespace`, which requires an additional query input: `member_key_namespace`. Example query: member_key_id == 'member_key_id_value' [ && member_key_namespace == 'member_key_namespace_value' ] && in labels Query may optionally contain equality operators on the parent of the group restricting the search within a particular customer, e.g. `parent == 'customers\/{customer_id}'`. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). This filtering is only supported for Admins with groups read permissons on the input customer. Example query: `member_key_id == 'member_key_id_value' && in labels && parent == 'customers\/C046psxkn'`",
                   "location": "query",
                   "type": "string"
                 },

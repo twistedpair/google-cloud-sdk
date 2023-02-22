@@ -69,13 +69,21 @@ _KMS_KEY_NAME_ERROR = (
     '/keyRings/{keyring}/cryptoKeys/{cryptokey} and only contain characters '
     'from the valid character set for a KMS key.'
 )
-_DOCKER_REPOSITORY_NAME_PATTERN = (
+_DOCKER_REPOSITORY_NAME_RESOURCE_PATTERN = (
     r'^projects/[^/]+/locations/[^/]+/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$'
 )
+_DOCKER_REPOSITORY_NAME_PKG_PATTERN = (
+    r'^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)'
+)
+_DOCKER_REPOSITORY_NAME_PATTERN = '({}|{})'.format(
+    _DOCKER_REPOSITORY_NAME_RESOURCE_PATTERN,
+    _DOCKER_REPOSITORY_NAME_PKG_PATTERN,
+)
 _DOCKER_REPOSITORY_NAME_ERROR = (
-    'Docker repository name should match projects/{project}'
-    '/locations/{location}/repositories/{repository} and only contain '
-    'characters from the valid character set for a repository.'
+    'Docker repository name should match'
+    ' `projects/{project}/locations/{location}/repositories/{repository}` or'
+    ' `{location}-docker.pkg.dev/{project}/{repository}` and only contain'
+    ' characters from the valid character set for a repository.'
 )
 
 DOCKER_REGISTRY_MAPPING = {
@@ -913,10 +921,13 @@ def AddDockerRepositoryFlags(parser):
         must be an Artifact Registry Docker repository present in the `same`
         project and location as the Cloud Function.
 
-        The repository name should match the pattern
-        `projects/${PROJECT}/locations/${LOCATION}/repositories/${REPOSITORY}`
-        where ${PROJECT} is the project, ${LOCATION} is the location of the
-        repository and ${REPOSITORY} is a valid repository ID.
+        The repository name should match one of these patterns:
+
+        * `projects/${PROJECT}/locations/${LOCATION}/repositories/${REPOSITORY}`,
+        * `{LOCATION}-docker.pkg.dev/{PROJECT}/{REPOSITORY}`.
+
+        where `${PROJECT}` is the project, `${LOCATION}` is the location of the
+        repository and `${REPOSITORY}` is a valid repository ID.
       """,
   )
   kmskey_group.add_argument(

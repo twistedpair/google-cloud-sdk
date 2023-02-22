@@ -118,10 +118,14 @@ class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
       enforced.
     allowedPackageNames: Android package names of apps allowed to use the key.
       Example: 'com.companyname.appname'
+    supportNonGoogleAppStoreDistribution: Set to true for keys that are used
+      in an Android application that is available for download in app stores
+      in addition to the Google Play Store.
   """
 
   allowAllPackageNames = _messages.BooleanField(1)
   allowedPackageNames = _messages.StringField(2, repeated=True)
+  supportNonGoogleAppStoreDistribution = _messages.BooleanField(3)
 
 
 class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Message):
@@ -145,6 +149,9 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
       that the identifier is hashed using hmac-sha256 with stable secret.
     reasons: Optional. Optional reasons for the annotation that will be
       assigned to the Event.
+    transactionEvent: Optional. If the assessment is part of a payment
+      transaction, provide details on payment lifecycle events that occur in
+      the transaction.
   """
 
   class AnnotationValueValuesEnum(_messages.Enum):
@@ -232,6 +239,7 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   hashedAccountId = _messages.BytesField(2)
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 3, repeated=True)
+  transactionEvent = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionEvent', 4)
 
 
 class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse(_messages.Message):
@@ -239,7 +247,7 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse(_messages.Messa
 
 
 class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
-  r"""A recaptcha assessment resource.
+  r"""A reCAPTCHA Enterprise assessment resource.
 
   Fields:
     accountDefenderAssessment: Assessment returned by account defender when a
@@ -248,6 +256,8 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
       verification. The assessment event must include a token and site key to
       use this feature.
     event: The event being assessed.
+    fraudPreventionAssessment: Assessment returned by Fraud Prevention when
+      TransactionData is provided.
     name: Output only. The resource name for the Assessment in the format
       "projects/{project}/assessments/{assessment}".
     privatePasswordLeakVerification: The private password leak verification
@@ -261,10 +271,11 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   accountDefenderAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment', 1)
   accountVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo', 2)
   event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 3)
-  name = _messages.StringField(4)
-  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 5)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 6)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 7)
+  fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 4)
+  name = _messages.StringField(5)
+  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 6)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 7)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 8)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
@@ -319,10 +330,13 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
     hashedAccountId: Optional. Unique stable hashed user identifier for the
       request. The identifier must be hashed using hmac-sha256 with stable
       secret.
-    siteKey: Optional. The site key that was used to invoke reCAPTCHA on your
-      site and generate the token.
-    token: Optional. The user response token provided by the reCAPTCHA client-
-      side integration on your site.
+    siteKey: Optional. The site key that was used to invoke reCAPTCHA
+      Enterprise on your site and generate the token.
+    token: Optional. The user response token provided by the reCAPTCHA
+      Enterprise client-side integration on your site.
+    transactionData: Optional. Data describing a payment transaction to be
+      assessed. Sending this data enables reCAPTCHA Enterprise Fraud
+      Prevention and the FraudPreventionAssessment component in the response.
     userAgent: Optional. The user agent present in the request from the user's
       device related to this event.
     userIpAddress: Optional. The IP address in the request from the user's
@@ -333,8 +347,9 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   hashedAccountId = _messages.BytesField(2)
   siteKey = _messages.StringField(3)
   token = _messages.StringField(4)
-  userAgent = _messages.StringField(5)
-  userIpAddress = _messages.StringField(6)
+  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 5)
+  userAgent = _messages.StringField(6)
+  userIpAddress = _messages.StringField(7)
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
@@ -406,14 +421,14 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionSubstituteAction(_messages.M
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
-  r"""An FirewallPolicy represents a single matching pattern and resulting
-  actions to take.
+  r"""A FirewallPolicy message represents a single matching pattern and
+  resulting actions to take.
 
   Fields:
     actions: The actions that the caller should take regarding the user. There
       should be at most 1 terminal action. A terminal action is any action
       that forces a response, such as Allow, Block or Substitute. If it makes
-      sense for it to happen multple times, such as SetHeader, the action is
+      sense for it to happen multiple times, such as SetHeader, the action is
       non-terminal. A maximum of 16 actions can be in a single policy.
     condition: A CEL (Common Expression Language) conditional expression that
       specifies if this policy applies to an incoming user request. If this
@@ -440,6 +455,47 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
   description = _messages.StringField(3)
   name = _messages.StringField(4)
   path = _messages.StringField(5)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Message):
+  r"""Assessment for Fraud Prevention.
+
+  Fields:
+    cardTestingVerdict: Assessment of this transaction for risk of being part
+      of a card testing attack.
+    stolenInstrumentVerdict: Assessment of this transaction for risk of a
+      stolen instrument.
+    transactionRisk: Probability (0-1) of this transaction being fraudulent.
+      Summarizes the combined risk of attack vectors below.
+  """
+
+  cardTestingVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdict', 1)
+  stolenInstrumentVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict', 2)
+  transactionRisk = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdict(_messages.Message):
+  r"""Information about card testing fraud, where an adversary is testing
+  fraudulently obtained cards or brute forcing their details.
+
+  Fields:
+    risk: Probability (0-1) of this transaction attempt being part of a card
+      testing attack.
+  """
+
+  risk = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict(_messages.Message):
+  r"""Information about stolen instrument fraud, where the user is not the
+  legitimate owner of the instrument being used for the purchase.
+
+  Fields:
+    risk: Probability (0-1) of this transaction being executed with a stolen
+      instrument.
+  """
+
+  risk = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
@@ -692,6 +748,10 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
         different than expected patterns.
       LOW_CONFIDENCE_SCORE: Too little traffic has been received from this
         site thus far to generate quality risk analysis.
+      SUSPECTED_CARDING: The request matches behavioral characteristics of a
+        carding attack.
+      SUSPECTED_CHARGEBACK: The request matches behavioral characteristics of
+        chargebacks for fraud.
     """
     CLASSIFICATION_REASON_UNSPECIFIED = 0
     AUTOMATION = 1
@@ -699,6 +759,8 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
     TOO_MUCH_TRAFFIC = 3
     UNEXPECTED_USAGE_PATTERNS = 4
     LOW_CONFIDENCE_SCORE = 5
+    SUSPECTED_CARDING = 6
+    SUSPECTED_CHARGEBACK = 7
 
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 1, repeated=True)
   score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
@@ -919,6 +981,251 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
   invalidReason = _messages.EnumField('InvalidReasonValueValuesEnum', 5)
   iosBundleId = _messages.StringField(6)
   valid = _messages.BooleanField(7)
+
+
+class GoogleCloudRecaptchaenterpriseV1TransactionData(_messages.Message):
+  r"""Transaction data associated with a payment protected by reCAPTCHA
+  Enterprise. All fields are optional.
+
+  Fields:
+    billingAddress: Address associated with the payment method when
+      applicable.
+    cardBin: The Bank Identification Number - generally the first 6 or 8
+      digits of the card.
+    cardLastFour: The last four digits of the card.
+    currencyCode: The currency code in ISO-4217 format.
+    gatewayInfo: Information about the payment gateway's response to the
+      transaction.
+    items: Items purchased in this transaction.
+    merchants: Information about the user or users fulfilling the transaction.
+    paymentMethod: The payment method for the transaction. The allowed values
+      are: * credit-card * debit-card * gift-card * processor-{name} (If a
+      third-party is used, for example, processor-paypal) * custom-{name} (If
+      an alternative method is used, for example, custom-crypto)
+    shippingAddress: Destination address if this transaction involves shipping
+      a physical item.
+    shippingValue: The value of shipping in the specified currency. 0 for free
+      or no shipping.
+    transactionId: Unique identifier for the transaction. This custom
+      identifier can be used to reference this transaction in the future, for
+      example, labeling a refund or chargeback event. Two attempts at the same
+      transaction should use the same transaction id.
+    user: Information about the user paying/initiating the transaction.
+    value: The decimal value of the transaction in the specified currency.
+  """
+
+  billingAddress = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionDataAddress', 1)
+  cardBin = _messages.StringField(2)
+  cardLastFour = _messages.StringField(3)
+  currencyCode = _messages.StringField(4)
+  gatewayInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionDataGatewayInfo', 5)
+  items = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionDataItem', 6, repeated=True)
+  merchants = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionDataUser', 7, repeated=True)
+  paymentMethod = _messages.StringField(8)
+  shippingAddress = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionDataAddress', 9)
+  shippingValue = _messages.FloatField(10)
+  transactionId = _messages.StringField(11)
+  user = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionDataUser', 12)
+  value = _messages.FloatField(13)
+
+
+class GoogleCloudRecaptchaenterpriseV1TransactionDataAddress(_messages.Message):
+  r"""Structured address format for billing and shipping addresses.
+
+  Fields:
+    address: The first lines of the address. The first line generally contains
+      the street name and number, and further lines may include information
+      such as an apartment number.
+    administrativeArea: The state, province, or otherwise administrative area
+      of the address.
+    locality: The town/city of the address.
+    postalCode: The postal or ZIP code of the address.
+    recipient: The recipient name, potentially including information such as
+      "care of".
+    regionCode: The CLDR country/region of the address.
+  """
+
+  address = _messages.StringField(1, repeated=True)
+  administrativeArea = _messages.StringField(2)
+  locality = _messages.StringField(3)
+  postalCode = _messages.StringField(4)
+  recipient = _messages.StringField(5)
+  regionCode = _messages.StringField(6)
+
+
+class GoogleCloudRecaptchaenterpriseV1TransactionDataGatewayInfo(_messages.Message):
+  r"""Details about the transaction from the gateway.
+
+  Fields:
+    avsResponseCode: AVS response code from the gateway (available only when
+      reCAPTCHA Enterprise is called after authorization).
+    cvvResponseCode: CVV response code from the gateway (available only when
+      reCAPTCHA Enterprise is called after authorization).
+    gatewayResponseCode: Gateway response code describing the state of the
+      transaction.
+    name: Name of the gateway service (for example, stripe, square, paypal).
+  """
+
+  avsResponseCode = _messages.StringField(1)
+  cvvResponseCode = _messages.StringField(2)
+  gatewayResponseCode = _messages.StringField(3)
+  name = _messages.StringField(4)
+
+
+class GoogleCloudRecaptchaenterpriseV1TransactionDataItem(_messages.Message):
+  r"""Line items being purchased in this transaction.
+
+  Fields:
+    merchantAccountId: When a merchant is specified, its corresponding
+      account_id. Necessary to populate marketplace-style transactions.
+    name: The full name of the item.
+    quantity: The quantity of this item that is being purchased.
+    value: The value per item that the user is paying, in the transaction
+      currency, after discounts.
+  """
+
+  merchantAccountId = _messages.StringField(1)
+  name = _messages.StringField(2)
+  quantity = _messages.IntegerField(3)
+  value = _messages.FloatField(4)
+
+
+class GoogleCloudRecaptchaenterpriseV1TransactionDataUser(_messages.Message):
+  r"""Details about a user's account involved in the transaction.
+
+  Fields:
+    accountId: Unique account identifier for this user. If using account
+      defender, this should match the hashed_account_id field. Otherwise, a
+      unique and persistent identifier for this account.
+    creationMs: The epoch milliseconds of the user's account creation.
+    email: The email address of the user.
+    emailVerified: Whether the email has been verified to be accessible by the
+      user (OTP or similar).
+    phoneNumber: The phone number of the user, with country code.
+    phoneVerified: Whether the phone number has been verified to be accessible
+      by the user (OTP or similar).
+  """
+
+  accountId = _messages.StringField(1)
+  creationMs = _messages.IntegerField(2)
+  email = _messages.StringField(3)
+  emailVerified = _messages.BooleanField(4)
+  phoneNumber = _messages.StringField(5)
+  phoneVerified = _messages.BooleanField(6)
+
+
+class GoogleCloudRecaptchaenterpriseV1TransactionEvent(_messages.Message):
+  r"""Describes an event in the lifecycle of a payment transaction.
+
+  Enums:
+    EventTypeValueValuesEnum: Optional. The type of this transaction event.
+
+  Fields:
+    eventTime: Optional. Timestamp when this transaction event occurred;
+      otherwise assumed to be the time of the API call.
+    eventType: Optional. The type of this transaction event.
+    reason: Optional. The reason or standardized code that corresponds with
+      this transaction event, if one exists. For example, a CHARGEBACK event
+      with code 6005.
+    value: Optional. The value that corresponds with this transaction event,
+      if one exists. For example, a refund event where $5.00 was refunded.
+      Currency is obtained from the original transaction data.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of this transaction event.
+
+    Values:
+      TRANSACTION_EVENT_TYPE_UNSPECIFIED: Default, unspecified event type.
+      MERCHANT_APPROVE: Indicates that the transaction is approved by the
+        merchant. The accompanying reasons can include terms such as
+        'INHOUSE', 'ACCERTIFY', 'CYBERSOURCE', or 'MANUAL_REVIEW'.
+      MERCHANT_DENY: Indicates that the transaction is denied and concluded
+        due to risks detected by the merchant. The accompanying reasons can
+        include terms such as 'INHOUSE', 'ACCERTIFY', 'CYBERSOURCE', or
+        'MANUAL_REVIEW'.
+      MANUAL_REVIEW: Indicates that the transaction is being evaluated by a
+        human, due to suspicion or risk.
+      AUTHORIZATION: Indicates that the authorization attempt with the card
+        issuer succeeded.
+      AUTHORIZATION_DECLINE: Indicates that the authorization attempt with the
+        card issuer failed. The accompanying reasons can include Visa's '54'
+        indicating that the card is expired, or '82' indicating that the CVV
+        is incorrect.
+      PAYMENT_CAPTURE: Indicates that the transaction is completed because the
+        funds were settled.
+      PAYMENT_CAPTURE_DECLINE: Indicates that the transaction could not be
+        completed because the funds were not settled.
+      CANCEL: Indicates that the transaction has been canceled. Specify the
+        reason for the cancellation. For example, 'INSUFFICIENT_INVENTORY'.
+      CHARGEBACK_INQUIRY: Indicates that the merchant has received a
+        chargeback inquiry due to fraud for the transaction, requesting
+        additional information before a fraud chargeback is officially issued
+        and a formal chargeback notification is sent.
+      CHARGEBACK_ALERT: Indicates that the merchant has received a chargeback
+        alert due to fraud for the transaction. The process of resolving the
+        dispute without involving the payment network is started.
+      FRAUD_NOTIFICATION: Indicates that a fraud notification is issued for
+        the transaction, sent by the payment instrument's issuing bank because
+        the transaction appears to be fraudulent. We recommend including TC40
+        or SAFE data in the `reason` field for this event type. For partial
+        chargebacks, we recommend that you include an amount in the `value`
+        field.
+      CHARGEBACK: Indicates that the merchant is informed by the payment
+        network that the transaction has entered the chargeback process due to
+        fraud. Reason code examples include Discover's '6005' and '6041'. For
+        partial chargebacks, we recommend that you include an amount in the
+        `value` field.
+      CHARGEBACK_REPRESENTMENT: Indicates that the transaction has entered the
+        chargeback process due to fraud, and that the merchant has chosen to
+        enter representment. Reason examples include Discover's '6005' and
+        '6041'. For partial chargebacks, we recommend that you include an
+        amount in the `value` field.
+      CHARGEBACK_REVERSE: Indicates that the transaction has had a fraud
+        chargeback which was illegitimate and was reversed as a result. For
+        partial chargebacks, we recommend that you include an amount in the
+        `value` field.
+      REFUND_REQUEST: Indicates that the merchant has received a refund for a
+        completed transaction. For partial refunds, we recommend that you
+        include an amount in the `value` field. Reason example: 'TAX_EXEMPT'
+        (partial refund of exempt tax)
+      REFUND_DECLINE: Indicates that the merchant has received a refund
+        request for this transaction, but that they have declined it. For
+        partial refunds, we recommend that you include an amount in the
+        `value` field. Reason example: 'TAX_EXEMPT' (partial refund of exempt
+        tax)
+      REFUND: Indicates that the completed transaction was refunded by the
+        merchant. For partial refunds, we recommend that you include an amount
+        in the `value` field. Reason example: 'TAX_EXEMPT' (partial refund of
+        exempt tax)
+      REFUND_REVERSE: Indicates that the completed transaction was refunded by
+        the merchant, and that this refund was reversed. For partial refunds,
+        we recommend that you include an amount in the `value` field.
+    """
+    TRANSACTION_EVENT_TYPE_UNSPECIFIED = 0
+    MERCHANT_APPROVE = 1
+    MERCHANT_DENY = 2
+    MANUAL_REVIEW = 3
+    AUTHORIZATION = 4
+    AUTHORIZATION_DECLINE = 5
+    PAYMENT_CAPTURE = 6
+    PAYMENT_CAPTURE_DECLINE = 7
+    CANCEL = 8
+    CHARGEBACK_INQUIRY = 9
+    CHARGEBACK_ALERT = 10
+    FRAUD_NOTIFICATION = 11
+    CHARGEBACK = 12
+    CHARGEBACK_REPRESENTMENT = 13
+    CHARGEBACK_REVERSE = 14
+    REFUND_REQUEST = 15
+    REFUND_DECLINE = 16
+    REFUND = 17
+    REFUND_REVERSE = 18
+
+  eventTime = _messages.StringField(1)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 2)
+  reason = _messages.StringField(3)
+  value = _messages.FloatField(4)
 
 
 class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):

@@ -21,8 +21,11 @@ class AndroidAttributes(_messages.Message):
     OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
 
   Fields:
+    ctsProfileMatch: Whether the device passes Android CTS compliance.
     enabledUnknownSources: Whether applications from unknown sources can be
       installed on device.
+    hasPotentiallyHarmfulApps: Whether any potentially harmful apps were
+      detected on the device.
     ownerProfileAccount: Whether this account is on an owner/primary profile.
       For phones, only true for owner profiles. Android 4+ devices can have
       secondary or restricted user profiles.
@@ -30,6 +33,8 @@ class AndroidAttributes(_messages.Message):
     supportsWorkProfile: Whether device supports Android work profiles. If
       false, this service will not block access to corp data even if an
       administrator turns on the "Enforce Work Profile" policy.
+    verifiedBoot: Whether Android verified boot status is GREEN.
+    verifyAppsEnabled: Whether Google Play Protect Verify Apps is enabled.
   """
 
   class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
@@ -48,10 +53,14 @@ class AndroidAttributes(_messages.Message):
     PROFILE_OWNER = 2
     DEVICE_OWNER = 3
 
-  enabledUnknownSources = _messages.BooleanField(1)
-  ownerProfileAccount = _messages.BooleanField(2)
-  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 3)
-  supportsWorkProfile = _messages.BooleanField(4)
+  ctsProfileMatch = _messages.BooleanField(1)
+  enabledUnknownSources = _messages.BooleanField(2)
+  hasPotentiallyHarmfulApps = _messages.BooleanField(3)
+  ownerProfileAccount = _messages.BooleanField(4)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 5)
+  supportsWorkProfile = _messages.BooleanField(6)
+  verifiedBoot = _messages.BooleanField(7)
+  verifyAppsEnabled = _messages.BooleanField(8)
 
 
 class ApproveDeviceUserResponse(_messages.Message):
@@ -745,14 +754,14 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       example, 'C046psxkn'). [Find your customer ID.]
       (https://support.google.com/cloudidentity/answer/10070793) * Can contain
       optional inclusion operators on `labels` such as
-      `cloudidentity.googleapis.com/groups.discussion_forum' in labels`). *
-      Can contain an optional equality operator on `domain_name` or
-      `startsWith/contains/equality` operator on `group_key`, e.g.
-      `domain_name == 'abc.com'`, `group_key.startsWith('dev')`,
-      `group_key.contains('dev'), group_key == 'dev@abc.com'` * Can contain an
-      optional `startsWith/contains/equality` operator on `display_name`, such
-      as `display_name.startsWith('dev')` , `display_name.contains('dev')`,
-      `display_name == 'dev'`
+      `'cloudidentity.googleapis.com/groups.discussion_forum' in labels`). *
+      Can contain an optional equality operator on `domain_name`. e.g.
+      `domain_name == 'abc.com'` * Can contain optional
+      `startsWith/contains/equality` operators on `group_key`, e.g.
+      `group_key.startsWith('dev')`, `group_key.contains('dev'), group_key ==
+      'dev@abc.com'` * Can contain optional `startsWith/contains/equality`
+      operators on `display_name`, such as `display_name.startsWith('dev')` ,
+      `display_name.contains('dev')`, `display_name == 'dev'`
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """

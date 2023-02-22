@@ -28,15 +28,15 @@ from .types.storage import ContentRange
 from .types.storage import CreateBucketRequest
 from .types.storage import CreateHmacKeyRequest
 from .types.storage import CreateHmacKeyResponse
-from .types.storage import CreateNotificationRequest
+from .types.storage import CreateNotificationConfigRequest
 from .types.storage import CustomerEncryption
 from .types.storage import DeleteBucketRequest
 from .types.storage import DeleteHmacKeyRequest
-from .types.storage import DeleteNotificationRequest
+from .types.storage import DeleteNotificationConfigRequest
 from .types.storage import DeleteObjectRequest
 from .types.storage import GetBucketRequest
 from .types.storage import GetHmacKeyRequest
-from .types.storage import GetNotificationRequest
+from .types.storage import GetNotificationConfigRequest
 from .types.storage import GetObjectRequest
 from .types.storage import GetServiceAccountRequest
 from .types.storage import HmacKeyMetadata
@@ -44,12 +44,12 @@ from .types.storage import ListBucketsRequest
 from .types.storage import ListBucketsResponse
 from .types.storage import ListHmacKeysRequest
 from .types.storage import ListHmacKeysResponse
-from .types.storage import ListNotificationsRequest
-from .types.storage import ListNotificationsResponse
+from .types.storage import ListNotificationConfigsRequest
+from .types.storage import ListNotificationConfigsResponse
 from .types.storage import ListObjectsRequest
 from .types.storage import ListObjectsResponse
 from .types.storage import LockBucketRetentionPolicyRequest
-from .types.storage import Notification
+from .types.storage import NotificationConfig
 from .types.storage import Object
 from .types.storage import ObjectAccessControl
 from .types.storage import ObjectChecksums
@@ -85,15 +85,15 @@ __all__ = (
 'CreateBucketRequest',
 'CreateHmacKeyRequest',
 'CreateHmacKeyResponse',
-'CreateNotificationRequest',
+'CreateNotificationConfigRequest',
 'CustomerEncryption',
 'DeleteBucketRequest',
 'DeleteHmacKeyRequest',
-'DeleteNotificationRequest',
+'DeleteNotificationConfigRequest',
 'DeleteObjectRequest',
 'GetBucketRequest',
 'GetHmacKeyRequest',
-'GetNotificationRequest',
+'GetNotificationConfigRequest',
 'GetObjectRequest',
 'GetServiceAccountRequest',
 'HmacKeyMetadata',
@@ -101,12 +101,12 @@ __all__ = (
 'ListBucketsResponse',
 'ListHmacKeysRequest',
 'ListHmacKeysResponse',
-'ListNotificationsRequest',
-'ListNotificationsResponse',
+'ListNotificationConfigsRequest',
+'ListNotificationConfigsResponse',
 'ListObjectsRequest',
 'ListObjectsResponse',
 'LockBucketRetentionPolicyRequest',
-'Notification',
+'NotificationConfig',
 'Object',
 'ObjectAccessControl',
 'ObjectChecksums',

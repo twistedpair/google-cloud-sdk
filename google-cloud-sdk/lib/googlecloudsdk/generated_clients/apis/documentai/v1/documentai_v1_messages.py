@@ -2155,7 +2155,7 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityType(_messages.Message):
       sometimes used to denote a property of a type. For example
       `line_item/amount`. This convention is deprecated, but will still be
       honored for backward compatibility.
-    properties: Describing the nested structure, or composition of an entity.
+    properties: Description the nested structure, or composition of an entity.
   """
 
   baseTypes = _messages.StringField(1, repeated=True)
@@ -2198,8 +2198,10 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
     Values:
       OCCURRENCE_TYPE_UNSPECIFIED: Unspecified occurrence type.
       OPTIONAL_ONCE: There will be zero or one instance of this entity type.
+        The same entity instance may be mentioned multiple times.
       OPTIONAL_MULTIPLE: The entity type will appear zero or multiple times.
-      REQUIRED_ONCE: The entity type will only appear exactly once.
+      REQUIRED_ONCE: The entity type will only appear exactly once. The same
+        entity instance may be mentioned multiple times.
       REQUIRED_MULTIPLE: The entity type will appear once or more times.
     """
     OCCURRENCE_TYPE_UNSPECIFIED = 0

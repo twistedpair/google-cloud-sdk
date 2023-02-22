@@ -652,12 +652,28 @@ def _CreateLocalSsdMessage(resources,
   return local_ssd
 
 
-def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
-                             project, location, scope, skip_defaults):
+def GetBulkNetworkInterfaces(
+    args,
+    resource_parser,
+    compute_client,
+    holder,
+    project,
+    location,
+    scope,
+    skip_defaults,
+    support_stack_type=False,
+):
   """Gets network interfaces in bulk instance API."""
-  if (skip_defaults and not instance_utils.IsAnySpecified(
-      args, 'network_interface', 'network', 'network_tier', 'subnet',
-      'no_address')):
+  bulk_args = [
+      'network_interface',
+      'network',
+      'network_tier',
+      'subnet',
+      'no_address',
+  ]
+  if support_stack_type:
+    bulk_args.append('stack_type')
+  if skip_defaults and not instance_utils.IsAnySpecified(args, *bulk_args):
     return []
   elif args.network_interface:
     return CreateNetworkInterfaceMessages(
@@ -668,19 +684,35 @@ def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
         location=location,
         scope=scope)
   else:
-    return [
-        CreateNetworkInterfaceMessage(
-            resources=holder.resources,
-            compute_client=compute_client,
-            network=args.network,
-            subnet=args.subnet,
-            no_address=args.no_address,
-            project=project,
-            location=location,
-            scope=scope,
-            network_tier=getattr(args, 'network_tier', None),
-        )
-    ]
+    if support_stack_type:
+      return [
+          CreateNetworkInterfaceMessage(
+              resources=holder.resources,
+              compute_client=compute_client,
+              network=args.network,
+              subnet=args.subnet,
+              no_address=args.no_address,
+              project=project,
+              location=location,
+              scope=scope,
+              network_tier=getattr(args, 'network_tier', None),
+              stack_type=getattr(args, 'stack_type', None),
+          )
+      ]
+    else:
+      return [
+          CreateNetworkInterfaceMessage(
+              resources=holder.resources,
+              compute_client=compute_client,
+              network=args.network,
+              subnet=args.subnet,
+              no_address=args.no_address,
+              project=project,
+              location=location,
+              scope=scope,
+              network_tier=getattr(args, 'network_tier', None),
+          )
+      ]
 
 
 def GetNetworkInterfaces(args, client, holder, project, location, scope,

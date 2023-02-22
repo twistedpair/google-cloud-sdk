@@ -1026,7 +1026,10 @@ class QueuedResource(_messages.Message):
     guaranteed: The Guaranteed tier
     name: Output only. Immutable. The name of the QueuedResource.
     queueingPolicy: The queueing policy of the QueuedRequest.
-    state: Output only. State of the QueuedResource request
+    reservationName: Name of the reservation in which the resource should be
+      provisioned. Format:
+      projects/{project}/locations/{zone}/reservations/{reservation}
+    state: Output only. State of the QueuedResource request.
     tpu: Defines a TPU resource.
     trafficConfig: Network traffic configuration.
   """
@@ -1035,9 +1038,10 @@ class QueuedResource(_messages.Message):
   guaranteed = _messages.MessageField('Guaranteed', 2)
   name = _messages.StringField(3)
   queueingPolicy = _messages.MessageField('QueueingPolicy', 4)
-  state = _messages.MessageField('QueuedResourceState', 5)
-  tpu = _messages.MessageField('Tpu', 6)
-  trafficConfig = _messages.MessageField('TrafficConfig', 7)
+  reservationName = _messages.StringField(5)
+  state = _messages.MessageField('QueuedResourceState', 6)
+  tpu = _messages.MessageField('Tpu', 7)
+  trafficConfig = _messages.MessageField('TrafficConfig', 8)
 
 
 class QueuedResourceState(_messages.Message):

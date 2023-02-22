@@ -25,8 +25,6 @@ from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.calliope import exceptions as calliope_errors
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import retry
 
 import oauth2client
 
@@ -111,12 +109,5 @@ def launch_retriable(download_stream,
         additional_headers=additional_headers)
 
   # Convert seconds to miliseconds by multiplying by 1000.
-  return retry.Retryer(
-      max_retrials=properties.VALUES.storage.max_retries.GetInt(),
-      wait_ceiling_ms=properties.VALUES.storage.max_retry_delay.GetInt() * 1000,
-      exponential_sleep_multiplier=(
-          properties.VALUES.storage.exponential_sleep_multiplier.GetInt()
-      )).RetryOnException(
-          _call_launch,
-          sleep_ms=properties.VALUES.storage.base_retry_delay.GetInt() * 1000,
-          should_retry_if=_should_retry_resumable_download)
+  return retry_util.retryer(
+      target=_call_launch, should_retry_if=_should_retry_resumable_download)

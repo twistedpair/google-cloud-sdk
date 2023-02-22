@@ -154,6 +154,8 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       source_resource_for_metadata = self._source_resource
     else:
       source_resource_for_metadata = None
+      # This disables the Content-MD5 header for multi-part uploads.
+      request_config.resource_args.md5_hash = None
 
     with upload_util.get_stream(
         self._transformed_source_resource,
