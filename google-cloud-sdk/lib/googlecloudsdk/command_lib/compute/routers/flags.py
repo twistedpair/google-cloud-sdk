@@ -36,7 +36,9 @@ _MODE_CHOICES = {
 }
 
 _GROUP_CHOICES = {
-    'ALL_SUBNETS': 'Automatically advertise all available subnets.',
+    'ALL_SUBNETS':
+        'Automatically advertise all available subnets. This excludes '
+        'any routes learned for subnets that use VPC Network Peering.',
 }
 
 _BFD_SESSION_INITIALIZATION_MODE_CHOICES = {
@@ -401,7 +403,9 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
               with the range, use
               `--advertisement-ranges=192.168.10.0/24=my-networks`. This list
               can only be specified in custom advertisement mode.""".format(
-                  resource_str))
+          resource_str
+      ),
+  )
 
   incremental_args.add_argument(
       '--remove-advertisement-ranges',
@@ -412,6 +416,89 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
               exist in the current set of custom advertisements. This field can
               only be specified in custom advertisement mode.""".format(
                   resource_str))
+
+
+def AddUpdateCustomLearnedRoutesArgs(parser):
+  """Adds common arguments for setting/updating custom learned routes.
+
+  Args:
+    parser: The parser to parse arguments.
+  """
+
+  AddReplaceCustomLearnedRoutesArgs(parser)
+  AddIncrementalCustomLearnedRoutesArgs(parser)
+
+
+def AddReplaceCustomLearnedRoutesArgs(parser):
+  """Adds common arguments for replacing custom learned routes.
+
+  Args:
+    parser: The parser to parse arguments.
+  """
+
+  parser.add_argument(
+      '--set-custom-learned-route-priority',
+      type=int,
+      metavar='PRIORITY',
+      help="""An integral value `0` <= priority <= `2^31-1`, to be applied to
+              all custom learned route IP address ranges for this peer. If not
+              specified, a Google-managed priority value 100 is used. The routes
+              with lowest priority value win.""",
+      hidden=True,
+  )
+
+  parser.add_argument(
+      '--set-custom-learned-route-ranges',
+      type=arg_parsers.ArgList(),
+      metavar='CIDR_RANGE',
+      help="""The list of user-defined custom learned route IP address ranges
+              for this peer. This list is a comma separated IP address ranges
+              such as `1.2.3.4`,`6.7.0.0/16`,`2001:db8:abcd:12::/64` where each
+              IP address range must be a valid CIDR-formatted prefix. If an IP
+              address is provided without a subnet mask, it is interpreted as a
+              /32 singular IP address range for IPv4, and /128 for IPv6.""",
+      hidden=True,
+  )
+
+
+def AddIncrementalCustomLearnedRoutesArgs(parser):
+  """Adds common arguments for incrementally updating custom learned routes.
+
+  Args:
+    parser: The parser to parse arguments.
+  """
+
+  incremental_args = parser.add_mutually_exclusive_group(
+      required=False, hidden=True
+  )
+
+  incremental_args.add_argument(
+      '--add-custom-learned-route-ranges',
+      type=arg_parsers.ArgList(),
+      metavar='CIDR_RANGE',
+      help="""A list of user-defined custom learned route IP address ranges to
+              be added to this peer. This list is a comma separated IP address
+              ranges such as `1.2.3.4`,`6.7.0.0/16`,`2001:db8:abcd:12::/64`
+              where each IP address range must be a valid CIDR-formatted prefix.
+              If an IP address is provided without a subnet mask, it is
+              interpreted as a /32 singular IP address range for IPv4, and /128
+              for IPv6.""",
+      hidden=True,
+  )
+
+  incremental_args.add_argument(
+      '--remove-custom-learned-route-ranges',
+      type=arg_parsers.ArgList(),
+      metavar='CIDR_RANGE',
+      help="""A list of user-defined custom learned route IP address ranges to
+              be removed from this peer. This list is a comma separated IP
+              address ranges such as `1.2.3.4`,`6.7.0.0/16`,`2001:db8:abcd:12::/64`
+              where each IP address range must be a valid CIDR-formatted prefix.
+              If an IP address is provided without a subnet mask, it is
+              interpreted as a /32 singular IP address range for IPv4, and /128
+              for IPv6.""",
+      hidden=True,
+  )
 
 
 def AddGetNatMappingInfoArgs(parser, include_nat_name_filter):

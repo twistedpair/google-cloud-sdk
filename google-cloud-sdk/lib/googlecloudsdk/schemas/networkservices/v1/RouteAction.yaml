@@ -32,7 +32,7 @@ properties:
     $ref: CDNPolicy.yaml
   corsPolicy:
     description: |-
-      The CORS (Cross-Origin Resource Sharing) policy for requests that match
+      The Cross-Origin Resource Sharing (CORS) policy for requests that match
       this route.
     $ref: CORSPolicy.yaml
   urlRewrite:

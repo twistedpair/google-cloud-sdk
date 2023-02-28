@@ -700,6 +700,19 @@ class ListNodeTypesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListNodesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListNodes
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    nodes: The nodes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  nodes = _messages.MessageField('Node', 2, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1268,6 +1281,54 @@ class NetworkService(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
+class Node(_messages.Message):
+  r"""Node in a cluster.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
+
+  Fields:
+    customCoreCount: Output only. Customized number of cores
+    fqdn: Output only. Fully qualified domain name of the node.
+    internalIp: Output only. Internal IP address of the node.
+    name: Output only. The resource name of this node. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/clusters/my-cluster/nodes/my-node
+    nodeTypeId: Output only. The canonical identifier of the node type
+      (corresponds to the `NodeType`). For example: standard-72.
+    state: Output only. The state of the appliance.
+    version: Output only. The version number of the VMware ESXi management
+      component in this cluster.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: Node is operational and can be used by the user.
+      CREATING: Node is being provisioned.
+      FAILED: Node is in a failed state.
+      SERVICING: Node is undergoing maintenance, e.g.: during private cloud
+        upgrade.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    FAILED = 3
+    SERVICING = 4
+
+  customCoreCount = _messages.IntegerField(1)
+  fqdn = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  name = _messages.StringField(4)
+  nodeTypeId = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  version = _messages.StringField(7)
+
+
 class NodeType(_messages.Message):
   r"""Describes node type.
 
@@ -1777,6 +1838,9 @@ class PrivateConnection(_messages.Message):
       connection resource name and `{vmware_engine_network_id}` will be in the
       form of `{location}`-default e.g. projects/project/locations/us-
       central1/vmwareEngineNetworks/us-central1-default.
+    vmwareEngineNetworkCanonical: Output only. The canonical name of the
+      VMware Engine network in the form: `projects/{project_number}/locations/
+      {location}/vmwareEngineNetworks/{vmware_engine_network_id}`
   """
 
   class PeeringStateValueValuesEnum(_messages.Enum):
@@ -1862,6 +1926,7 @@ class PrivateConnection(_messages.Message):
   uid = _messages.StringField(10)
   updateTime = _messages.StringField(11)
   vmwareEngineNetwork = _messages.StringField(12)
+  vmwareEngineNetworkCanonical = _messages.StringField(13)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -3035,6 +3100,43 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsClustersNodesGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsClustersNodesGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the node to retrieve. For example: `p
+      rojects/{project}/locations/{location}/privateClouds/{private_cloud}/clu
+      sters/{cluster}/nodes/{node}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsClustersNodesListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsClustersNodesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of nodes to return in one page. The service
+      may return fewer than this value. The maximum value is coerced to 1000.
+      The default value of this field is 500.
+    pageToken: A page token, received from a previous `ListNodes` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListNodes` must match the call that provided the
+      page token.
+    parent: Required. The resource name of the cluster to be queried for
+      nodes. Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/clusters/my-cluster`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest object.
 
@@ -3889,18 +3991,6 @@ class VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest(_messages.Me
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/subnets/my-subnet`
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check if the
-      original operation with the same request ID was received, and if so,
-      will ignore the second request. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
     subnet: A Subnet resource to be passed as the request body.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `Subnet` resource by the update. The fields specified
@@ -3910,9 +4000,8 @@ class VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest(_messages.Me
   """
 
   name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  subnet = _messages.MessageField('Subnet', 3)
-  updateMask = _messages.StringField(4)
+  subnet = _messages.MessageField('Subnet', 2)
+  updateMask = _messages.StringField(3)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsTestIamPermissionsRequest(_messages.Message):

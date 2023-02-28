@@ -4683,7 +4683,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.projects.locations.buckets.links.delete",
@@ -6265,7 +6265,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.organizations.locations.buckets.links.delete",
@@ -7654,7 +7654,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.folders.locations.buckets.links.delete",
@@ -9008,7 +9008,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.billingAccounts.locations.buckets.links.delete",
@@ -9862,7 +9862,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                  "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
                 },
                 "delete": {
                   "id": "logging.locations.buckets.links.delete",

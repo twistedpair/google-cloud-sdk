@@ -2354,6 +2354,14 @@
         "importRulesJobDetails": {
           "description": "Import rules job details.",
           "$ref": "ImportRulesJobDetails"
+        },
+        "convertJobDetails": {
+          "description": "Convert job details.",
+          "$ref": "ConvertJobDetails"
+        },
+        "applyJobDetails": {
+          "description": "Apply job details.",
+          "$ref": "ApplyJobDetails"
         }
       }
     },
@@ -2393,6 +2401,32 @@
             "IMPORT_RULES_FILE_FORMAT_HARBOUR_BRIDGE_SESSION_FILE",
             "IMPORT_RULES_FILE_FORMAT_ORATOPG_CONFIG_FILE"
           ]
+        }
+      }
+    },
+    "ConvertJobDetails": {
+      "id": "ConvertJobDetails",
+      "description": "Details regarding a Convert background job.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "AIP-160 based filter used to specify the entities to convert",
+          "type": "string"
+        }
+      }
+    },
+    "ApplyJobDetails": {
+      "id": "ApplyJobDetails",
+      "description": "Details regarding an Apply background job.",
+      "type": "object",
+      "properties": {
+        "connectionProfile": {
+          "description": "The connection profile which was used for the apply job.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "AIP-160 based filter used to specify the entities to apply",
+          "type": "string"
         }
       }
     },

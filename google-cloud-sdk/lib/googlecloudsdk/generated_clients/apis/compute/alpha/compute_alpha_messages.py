@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'compute'
@@ -59689,6 +59690,8 @@ class Operation(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    setCommonInstanceMetadataOperationMetadata: A
+      SetCommonInstanceMetadataOperationMetadata attribute.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
     status: [Output Only] The status of the operation, which can be one of the
@@ -59920,14 +59923,15 @@ class Operation(_messages.Message):
   region = _messages.StringField(15)
   selfLink = _messages.StringField(16)
   selfLinkWithId = _messages.StringField(17)
-  startTime = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(22)
-  user = _messages.StringField(23)
-  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
-  zone = _messages.StringField(25)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 18)
+  startTime = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(23)
+  user = _messages.StringField(24)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -68759,13 +68763,13 @@ class RouterBgpPeer(_messages.Message):
     advertiseMode: User-specified flag to indicate which mode to use for
       advertisement.
     advertisedGroups: User-specified list of prefix groups to advertise in
-      custom mode, which can take one of the following options: - ALL_SUBNETS:
-      Advertises all available subnets, including peer VPC subnets. -
-      ALL_VPC_SUBNETS: Advertises the router's own VPC subnets. Note that this
-      field can only be populated if advertise_mode is CUSTOM and overrides
-      the list defined for the router (in the "bgp" message). These groups are
-      advertised in addition to any specified prefixes. Leave this field blank
-      to advertise no custom groups.
+      custom mode, which currently supports the following option: -
+      ALL_SUBNETS: Advertises all of the router's own VPC subnets. This
+      excludes any routes learned for subnets that use VPC Network Peering.
+      Note that this field can only be populated if advertise_mode is CUSTOM
+      and overrides the list defined for the router (in the "bgp" message).
+      These groups are advertised in addition to any specified prefixes. Leave
+      this field blank to advertise no custom groups.
     advertisedIpRanges: User-specified list of individual IP ranges to
       advertise in custom mode. This field can only be populated if
       advertise_mode is CUSTOM and overrides the list defined for the router
@@ -70397,6 +70401,10 @@ class Scheduling(_messages.Message):
       latency. This can only be set during instance creation, or when the
       instance is not currently running. It must not be set if the preemptible
       option is also set.
+    localSsdRecoveryTimeout: Specifies the maximum amount of time a Local Ssd
+      Vm should wait while recovery of the Local Ssd state is attempted. Its
+      value should be in between 0 and 168 hours with hour granularity and the
+      default value being 1 hour.
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
@@ -70496,16 +70504,17 @@ class Scheduling(_messages.Message):
   hostErrorTimeoutSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 6)
   latencyTolerant = _messages.BooleanField(7)
-  locationHint = _messages.StringField(8)
-  maintenanceFreezeDurationHours = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 10)
-  maxRunDuration = _messages.MessageField('Duration', 11)
-  minNodeCpus = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 13, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 14)
-  preemptible = _messages.BooleanField(15)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 16)
-  terminationTime = _messages.StringField(17)
+  localSsdRecoveryTimeout = _messages.MessageField('Duration', 8)
+  locationHint = _messages.StringField(9)
+  maintenanceFreezeDurationHours = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 11)
+  maxRunDuration = _messages.MessageField('Duration', 12)
+  minNodeCpus = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 14, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 15)
+  preemptible = _messages.BooleanField(16)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 17)
+  terminationTime = _messages.StringField(18)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -71277,10 +71286,12 @@ class SecurityPolicyDdosProtectionConfig(_messages.Message):
 
     Values:
       ADVANCED: <no description>
+      ADVANCED_PREVIEW: <no description>
       STANDARD: <no description>
     """
     ADVANCED = 0
-    STANDARD = 1
+    ADVANCED_PREVIEW = 1
+    STANDARD = 2
 
   ddosProtection = _messages.EnumField('DdosProtectionValueValuesEnum', 1)
 
@@ -73029,6 +73040,89 @@ class ServiceIntegrationSpecBackupDRSpec(_messages.Message):
   """
 
   plan = _messages.StringField(1)
+
+
+class SetCommonInstanceMetadataOperationMetadata(_messages.Message):
+  r"""Encapsulates partial completion metadata for SetCommonInstanceMetadata.
+  Will be propagated on Operation.metadata as per go/partial-completion-api-
+  clean. See go/gce-aips/2822 for API council results.
+
+  Messages:
+    PerLocationOperationsValue: A PerLocationOperationsValue object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    perLocationOperations: A PerLocationOperationsValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PerLocationOperationsValue(_messages.Message):
+    r"""A PerLocationOperationsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        PerLocationOperationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PerLocationOperationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PerLocationOperationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientOperationId = _messages.StringField(1)
+  perLocationOperations = _messages.MessageField('PerLocationOperationsValue', 2)
+
+
+class SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo(_messages.Message):
+  r"""A SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo
+  object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    error: A Status attribute.
+    operation: A string attribute.
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      ABANDONED: Operation not tracked in this location e.g. zone is marked as
+        DOWN.
+      DONE: Operation has completed successfully.
+      FAILED: Operation is in an error state.
+      PROPAGATED: Operation is confirmed to be in the location.
+      PROPAGATING: Operation is not yet confirmed to have been created in the
+        location.
+      UNSPECIFIED: <no description>
+    """
+    ABANDONED = 0
+    DONE = 1
+    FAILED = 2
+    PROPAGATED = 3
+    PROPAGATING = 4
+    UNSPECIFIED = 5
+
+  error = _messages.MessageField('Status', 1)
+  operation = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class ShareSettings(_messages.Message):
@@ -75582,6 +75676,57 @@ class StatefulPolicyPreservedStateNetworkIp(_messages.Message):
     ON_PERMANENT_INSTANCE_DELETION = 1
 
   autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class Subnetwork(_messages.Message):

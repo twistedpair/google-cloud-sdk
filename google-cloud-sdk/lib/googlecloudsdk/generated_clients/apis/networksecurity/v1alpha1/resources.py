@@ -49,6 +49,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_FIREWALLENDPOINTS = (
+      'organizations.locations.firewallEndpoints',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'firewallEndpoints/{firewallEndpointsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',
@@ -56,6 +67,28 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_SECURITYPROFILEGROUPS = (
+      'organizations.locations.securityProfileGroups',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'securityProfileGroups/{securityProfileGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_SECURITYPROFILES = (
+      'organizations.locations.securityProfiles',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'securityProfiles/{securityProfilesId}',
       },
       ['name'],
       True
@@ -110,6 +143,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FIREWALLENDPOINTASSOCIATIONS = (
+      'projects.locations.firewallEndpointAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'firewallEndpointAssociations/{firewallEndpointAssociationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GATEWAYSECURITYPOLICIES = (
       'projects.locations.gatewaySecurityPolicies',
       '{+name}',
@@ -140,6 +184,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SECURITYPROFILEGROUPS = (
+      'projects.locations.securityProfileGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'securityProfileGroups/{securityProfileGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SECURITYPROFILES = (
+      'projects.locations.securityProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'securityProfiles/{securityProfilesId}',
       },
       ['name'],
       True

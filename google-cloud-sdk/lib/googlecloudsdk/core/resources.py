@@ -1001,18 +1001,15 @@ class Registry(object):
     if not match:
       raise InvalidResourceException(url, reason='unknown API host')
 
-    # pylint:disable=protected-access
-    default_enpoint_url = apis_internal._GetDefaultEndpointUrl(url)
     api_name, api_version, resource_path = (
-        resource_util.SplitDefaultEndpointUrl(default_enpoint_url))
-    # Force hyphenated API names to use underscores to conform with apitools
-    # generated clients
-    api_name = api_name.replace('-', '_')
-    if not url.startswith(default_enpoint_url):
+        resource_util.SplitDefaultEndpointUrl(url))
+
+    if apis_internal.IsOverriddenURL(url):
       # Use last registered api version in case of override.
       api_version = self.registered_apis.get(api_name, [api_version])[-1]
 
     try:
+      # pylint:disable=protected-access
       versions = apis_internal._GetVersions(api_name)
     except apis_util.UnknownAPIError:
       raise InvalidResourceException(url, 'unknown api {}'.format(api_name))

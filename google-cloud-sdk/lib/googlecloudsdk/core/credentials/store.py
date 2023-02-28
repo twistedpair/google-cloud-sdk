@@ -1355,6 +1355,11 @@ class _LegacyGenerator(object):
     # recreated here.
     self.Clean()
 
+    if self._cred_type == c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME:
+      # TODO(b/251565106): Support for gsutil will be added in a later CL.
+      # TODO(b/251565107): Support for bq will be added in a later CL.
+      return
+
     # Generates credentials used by bq and gsutil.
     if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
       cred = self.credentials
@@ -1384,11 +1389,6 @@ class _LegacyGenerator(object):
               '[Credentials]',
               'gs_external_account_file = {external_account_file}',
           ]).format(external_account_file=self._adc_path))
-    elif self._cred_type == c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME:
-      self._WriteFileContents(self._gsutil_path, '\n'.join([
-          '[Credentials]',
-          'gs_external_account_authorized_user_file = {external_account_file}',
-      ]).format(external_account_file=self._adc_path))
     elif self._cred_type == c_creds.USER_ACCOUNT_CREDS_NAME:
       # We create a small .boto file for gsutil, to be put in BOTO_PATH.
       # Our client_id and client_secret should accompany our refresh token;

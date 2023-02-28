@@ -117,11 +117,11 @@ class BatchTranslateDocumentRequest(_messages.Message):
     outputConfig: Required. Output configuration. If 2 input configs match to
       the same file (that is, same input path), we don't generate output for
       duplicate inputs.
-    sourceLanguageCode: Required. The BCP-47 language code of the input
+    sourceLanguageCode: Required. The ISO-639 language code of the input
       document if known, for example, "en-US" or "sr-Latn". Supported language
       codes are listed in [Language
       Support](https://cloud.google.com/translate/docs/languages).
-    targetLanguageCodes: Required. The BCP-47 language code to use for
+    targetLanguageCodes: Required. The ISO-639 language code to use for
       translation of the input document. Specify up to 10 language codes here.
   """
 
@@ -505,7 +505,7 @@ class DetectedLanguage(_messages.Message):
 
   Fields:
     confidence: The confidence of the detection result for this language.
-    languageCode: The BCP-47 language code of the source content in the
+    languageCode: The ISO-639 language code of the source content in the
       request, detected automatically.
   """
 
@@ -847,10 +847,10 @@ class LanguageCodePair(_messages.Message):
   r"""Used with unidirectional glossaries.
 
   Fields:
-    sourceLanguageCode: Required. The BCP-47 language code of the input text,
+    sourceLanguageCode: Required. The ISO-639 language code of the input text,
       for example, "en-US". Expected to be an exact match for
       GlossaryTerm.language_code.
-    targetLanguageCode: Required. The BCP-47 language code for translation
+    targetLanguageCode: Required. The ISO-639 language code for translation
       output, for example, "zh-CN". Expected to be an exact match for
       GlossaryTerm.language_code.
   """
@@ -863,7 +863,7 @@ class LanguageCodesSet(_messages.Message):
   r"""Used with equivalent term set glossaries.
 
   Fields:
-    languageCodes: The BCP-47 language code(s) for terms defined in the
+    languageCodes: The ISO-639 language code(s) for terms defined in the
       glossary. All entries are unique. The list contains at least two
       entries. Expected to be an exact match for GlossaryTerm.language_code.
   """
@@ -1379,7 +1379,7 @@ class SupportedLanguage(_messages.Message):
     displayName: Human-readable name of the language localized in the display
       language specified in the request.
     languageCode: Supported language code, generally consisting of its ISO
-      639-1 identifier, for example, 'en', 'ja'. In certain cases, BCP-47
+      639-1 identifier, for example, 'en', 'ja'. In certain cases, ISO-639
       codes including language and region identifiers are returned (for
       example, 'zh-TW' and 'zh-CN').
     supportSource: Can be used as a source language.
@@ -1449,14 +1449,14 @@ class TranslateDocumentRequest(_messages.Message):
       id}` - General (built-in) models: `projects/{project-number-or-
       id}/locations/{location-id}/models/general/nmt`, If not provided, the
       default Google model (NMT) will be used for translation.
-    sourceLanguageCode: Optional. The BCP-47 language code of the input
+    sourceLanguageCode: Optional. The ISO-639 language code of the input
       document if known, for example, "en-US" or "sr-Latn". Supported language
       codes are listed in Language Support. If the source language isn't
       specified, the API attempts to identify the source language
       automatically and returns the source language within the response.
       Source language must be specified if the request contains a glossary or
       a custom model.
-    targetLanguageCode: Required. The BCP-47 language code to use for
+    targetLanguageCode: Required. The ISO-639 language code to use for
       translation of the input document, set to one of the language codes
       listed in Language Support.
   """
@@ -2156,12 +2156,12 @@ class TranslateTextRequest(_messages.Message):
       regionalized) requests, use `location-id` `global`. For example,
       `projects/{project-number-or-id}/locations/global/models/general/nmt`.
       If not provided, the default Google model (NMT) will be used
-    sourceLanguageCode: Optional. The BCP-47 language code of the input text
+    sourceLanguageCode: Optional. The ISO-639 language code of the input text
       if known, for example, "en-US" or "sr-Latn". Supported language codes
       are listed in Language Support. If the source language isn't specified,
       the API attempts to identify the source language automatically and
       returns the source language within the response.
-    targetLanguageCode: Required. The BCP-47 language code to use for
+    targetLanguageCode: Required. The ISO-639 language code to use for
       translation of the input text, set to one of the language codes listed
       in Language Support.
   """
@@ -2224,7 +2224,7 @@ class Translation(_messages.Message):
   r"""A single translation response.
 
   Fields:
-    detectedLanguageCode: The BCP-47 language code of source text in the
+    detectedLanguageCode: The ISO-639 language code of source text in the
       initial request, detected automatically, if no source language was
       passed within the initial request. If the source language was passed,
       auto-detection of the language does not occur and this field is empty.

@@ -123,6 +123,77 @@ def EncodeTriggerSubstitutions(substitutions, messages):
       additionalProperties=substitution_properties)
 
 
+def EncodeUpdatedTriggerSubstitutions(old_substitutions, substitutions,
+                                      messages):
+  """Encodes the trigger substitutions for the update command.
+
+  Args:
+    old_substitutions: The existing substitutions to be updated.
+    substitutions: The substitutions to be added to the existing substitutions.
+    messages: A Cloud Build messages module.
+
+  Returns:
+    The updated trigger substitutions.
+  """
+  if not substitutions:
+    return None
+  substitution_properties = []
+  for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
+    substitution_properties.append(
+        messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
+            key=key, value=value))
+  if old_substitutions:
+    for sub in old_substitutions.additionalProperties:
+      substitution_properties.append(
+          messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
+              key=sub.key, value=sub.value))
+  return messages.BuildTrigger.SubstitutionsValue(
+      additionalProperties=substitution_properties
+  )
+
+
+def RemoveTriggerSubstitutions(
+    old_substitutions, substitutions_to_be_removed, messages
+):
+  """Removes existing substitutions for the update command.
+
+  Args:
+    old_substitutions: The existing substitutions.
+    substitutions_to_be_removed: The substitutions to be removed if exist.
+    messages: A Cloud Build messages module.
+
+  Returns:
+    The updated trigger substitutions.
+  """
+  if not substitutions_to_be_removed:
+    return None
+  substitution_properties = []
+  if old_substitutions:
+    for sub in old_substitutions.additionalProperties:
+      if sub.key not in substitutions_to_be_removed:
+        substitution_properties.append(
+            messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
+                key=sub.key, value=sub.value
+            )
+        )
+  if not substitution_properties:
+    substitution_properties.append(
+        messages.BuildTrigger.SubstitutionsValue.AdditionalProperty()
+    )
+  return messages.BuildTrigger.SubstitutionsValue(
+      additionalProperties=substitution_properties
+  )
+
+
+def EncodeEmptyTriggerSubstitutions(messages):
+  substitution_properties = [
+      messages.BuildTrigger.SubstitutionsValue.AdditionalProperty()
+  ]
+  return messages.BuildTrigger.SubstitutionsValue(
+      additionalProperties=substitution_properties
+  )
+
+
 def SnakeToCamelString(snake):
   """Change a snake_case string into a camelCase string.
 
@@ -548,8 +619,12 @@ def BitbucketServerConfigFromArgs(args, update=False):
   bbs.username = args.user_name
   bbs.apiKey = args.api_key
   secret_location = messages.BitbucketServerSecrets()
-  secret_location.adminAccessTokenVersionName = args.admin_access_token_secret_version
-  secret_location.readAccessTokenVersionName = args.read_access_token_secret_version
+  secret_location.adminAccessTokenVersionName = (
+      args.admin_access_token_secret_version
+  )
+  secret_location.readAccessTokenVersionName = (
+      args.read_access_token_secret_version
+  )
   secret_location.webhookSecretVersionName = args.webhook_secret_secret_version
   if update or secret_location is not None:
     bbs.secrets = secret_location
@@ -605,11 +680,21 @@ def _IsEmptyMessage(message):
 
 
 def WorkerPoolIsSpecified(build_config):
-  return build_config is not None and build_config.options is not None and build_config.options.pool is not None and build_config.options.pool.name is not None
+  return (
+      build_config is not None
+      and build_config.options is not None
+      and build_config.options.pool is not None
+      and build_config.options.pool.name is not None
+  )
 
 
 def WorkerPoolConfigIsSpecified(build_config):
-  return build_config is not None and build_config.options is not None and build_config.options.pool is not None and build_config.options.pool.workerConfig is not None
+  return (
+      build_config is not None
+      and build_config.options is not None
+      and build_config.options.pool is not None
+      and build_config.options.pool.workerConfig is not None
+  )
 
 
 def BytesToGb(size):

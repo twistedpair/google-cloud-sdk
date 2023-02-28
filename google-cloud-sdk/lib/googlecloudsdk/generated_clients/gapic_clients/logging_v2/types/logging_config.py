@@ -29,6 +29,8 @@ __protobuf__ = proto.module(
         'LogBucket',
         'LogView',
         'LogSink',
+        'BigQueryDataset',
+        'Link',
         'BigQueryOptions',
         'ListBucketsRequest',
         'ListBucketsResponse',
@@ -49,6 +51,11 @@ __protobuf__ = proto.module(
         'CreateSinkRequest',
         'UpdateSinkRequest',
         'DeleteSinkRequest',
+        'CreateLinkRequest',
+        'DeleteLinkRequest',
+        'ListLinksRequest',
+        'ListLinksResponse',
+        'GetLinkRequest',
         'LogExclusion',
         'ListExclusionsRequest',
         'ListExclusionsResponse',
@@ -66,6 +73,8 @@ __protobuf__ = proto.module(
         'CopyLogEntriesMetadata',
         'CopyLogEntriesResponse',
         'BucketMetadata',
+        'LinkMetadata',
+        'LocationMetadata',
     },
 )
 
@@ -498,6 +507,89 @@ class LogSink(proto.Message):
         proto.MESSAGE,
         number=14,
         message=timestamp_pb2.Timestamp,
+    )
+
+
+class BigQueryDataset(proto.Message):
+    r"""Describes a BigQuery dataset that was created by a link.
+
+    Attributes:
+        dataset_id (str):
+            Output only. The full resource name of the BigQuery dataset.
+            The DATASET_ID will match the ID of the link, so the link
+            must match the naming restrictions of BigQuery datasets
+            (alphanumeric characters and underscores only).
+
+            The dataset will have a resource path of
+            "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET_ID]".
+    """
+
+    dataset_id = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class Link(proto.Message):
+    r"""Describes a link connected to an analytics enabled bucket.
+
+    Attributes:
+        name (str):
+            The resource name of the link. The name can have up to 100
+            characters. A valid link id (at the end of the link name)
+            must only have alphanumeric characters and underscores
+            within it.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+
+            For example:
+
+            \`projects/my-project/locations/global/buckets/my-bucket/links/my_link
+        description (str):
+            Describes this link.
+            The maximum length of the description is 8000
+            characters.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The creation timestamp of the
+            link.
+        lifecycle_state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LifecycleState):
+            Output only. The resource lifecycle state.
+        bigquery_dataset (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.BigQueryDataset):
+            The information of a BigQuery Dataset. When a
+            link is created, a BigQuery dataset is created
+            along with it, in the same project as the
+            LogBucket it's linked to. This dataset will also
+            have BigQuery Views corresponding to the
+            LogViews in the bucket.
+    """
+
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    description = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    create_time = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=timestamp_pb2.Timestamp,
+    )
+    lifecycle_state = proto.Field(
+        proto.ENUM,
+        number=4,
+        enum='LifecycleState',
+    )
+    bigquery_dataset = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message='BigQueryDataset',
     )
 
 
@@ -1213,6 +1305,144 @@ class DeleteSinkRequest(proto.Message):
     """
 
     sink_name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class CreateLinkRequest(proto.Message):
+    r"""The parameters to CreateLink.
+
+    Attributes:
+        parent (str):
+            Required. The full resource name of the bucket to create a
+            link for.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]".
+        link (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Link):
+            Required. The new link.
+        link_id (str):
+            Required. The ID to use for the link. The link_id can have
+            up to 100 characters. A valid link_id must only have
+            alphanumeric characters and underscores within it.
+    """
+
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    link = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='Link',
+    )
+    link_id = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+
+
+class DeleteLinkRequest(proto.Message):
+    r"""The parameters to DeleteLink.
+
+    Attributes:
+        name (str):
+            Required. The full resource name of the link to delete.
+
+            "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+            "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+            "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+            "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
+    """
+
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class ListLinksRequest(proto.Message):
+    r"""The parameters to ListLinks.
+
+    Attributes:
+        parent (str):
+            Required. The parent resource whose links are to be listed:
+
+            "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/"
+            "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/"
+            "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/"
+            "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/
+        page_token (str):
+            Optional. If present, then retrieve the next batch of
+            results from the preceding call to this method.
+            ``pageToken`` must be the value of ``nextPageToken`` from
+            the previous response.
+        page_size (int):
+            Optional. The maximum number of results to
+            return from this request.
+    """
+
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+
+
+class ListLinksResponse(proto.Message):
+    r"""The response from ListLinks.
+
+    Attributes:
+        links (Sequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Link]):
+            A list of links.
+        next_page_token (str):
+            If there might be more results than those appearing in this
+            response, then ``nextPageToken`` is included. To get the
+            next set of results, call the same method again using the
+            value of ``nextPageToken`` as ``pageToken``.
+    """
+
+    @property
+    def raw_page(self):
+        return self
+
+    links = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='Link',
+    )
+    next_page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
+class GetLinkRequest(proto.Message):
+    r"""The parameters to GetLink.
+
+    Attributes:
+        name (str):
+            Required. The resource name of the link:
+
+            "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+            "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+            "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+            "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]
+    """
+
+    name = proto.Field(
         proto.STRING,
         number=1,
     )
@@ -2047,6 +2277,77 @@ class BucketMetadata(proto.Message):
         number=5,
         oneof='request',
         message='UpdateBucketRequest',
+    )
+
+
+class LinkMetadata(proto.Message):
+    r"""Metadata for long running Link operations.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        start_time (google.protobuf.timestamp_pb2.Timestamp):
+            The start time of an operation.
+        end_time (google.protobuf.timestamp_pb2.Timestamp):
+            The end time of an operation.
+        state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OperationState):
+            State of an operation.
+        create_link_request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateLinkRequest):
+            CreateLink RPC request.
+
+            This field is a member of `oneof`_ ``request``.
+        delete_link_request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteLinkRequest):
+            DeleteLink RPC request.
+
+            This field is a member of `oneof`_ ``request``.
+    """
+
+    start_time = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message=timestamp_pb2.Timestamp,
+    )
+    end_time = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=timestamp_pb2.Timestamp,
+    )
+    state = proto.Field(
+        proto.ENUM,
+        number=3,
+        enum='OperationState',
+    )
+    create_link_request = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='request',
+        message='CreateLinkRequest',
+    )
+    delete_link_request = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='request',
+        message='DeleteLinkRequest',
+    )
+
+
+class LocationMetadata(proto.Message):
+    r"""Cloud Logging specific location metadata.
+
+    Attributes:
+        log_analytics_enabled (bool):
+            Indicates whether or not Log Analytics
+            features are supported in the given location.
+    """
+
+    log_analytics_enabled = proto.Field(
+        proto.BOOL,
+        number=1,
     )
 
 

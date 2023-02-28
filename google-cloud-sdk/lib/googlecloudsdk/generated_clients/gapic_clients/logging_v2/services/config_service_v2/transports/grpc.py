@@ -756,6 +756,114 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
         return self._stubs['delete_sink']
 
     @property
+    def create_link(self) -> Callable[
+            [logging_config.CreateLinkRequest],
+            operations_pb2.Operation]:
+        r"""Return a callable for the create link method over gRPC.
+
+        Asynchronously creates linked dataset in BigQuery
+        which makes it possible to use BugQuery to read the logs
+        stored in the bucket. A bucket may currently only
+        contain one link.
+
+        Returns:
+            Callable[[~.CreateLinkRequest],
+                    ~.Operation]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'create_link' not in self._stubs:
+            self._stubs['create_link'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/CreateLink',
+                request_serializer=logging_config.CreateLinkRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['create_link']
+
+    @property
+    def delete_link(self) -> Callable[
+            [logging_config.DeleteLinkRequest],
+            operations_pb2.Operation]:
+        r"""Return a callable for the delete link method over gRPC.
+
+        Deletes a link. This will also delete the
+        corresponding BigQuery linked dataset.
+
+        Returns:
+            Callable[[~.DeleteLinkRequest],
+                    ~.Operation]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'delete_link' not in self._stubs:
+            self._stubs['delete_link'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/DeleteLink',
+                request_serializer=logging_config.DeleteLinkRequest.serialize,
+                response_deserializer=operations_pb2.Operation.FromString,
+            )
+        return self._stubs['delete_link']
+
+    @property
+    def list_links(self) -> Callable[
+            [logging_config.ListLinksRequest],
+            logging_config.ListLinksResponse]:
+        r"""Return a callable for the list links method over gRPC.
+
+        Lists links.
+
+        Returns:
+            Callable[[~.ListLinksRequest],
+                    ~.ListLinksResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'list_links' not in self._stubs:
+            self._stubs['list_links'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/ListLinks',
+                request_serializer=logging_config.ListLinksRequest.serialize,
+                response_deserializer=logging_config.ListLinksResponse.deserialize,
+            )
+        return self._stubs['list_links']
+
+    @property
+    def get_link(self) -> Callable[
+            [logging_config.GetLinkRequest],
+            logging_config.Link]:
+        r"""Return a callable for the get link method over gRPC.
+
+        Gets a link.
+
+        Returns:
+            Callable[[~.GetLinkRequest],
+                    ~.Link]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'get_link' not in self._stubs:
+            self._stubs['get_link'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/GetLink',
+                request_serializer=logging_config.GetLinkRequest.serialize,
+                response_deserializer=logging_config.Link.deserialize,
+            )
+        return self._stubs['get_link']
+
+    @property
     def list_exclusions(self) -> Callable[
             [logging_config.ListExclusionsRequest],
             logging_config.ListExclusionsResponse]:

@@ -33,7 +33,6 @@ from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as api_client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
-from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base as calliope_base
@@ -42,16 +41,15 @@ from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.eventarc import types as trigger_types
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
+from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.functions import secrets_config
 from googlecloudsdk.command_lib.projects import util as projects_util
-from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resources
 from googlecloudsdk.core import transports
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
@@ -112,9 +110,6 @@ _V1_ONLY_FLAGS = [
 _V1_ONLY_FLAG_ERROR = (
     '`%s` is only supported in Cloud Functions (First generation).'
 )
-
-_CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
-_CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
 
 _DEFAULT_IGNORE_FILE = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
 
@@ -1024,9 +1019,13 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
           frozenset(['service_config.vpc_connector']),
       )
   elif args.egress_settings:
-    if existing_function and existing_function.vpc_connector:
+    if (
+        existing_function
+        and existing_function.serviceConfig
+        and existing_function.serviceConfig.vpcConnector
+    ):
       return (
-          existing_function.vpc_connector,
+          existing_function.serviceConfig.vpcConnector,
           egress_settings,
           frozenset(['service_config.vpc_connector_egress_settings']),
       )
@@ -1200,58 +1199,35 @@ def _SetInvokerPermissions(args, function, is_new_function):
   Returns:
     None
   """
-  service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service, _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM
-  )
-
   # This condition will be truthy if the user provided either
   # `--allow-unauthenticated` or `--no-allow-unauthenticated`. In other
   # words, it is only falsey when neither of those two flags is provided.
   if args.IsSpecified('allow_unauthenticated'):
     allow_unauthenticated = args.allow_unauthenticated
   else:
-    if is_new_function:
-      allow_unauthenticated = console_io.PromptContinue(
-          prompt_string=(
-              'Allow unauthenticated invocations of new function [{}]?'.format(
-                  args.NAME
-              )
-          ),
-          default=False,
-      )
-    else:
+    if not is_new_function:
       # The function already exists, and the user didn't request any change to
       # the permissions. There is nothing to do in this case.
       return
 
-  run_connection_context = connection_context.RegionalConnectionContext(
-      service_ref_one_platform.locationsId,
-      global_methods.SERVERLESS_API_NAME,
-      global_methods.SERVERLESS_API_VERSION,
-  )
-
-  with serverless_operations.Connect(run_connection_context) as operations:
-    service_ref_k8s = resources.REGISTRY.ParseRelativeName(
-        'namespaces/{}/services/{}'.format(
-            api_util.GetProject(), service_ref_one_platform.Name()
+    allow_unauthenticated = console_io.PromptContinue(
+        prompt_string=(
+            'Allow unauthenticated invocations of new function [{}]?'.format(
+                args.NAME
+            )
         ),
-        _CLOUD_RUN_SERVICE_COLLECTION_K8S,
+        default=False,
     )
 
-    if allow_unauthenticated:
-      operations.AddOrRemoveIamPolicyBinding(
-          service_ref_k8s,
-          add_binding=True,
-          member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
-          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE,
-      )
-    elif not is_new_function:
-      operations.AddOrRemoveIamPolicyBinding(
-          service_ref_k8s,
-          add_binding=False,
-          member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
-          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE,
-      )
+  if is_new_function and not allow_unauthenticated:
+    # No permissions to grant nor remove on the new function.
+    return
+
+  run_util.AddOrRemoveInvokerBinding(
+      function,
+      add_binding=allow_unauthenticated,
+      member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+  )
 
 
 def _GetFunction(client, messages, function_ref):

@@ -30,6 +30,11 @@
                 "create_exclusion"
               ]
             },
+            "CreateLink": {
+              "methods": [
+                "create_link"
+              ]
+            },
             "CreateSink": {
               "methods": [
                 "create_sink"
@@ -48,6 +53,11 @@
             "DeleteExclusion": {
               "methods": [
                 "delete_exclusion"
+              ]
+            },
+            "DeleteLink": {
+              "methods": [
+                "delete_link"
               ]
             },
             "DeleteSink": {
@@ -75,6 +85,11 @@
                 "get_exclusion"
               ]
             },
+            "GetLink": {
+              "methods": [
+                "get_link"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "get_settings"
@@ -98,6 +113,11 @@
             "ListExclusions": {
               "methods": [
                 "list_exclusions"
+              ]
+            },
+            "ListLinks": {
+              "methods": [
+                "list_links"
               ]
             },
             "ListSinks": {
@@ -175,6 +195,11 @@
                 "create_exclusion"
               ]
             },
+            "CreateLink": {
+              "methods": [
+                "create_link"
+              ]
+            },
             "CreateSink": {
               "methods": [
                 "create_sink"
@@ -193,6 +218,11 @@
             "DeleteExclusion": {
               "methods": [
                 "delete_exclusion"
+              ]
+            },
+            "DeleteLink": {
+              "methods": [
+                "delete_link"
               ]
             },
             "DeleteSink": {
@@ -220,6 +250,11 @@
                 "get_exclusion"
               ]
             },
+            "GetLink": {
+              "methods": [
+                "get_link"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "get_settings"
@@ -243,6 +278,11 @@
             "ListExclusions": {
               "methods": [
                 "list_exclusions"
+              ]
+            },
+            "ListLinks": {
+              "methods": [
+                "list_links"
               ]
             },
             "ListSinks": {
@@ -320,6 +360,11 @@
                 "create_exclusion"
               ]
             },
+            "CreateLink": {
+              "methods": [
+                "create_link"
+              ]
+            },
             "CreateSink": {
               "methods": [
                 "create_sink"
@@ -338,6 +383,11 @@
             "DeleteExclusion": {
               "methods": [
                 "delete_exclusion"
+              ]
+            },
+            "DeleteLink": {
+              "methods": [
+                "delete_link"
               ]
             },
             "DeleteSink": {
@@ -365,6 +415,11 @@
                 "get_exclusion"
               ]
             },
+            "GetLink": {
+              "methods": [
+                "get_link"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "get_settings"
@@ -388,6 +443,11 @@
             "ListExclusions": {
               "methods": [
                 "list_exclusions"
+              ]
+            },
+            "ListLinks": {
+              "methods": [
+                "list_links"
               ]
             },
             "ListSinks": {

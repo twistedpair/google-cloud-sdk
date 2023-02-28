@@ -784,6 +784,10 @@
         "network": {
           "description": "The network policy.",
           "$ref": "NetworkPolicy"
+        },
+        "placement": {
+          "description": "The placement policy.",
+          "$ref": "PlacementPolicy"
         }
       }
     },
@@ -1000,6 +1004,22 @@
         "noExternalIpAddress": {
           "description": "Default is false (with an external IP address). Required if no external public IP address is attached to the VM. If no external public IP address, additional configuration is required to allow the VM to access Google Services. See https:\/\/cloud.google.com\/vpc\/docs\/configure-private-google-access and https:\/\/cloud.google.com\/nat\/docs\/gce-example#create-nat for more information.",
           "type": "boolean"
+        }
+      }
+    },
+    "PlacementPolicy": {
+      "id": "PlacementPolicy",
+      "description": "PlacementPolicy describes a group placement policy for the VMs controlled by this AllocationPolicy.",
+      "type": "object",
+      "properties": {
+        "collocation": {
+          "description": "UNSPECIFIED vs. COLLOCATED (default UNSPECIFIED). Use COLLOCATED when you want VMs to be located close to each other for low network latency between the VMs.",
+          "type": "string"
+        },
+        "maxDistance": {
+          "description": "When specified, causes the job to fail if more than max_distance logical switches are required between VMs. Batch uses the most compact possible placement of VMs even when max_distance is not specified. An explicit max_distance makes that level of compactness a strict requirement. Not yet implemented",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

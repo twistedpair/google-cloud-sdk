@@ -417,7 +417,7 @@
           "type": "string"
         },
         "readAuthorizerCredential": {
-          "description": "A GitLab personal access token with `read_repository` scope access. Required if the GitLab Enterprise server verion is older than 13.10. See at https:\/\/docs.gitlab.com\/ee\/api\/project_access_tokens.html#create-a-project-access-token.",
+          "description": "A GitLab personal access token with `read_api` scope access. Required if the GitLab Enterprise server verion is older than 13.10. See at https:\/\/docs.gitlab.com\/ee\/api\/project_access_tokens.html#create-a-project-access-token.",
           "$ref": "UserCredential"
         },
         "authorizerCredential": {
@@ -772,6 +772,10 @@
         "pipelineSpec": {
           "description": "Fields from both the Workflow and the PipelineSpec will be used to form the full PipelineRun.",
           "$ref": "PipelineSpec"
+        },
+        "bundle": {
+          "description": "A Tekton Bundle is an OCI Image that Tekton understands. OCI is the spec for container images that docker and others (such as Tekton Bundles) follow. This field deprecated; please use `ref` instead.",
+          "type": "string"
         },
         "ref": {
           "description": "PipelineRef refer to a specific instance of a Pipeline.",
@@ -1393,6 +1397,10 @@
           "description": "Name of the task.",
           "type": "string"
         },
+        "bundle": {
+          "description": "Bundle url reference to a Tekton Bundle.",
+          "type": "string"
+        },
         "resolver": {
           "description": "Resolver is the name of the resolver that should perform resolution of the referenced Tekton resource.",
           "type": "string",
@@ -1522,6 +1530,10 @@
           "description": "Name of the Pipeline.",
           "type": "string"
         },
+        "bundle": {
+          "description": "Bundle url reference to a Tekton Bundle.",
+          "type": "string"
+        },
         "resolver": {
           "description": "Resolver is the name of the resolver that should perform resolution of the referenced Tekton resource.",
           "type": "string",
@@ -1644,6 +1656,10 @@
         "secret": {
           "description": "Secret Volume Source.",
           "$ref": "SecretVolumeSource"
+        },
+        "volumeClaim": {
+          "description": "Volume claim that will be created in the same namespace.",
+          "$ref": "VolumeClaim"
         }
       }
     },
@@ -1728,6 +1744,17 @@
         "secretVersion": {
           "description": "Output only. Resource name of the SecretVersion. In format: projects\/*\/secrets\/*\/versions\/*",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "VolumeClaim": {
+      "id": "VolumeClaim",
+      "description": "VolumeClaim is a user's request for a volume.",
+      "type": "object",
+      "properties": {
+        "storage": {
+          "description": "Volume size, e.g. 1gb.",
           "type": "string"
         }
       }

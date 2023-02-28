@@ -42,7 +42,7 @@ class ActivateCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -204,7 +204,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -221,9 +223,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -498,6 +498,8 @@ class CertificateAuthorityPolicy(_messages.Message):
       all Certificates issued by the CertificateAuthority must match
       AllowedSubjectAltNames. If no value or an empty value is specified, any
       value will be allowed for the SubjectAltNames field.
+    cloudFunctionPolicy: Optional. If specified, use a Cloud Function to
+      implement custom certificate policy for certificate issuance.
     maximumLifetime: Optional. The maximum lifetime allowed by the
       CertificateAuthority. Note that if the any part if the issuing chain
       expires before a Certificate's requested maximum_lifetime, the effective
@@ -512,8 +514,9 @@ class CertificateAuthorityPolicy(_messages.Message):
   allowedIssuanceModes = _messages.MessageField('IssuanceModes', 3)
   allowedLocationsAndOrganizations = _messages.MessageField('Subject', 4, repeated=True)
   allowedSans = _messages.MessageField('AllowedSubjectAltNames', 5)
-  maximumLifetime = _messages.StringField(6)
-  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 7)
+  cloudFunctionPolicy = _messages.MessageField('CloudFunctionPolicy', 6)
+  maximumLifetime = _messages.StringField(7)
+  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 8)
 
 
 class CertificateConfig(_messages.Message):
@@ -656,6 +659,18 @@ class CertificateRevocationList(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class CloudFunctionPolicy(_messages.Message):
+  r"""CloudFunctionPolicy specifies the Cloud Function custom certificate
+  policy for certificate issuance.
+
+  Fields:
+    cloudFunction: Required. The resource name of the Cloud Function to
+      invoke, in the format `projects/*/locations/*/functions/*`.
+  """
+
+  cloudFunction = _messages.StringField(1)
+
+
 class DisableCertificateAuthorityRequest(_messages.Message):
   r"""Request message for
   CertificateAuthorityService.DisableCertificateAuthority.
@@ -665,7 +680,7 @@ class DisableCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -695,7 +710,7 @@ class EnableCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1419,7 +1434,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationLists
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1488,7 +1503,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesCreateRequest(
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1559,7 +1574,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesPatchRequest(_
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1605,7 +1620,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCreateRequest(_messages.Me
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1733,7 +1748,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesPatchRequest(_messages.Mes
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1893,6 +1908,58 @@ class PrivatecaProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class PrivatecaProjectsLocationsReusableConfigsCreateRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsReusableConfigsCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the location associated with the
+      ReusableConfig, in the format `projects/*/locations/*`.
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    reusableConfig: A ReusableConfig resource to be passed as the request
+      body.
+    reusableConfigId: Required. It must be unique within a location and match
+      the regular expression `[a-zA-Z0-9_-]{1,63}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  reusableConfig = _messages.MessageField('ReusableConfig', 3)
+  reusableConfigId = _messages.StringField(4)
+
+
+class PrivatecaProjectsLocationsReusableConfigsDeleteRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsReusableConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name for this ReusableConfig in the format
+      `projects/*/locations/*/reusableConfigs/*`.
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class PrivatecaProjectsLocationsReusableConfigsGetIamPolicyRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsReusableConfigsGetIamPolicyRequest object.
 
@@ -1952,6 +2019,34 @@ class PrivatecaProjectsLocationsReusableConfigsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class PrivatecaProjectsLocationsReusableConfigsPatchRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsReusableConfigsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource path for this ReusableConfig in the format
+      `projects/*/locations/*/reusableConfigs/*`.
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    reusableConfig: A ReusableConfig resource to be passed as the request
+      body.
+    updateMask: Required. A list of fields to be updated in this request.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  reusableConfig = _messages.MessageField('ReusableConfig', 3)
+  updateMask = _messages.StringField(4)
 
 
 class PrivatecaProjectsLocationsReusableConfigsSetIamPolicyRequest(_messages.Message):
@@ -2015,8 +2110,8 @@ class PublicKey(_messages.Message):
         RFC 5280 [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280#se
         ction-4.1) structure containing the former.
       PEM_EC_KEY: An RFC 5280
-        [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280#section-4.1
-        ) structure containing a PEM-encoded compressed NIST
+        [SubjectPublicKeyInfo](https://tools.ietf.org/html/rfc5280#section-
+        4.1) structure containing a PEM-encoded compressed NIST
         P-256/secp256r1/prime256v1 or P-384 key.
     """
     KEY_TYPE_UNSPECIFIED = 0
@@ -2070,7 +2165,7 @@ class RestoreCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2236,7 +2331,7 @@ class RevokeCertificateRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2336,6 +2431,10 @@ class ScheduleDeleteCertificateAuthorityRequest(_messages.Message):
   CertificateAuthorityService.ScheduleDeleteCertificateAuthority.
 
   Fields:
+    deletePendingDuration: Optional. For PRIVATECA_INTERNAL callers only. Set
+      a duration for scheduled deletion. This allows internal callers to
+      override the default 30 day scheduled deletion time for faster deletion.
+      A duration greater than the default 30 days is prohibited.
     ignoreActiveCertificates: Optional. This field allows the CA to be
       scheduled for deletion even if the CA has active certs. Active certs
       include both unrevoked and unexpired certs.
@@ -2343,7 +2442,7 @@ class ScheduleDeleteCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2352,8 +2451,9 @@ class ScheduleDeleteCertificateAuthorityRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  ignoreActiveCertificates = _messages.BooleanField(1)
-  requestId = _messages.StringField(2)
+  deletePendingDuration = _messages.StringField(1)
+  ignoreActiveCertificates = _messages.BooleanField(2)
+  requestId = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

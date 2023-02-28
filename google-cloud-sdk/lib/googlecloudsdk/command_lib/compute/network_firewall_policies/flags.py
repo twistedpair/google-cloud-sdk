@@ -436,3 +436,18 @@ def AddSecurityProfileGroup(parser):
       help=(
           'A security profile group to be used with apply_security_profile_group action.'
       ))
+
+
+def AddTlsInspect(parser):
+  """Adds the option to turn on TLS decryption on the rule."""
+  parser.add_argument(
+      '--tls-inspect',
+      required=False,
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Use this flag to indicate whether TLS traffic should be inspected '
+          'using the TLS inspection policy when the security profile group '
+          'is applied. Default: no TLS inspection.'
+      ),
+  )

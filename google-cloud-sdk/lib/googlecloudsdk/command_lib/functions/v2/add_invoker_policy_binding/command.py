@@ -19,11 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
-from googlecloudsdk.api_lib.run import global_methods
-from googlecloudsdk.command_lib.run import connection_context
-from googlecloudsdk.command_lib.run import serverless_operations
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
+from googlecloudsdk.command_lib.functions import run_util
 
 CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
@@ -39,21 +35,6 @@ def Run(args, release_track):
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
 
-  service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service, CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
-
-  run_connection_context = connection_context.RegionalConnectionContext(
-      service_ref_one_platform.locationsId, global_methods.SERVERLESS_API_NAME,
-      global_methods.SERVERLESS_API_VERSION)
-
-  with serverless_operations.Connect(run_connection_context) as operations:
-    service_ref_k8s = resources.REGISTRY.ParseRelativeName(
-        'namespaces/{}/services/{}'.format(
-            properties.VALUES.core.project.GetOrFail(),
-            service_ref_one_platform.Name()), CLOUD_RUN_SERVICE_COLLECTION_K8S)
-
-    return operations.AddOrRemoveIamPolicyBinding(
-        service_ref_k8s,
-        True,  # Add the binding
-        member=args.member,
-        role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+  return run_util.AddOrRemoveInvokerBinding(
+      function, args.member, add_binding=True
+  )

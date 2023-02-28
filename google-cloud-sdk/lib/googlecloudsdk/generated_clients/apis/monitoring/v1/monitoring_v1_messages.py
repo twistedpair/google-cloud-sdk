@@ -882,6 +882,23 @@ class HttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
+class IncidentList(_messages.Message):
+  r"""A widget that displays a list of incidents
+
+  Fields:
+    monitoredResources: Optional. The monitored resource for which incidents
+      are listed. The resource doesn't need to be fully specified. That is,
+      you can specify the resource type but not the values of the resource
+      labels. The resource type and labels are used for filtering.
+    policyNames: Optional. A list of alert policy names to filter the incident
+      list by. Don't include the project ID prefix in the policy name. For
+      example, use alertPolicies/utilization.
+  """
+
+  monitoredResources = _messages.MessageField('MonitoredResource', 1, repeated=True)
+  policyNames = _messages.StringField(2, repeated=True)
+
+
 class ListDashboardsResponse(_messages.Message):
   r"""The ListDashboards request.
 
@@ -983,6 +1000,66 @@ class MonitoredProject(_messages.Message):
 
   createTime = _messages.StringField(1)
   name = _messages.StringField(2)
+
+
+class MonitoredResource(_messages.Message):
+  r"""An object representing a resource that can be used for monitoring,
+  logging, billing, or other purposes. Examples include virtual machine
+  instances, databases, and storage devices such as disks. The type field
+  identifies a MonitoredResourceDescriptor object that describes the
+  resource's schema. Information in the labels field identifies the actual
+  resource and its attributes according to the schema. For example, a
+  particular Compute Engine VM instance could be represented by the following
+  object, because the MonitoredResourceDescriptor for "gce_instance" has
+  labels "project_id", "instance_id" and "zone": { "type": "gce_instance",
+  "labels": { "project_id": "my-project", "instance_id": "12345678901234",
+  "zone": "us-central1-a" }}
+
+  Messages:
+    LabelsValue: Required. Values for all of the labels listed in the
+      associated monitored resource descriptor. For example, Compute Engine VM
+      instances use the labels "project_id", "instance_id", and "zone".
+
+  Fields:
+    labels: Required. Values for all of the labels listed in the associated
+      monitored resource descriptor. For example, Compute Engine VM instances
+      use the labels "project_id", "instance_id", and "zone".
+    type: Required. The monitored resource type. This field must match the
+      type field of a MonitoredResourceDescriptor object. For example, the
+      type of a Compute Engine VM instance is gce_instance. For a list of
+      types, see Monitoring resource types
+      (https://cloud.google.com/monitoring/api/resources) and Logging resource
+      types (https://cloud.google.com/logging/docs/api/v2/resource-list).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Required. Values for all of the labels listed in the associated
+    monitored resource descriptor. For example, Compute Engine VM instances
+    use the labels "project_id", "instance_id", and "zone".
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  type = _messages.StringField(2)
 
 
 class MonitoringLocationsGlobalMetricsScopesGetRequest(_messages.Message):
@@ -2248,6 +2325,7 @@ class Widget(_messages.Message):
     collapsibleGroup: A widget that groups the other widgets. All widgets that
       are within the area spanned by the grouping widget are considered member
       widgets.
+    incidentList: A widget that shows list of incidents.
     logsPanel: A widget that shows a stream of logs.
     scorecard: A scorecard summarizing time series data.
     text: A raw string or markdown displaying textual content.
@@ -2260,12 +2338,13 @@ class Widget(_messages.Message):
   alertChart = _messages.MessageField('AlertChart', 1)
   blank = _messages.MessageField('Empty', 2)
   collapsibleGroup = _messages.MessageField('CollapsibleGroup', 3)
-  logsPanel = _messages.MessageField('LogsPanel', 4)
-  scorecard = _messages.MessageField('Scorecard', 5)
-  text = _messages.MessageField('Text', 6)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 7)
-  title = _messages.StringField(8)
-  xyChart = _messages.MessageField('XyChart', 9)
+  incidentList = _messages.MessageField('IncidentList', 4)
+  logsPanel = _messages.MessageField('LogsPanel', 5)
+  scorecard = _messages.MessageField('Scorecard', 6)
+  text = _messages.MessageField('Text', 7)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 8)
+  title = _messages.StringField(9)
+  xyChart = _messages.MessageField('XyChart', 10)
 
 
 class XyChart(_messages.Message):

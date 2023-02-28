@@ -38,9 +38,9 @@ properties:
     type: string
   invertMatch:
     description: |-
-      If set to `false`, the HeaderMatch is considered a match if the match
-      criteria above are met. If set to `true`, the `HeaderMatch` is considered
-      a match if the match criteria above are NOT met. The default is `false`.
+      If set to `false`, HeaderMatch is considered a match when the match
+      criteria above are met. If set to `true`, `HeaderMatch` is considered a
+      match when the match criteria above are not met. The default is `false`.
     type: boolean
   prefixMatch:
     description: |-
@@ -57,6 +57,6 @@ properties:
   suffixMatch:
     description: |-
       The value of the header must end with the contents of `suffix_match`. Only
-      one of exact_match, prefix_match, `suffix_match` or present_match must be
+      one of exact_match, prefix_match, `suffix_match`, or present_match must be
       set.
     type: string

@@ -89,6 +89,7 @@ class ClustersClient(client.ClientBase):
         'allowMissing': flags.Get(args, 'allow_missing'),
         'validateOnly': flags.Get(args, 'validate_only'),
         'force': flags.Get(args, 'force'),
+        'ignoreErrors': flags.Get(args, 'ignore_errors'),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersDeleteRequest(
         **kwargs

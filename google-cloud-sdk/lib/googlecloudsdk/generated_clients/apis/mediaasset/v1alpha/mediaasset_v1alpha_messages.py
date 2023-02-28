@@ -2749,7 +2749,7 @@ class MediaassetProjectsLocationsAssetTypesAssetsDeleteRequest(_messages.Message
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2847,7 +2847,7 @@ class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message)
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2913,7 +2913,7 @@ class MediaassetProjectsLocationsAssetTypesCreateRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2938,7 +2938,7 @@ class MediaassetProjectsLocationsAssetTypesDeleteRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3027,7 +3027,7 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3284,7 +3284,7 @@ class MediaassetProjectsLocationsComplexTypesCreateRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3309,7 +3309,7 @@ class MediaassetProjectsLocationsComplexTypesDeleteRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3398,7 +3398,7 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3624,7 +3624,7 @@ class MediaassetProjectsLocationsTransformersCreateRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3651,7 +3651,7 @@ class MediaassetProjectsLocationsTransformersDeleteRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3740,7 +3740,7 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents

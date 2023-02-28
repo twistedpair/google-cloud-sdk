@@ -1978,10 +1978,12 @@ class Operation(_messages.Message):
         onboarding process. It is only available to Google internal services,
         and the service must be approved by chemist-dev@google.com in order to
         use this level.
+      PROMOTED: Used internally by Chemist.
     """
     LOW = 0
     HIGH = 1
     DEBUG = 2
+    PROMOTED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

@@ -33,13 +33,12 @@ def ParseGroups(resource_class, groups):
 
 
 def ParseIpRanges(messages, ip_ranges):
-  """Parse a dict of IP ranges into AdvertisedIpRange objects.
+  """Parses a dict of IP ranges into AdvertisedIpRange objects.
 
   Args:
     messages: API messages holder.
     ip_ranges: A dict of IP ranges of the form ip_range=description, where
-               ip_range is a CIDR-formatted IP and description is an optional
-               text label.
+      ip_range is a CIDR-formatted IP and description is an optional text label.
 
   Returns:
     A list of AdvertisedIpRange objects containing the specified IP ranges.
@@ -51,4 +50,24 @@ def ParseIpRanges(messages, ip_ranges):
   # Sort the resulting list so that requests have a deterministic ordering
   # for test validations and user output.
   ranges.sort(key=operator.attrgetter('range', 'description'))
+  return ranges
+
+
+def ParseCustomLearnedIpRanges(messages, ip_ranges):
+  """Parses a list of IP address ranges into CustomLearnedIpRange objects.
+
+  Args:
+    messages: API messages holder.
+    ip_ranges: A list of ip_ranges, where each ip_range is a CIDR-formatted IP.
+
+  Returns:
+    A list of CustomLearnedIpRange objects containing the specified IP ranges.
+  """
+  ranges = [
+      messages.RouterBgpPeerCustomLearnedIpRange(range=ip_range)
+      for ip_range in ip_ranges
+  ]
+  # Sort the resulting list so that requests have a deterministic ordering
+  # for test validations and user output.
+  ranges.sort(key=operator.attrgetter('range'))
   return ranges

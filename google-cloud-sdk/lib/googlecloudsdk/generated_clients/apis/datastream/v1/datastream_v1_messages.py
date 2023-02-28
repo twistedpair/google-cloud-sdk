@@ -1613,11 +1613,11 @@ class OracleSourceConfig(_messages.Message):
     excludeObjects: Oracle objects to exclude from the stream.
     includeObjects: Oracle objects to include in the stream.
     maxConcurrentBackfillTasks: Maximum number of concurrent backfill tasks.
-      The number should be non negative. If not set (or set to 0), the
-      system's default value will be used.
+      The number should be non-negative. If not set (or set to 0), the
+      system's default value is used.
     maxConcurrentCdcTasks: Maximum number of concurrent CDC tasks. The number
-      should be non negative. If not set (or set to 0), the system's default
-      value will be used.
+      should be non-negative. If not set (or set to 0), the system's default
+      value is used.
     streamLargeObjects: Stream large object values. NOTE: This feature is
       currently experimental.
   """

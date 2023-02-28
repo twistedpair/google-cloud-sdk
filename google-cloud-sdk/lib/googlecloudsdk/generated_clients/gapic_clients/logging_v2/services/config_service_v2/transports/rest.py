@@ -97,6 +97,13 @@ class ConfigServiceV2RestInterceptor:
             def post_create_exclusion(response):
                 logging.log(f"Received response: {response}")
 
+            def pre_create_link(request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_create_link(response):
+                logging.log(f"Received response: {response}")
+
             def pre_create_sink(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -118,6 +125,13 @@ class ConfigServiceV2RestInterceptor:
             def pre_delete_exclusion(request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
+
+            def pre_delete_link(request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_delete_link(response):
+                logging.log(f"Received response: {response}")
 
             def pre_delete_sink(request, metadata):
                 logging.log(f"Received request: {request}")
@@ -146,6 +160,13 @@ class ConfigServiceV2RestInterceptor:
                 return request, metadata
 
             def post_get_exclusion(response):
+                logging.log(f"Received response: {response}")
+
+            def pre_get_link(request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_get_link(response):
                 logging.log(f"Received response: {response}")
 
             def pre_get_settings(request, metadata):
@@ -181,6 +202,13 @@ class ConfigServiceV2RestInterceptor:
                 return request, metadata
 
             def post_list_exclusions(response):
+                logging.log(f"Received response: {response}")
+
+            def pre_list_links(request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_list_links(response):
                 logging.log(f"Received response: {response}")
 
             def pre_list_sinks(request, metadata):
@@ -319,6 +347,22 @@ class ConfigServiceV2RestInterceptor:
         it is returned to user code.
         """
         return response
+    def pre_create_link(self, request: logging_config.CreateLinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.CreateLinkRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for create_link
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_create_link(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
+        """Post-rpc interceptor for create_link
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
     def pre_create_sink(self, request: logging_config.CreateSinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.CreateSinkRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for create_sink
 
@@ -367,6 +411,22 @@ class ConfigServiceV2RestInterceptor:
         """
         return request, metadata
 
+    def pre_delete_link(self, request: logging_config.DeleteLinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.DeleteLinkRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for delete_link
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_delete_link(self, response: operations_pb2.Operation) -> operations_pb2.Operation:
+        """Post-rpc interceptor for delete_link
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
     def pre_delete_sink(self, request: logging_config.DeleteSinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.DeleteSinkRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for delete_sink
 
@@ -425,6 +485,22 @@ class ConfigServiceV2RestInterceptor:
 
     def post_get_exclusion(self, response: logging_config.LogExclusion) -> logging_config.LogExclusion:
         """Post-rpc interceptor for get_exclusion
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_get_link(self, request: logging_config.GetLinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.GetLinkRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for get_link
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_get_link(self, response: logging_config.Link) -> logging_config.Link:
+        """Post-rpc interceptor for get_link
 
         Override in a subclass to manipulate the response
         after it is returned by the ConfigServiceV2 server but before
@@ -505,6 +581,22 @@ class ConfigServiceV2RestInterceptor:
 
     def post_list_exclusions(self, response: logging_config.ListExclusionsResponse) -> logging_config.ListExclusionsResponse:
         """Post-rpc interceptor for list_exclusions
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_list_links(self, request: logging_config.ListLinksRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.ListLinksRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for list_links
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_list_links(self, response: logging_config.ListLinksResponse) -> logging_config.ListLinksResponse:
+        """Post-rpc interceptor for list_links
 
         Override in a subclass to manipulate the response
         after it is returned by the ConfigServiceV2 server but before
@@ -1200,6 +1292,112 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             resp = self._interceptor.post_create_exclusion(resp)
             return resp
 
+    class _CreateLink(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("CreateLink")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+            "linkId" : "",        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.CreateLinkRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: float=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> operations_pb2.Operation:
+            r"""Call the create link method over HTTP.
+
+            Args:
+                request (~.logging_config.CreateLinkRequest):
+                    The request object. The parameters to CreateLink.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.operations_pb2.Operation:
+                    This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v2/{parent=*/*/locations/*/buckets/*}/links',
+                'body': 'link',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=projects/*/locations/*/buckets/*}/links',
+                'body': 'link',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=organizations/*/locations/*/buckets/*}/links',
+                'body': 'link',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=folders/*/locations/*/buckets/*}/links',
+                'body': 'link',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=billingAccounts/*/locations/*/buckets/*}/links',
+                'body': 'link',
+            },
+            ]
+            request, metadata = self._interceptor.pre_create_link(request, metadata)
+            pb_request = logging_config.CreateLinkRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = operations_pb2.Operation()
+            json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_create_link(resp)
+            return resp
+
     class _CreateSink(ConfigServiceV2RestStub):
         def __hash__(self):
             return hash("CreateSink")
@@ -1585,6 +1783,99 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             # subclass.
             if response.status_code >= 400:
                 raise core_exceptions.from_http_response(response)
+
+    class _DeleteLink(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("DeleteLink")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.DeleteLinkRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: float=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> operations_pb2.Operation:
+            r"""Call the delete link method over HTTP.
+
+            Args:
+                request (~.logging_config.DeleteLinkRequest):
+                    The request object. The parameters to DeleteLink.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.operations_pb2.Operation:
+                    This resource represents a
+                long-running operation that is the
+                result of a network API call.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'delete',
+                'uri': '/v2/{name=*/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=projects/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=organizations/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=folders/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=billingAccounts/*/locations/*/buckets/*/links/*}',
+            },
+            ]
+            request, metadata = self._interceptor.pre_delete_link(request, metadata)
+            pb_request = logging_config.DeleteLinkRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = operations_pb2.Operation()
+            json_format.Parse(response.content, resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_delete_link(resp)
+            return resp
 
     class _DeleteSink(ConfigServiceV2RestStub):
         def __hash__(self):
@@ -2051,6 +2342,100 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
             resp = self._interceptor.post_get_exclusion(resp)
+            return resp
+
+    class _GetLink(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("GetLink")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.GetLinkRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: float=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> logging_config.Link:
+            r"""Call the get link method over HTTP.
+
+            Args:
+                request (~.logging_config.GetLinkRequest):
+                    The request object. The parameters to GetLink.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.logging_config.Link:
+                    Describes a link connected to an
+                analytics enabled bucket.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'get',
+                'uri': '/v2/{name=*/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{name=projects/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{name=organizations/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{name=folders/*/locations/*/buckets/*/links/*}',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{name=billingAccounts/*/locations/*/buckets/*/links/*}',
+            },
+            ]
+            request, metadata = self._interceptor.pre_get_link(request, metadata)
+            pb_request = logging_config.GetLinkRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = logging_config.Link()
+            pb_resp = logging_config.Link.pb(resp)
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_get_link(resp)
             return resp
 
     class _GetSettings(ConfigServiceV2RestStub):
@@ -2531,6 +2916,98 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
 
             json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
             resp = self._interceptor.post_list_exclusions(resp)
+            return resp
+
+    class _ListLinks(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("ListLinks")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, str] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.ListLinksRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: float=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> logging_config.ListLinksResponse:
+            r"""Call the list links method over HTTP.
+
+            Args:
+                request (~.logging_config.ListLinksRequest):
+                    The request object. The parameters to ListLinks.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.logging_config.ListLinksResponse:
+                    The response from ListLinks.
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'get',
+                'uri': '/v2/{parent=*/*/locations/*/buckets/*}/links',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=projects/*/locations/*/buckets/*}/links',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=organizations/*/locations/*/buckets/*}/links',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=folders/*/locations/*/buckets/*}/links',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=billingAccounts/*/locations/*/buckets/*}/links',
+            },
+            ]
+            request, metadata = self._interceptor.pre_list_links(request, metadata)
+            pb_request = logging_config.ListLinksRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = logging_config.ListLinksResponse()
+            pb_resp = logging_config.ListLinksResponse.pb(resp)
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_list_links(resp)
             return resp
 
     class _ListSinks(ConfigServiceV2RestStub):
@@ -3625,6 +4102,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         return self._CreateExclusion(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def create_link(self) -> Callable[
+            [logging_config.CreateLinkRequest],
+            operations_pb2.Operation]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._CreateLink(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def create_sink(self) -> Callable[
             [logging_config.CreateSinkRequest],
             logging_config.LogSink]:
@@ -3655,6 +4140,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._DeleteExclusion(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def delete_link(self) -> Callable[
+            [logging_config.DeleteLinkRequest],
+            operations_pb2.Operation]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._DeleteLink(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def delete_sink(self) -> Callable[
@@ -3697,6 +4190,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         return self._GetExclusion(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def get_link(self) -> Callable[
+            [logging_config.GetLinkRequest],
+            logging_config.Link]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._GetLink(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def get_settings(self) -> Callable[
             [logging_config.GetSettingsRequest],
             logging_config.Settings]:
@@ -3735,6 +4236,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._ListExclusions(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def list_links(self) -> Callable[
+            [logging_config.ListLinksRequest],
+            logging_config.ListLinksResponse]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._ListLinks(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def list_sinks(self) -> Callable[

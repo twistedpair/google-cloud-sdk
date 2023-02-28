@@ -42,7 +42,7 @@ class ActivateCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -167,7 +167,9 @@ class Binding(_messages.Message):
       to/kubernetes-service-accounts). For example, `my-
       project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -184,9 +186,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -354,10 +354,10 @@ class Certificate(_messages.Message):
         certificate request. This mode requires the caller to have the
         `privateca.certificates.create` permission.
       REFLECTED_SPIFFE: A mode reserved for special cases. Indicates that the
-        certificate should have one or more SPIFFE SubjectAltNames set by the
-        service based on the caller's identity. This mode will ignore any
-        explicitly specified Subject and/or SubjectAltNames in the certificate
-        request. This mode requires the caller to have the
+        certificate should have one SPIFFE SubjectAltNames set by the service
+        based on the caller's identity. This mode will ignore any explicitly
+        specified Subject and/or SubjectAltNames in the certificate request.
+        This mode requires the caller to have the
         `privateca.certificates.createForSelf` permission.
     """
     SUBJECT_REQUEST_MODE_UNSPECIFIED = 0
@@ -872,7 +872,7 @@ class DisableCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -938,7 +938,7 @@ class EnableCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1021,7 +1021,7 @@ class FetchCaCertsRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1789,7 +1789,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesCertificateRevocati
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1855,7 +1855,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesCreateRequest(_mess
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1884,7 +1884,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest(_mess
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1996,7 +1996,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesPatchRequest(_messa
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2124,7 +2124,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificatesPatchRequest(_messages.Messag
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2167,7 +2167,7 @@ class PrivatecaProjectsLocationsCaPoolsCreateRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2192,7 +2192,7 @@ class PrivatecaProjectsLocationsCaPoolsDeleteRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2290,7 +2290,7 @@ class PrivatecaProjectsLocationsCaPoolsPatchRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2352,7 +2352,7 @@ class PrivatecaProjectsLocationsCertificateTemplatesCreateRequest(_messages.Mess
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2377,7 +2377,7 @@ class PrivatecaProjectsLocationsCertificateTemplatesDeleteRequest(_messages.Mess
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2464,7 +2464,7 @@ class PrivatecaProjectsLocationsCertificateTemplatesPatchRequest(_messages.Messa
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2776,7 +2776,7 @@ class RevokeCertificateRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -3169,7 +3169,7 @@ class UndeleteCertificateAuthorityRequest(_messages.Message):
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents

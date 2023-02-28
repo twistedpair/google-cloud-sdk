@@ -19,7 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.command_lib.functions.v2.add_invoker_policy_binding import command as add_invoker_policy_binding_command
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 
 
 def Run(args, release_track):
@@ -44,10 +47,45 @@ def Run(args, release_track):
       messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
           resource=function_relative_name))
 
-  iam_util.AddBindingToIamPolicy(messages.Binding, policy, args.member,
-                                 args.role)
+  iam_util.AddBindingToIamPolicy(
+      messages.Binding, policy, args.member, args.role
+  )
 
-  return client.projects_locations_functions.SetIamPolicy(
+  policy = client.projects_locations_functions.SetIamPolicy(
       messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
           resource=function_relative_name,
-          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
+      )
+  )
+
+  if args.role in [
+      'roles/cloudfunctions.admin',
+      'roles/cloudfunctions.developer',
+      'roles/cloudfunctions.invoker',
+  ]:
+    log.warning(
+        'The role [{role}] was successfully bound to member [{member}] but this'
+        ' does not grant the member permission to invoke 2nd gen function'
+        ' [{name}]. Instead, the role [roles/run.invoker] must be granted on'
+        ' the underlying Cloud Run service. This can be done by running the'
+        ' `gcloud functions add-invoker-policy-binding` command.\n'.format(
+            role=args.role, member=args.member, name=function_ref.Name()
+        )
+    )
+
+    if console_io.CanPrompt() and console_io.PromptContinue(
+        prompt_string=(
+            'Would you like to run this command and additionally grant [{}]'
+            ' permission to invoke function [{}]'
+        ).format(args.member, function_ref.Name()),
+    ):
+      add_invoker_policy_binding_command.Run(args, release_track)
+      return policy
+
+    log.status.Print(
+        'Additional information on authenticating function calls can be found'
+        ' at:\n'
+        'https://cloud.google.com/functions/docs/securing/authenticating#authenticating_function_to_function_calls'
+    )
+
+  return policy

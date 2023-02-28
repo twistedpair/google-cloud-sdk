@@ -64,11 +64,14 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args,
-                     compute_holder,
-                     with_private_nat=False,
-                     with_subnet_all=False,
-                     with_auto_network_tier=False):
+def CreateNatMessage(
+    args,
+    compute_holder,
+    with_private_nat=False,
+    with_subnet_all=False,
+    with_auto_network_tier=False,
+    with_endpoint_types=False,
+):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -96,6 +99,15 @@ def CreateNatMessage(args,
     params['autoNetworkTier'] = (
         compute_holder.client.messages.RouterNat.AutoNetworkTierValueValuesEnum(
             args.auto_network_tier))
+
+  if with_endpoint_types and args.endpoint_types is not None:
+    params['endpointTypes'] = [
+        compute_holder.client.messages.RouterNat.EndpointTypesValueListEntryValuesEnum(
+            endpoint_type
+        )
+        for endpoint_type in args.endpoint_types
+    ]
+
   params['udpIdleTimeoutSec'] = args.udp_idle_timeout
   params['icmpIdleTimeoutSec'] = args.icmp_idle_timeout
   params['tcpEstablishedIdleTimeoutSec'] = args.tcp_established_idle_timeout

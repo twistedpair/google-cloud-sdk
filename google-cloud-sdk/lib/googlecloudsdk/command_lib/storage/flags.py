@@ -27,7 +27,7 @@ from googlecloudsdk.core import properties
 
 REQUIRED_INVENTORY_REPORTS_METADATA_FIELDS = ('project', 'bucket', 'name')
 OPTIONAL_INVENTORY_REPORTS_METADATA_FIELDS = (
-    'location', 'size', 'timeCreated', 'timeDeleted', 'type',
+    'location', 'size', 'timeCreated', 'timeDeleted',
     'updated', 'storageClass', 'etag', 'retentionExpirationTime', 'crc32c',
     'md5Hash', 'generation', 'metageneration', 'contentType',
     'contentEncoding', 'timeStorageClassUpdated')

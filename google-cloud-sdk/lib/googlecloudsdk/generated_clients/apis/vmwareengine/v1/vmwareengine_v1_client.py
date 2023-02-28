@@ -46,6 +46,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_networkPolicies = self.ProjectsLocationsNetworkPoliciesService(self)
     self.projects_locations_nodeTypes = self.ProjectsLocationsNodeTypesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_privateClouds_clusters_nodes = self.ProjectsLocationsPrivateCloudsClustersNodesService(self)
     self.projects_locations_privateClouds_clusters = self.ProjectsLocationsPrivateCloudsClustersService(self)
     self.projects_locations_privateClouds_externalAddresses = self.ProjectsLocationsPrivateCloudsExternalAddressesService(self)
     self.projects_locations_privateClouds_hcxActivationKeys = self.ProjectsLocationsPrivateCloudsHcxActivationKeysService(self)
@@ -719,6 +720,70 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateCloudsClustersNodesService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_clusters_nodes resource."""
+
+    _NAME = 'projects_locations_privateClouds_clusters_nodes'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsClustersNodesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single node.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsClustersNodesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Node) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}/nodes/{nodesId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.clusters.nodes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersNodesGetRequest',
+        response_type_name='Node',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists nodes in a given cluster.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsClustersNodesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNodesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}/nodes',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.clusters.nodes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/nodes',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersNodesListRequest',
+        response_type_name='ListNodesResponse',
         supports_download=False,
     )
 
@@ -1493,7 +1558,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.privateClouds.subnets.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId', 'updateMask'],
+        query_params=['updateMask'],
         relative_path='v1/{+name}',
         request_field='subnet',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest',

@@ -4780,7 +4780,7 @@ class Namespace(_messages.Message):
     deleteTime: Output only. When the namespace was deleted.
     name: The resource name for the namespace
       `projects/{project}/locations/{location}/namespaces/{namespace}`
-    scope: Optional. Scope associated with the namespace
+    scope: Required. Scope associated with the namespace
     state: Output only. State of the namespace resource.
     tenancyProject: Tenancy Project associated with the namespace
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -5558,12 +5558,14 @@ class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
   Fields:
     containerResources: Container resource requirements.
     podAntiAffinity: Pod anti-affinity enablement.
+    podTolerations: Pod tolerations of node taints.
     replicaCount: Pod replica count.
   """
 
   containerResources = _messages.MessageField('PolicyControllerResourceRequirements', 1)
   podAntiAffinity = _messages.BooleanField(2)
-  replicaCount = _messages.IntegerField(3)
+  podTolerations = _messages.MessageField('PolicyControllerToleration', 3, repeated=True)
+  replicaCount = _messages.IntegerField(4)
 
 
 class PolicyControllerResourceList(_messages.Message):
@@ -5601,6 +5603,22 @@ class PolicyControllerTemplateLibraryConfig(_messages.Message):
   """
 
   included = _messages.BooleanField(1)
+
+
+class PolicyControllerToleration(_messages.Message):
+  r"""Toleration of a node taint.
+
+  Fields:
+    effect: Matches a taint effect.
+    key: Matches a taint key (not necessarily unique).
+    operator: Matches a taint operator.
+    value: Matches a taint value.
+  """
+
+  effect = _messages.StringField(1)
+  key = _messages.StringField(2)
+  operator = _messages.StringField(3)
+  value = _messages.StringField(4)
 
 
 class RBACRoleBinding(_messages.Message):

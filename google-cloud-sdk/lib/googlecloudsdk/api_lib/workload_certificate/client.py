@@ -237,7 +237,8 @@ class WIPClient(object):
       return None
 
     log.status.Print(
-        'Successfully created WorkloadRegistration:\n{}'.format(result)
+        'Successfully created WorkloadRegistration: {} for fleet'
+        ' membership: {}.'.format(result.name, fleet_membership)
     )
     return result
 

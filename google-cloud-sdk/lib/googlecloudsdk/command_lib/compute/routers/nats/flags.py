@@ -77,17 +77,37 @@ def AddTypeArg(parser):
   """Adds the --type argument."""
   help_text = 'Type of the NAT Gateway. Defaults to PUBLIC if not specified.'
   choices = {
-      'PUBLIC': 'Used for private-to-public NAT translations. Allows VMs to '
-                'communicate with the Internet.',
-      'PRIVATE':
-          'Used for priate-to-private NAT translations. Allows communication '
+      'PUBLIC': (
+          'Used for private-to-public NAT translations. Allows VMs to '
+          'communicate with the Internet.'
+      ),
+      'PRIVATE': (
+          'Used for private-to-private NAT translations. Allows communication '
           'between VPC Networks.'
+      ),
   }
   parser.add_argument(
       '--type',
       type=arg_utils.ChoiceToEnumName,
       choices=choices,
       help=help_text)
+
+
+def AddEndpointTypesArg(parser):
+  """Adds the --endpoint-type argument."""
+  help_text = (
+      'Endpoint Types supported by the NAT Gateway. Choices are'
+      ' ENDPOINT_TYPE_VM for VM Endpoints and ENDPOINT_TYPE_SWG for Secure Web'
+      ' Gateway Endpoints. Defaults to ENDPOINT_TYPE_VM if not specified'
+  )
+  choices = ['ENDPOINT_TYPE_VM', 'ENDPOINT_TYPE_SWG']
+  parser.add_argument(
+      '--endpoint-types',
+      type=arg_parsers.ArgList(choices=choices),
+      help=help_text,
+      metavar='ENDPOINT_TYPE',
+      required=False,
+  )
 
 
 def AddCommonNatArgs(parser,

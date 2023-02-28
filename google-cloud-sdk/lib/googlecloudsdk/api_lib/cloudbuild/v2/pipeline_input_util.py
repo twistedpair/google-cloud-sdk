@@ -162,6 +162,8 @@ def _TaskTransform(task):
     if managed_sidecars:
       task_spec["managedSidecars"] = managed_sidecars
     task["taskSpec"] = {"taskSpec": task_spec}
+  if "taskRef" in task:
+    input_util.RefTransform(task["taskRef"])
   whens = task.pop("when", [])
   for when in whens:
     if "operator" in when:

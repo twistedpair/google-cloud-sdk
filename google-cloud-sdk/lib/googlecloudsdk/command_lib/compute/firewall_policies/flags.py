@@ -492,3 +492,18 @@ def AddSecurityProfileGroup(parser):
           'In order to set this property, '
           'please run the command \'gcloud config set api_endpoint_overrides/networkservices https://<namespace>/\''
       ))
+
+
+def AddTlsInspect(parser):
+  """Adds the option to turn on TLS decryption on the rule."""
+  parser.add_argument(
+      '--tls-inspect',
+      required=False,
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Use this flag to indicate whether TLS traffic should be inspected '
+          'using the TLS inspection policy when the security profile group '
+          'is applied. Default: no TLS inspection.'
+      ),
+  )

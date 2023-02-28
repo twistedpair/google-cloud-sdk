@@ -625,6 +625,81 @@
         }
       }
     },
+    "ListNodesResponse": {
+      "id": "ListNodesResponse",
+      "description": "Response message for VmwareEngine.ListNodes",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "The nodes.",
+          "type": "array",
+          "items": {
+            "$ref": "Node"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "Node": {
+      "id": "Node",
+      "description": "Node in a cluster.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this node. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/clusters\/my-cluster\/nodes\/my-node",
+          "readOnly": true,
+          "type": "string"
+        },
+        "fqdn": {
+          "description": "Output only. Fully qualified domain name of the node.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "Output only. Internal IP address of the node.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nodeTypeId": {
+          "description": "Output only. The canonical identifier of the node type (corresponds to the `NodeType`). For example: standard-72.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "version": {
+          "description": "Output only. The version number of the VMware ESXi management component in this cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "customCoreCount": {
+          "description": "Output only. Customized number of cores",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "Node is operational and can be used by the user.",
+            "Node is being provisioned.",
+            "Node is in a failed state.",
+            "Node is undergoing maintenance, e.g.: during private cloud upgrade."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "FAILED",
+            "SERVICING"
+          ]
+        }
+      }
+    },
     "ListExternalAddressesResponse": {
       "id": "ListExternalAddressesResponse",
       "description": "Response message for VmwareEngine.ListExternalAddresses",
@@ -1791,6 +1866,11 @@
         },
         "vmwareEngineNetwork": {
           "description": "Required. The relative resource name of Legacy VMware Engine network. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}`, `{location}` will be same as specified in private connection resource name and `{vmware_engine_network_id}` will be in the form of `{location}`-default e.g. projects\/project\/locations\/us-central1\/vmwareEngineNetworks\/us-central1-default.",
+          "type": "string"
+        },
+        "vmwareEngineNetworkCanonical": {
+          "description": "Output only. The canonical name of the VMware Engine network in the form: `projects\/{project_number}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}`",
+          "readOnly": true,
           "type": "string"
         },
         "type": {
@@ -3031,6 +3111,74 @@
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
+                  ,
+                  "resources": {
+                    "nodes": {
+                      "methods": {
+                        "list": {
+                          "id": "vmwareengine.projects.locations.privateClouds.clusters.nodes.list",
+                          "path": "v1/{+parent}/nodes",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}/nodes",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the cluster to be queried for nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of nodes to return in one page. The service may return fewer than this value. The maximum value is coerced to 1000. The default value of this field is 500.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous `ListNodes` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNodes` must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListNodesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists nodes in a given cluster."
+                        },
+                        "get": {
+                          "id": "vmwareengine.projects.locations.privateClouds.clusters.nodes.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}/nodes/{nodesId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the node to retrieve. For example: `projects\/{project}\/locations\/{location}\/privateClouds\/{private_cloud}\/clusters\/{cluster}\/nodes\/{node}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+\/nodes\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Node"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets details of a single node."
+                        }
+                      }
+                    }
+                  }
                 },
                 "externalAddresses": {
                   "methods": {
@@ -3305,11 +3453,6 @@
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
-                        },
-                        "requestId": {
-                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
                         }
                       },
                       "parameterOrder": [

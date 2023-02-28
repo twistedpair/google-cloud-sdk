@@ -95,6 +95,19 @@ class ApplyConversionWorkspaceRequest(_messages.Message):
   filter = _messages.StringField(2)
 
 
+class ApplyJobDetails(_messages.Message):
+  r"""Details regarding an Apply background job.
+
+  Fields:
+    connectionProfile: The connection profile which was used for the apply
+      job.
+    filter: AIP-160 based filter used to specify the entities to apply
+  """
+
+  connectionProfile = _messages.StringField(1)
+  filter = _messages.StringField(2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -167,11 +180,13 @@ class BackgroundJobLogEntry(_messages.Message):
     JobTypeValueValuesEnum: The type of job that was executed.
 
   Fields:
+    applyJobDetails: Apply job details.
     completionComment: Job completion comment, such as how many entities were
       seeded, how many warnings were found during conversion, and similar
       information.
     completionState: Job completion state, i.e. the final state after the job
       completed.
+    convertJobDetails: Convert job details.
     finishTime: The timestamp when the background job was finished.
     id: The background job log entry ID.
     importRulesJobDetails: Import rules job details.
@@ -214,15 +229,17 @@ class BackgroundJobLogEntry(_messages.Message):
     BACKGROUND_JOB_TYPE_APPLY_DESTINATION = 3
     BACKGROUND_JOB_TYPE_IMPORT_RULES_FILE = 4
 
-  completionComment = _messages.StringField(1)
-  completionState = _messages.EnumField('CompletionStateValueValuesEnum', 2)
-  finishTime = _messages.StringField(3)
-  id = _messages.StringField(4)
-  importRulesJobDetails = _messages.MessageField('ImportRulesJobDetails', 5)
-  jobType = _messages.EnumField('JobTypeValueValuesEnum', 6)
-  requestAutocommit = _messages.BooleanField(7)
-  seedJobDetails = _messages.MessageField('SeedJobDetails', 8)
-  startTime = _messages.StringField(9)
+  applyJobDetails = _messages.MessageField('ApplyJobDetails', 1)
+  completionComment = _messages.StringField(2)
+  completionState = _messages.EnumField('CompletionStateValueValuesEnum', 3)
+  convertJobDetails = _messages.MessageField('ConvertJobDetails', 4)
+  finishTime = _messages.StringField(5)
+  id = _messages.StringField(6)
+  importRulesJobDetails = _messages.MessageField('ImportRulesJobDetails', 7)
+  jobType = _messages.EnumField('JobTypeValueValuesEnum', 8)
+  requestAutocommit = _messages.BooleanField(9)
+  seedJobDetails = _messages.MessageField('SeedJobDetails', 10)
+  startTime = _messages.StringField(11)
 
 
 class Binding(_messages.Message):
@@ -898,6 +915,16 @@ class ConvertConversionWorkspaceRequest(_messages.Message):
 
   autoCommit = _messages.BooleanField(1)
   filter = _messages.StringField(2)
+
+
+class ConvertJobDetails(_messages.Message):
+  r"""Details regarding a Convert background job.
+
+  Fields:
+    filter: AIP-160 based filter used to specify the entities to convert
+  """
+
+  filter = _messages.StringField(1)
 
 
 class DatabaseEngineInfo(_messages.Message):

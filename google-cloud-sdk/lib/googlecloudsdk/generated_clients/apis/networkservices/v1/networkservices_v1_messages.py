@@ -2450,6 +2450,21 @@ class ListMeshesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMulticastConsumerAssociationsResponse(_messages.Message):
+  r"""Message for response to listing MulticastConsumerAssociations
+
+  Fields:
+    multicastConsumerAssociations: The list of MulticastConsumerAssociation
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastConsumerAssociations = _messages.MessageField('MulticastConsumerAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListMulticastDomainActivationsResponse(_messages.Message):
   r"""Message for response to listing MulticastDomainActivations
 
@@ -2657,7 +2672,7 @@ class LogConfig(_messages.Message):
       by this service. Defaults to false.
     sampleRate: Optional. The sampling rate of requests, where `1.0` means all
       logged requests are reported and `0.0` means no logged requests are
-      reported. The default value is `1.0`, and the value of the field must be
+      reported. The default value is `0.0`, and the value of the field must be
       in `[0, 1]`. This field can be specified only if logging is enabled for
       this service.
   """
@@ -2688,7 +2703,7 @@ class MatchRule(_messages.Message):
       `path_template_match` after removing any query parameters and anchors
       that might be part of the original URL. `path_template_match` must be
       between 1 and 255 characters (inclusive). The pattern specified by
-      `path_template_match` can have at most five wildcard operators and five
+      `path_template_match` can have at most ten wildcard operators and ten
       variable captures. One of prefix_match, full_path_match, or
       `path_template_match` must be specified.
     prefixMatch: Optional. To satisfy the `MatchRule` condition, the request's
@@ -2766,6 +2781,53 @@ class Mesh(_messages.Message):
   name = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class MulticastConsumerAssociation(_messages.Message):
+  r"""Message describing MulticastConsumerAssociation object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    multicastGroup: Reference to the multicast group
+    name: name of resource
+    network: Reference to the network
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  multicastGroup = _messages.StringField(3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class MulticastDomain(_messages.Message):
@@ -3969,6 +4031,190 @@ class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest
+  object.
+
+  Fields:
+    multicastConsumerAssociation: A MulticastConsumerAssociation resource to
+      be passed as the request body.
+    multicastConsumerAssociationId: Required. Id of the requesting object If
+      auto-generating Id server-side, remove this field and
+      multicast_consumer_association_id from the method_signature of Create
+      RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
+  multicastConsumerAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPol
+  icyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest
+  object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for
+      ListMulticastConsumerAssociationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest
+  object.
+
+  Fields:
+    multicastConsumerAssociation: A MulticastConsumerAssociation resource to
+      be passed as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastConsumerAssociation resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPol
+  icyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPe
+  rmissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest
@@ -3986,7 +4232,7 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_m
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4012,7 +4258,7 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_m
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4022,6 +4268,33 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_m
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsGetIamPolicy
+  Request object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest(_messages.Message):
@@ -4068,7 +4341,7 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4087,6 +4360,40 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
   updateMask = _messages.StringField(4)
 
 
+class NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsSetIamPolicy
+  Request object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainActivationsTestIamPermi
+  ssionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMulticastDomainsCreateRequest object.
 
@@ -4102,7 +4409,7 @@ class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Me
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4126,7 +4433,7 @@ class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Me
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4136,6 +4443,33 @@ class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Me
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastDomainsGetRequest(_messages.Message):
@@ -4179,7 +4513,7 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4198,6 +4532,41 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
   updateMask = _messages.StringField(4)
 
 
+class NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastDomainsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastDomainsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest
   object.
@@ -4214,7 +4583,7 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_me
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4239,7 +4608,7 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest(_me
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4249,6 +4618,34 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest(_me
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest(_messages.Message):
@@ -4295,7 +4692,7 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4314,6 +4711,41 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
   updateMask = _messages.StringField(4)
 
 
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupDefinitionsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupDefinitionsTestIamPermis
+  sionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMulticastGroupsCreateRequest object.
 
@@ -4329,7 +4761,7 @@ class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Mes
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4353,7 +4785,7 @@ class NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest(_messages.Mes
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4363,6 +4795,33 @@ class NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkservicesProjectsLocationsMulticastGroupsGetRequest(_messages.Message):
@@ -4406,7 +4865,7 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4423,6 +4882,41 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):

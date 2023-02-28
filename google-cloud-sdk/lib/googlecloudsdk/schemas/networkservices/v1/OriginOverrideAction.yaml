@@ -27,7 +27,7 @@ properties:
       type: string
   headerAction:
     description: |-
-      The header actions, including adding & removing headers, for requests
+      The header actions, including adding and removing headers, for requests
       handled by this origin.
     $ref: OriginHeaderAction.yaml
   urlRewrite:

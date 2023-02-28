@@ -5,6 +5,85 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 420.0.0 (2023-02-28)
+
+### Breaking Changes
+
+*   **(Cloud Firestore)** Switched `firestore beta database create` to use Firestore API.
+*   **(Cloud Firestore)** Added `--type`, `--location` and `--database` to `gcloud beta firestore database create`.
+*   **(Cloud Firestore)** Removed `--region` in `gcloud beta firestore database create`. Use `--location` instead.
+
+
+### App Engine
+
+* Added support for App Engine go runtime versions 116, 117, 118, 119, 120.
+
+### BigQuery
+
+* Updated messaging for the `use_legacy_sql` flag.
+* Added stack trace logging for errors when the `apilog` flag is used.
+* Removed unnecessary fetches for data transfer commands.
+
+### Certificate Authority Service
+
+* Added name constraints arguments to `gcloud privateca roots create` to allow
+configuring certificate authorities with name constraints.
+* Added name constraints arguments to `gcloud privateca subordinates create` to
+allow configuring certificate authorities with name constraints.
+* Added name constraints arguments to `gcloud privateca certificates create` to
+allow configuring certificate authorities with name constraints.
+
+### Cloud Composer
+
+* Update warning message when running commands that use the default Cloud
+ Composer version, which was changed recently from 1 to 2.
+
+### Cloud Functions
+
+*   Fixed issue where `gcloud functions deploy` would crash on updating an
+    existing function with VPC Connector when `--egress-settings` flag was
+    specified.
+* Added warning and prompting to `gcloud functions add-iam-policy-binding` about
+  needing to bind the `roles/run.invoker` role for 2nd gen functions.
+
+### Cloud Key Management Service
+
+*   Added `gcloud beta kms inventory` which allows viewing and tracking of
+    keys across cloud resources.
+
+### Cloud Logging
+
+* Promoted `buckets create --enable-analytics` to GA.
+* Added `buckets update --enable-analytics` to GA track.
+* Removed deprecated `buckets update --enable-loglink` from ALPHA track.
+* Added `--async` option to the `buckets create` and `buckets update` commands.
+* Added `links` command group implementation.
+
+### Compute Engine
+
+*   Promoted `--queue-count` flag in `--network-interface` of `gcloud compute instances create` to beta.
+*   Promoted `--stack-type` flag of `gcloud compute instances bulk create` to GA.
+* Promoted `gcloud compute disks update` to GA.
+* Promoted `--provisioned-iops` flag of `gcloud compute disks update` to GA.
+
+### GKE Hub
+
+* Added `gcloud container fleet scopes|namespaces` which allows users to manage Fleet Tenancy.
+
+### Identity and Access Management
+
+* Workforce identity federation now supports browser-based sign-in when authenticating with the Google Cloud CLI via `gcloud auth login`. To learn more, see [Obtain short-lived tokens for workforce identity federation](cloud.google.com/iam/docs/workforce-obtaining-short-lived-credentials) or the [Azure AD](/iam/docs/workforce-sign-in-azure-ad) or [Okta](/iam/docs/workforce-sign-in-okta)-specific `gcloud` CLI sign-in instructions.
+
+### Pubsub Emulator
+
+*   Added support for updating schemas.
+*   Fixed the inability to create topics, subscriptions, and schemas when using
+    the `gcloud` CLI.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 419.0.0 (2023-02-22)
 
 ### App Engine

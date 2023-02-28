@@ -1001,7 +1001,7 @@ class BaseSSHCLIHelper(BaseSSHHelper):
     null_err = FileWriter(os.devnull)
     return_code = cmd.Run(
         self.env,
-        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
+        putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
         explicit_output_file=null_out,
         explicit_error_file=null_err,
         explicit_input_file=null_in)

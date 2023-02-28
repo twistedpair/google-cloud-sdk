@@ -4609,6 +4609,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FindNeighbors(self, request, global_params=None):
+      r"""Finds the nearest neighbors of each vector within the request.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsFindNeighborsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1FindNeighborsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindNeighbors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindNeighbors.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:findNeighbors',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexEndpoints.findNeighbors',
+        ordered_params=['indexEndpoint'],
+        path_params=['indexEndpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+indexEndpoint}:findNeighbors',
+        request_field='googleCloudAiplatformV1beta1FindNeighborsRequest',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsFindNeighborsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1FindNeighborsResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets an IndexEndpoint.
 
@@ -4714,6 +4741,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1IndexEndpoint',
         request_type_name='AiplatformProjectsLocationsIndexEndpointsPatchRequest',
         response_type_name='GoogleCloudAiplatformV1beta1IndexEndpoint',
+        supports_download=False,
+    )
+
+    def ReadIndexDatapoints(self, request, global_params=None):
+      r"""Reads the datapoints/vectors of the given IDs. A maximum of 1000 datapoints can be retrieved in a batch.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsReadIndexDatapointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ReadIndexDatapointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReadIndexDatapoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadIndexDatapoints.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:readIndexDatapoints',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexEndpoints.readIndexDatapoints',
+        ordered_params=['indexEndpoint'],
+        path_params=['indexEndpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+indexEndpoint}:readIndexDatapoints',
+        request_field='googleCloudAiplatformV1beta1ReadIndexDatapointsRequest',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsReadIndexDatapointsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ReadIndexDatapointsResponse',
         supports_download=False,
     )
 

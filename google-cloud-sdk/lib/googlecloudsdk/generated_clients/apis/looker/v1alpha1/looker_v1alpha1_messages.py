@@ -475,10 +475,8 @@ class DenyMaintenancePeriod(_messages.Message):
   r"""Specifies the maintenance denial period.
 
   Fields:
-    endDate: Required. If the year of the end date is empty, the year of the
-      start date also must be empty. This indicates a yearly recurrence.
-    startDate: Required. If the year of the start date is empty, the year of
-      the end date also must be empty. This indicates a yearly recurrence.
+    endDate: Required. End date of the deny maintenance period
+    startDate: Required. Start date of the deny maintenance period
     time: Required. Time in UTC when the period starts and ends.
   """
 

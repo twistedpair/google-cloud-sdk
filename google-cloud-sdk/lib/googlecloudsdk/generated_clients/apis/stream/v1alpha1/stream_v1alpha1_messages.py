@@ -809,10 +809,13 @@ class GoogleApiServicecontrolV1Operation(_messages.Message):
         onboarding process. It is only available to Google internal services,
         and the service must be approved by chemist-dev@google.com in order to
         use this level.
+      PROMOTED: Used internally by Chemist. Promote low importance operation,
+        send immediately.
     """
     LOW = 0
     HIGH = 1
     DEBUG = 2
+    PROMOTED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1947,7 +1950,7 @@ class StreamProjectsLocationsStreamContentsCreateRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1975,7 +1978,7 @@ class StreamProjectsLocationsStreamContentsDeleteRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2026,7 +2029,7 @@ class StreamProjectsLocationsStreamContentsPatchRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2056,7 +2059,7 @@ class StreamProjectsLocationsStreamInstancesCreateRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2085,7 +2088,7 @@ class StreamProjectsLocationsStreamInstancesDeleteRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2136,7 +2139,7 @@ class StreamProjectsLocationsStreamInstancesPatchRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.

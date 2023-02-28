@@ -393,7 +393,6 @@ def AddInlineX509ParametersFlags(parser,
           choices=_VALID_EXTENDED_KEY_USAGES)).AddToParser(group)
 
   name_constraints_group = group.add_group(
-      hidden=True,
       help='The x509 name constraints configurations')
   AddNameConstraintParameterFlags(name_constraints_group)
 

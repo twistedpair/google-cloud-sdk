@@ -211,7 +211,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       try:
         poller.Poll(
             self.env,
-            force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
+            putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
       except retry.WaitException:
         raise ssh_utils.NetworkError()
 
@@ -226,4 +226,4 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     # Errors from the SCP command result in an ssh.CommandError being raised
     cmd.Run(
         self.env,
-        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
+        putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())

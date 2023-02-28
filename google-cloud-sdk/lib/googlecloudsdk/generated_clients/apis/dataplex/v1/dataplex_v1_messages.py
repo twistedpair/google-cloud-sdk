@@ -276,9 +276,9 @@ class DataplexProjectsLocationsDataScansJobsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the DataScanJob: projects/{project}/l
-      ocations/{location_id}/dataScans/{data_scan_id}/dataScanJobs/{data_scan_
-      job_id} where project refers to a project_id or project_number and
-      location_id refers to a GCP region.
+      ocations/{location_id}/dataScans/{data_scan_id}/jobs/{data_scan_job_id}
+      where project refers to a project_id or project_number and location_id
+      refers to a GCP region.
     view: Optional. Select the DataScanJob view to return. Defaults to BASIC.
   """
 

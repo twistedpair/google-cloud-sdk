@@ -43,7 +43,7 @@ properties:
   presentMatch:
     description: |-
       Specifies that the QueryParameterMatcher matches if the request contains
-      the query parameter. The match can success as long as the request contains
+      the query parameter. The match can succeed as long as the request contains
       the query parameter, regardless of whether the parameter has a value or
       not. Only one of `present_match` or exact_match must be set.
     type: boolean

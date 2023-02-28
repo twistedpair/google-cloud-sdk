@@ -108,9 +108,10 @@ def ImageVersionFromAirflowVersion(airflow_version):
 
 def IsImageVersionStringComposerV1(image_version):
   """Checks if string composer-X.Y.Z-airflow-A.B.C is Composer v1 version."""
-  return (not image_version or image_version.startswith('composer-1.') or
-          image_version.startswith('composer-1-') or
-          image_version.startswith('composer-latest'))
+  return image_version is not None and (
+      image_version.startswith('composer-1.')
+      or image_version.startswith('composer-1-')
+  )
 
 
 def IsDefaultImageVersion(image_version):
@@ -120,8 +121,8 @@ def IsDefaultImageVersion(image_version):
 def BuildDefaultComposerVersionWarning(image_version, airflow_version):
   """Builds warning message about using default Composer version."""
   message = (
-      '{} resolves to Cloud Composer current default version, which will change'
-      ' from 1 to 2 in an upcoming release and is subject to'
+      '{} resolves to Cloud Composer current default version, which changed'
+      ' from 1 to 2 in a recent release and is subject to'
       ' further changes in the future. Consider using'
       ' --image-version=composer-A-airflow-X[.Y[.Z]]. More info at'
       ' https://cloud.google.com/composer/docs/concepts/versioning/composer-versioning-overview#version-aliases'

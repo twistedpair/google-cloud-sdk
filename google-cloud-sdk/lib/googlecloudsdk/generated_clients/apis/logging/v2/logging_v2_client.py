@@ -249,7 +249,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+      r"""Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsLinksCreateRequest) input message
@@ -1765,7 +1765,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+      r"""Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link.
 
       Args:
         request: (LoggingFoldersLocationsBucketsLinksCreateRequest) input message
@@ -2800,7 +2800,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+      r"""Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link.
 
       Args:
         request: (LoggingLocationsBucketsLinksCreateRequest) input message
@@ -3716,7 +3716,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+      r"""Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsLinksCreateRequest) input message
@@ -4923,7 +4923,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+      r"""Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link.
 
       Args:
         request: (LoggingProjectsLocationsBucketsLinksCreateRequest) input message

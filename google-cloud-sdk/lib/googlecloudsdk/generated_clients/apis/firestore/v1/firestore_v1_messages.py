@@ -849,8 +849,6 @@ class FirestoreProjectsDatabasesDeleteRequest(_messages.Message):
     etag: The current etag of the Database. If an etag is provided and does
       not match the current etag of the database, deletion will be blocked and
       a FAILED_PRECONDITION error will be returned.
-    freeId: If set, will free the database_id associated with this database.
-      uid will be used as the resource id to identify this deleted database.
     name: Required. A name of the form
       `projects/{project_id}/databases/{database_id}`
     validateOnly: If set, validate the request and preview the response, but
@@ -859,9 +857,8 @@ class FirestoreProjectsDatabasesDeleteRequest(_messages.Message):
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  freeId = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  validateOnly = _messages.BooleanField(5)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):

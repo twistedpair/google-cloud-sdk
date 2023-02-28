@@ -660,8 +660,7 @@ def GetBulkNetworkInterfaces(
     project,
     location,
     scope,
-    skip_defaults,
-    support_stack_type=False,
+    skip_defaults
 ):
   """Gets network interfaces in bulk instance API."""
   bulk_args = [
@@ -670,9 +669,8 @@ def GetBulkNetworkInterfaces(
       'network_tier',
       'subnet',
       'no_address',
+      'stack_type',
   ]
-  if support_stack_type:
-    bulk_args.append('stack_type')
   if skip_defaults and not instance_utils.IsAnySpecified(args, *bulk_args):
     return []
   elif args.network_interface:
@@ -684,35 +682,20 @@ def GetBulkNetworkInterfaces(
         location=location,
         scope=scope)
   else:
-    if support_stack_type:
-      return [
-          CreateNetworkInterfaceMessage(
-              resources=holder.resources,
-              compute_client=compute_client,
-              network=args.network,
-              subnet=args.subnet,
-              no_address=args.no_address,
-              project=project,
-              location=location,
-              scope=scope,
-              network_tier=getattr(args, 'network_tier', None),
-              stack_type=getattr(args, 'stack_type', None),
-          )
-      ]
-    else:
-      return [
-          CreateNetworkInterfaceMessage(
-              resources=holder.resources,
-              compute_client=compute_client,
-              network=args.network,
-              subnet=args.subnet,
-              no_address=args.no_address,
-              project=project,
-              location=location,
-              scope=scope,
-              network_tier=getattr(args, 'network_tier', None),
-          )
-      ]
+    return [
+        CreateNetworkInterfaceMessage(
+            resources=holder.resources,
+            compute_client=compute_client,
+            network=args.network,
+            subnet=args.subnet,
+            no_address=args.no_address,
+            project=project,
+            location=location,
+            scope=scope,
+            network_tier=getattr(args, 'network_tier', None),
+            stack_type=getattr(args, 'stack_type', None),
+        )
+    ]
 
 
 def GetNetworkInterfaces(args, client, holder, project, location, scope,

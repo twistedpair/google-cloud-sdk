@@ -139,7 +139,7 @@ def RunSSHCommandToInstance(command_list,
 
   return_code = cmd.Run(
       ssh_helper.env,
-      force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
+      putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
       explicit_output_file=explicit_output_file,
       explicit_error_file=explicit_error_file)
   log.out.flush()

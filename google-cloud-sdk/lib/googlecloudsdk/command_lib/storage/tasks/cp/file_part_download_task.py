@@ -104,10 +104,12 @@ def _get_digesters(component_number, resource):
   if check_hashes != properties.CheckHashes.NEVER.value:
     if component_number is None and resource.md5_hash:
       digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
-    elif (
-        resource.crc32c_hash and
-        (check_hashes == properties.CheckHashes.ALWAYS.value or
-         fast_crc32c_util.check_if_fast_crc32c_available_and_install_if_not())):
+    elif resource.crc32c_hash and (
+        check_hashes == properties.CheckHashes.ALWAYS.value
+        or fast_crc32c_util.check_if_fast_crc32c_available(
+            install_if_missing=True
+        )
+    ):
       digesters[hash_util.HashAlgorithm.CRC32C] = fast_crc32c_util.get_crc32c()
 
   if not digesters:
@@ -159,6 +161,18 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     self._strategy = strategy
     self._user_request_args = user_request_args
 
+  def _calculate_deferred_hashes(self, digesters):
+    """DeferredCrc32c does not hash on-the-fly and needs a summation call."""
+    if isinstance(
+        digesters.get(hash_util.HashAlgorithm.CRC32C),
+        fast_crc32c_util.DeferredCrc32c,
+    ):
+      digesters[hash_util.HashAlgorithm.CRC32C].sum_file(
+          self._destination_resource.storage_url.object_name,
+          self._offset,
+          self._length,
+      )
+
   def _disable_in_flight_decompression(self, is_resumable_or_sliced_download):
     """Whether or not to disable on-the-fly decompression."""
     if self._do_not_decompress_flag:
@@ -200,6 +214,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           start_byte=start_byte,
           end_byte=end_byte)
 
+    self._calculate_deferred_hashes(digesters)
     if hash_util.HashAlgorithm.MD5 in digesters:
       calculated_digest = hash_util.get_base64_hash_digest_string(
           digesters[hash_util.HashAlgorithm.MD5])
@@ -207,12 +222,6 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           self._destination_resource.storage_url.object_name,
           self._source_resource.md5_hash, calculated_digest)
     elif hash_util.HashAlgorithm.CRC32C in digesters:
-      # Perform deferred hash calculations now.
-      if isinstance(digesters[hash_util.HashAlgorithm.CRC32C],
-                    fast_crc32c_util.DeferredCrc32c):
-        digesters[hash_util.HashAlgorithm.CRC32C].sum_file(
-            self._destination_resource.storage_url.object_name, self._offset,
-            self._length)
       # Only for one-shot composite object downloads as final CRC32C validated
       # in FinalizeSlicedDownloadTask.
       if self._component_number is None:
@@ -237,13 +246,17 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         files.BinaryFileWriterMode.TRUNCATE, digesters)
 
   def _catch_up_digesters(self, digesters, start_byte, end_byte):
-    with files.BinaryFileReader(
-        self._destination_resource.storage_url.object_name
-    ) as file_reader:
-      # Get hash of partially-downloaded file as start for validation.
-      for hash_algorithm in digesters:
-        digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
-            file_reader, hash_algorithm, start=start_byte, stop=end_byte)
+    """Gets hash of partially-downloaded file as start for validation."""
+    for hash_algorithm in digesters:
+      if isinstance(digesters[hash_algorithm], fast_crc32c_util.DeferredCrc32c):
+        # Deferred calculation runs at end, no on-the-fly.
+        continue
+      digesters[hash_algorithm] = hash_util.get_hash_from_file(
+          self._destination_resource.storage_url.object_name,
+          hash_algorithm,
+          start=start_byte,
+          stop=end_byte,
+      )
 
   def _perform_resumable_download(self, request_config, progress_callback,
                                   digesters):
@@ -336,6 +349,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       if start_byte > end_byte:
         log.status.Print('{} component {} already downloaded.'.format(
             self._source_resource, self._component_number))
+        self._calculate_deferred_hashes(digesters)
         self._catch_up_digesters(
             digesters,
             start_byte=self._offset,

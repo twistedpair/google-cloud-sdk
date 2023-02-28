@@ -154,17 +154,22 @@ def display_name_flag(parser, suffix='to act on'):
 
 def add_key_update_args(parser):
   """Add args for api-keys update command."""
-  update_set_group = parser.add_mutually_exclusive_group(required=False)
-  _add_clear_restrictions_arg(update_set_group)
-  _add_clear_annotations_arg(update_set_group)
-  restriction_group = update_set_group.add_argument_group()
+  update_set_restriction_group = parser.add_mutually_exclusive_group(
+      required=False
+  )
+  _add_clear_restrictions_arg(update_set_restriction_group)
+  restriction_group = update_set_restriction_group.add_argument_group()
   client_restriction_group = restriction_group.add_mutually_exclusive_group()
   _allowed_referrers_arg(client_restriction_group)
   _allowed_ips_arg(client_restriction_group)
   _allowed_bundle_ids(client_restriction_group)
   _allowed_application(client_restriction_group)
   _api_targets_arg(restriction_group)
-  _annotations(parser)
+  update_set_annotation_group = parser.add_mutually_exclusive_group(
+      required=False
+  )
+  _annotations(update_set_annotation_group)
+  _add_clear_annotations_arg(update_set_annotation_group)
 
 
 def add_key_create_args(parser):

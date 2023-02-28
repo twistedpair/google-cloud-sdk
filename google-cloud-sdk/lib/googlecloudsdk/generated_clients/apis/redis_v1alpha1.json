@@ -1054,27 +1054,20 @@
             "Redis cluster is being created.",
             "Redis cluster has been created and is fully usable.",
             "Redis cluster configuration is being updated.",
-            "Redis cluster is being deleted.",
-            "Redis instance is being reparied."
+            "Redis cluster is being deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
             "UPDATING",
-            "DELETING",
-            "REPAIRING"
+            "DELETING"
           ]
         },
         "uid": {
           "description": "Output only. System assigned, unique identifier for the cluster.",
           "readOnly": true,
           "type": "string"
-        },
-        "totalMemorySizeGb": {
-          "description": "Optional. Redis memory size in GB for the entire cluster.",
-          "type": "integer",
-          "format": "int32"
         },
         "replicaCount": {
           "description": "Optional. The number of replica nodes per shard.",

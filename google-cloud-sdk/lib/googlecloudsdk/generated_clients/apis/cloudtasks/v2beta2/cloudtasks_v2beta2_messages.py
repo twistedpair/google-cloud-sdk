@@ -986,10 +986,10 @@ class CreateTaskRequest(_messages.Message):
       de-duplication. If a task's ID is identical to that of an existing task
       or a task that was deleted or completed recently then the call will fail
       with ALREADY_EXISTS. If the task's queue was created using Cloud Tasks,
-      then another task with the same name can't be created for ~1hour after
+      then another task with the same name can't be created for ~1 hour after
       the original task was deleted or completed. If the task's queue was
       created using queue.yaml or queue.xml, then another task with the same
-      name can't be created for ~9days after the original task was deleted or
+      name can't be created for ~9 days after the original task was deleted or
       completed. Because there is an extra lookup cost to identify duplicate
       task names, these CreateTask calls have significantly increased latency.
       Using hashed strings for the task id or for the prefix of the task id is
@@ -1334,9 +1334,9 @@ class HttpTarget(_messages.Message):
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. When
-      specified, it will override HttpRequest for the task. Note that if the
-      value is set to HttpMethod the HttpRequest of the task will be ignored
-      at execution time.
+      specified, it overrides HttpRequest for the task. Note that if the value
+      is set to HttpMethod the HttpRequest of the task will be ignored at
+      execution time.
 
   Fields:
     headerOverrides: HTTP target headers. This map contains the header field
@@ -1358,7 +1358,7 @@ class HttpTarget(_messages.Message):
       comma-separated values. The size of the headers must be less than 80KB.
       Queue-level headers to override headers of all the tasks in the queue.
     httpMethod: The HTTP method to use for the request. When specified, it
-      will override HttpRequest for the task. Note that if the value is set to
+      overrides HttpRequest for the task. Note that if the value is set to
       HttpMethod the HttpRequest of the task will be ignored at execution
       time.
     oauthToken: If specified, an [OAuth
@@ -1372,14 +1372,14 @@ class HttpTarget(_messages.Message):
       HTTP request. This type of authorization can be used for many scenarios,
       including calling Cloud Run, or endpoints where you intend to validate
       the token yourself.
-    uriOverride: Uri override. When specified, modifies the execution Uri for
+    uriOverride: Uri override. When specified, overrides the execution Uri for
       all the tasks in the queue.
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    r"""The HTTP method to use for the request. When specified, it will
-    override HttpRequest for the task. Note that if the value is set to
-    HttpMethod the HttpRequest of the task will be ignored at execution time.
+    r"""The HTTP method to use for the request. When specified, it overrides
+    HttpRequest for the task. Note that if the value is set to HttpMethod the
+    HttpRequest of the task will be ignored at execution time.
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
@@ -1665,7 +1665,7 @@ class PathOverride(_messages.Message):
   r"""PathOverride. Path message defines path override for HTTP targets.
 
   Fields:
-    path: The URI path (e.g., a/b/c). Default is Empty string.
+    path: The URI path (e.g., /users/1234). Default is an empty string.
   """
 
   path = _messages.StringField(1)
@@ -1788,7 +1788,7 @@ class QueryOverride(_messages.Message):
 
   Fields:
     queryParams: The query parameters (e.g., qparam1=123&qparam2=456). Default
-      is Empty string.
+      is an empty string.
   """
 
   queryParams = _messages.StringField(1)
@@ -2427,20 +2427,21 @@ class UriOverride(_messages.Message):
       defaults to ALWAYS.
 
   Fields:
-    host: Host override. When specified, will replace the host part of the
-      task URL. For example, if the task URL is "https://www.google.com", and
-      host value is set to "example.net", the overridden URI will be changed
-      to "https://example.net". Host value cannot be an empty string.
-    pathOverride: URI path. When specified, will replace the existing path of
-      the task URL. Setting the path value to an empty string clears the URI
-      path segment.
-    port: Port override. When specified, will replace the port part of the
-      task URI. For instance, for a URI http://www.google.com/foo and
-      port=123, the overridden URI becomes http://www.google.com:123/foo. Note
-      that the port value must be a positive integer. Setting the port to 0
-      (Zero) clears the URI port.
-    queryOverride: URI Query. When specified, will replace the query part of
-      the task URI. Setting the query value to an empty string clears the URI
+    host: Host override. When specified, replaces the host part of the task
+      URL. For example, if the task URL is "https://www.google.com," and host
+      value is set to "example.net", the overridden URI will be changed to
+      "https://example.net." Host value cannot be an empty string
+      (INVALID_ARGUMENT).
+    pathOverride: URI path. When specified, replaces the existing path of the
+      task URL. Setting the path value to an empty string clears the URI path
+      segment.
+    port: Port override. When specified, replaces the port part of the task
+      URI. For instance, for a URI http://www.google.com/foo and port=123, the
+      overridden URI becomes http://www.google.com:123/foo. Note that the port
+      value must be a positive integer. Setting the port to 0 (Zero) clears
+      the URI port.
+    queryOverride: URI Query. When specified, replaces the query part of the
+      task URI. Setting the query value to an empty string clears the URI
       query segment.
     scheme: Scheme override. When specified, the task URI scheme is replaced
       by the provided value (HTTP or HTTPS).

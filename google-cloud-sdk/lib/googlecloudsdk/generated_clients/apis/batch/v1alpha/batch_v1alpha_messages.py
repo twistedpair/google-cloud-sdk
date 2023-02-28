@@ -72,6 +72,7 @@ class AllocationPolicy(_messages.Message):
     location: Location where compute resources should be allocated for the
       Job.
     network: The network policy.
+    placement: The placement policy.
     provisioningModels: Deprecated: please use
       instances[0].policy.provisioning_model instead.
     serviceAccount: Service account that VMs will run as.
@@ -131,9 +132,10 @@ class AllocationPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   location = _messages.MessageField('LocationPolicy', 5)
   network = _messages.MessageField('NetworkPolicy', 6)
-  provisioningModels = _messages.EnumField('ProvisioningModelsValueListEntryValuesEnum', 7, repeated=True)
-  serviceAccount = _messages.MessageField('ServiceAccount', 8)
-  serviceAccountEmail = _messages.StringField(9)
+  placement = _messages.MessageField('PlacementPolicy', 7)
+  provisioningModels = _messages.EnumField('ProvisioningModelsValueListEntryValuesEnum', 8, repeated=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 9)
+  serviceAccountEmail = _messages.StringField(10)
 
 
 class AttachedDisk(_messages.Message):
@@ -1433,6 +1435,25 @@ class PD(_messages.Message):
   device = _messages.StringField(1)
   disk = _messages.StringField(2)
   existing = _messages.BooleanField(3)
+
+
+class PlacementPolicy(_messages.Message):
+  r"""PlacementPolicy describes a group placement policy for the VMs
+  controlled by this AllocationPolicy.
+
+  Fields:
+    collocation: UNSPECIFIED vs. COLLOCATED (default UNSPECIFIED). Use
+      COLLOCATED when you want VMs to be located close to each other for low
+      network latency between the VMs.
+    maxDistance: When specified, causes the job to fail if more than
+      max_distance logical switches are required between VMs. Batch uses the
+      most compact possible placement of VMs even when max_distance is not
+      specified. An explicit max_distance makes that level of compactness a
+      strict requirement. Not yet implemented
+  """
+
+  collocation = _messages.StringField(1)
+  maxDistance = _messages.IntegerField(2)
 
 
 class ResourceUsage(_messages.Message):

@@ -219,24 +219,15 @@ def AddBulkCreateArgs(parser):
                             compute_flags.REGION_PROPERTY_EXPLANATION))
 
 
-def AddProvisionedIopsFlag(parser, arg_parsers, constants):
+def AddProvisionedIopsFlag(parser, arg_parsers):
   return parser.add_argument(
       '--provisioned-iops',
-      type=arg_parsers.BoundedInt(constants.MIN_PROVISIONED_IOPS,
-                                  constants.MAX_PROVISIONED_IOPS),
+      type=arg_parsers.BoundedInt(),
       help=(
-          'Provisioned IOPS of pd-extreme disk to create. Only for use with '
-          'disks of type pd-extreme. If specified, the value must be in the '
-          'range between {min} and {max}. If not specified, the default value '
-          'is {default}.').format(
-              min=constants.MIN_PROVISIONED_IOPS,
-              # TODO(b/246777440):
-              # Replace max=120000 with max=constants.MAX_PROVISIONED_IOPS.
-              # This is because the field is already GA, but hyperdisk-extreme
-              # no yet, so we will use the old text with old iops range for
-              # alpha.
-              max=120000,
-              default=constants.DEFAULT_PROVISIONED_IOPS))
+          'Provisioned IOPS of disk to create. Only for use with disks of type '
+          'pd-extreme and hyperdisk-extreme.'
+      ),
+  )
 
 
 def AddProvisionedThroughputFlag(parser, arg_parsers):

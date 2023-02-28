@@ -42,18 +42,18 @@ properties:
       `RouteRule`. This list has `OR` semantics: the request matches this
       `RouteRule` when any of the MatchRules are satisfied. However, predicates
       within a given `MatchRule` have `AND` semantics. All predicates within a
-      `MatchRule` must match for the request to match the rule. You may specify
-      up to 5 match rules.
+      `MatchRule` must match for the request to match the rule. You can specify
+      up to five match rules.
     type: array
     items:
       $ref: MatchRule.yaml
   origin:
     description: |-
-      Determines an alternate EdgeCacheOrigin resource that this route
-      responds with when a matching response is not in the cache. The
-      following are both valid paths to an `EdgeCacheOrigin` resource: *
-      `projects/my-project/locations/global/edgeCacheOrigins/my-origin` *
-      `my- origin` Only one of `origin` or url_redirect can be set.
+      An alternate EdgeCacheOrigin resource that this route responds with
+      when a matching response is not in the cache. The following are both
+      valid paths to an `EdgeCacheOrigin` resource: * `projects/my-
+      project/locations/global/edgeCacheOrigins/my-origin` * `my- origin`
+      Only one of `origin` or url_redirect can be set.
     type: string
   priority:
     description: |-

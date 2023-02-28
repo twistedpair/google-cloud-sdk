@@ -3146,12 +3146,14 @@ class PolicyControllerDeploymentConfig(_messages.Message):
   Fields:
     containerResources: Container resource requirements.
     podAntiAffinity: Pod anti-affinity enablement.
+    podTolerations: Pod tolerations of node taints.
     replicaCount: Pod replica count.
   """
 
   containerResources = _messages.MessageField('ResourceRequirements', 1)
   podAntiAffinity = _messages.BooleanField(2)
-  replicaCount = _messages.IntegerField(3)
+  podTolerations = _messages.MessageField('Toleration', 3, repeated=True)
+  replicaCount = _messages.IntegerField(4)
 
 
 class PolicyControllerFeatureSpec(_messages.Message):
@@ -4249,6 +4251,22 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class Toleration(_messages.Message):
+  r"""Toleration of a node taint.
+
+  Fields:
+    effect: Matches a taint effect.
+    key: Matches a taint key (not necessarily unique).
+    operator: Matches a taint operator.
+    value: Matches a taint value.
+  """
+
+  effect = _messages.StringField(1)
+  key = _messages.StringField(2)
+  operator = _messages.StringField(3)
+  value = _messages.StringField(4)
 
 
 class Type(_messages.Message):

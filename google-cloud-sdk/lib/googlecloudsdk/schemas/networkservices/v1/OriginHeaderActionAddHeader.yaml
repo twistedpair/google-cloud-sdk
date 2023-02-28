@@ -36,8 +36,8 @@ properties:
     type: string
   replace:
     description: |-
-      Whether to replace all existing headers with the same name. By default,
-      added header values are appended to the response or request headers with
-      the same field names. The added values are separated by commas. To
-      overwrite existing values, set `replace` to `true`.
+      Specifies whether to replace all existing headers with the same name. By
+      default, added header values are appended to the response or request
+      headers with the same field names. The added values are separated by
+      commas. To overwrite existing values, set `replace` to `true`.
     type: boolean

@@ -974,7 +974,8 @@
             "Nvidia Tesla A100 GPU.",
             "Nvidia A2 Ultra GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v4."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -986,7 +987,8 @@
             "NVIDIA_TESLA_A100",
             "NVIDIA_A100_80GB",
             "TPU_V2",
-            "TPU_V3"
+            "TPU_V3",
+            "TPU_V4_POD"
           ]
         },
         "acceleratorCount": {
@@ -3512,7 +3514,7 @@
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
             "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+            "The job is being updated. Only jobs in the `RUNNING` state can be updated. After updating, the job goes back to the `RUNNING` state."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -3899,7 +3901,7 @@
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
             "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+            "The job is being updated. Only jobs in the `RUNNING` state can be updated. After updating, the job goes back to the `RUNNING` state."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -4139,7 +4141,7 @@
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
             "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+            "The job is being updated. Only jobs in the `RUNNING` state can be updated. After updating, the job goes back to the `RUNNING` state."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -4849,7 +4851,7 @@
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
             "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+            "The job is being updated. Only jobs in the `RUNNING` state can be updated. After updating, the job goes back to the `RUNNING` state."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -5270,7 +5272,7 @@
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
             "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+            "The job is being updated. Only jobs in the `RUNNING` state can be updated. After updating, the job goes back to the `RUNNING` state."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -5987,7 +5989,7 @@
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
             "The job has expired.",
-            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+            "The job is being updated. Only jobs in the `RUNNING` state can be updated. After updating, the job goes back to the `RUNNING` state."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -6318,6 +6320,139 @@
       "description": "Request message for JobService.ResumeModelDeploymentMonitoringJob.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FindNeighborsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1FindNeighborsRequest",
+      "description": "The request message for MatchService.FindNeighbors.",
+      "type": "object",
+      "properties": {
+        "deployedIndexId": {
+          "description": "The ID of the DeploydIndex that will serve the request. This request is sent to a specific IndexEndpoint, as per the IndexEndpoint.network. That IndexEndpoint also has IndexEndpoint.deployed_indexes, and each such index has a DeployedIndex.id field. The value of the field below must equal one of the DeployedIndex.id fields of the IndexEndpoint that is being called for this request.",
+          "type": "string"
+        },
+        "queries": {
+          "description": "The list of queries.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FindNeighborsRequestQuery"
+          }
+        },
+        "returnFullDatapoint": {
+          "description": "If set to true, the full datapoints (including all vector values and restricts) of the nearest neighbors are returned. Note that returning full datapoint will significantly increase the latency and cost of the query.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FindNeighborsRequestQuery": {
+      "id": "GoogleCloudAiplatformV1beta1FindNeighborsRequestQuery",
+      "description": "A query to find a number of the nearest neighbors (most similar vectors) of a vector.",
+      "type": "object",
+      "properties": {
+        "datapoint": {
+          "description": "Required. The datapoint\/vector whose nearest neighbors should be searched for.",
+          "$ref": "GoogleCloudAiplatformV1beta1IndexDatapoint"
+        },
+        "neighborCount": {
+          "description": "The number of nearest neighbors to be retrieved from database for each query. If not set, will use the default from the service configuration (https:\/\/cloud.google.com\/vertex-ai\/docs\/matching-engine\/configuring-indexes#nearest-neighbor-search-config).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "perCrowdingAttributeNeighborCount": {
+          "description": "Crowding is a constraint on a neighbor list produced by nearest neighbor search requiring that no more than some value k' of the k neighbors returned have the same value of crowding_attribute. It's used for improving result diversity. This field is the maximum number of matches with the same crowding tag.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "approximateNeighborCount": {
+          "description": "The number of neighbors to find via approximate search before exact reordering is performed. If not set, the default value from scam config is used; if set, this value must be > 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "fractionLeafNodesToSearchOverride": {
+          "description": "The fraction of the number of leaves to search, set at query time allows user to tune search performance. This value increase result in both search accuracy and latency increase. The value should be between 0.0 and 1.0. If not set or set to 0.0, query uses the default value specified in NearestNeighborSearchConfig.TreeAHConfig.fraction_leaf_nodes_to_search.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FindNeighborsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1FindNeighborsResponse",
+      "description": "The response message for MatchService.FindNeighbors.",
+      "type": "object",
+      "properties": {
+        "nearestNeighbors": {
+          "description": "The nearest neighbors of the query datapoints.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FindNeighborsResponseNearestNeighbors"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FindNeighborsResponseNearestNeighbors": {
+      "id": "GoogleCloudAiplatformV1beta1FindNeighborsResponseNearestNeighbors",
+      "description": "Nearest neighbors for one query.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The ID of the query datapoint.",
+          "type": "string"
+        },
+        "neighbors": {
+          "description": "All its neighbors.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FindNeighborsResponseNeighbor"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1FindNeighborsResponseNeighbor": {
+      "id": "GoogleCloudAiplatformV1beta1FindNeighborsResponseNeighbor",
+      "description": "A neighbor of the query vector.",
+      "type": "object",
+      "properties": {
+        "datapoint": {
+          "description": "The datapoint of the neighbor. Note that full datapoints are returned only when \"return_full_datapoint\" is set to true. Otherwise, only the \"datapoint_id\" and \"crowding_tag\" fields are populated.",
+          "$ref": "GoogleCloudAiplatformV1beta1IndexDatapoint"
+        },
+        "distance": {
+          "description": "The distance between the neighbor and the query vector.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ReadIndexDatapointsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1ReadIndexDatapointsRequest",
+      "description": "The request message for MatchService.ReadIndexDatapoints.",
+      "type": "object",
+      "properties": {
+        "deployedIndexId": {
+          "description": "The ID of the DeploydIndex that will serve the request.",
+          "type": "string"
+        },
+        "ids": {
+          "description": "IDs of the datapoints to be searched for.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ReadIndexDatapointsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ReadIndexDatapointsResponse",
+      "description": "The response message for MatchService.ReadIndexDatapoints.",
+      "type": "object",
+      "properties": {
+        "datapoints": {
+          "description": "The result list of datapoints.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1IndexDatapoint"
+          }
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1MetadataStore": {
@@ -7783,6 +7918,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "modelExplanation": {
+          "description": "Output only. Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for tabular Models.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1ModelExplanation"
         }
       }
     },
@@ -7792,7 +7932,7 @@
       "type": "object",
       "properties": {
         "dimension": {
-          "description": "Output only. The dimension of the slice. Well-known dimensions are: * `annotationSpec`: This slice is on the test data that has either ground truth or prediction with AnnotationSpec.display_name equals to value.",
+          "description": "Output only. The dimension of the slice. Well-known dimensions are: * `annotationSpec`: This slice is on the test data that has either ground truth or prediction with AnnotationSpec.display_name equals to value. * `slice`: This slice is a user customized slice defined by its SliceSpec.",
           "readOnly": true,
           "type": "string"
         },
@@ -7800,6 +7940,77 @@
           "description": "Output only. The value of the dimension in this slice.",
           "readOnly": true,
           "type": "string"
+        },
+        "sliceSpec": {
+          "description": "Output only. Specification for how the data was sliced.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpec": {
+      "id": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpec",
+      "description": "LINT.IfChange Specification for how the data should be sliced.",
+      "type": "object",
+      "properties": {
+        "configs": {
+          "description": "Mapping configuration for this SliceSpec. The key is the name of the feature. By default, the key will be prefixed by \"instance\" as a dictionary prefix for Vertex Batch Predictions output format.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecSliceConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecSliceConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecSliceConfig",
+      "description": "Specification message containing the config for this SliceSpec. When `kind` is selected as `value` and\/or `range`, only a single slice will be computed. When `all_values` is present, a separate slice will be computed for each possible label\/value for the corresponding key in `config`. Examples, with feature zip_code with values 12345, 23334, 88888 and feature country with values \"US\", \"Canada\", \"Mexico\" in the dataset: Example 1: { \"zip_code\": { \"value\": { \"float_value\": 12345.0 } } } A single slice for any data with zip_code 12345 in the dataset. Example 2: { \"zip_code\": { \"range\": { \"low\": 12345, \"high\": 20000 } } } A single slice containing data where the zip_codes between 12345 and 20000 For this example, data with the zip_code of 12345 will be in this slice. Example 3: { \"zip_code\": { \"range\": { \"low\": 10000, \"high\": 20000 } }, \"country\": { \"value\": { \"string_value\": \"US\" } } } A single slice containing data where the zip_codes between 10000 and 20000 has the country \"US\". For this example, data with the zip_code of 12345 and country \"US\" will be in this slice. Example 4: { \"country\": { \"all_values\": { \"value\": true } } } Three slices are computed, one for each unique country in the dataset. Example 5: { \"country\": { \"all_values\": { \"value\": true } }, \"zip_code\": { \"value\": { \"float_value\": 12345.0 } } } Three slices are computed, one for each unique country in the dataset where the zip_code is also 12345. For this example, data with zip_code 12345 and country \"US\" will be in one slice, zip_code 12345 and country \"Canada\" in another slice, and zip_code 12345 and country \"Mexico\" in another slice, totaling 3 slices.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "A unique specific value for a given feature. Example: { \"value\": { \"string_value\": \"12345\" } }",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecValue"
+        },
+        "range": {
+          "description": "A range of values for a numerical feature. Example: {\"range\":{\"low\":10000.0,\"high\":50000.0}} will capture 12345 and 23334 in the slice.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecRange"
+        },
+        "allValues": {
+          "description": "If all_values is set to true, then all possible labels of the keyed feature will have another slice computed. Example: {\"all_values\":{\"value\":true}}",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecValue": {
+      "id": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecValue",
+      "description": "Single value that supports strings and floats.",
+      "type": "object",
+      "properties": {
+        "stringValue": {
+          "description": "String type.",
+          "type": "string"
+        },
+        "floatValue": {
+          "description": "Float type.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecRange": {
+      "id": "GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecRange",
+      "description": "A range of values for slice(s). `low` is inclusive, `high` is exclusive.",
+      "type": "object",
+      "properties": {
+        "low": {
+          "description": "Inclusive low value for the range.",
+          "type": "number",
+          "format": "float"
+        },
+        "high": {
+          "description": "Exclusive high value for the range.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -10782,7 +10993,8 @@
             "Nvidia Tesla A100 GPU.",
             "Nvidia A2 Ultra GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v4."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -10794,7 +11006,8 @@
             "NVIDIA_TESLA_A100",
             "NVIDIA_A100_80GB",
             "TPU_V2",
-            "TPU_V3"
+            "TPU_V3",
+            "TPU_V4_POD"
           ]
         },
         "acceleratorCount": {
@@ -14002,7 +14215,8 @@
             "Nvidia Tesla T4 GPU.",
             "Nvidia Tesla A100 GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v4."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -14013,7 +14227,8 @@
             "NVIDIA_TESLA_T4",
             "NVIDIA_TESLA_A100",
             "TPU_V2",
-            "TPU_V3"
+            "TPU_V3",
+            "TPU_V4_POD"
           ]
         },
         "acceleratorCount": {
@@ -19300,7 +19515,8 @@
             "Nvidia Tesla T4 GPU.",
             "Nvidia Tesla A100 GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v4."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -19311,7 +19527,8 @@
             "NVIDIA_TESLA_T4",
             "NVIDIA_TESLA_A100",
             "TPU_V2",
-            "TPU_V3"
+            "TPU_V3",
+            "TPU_V4_POD"
           ]
         },
         "acceleratorCount": {
@@ -25383,7 +25600,8 @@
             "Nvidia Tesla T4 GPU.",
             "Nvidia Tesla A100 GPU.",
             "TPU v2.",
-            "TPU v3."
+            "TPU v3.",
+            "TPU v4."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -25394,7 +25612,8 @@
             "NVIDIA_TESLA_T4",
             "NVIDIA_TESLA_A100",
             "TPU_V2",
-            "TPU_V3"
+            "TPU_V3",
+            "TPU_V4_POD"
           ]
         },
         "acceleratorCount": {
@@ -34960,6 +35179,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Update an existing DeployedIndex under an IndexEndpoint."
+                },
+                "findNeighbors": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.findNeighbors",
+                  "path": "v1beta1/{+indexEndpoint}:findNeighbors",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:findNeighbors",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "indexEndpoint": {
+                      "description": "Required. The name of the index endpoint. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "indexEndpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1FindNeighborsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1FindNeighborsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Finds the nearest neighbors of each vector within the request."
+                },
+                "readIndexDatapoints": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.readIndexDatapoints",
+                  "path": "v1beta1/{+indexEndpoint}:readIndexDatapoints",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:readIndexDatapoints",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "indexEndpoint": {
+                      "description": "Required. The name of the index endpoint. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "indexEndpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ReadIndexDatapointsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ReadIndexDatapointsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Reads the datapoints\/vectors of the given IDs. A maximum of 1000 datapoints can be retrieved in a batch."
                 }
               }
               ,

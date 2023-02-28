@@ -654,7 +654,8 @@ class ExecutionSpec(_messages.Message):
       parallelism.
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
-      success of that task signals the success of the execution.
+      success of that task signals the success of the execution. Defaults to
+      1.
     template: Optional. The template used to create tasks for this execution.
   """
 
@@ -1537,7 +1538,6 @@ class ObjectMeta(_messages.Message):
 
 class Overrides(_messages.Message):
   r"""RunJob Overrides that contains Execution fields to be overridden on the
-
   go.
 
   Fields:
@@ -1549,9 +1549,7 @@ class Overrides(_messages.Message):
       containers. Will replace existing timeout_seconds value.
   """
 
-  containerOverrides = _messages.MessageField(
-      'ContainerOverride', 1, repeated=True
-  )
+  containerOverrides = _messages.MessageField('ContainerOverride', 1, repeated=True)
   taskCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   timeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
@@ -3799,7 +3797,7 @@ class TaskSpec(_messages.Message):
       disallow a number of fields on this Container. Only a single container
       may be provided.
     maxRetries: Optional. Number of retries allowed per task, before marking
-      this job failed.
+      this job failed. Defaults to 3.
     serviceAccountName: Optional. Email address of the IAM service account
       associated with the task of a job execution. The service account
       represents the identity of the running task, and determines what
@@ -3808,7 +3806,7 @@ class TaskSpec(_messages.Message):
     timeoutSeconds: Optional. Duration in seconds the task may be active
       before the system will actively try to mark it failed and kill
       associated containers. This applies per attempt of a task, meaning each
-      retry can run for the full timeout.
+      retry can run for the full timeout. Defaults to 600 seconds.
     volumes: Optional. List of volumes that can be mounted by containers
       belonging to the task. More info:
       https://kubernetes.io/docs/concepts/storage/volumes

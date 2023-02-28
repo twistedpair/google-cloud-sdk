@@ -543,6 +543,7 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
             update_mask.get_update_mask(
                 args,
                 update_mask.BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS),
+        'validateOnly': getattr(args, 'validate_only', False),
         'bareMetalAdminCluster':
             self._bare_metal_admin_cluster_for_update(args),
     }
@@ -553,7 +554,17 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
   def _bare_metal_admin_cluster_for_update(self, args):
     """Constructs proto message BareMetalAdminCluster."""
     kwargs = {
+        'description': getattr(args, 'description', None),
         'bareMetalVersion': getattr(args, 'version', None),
+        'networkConfig': self._network_config(args),
+        'controlPlane': self._control_plane_config(args),
+        'loadBalancer': self._load_balancer_config(args),
+        'storage': self._storage_config(args),
+        'proxy': self._proxy_config(args),
+        'clusterOperations': self._cluster_operations_config(args),
+        'maintenanceConfig': self._maintenance_config(args),
+        'nodeConfig': self._workload_node_config(args),
+        'nodeAccessConfig': self._node_access_config(args),
     }
     if any(kwargs.values()):
       return self._messages.BareMetalAdminCluster(**kwargs)

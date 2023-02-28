@@ -1314,6 +1314,13 @@
         "podAntiAffinity": {
           "description": "Pod anti-affinity enablement.",
           "type": "boolean"
+        },
+        "podTolerations": {
+          "description": "Pod tolerations of node taints.",
+          "type": "array",
+          "items": {
+            "$ref": "Toleration"
+          }
         }
       }
     },
@@ -1343,6 +1350,29 @@
         },
         "cpu": {
           "description": "CPU requirement expressed in Kubernetes resource units.",
+          "type": "string"
+        }
+      }
+    },
+    "Toleration": {
+      "id": "Toleration",
+      "description": "Toleration of a node taint.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Matches a taint key (not necessarily unique).",
+          "type": "string"
+        },
+        "operator": {
+          "description": "Matches a taint operator.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Matches a taint value.",
+          "type": "string"
+        },
+        "effect": {
+          "description": "Matches a taint effect.",
           "type": "string"
         }
       }

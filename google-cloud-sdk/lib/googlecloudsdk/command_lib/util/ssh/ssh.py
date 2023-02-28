@@ -1484,7 +1484,7 @@ class SSHCommand(object):
         args.extend(self.remote_command)
     return args
 
-  def Run(self, env=None, force_connect=False,
+  def Run(self, env=None, putty_force_connect=False,
           explicit_output_file=None,
           explicit_error_file=None,
           explicit_input_file=None):
@@ -1492,9 +1492,10 @@ class SSHCommand(object):
 
     Args:
       env: Environment, environment to run in (or current if None).
-      force_connect: bool, whether to inject 'y' into the prompts for `plink`,
-        which is insecure and not recommended. It serves legacy compatibility
-        purposes only.
+      putty_force_connect: bool, whether to inject 'y' into the prompts for
+        `plink`, which is insecure and not recommended. It serves legacy
+        compatibility purposes for existing usages only; DO NOT SET THIS IN NEW
+        CODE.
       explicit_output_file: Pipe stdout into this file-like object
       explicit_error_file: Pipe stderr into this file-like object
       explicit_input_file: Pipe stdin from this file-like object
@@ -1511,7 +1512,7 @@ class SSHCommand(object):
     args = self.Build(env)
     log.debug('Running command [{}].'.format(' '.join(args)))
     # PuTTY and friends always ask on fingerprint mismatch
-    in_str = 'y\n' if env.suite is Suite.PUTTY and force_connect else None
+    in_str = 'y\n' if env.suite is Suite.PUTTY and putty_force_connect else None
 
     # We pipe stdout to a specific file
     extra_popen_kwargs = {}
@@ -1697,14 +1698,15 @@ class SCPCommand(object):
     args.append(self.destination.ToArg())
     return args
 
-  def Run(self, env=None, force_connect=False):
+  def Run(self, env=None, putty_force_connect=False):
     """Run the SCP command using the given environment.
 
     Args:
       env: Environment, environment to run in (or current if None).
-      force_connect: bool, whether to inject 'y' into the prompts for `pscp`,
-        which is insecure and not recommended. It serves legacy compatibility
-        purposes only.
+      putty_force_connect: bool, whether to inject 'y' into the prompts for
+        `pscp`, which is insecure and not recommended. It serves legacy
+        compatibility purposes for existing usages only; DO NOT SET THIS IN NEW
+        CODE.
 
     Raises:
       InvalidConfigurationError: The source/destination configuration is
@@ -1718,7 +1720,7 @@ class SCPCommand(object):
     # pscp asks on (1) first connection and (2) fingerprint mismatch.
     # This ensures pscp will always allow the connection.
     # TODO(b/35355795): Work out a better solution for PuTTY.
-    in_str = 'y\n' if env.suite is Suite.PUTTY and force_connect else None
+    in_str = 'y\n' if env.suite is Suite.PUTTY and putty_force_connect else None
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str)
     if status:
       raise CommandError(args[0], return_code=status)
@@ -1758,7 +1760,7 @@ class SSHPoller(object):
     self._sleep_ms = sleep_ms
     self._retryer = retry.Retryer(max_wait_ms=max_wait_ms, jitter_ms=0)
 
-  def Poll(self, env=None, force_connect=False):
+  def Poll(self, env=None, putty_force_connect=False):
     """Poll a remote for connectivity within the given timeout.
 
     The SSH command may prompt the user. It is recommended to wrap this call in
@@ -1767,9 +1769,10 @@ class SSHPoller(object):
 
     Args:
       env: Environment, environment to run in (or current if None).
-      force_connect: bool, whether to inject 'y' into the prompts for `plink`,
-        which is insecure and not recommended. It serves legacy compatibility
-        purposes only.
+      putty_force_connect: bool, whether to inject 'y' into the prompts for
+        `plink`, which is insecure and not recommended. It serves legacy
+        compatibility purposes for existing usages only; DO NOT SET THIS IN NEW
+        CODE.
 
     Raises:
       MissingCommandError: If SSH command(s) not found.
@@ -1779,7 +1782,7 @@ class SSHPoller(object):
     """
     self._retryer.RetryOnException(
         self.ssh_command.Run,
-        kwargs={'env': env, 'force_connect': force_connect},
+        kwargs={'env': env, 'putty_force_connect': putty_force_connect},
         should_retry_if=lambda exc_type, *args: exc_type is CommandError,
         sleep_ms=self._sleep_ms)
 

@@ -28,22 +28,22 @@ properties:
   requestHeadersToAdd:
     description: |-
       A list of headers to add to the request prior to forwarding the request to
-      the origin. You may add a maximum of 5 request headers.
+      the origin. You can add a maximum of five request headers.
     type: array
     items:
       $ref: HeaderActionAddHeader.yaml
   requestHeadersToRemove:
     description: |-
-      A list of header names to remove from the request prior to forwarding
-      the request to the origin. You may specify up to 10 request headers to
+      A list of header names to remove from the request before forwarding
+      the request to the origin. You can specify up to 10 request headers to
       remove.
     type: array
     items:
       $ref: HeaderActionRemoveHeader.yaml
   responseHeadersToAdd:
     description: |-
-      A list of headers to add to the response prior to sending it back
-      to the client. You may add a maximum of 5 response headers.
+      A list of headers to add to the response before sending it back to
+      the client. You can add a maximum of five response headers.
       Response headers are only sent to the client, and do not have an
       effect on the cache serving the response.
     type: array
@@ -51,10 +51,10 @@ properties:
       $ref: HeaderActionAddHeader.yaml
   responseHeadersToRemove:
     description: |-
-      A list of headers to remove from the response prior to sending
+      A list of headers to remove from the response before sending
       it back to the client. Response headers are only sent to the
       client, and do not have an effect on the cache serving the
-      response. You may specify up to 10 response headers to remove.
+      response. You can specify up to 10 response headers to remove.
     type: array
     items:
       $ref: HeaderActionRemoveHeader.yaml

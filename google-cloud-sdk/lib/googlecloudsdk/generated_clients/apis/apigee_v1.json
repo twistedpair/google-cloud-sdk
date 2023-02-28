@@ -3957,7 +3957,7 @@
           "$ref": "GoogleCloudApigeeV1GraphQLOperationGroup"
         },
         "grpcOperationGroup": {
-          "description": "Configuration used to group Apigee proxies with gRPC services and method names. This grouping allows us to set quota for a particular gRPC proxy and method name for a particular gRPC proxy request. If a method name is not set, this implies quota and authorization are applied to all gRPC methods implemented by that proxy.",
+          "description": "Configuration used to group Apigee proxies with gRPC services and method names. This grouping allows us to set quota for a particular proxy with the gRPC service name and method. If a method name is not set, this implies quota and authorization are applied to all gRPC methods implemented by that proxy for that particular gRPC service.",
           "$ref": "GoogleCloudApigeeV1GrpcOperationGroup"
         },
         "quotaCounterScope": {
@@ -4180,6 +4180,10 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1Attribute"
           }
+        },
+        "service": {
+          "description": "Required. gRPC Service name associated to be associated with the API proxy, on which quota rules can be applied upon.",
+          "type": "string"
         }
       }
     },
@@ -12182,7 +12186,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The filter expression to filter List results. https:\/\/google.aip.dev\/160. Allows for filtering over: state, create_time, update_time and api_proxies. E.g.: create_time >= \"2012-04-21T11:30:00-04:00\" AND api_proxies: foo. Filtering by action is not supported https:\/\/github.com\/aip-dev\/google.aip.dev\/issues\/624",
+                      "description": "The filter expression to filter List results. https:\/\/google.aip.dev\/160. Allows for filtering over: state and api_proxies. E.g.: state = ACTIVE AND apiProxies:foo. Filtering by action is not supported https:\/\/github.com\/aip-dev\/google.aip.dev\/issues\/624",
                       "location": "query",
                       "type": "string"
                     }

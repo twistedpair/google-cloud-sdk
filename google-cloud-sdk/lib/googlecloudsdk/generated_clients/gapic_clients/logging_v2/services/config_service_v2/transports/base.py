@@ -247,6 +247,26 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
                 default_timeout=60.0,
                 client_info=client_info,
             ),
+            self.create_link: gapic_v1.method.wrap_method(
+                self.create_link,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.delete_link: gapic_v1.method.wrap_method(
+                self.delete_link,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.list_links: gapic_v1.method.wrap_method(
+                self.list_links,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.get_link: gapic_v1.method.wrap_method(
+                self.get_link,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.list_exclusions: gapic_v1.method.wrap_method(
                 self.list_exclusions,
                 default_retry=retries.Retry(
@@ -496,6 +516,42 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
             Union[
                 empty_pb2.Empty,
                 Awaitable[empty_pb2.Empty]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def create_link(self) -> Callable[
+            [logging_config.CreateLinkRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def delete_link(self) -> Callable[
+            [logging_config.DeleteLinkRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def list_links(self) -> Callable[
+            [logging_config.ListLinksRequest],
+            Union[
+                logging_config.ListLinksResponse,
+                Awaitable[logging_config.ListLinksResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def get_link(self) -> Callable[
+            [logging_config.GetLinkRequest],
+            Union[
+                logging_config.Link,
+                Awaitable[logging_config.Link]
             ]]:
         raise NotImplementedError()
 

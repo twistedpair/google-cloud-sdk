@@ -1080,6 +1080,47 @@ class RegistrationPolicy(_messages.Message):
   resourcePolicies = _messages.MessageField('ResourcePolicy', 3, repeated=True)
 
 
+class ReliabilityAttributes(_messages.Message):
+  r"""Reliability Attributes associated with workload.
+
+  Enums:
+    CriticalityValueValuesEnum: Optional. Criticality with respect to
+      reliability associated with this workload.
+
+  Fields:
+    criticality: Optional. Criticality with respect to reliability associated
+      with this workload.
+    owners: Optional. List of contacts for reliability owners of this service.
+      These owners indicate who to contact in case of a reliability issue,
+      such as an outage.
+  """
+
+  class CriticalityValueValuesEnum(_messages.Enum):
+    r"""Optional. Criticality with respect to reliability associated with this
+    workload.
+
+    Values:
+      CRITICALITY_UNSPECIFIED: Default. Workload is not supported and is not
+        explected to provide any guarantees.
+      MISSION_CRITICAL: The workload is mission-critical to the organization.
+      UNIT_CRITICAL: The workload is critical to a unit within the
+        organization.
+      HIGH: The workload may not directly affect the mission of a specific
+        unit, but is of high importance to the organization.
+      MEDIUM: The workload is of medium importance to the organization.
+      LOW: The workload is of low importance to the organization.
+    """
+    CRITICALITY_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    UNIT_CRITICAL = 2
+    HIGH = 3
+    MEDIUM = 4
+    LOW = 5
+
+  criticality = _messages.EnumField('CriticalityValueValuesEnum', 1)
+  owners = _messages.MessageField('ContactInfo', 2, repeated=True)
+
+
 class ResolveServiceRequest(_messages.Message):
   r"""The request message for LookupService.ResolveService. Looks up a service
   by its name, returns the service and its endpoints.
@@ -1212,6 +1253,48 @@ class Rule(_messages.Message):
   logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
   notIn = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class SecurityAttributes(_messages.Message):
+  r"""Security Attributes associated with workload.
+
+  Enums:
+    CriticalityValueValuesEnum: Optional. Criticality with respect to security
+      associated with this workload. An example of a security-critical
+      workload could be a workload handling sensitive data.
+
+  Fields:
+    criticality: Optional. Criticality with respect to security associated
+      with this workload. An example of a security-critical workload could be
+      a workload handling sensitive data.
+    owners: Optional. List of contacts for security owners of this service.
+  """
+
+  class CriticalityValueValuesEnum(_messages.Enum):
+    r"""Optional. Criticality with respect to security associated with this
+    workload. An example of a security-critical workload could be a workload
+    handling sensitive data.
+
+    Values:
+      CRITICALITY_UNSPECIFIED: Default. Workload is not supported and is not
+        explected to provide any guarantees.
+      MISSION_CRITICAL: The workload is mission-critical to the organization.
+      UNIT_CRITICAL: The workload is critical to a unit within the
+        organization.
+      HIGH: The workload may not directly affect the mission of a specific
+        unit, but is of high importance to the organization.
+      MEDIUM: The workload is of medium importance to the organization.
+      LOW: The workload is of low importance to the organization.
+    """
+    CRITICALITY_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    UNIT_CRITICAL = 2
+    HIGH = 3
+    MEDIUM = 4
+    LOW = 5
+
+  criticality = _messages.EnumField('CriticalityValueValuesEnum', 1)
+  owners = _messages.MessageField('ContactInfo', 2, repeated=True)
 
 
 class Service(_messages.Message):
@@ -2571,30 +2654,49 @@ class Workload(_messages.Message):
   services in Service Directory and to which policies can be applied.
 
   Fields:
+    businessOwners: Optional. List of contacts for business owners of this
+      workload. This includes team members who are responsible for business
+      outcomes, customer escalations, or P&L of a service.
     components: Optional. List of components (as schemeless URIs) that are
       part of this Workload. Example for Google Compute Engine components: [
       //compute.googleapis.com/projects/1234/zones/us-east1-c/instances/mig1,
       //compute.googleapis.com/projects/1234/zones/us-east1-a/instances/mig2]
     createTime: Output only. The timestamp when this workload was created in
       Service Directory.
+    devOwners: Optional. List of contacts for developer owners of this
+      workload. This includes application engineers and architects writing and
+      updating this workload.
     displayName: Optional. Friendly name. User modifiable.
     internalAttributes: Optional. Internal Attributes associated with this
       workload. This field should stay GOOGLE_INTERNAL post launch.
     name: Immutable. The resource name for the workload in the format
       `projects/*/locations/*/namespaces/*/workloads/*`.
+    operatorOwners: Optional. List of contacts for operator owners of this
+      workload. This includes SRE and ops teams that are responsible for
+      troubleshooting a workload, responding to outages or unhealthiness, and
+      maintaining availability.
+    reliabilityAttributes: Optional. Properties related to reliability of this
+      workload.
+    securityAttributes: Optional. Properties related to security of this
+      workload.
     uid: Output only. A globally unique identifier (in UUID4 format) for this
       workload.
     updateTime: Output only. The timestamp when the workload was last updated
       in Service Directory.
   """
 
-  components = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  internalAttributes = _messages.MessageField('InternalAttributes', 4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
+  components = _messages.StringField(2, repeated=True)
+  createTime = _messages.StringField(3)
+  devOwners = _messages.MessageField('ContactInfo', 4, repeated=True)
+  displayName = _messages.StringField(5)
+  internalAttributes = _messages.MessageField('InternalAttributes', 6)
+  name = _messages.StringField(7)
+  operatorOwners = _messages.MessageField('ContactInfo', 8, repeated=True)
+  reliabilityAttributes = _messages.MessageField('ReliabilityAttributes', 9)
+  securityAttributes = _messages.MessageField('SecurityAttributes', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 encoding.AddCustomJsonFieldMapping(

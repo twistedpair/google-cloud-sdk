@@ -119,6 +119,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_CLUSTERS_NODES = (
+      'projects.locations.privateClouds.clusters.nodes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
+              '{privateCloudsId}/clusters/{clustersId}/nodes/{nodesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PRIVATECLOUDS_EXTERNALADDRESSES = (
       'projects.locations.privateClouds.externalAddresses',
       '{+name}',

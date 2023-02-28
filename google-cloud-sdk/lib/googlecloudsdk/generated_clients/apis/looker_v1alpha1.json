@@ -524,11 +524,11 @@
       "type": "object",
       "properties": {
         "startDate": {
-          "description": "Required. If the year of the start date is empty, the year of the end date also must be empty. This indicates a yearly recurrence.",
+          "description": "Required. Start date of the deny maintenance period",
           "$ref": "Date"
         },
         "endDate": {
-          "description": "Required. If the year of the end date is empty, the year of the start date also must be empty. This indicates a yearly recurrence.",
+          "description": "Required. End date of the deny maintenance period",
           "$ref": "Date"
         },
         "time": {

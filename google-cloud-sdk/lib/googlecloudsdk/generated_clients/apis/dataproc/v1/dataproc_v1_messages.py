@@ -2892,8 +2892,8 @@ class GceClusterConfig(_messages.Message):
       (see Using Subnetworks
       (https://cloud.google.com/compute/docs/subnetworks) for more
       information).A full URL, partial URI, or short name are valid. Examples:
-      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/[reg
-      ion]/default projects/[project_id]/regions/[region]/default default
+      https://www.googleapis.com/compute/v1/projects/[project_id]/global/netwo
+      rks/default projects/[project_id]/global/networks/default default
     nodeGroupAffinity: Optional. Node Group Affinity for sole-tenant clusters.
     privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal

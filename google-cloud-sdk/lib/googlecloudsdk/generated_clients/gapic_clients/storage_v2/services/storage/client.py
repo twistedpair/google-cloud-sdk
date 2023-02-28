@@ -668,10 +668,15 @@ class StorageClient(metaclass=StorageClientMeta):
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             bucket (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket):
-                Properties of the new bucket being inserted. The project
-                and name of the bucket are specified in the parent and
-                bucket_id fields, respectively. Populating those fields
-                in ``bucket`` will result in an error.
+                Properties of the new bucket being inserted. The name of
+                the bucket is specified in the ``bucket_id`` field.
+                Populating ``bucket.name`` field will result in an
+                error. The project of the bucket must be specified in
+                the ``bucket.project`` field. This field must be in
+                ``projects/{projectIdentifier}`` format,
+                {projectIdentifier} can be the project ID or project
+                number. The ``parent`` field must be either empty or
+                ``projects/_``.
 
                 This corresponds to the ``bucket`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -2091,9 +2096,12 @@ class StorageClient(metaclass=StorageClientMeta):
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
-        r"""Deletes an object and its metadata. Deletions are permanent if
-        versioning is not enabled for the bucket, or if the
-        ``generation`` parameter is used.
+        r"""Deletes an object and its metadata.
+        Deletions are normally permanent when versioning is
+        disabled or whenever the generation parameter is used.
+        However, if soft delete is enabled for the bucket,
+        deleted objects can be restored using RestoreObject
+        until the soft delete retention period has passed.
 
         .. code-block:: python
 
@@ -3280,8 +3288,8 @@ class StorageClient(metaclass=StorageClientMeta):
                 GetServiceAccount.
             project (str):
                 Required. Project ID, in the format
-                of "projects/<projectIdentifier>".
-                <projectIdentifier> can be the project
+                of "projects/{projectIdentifier}".
+                {projectIdentifier} can be the project
                 ID or project number.
 
                 This corresponds to the ``project`` field
@@ -3391,8 +3399,8 @@ class StorageClient(metaclass=StorageClientMeta):
                 Required. The project that the
                 HMAC-owning service account lives in, in
                 the format of
-                "projects/<projectIdentifier>".
-                <projectIdentifier> can be the project
+                "projects/{projectIdentifier}".
+                {projectIdentifier} can be the project
                 ID or project number.
 
                 This corresponds to the ``project`` field
@@ -3513,8 +3521,8 @@ class StorageClient(metaclass=StorageClientMeta):
             project (str):
                 Required. The project that owns the
                 HMAC key, in the format of
-                "projects/<projectIdentifier>".
-                <projectIdentifier> can be the project
+                "projects/{projectIdentifier}".
+                {projectIdentifier} can be the project
                 ID or project number.
 
                 This corresponds to the ``project`` field
@@ -3621,8 +3629,8 @@ class StorageClient(metaclass=StorageClientMeta):
             project (str):
                 Required. The project the HMAC key
                 lies in, in the format of
-                "projects/<projectIdentifier>".
-                <projectIdentifier> can be the project
+                "projects/{projectIdentifier}".
+                {projectIdentifier} can be the project
                 ID or project number.
 
                 This corresponds to the ``project`` field
@@ -3731,8 +3739,8 @@ class StorageClient(metaclass=StorageClientMeta):
             project (str):
                 Required. The project to list HMAC
                 keys for, in the format of
-                "projects/<projectIdentifier>".
-                <projectIdentifier> can be the project
+                "projects/{projectIdentifier}".
+                {projectIdentifier} can be the project
                 ID or project number.
 
                 This corresponds to the ``project`` field

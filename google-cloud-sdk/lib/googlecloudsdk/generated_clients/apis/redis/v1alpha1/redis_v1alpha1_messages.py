@@ -99,8 +99,6 @@ class Cluster(_messages.Message):
       instance-with-custom-machine-type#memory_units.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
-    totalMemorySizeGb: Optional. Redis memory size in GB for the entire
-      cluster.
     transitEncryptionMode: Optional. The in-transit encryption for the Redis
       cluster. If not provided, encryption is disabled for the cluster.
     uid: Output only. System assigned, unique identifier for the cluster.
@@ -129,14 +127,12 @@ class Cluster(_messages.Message):
       ACTIVE: Redis cluster has been created and is fully usable.
       UPDATING: Redis cluster configuration is being updated.
       DELETING: Redis cluster is being deleted.
-      REPAIRING: Redis instance is being reparied.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     UPDATING = 3
     DELETING = 4
-    REPAIRING = 5
 
   class TransitEncryptionModeValueValuesEnum(_messages.Enum):
     r"""Optional. The in-transit encryption for the Redis cluster. If not
@@ -160,9 +156,8 @@ class Cluster(_messages.Message):
   replicaCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   sizeGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 8)
-  totalMemorySizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 9)
+  uid = _messages.StringField(10)
 
 
 class Empty(_messages.Message):

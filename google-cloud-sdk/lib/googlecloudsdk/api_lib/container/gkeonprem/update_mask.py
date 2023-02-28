@@ -107,6 +107,21 @@ BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
 
 BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'version': 'bare_metal_version',
+    'description': 'description',
+    'control_plane_node_configs_from_file':
+        'control_plane.node_pool_config.node_pool_config.node_configs',
+    'control_plane_node_labels':
+        'control_plane.node_pool_config.node_pool_config.labels',
+    'control_plane_node_taints':
+        'control_plane.node_pool_config.node_pool_config.taints',
+    'api_server_args': 'control_plane.api_server_args',
+    'uri': 'proxy.uri',
+    'no_proxy': 'proxy.no_proxy',
+    'enable_application_logs': 'cluster_operations.enable_application_logs',
+    'maintenance_address_cidr_blocks':
+        'maintenance_config.maintenance_address_cidr_blocks',
+    'max_pods_per_node': 'node_config.max_pods_per_node',
+    'login_user': 'node_access_config.login_user',
 }
 
 

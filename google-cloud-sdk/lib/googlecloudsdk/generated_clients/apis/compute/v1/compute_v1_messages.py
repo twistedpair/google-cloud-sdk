@@ -56853,13 +56853,13 @@ class RouterBgpPeer(_messages.Message):
     advertiseMode: User-specified flag to indicate which mode to use for
       advertisement.
     advertisedGroups: User-specified list of prefix groups to advertise in
-      custom mode, which can take one of the following options: - ALL_SUBNETS:
-      Advertises all available subnets, including peer VPC subnets. -
-      ALL_VPC_SUBNETS: Advertises the router's own VPC subnets. Note that this
-      field can only be populated if advertise_mode is CUSTOM and overrides
-      the list defined for the router (in the "bgp" message). These groups are
-      advertised in addition to any specified prefixes. Leave this field blank
-      to advertise no custom groups.
+      custom mode, which currently supports the following option: -
+      ALL_SUBNETS: Advertises all of the router's own VPC subnets. This
+      excludes any routes learned for subnets that use VPC Network Peering.
+      Note that this field can only be populated if advertise_mode is CUSTOM
+      and overrides the list defined for the router (in the "bgp" message).
+      These groups are advertised in addition to any specified prefixes. Leave
+      this field blank to advertise no custom groups.
     advertisedIpRanges: User-specified list of individual IP ranges to
       advertise in custom mode. This field can only be populated if
       advertise_mode is CUSTOM and overrides the list defined for the router
@@ -59237,6 +59237,10 @@ class SecurityPolicyRule(_messages.Message):
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
       evaluates to true, the corresponding 'action' is enforced.
+    preconfiguredWafConfig: Preconfigured WAF configuration to be applied for
+      the rule. If the rule does not evaluate preconfigured WAF rules, i.e.,
+      if evaluatePreconfiguredWaf() is not used, this field will have no
+      effect.
     preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
@@ -59253,10 +59257,11 @@ class SecurityPolicyRule(_messages.Message):
   headerAction = _messages.MessageField('SecurityPolicyRuleHttpHeaderAction', 3)
   kind = _messages.StringField(4, default='compute#securityPolicyRule')
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 5)
-  preview = _messages.BooleanField(6)
-  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 8)
-  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 9)
+  preconfiguredWafConfig = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfig', 6)
+  preview = _messages.BooleanField(7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 9)
+  redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 10)
 
 
 class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
@@ -59331,6 +59336,82 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
   """
 
   srcIpRanges = _messages.StringField(1, repeated=True)
+
+
+class SecurityPolicyRulePreconfiguredWafConfig(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfig object.
+
+  Fields:
+    exclusions: A list of exclusions to apply during preconfigured WAF
+      evaluation.
+  """
+
+  exclusions = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusion', 1, repeated=True)
+
+
+class SecurityPolicyRulePreconfiguredWafConfigExclusion(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfigExclusion object.
+
+  Fields:
+    requestCookiesToExclude: A list of request cookie names whose value will
+      be excluded from inspection during preconfigured WAF evaluation.
+    requestHeadersToExclude: A list of request header names whose value will
+      be excluded from inspection during preconfigured WAF evaluation.
+    requestQueryParamsToExclude: A list of request query parameter names whose
+      value will be excluded from inspection during preconfigured WAF
+      evaluation. Note that the parameter can be in the query string or in the
+      POST body.
+    requestUrisToExclude: A list of request URIs from the request line to be
+      excluded from inspection during preconfigured WAF evaluation. When
+      specifying this field, the query or fragment part should be excluded.
+    targetRuleIds: A list of target rule IDs under the WAF rule set to apply
+      the preconfigured WAF exclusion. If omitted, it refers to all the rule
+      IDs under the WAF rule set.
+    targetRuleSet: Target WAF rule set to apply the preconfigured WAF
+      exclusion.
+  """
+
+  requestCookiesToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 1, repeated=True)
+  requestHeadersToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 2, repeated=True)
+  requestQueryParamsToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 3, repeated=True)
+  requestUrisToExclude = _messages.MessageField('SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams', 4, repeated=True)
+  targetRuleIds = _messages.StringField(5, repeated=True)
+  targetRuleSet = _messages.StringField(6)
+
+
+class SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams(_messages.Message):
+  r"""A SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams object.
+
+  Enums:
+    OpValueValuesEnum: The match operator for the field.
+
+  Fields:
+    op: The match operator for the field.
+    val: The value of the field.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""The match operator for the field.
+
+    Values:
+      CONTAINS: The operator matches if the field value contains the specified
+        value.
+      ENDS_WITH: The operator matches if the field value ends with the
+        specified value.
+      EQUALS: The operator matches if the field value equals the specified
+        value.
+      EQUALS_ANY: The operator matches if the field value is any value.
+      STARTS_WITH: The operator matches if the field value starts with the
+        specified value.
+    """
+    CONTAINS = 0
+    ENDS_WITH = 1
+    EQUALS = 2
+    EQUALS_ANY = 3
+    STARTS_WITH = 4
+
+  op = _messages.EnumField('OpValueValuesEnum', 1)
+  val = _messages.StringField(2)
 
 
 class SecurityPolicyRuleRateLimitOptions(_messages.Message):

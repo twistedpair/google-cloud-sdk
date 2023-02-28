@@ -129,6 +129,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MULTICASTCONSUMERASSOCIATIONS = (
+      'projects.locations.multicastConsumerAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'multicastConsumerAssociations/'
+              '{multicastConsumerAssociationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MULTICASTDOMAINACTIVATIONS = (
       'projects.locations.multicastDomainActivations',
       '{+name}',

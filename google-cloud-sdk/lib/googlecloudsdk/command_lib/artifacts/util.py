@@ -668,17 +668,6 @@ def EscapeVersionNameHook(ref, unused_args, req):
   return req
 
 
-def EscapeFileNameName(ref):
-  """Escapes slashes and pluses from request names."""
-  return resources.REGISTRY.Create(
-      "artifactregistry.projects.locations.repositories.files",
-      projectsId=ref.projectsId,
-      locationsId=ref.locationsId,
-      repositoriesId=ref.repositoriesId,
-      filesId=ref.filesId.replace("/", "%2F").replace("+", "%2B"),
-  )
-
-
 def GetRedirectionEnablementReport(project):
   """Prints a redirection enablement report and returns mis-configured repos.
 

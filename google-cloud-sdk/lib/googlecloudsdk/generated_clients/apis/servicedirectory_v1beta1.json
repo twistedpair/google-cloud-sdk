@@ -709,6 +709,35 @@
           "items": {
             "type": "string"
           }
+        },
+        "devOwners": {
+          "description": "Optional. List of contacts for developer owners of this workload. This includes application engineers and architects writing and updating this workload.",
+          "type": "array",
+          "items": {
+            "$ref": "ContactInfo"
+          }
+        },
+        "operatorOwners": {
+          "description": "Optional. List of contacts for operator owners of this workload. This includes SRE and ops teams that are responsible for troubleshooting a workload, responding to outages or unhealthiness, and maintaining availability.",
+          "type": "array",
+          "items": {
+            "$ref": "ContactInfo"
+          }
+        },
+        "businessOwners": {
+          "description": "Optional. List of contacts for business owners of this workload. This includes team members who are responsible for business outcomes, customer escalations, or P&L of a service.",
+          "type": "array",
+          "items": {
+            "$ref": "ContactInfo"
+          }
+        },
+        "reliabilityAttributes": {
+          "description": "Optional. Properties related to reliability of this workload.",
+          "$ref": "ReliabilityAttributes"
+        },
+        "securityAttributes": {
+          "description": "Optional. Properties related to security of this workload.",
+          "$ref": "SecurityAttributes"
         }
       }
     },
@@ -735,6 +764,74 @@
         "managedRegistration": {
           "readOnly": true,
           "type": "boolean"
+        }
+      }
+    },
+    "ReliabilityAttributes": {
+      "id": "ReliabilityAttributes",
+      "description": "Reliability Attributes associated with workload.",
+      "type": "object",
+      "properties": {
+        "criticality": {
+          "description": "Optional. Criticality with respect to reliability associated with this workload.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Workload is not supported and is not explected to provide any guarantees.",
+            "The workload is mission-critical to the organization.",
+            "The workload is critical to a unit within the organization.",
+            "The workload may not directly affect the mission of a specific unit, but is of high importance to the organization.",
+            "The workload is of medium importance to the organization.",
+            "The workload is of low importance to the organization."
+          ],
+          "enum": [
+            "CRITICALITY_UNSPECIFIED",
+            "MISSION_CRITICAL",
+            "UNIT_CRITICAL",
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "owners": {
+          "description": "Optional. List of contacts for reliability owners of this service. These owners indicate who to contact in case of a reliability issue, such as an outage.",
+          "type": "array",
+          "items": {
+            "$ref": "ContactInfo"
+          }
+        }
+      }
+    },
+    "SecurityAttributes": {
+      "id": "SecurityAttributes",
+      "description": "Security Attributes associated with workload.",
+      "type": "object",
+      "properties": {
+        "criticality": {
+          "description": "Optional. Criticality with respect to security associated with this workload. An example of a security-critical workload could be a workload handling sensitive data.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Workload is not supported and is not explected to provide any guarantees.",
+            "The workload is mission-critical to the organization.",
+            "The workload is critical to a unit within the organization.",
+            "The workload may not directly affect the mission of a specific unit, but is of high importance to the organization.",
+            "The workload is of medium importance to the organization.",
+            "The workload is of low importance to the organization."
+          ],
+          "enum": [
+            "CRITICALITY_UNSPECIFIED",
+            "MISSION_CRITICAL",
+            "UNIT_CRITICAL",
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "owners": {
+          "description": "Optional. List of contacts for security owners of this service.",
+          "type": "array",
+          "items": {
+            "$ref": "ContactInfo"
+          }
         }
       }
     },

@@ -191,7 +191,8 @@ def GetAllowOverwriteFlag():
       '--allow-overwrite',
       action='store_true',
       default=False,
-      help='If specified, allows users to overwrite an existing file')
+      help='If specified, the command overwrites an existing file',
+  )
 
 
 def GetRepoArg():

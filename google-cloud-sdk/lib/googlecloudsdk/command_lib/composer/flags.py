@@ -72,8 +72,7 @@ def ValidateComposerVersionExclusiveOptionFactory(composer_v1_option,
 
       def IsImageVersionStringComposerV1(image_version):
         return (image_version.startswith('composer-1.') or
-                image_version.startswith('composer-1-') or
-                image_version.startswith('composer-latest'))
+                image_version.startswith('composer-1-'))
 
       try:
         if namespace.image_version and IsImageVersionStringComposerV1(

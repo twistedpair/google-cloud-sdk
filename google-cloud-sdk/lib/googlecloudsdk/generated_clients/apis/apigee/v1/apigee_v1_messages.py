@@ -2948,10 +2948,10 @@ class ApigeeOrganizationsEnvironmentsSecurityActionsListRequest(_messages.Messag
 
   Fields:
     filter: The filter expression to filter List results.
-      https://google.aip.dev/160. Allows for filtering over: state,
-      create_time, update_time and api_proxies. E.g.: create_time >=
-      "2012-04-21T11:30:00-04:00" AND api_proxies: foo. Filtering by action is
-      not supported https://github.com/aip-dev/google.aip.dev/issues/624
+      https://google.aip.dev/160. Allows for filtering over: state and
+      api_proxies. E.g.: state = ACTIVE AND apiProxies:foo. Filtering by
+      action is not supported https://github.com/aip-
+      dev/google.aip.dev/issues/624
     pageSize: The maximum number of SecurityActions to return. If unspecified,
       at most 50 SecurityActions will be returned. The maximum value is 1000;
       values above 1000 will be coerced to 1000.
@@ -5078,9 +5078,9 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       applied on all graphQL requests matching the operation type.
     grpcOperationGroup: Configuration used to group Apigee proxies with gRPC
       services and method names. This grouping allows us to set quota for a
-      particular gRPC proxy and method name for a particular gRPC proxy
-      request. If a method name is not set, this implies quota and
-      authorization are applied to all gRPC methods implemented by that proxy.
+      particular proxy with the gRPC service name and method. If a method name
+      is not set, this implies quota and authorization are applied to all gRPC
+      methods implemented by that proxy for that particular gRPC service.
     lastModifiedAt: Response only. Modified time of this environment as
       milliseconds since epoch.
     name: Internal name of the API product. Characters you can use in the name
@@ -7546,12 +7546,15 @@ class GoogleCloudApigeeV1GrpcOperationConfig(_messages.Message):
       would be specified here as simply ["ListPets", "GetPet"].
     quota: Quota parameters to be enforced for the methods and API source
       combination. If none are specified, quota enforcement will not be done.
+    service: Required. gRPC Service name associated to be associated with the
+      API proxy, on which quota rules can be applied upon.
   """
 
   apiSource = _messages.StringField(1)
   attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
   methods = _messages.StringField(3, repeated=True)
   quota = _messages.MessageField('GoogleCloudApigeeV1Quota', 4)
+  service = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1GrpcOperationGroup(_messages.Message):

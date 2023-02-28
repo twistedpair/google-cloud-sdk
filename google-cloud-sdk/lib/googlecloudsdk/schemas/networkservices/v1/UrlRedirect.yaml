@@ -33,11 +33,10 @@ properties:
   httpsRedirect:
     description: |-
       Determines whether the URL scheme in the redirected request is adjusted to
-      HTTPS or remains that of the request. If it is set to `true` and at least
-      one edge_ssl_certificates is set on the service, then the URL scheme in
-      the redirected request is set to HTTPS. If it is set to `false`, then the
-      URL scheme of the redirected request remains the same as that of the
-      request.
+      `HTTPS` or remains that of the request. If it is set to `true` and at
+      least one edge_ssl_certificates is set on the service, the URL scheme in
+      the redirected request is set to `HTTPS`. If it is set to `false`, the URL
+      scheme of the redirected request remains the same as that of the request.
     type: boolean
   pathRedirect:
     description: |-
@@ -49,7 +48,7 @@ properties:
     type: string
   prefixRedirect:
     description: |-
-      The prefix that replaces the prefix_match specified in the RouteRule,
+      The prefix that replaces the prefix_match specified in the RouteRule rule,
       retaining the remaining portion of the URL before redirecting the request.
       `prefix_redirect` cannot be supplied together with path_redirect. Supply
       one alone or neither. If neither is supplied, the path of the original
@@ -70,8 +69,8 @@ properties:
   stripQuery:
     description: |-
       Determines whether accompanying query portions of the original URL are
-      removed prior to redirecting the request. If it is set to `true`, then the
-      accompanying query portion of the original URL is removed prior to
+      removed prior to redirecting the request. If it is set to `true`, the
+      accompanying query portion of the original URL is removed before
       redirecting the request. If it is set to `false`, the query portion of the
       original URL is retained. The default is `false`.
     type: boolean

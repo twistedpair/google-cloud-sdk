@@ -39,8 +39,14 @@ _CUSTOM_WITH_DEFAULT_ERROR_MESSAGE = (
 _GROUP_NOT_FOUND_ERROR_MESSAGE = (
     'Advertised group {group} not found on this {resource}.')
 
-_IP_RANGE_NOT_FOUND_ERROR_MESSAGE = (
-    'Advertised IP range {ip_range} not found on this {resource}.')
+_ADVERTISED_IP_RANGE_NOT_FOUND_ERROR_MESSAGE = (
+    'Advertised IP range {ip_range} not found on this {resource}.'
+)
+
+_CUSTOM_LEARNED_ROUTE_IP_RANGE_NOT_FOUND_ERROR_MESSAGE = (
+    'Custom Learned Route IP address range {ip_range} not found on this'
+    ' {resource}.'
+)
 
 _REQUIRE_IP_ADDRESS_AND_MASK_LENGTH_ERROR_MESSAGE = (
     '--ip-address and --mask-length must be set together.')
@@ -102,12 +108,20 @@ class GroupNotFoundError(RouterError):
 
 
 class IpRangeNotFoundError(RouterError):
-  """Raised when an advertised ip range is not found in a resource."""
+  """Raised when an ip range is not found in a resource."""
 
-  def __init__(self, messages, resource_class, ip_range):
+  def __init__(self, messages, resource_class, error_message, ip_range):
+    """Initializes the instance adapting the error message provided.
+
+    Args:
+      messages: API messages holder.
+      resource_class: The class of the resource where the ip range is not found.
+      error_message: The error message to be formatted with resource_class and
+        ip_range.
+      ip_range: The ip range that is not found in a resource.
+    """
     resource_str = _GetResourceClassStr(messages, resource_class)
-    error_msg = _IP_RANGE_NOT_FOUND_ERROR_MESSAGE.format(
-        ip_range=ip_range, resource=resource_str)
+    error_msg = error_message.format(ip_range=ip_range, resource=resource_str)
     super(IpRangeNotFoundError, self).__init__(error_msg)
 
 
@@ -266,9 +280,42 @@ def RemoveIpRangesFromAdvertisements(messages, resource_class, resource,
   """
   for ip_range in ip_ranges:
     if ip_range not in [r.range for r in resource.advertisedIpRanges]:
-      raise IpRangeNotFoundError(messages, resource_class, ip_range)
+      raise IpRangeNotFoundError(
+          messages,
+          resource_class,
+          _ADVERTISED_IP_RANGE_NOT_FOUND_ERROR_MESSAGE,
+          ip_range,
+      )
   resource.advertisedIpRanges = [
       r for r in resource.advertisedIpRanges if r.range not in ip_ranges
+  ]
+
+
+def RemoveIpRangesFromCustomLearnedRoutes(messages, peer, ip_ranges):
+  """Removes all specified IP address ranges from a peer's custom learned routes.
+
+  Raises an error if any of the specified custom learned route IP address ranges
+  were not found in the peer's IP ranges set. The IP address range search is
+  done by exact text match.
+
+  Args:
+    messages: API messages holder.
+    peer: the peer being modified.
+    ip_ranges: the custom learned route IP address ranges to remove.
+
+  Raises:
+    IpRangeNotFoundError: if any IP address range was not found in the peer.
+  """
+  for ip_range in ip_ranges:
+    if ip_range not in [r.range for r in peer.customLearnedIpRanges]:
+      raise IpRangeNotFoundError(
+          messages,
+          messages.RouterBgpPeer,
+          _CUSTOM_LEARNED_ROUTE_IP_RANGE_NOT_FOUND_ERROR_MESSAGE,
+          ip_range,
+      )
+  peer.customLearnedIpRanges = [
+      r for r in peer.customLearnedIpRanges if r.range not in ip_ranges
   ]
 
 

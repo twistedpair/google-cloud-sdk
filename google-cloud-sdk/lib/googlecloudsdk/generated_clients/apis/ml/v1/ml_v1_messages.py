@@ -124,6 +124,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
       TPU_V3: TPU v3.
       TPU_V2_POD: TPU v2 POD.
       TPU_V3_POD: TPU v3 POD.
+      TPU_V4_POD: TPU v4 POD.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -136,6 +137,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     TPU_V3 = 8
     TPU_V2_POD = 9
     TPU_V3_POD = 10
+    TPU_V4_POD = 11
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -305,6 +307,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
       TPU_V3: TPU v3.
       TPU_V2_POD: TPU v2 POD.
       TPU_V3_POD: TPU v3 POD.
+      TPU_V4_POD: TPU v4 POD.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -317,6 +320,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
     TPU_V3 = 8
     TPU_V2_POD = 9
     TPU_V3_POD = 10
+    TPU_V4_POD = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.

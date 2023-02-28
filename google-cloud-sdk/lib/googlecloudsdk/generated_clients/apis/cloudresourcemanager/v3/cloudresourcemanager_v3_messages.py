@@ -1167,6 +1167,8 @@ class EffectiveTag(_messages.Message):
       formats will be supported when we add non-org parented tags.
     tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
       `tagKeys/123`.
+    tagKeyParentName: The parent name of the tag key. Must be in the format
+      `organizations/{organization_id}`.
     tagValue: Resource name for TagValue in the format `tagValues/456`.
   """
 
@@ -1174,7 +1176,8 @@ class EffectiveTag(_messages.Message):
   namespacedTagKey = _messages.StringField(2)
   namespacedTagValue = _messages.StringField(3)
   tagKey = _messages.StringField(4)
-  tagValue = _messages.StringField(5)
+  tagKeyParentName = _messages.StringField(5)
+  tagValue = _messages.StringField(6)
 
 
 class Empty(_messages.Message):

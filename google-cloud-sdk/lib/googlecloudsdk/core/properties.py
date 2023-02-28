@@ -1547,7 +1547,6 @@ class _SectionAuth(_Section):
     )
     self.login_config_file = self._Add(
         'login_config_file',
-        hidden=True,
         help_text='Sets the created login configuration file in '
         'auth/login_config_file. Calling `gcloud auth login` will automatically '
         'use this login configuration unless it is explicitly unset.')

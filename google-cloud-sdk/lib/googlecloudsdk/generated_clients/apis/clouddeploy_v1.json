@@ -1201,11 +1201,12 @@
     },
     "DeployPolicy": {
       "id": "DeployPolicy",
-      "description": "A `DeployPolicy` resource in the Google Cloud Deploy API. A `DeployPolicy` defines a policy to apply for a project\/location.",
+      "description": "A `DeployPolicy` resource in the Google Cloud Deploy API. A `DeployPolicy` inhibits manual or automation driven actions within a Delivery Pipeline or Target.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the `DeployPolicy`. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "description": "Output only. Name of the `DeployPolicy`. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+          "readOnly": true,
           "type": "string"
         },
         "uid": {
@@ -1218,7 +1219,7 @@
           "type": "string"
         },
         "annotations": {
-          "description": "User annotations. These attributes can only be set and used by the user, and not by Google Cloud Deploy.",
+          "description": "User annotations. These attributes can only be set and used by the user, and not by Google Cloud Deploy. Annotations must meet the following constraints: * Annotations are key\/value pairs. * Valid annotation keys have two segments: an optional prefix and name, separated by a slash (\/). * The name segment is required and must be 63 characters or less, beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between. * The prefix is optional. If specified, the prefix must be a DNS subdomain: a series of DNS labels separated by dots(.), not longer than 253 characters in total, followed by a slash (\/). See https:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/annotations\/#syntax-and-character-set for more details.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1251,6 +1252,10 @@
           "description": "Resources to apply the policy to.",
           "$ref": "Resource"
         },
+        "selector": {
+          "description": "Selected resources to which the policy will be applied.",
+          "$ref": "DeployPolicyResourceSelector"
+        },
         "rules": {
           "description": "Rules to apply.",
           "type": "array",
@@ -1259,7 +1264,7 @@
           }
         },
         "etag": {
-          "description": "This checksum is computed by the server based on the value of other fields. If this is provided on update, it must match the server's etag.",
+          "description": "The weak etag of the `Automation` resource. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         }
       }
@@ -1287,11 +1292,11 @@
     },
     "DeliveryPipelineAttribute": {
       "id": "DeliveryPipelineAttribute",
-      "description": "Contains criteria for selecting DeliveryPipelines. Attributes provided must match the delivery pipeline resource in order for policy restrictions to apply. E.g. if id \"prod\" and labels \"foo: bar\" are given the delivery pipeline resource must match both that id and have that label in order to be selected for a deploy policy.",
+      "description": "Contains criteria for selecting DeliveryPipelines. Attributes provided must match the delivery pipeline resource in order for policy restrictions to apply. E.g. if id \"prod\" and labels \"foo: bar\" are given the delivery pipeline resource must match both that id and have that label in order to be selected.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "ID of the `DeliveryPipeline`. Not using the resource name as only the id is needed to determine which pipeline is being referred to.",
+          "description": "ID of the `DeliveryPipeline`. The value of this field could be one of the following: * The last segment of a pipeline name. It only needs the ID to determine which pipeline is being referred to * \"*\", all delivery pipelines in a location.",
           "type": "string"
         },
         "labels": {
@@ -1305,11 +1310,11 @@
     },
     "TargetAttribute": {
       "id": "TargetAttribute",
-      "description": "Contains criteria for selecting Targets. Attributes provided must match the target resource in order for policy restrictions to apply. E.g. if id \"prod\" and labels \"foo: bar\" are given the target resource must match both that id and have that label in order to be selected for a deploy policy.",
+      "description": "Contains criteria for selecting Targets. Attributes provided must match the target resource in order for policy restrictions to apply. E.g. if id \"prod\" and labels \"foo: bar\" are given the target resource must match both that id and have that label in order to be selected.",
       "type": "object",
       "properties": {
         "id": {
-          "description": "ID of the `Target`. Not using the resource name as only the id is needed to determine which target is being referred to.",
+          "description": "ID of the `Target`. The value of this field could be one of the following: * The last segment of a target name. It only needs the ID to determine which target is being referred to * \"*\", all targets in a location.",
           "type": "string"
         },
         "labels": {
@@ -1317,6 +1322,27 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "DeployPolicyResourceSelector": {
+      "id": "DeployPolicyResourceSelector",
+      "description": "Contains information on the resources to select for a deploy policy.",
+      "type": "object",
+      "properties": {
+        "deliveryPipelines": {
+          "description": "Contains attributes about a delivery pipeline.",
+          "type": "array",
+          "items": {
+            "$ref": "DeliveryPipelineAttribute"
+          }
+        },
+        "targets": {
+          "description": "Contains attributes about a target.",
+          "type": "array",
+          "items": {
+            "$ref": "TargetAttribute"
           }
         }
       }
@@ -4275,7 +4301,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Name of the `DeployPolicy`. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
+                      "description": "Output only. Name of the `DeployPolicy`. Format is projects\/{project}\/ locations\/{location}\/deployPolicies\/a-z{0,62}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,

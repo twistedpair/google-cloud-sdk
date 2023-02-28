@@ -972,12 +972,12 @@
           "$ref": "OracleRdbms"
         },
         "maxConcurrentCdcTasks": {
-          "description": "Maximum number of concurrent CDC tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
+          "description": "Maximum number of concurrent CDC tasks. The number should be non-negative. If not set (or set to 0), the system's default value is used.",
           "type": "integer",
           "format": "int32"
         },
         "maxConcurrentBackfillTasks": {
-          "description": "Maximum number of concurrent backfill tasks. The number should be non negative. If not set (or set to 0), the system's default value will be used.",
+          "description": "Maximum number of concurrent backfill tasks. The number should be non-negative. If not set (or set to 0), the system's default value is used.",
           "type": "integer",
           "format": "int32"
         },

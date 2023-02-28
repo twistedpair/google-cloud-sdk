@@ -6878,6 +6878,7 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -6889,6 +6890,7 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_A100_80GB = 7
     TPU_V2 = 8
     TPU_V3 = 9
+    TPU_V4_POD = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -9725,6 +9727,7 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -9735,6 +9738,7 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
+    TPU_V4_POD = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -15709,6 +15713,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -15719,6 +15724,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
+    TPU_V4_POD = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -20871,12 +20877,9 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
-      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
-        updated at RUNNING state; if the update operation succeeds, job goes
-        back to RUNNING state; if the update operation fails, the job goes
-        back to RUNNING state with error messages written to
-        ModelDeploymentMonitoringJob.partial_errors field if it is a
-        ModelDeploymentMonitoringJob.
+      JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
+        state can be updated. After updating, the job goes back to the
+        `RUNNING` state.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -21631,12 +21634,9 @@ class GoogleCloudAiplatformV1alpha1CustomJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
-      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
-        updated at RUNNING state; if the update operation succeeds, job goes
-        back to RUNNING state; if the update operation fails, the job goes
-        back to RUNNING state with error messages written to
-        ModelDeploymentMonitoringJob.partial_errors field if it is a
-        ModelDeploymentMonitoringJob.
+      JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
+        state can be updated. After updating, the job goes back to the
+        `RUNNING` state.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -21939,12 +21939,9 @@ class GoogleCloudAiplatformV1alpha1DataLabelingJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
-      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
-        updated at RUNNING state; if the update operation succeeds, job goes
-        back to RUNNING state; if the update operation fails, the job goes
-        back to RUNNING state with error messages written to
-        ModelDeploymentMonitoringJob.partial_errors field if it is a
-        ModelDeploymentMonitoringJob.
+      JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
+        state can be updated. After updating, the job goes back to the
+        `RUNNING` state.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -23705,12 +23702,9 @@ class GoogleCloudAiplatformV1alpha1HyperparameterTuningJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
-      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
-        updated at RUNNING state; if the update operation succeeds, job goes
-        back to RUNNING state; if the update operation fails, the job goes
-        back to RUNNING state with error messages written to
-        ModelDeploymentMonitoringJob.partial_errors field if it is a
-        ModelDeploymentMonitoringJob.
+      JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
+        state can be updated. After updating, the job goes back to the
+        `RUNNING` state.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -24575,6 +24569,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -24585,6 +24580,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
+    TPU_V4_POD = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -25411,12 +25407,9 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
-      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
-        updated at RUNNING state; if the update operation succeeds, job goes
-        back to RUNNING state; if the update operation fails, the job goes
-        back to RUNNING state with error messages written to
-        ModelDeploymentMonitoringJob.partial_errors field if it is a
-        ModelDeploymentMonitoringJob.
+      JOB_STATE_UPDATING: The job is being updated. Only jobs in the `RUNNING`
+        state can be updated. After updating, the job goes back to the
+        `RUNNING` state.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -25577,6 +25570,10 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluationSlice(_messages.Message):
       schema is defined as an OpenAPI 3.0.2 [Schema
       Object](https://github.com/OAI/OpenAPI-
       Specification/blob/main/versions/3.0.2.md#schemaObject).
+    modelExplanation: Output only. Aggregated explanation metrics for the
+      Model's prediction output over the data this ModelEvaluation uses. This
+      field is populated only if the Model is evaluated with explanations, and
+      only for tabular Models.
     name: Output only. The resource name of the ModelEvaluationSlice.
     slice: Output only. The slice of the test data that is used to evaluate
       the Model.
@@ -25585,8 +25582,9 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluationSlice(_messages.Message):
   createTime = _messages.StringField(1)
   metrics = _messages.MessageField('extra_types.JsonValue', 2)
   metricsSchemaUri = _messages.StringField(3)
-  name = _messages.StringField(4)
-  slice = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSlice', 5)
+  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelExplanation', 4)
+  name = _messages.StringField(5)
+  slice = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSlice', 6)
 
 
 class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSlice(_messages.Message):
@@ -25596,12 +25594,123 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSlice(_messages.Message):
     dimension: Output only. The dimension of the slice. Well-known dimensions
       are: * `annotationSpec`: This slice is on the test data that has either
       ground truth or prediction with AnnotationSpec.display_name equals to
-      value.
+      value. * `slice`: This slice is a user customized slice defined by its
+      SliceSpec.
+    sliceSpec: Output only. Specification for how the data was sliced.
     value: Output only. The value of the dimension in this slice.
   """
 
   dimension = _messages.StringField(1)
-  value = _messages.StringField(2)
+  sliceSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpec', 2)
+  value = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpec(_messages.Message):
+  r"""LINT.IfChange Specification for how the data should be sliced.
+
+  Messages:
+    ConfigsValue: Mapping configuration for this SliceSpec. The key is the
+      name of the feature. By default, the key will be prefixed by "instance"
+      as a dictionary prefix for Vertex Batch Predictions output format.
+
+  Fields:
+    configs: Mapping configuration for this SliceSpec. The key is the name of
+      the feature. By default, the key will be prefixed by "instance" as a
+      dictionary prefix for Vertex Batch Predictions output format.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigsValue(_messages.Message):
+    r"""Mapping configuration for this SliceSpec. The key is the name of the
+    feature. By default, the key will be prefixed by "instance" as a
+    dictionary prefix for Vertex Batch Predictions output format.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSp
+          ecSliceConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecSliceConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configs = _messages.MessageField('ConfigsValue', 1)
+
+
+class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecRange(_messages.Message):
+  r"""A range of values for slice(s). `low` is inclusive, `high` is exclusive.
+
+  Fields:
+    high: Exclusive high value for the range.
+    low: Inclusive low value for the range.
+  """
+
+  high = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  low = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecSliceConfig(_messages.Message):
+  r"""Specification message containing the config for this SliceSpec. When
+  `kind` is selected as `value` and/or `range`, only a single slice will be
+  computed. When `all_values` is present, a separate slice will be computed
+  for each possible label/value for the corresponding key in `config`.
+  Examples, with feature zip_code with values 12345, 23334, 88888 and feature
+  country with values "US", "Canada", "Mexico" in the dataset: Example 1: {
+  "zip_code": { "value": { "float_value": 12345.0 } } } A single slice for any
+  data with zip_code 12345 in the dataset. Example 2: { "zip_code": { "range":
+  { "low": 12345, "high": 20000 } } } A single slice containing data where the
+  zip_codes between 12345 and 20000 For this example, data with the zip_code
+  of 12345 will be in this slice. Example 3: { "zip_code": { "range": { "low":
+  10000, "high": 20000 } }, "country": { "value": { "string_value": "US" } } }
+  A single slice containing data where the zip_codes between 10000 and 20000
+  has the country "US". For this example, data with the zip_code of 12345 and
+  country "US" will be in this slice. Example 4: { "country": { "all_values":
+  { "value": true } } } Three slices are computed, one for each unique country
+  in the dataset. Example 5: { "country": { "all_values": { "value": true } },
+  "zip_code": { "value": { "float_value": 12345.0 } } } Three slices are
+  computed, one for each unique country in the dataset where the zip_code is
+  also 12345. For this example, data with zip_code 12345 and country "US" will
+  be in one slice, zip_code 12345 and country "Canada" in another slice, and
+  zip_code 12345 and country "Mexico" in another slice, totaling 3 slices.
+
+  Fields:
+    allValues: If all_values is set to true, then all possible labels of the
+      keyed feature will have another slice computed. Example:
+      {"all_values":{"value":true}}
+    range: A range of values for a numerical feature. Example:
+      {"range":{"low":10000.0,"high":50000.0}} will capture 12345 and 23334 in
+      the slice.
+    value: A unique specific value for a given feature. Example: { "value": {
+      "string_value": "12345" } }
+  """
+
+  allValues = _messages.BooleanField(1)
+  range = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecRange', 2)
+  value = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecValue', 3)
+
+
+class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecValue(_messages.Message):
+  r"""Single value that supports strings and floats.
+
+  Fields:
+    floatValue: Float type.
+    stringValue: String type.
+  """
+
+  floatValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  stringValue = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1alpha1ModelExplanation(_messages.Message):
@@ -31305,6 +31414,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -31316,6 +31426,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_A100_80GB = 7
     TPU_V2 = 8
     TPU_V3 = 9
+    TPU_V4_POD = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)

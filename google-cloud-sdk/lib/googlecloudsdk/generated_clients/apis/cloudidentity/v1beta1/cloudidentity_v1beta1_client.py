@@ -893,6 +893,33 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchDirectGroups(self, request, global_params=None):
+      r"""Searches direct groups of a member.
+
+      Args:
+        request: (CloudidentityGroupsMembershipsSearchDirectGroupsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchDirectGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchDirectGroups')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchDirectGroups.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/groups/{groupsId}/memberships:searchDirectGroups',
+        http_method='GET',
+        method_id='cloudidentity.groups.memberships.searchDirectGroups',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['orderBy', 'pageSize', 'pageToken', 'query'],
+        relative_path='v1beta1/{+parent}/memberships:searchDirectGroups',
+        request_field='',
+        request_type_name='CloudidentityGroupsMembershipsSearchDirectGroupsRequest',
+        response_type_name='SearchDirectGroupsResponse',
+        supports_download=False,
+    )
+
     def SearchTransitiveGroups(self, request, global_params=None):
       r"""Search transitive groups of a member. **Note:** This feature is only available to Google Workspace Enterprise Standard, Enterprise Plus, and Enterprise for Education; and Cloud Identity Premium accounts. A transitive group is any group that has a direct or indirect membership to the member. Actor must have view permissions all transitive groups.
 

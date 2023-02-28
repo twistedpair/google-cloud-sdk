@@ -32,17 +32,17 @@ properties:
     description: |-
       A list of HostRule rules to match against. `RouteRule` rules support
       advanced routing behavior, and can match on paths, headers and query
-      parameters, as well as status codes and HTTP methods. You may specify up
-      to 5 host rules.
+      parameters, as well as status codes and HTTP methods. You can specify up
+      to five host rules.
     type: array
     items:
       $ref: HostRule.yaml
   pathMatchers:
     description: |-
-      The list of PathMatchers referenced via name by HostRules.
-      `PathMatcher` is used to match the path portion of the URL when a
-      `HostRule` matches the URL's host portion. You may specify up to 10
-      path matchers.
+      A list of PathMatcher values referenced by name by HostRule values.
+      `PathMatcher` is used to match the path portion of the URL when
+      a`HostRule` value matches the URL's host portion. You can specify up
+      to 10 path matchers.
     type: array
     items:
       $ref: PathMatcher.yaml

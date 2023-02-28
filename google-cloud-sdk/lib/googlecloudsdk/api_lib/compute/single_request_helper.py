@@ -22,6 +22,8 @@ import json
 
 from apitools.base.py import exceptions
 
+from googlecloudsdk.api_lib.compute import operation_quota_utils
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions as http_exception
 from googlecloudsdk.core import properties
@@ -32,8 +34,18 @@ def _GenerateErrorMessage(exception):
   error_message = None
   try:
     data = json.loads(exception.content)
-    error_message = (exception.status_code, data.get('error',
-                                                     {}).get('message'))
+    if isinstance(
+        exception, exceptions.HttpError
+    ) and utils.JsonErrorHasDetails(data):
+      error_message = (
+          exception.status_code,
+          BuildMessageForErrorWithDetails(data),
+      )
+    else:
+      error_message = (
+          exception.status_code,
+          data.get('error', {}).get('message'),
+      )
   except ValueError:
     pass
   if not error_message:
@@ -82,3 +94,13 @@ def MakeSingleRequest(service, method, request_body):
     error_message = _GenerateErrorMessage(exception)
     errors.append(error_message)
   return responses, errors
+
+
+# TODO(b/269805885): move to common formatter library
+def BuildMessageForErrorWithDetails(json_data):
+  if operation_quota_utils.IsJsonOperationQuotaError(
+      json_data.get('error', {})
+  ):
+    return operation_quota_utils.CreateOperationQuotaExceededMsg(json_data)
+  else:
+    return json_data.get('error', {}).get('message')

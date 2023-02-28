@@ -471,7 +471,7 @@ class RecognitionConfig(_messages.Message):
       of the audio.
     enableSpeakerDiarization: If 'true', enables speaker detection for each
       recognized word in the top alternative of the recognition result using a
-      speaker_tag provided in the WordInfo. Note: Use diarization_config
+      speaker_label provided in the WordInfo. Note: Use diarization_config
       instead.
     enableSpokenEmojis: The spoken emoji behavior for the call If not set,
       uses default behavior based on model of choice If 'true', adds spoken
@@ -799,7 +799,7 @@ class SpeakerDiarizationConfig(_messages.Message):
   Fields:
     enableSpeakerDiarization: If 'true', enables speaker detection for each
       recognized word in the top alternative of the recognition result using a
-      speaker_tag provided in the WordInfo.
+      speaker_label provided in the WordInfo.
     maxSpeakerCount: Maximum number of speakers in the conversation. This
       range gives you more flexibility by allowing the system to automatically
       determine the correct number of speakers. If not set, the default value
@@ -1292,11 +1292,19 @@ class WordInfo(_messages.Message):
       corresponding to the end of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
       an experimental feature and the accuracy of the time offset can vary.
+    speakerLabel: Output only. A label value assigned for every unique speaker
+      within the audio. This field specifies which speaker was detected to
+      have spoken this word. For some models, like medical_conversation this
+      can be actual speaker role, for example "patient" or "provider", but
+      generally this would be a number identifying a speaker. This field is
+      only set if enable_speaker_diarization = 'true' and only for the top
+      alternative.
     speakerTag: Output only. A distinct integer value is assigned for every
       speaker within the audio. This field specifies which one of those
       speakers was detected to have spoken this word. Value ranges from '1' to
       diarization_speaker_count. speaker_tag is set if
-      enable_speaker_diarization = 'true' and only in the top alternative.
+      enable_speaker_diarization = 'true' and only for the top alternative.
+      Note: Use speaker_label instead.
     startTime: Time offset relative to the beginning of the audio, and
       corresponding to the start of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
@@ -1306,9 +1314,10 @@ class WordInfo(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   endTime = _messages.StringField(2)
-  speakerTag = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(4)
-  word = _messages.StringField(5)
+  speakerLabel = _messages.StringField(3)
+  speakerTag = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(5)
+  word = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

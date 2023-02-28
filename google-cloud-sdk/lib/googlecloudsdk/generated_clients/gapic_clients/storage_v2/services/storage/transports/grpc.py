@@ -641,9 +641,12 @@ class StorageGrpcTransport(StorageTransport):
             empty_pb2.Empty]:
         r"""Return a callable for the delete object method over gRPC.
 
-        Deletes an object and its metadata. Deletions are permanent if
-        versioning is not enabled for the bucket, or if the
-        ``generation`` parameter is used.
+        Deletes an object and its metadata.
+        Deletions are normally permanent when versioning is
+        disabled or whenever the generation parameter is used.
+        However, if soft delete is enabled for the bucket,
+        deleted objects can be restored using RestoreObject
+        until the soft delete retention period has passed.
 
         Returns:
             Callable[[~.DeleteObjectRequest],

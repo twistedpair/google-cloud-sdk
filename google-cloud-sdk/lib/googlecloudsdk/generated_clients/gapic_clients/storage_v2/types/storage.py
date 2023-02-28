@@ -172,10 +172,14 @@ class CreateBucketRequest(proto.Message):
             Required. The project to which this bucket
             will belong.
         bucket (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket):
-            Properties of the new bucket being inserted. The project and
-            name of the bucket are specified in the parent and bucket_id
-            fields, respectively. Populating those fields in ``bucket``
-            will result in an error.
+            Properties of the new bucket being inserted. The name of the
+            bucket is specified in the ``bucket_id`` field. Populating
+            ``bucket.name`` field will result in an error. The project
+            of the bucket must be specified in the ``bucket.project``
+            field. This field must be in
+            ``projects/{projectIdentifier}`` format, {projectIdentifier}
+            can be the project ID or project number. The ``parent``
+            field must be either empty or ``projects/_``.
         bucket_id (str):
             Required. The ID to use for this bucket, which will become
             the final component of the bucket's resource name. For
@@ -1894,8 +1898,8 @@ class GetServiceAccountRequest(proto.Message):
     Attributes:
         project (str):
             Required. Project ID, in the format of
-            "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
     """
 
@@ -1912,8 +1916,8 @@ class CreateHmacKeyRequest(proto.Message):
         project (str):
             Required. The project that the HMAC-owning
             service account lives in, in the format of
-            "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
         service_account_email (str):
             Required. The service account to create the
@@ -1962,8 +1966,8 @@ class DeleteHmacKeyRequest(proto.Message):
             delete.
         project (str):
             Required. The project that owns the HMAC key,
-            in the format of "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            in the format of "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
     """
 
@@ -1986,8 +1990,8 @@ class GetHmacKeyRequest(proto.Message):
             delete.
         project (str):
             Required. The project the HMAC key lies in,
-            in the format of "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            in the format of "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
     """
 
@@ -2007,8 +2011,8 @@ class ListHmacKeysRequest(proto.Message):
     Attributes:
         project (str):
             Required. The project to list HMAC keys for,
-            in the format of "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            in the format of "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
         page_size (int):
             The maximum number of keys to return.
@@ -2181,8 +2185,8 @@ class Bucket(proto.Message):
         project (str):
             Immutable. The project which owns this
             bucket, in the format of
-            "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
         metageneration (int):
             Output only. The metadata generation of this bucket.
@@ -3064,16 +3068,16 @@ class HmacKeyMetadata(proto.Message):
     Attributes:
         id (str):
             Immutable. Resource name ID of the key in the
-            format <projectIdentifier>/<accessId>.
-            <projectIdentifier> can be the project ID or
+            format {projectIdentifier}/{accessId}.
+            {projectIdentifier} can be the project ID or
             project number.
         access_id (str):
             Immutable. Globally unique id for keys.
         project (str):
             Immutable. Identifies the project that owns
             the service account of the specified HMAC key,
-            in the format "projects/<projectIdentifier>".
-            <projectIdentifier> can be the project ID or
+            in the format "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
             project number.
         service_account_email (str):
             Output only. Email of the service account the

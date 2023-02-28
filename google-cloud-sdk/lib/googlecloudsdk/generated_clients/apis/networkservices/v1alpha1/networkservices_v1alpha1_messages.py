@@ -2702,7 +2702,7 @@ class LogConfig(_messages.Message):
       by this service. Defaults to false.
     sampleRate: Optional. The sampling rate of requests, where `1.0` means all
       logged requests are reported and `0.0` means no logged requests are
-      reported. The default value is `1.0`, and the value of the field must be
+      reported. The default value is `0.0`, and the value of the field must be
       in `[0, 1]`. This field can be specified only if logging is enabled for
       this service.
   """
@@ -2733,7 +2733,7 @@ class MatchRule(_messages.Message):
       `path_template_match` after removing any query parameters and anchors
       that might be part of the original URL. `path_template_match` must be
       between 1 and 255 characters (inclusive). The pattern specified by
-      `path_template_match` can have at most five wildcard operators and five
+      `path_template_match` can have at most ten wildcard operators and ten
       variable captures. One of prefix_match, full_path_match, or
       `path_template_match` must be specified.
     prefixMatch: Optional. To satisfy the `MatchRule` condition, the request's
@@ -4315,6 +4315,67 @@ class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Messag
 class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest
   object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetIamPol
+  icyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsSetIamPol
+  icyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastConsumerAssociationsTestIamPe
+  rmissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
