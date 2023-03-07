@@ -745,7 +745,7 @@
       "type": "object",
       "properties": {
         "requestHeadersToAdd": {
-          "description": "Optional. A header to add. You can add a maximum of five request headers.",
+          "description": "Optional. A header to add. You can add a maximum of 25 request headers.",
           "type": "array",
           "items": {
             "$ref": "OriginHeaderActionAddHeader"
@@ -1064,7 +1064,7 @@
           "type": "string"
         },
         "pathTemplateMatch": {
-          "description": "Optional. To satisfy the `MatchRule` condition, the path of the request must match the wildcard pattern specified in `path_template_match` after removing any query parameters and anchors that might be part of the original URL. `path_template_match` must be between 1 and 255 characters (inclusive). The pattern specified by `path_template_match` can have at most ten wildcard operators and ten variable captures. One of prefix_match, full_path_match, or `path_template_match` must be specified.",
+          "description": "Optional. To satisfy the `MatchRule` condition, the path of the request must match the wildcard pattern specified in `path_template_match` after removing any query parameters and anchors that might be part of the original URL. `path_template_match` must be between 1 and 255 characters (inclusive). The pattern specified by `path_template_match` can have at most 10 wildcard operators and 10 variable captures. One of prefix_match, full_path_match, or `path_template_match` must be specified.",
           "type": "string"
         },
         "ignoreCase": {
@@ -1143,28 +1143,28 @@
       "type": "object",
       "properties": {
         "requestHeadersToAdd": {
-          "description": "Optional. A list of headers to add to the request prior to forwarding the request to the origin. You can add a maximum of five request headers.",
+          "description": "Optional. A list of headers to add to the request prior to forwarding the request to the origin. You can add a maximum of 25 request headers.",
           "type": "array",
           "items": {
             "$ref": "HeaderActionAddHeader"
           }
         },
         "responseHeadersToAdd": {
-          "description": "Optional. A list of headers to add to the response before sending it back to the client. You can add a maximum of five response headers. Response headers are only sent to the client, and do not have an effect on the cache serving the response.",
+          "description": "Optional. A list of headers to add to the response before sending it back to the client. You can add a maximum of 25 response headers. Response headers are only sent to the client, and do not have an effect on the cache serving the response.",
           "type": "array",
           "items": {
             "$ref": "HeaderActionAddHeader"
           }
         },
         "requestHeadersToRemove": {
-          "description": "Optional. A list of header names to remove from the request before forwarding the request to the origin. You can specify up to 10 request headers to remove.",
+          "description": "Optional. A list of header names to remove from the request before forwarding the request to the origin. You can specify up to 25 request headers to remove.",
           "type": "array",
           "items": {
             "$ref": "HeaderActionRemoveHeader"
           }
         },
         "responseHeadersToRemove": {
-          "description": "Optional. A list of headers to remove from the response before sending it back to the client. Response headers are only sent to the client, and do not have an effect on the cache serving the response. You can specify up to 10 response headers to remove.",
+          "description": "Optional. A list of headers to remove from the response before sending it back to the client. Response headers are only sent to the client, and do not have an effect on the cache serving the response. You can specify up to 25 response headers to remove.",
           "type": "array",
           "items": {
             "$ref": "HeaderActionRemoveHeader"
@@ -1489,14 +1489,14 @@
           }
         },
         "allowHeaders": {
-          "description": "Optional. The content for the `Access-Control-Allow-Headers` response header. You can specify up to five headers to include in the `Access-Control-Allow-Headers` header.",
+          "description": "Optional. The content for the `Access-Control-Allow-Headers` response header. You can specify up to 25 headers to include in the `Access-Control-Allow-Headers` header.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "exposeHeaders": {
-          "description": "Optional. The content for the Access-Control-Expose-Headers response header. You can specify up to five headers to expose in the `Access-Control-Expose-Headers` header.",
+          "description": "Optional. The content for the Access-Control-Expose-Headers response header. You can specify up to 25 headers to expose in the `Access-Control-Expose-Headers` header.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3344,12 +3344,14 @@
           "enumDescriptions": [
             "The type of the loadbalancing algorithm is unspecified.",
             "Direct traffic to the nearest region with endpoints and capacity before spilling over to other regions.",
-            "Attempt to keep traffic in a single zone closest to the client, before spilling over to other zones."
+            "Attempt to keep traffic in a single zone closest to the client, before spilling over to other zones.",
+            "Balance traffic across all backends across the world proportionally based on capacity."
           ],
           "enum": [
             "LOAD_BALANCING_ALGORITHM_UNSPECIFIED",
             "BALANCE_OVER_REGION",
-            "NEAREST_ZONE_FIRST"
+            "NEAREST_ZONE_FIRST",
+            "SPRAY_TO_WORLD"
           ]
         },
         "reduceSpikeOverload": {

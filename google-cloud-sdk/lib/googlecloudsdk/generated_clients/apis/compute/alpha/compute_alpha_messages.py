@@ -12623,6 +12623,36 @@ class ComputeImagesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeInstanceGroupManagerResizeRequestsCancelRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagerResizeRequestsCancelRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. The name
+      should conform to RFC1035 or be a resource ID.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resizeRequest: The name of the resize request to cancel. The name should
+      conform to RFC1035 or be a resource ID.
+    zone: The name of the zone where the managed instance group is located.
+      The name should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resizeRequest = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceGroupManagerResizeRequestsDeleteRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagerResizeRequestsDeleteRequest object.
 
@@ -28876,6 +28906,7 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyRule: A SecurityPolicyRule resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
     validateOnly: If true, the request will not be committed.
   """
 
@@ -28883,7 +28914,8 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
-  validateOnly = _messages.BooleanField(5)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
@@ -39555,23 +39587,25 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_SNP_CAPABLE For more information, see Enabling guest operating
-      system features.
+      SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
+      operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For
-      more information, see Enabling guest operating system features.
+      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
+      TDX_CAPABLE For more information, see Enabling guest operating system
+      features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more
-    information, see Enabling guest operating system features.
+    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
+    TDX_CAPABLE For more information, see Enabling guest operating system
+    features.
 
     Values:
       BARE_METAL_LINUX_COMPATIBLE: <no description>
@@ -41741,7 +41775,8 @@ class HttpHealthCheck(_messages.Message):
     port: The TCP port number for the HTTP health check request. The default
       value is 80.
     requestPath: The request path of the HTTP health check request. The
-      default value is /. This field does not support query parameters.
+      default value is /. This field does not support query parameters. Must
+      comply with RFC3986.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -42352,7 +42387,7 @@ class HttpsHealthCheck(_messages.Message):
     port: The TCP port number for the HTTPS health check request. The default
       value is 443.
     requestPath: The request path of the HTTPS health check request. The
-      default value is "/".
+      default value is "/". Must comply with RFC3986.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -44821,6 +44856,7 @@ class InstanceGroupManagerResizeRequest(_messages.Message):
     Values:
       ACCEPTED: The request was created successfully and was accepted for
         provisioning when the capacity becomes available.
+      CANCELLED: The request is cancelled.
       CREATING: resize request is being created and may still fail creation.
       DELETING: The request is being deleted.
       FAILED: The request failed before or during provisioning. If the request
@@ -44830,11 +44866,12 @@ class InstanceGroupManagerResizeRequest(_messages.Message):
       SUCCEEDED: The request succeeded.
     """
     ACCEPTED = 0
-    CREATING = 1
-    DELETING = 2
-    FAILED = 3
-    PROVISIONING = 4
-    SUCCEEDED = 5
+    CANCELLED = 1
+    CREATING = 2
+    DELETING = 3
+    FAILED = 4
+    PROVISIONING = 5
+    SUCCEEDED = 6
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
@@ -54135,6 +54172,7 @@ class Network(_messages.Message):
       BEFORE_CLASSIC_FIREWALL. Defaults to AFTER_CLASSIC_FIREWALL if the field
       is not specified.
     peerings: [Output Only] A list of network peerings for the resource.
+    rdma: Whether this is an RDMA network.
     region: [Output Only] URL of the region where the regional network
       resides. This field is not applicable to global network. You must
       specify this field as part of the HTTP request URL. It is not settable
@@ -54175,11 +54213,12 @@ class Network(_messages.Message):
   name = _messages.StringField(12)
   networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 13)
   peerings = _messages.MessageField('NetworkPeering', 14, repeated=True)
-  region = _messages.StringField(15)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 16)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  subnetworks = _messages.StringField(19, repeated=True)
+  rdma = _messages.BooleanField(15)
+  region = _messages.StringField(16)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 17)
+  selfLink = _messages.StringField(18)
+  selfLinkWithId = _messages.StringField(19)
+  subnetworks = _messages.StringField(20, repeated=True)
 
 
 class NetworkAttachment(_messages.Message):
@@ -56425,12 +56464,15 @@ class NetworkInterface(_messages.Message):
 
     Values:
       GVNIC: GVNIC
+      RDMA: Supports RDMA traffic and enables attaching an instance to an RDMA
+        network.
       UNSPECIFIED_NIC_TYPE: No type specified.
       VIRTIO_NET: VIRTIO
     """
     GVNIC = 0
-    UNSPECIFIED_NIC_TYPE = 1
-    VIRTIO_NET = 2
+    RDMA = 1
+    UNSPECIFIED_NIC_TYPE = 2
+    VIRTIO_NET = 3
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this network interface to identify whether the IPv6
@@ -68780,12 +68822,12 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
-    customLearnedIpRanges: User-defined Custom Learned Route IP range list for
-      a BGP session.
-    customLearnedRoutePriority: User-defined Custom Learned Route Priority for
-      a BGP session. This will be applied to all Custom Learned Route ranges
-      of the BGP session, if not given, google-managed priority of 100 is
-      used.
+    customLearnedIpRanges: A list of user-defined custom learned route IP
+      address ranges for a BGP session.
+    customLearnedRoutePriority: The user-defined custom learned route priority
+      for a BGP session. This value is applied to all custom learned route
+      ranges for the BGP session. If a priority is not provided, a Google-
+      managed priority of `100` is used.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -69037,9 +69079,10 @@ class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
   r"""A RouterBgpPeerCustomLearnedIpRange object.
 
   Fields:
-    range: The Custom Learned Route IP range. Must be a valid CIDR-formatted
-      prefix. If an IP is provided without a subnet mask, it is interpreted as
-      a /32 singular IP range for IPv4, and /128 for IPv6.
+    range: The custom learned route IP address range. Must be a valid CIDR-
+      formatted prefix. If an IP address is provided without a subnet mask, it
+      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
+      IPv6, `/128`.
   """
 
   range = _messages.StringField(1)
@@ -75879,6 +75922,7 @@ class Subnetwork(_messages.Message):
       that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
       the purpose defaults to PRIVATE_RFC_1918. The enableFlowLogs field isn't
       supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.
+    rdma: [Output Only] Whether this subnetwork belongs to an RDMA network.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     reservedInternalRange: The URL of the reserved internal range.
@@ -76081,15 +76125,16 @@ class Subnetwork(_messages.Message):
   privateIpGoogleAccess = _messages.BooleanField(22)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 23)
   purpose = _messages.EnumField('PurposeValueValuesEnum', 24)
-  region = _messages.StringField(25)
-  reservedInternalRange = _messages.StringField(26)
-  role = _messages.EnumField('RoleValueValuesEnum', 27)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 28, repeated=True)
-  selfLink = _messages.StringField(29)
-  selfLinkWithId = _messages.StringField(30)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 31)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  vlans = _messages.IntegerField(33, repeated=True, variant=_messages.Variant.INT32)
+  rdma = _messages.BooleanField(25)
+  region = _messages.StringField(26)
+  reservedInternalRange = _messages.StringField(27)
+  role = _messages.EnumField('RoleValueValuesEnum', 28)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 29, repeated=True)
+  selfLink = _messages.StringField(30)
+  selfLinkWithId = _messages.StringField(31)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  vlans = _messages.IntegerField(34, repeated=True, variant=_messages.Variant.INT32)
 
 
 class SubnetworkAggregatedList(_messages.Message):

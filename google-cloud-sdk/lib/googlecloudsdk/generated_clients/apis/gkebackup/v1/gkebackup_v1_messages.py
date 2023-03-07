@@ -2085,7 +2085,7 @@ class Restore(_messages.Message):
 
 
 class RestoreConfig(_messages.Message):
-  r"""Configuration of a restore. Next id: 11
+  r"""Configuration of a restore. Next id: 12
 
   Enums:
     ClusterResourceConflictPolicyValueValuesEnum: Defines the behavior for
@@ -2216,7 +2216,7 @@ class RestoreConfig(_messages.Message):
 
 class RestorePlan(_messages.Message):
   r"""The configuration of a potential series of Restore operations to be
-  performed against Backups belong to a particular BackupPlan. Next id: 11
+  performed against Backups belong to a particular BackupPlan. Next id: 13
 
   Messages:
     LabelsValue: A set of custom labels supplied by user.

@@ -138,10 +138,12 @@ def _check_if_gcloud_crc32c_available(install_if_missing=False):
   return False
 
 
-def check_if_fast_crc32c_available(install_if_missing=False):
-  return (
-      crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE
-      or _check_if_gcloud_crc32c_available(install_if_missing)
+def check_if_will_use_fast_crc32c(install_if_missing=False):
+  return crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or (
+      # pylint:disable=g-bool-id-comparison
+      properties.VALUES.storage.use_gcloud_crc32c.GetBool() is not False
+      # pylint:enable=g-bool-id-comparison
+      and _check_if_gcloud_crc32c_available(install_if_missing)
   )
 
 
@@ -244,7 +246,7 @@ def log_or_raise_crc32c_issues(warn_for_always=True):
     errors.Error: IF_FAST_ELSE_FAIL set, and CRC32C binary not present. See
       error message for more details.
   """
-  if check_if_fast_crc32c_available(install_if_missing=True):
+  if check_if_will_use_fast_crc32c(install_if_missing=True):
     return
 
   check_hashes = properties.VALUES.storage.check_hashes.Get()

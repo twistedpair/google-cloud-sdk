@@ -2744,7 +2744,8 @@ class GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(_messages.Me
   Fields:
     name: The resource name for the rbacrolebinding `projects/{project}/locati
       ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      `
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
     rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
       body.
     updateMask: Required. The fields to be updated.
@@ -4782,7 +4783,8 @@ class RBACRoleBinding(_messages.Message):
     group: group is the group, as seen by the kubernetes cluster.
     name: The resource name for the rbacrolebinding `projects/{project}/locati
       ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      `
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
     role: Required. Role to bind to the principal
     state: Output only. State of the rbacrolebinding resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -4956,11 +4958,14 @@ class Role(_messages.Message):
       ADMIN: ADMIN has EDIT and RBAC permissions
       EDIT: EDIT can edit all resources except RBAC
       VIEW: VIEW can only read resources
+      ANTHOS_SUPPORT: ANTHOS_SUPPORT gives Google Support read-only access to
+        a number of cluster resources.
     """
     UNKNOWN = 0
     ADMIN = 1
     EDIT = 2
     VIEW = 3
+    ANTHOS_SUPPORT = 4
 
   predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
 

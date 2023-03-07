@@ -533,11 +533,11 @@
             "UNDER_INVESTIGATION"
           ]
         },
-        "threats": {
-          "description": "Contains information about this vulnerability, this will change with time.",
+        "impacts": {
+          "description": "Contains information about the impact of this vulnerability, this will change with time.",
           "type": "array",
           "items": {
-            "$ref": "Threat"
+            "type": "string"
           }
         },
         "remediations": {
@@ -546,31 +546,10 @@
           "items": {
             "$ref": "Remediation"
           }
-        }
-      }
-    },
-    "Threat": {
-      "id": "Threat",
-      "description": "Contains the vulnerability kinetic information. This information can change as the vulnerability ages and new information becomes available.",
-      "type": "object",
-      "properties": {
-        "threatType": {
-          "description": "The type of threat.",
-          "type": "string",
-          "enumDescriptions": [
-            "No threat type specified.",
-            "IMPACT",
-            "EXPLOIT_STATUS"
-          ],
-          "enum": [
-            "THREAT_TYPE_UNSPECIFIED",
-            "IMPACT",
-            "EXPLOIT_STATUS"
-          ]
         },
-        "details": {
-          "description": "Represents a thorough human-readable discussion of the threat.",
-          "type": "string"
+        "justification": {
+          "description": "Justification provides the justification when the state of the assessment if NOT_AFFECTED.",
+          "$ref": "Justification"
         }
       }
     },
@@ -611,6 +590,37 @@
         "remediationUri": {
           "description": "Contains the URL where to obtain the remediation.",
           "$ref": "RelatedUrl"
+        }
+      }
+    },
+    "Justification": {
+      "id": "Justification",
+      "description": "Justification provides the justification when the state of the assessment if NOT_AFFECTED.",
+      "type": "object",
+      "properties": {
+        "justificationType": {
+          "description": "The justification type for this vulnerability.",
+          "type": "string",
+          "enumDescriptions": [
+            "JUSTIFICATION_TYPE_UNSPECIFIED.",
+            "The vulnerable component is not present in the product.",
+            "The vulnerable code is not present. Typically this case occurs when source code is configured or built in a way that excludes the vulnerable code.",
+            "The vulnerable code can not be executed. Typically this case occurs when the product includes the vulnerable code but does not call or use the vulnerable code.",
+            "The vulnerable code cannot be controlled by an attacker to exploit the vulnerability.",
+            "The product includes built-in protections or features that prevent exploitation of the vulnerability. These built-in protections cannot be subverted by the attacker and cannot be configured or disabled by the user. These mitigations completely prevent exploitation based on known attack vectors."
+          ],
+          "enum": [
+            "JUSTIFICATION_TYPE_UNSPECIFIED",
+            "COMPONENT_NOT_PRESENT",
+            "VULNERABLE_CODE_NOT_PRESENT",
+            "VULNERABLE_CODE_NOT_IN_EXECUTE_PATH",
+            "VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY",
+            "INLINE_MITIGATIONS_ALREADY_EXIST"
+          ]
+        },
+        "details": {
+          "description": "Additional details on why this justification was chosen.",
+          "type": "string"
         }
       }
     },
@@ -3267,12 +3277,16 @@
             "UNDER_INVESTIGATION"
           ]
         },
-        "threats": {
-          "description": "Contains information about this vulnerability, this will change with time.",
+        "impacts": {
+          "description": "Contains information about the impact of this vulnerability, this will change with time.",
           "type": "array",
           "items": {
-            "$ref": "Threat"
+            "type": "string"
           }
+        },
+        "justification": {
+          "description": "Justification provides the justification when the state of the assessment if NOT_AFFECTED.",
+          "$ref": "Justification"
         },
         "remediations": {
           "description": "Specifies details on how to handle (and presumably, fix) a vulnerability.",

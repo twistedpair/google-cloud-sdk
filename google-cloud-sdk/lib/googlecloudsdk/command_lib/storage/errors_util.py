@@ -50,18 +50,21 @@ def _raise_error_for_wrong_resource_type(command_list, expected_resource_type,
 
 
 def raise_error_if_not_bucket(command_list, url):
-  if not url.is_bucket():
+  if not (isinstance(url, storage_url.CloudUrl) and url.is_bucket()):
     _raise_error_for_wrong_resource_type(command_list, 'bucket', 'gs://bucket',
                                          url)
 
 
 def raise_error_if_not_cloud_object(command_list, url):
-  if not url.is_object():
+  if not (isinstance(url, storage_url.CloudUrl) and url.is_object()):
     _raise_error_for_wrong_resource_type(command_list, 'object',
                                          'gs://bucket/object.txt', url)
 
 
 def raise_error_if_not_gcs(command_list, url):
-  if url.scheme is not storage_url.ProviderPrefix.GCS:
+  if not (
+      isinstance(url, storage_url.CloudUrl)
+      and url.scheme is storage_url.ProviderPrefix.GCS
+  ):
     _raise_error_for_wrong_resource_type(command_list, 'Google Cloud Storage',
                                          'gs://bucket', url)

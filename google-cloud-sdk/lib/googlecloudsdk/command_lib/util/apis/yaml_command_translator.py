@@ -426,26 +426,8 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     return ref, response
 
   def _Format(self, format_string, resource_ref, display_name=None):
-    """Formats a string with all the attributes of the given resource ref.
-
-    Args:
-      format_string: str, The format string.
-      resource_ref: resources.Resource, The resource reference to extract
-        attributes from.
-      display_name: the display name for the resource.
-
-    Returns:
-      str, The formatted string.
-    """
-    if resource_ref:
-      d = resource_ref.AsDict()
-      d[yaml_command_schema.NAME_FORMAT_KEY] = (
-          display_name or resource_ref.Name())
-      d[yaml_command_schema.REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
-    else:
-      d = {yaml_command_schema.NAME_FORMAT_KEY: display_name}
-    d[yaml_command_schema.RESOURCE_TYPE_FORMAT_KEY] = self.display_resource_type
-    return format_string.format(**d)
+    return yaml_command_schema.FormatResourceAttrStr(
+        format_string, resource_ref, display_name, self.display_resource_type)
 
   def _GetDisplayName(self, resource_ref, args):
     if (self.spec.arguments.resource

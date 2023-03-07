@@ -780,12 +780,22 @@ class SasPortalPolicy(_messages.Message):
 
 class SasPortalProvisionDeploymentRequest(_messages.Message):
   r"""Request for [ProvisionDeployment].
-  [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. No input is
-  needed, because GCP Project, Organization Info, and caller's GAIA ID should
-  be retrieved from the RPC handler, and used as inputs to create a new SAS
-  organization (if not exists) and a new SAS deployment.
+  [spectrum.sas.portal.v1alpha1.Provisioning.ProvisionDeployment]. GCP
+  Project, Organization Info, and caller's GAIA ID should be retrieved from
+  the RPC handler, and used as inputs to create a new SAS organization (if not
+  exists) and a new SAS deployment.
+
+  Fields:
+    newDeploymentDisplayName: Optional. If this field is set, and a new SAS
+      Portal Deployment needs to be created, its display name will be set to
+      the value of this field.
+    newOrganizationDisplayName: Optional. If this field is set, and a new SAS
+      Portal Organization needs to be created, its display name will be set to
+      the value of this field.
   """
 
+  newDeploymentDisplayName = _messages.StringField(1)
+  newOrganizationDisplayName = _messages.StringField(2)
 
 
 class SasPortalProvisionDeploymentResponse(_messages.Message):

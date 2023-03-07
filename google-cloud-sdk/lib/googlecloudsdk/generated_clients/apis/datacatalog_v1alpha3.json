@@ -659,58 +659,6 @@
         }
       }
     },
-    "GoogleCloudDatacatalogV1ReconcileTagsMetadata": {
-      "id": "GoogleCloudDatacatalogV1ReconcileTagsMetadata",
-      "description": "Long-running operation metadata message returned by the ReconcileTags.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "State of the reconciliation operation.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "The reconciliation has been queued and awaits for execution.",
-            "The reconciliation is in progress.",
-            "The reconciliation has been finished."
-          ],
-          "enum": [
-            "RECONCILIATION_STATE_UNSPECIFIED",
-            "RECONCILIATION_QUEUED",
-            "RECONCILIATION_IN_PROGRESS",
-            "RECONCILIATION_DONE"
-          ]
-        },
-        "errors": {
-          "description": "Maps the name of each tagged column (or empty string for a sole entry) to tagging operation status.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "Status"
-          }
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1ReconcileTagsResponse": {
-      "id": "GoogleCloudDatacatalogV1ReconcileTagsResponse",
-      "description": "Long-running operation response message returned by ReconcileTags.",
-      "type": "object",
-      "properties": {
-        "createdTagsCount": {
-          "description": "Number of tags created in the request.",
-          "type": "string",
-          "format": "int64"
-        },
-        "updatedTagsCount": {
-          "description": "Number of tags updated in the request.",
-          "type": "string",
-          "format": "int64"
-        },
-        "deletedTagsCount": {
-          "description": "Number of tags deleted in the request.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "GoogleCloudDatacatalogV1ImportEntriesMetadata": {
       "id": "GoogleCloudDatacatalogV1ImportEntriesMetadata",
       "description": "Metadata message for long-running operation returned by the ImportEntries.",
@@ -757,6 +705,1207 @@
           "description": "Number of entries deleted as a result of import operation.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DumpItem": {
+      "id": "GoogleCloudDatacatalogV1DumpItem",
+      "description": "Wrapper for any item that can be contained in the dump.",
+      "type": "object",
+      "properties": {
+        "taggedEntry": {
+          "description": "Entry and its tags.",
+          "$ref": "GoogleCloudDatacatalogV1TaggedEntry"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1TaggedEntry": {
+      "id": "GoogleCloudDatacatalogV1TaggedEntry",
+      "description": "Wrapper containing Entry and information about Tags that should and should not be attached to it.",
+      "type": "object",
+      "properties": {
+        "v1Entry": {
+          "description": "Non-encrypted Data Catalog v1 Entry.",
+          "$ref": "GoogleCloudDatacatalogV1Entry"
+        },
+        "presentTags": {
+          "description": "Tags that should be ingested into the Data Catalog. Caller should populate template name, column and fields.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1Tag"
+          }
+        },
+        "absentTags": {
+          "description": "Tags that should be deleted from the Data Catalog. Caller should populate template name and column only.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1Tag"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1Entry": {
+      "id": "GoogleCloudDatacatalogV1Entry",
+      "description": "Entry metadata. A Data Catalog entry represents another resource in Google Cloud Platform (such as a BigQuery dataset or a Pub\/Sub topic) or outside of it. You can use the `linked_resource` field in the entry resource to refer to the original resource ID of the source system. An entry resource contains resource details, for example, its schema. Additionally, you can attach flexible metadata to an entry in the form of a Tag.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of an entry in URL format. Note: The entry itself and its child resources might not be stored in the location specified in its name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "linkedResource": {
+          "description": "The resource this metadata entry refers to. For Google Cloud Platform resources, `linked_resource` is the [Full Resource Name] (https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name). For example, the `linked_resource` for a table resource from BigQuery is: `\/\/bigquery.googleapis.com\/projects\/{PROJECT_ID}\/datasets\/{DATASET_ID}\/tables\/{TABLE_ID}` Output only when the entry is one of the types in the `EntryType` enum. For entries with a `user_specified_type`, this field is optional and defaults to an empty string. The resource string must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), periods (.), colons (:), slashes (\/), dashes (-), and hashes (#). The maximum size is 200 bytes when encoded in UTF-8.",
+          "type": "string"
+        },
+        "fullyQualifiedName": {
+          "description": "Fully qualified name (FQN) of the resource. Set automatically for entries representing resources from synced systems. Settable only during creation and read-only afterwards. Can be used for search and lookup of the entries. FQNs take two forms: * For non-regionalized resources: `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:{PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the entry. Only used for entries with types listed in the `EntryType` enum. Currently, only `FILESET` enum value is allowed. All other entries created in Data Catalog must use the `user_specified_type`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown type.",
+            "The entry type that has a GoogleSQL schema, including logical views.",
+            "Output only. The type of models. For more information, see [Supported models in BigQuery ML] (https:\/\/cloud.google.com\/bigquery-ml\/docs\/introduction#supported_models_in).",
+            "An entry type for streaming entries. For example, a Pub\/Sub topic.",
+            "An entry type for a set of files or objects. For example, a Cloud Storage fileset.",
+            "A group of servers that work together. For example, a Kafka cluster.",
+            "A database.",
+            "Output only. Connection to a data source. For example, a BigQuery connection.",
+            "Output only. Routine, for example, a BigQuery routine.",
+            "A Dataplex lake.",
+            "A Dataplex zone.",
+            "A service, for example, a Dataproc Metastore service.",
+            "Schema within a relational database.",
+            "A Dashboard, for example from Looker.",
+            "A Looker Explore. For more information, see [Looker Explore API] (https:\/\/developers.looker.com\/api\/explorer\/4.0\/methods\/LookmlModel\/lookml_model_explore).",
+            "A Looker Look. For more information, see [Looker Look API] (https:\/\/developers.looker.com\/api\/explorer\/4.0\/methods\/Look)."
+          ],
+          "enum": [
+            "ENTRY_TYPE_UNSPECIFIED",
+            "TABLE",
+            "MODEL",
+            "DATA_STREAM",
+            "FILESET",
+            "CLUSTER",
+            "DATABASE",
+            "DATA_SOURCE_CONNECTION",
+            "ROUTINE",
+            "LAKE",
+            "ZONE",
+            "SERVICE",
+            "DATABASE_SCHEMA",
+            "DASHBOARD",
+            "EXPLORE",
+            "LOOK"
+          ]
+        },
+        "userSpecifiedType": {
+          "description": "Custom entry type that doesn't match any of the values allowed for input and listed in the `EntryType` enum. When creating an entry, first check the type values in the enum. If there are no appropriate types for the new entry, provide a custom value, for example, `my_special_type`. The `user_specified_type` string has the following limitations: * Is case insensitive. * Must begin with a letter or underscore. * Can only contain letters, numbers, and underscores. * Must be at least 1 character and at most 64 characters long.",
+          "type": "string"
+        },
+        "integratedSystem": {
+          "description": "Output only. Indicates the entry's source system that Data Catalog integrates with, such as BigQuery, Pub\/Sub, or Dataproc Metastore.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown system.",
+            "BigQuery.",
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore.",
+            "Dataplex.",
+            "Cloud Sql",
+            "Looker"
+          ],
+          "enum": [
+            "INTEGRATED_SYSTEM_UNSPECIFIED",
+            "BIGQUERY",
+            "CLOUD_PUBSUB",
+            "DATAPROC_METASTORE",
+            "DATAPLEX",
+            "CLOUD_SQL",
+            "LOOKER"
+          ]
+        },
+        "userSpecifiedSystem": {
+          "description": "Indicates the entry's source system that Data Catalog doesn't automatically integrate with. The `user_specified_system` string has the following limitations: * Is case insensitive. * Must begin with a letter or underscore. * Can only contain letters, numbers, and underscores. * Must be at least 1 character and at most 64 characters long.",
+          "type": "string"
+        },
+        "sqlDatabaseSystemSpec": {
+          "description": "Specification that applies to a relational database system. Only settable when `user_specified_system` is equal to `SQL_DATABASE`",
+          "$ref": "GoogleCloudDatacatalogV1SqlDatabaseSystemSpec"
+        },
+        "lookerSystemSpec": {
+          "description": "Specification that applies to Looker sysstem. Only settable when `user_specified_system` is equal to `LOOKER`",
+          "$ref": "GoogleCloudDatacatalogV1LookerSystemSpec"
+        },
+        "gcsFilesetSpec": {
+          "description": "Specification that applies to a Cloud Storage fileset. Valid only for entries with the `FILESET` type.",
+          "$ref": "GoogleCloudDatacatalogV1GcsFilesetSpec"
+        },
+        "bigqueryTableSpec": {
+          "description": "Output only. Specification that applies to a BigQuery table. Valid only for entries with the `TABLE` type.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1BigQueryTableSpec"
+        },
+        "bigqueryDateShardedSpec": {
+          "description": "Output only. Specification for a group of BigQuery tables with the `[prefix]YYYYMMDD` name pattern. For more information, see [Introduction to partitioned tables] (https:\/\/cloud.google.com\/bigquery\/docs\/partitioned-tables#partitioning_versus_sharding).",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1BigQueryDateShardedSpec"
+        },
+        "databaseTableSpec": {
+          "description": "Specification that applies to a table resource. Valid only for entries with the `TABLE` or `EXPLORE` type.",
+          "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpec"
+        },
+        "dataSourceConnectionSpec": {
+          "description": "Specification that applies to a data source connection. Valid only for entries with the `DATA_SOURCE_CONNECTION` type.",
+          "$ref": "GoogleCloudDatacatalogV1DataSourceConnectionSpec"
+        },
+        "routineSpec": {
+          "description": "Specification that applies to a user-defined function or procedure. Valid only for entries with the `ROUTINE` type.",
+          "$ref": "GoogleCloudDatacatalogV1RoutineSpec"
+        },
+        "filesetSpec": {
+          "description": "Specification that applies to a fileset resource. Valid only for entries with the `FILESET` type.",
+          "$ref": "GoogleCloudDatacatalogV1FilesetSpec"
+        },
+        "displayName": {
+          "description": "Display name of an entry. The maximum size is 500 bytes when encoded in UTF-8. Default value is an empty string.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Entry description that can consist of several sentences or paragraphs that describe entry contents. The description must not contain Unicode non-characters as well as C0 and C1 control codes except tabs (HT), new lines (LF), carriage returns (CR), and page breaks (FF). The maximum size is 2000 bytes when encoded in UTF-8. Default value is an empty string.",
+          "type": "string"
+        },
+        "businessContext": {
+          "description": "Business Context of the entry. Not supported for BigQuery datasets",
+          "$ref": "GoogleCloudDatacatalogV1BusinessContext"
+        },
+        "schema": {
+          "description": "Schema of the entry. An entry might not have any schema attached to it.",
+          "$ref": "GoogleCloudDatacatalogV1Schema"
+        },
+        "sourceSystemTimestamps": {
+          "description": "Timestamps from the underlying resource, not from the Data Catalog entry. Output only when the entry has a system listed in the `IntegratedSystem` enum. For entries with `user_specified_system`, this field is optional and defaults to an empty timestamp.",
+          "$ref": "GoogleCloudDatacatalogV1SystemTimestamps"
+        },
+        "usageSignal": {
+          "description": "Resource usage statistics.",
+          "$ref": "GoogleCloudDatacatalogV1UsageSignal"
+        },
+        "labels": {
+          "description": "Cloud labels attached to the entry. In Data Catalog, you can create and modify labels attached only to custom entries. Synced entries have unmodifiable labels that come from the source system.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "dataSource": {
+          "description": "Output only. Physical location of the entry.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1DataSource"
+        },
+        "personalDetails": {
+          "description": "Output only. Additional information related to the entry. Private to the current user.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1PersonalDetails"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1SqlDatabaseSystemSpec": {
+      "id": "GoogleCloudDatacatalogV1SqlDatabaseSystemSpec",
+      "description": "Specification that applies to entries that are part `SQL_DATABASE` system (user_specified_type)",
+      "type": "object",
+      "properties": {
+        "sqlEngine": {
+          "description": "SQL Database Engine. enum SqlEngine { UNDEFINED = 0; MY_SQL = 1; POSTGRE_SQL = 2; SQL_SERVER = 3; } Engine of the enclosing database instance.",
+          "type": "string"
+        },
+        "databaseVersion": {
+          "description": "Version of the database engine.",
+          "type": "string"
+        },
+        "instanceHost": {
+          "description": "Host of the SQL database enum InstanceHost { UNDEFINED = 0; SELF_HOSTED = 1; CLOUD_SQL = 2; AMAZON_RDS = 3; AZURE_SQL = 4; } Host of the enclousing database instance.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1LookerSystemSpec": {
+      "id": "GoogleCloudDatacatalogV1LookerSystemSpec",
+      "description": "Specification that applies to entries that are part `LOOKER` system (user_specified_type)",
+      "type": "object",
+      "properties": {
+        "parentInstanceId": {
+          "description": "ID of the parent Looker Instance. Empty if it does not exist. Example value: `someinstance.looker.com`",
+          "type": "string"
+        },
+        "parentInstanceDisplayName": {
+          "description": "Name of the parent Looker Instance. Empty if it does not exist.",
+          "type": "string"
+        },
+        "parentModelId": {
+          "description": "ID of the parent Model. Empty if it does not exist.",
+          "type": "string"
+        },
+        "parentModelDisplayName": {
+          "description": "Name of the parent Model. Empty if it does not exist.",
+          "type": "string"
+        },
+        "parentViewId": {
+          "description": "ID of the parent View. Empty if it does not exist.",
+          "type": "string"
+        },
+        "parentViewDisplayName": {
+          "description": "Name of the parent View. Empty if it does not exist.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1GcsFilesetSpec": {
+      "id": "GoogleCloudDatacatalogV1GcsFilesetSpec",
+      "description": "Describes a Cloud Storage fileset entry.",
+      "type": "object",
+      "properties": {
+        "filePatterns": {
+          "description": "Required. Patterns to identify a set of files in Google Cloud Storage. For more information, see [Wildcard Names] (https:\/\/cloud.google.com\/storage\/docs\/gsutil\/addlhelp\/WildcardNames). Note: Currently, bucket wildcards are not supported. Examples of valid `file_patterns`: * `gs:\/\/bucket_name\/dir\/*`: matches all files in `bucket_name\/dir` directory * `gs:\/\/bucket_name\/dir\/**`: matches all files in `bucket_name\/dir` and all subdirectories * `gs:\/\/bucket_name\/file*`: matches files prefixed by `file` in `bucket_name` * `gs:\/\/bucket_name\/??.txt`: matches files with two characters followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/[aeiou].txt`: matches files that contain a single vowel character followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/[a-m].txt`: matches files that contain `a`, `b`, ... or `m` followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/a\/*\/b`: matches all files in `bucket_name` that match the `a\/*\/b` pattern, such as `a\/c\/b`, `a\/d\/b` * `gs:\/\/another_bucket\/a.txt`: matches `gs:\/\/another_bucket\/a.txt` You can combine wildcards to match complex sets of files, for example: `gs:\/\/bucket_name\/[a-m]??.j*g`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sampleGcsFileSpecs": {
+          "description": "Output only. Sample files contained in this fileset, not all files contained in this fileset are represented here.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1GcsFileSpec"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1GcsFileSpec": {
+      "id": "GoogleCloudDatacatalogV1GcsFileSpec",
+      "description": "Specification of a single file in Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "description": "Required. Full file path. Example: `gs:\/\/bucket_name\/a\/b.txt`.",
+          "type": "string"
+        },
+        "gcsTimestamps": {
+          "description": "Output only. Creation, modification, and expiration timestamps of a Cloud Storage file.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1SystemTimestamps"
+        },
+        "sizeBytes": {
+          "description": "Output only. File size in bytes.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1SystemTimestamps": {
+      "id": "GoogleCloudDatacatalogV1SystemTimestamps",
+      "description": "Timestamps associated with this resource in a particular system.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Creation timestamp of the resource within the given system.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Timestamp of the last modification of the resource or its metadata within a given system. Note: Depending on the source system, not every modification updates this timestamp. For example, BigQuery timestamps every metadata modification but not data or permission changes.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. Expiration timestamp of the resource within the given system. Currently only applicable to BigQuery resources.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BigQueryTableSpec": {
+      "id": "GoogleCloudDatacatalogV1BigQueryTableSpec",
+      "description": "Describes a BigQuery table.",
+      "type": "object",
+      "properties": {
+        "tableSourceType": {
+          "description": "Output only. The table source type.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown type.",
+            "Table view.",
+            "BigQuery native table.",
+            "BigQuery materialized view."
+          ],
+          "enum": [
+            "TABLE_SOURCE_TYPE_UNSPECIFIED",
+            "BIGQUERY_VIEW",
+            "BIGQUERY_TABLE",
+            "BIGQUERY_MATERIALIZED_VIEW"
+          ]
+        },
+        "viewSpec": {
+          "description": "Table view specification. Populated only if the `table_source_type` is `BIGQUERY_VIEW`.",
+          "$ref": "GoogleCloudDatacatalogV1ViewSpec"
+        },
+        "tableSpec": {
+          "description": "Specification of a BigQuery table. Populated only if the `table_source_type` is `BIGQUERY_TABLE`.",
+          "$ref": "GoogleCloudDatacatalogV1TableSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ViewSpec": {
+      "id": "GoogleCloudDatacatalogV1ViewSpec",
+      "description": "Table view specification.",
+      "type": "object",
+      "properties": {
+        "viewQuery": {
+          "description": "Output only. The query that defines the table view.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1TableSpec": {
+      "id": "GoogleCloudDatacatalogV1TableSpec",
+      "description": "Normal BigQuery table specification.",
+      "type": "object",
+      "properties": {
+        "groupedEntry": {
+          "description": "Output only. If the table is date-sharded, that is, it matches the `[prefix]YYYYMMDD` name pattern, this field is the Data Catalog resource name of the date-sharded grouped entry. For example: `projects\/{PROJECT_ID}\/locations\/{LOCATION}\/entrygroups\/{ENTRY_GROUP_ID}\/entries\/{ENTRY_ID}`. Otherwise, `grouped_entry` is empty.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BigQueryDateShardedSpec": {
+      "id": "GoogleCloudDatacatalogV1BigQueryDateShardedSpec",
+      "description": "Specification for a group of BigQuery tables with the `[prefix]YYYYMMDD` name pattern. For more information, see [Introduction to partitioned tables] (https:\/\/cloud.google.com\/bigquery\/docs\/partitioned-tables#partitioning_versus_sharding).",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "Output only. The Data Catalog resource name of the dataset entry the current table belongs to. For example: `projects\/{PROJECT_ID}\/locations\/{LOCATION}\/entrygroups\/{ENTRY_GROUP_ID}\/entries\/{ENTRY_ID}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "tablePrefix": {
+          "description": "Output only. The table name prefix of the shards. The name of any given shard is `[table_prefix]YYYYMMDD`. For example, for the `MyTable20180101` shard, the `table_prefix` is `MyTable`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "shardCount": {
+          "description": "Output only. Total number of shards.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "latestShardResource": {
+          "description": "Output only. BigQuery resource name of the latest shard.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DatabaseTableSpec": {
+      "id": "GoogleCloudDatacatalogV1DatabaseTableSpec",
+      "description": "Specification that applies to a table resource. Valid only for entries with the `TABLE` type.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of this table.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown table type.",
+            "Native table.",
+            "External table."
+          ],
+          "enum": [
+            "TABLE_TYPE_UNSPECIFIED",
+            "NATIVE",
+            "EXTERNAL"
+          ]
+        },
+        "dataplexTable": {
+          "description": "Output only. Fields specific to a Dataplex table and present only in the Dataplex table entries.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1DataplexTableSpec"
+        },
+        "databaseViewSpec": {
+          "description": "Spec what aplies to tables that are actually views. Not set for \"real\" tables.",
+          "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexTableSpec": {
+      "id": "GoogleCloudDatacatalogV1DataplexTableSpec",
+      "description": "Entry specification for a Dataplex table.",
+      "type": "object",
+      "properties": {
+        "externalTables": {
+          "description": "List of external tables registered by Dataplex in other systems based on the same underlying data. External tables allow to query this data in those systems.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1DataplexExternalTable"
+          }
+        },
+        "dataplexSpec": {
+          "description": "Common Dataplex fields.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexSpec"
+        },
+        "userManaged": {
+          "description": "Indicates if the table schema is managed by the user or not.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexExternalTable": {
+      "id": "GoogleCloudDatacatalogV1DataplexExternalTable",
+      "description": "External table registered by Dataplex. Dataplex publishes data discovered from an asset into multiple other systems (BigQuery, DPMS) in form of tables. We call them \"external tables\". External tables are also synced into the Data Catalog. This message contains pointers to those external tables (fully qualified name, resource name et cetera) within the Data Catalog.",
+      "type": "object",
+      "properties": {
+        "system": {
+          "description": "Service in which the external table is registered.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown system.",
+            "BigQuery.",
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore.",
+            "Dataplex.",
+            "Cloud Sql",
+            "Looker"
+          ],
+          "enum": [
+            "INTEGRATED_SYSTEM_UNSPECIFIED",
+            "BIGQUERY",
+            "CLOUD_PUBSUB",
+            "DATAPROC_METASTORE",
+            "DATAPLEX",
+            "CLOUD_SQL",
+            "LOOKER"
+          ]
+        },
+        "fullyQualifiedName": {
+          "description": "Fully qualified name (FQN) of the external table.",
+          "type": "string"
+        },
+        "googleCloudResource": {
+          "description": "Google Cloud resource name of the external table.",
+          "type": "string"
+        },
+        "dataCatalogEntry": {
+          "description": "Name of the Data Catalog entry representing the external table.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexSpec": {
+      "id": "GoogleCloudDatacatalogV1DataplexSpec",
+      "description": "Common Dataplex fields.",
+      "type": "object",
+      "properties": {
+        "asset": {
+          "description": "Fully qualified resource name of an asset in Dataplex, to which the underlying data source (Cloud Storage bucket or BigQuery dataset) of the entity is attached.",
+          "type": "string"
+        },
+        "dataFormat": {
+          "description": "Format of the data.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchema"
+        },
+        "compressionFormat": {
+          "description": "Compression format of the data, e.g., zip, gzip etc.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project ID of the underlying Cloud Storage or BigQuery data. Note that this may not be the same project as the correspondingly Dataplex lake \/ zone \/ asset.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchema",
+      "description": "Native schema used by a resource represented as an entry. Used by query engines for deserializing and parsing source data.",
+      "type": "object",
+      "properties": {
+        "avro": {
+          "description": "Schema in Avro JSON format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema"
+        },
+        "thrift": {
+          "description": "Schema in Thrift format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema"
+        },
+        "protobuf": {
+          "description": "Schema in protocol buffer format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema"
+        },
+        "parquet": {
+          "description": "Marks a Parquet-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema"
+        },
+        "orc": {
+          "description": "Marks an ORC-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema"
+        },
+        "csv": {
+          "description": "Marks a CSV-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema",
+      "description": "Schema in Avro JSON format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "JSON source of the Avro schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema",
+      "description": "Schema in Thrift format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Thrift IDL source of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema",
+      "description": "Schema in protocol buffer format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Protocol buffer source of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema",
+      "description": "Marks a Parquet-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema",
+      "description": "Marks an ORC-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema",
+      "description": "Marks a CSV-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec": {
+      "id": "GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec",
+      "description": "Specification that applies to database view.",
+      "type": "object",
+      "properties": {
+        "viewType": {
+          "description": "Type of this view.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown view type.",
+            "Standard view.",
+            "Materialized view."
+          ],
+          "enum": [
+            "VIEW_TYPE_UNSPECIFIED",
+            "STANDARD_VIEW",
+            "MATERIALIZED_VIEW"
+          ]
+        },
+        "baseTable": {
+          "description": "Name of a singular table this view reflects one to one.",
+          "type": "string"
+        },
+        "sqlQuery": {
+          "description": "SQL query used to generate this view.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataSourceConnectionSpec": {
+      "id": "GoogleCloudDatacatalogV1DataSourceConnectionSpec",
+      "description": "Specification that applies to a data source connection. Valid only for entries with the `DATA_SOURCE_CONNECTION` type. Only one of internal specs can be set at the time, and cannot be changed later.",
+      "type": "object",
+      "properties": {
+        "bigqueryConnectionSpec": {
+          "description": "Output only. Fields specific to BigQuery connections.",
+          "$ref": "GoogleCloudDatacatalogV1BigQueryConnectionSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BigQueryConnectionSpec": {
+      "id": "GoogleCloudDatacatalogV1BigQueryConnectionSpec",
+      "description": "Specification for the BigQuery connection.",
+      "type": "object",
+      "properties": {
+        "connectionType": {
+          "description": "The type of the BigQuery connection.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Cloud SQL connection."
+          ],
+          "enum": [
+            "CONNECTION_TYPE_UNSPECIFIED",
+            "CLOUD_SQL"
+          ]
+        },
+        "cloudSql": {
+          "description": "Specification for the BigQuery connection to a Cloud SQL instance.",
+          "$ref": "GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec"
+        },
+        "hasCredential": {
+          "description": "True if there are credentials attached to the BigQuery connection; false otherwise.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec": {
+      "id": "GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec",
+      "description": "Specification for the BigQuery connection to a Cloud SQL instance.",
+      "type": "object",
+      "properties": {
+        "instanceId": {
+          "description": "Cloud SQL instance ID in the format of `project:location:instance`.",
+          "type": "string"
+        },
+        "database": {
+          "description": "Database name.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the Cloud SQL database.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified database type.",
+            "Cloud SQL for PostgreSQL.",
+            "Cloud SQL for MySQL."
+          ],
+          "enum": [
+            "DATABASE_TYPE_UNSPECIFIED",
+            "POSTGRES",
+            "MYSQL"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1RoutineSpec": {
+      "id": "GoogleCloudDatacatalogV1RoutineSpec",
+      "description": "Specification that applies to a routine. Valid only for entries with the `ROUTINE` type.",
+      "type": "object",
+      "properties": {
+        "routineType": {
+          "description": "The type of the routine.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Non-builtin permanent scalar function.",
+            "Stored procedure."
+          ],
+          "enum": [
+            "ROUTINE_TYPE_UNSPECIFIED",
+            "SCALAR_FUNCTION",
+            "PROCEDURE"
+          ]
+        },
+        "language": {
+          "description": "The language the routine is written in. The exact value depends on the source system. For BigQuery routines, possible values are: * `SQL` * `JAVASCRIPT`",
+          "type": "string"
+        },
+        "routineArguments": {
+          "description": "Arguments of the routine.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1RoutineSpecArgument"
+          }
+        },
+        "returnType": {
+          "description": "Return type of the argument. The exact value depends on the source system and the language.",
+          "type": "string"
+        },
+        "definitionBody": {
+          "description": "The body of the routine.",
+          "type": "string"
+        },
+        "bigqueryRoutineSpec": {
+          "description": "Fields specific for BigQuery routines.",
+          "$ref": "GoogleCloudDatacatalogV1BigQueryRoutineSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1RoutineSpecArgument": {
+      "id": "GoogleCloudDatacatalogV1RoutineSpecArgument",
+      "description": "Input or output argument of a function or stored procedure.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the argument. A return argument of a function might not have a name.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Specifies whether the argument is input or output.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified mode.",
+            "The argument is input-only.",
+            "The argument is output-only.",
+            "The argument is both an input and an output."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "IN",
+            "OUT",
+            "INOUT"
+          ]
+        },
+        "type": {
+          "description": "Type of the argument. The exact value depends on the source system and the language.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BigQueryRoutineSpec": {
+      "id": "GoogleCloudDatacatalogV1BigQueryRoutineSpec",
+      "description": "Fields specific for BigQuery routines.",
+      "type": "object",
+      "properties": {
+        "importedLibraries": {
+          "description": "Paths of the imported libraries.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1FilesetSpec": {
+      "id": "GoogleCloudDatacatalogV1FilesetSpec",
+      "description": "Specification that applies to a fileset. Valid only for entries with the 'FILESET' type.",
+      "type": "object",
+      "properties": {
+        "dataplexFileset": {
+          "description": "Fields specific to a Dataplex fileset and present only in the Dataplex fileset entries.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexFilesetSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexFilesetSpec": {
+      "id": "GoogleCloudDatacatalogV1DataplexFilesetSpec",
+      "description": "Entry specyfication for a Dataplex fileset.",
+      "type": "object",
+      "properties": {
+        "dataplexSpec": {
+          "description": "Common Dataplex fields.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BusinessContext": {
+      "id": "GoogleCloudDatacatalogV1BusinessContext",
+      "description": "Business Context of the entry.",
+      "type": "object",
+      "properties": {
+        "entryOverview": {
+          "description": "Entry overview fields for rich text descriptions of entries.",
+          "$ref": "GoogleCloudDatacatalogV1EntryOverview"
+        },
+        "contacts": {
+          "description": "Contact people for the entry.",
+          "$ref": "GoogleCloudDatacatalogV1Contacts"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1EntryOverview": {
+      "id": "GoogleCloudDatacatalogV1EntryOverview",
+      "description": "Entry overview fields for rich text descriptions of entries.",
+      "type": "object",
+      "properties": {
+        "overview": {
+          "description": "Entry overview with support for rich text. The overview must only contain Unicode characters, and should be formatted using HTML. The maximum length is 10 MiB as this value holds HTML descriptions including encoded images. The maximum length of the text without images is 100 KiB.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1Contacts": {
+      "id": "GoogleCloudDatacatalogV1Contacts",
+      "description": "Contact people for the entry.",
+      "type": "object",
+      "properties": {
+        "people": {
+          "description": "The list of contact people for the entry.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1ContactsPerson"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ContactsPerson": {
+      "id": "GoogleCloudDatacatalogV1ContactsPerson",
+      "description": "A contact person for the entry.",
+      "type": "object",
+      "properties": {
+        "designation": {
+          "description": "Designation of the person, for example, Data Steward.",
+          "type": "string"
+        },
+        "email": {
+          "description": "Email of the person in the format of `john.doe@xyz`, ``, or `John Doe`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1Schema": {
+      "id": "GoogleCloudDatacatalogV1Schema",
+      "description": "Represents a schema, for example, a BigQuery, GoogleSQL, or Avro schema.",
+      "type": "object",
+      "properties": {
+        "columns": {
+          "description": "The unified GoogleSQL-like schema of columns. The overall maximum number of columns and nested columns is 10,000. The maximum nested depth is 15 levels.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1ColumnSchema"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ColumnSchema": {
+      "id": "GoogleCloudDatacatalogV1ColumnSchema",
+      "description": "A column within a schema. Columns can be nested inside other columns.",
+      "type": "object",
+      "properties": {
+        "column": {
+          "description": "Required. Name of the column. Must be a UTF-8 string without dots (.). The maximum size is 64 bytes.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. Type of the column. Must be a UTF-8 string with the maximum size of 128 bytes.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the column. Default value is an empty string. The description must be a UTF-8 string with the maximum size of 2000 bytes.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Optional. A column's mode indicates whether values in this column are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and `REPEATED` values are supported. Default mode is `NULLABLE`.",
+          "type": "string"
+        },
+        "defaultValue": {
+          "description": "Optional. Default value for the column.",
+          "type": "string"
+        },
+        "ordinalPosition": {
+          "description": "Optional. Ordinal position",
+          "type": "integer",
+          "format": "int32"
+        },
+        "highestIndexingType": {
+          "description": "Optional. Most important inclusion of this column.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Column not a part of an index.",
+            "Column Part of non unique index.",
+            "Column part of unique index.",
+            "Column part of the primary key."
+          ],
+          "enum": [
+            "INDEXING_TYPE_UNSPECIFIED",
+            "INDEXING_TYPE_NONE",
+            "INDEXING_TYPE_NON_UNIQUE",
+            "INDEXING_TYPE_UNIQUE",
+            "INDEXING_TYPE_PRIMARY_KEY"
+          ]
+        },
+        "subcolumns": {
+          "description": "Optional. Schema of sub-columns. A column can have zero or more sub-columns.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1ColumnSchema"
+          }
+        },
+        "lookerColumnSpec": {
+          "description": "Looker specific column info of this column.",
+          "$ref": "GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec"
+        },
+        "gcRule": {
+          "description": "Optional. Garbage collection policy for the column or column family. Applies to systems like Cloud Bigtable.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec": {
+      "id": "GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec",
+      "description": "Column info specific to Looker System.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Looker specific column type of this column.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Dimension.",
+            "Dimension group - parent for Dimension.",
+            "Filter.",
+            "Measure.",
+            "Parameter."
+          ],
+          "enum": [
+            "LOOKER_COLUMN_TYPE_UNSPECIFIED",
+            "DIMENSION",
+            "DIMENSION_GROUP",
+            "FILTER",
+            "MEASURE",
+            "PAREMETER"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1UsageSignal": {
+      "id": "GoogleCloudDatacatalogV1UsageSignal",
+      "description": "The set of all usage signals that Data Catalog stores. Note: Usually, these signals are updated daily. In rare cases, an update may fail but will be performed again on the next day.",
+      "type": "object",
+      "properties": {
+        "updateTime": {
+          "description": "The end timestamp of the duration of usage statistics.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "usageWithinTimeRange": {
+          "description": "Output only. BigQuery usage statistics over each of the predefined time ranges. Supported time ranges are `{\"24H\", \"7D\", \"30D\"}`.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudDatacatalogV1UsageStats"
+          }
+        },
+        "commonUsageWithinTimeRange": {
+          "description": "Common usage statistics over each of the predefined time ranges. Supported time ranges are `{\"24H\", \"7D\", \"30D\", \"Lifetime\"}`.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudDatacatalogV1CommonUsageStats"
+          }
+        },
+        "favoriteCount": {
+          "description": "Favorite count in the source system.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1UsageStats": {
+      "id": "GoogleCloudDatacatalogV1UsageStats",
+      "description": "Detailed statistics on the entry's usage. Usage statistics have the following limitations: - Only BigQuery tables have them. - They only include BigQuery query jobs. - They might be underestimated because wildcard table references are not yet counted. For more information, see [Querying multiple tables using a wildcard table] (https:\/\/cloud.google.com\/bigquery\/docs\/querying-wildcard-tables)",
+      "type": "object",
+      "properties": {
+        "totalCompletions": {
+          "description": "The number of successful uses of the underlying entry.",
+          "type": "number",
+          "format": "float"
+        },
+        "totalFailures": {
+          "description": "The number of failed attempts to use the underlying entry.",
+          "type": "number",
+          "format": "float"
+        },
+        "totalCancellations": {
+          "description": "The number of cancelled attempts to use the underlying entry.",
+          "type": "number",
+          "format": "float"
+        },
+        "totalExecutionTimeForCompletionsMillis": {
+          "description": "Total time spent only on successful uses, in milliseconds.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1CommonUsageStats": {
+      "id": "GoogleCloudDatacatalogV1CommonUsageStats",
+      "description": "Common statistics on the entry's usage. They can be set on any system.",
+      "type": "object",
+      "properties": {
+        "viewCount": {
+          "description": "View count in source system.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataSource": {
+      "id": "GoogleCloudDatacatalogV1DataSource",
+      "description": "Physical location of an entry.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Service that physically stores the data.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown service.",
+            "Google Cloud Storage service.",
+            "BigQuery service."
+          ],
+          "enum": [
+            "SERVICE_UNSPECIFIED",
+            "CLOUD_STORAGE",
+            "BIGQUERY"
+          ]
+        },
+        "resource": {
+          "description": "Full name of a resource as defined by the service. For example: `\/\/bigquery.googleapis.com\/projects\/{PROJECT_ID}\/locations\/{LOCATION}\/datasets\/{DATASET_ID}\/tables\/{TABLE_ID}`",
+          "type": "string"
+        },
+        "sourceEntry": {
+          "description": "Output only. Data Catalog entry name, if applicable.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "storageProperties": {
+          "description": "Detailed properties of the underlying storage.",
+          "$ref": "GoogleCloudDatacatalogV1StorageProperties"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1StorageProperties": {
+      "id": "GoogleCloudDatacatalogV1StorageProperties",
+      "description": "Details the properties of the underlying storage.",
+      "type": "object",
+      "properties": {
+        "filePattern": {
+          "description": "Patterns to identify a set of files for this fileset. Examples of a valid `file_pattern`: * `gs:\/\/bucket_name\/dir\/*`: matches all files in the `bucket_name\/dir` directory * `gs:\/\/bucket_name\/dir\/**`: matches all files in the `bucket_name\/dir` and all subdirectories recursively * `gs:\/\/bucket_name\/file*`: matches files prefixed by `file` in `bucket_name` * `gs:\/\/bucket_name\/??.txt`: matches files with two characters followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/[aeiou].txt`: matches files that contain a single vowel character followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/[a-m].txt`: matches files that contain `a`, `b`, ... or `m` followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/a\/*\/b`: matches all files in `bucket_name` that match the `a\/*\/b` pattern, such as `a\/c\/b`, `a\/d\/b` * `gs:\/\/another_bucket\/a.txt`: matches `gs:\/\/another_bucket\/a.txt`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileType": {
+          "description": "File type in MIME format, for example, `text\/plain`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PersonalDetails": {
+      "id": "GoogleCloudDatacatalogV1PersonalDetails",
+      "description": "Entry metadata relevant only to the user and private to them.",
+      "type": "object",
+      "properties": {
+        "starred": {
+          "description": "True if the entry is starred by the user; false otherwise.",
+          "type": "boolean"
+        },
+        "starTime": {
+          "description": "Set if the entry is starred; unset otherwise.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1Tag": {
+      "id": "GoogleCloudDatacatalogV1Tag",
+      "description": "Tags contain custom metadata and are attached to Data Catalog resources. Tags conform with the specification of their tag template. See [Data Catalog IAM](https:\/\/cloud.google.com\/data-catalog\/docs\/concepts\/iam) for information on the permissions needed to create or view tags.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
+          "type": "string"
+        },
+        "template": {
+          "description": "Required. The resource name of the tag template this tag uses. Example: `projects\/{PROJECT_ID}\/locations\/{LOCATION}\/tagTemplates\/{TAG_TEMPLATE_ID}` This field cannot be modified after creation.",
+          "type": "string"
+        },
+        "templateDisplayName": {
+          "description": "Output only. The display name of the tag template.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "column": {
+          "description": "Resources like entry can have schemas associated with them. This scope allows you to attach tags to an individual column based on that schema. To attach a tag to a nested column, separate column names with a dot (`.`). Example: `column.nested_column`.",
+          "type": "string"
+        },
+        "fields": {
+          "description": "Required. Maps the ID of a tag field to its value and additional information about that field. Tag template defines valid field IDs. A tag must have at least 1 field and at most 500 fields.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudDatacatalogV1TagField"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1TagField": {
+      "id": "GoogleCloudDatacatalogV1TagField",
+      "description": "Contains the value and additional information on a field within a Tag.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Output only. The display name of this field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "doubleValue": {
+          "description": "The value of a tag field with a double type.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringValue": {
+          "description": "The value of a tag field with a string type. The maximum length is 2000 UTF-8 characters.",
+          "type": "string"
+        },
+        "boolValue": {
+          "description": "The value of a tag field with a boolean type.",
+          "type": "boolean"
+        },
+        "timestampValue": {
+          "description": "The value of a tag field with a timestamp type.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "enumValue": {
+          "description": "The value of a tag field with an enum type. This value must be one of the allowed values listed in this enum.",
+          "$ref": "GoogleCloudDatacatalogV1TagFieldEnumValue"
+        },
+        "richtextValue": {
+          "description": "The value of a tag field with a rich text type. The maximum length is 10 MiB as this value holds HTML descriptions including encoded images. The maximum length of the text without images is 100 KiB.",
+          "type": "string"
+        },
+        "order": {
+          "description": "Output only. The order of this field with respect to other fields in this tag. Can be set by Tag. For example, a higher value can indicate a more important field. The value can be negative. Multiple fields can have the same order, and field orders within a tag don't have to be sequential.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1TagFieldEnumValue": {
+      "id": "GoogleCloudDatacatalogV1TagFieldEnumValue",
+      "description": "An enum value.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "The display name of the enum value.",
+          "type": "string"
         }
       }
     }

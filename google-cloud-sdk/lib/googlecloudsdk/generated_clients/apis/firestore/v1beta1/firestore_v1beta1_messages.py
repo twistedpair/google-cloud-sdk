@@ -1890,7 +1890,12 @@ class RunAggregationQueryResponse(_messages.Message):
   r"""The response for Firestore.RunAggregationQuery.
 
   Fields:
-    readTime: The time at which the aggregate value is valid for.
+    readTime: The time at which the aggregate result was computed. This is
+      always monotonically increasing; in this case, the previous
+      AggregationResult in the result stream are guaranteed not to have
+      changed between their `read_time` and this one. If the query returns no
+      results, a response with `read_time` and no `result` will be sent, and
+      this represents the time at which the query was run.
     result: A single aggregation result. Not present when reporting partial
       progress.
     transaction: The transaction that was started as part of this request.
@@ -2110,7 +2115,9 @@ class StructuredQuery(_messages.Message):
       __name__ DESC` * `WHERE a > 1` becomes `WHERE a > 1 ORDER BY a ASC,
       __name__ ASC` * `WHERE __name__ > ... AND a > 1` becomes `WHERE __name__
       > ... AND a > 1 ORDER BY a ASC, __name__ ASC`
-    select: The projection to return.
+    select: Optional sub-set of the fields to return. This acts as a
+      DocumentMask over the documents returned from a query. When not set,
+      assumes that the caller wants all fields returned.
     startAt: A potential prefix of a position in the result set to start the
       query at. The ordering of the result set is based on the `ORDER BY`
       clause of the original query. ``` SELECT * FROM k WHERE a = 1 AND b > 2

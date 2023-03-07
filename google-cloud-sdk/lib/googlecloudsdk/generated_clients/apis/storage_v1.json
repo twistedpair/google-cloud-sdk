@@ -3452,6 +3452,11 @@
        "type": "boolean",
        "description": "If true, lists all versions of an object as distinct results. The default is false. For more information, see Object Versioning.",
        "location": "query"
+      },
+      "matchGlob": {
+       "type": "string",
+       "description": "Filter results to objects and prefixes that match this glob pattern.",
+       "location": "query"
       }
      },
      "parameterOrder": [

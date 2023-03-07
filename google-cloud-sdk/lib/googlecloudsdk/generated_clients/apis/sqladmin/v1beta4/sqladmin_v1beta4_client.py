@@ -777,6 +777,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Reencrypt(self, request, global_params=None):
+      r"""Reencrypt CMEK instance with latest key version.
+
+      Args:
+        request: (SqlInstancesReencryptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reencrypt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reencrypt.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.reencrypt',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/reencrypt',
+        request_field='sqlInstancesReencryptRequest',
+        request_type_name='SqlInstancesReencryptRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ResetSslConfig(self, request, global_params=None):
       r"""Deletes all client certificates and generates a new server SSL certificate for the instance.
 

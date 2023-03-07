@@ -298,17 +298,20 @@ def AddVersion(parser, is_update=False):
   )
 
 
-def _AddServiceAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group):
+def _AddServiceAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group,
+                                 is_update=False):
   """Adds a flag to specify the IPv4 address ranges used in the services in the cluster.
 
   Args:
     bare_metal_island_mode_cidr_config_group: The parent group to add the flag
       to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   bare_metal_island_mode_cidr_config_group.add_argument(
       '--island-mode-service-address-cidr-blocks',
       metavar='SERVICE_ADDRESS',
-      required=True,
+      required=required,
       type=arg_parsers.ArgList(
           min_length=1,
       ),
@@ -334,31 +337,41 @@ def _AddPodAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group):
   )
 
 
-def _AddIslandModeCIDRConfig(bare_metal_network_config_group):
+def _AddIslandModeCIDRConfig(bare_metal_network_config_group, is_update=False):
   """Adds island mode CIDR config related flags.
 
   Args:
     bare_metal_network_config_group: The parent group to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   bare_metal_island_mode_cidr_config_group = bare_metal_network_config_group.add_group(
       help='Island mode CIDR network configuration.',
   )
-  _AddServiceAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group)
-  _AddPodAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group)
+
+  if required:
+    _AddServiceAddressCIDRBlocks(
+        bare_metal_island_mode_cidr_config_group, is_update)
+    _AddPodAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group)
+  else:
+    _AddServiceAddressCIDRBlocks(
+        bare_metal_island_mode_cidr_config_group, is_update)
 
 
-def AddNetworkConfig(parser):
+def AddNetworkConfig(parser, is_update=False):
   """Adds network config related flags.
 
   Args:
     parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   network_config_mutex_group = parser.add_group(
       mutex=True,
-      required=True,
+      required=required,
       help='Populate one of the network configs.',
   )
-  _AddIslandModeCIDRConfig(network_config_mutex_group)
+  _AddIslandModeCIDRConfig(network_config_mutex_group, is_update)
 
 
 def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):
@@ -1220,3 +1233,19 @@ def AddAdminWorkloadNodeConfig(parser):
   )
 
   _AddMaxPodsPerNode(bare_metal_workload_node_config_group)
+
+
+def AddIgnoreErrors(parser):
+  """Adds a flag for ignore_errors field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      help=(
+          'If set, the deletion of a bare metal user cluster resource will'
+          ' succeed even if errors occur during deletion.'
+      ),
+      action='store_true',
+  )

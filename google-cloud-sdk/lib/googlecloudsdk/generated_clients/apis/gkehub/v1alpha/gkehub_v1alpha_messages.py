@@ -2271,6 +2271,34 @@ class GenerateConnectManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GenerateMembershipRBACRoleBindingYAMLRequest(_messages.Message):
+  r"""Request to generate a YAML of the RBAC policies for the specified
+  RoleBinding and its associated impersonation resources.
+
+  Fields:
+    rbacrolebinding: Required. The rbacrolebindings to generate the YAML for.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  rbacrolebinding = _messages.MessageField('RBACRoleBinding', 1)
+  rbacrolebindingId = _messages.StringField(2)
+
+
+class GenerateMembershipRBACRoleBindingYAMLResponse(_messages.Message):
+  r"""Response for GenerateRBACRoleBindingYAML.
+
+  Fields:
+    roleBindingsYaml: a yaml text blob including the RBAC policies.
+  """
+
+  roleBindingsYaml = _messages.BytesField(1)
+
+
 class GetReferenceRequest(_messages.Message):
   r"""The GetReferenceRequest request.
 
@@ -2942,110 +2970,6 @@ class GkehubProjectsLocationsMembershipsListScopesRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class GkehubProjectsLocationsMembershipsListWorkspacesRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsListWorkspacesRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListWorkspaces`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project, location, membership) where the
-      Workspace will be listed. Specified in the format
-      `projects/*/locations/*/memberships/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsCreateRequest
-  object.
-
-  Fields:
-    namespaceBinding: A NamespaceBinding resource to be passed as the request
-      body.
-    namespacebindingId: Required. Client chosen ID for the NamespaceBinding.
-      `namespacebinding_id` must be a valid RFC 1123 compliant DNS label: 1.
-      At most 63 characters in length 2. It must consist of lower case
-      alphanumeric characters or `-` 3. It must start and end with an
-      alphanumeric character Which can be expressed as the regex:
-      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
-    parent: Required. The parent (project and location) where the
-      NamespaceBinding will be created. Specified in the format
-      `projects/*/locations/*/memberships/*`.
-  """
-
-  namespaceBinding = _messages.MessageField('NamespaceBinding', 1)
-  namespacebindingId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsMembershipsNamespacebindingsDeleteRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The NamespaceBinding resource name in the format
-      `projects/*/locations/*/memberships/*/namespacebindings/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsMembershipsNamespacebindingsGetRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsGetRequest object.
-
-  Fields:
-    name: Required. The NamespaceBinding resource name in the format
-      `projects/*/locations/*/memberships/*/namespacebindings/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsMembershipsNamespacebindingsListRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsListRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to
-      `ListNamespaceBindings` which specifies the position in the list from
-      where to continue listing the resources.
-    parent: Required. The parent (project and location) where the Features
-      will be listed. Specified in the format
-      `projects/*/locations/*/memberships/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsMembershipsNamespacebindingsPatchRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsMembershipsNamespacebindingsPatchRequest
-  object.
-
-  Fields:
-    name: The resource name for the namespacebinding `projects/{project}/locat
-      ions/{location}/memberships/{membership}/namespacebindings/{namespacebin
-      ding}`
-    namespaceBinding: A NamespaceBinding resource to be passed as the request
-      body.
-    updateMask: Required. The fields to be updated.
-  """
-
-  name = _messages.StringField(1, required=True)
-  namespaceBinding = _messages.MessageField('NamespaceBinding', 2)
-  updateMask = _messages.StringField(3)
-
-
 class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsPatchRequest object.
 
@@ -3071,6 +2995,107 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/memberships/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRBACRoleBindingYAMLRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRB
+  ACRoleBindingYAMLRequest object.
+
+  Fields:
+    generateMembershipRBACRoleBindingYAMLRequest: A
+      GenerateMembershipRBACRoleBindingYAMLRequest resource to be passed as
+      the request body.
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  generateMembershipRBACRoleBindingYAMLRequest = _messages.MessageField('GenerateMembershipRBACRoleBindingYAMLRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/memberships/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListMembershipRBACRoleBindings` which specifies the position in the
+      list from where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
@@ -3304,7 +3329,8 @@ class GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(_messages.Me
   Fields:
     name: The resource name for the rbacrolebinding `projects/{project}/locati
       ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      `
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
     rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
       body.
     updateMask: Required. The fields to be updated.
@@ -3453,97 +3479,6 @@ class GkehubProjectsLocationsScopesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   scope = _messages.MessageField('Scope', 2)
   updateMask = _messages.StringField(3)
-
-
-class GkehubProjectsLocationsWorkspacesCreateRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsWorkspacesCreateRequest object.
-
-  Fields:
-    parent: Required. The parent (project and location) where the Workspace
-      will be created. Specified in the format `projects/*/locations/*`.
-    workspace: A Workspace resource to be passed as the request body.
-    workspaceId: Required. Client chosen ID for the Workspace. `workspace_id`
-      must be a ????
-  """
-
-  parent = _messages.StringField(1, required=True)
-  workspace = _messages.MessageField('Workspace', 2)
-  workspaceId = _messages.StringField(3)
-
-
-class GkehubProjectsLocationsWorkspacesDeleteRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsWorkspacesDeleteRequest object.
-
-  Fields:
-    name: Required. The Workspace resource name in the format
-      `projects/*/locations/*/workspaces/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsWorkspacesGetRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsWorkspacesGetRequest object.
-
-  Fields:
-    name: Required. The Workspace resource name in the format
-      `projects/*/locations/*/workspace/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsWorkspacesListPermittedRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsWorkspacesListPermittedRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListWorkspaces`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project and location) where the Workspace
-      will be listed. Specified in the format `projects/*/locations/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsWorkspacesListRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsWorkspacesListRequest object.
-
-  Fields:
-    pageSize: Optional. When requesting a 'page' of resources, `page_size`
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
-    pageToken: Optional. Token returned by previous call to `ListWorkspaces`
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent (project and location) where the Workspace
-      will be listed. Specified in the format `projects/*/locations/*`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GkehubProjectsLocationsWorkspacesPatchRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsWorkspacesPatchRequest object.
-
-  Fields:
-    name: The resource name for the workspace
-      `projects/{project}/locations/{location}/workspaces/{workspace}`
-    updateMask: Required. The fields to be updated.
-    workspace: A Workspace resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  updateMask = _messages.StringField(2)
-  workspace = _messages.MessageField('Workspace', 3)
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -4043,6 +3978,20 @@ class ListMembershipBindingsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMembershipRBACRoleBindingsResponse(_messages.Message):
+  r"""List of Membership RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListMembershipRBACRoleBindings` method. The value of an empty string
+      means that there are no more resources to return.
+    rbacrolebindings: The list of Membership RBACRoleBindings.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
+
+
 class ListMembershipsForNamespaceResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListMemberships` method.
 
@@ -4075,20 +4024,6 @@ class ListMembershipsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Membership', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListNamespaceBindingsResponse(_messages.Message):
-  r"""List of NamespaceBindings.
-
-  Fields:
-    namespacebindings: The list of NamespaceBindings
-    nextPageToken: A token to request the next page of resources from the
-      `ListNamespaceBindings` method. The value of an empty string means that
-      there are no more resources to return.
-  """
-
-  namespacebindings = _messages.MessageField('NamespaceBinding', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListNamespacesForMembershipResponse(_messages.Message):
@@ -4205,34 +4140,6 @@ class ListScopesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   scopes = _messages.MessageField('Scope', 2, repeated=True)
-
-
-class ListWorkspacesForMembershipResponse(_messages.Message):
-  r"""List of paginated workspaces for a membership.
-
-  Fields:
-    nextPageToken: A token to request the next page of resources from the
-      `ListWorkspaces` method. The value of an empty string means that there
-      are no more resources to return.
-    workspaces: The list of workspaces
-  """
-
-  nextPageToken = _messages.StringField(1)
-  workspaces = _messages.MessageField('Workspace', 2, repeated=True)
-
-
-class ListWorkspacesResponse(_messages.Message):
-  r"""List of Workspaces.
-
-  Fields:
-    nextPageToken: A token to request the next page of resources from the
-      `ListWorkspaces` method. The value of an empty string means that there
-      are no more resources to return.
-    workspaces: The list of workspaces
-  """
-
-  nextPageToken = _messages.StringField(1)
-  workspaces = _messages.MessageField('Workspace', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -4822,29 +4729,6 @@ class NamespaceActuationMembershipState(_messages.Message):
   specific Feature state.
   """
 
-
-
-class NamespaceBinding(_messages.Message):
-  r"""NamespaceBinding represents a namespacebinding across the Fleet
-
-  Fields:
-    createTime: Output only. When the namespacebinding was created.
-    deleteTime: Output only. When the namespacebinding was deleted.
-    name: The resource name for the namespacebinding `projects/{project}/locat
-      ions/{location}/memberships/{membership}/namespacebindings/{namespacebin
-      ding}`
-    uid: Output only. Google-generated UUID for this resource. This is unique
-      across all namespacebinding resources. If a namespacebinding resource is
-      deleted and another resource with the same name is created, it gets a
-      different uid.
-    updateTime: Output only. When the namespacebinding was last updated.
-  """
-
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  uid = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
 
 
 class NamespaceLifecycleState(_messages.Message):
@@ -5630,7 +5514,8 @@ class RBACRoleBinding(_messages.Message):
     group: group is the group, as seen by the kubernetes cluster.
     name: The resource name for the rbacrolebinding `projects/{project}/locati
       ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      `
+      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
+      bacrolebindings/{rbacrolebinding}`
     role: Required. Role to bind to the principal
     state: Output only. State of the rbacrolebinding resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -5861,11 +5746,14 @@ class Role(_messages.Message):
       ADMIN: ADMIN has EDIT and RBAC permissions
       EDIT: EDIT can edit all resources except RBAC
       VIEW: VIEW can only read resources
+      ANTHOS_SUPPORT: ANTHOS_SUPPORT gives Google Support read-only access to
+        a number of cluster resources.
     """
     UNKNOWN = 0
     ADMIN = 1
     EDIT = 2
     VIEW = 3
+    ANTHOS_SUPPORT = 4
 
   predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
 
@@ -6700,59 +6588,6 @@ class WorkloadMigrationFeatureSpec(_messages.Message):
   feature. This is currently empty, but is used to restrict API visibility.
   """
 
-
-
-class Workspace(_messages.Message):
-  r"""Workspace represents a Workspace in a Fleet.
-
-  Fields:
-    createTime: Output only. When the workspace was created.
-    deleteTime: Output only. When the workspace was deleted.
-    name: The resource name for the workspace
-      `projects/{project}/locations/{location}/workspaces/{workspace}`
-    state: Output only. State of the workspace resource.
-    uid: Output only. Google-generated UUID for this resource. This is unique
-      across all workspace resources. If a workspace resource is deleted and
-      another resource with the same name is created, it gets a different uid.
-    updateTime: Output only. When the workspace was last updated.
-  """
-
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.MessageField('WorkspaceLifecycleState', 4)
-  uid = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-
-
-class WorkspaceLifecycleState(_messages.Message):
-  r"""WorkspaceLifecycleState describes the state of a Workspace resource.
-
-  Enums:
-    CodeValueValuesEnum: Output only. The current state of the Workspace
-      resource.
-
-  Fields:
-    code: Output only. The current state of the Workspace resource.
-  """
-
-  class CodeValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the Workspace resource.
-
-    Values:
-      CODE_UNSPECIFIED: The code is not set.
-      CREATING: The workspace is being created.
-      READY: The workspace active.
-      DELETING: The workspace is being deleted.
-      UPDATING: The workspace is being updated.
-    """
-    CODE_UNSPECIFIED = 0
-    CREATING = 1
-    READY = 2
-    DELETING = 3
-    UPDATING = 4
-
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

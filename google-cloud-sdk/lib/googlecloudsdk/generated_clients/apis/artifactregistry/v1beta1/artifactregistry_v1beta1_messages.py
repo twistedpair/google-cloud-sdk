@@ -958,7 +958,7 @@ class Repository(_messages.Message):
       contain lowercase letters, numeric characters, underscores, and dashes.
 
   Fields:
-    createTime: The time when the repository was created.
+    createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
     format: The format of packages that are stored in the repository.
     kmsKeyName: The Cloud KMS resource name of the customer managed encryption
@@ -977,7 +977,7 @@ class Repository(_messages.Message):
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
-    updateTime: The time when the repository was last updated.
+    updateTime: Output only. The time when the repository was last updated.
   """
 
   class FormatValueValuesEnum(_messages.Enum):

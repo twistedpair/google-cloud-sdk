@@ -1737,6 +1737,107 @@
       "properties": {
       }
     },
+    "GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsResponse": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsResponse",
+      "description": "Message stored in the response field of the Operation returned by ConsumerProcurementService.ReplaceOrderAllocations.",
+      "type": "object",
+      "properties": {
+        "orderAllocations": {
+          "description": "The entire list of OrderAllocations of the parent Order after the replacement.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation"
+          }
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation",
+      "description": "OrderAllocation represents the allocation of resources within a specific order to a set of targets (projects). Next Id: 9",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing_account}\/orders\/{order}\/orderAllocations\/{order_allocation}`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. The user-specified name of the allocation. Must be unique within an Order if specified.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the allocation.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The allocation is pending activation.",
+            "The allocation is active.",
+            "The allocation is pending deletion.",
+            "The allocation is cancelled. This can be caused by failure in creating the allocation or the associated Order being cancelled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STATE_PENDING_ACTIVATION",
+            "STATE_ACTIVE",
+            "STATE_PENDING_DELETION",
+            "STATE_CANCELLED"
+          ]
+        },
+        "allocationEntry": {
+          "description": "Required. The currently effective allocation entry.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry"
+        },
+        "pendingAllocationEntry": {
+          "description": "Output only. The upcoming allocation entry.",
+          "readOnly": true,
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry"
+        },
+        "createTime": {
+          "description": "Output only. The time when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the resource was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "etag": {
+          "description": "The weak etag of the order allocation, which can be optionally set.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry",
+      "description": "An allocation entry representing what resource is being allocated to which targets.",
+      "type": "object",
+      "properties": {
+        "int64ResourceValue": {
+          "description": "Represents an int64 value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "doubleResourceValue": {
+          "description": "Represents a double value.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringResourceValue": {
+          "description": "Represents a string value.",
+          "type": "string"
+        },
+        "targets": {
+          "description": "Required. The targets of the allocation, only projects are allowed at the moment.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata": {
       "id": "GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata",
       "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.UpdateOrderAllocation.",

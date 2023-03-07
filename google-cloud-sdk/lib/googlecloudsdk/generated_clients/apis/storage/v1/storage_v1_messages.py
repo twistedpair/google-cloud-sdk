@@ -2520,6 +2520,8 @@ class StorageObjectsListRequest(_messages.Message):
     includeTrailingDelimiter: If true, objects that end in exactly one
       instance of delimiter will have their metadata included in items in
       addition to prefixes.
+    matchGlob: Filter results to objects and prefixes that match this glob
+      pattern.
     maxResults: Maximum number of items plus prefixes to return in a single
       page of responses. As duplicate prefixes are omitted, fewer total
       results may be returned than requested. The service will use this
@@ -2552,13 +2554,14 @@ class StorageObjectsListRequest(_messages.Message):
   delimiter = _messages.StringField(2)
   endOffset = _messages.StringField(3)
   includeTrailingDelimiter = _messages.BooleanField(4)
-  maxResults = _messages.IntegerField(5, variant=_messages.Variant.UINT32, default=1000)
-  pageToken = _messages.StringField(6)
-  prefix = _messages.StringField(7)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
-  startOffset = _messages.StringField(9)
-  userProject = _messages.StringField(10)
-  versions = _messages.BooleanField(11)
+  matchGlob = _messages.StringField(5)
+  maxResults = _messages.IntegerField(6, variant=_messages.Variant.UINT32, default=1000)
+  pageToken = _messages.StringField(7)
+  prefix = _messages.StringField(8)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
+  startOffset = _messages.StringField(10)
+  userProject = _messages.StringField(11)
+  versions = _messages.BooleanField(12)
 
 
 class StorageObjectsPatchRequest(_messages.Message):

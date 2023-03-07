@@ -246,6 +246,23 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse(_messages.Messa
   r"""Empty response for AnnotateAssessment."""
 
 
+class GoogleCloudRecaptchaenterpriseV1AppleDeveloperId(_messages.Message):
+  r"""Contains fields that are required to perform Apple-specific integrity
+  checks.
+
+  Fields:
+    keyId: Required. The Apple developer key ID (10-character string).
+    privateKey: Required. Input only. A private key (downloaded as a text file
+      with a .p8 file extension) generated for your Apple Developer account.
+    teamId: Required. The Apple team ID (10-character string) owning the
+      provisioning profile used to build your application.
+  """
+
+  keyId = _messages.StringField(1)
+  privateKey = _messages.StringField(2)
+  teamId = _messages.StringField(3)
+
+
 class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   r"""A reCAPTCHA Enterprise assessment resource.
 
@@ -505,10 +522,16 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
     allowAllBundleIds: If set to true, allowed_bundle_ids are not enforced.
     allowedBundleIds: iOS bundle ids of apps allowed to use the key. Example:
       'com.companyname.productname.appname'
+    appleDeveloperId: Apple Developer account details for the app the
+      reCAPTCHA key will protect. reCAPTCHA Enterprise leverages platform
+      specific checks like Apple AppAttest and Apple DeviceCheck to protect
+      your app from abuse. Providing these fields allows reCAPTCHA Enterprise
+      to get a better assessment of the integrity of your app.
   """
 
   allowAllBundleIds = _messages.BooleanField(1)
   allowedBundleIds = _messages.StringField(2, repeated=True)
+  appleDeveloperId = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AppleDeveloperId', 3)
 
 
 class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):

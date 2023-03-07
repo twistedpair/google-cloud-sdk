@@ -560,6 +560,24 @@
         }
       }
     },
+    "ListServiceWorkloadsResponse": {
+      "id": "ListServiceWorkloadsResponse",
+      "description": "The response message for RegistrationService.ListServiceWorkloads.",
+      "type": "object",
+      "properties": {
+        "serviceWorkloads": {
+          "description": "The list of service workloads.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceWorkload"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
     "ServiceWorkload": {
       "id": "ServiceWorkload",
       "description": "An individual ServiceWorkload. A logical collection of workloads that provide the same functionality, with a common set of core attributes, that power services in Service Directory and to which policies can be applied.",
@@ -648,24 +666,6 @@
         "managedRegistration": {
           "readOnly": true,
           "type": "boolean"
-        }
-      }
-    },
-    "ListServiceWorkloadsResponse": {
-      "id": "ListServiceWorkloadsResponse",
-      "description": "The response message for RegistrationService.ListServiceWorkloads.",
-      "type": "object",
-      "properties": {
-        "serviceWorkloads": {
-          "description": "The list of service workloads.",
-          "type": "array",
-          "items": {
-            "$ref": "ServiceWorkload"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
         }
       }
     },
@@ -2173,39 +2173,6 @@
                 },
                 "serviceWorkloads": {
                   "methods": {
-                    "create": {
-                      "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.create",
-                      "path": "v1beta1/{+parent}/serviceWorkloads",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The resource name of the namespace this service workload will belong to.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "serviceWorkloadId": {
-                          "description": "Required. The Resource ID must be 1-63 characters long, and comply with [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Specifically, the name must be 1-63 characters long and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "ServiceWorkload"
-                      },
-                      "response": {
-                        "$ref": "ServiceWorkload"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a service workload, and returns the new service workload."
-                    },
                     "list": {
                       "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.list",
                       "path": "v1beta1/{+parent}/serviceWorkloads",
@@ -2251,110 +2218,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Lists all service workloads."
-                    },
-                    "get": {
-                      "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.get",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the service workload to get.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/serviceWorkloads\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "ServiceWorkload"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets a service workload."
-                    },
-                    "patch": {
-                      "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.patch",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Immutable. The resource name for the service workload in the format `projects\/*\/locations\/*\/namespaces\/*\/serviceWorkloads\/*`.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/serviceWorkloads\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Required. List of fields to be updated in this request. Allowable fields: `display_name`, `annotations`. -- Internal integrations may update other service_workload fields",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "allowMissing": {
-                          "description": "If set to true, and the service workload is not found, a new service workload will be created. -- Will remain GOOGLE_INTERNAL visibility post-launch.",
-                          "location": "query",
-                          "type": "boolean"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "ServiceWorkload"
-                      },
-                      "response": {
-                        "$ref": "ServiceWorkload"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates a service workload."
-                    },
-                    "delete": {
-                      "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.delete",
-                      "path": "v1beta1/{+name}",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the service workload to delete.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/serviceWorkloads\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "managerType": {
-                          "description": "Stores extra information about what Google resource is directly responsible for a given Service Workload resource.",
-                          "location": "query",
-                          "type": "string",
-                          "enumDescriptions": [
-                            "Default. Should not be used.",
-                            "Resource managed by GKE Hub.",
-                            "Resource managed by Arcus, Backend Service"
-                          ],
-                          "enum": [
-                            "TYPE_UNSPECIFIED",
-                            "GKE_HUB",
-                            "BACKEND_SERVICE"
-                          ]
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Empty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a service workload."
                     },
                     "getIamPolicy": {
                       "id": "servicedirectory.projects.locations.namespaces.serviceWorkloads.getIamPolicy",

@@ -603,29 +603,6 @@
         }
       }
     },
-    "AccessReadWriteTokenRequest": {
-      "id": "AccessReadWriteTokenRequest",
-      "description": "Message for fetching SCM read\/write token.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "AccessReadWriteTokenResponse": {
-      "id": "AccessReadWriteTokenResponse",
-      "description": "Message for responding to get read\/write token.",
-      "type": "object",
-      "properties": {
-        "token": {
-          "description": "The token content.",
-          "type": "string"
-        },
-        "expirationTime": {
-          "description": "Expiration timestamp. Can be empty if unknown.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "FetchReadWriteTokenRequest": {
       "id": "FetchReadWriteTokenRequest",
       "description": "Message for fetching SCM read\/write token.",
@@ -667,29 +644,6 @@
         },
         "expirationTime": {
           "description": "Expiration timestamp. Can be empty if unknown or non-expiring.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "AccessReadTokenRequest": {
-      "id": "AccessReadTokenRequest",
-      "description": "Message for getting SCM read token.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "AccessReadTokenResponse": {
-      "id": "AccessReadTokenResponse",
-      "description": "Message for responding to get read token.",
-      "type": "object",
-      "properties": {
-        "token": {
-          "description": "The token content.",
-          "type": "string"
-        },
-        "expirationTime": {
-          "description": "Expiration timestamp. Can be empty if unknown.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1769,8 +1723,16 @@
           "type": "string"
         },
         "eventSource": {
-          "description": "Optional. The event source the WorkflowTrigger listens to.",
+          "description": "The event source the WorkflowTrigger listens to. It is deprecated and will be removed soon.",
           "$ref": "EventSource"
+        },
+        "source": {
+          "description": "The event source the WorkflowTrigger listens to.",
+          "$ref": "EventSource"
+        },
+        "webhookSecret": {
+          "description": "The webhook secret resource.",
+          "$ref": "WebhookSecret"
         },
         "eventType": {
           "description": "Optional. The type of the events the WorkflowTrigger accepts.",
@@ -1879,6 +1841,22 @@
           "description": "Output only. The fully qualified resource name for the event source.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "WebhookSecret": {
+      "id": "WebhookSecret",
+      "description": "Webhook secret referenceable within a WorkflowTrigger.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "identification to secret Resource.",
+          "type": "string"
+        },
+        "secret": {
+          "description": "Output only. Secret Manager secret.",
+          "readOnly": true,
+          "$ref": "GoogleDevtoolsCloudbuildV2SecretManagerSecret"
         }
       }
     },
@@ -2227,6 +2205,32 @@
             "$ref": "WhenExpression"
           }
         }
+      }
+    },
+    "ProcessWorkflowTriggerWebhookRequest": {
+      "id": "ProcessWorkflowTriggerWebhookRequest",
+      "description": "Message for processing webhooks posted to WorkflowTrigger.",
+      "type": "object",
+      "properties": {
+        "body": {
+          "description": "Required. The webhook body in JSON.",
+          "$ref": "HttpBody"
+        },
+        "triggerId": {
+          "description": "Required. The WorkflowTrigger id.",
+          "type": "string"
+        },
+        "secretToken": {
+          "description": "Required. The secret token used for authorization based on the matching result between this and the secret stored in WorkflowTrigger.",
+          "type": "string"
+        }
+      }
+    },
+    "ProcessWorkflowTriggerWebhookResponse": {
+      "id": "ProcessWorkflowTriggerWebhookResponse",
+      "description": "message for processing webhooks posted to WorkflowTrigger.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListTaskRunsResponse": {
@@ -3302,62 +3306,6 @@
                   ],
                   "description": "Deletes a single connection."
                 },
-                "accessReadWriteToken": {
-                  "id": "cloudbuild.projects.locations.connections.accessReadWriteToken",
-                  "path": "v2/{+connection}:accessReadWriteToken",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:accessReadWriteToken",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "connection": {
-                      "description": "Required. The resource name of the connection in the format `projects\/*\/locations\/*\/connections\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connections\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "connection"
-                  ],
-                  "request": {
-                    "$ref": "AccessReadWriteTokenRequest"
-                  },
-                  "response": {
-                    "$ref": "AccessReadWriteTokenResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets read\/write token of a given connection."
-                },
-                "accessReadToken": {
-                  "id": "cloudbuild.projects.locations.connections.accessReadToken",
-                  "path": "v2/{+connection}:accessReadToken",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:accessReadToken",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "connection": {
-                      "description": "Required. The resource name of the connection in the format `projects\/*\/locations\/*\/connections\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connections\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "connection"
-                  ],
-                  "request": {
-                    "$ref": "AccessReadTokenRequest"
-                  },
-                  "response": {
-                    "$ref": "AccessReadTokenResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets read token of a given connection."
-                },
                 "processWebhook": {
                   "id": "cloudbuild.projects.locations.connections.processWebhook",
                   "path": "v2/{+parent}/connections:processWebhook",
@@ -3955,6 +3903,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Runs a Workflow."
+                },
+                "webhook": {
+                  "id": "cloudbuild.projects.locations.workflows.webhook",
+                  "path": "v2/{+workflow}:webhook",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:webhook",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "workflow": {
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}\/workflow\/{workflow}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "workflow"
+                  ],
+                  "request": {
+                    "$ref": "ProcessWorkflowTriggerWebhookRequest"
+                  },
+                  "response": {
+                    "$ref": "ProcessWorkflowTriggerWebhookResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Processes webhooks posted towards a WorkflowTrigger."
                 }
               }
             },

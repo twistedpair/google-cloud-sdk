@@ -36,6 +36,25 @@ class ClientBase(object):
     """Returns the gkeonprem message module."""
     return self._messages
 
+  def GetFlag(self, args, flag, default=None):
+    """Returns the flag value if it's set, otherwise returns None.
+
+    Args:
+      args: An argparser Namespace class instance.
+      flag: A string type flag name.
+      default: The default value to return if not found in the argparser
+        namespace.
+
+    Returns:
+      The flag value if it is set by the user. If the flag is not added to the
+      interface, or it is added by not specified by the user, returns the
+      default value.
+    """
+    if flag in args.GetSpecifiedArgsDict():
+      return getattr(args, flag)
+    else:
+      return default
+
   def Describe(self, resource_ref):
     """Gets a gkeonprem API resource."""
     req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())

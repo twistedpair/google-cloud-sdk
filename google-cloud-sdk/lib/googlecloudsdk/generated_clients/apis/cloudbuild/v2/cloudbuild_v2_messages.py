@@ -14,38 +14,6 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
-class AccessReadTokenRequest(_messages.Message):
-  r"""Message for getting SCM read token."""
-
-
-class AccessReadTokenResponse(_messages.Message):
-  r"""Message for responding to get read token.
-
-  Fields:
-    expirationTime: Expiration timestamp. Can be empty if unknown.
-    token: The token content.
-  """
-
-  expirationTime = _messages.StringField(1)
-  token = _messages.StringField(2)
-
-
-class AccessReadWriteTokenRequest(_messages.Message):
-  r"""Message for fetching SCM read/write token."""
-
-
-class AccessReadWriteTokenResponse(_messages.Message):
-  r"""Message for responding to get read/write token.
-
-  Fields:
-    expirationTime: Expiration timestamp. Can be empty if unknown.
-    token: The token content.
-  """
-
-  expirationTime = _messages.StringField(1)
-  token = _messages.StringField(2)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -221,35 +189,6 @@ class ChildStatusReference(_messages.Message):
   name = _messages.StringField(1)
   pipelineTaskName = _messages.StringField(2)
   whenExpressions = _messages.MessageField('WhenExpression', 3, repeated=True)
-
-
-class CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest(_messages.Message):
-  r"""A CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest object.
-
-  Fields:
-    accessReadTokenRequest: A AccessReadTokenRequest resource to be passed as
-      the request body.
-    connection: Required. The resource name of the connection in the format
-      `projects/*/locations/*/connections/*`.
-  """
-
-  accessReadTokenRequest = _messages.MessageField('AccessReadTokenRequest', 1)
-  connection = _messages.StringField(2, required=True)
-
-
-class CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest(_messages.Message):
-  r"""A CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest
-  object.
-
-  Fields:
-    accessReadWriteTokenRequest: A AccessReadWriteTokenRequest resource to be
-      passed as the request body.
-    connection: Required. The resource name of the connection in the format
-      `projects/*/locations/*/connections/*`.
-  """
-
-  accessReadWriteTokenRequest = _messages.MessageField('AccessReadWriteTokenRequest', 1)
-  connection = _messages.StringField(2, required=True)
 
 
 class CloudbuildProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -892,6 +831,21 @@ class CloudbuildProjectsLocationsWorkflowsRunRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   runWorkflowRequest = _messages.MessageField('RunWorkflowRequest', 2)
+
+
+class CloudbuildProjectsLocationsWorkflowsWebhookRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsWebhookRequest object.
+
+  Fields:
+    processWorkflowTriggerWebhookRequest: A
+      ProcessWorkflowTriggerWebhookRequest resource to be passed as the
+      request body.
+    workflow: Required. Format:
+      `projects/{project}/locations/{location}/workflow/{workflow}`
+  """
+
+  processWorkflowTriggerWebhookRequest = _messages.MessageField('ProcessWorkflowTriggerWebhookRequest', 1)
+  workflow = _messages.StringField(2, required=True)
 
 
 class Condition(_messages.Message):
@@ -2349,6 +2303,26 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ProcessWorkflowTriggerWebhookRequest(_messages.Message):
+  r"""Message for processing webhooks posted to WorkflowTrigger.
+
+  Fields:
+    body: Required. The webhook body in JSON.
+    secretToken: Required. The secret token used for authorization based on
+      the matching result between this and the secret stored in
+      WorkflowTrigger.
+    triggerId: Required. The WorkflowTrigger id.
+  """
+
+  body = _messages.MessageField('HttpBody', 1)
+  secretToken = _messages.StringField(2)
+  triggerId = _messages.StringField(3)
+
+
+class ProcessWorkflowTriggerWebhookResponse(_messages.Message):
+  r"""message for processing webhooks posted to WorkflowTrigger."""
+
+
 class PullRequest(_messages.Message):
   r"""Pull request configuration for filters.
 
@@ -3246,6 +3220,18 @@ class VolumeSource(_messages.Message):
   name = _messages.StringField(3)
 
 
+class WebhookSecret(_messages.Message):
+  r"""Webhook secret referenceable within a WorkflowTrigger.
+
+  Fields:
+    id: identification to secret Resource.
+    secret: Output only. Secret Manager secret.
+  """
+
+  id = _messages.StringField(1)
+  secret = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 2)
+
+
 class WhenExpression(_messages.Message):
   r"""Conditions that need to be true for the task to run.
 
@@ -3489,17 +3475,20 @@ class WorkflowTrigger(_messages.Message):
   Fields:
     createTime: Output only. Creation time of the WorkflowTrigger.
     custom: The CEL filters that triggers the Workflow.
-    eventSource: Optional. The event source the WorkflowTrigger listens to.
+    eventSource: The event source the WorkflowTrigger listens to. It is
+      deprecated and will be removed soon.
     eventType: Optional. The type of the events the WorkflowTrigger accepts.
     gitRef: Optional. The Git ref matching the SCM repo branch/tag.
     id: Immutable. id given by the users to the Workflow.
     params: List of parameters associated with the WorkflowTrigger.
     pullRequest: Optional. The Pull request role and comment that triggers the
       Workflow.
+    source: The event source the WorkflowTrigger listens to.
     status: Output only. The status of the WorkflowTrigger.
     statusMessage: Output only. The reason why WorkflowTrigger is deactivated.
     updateTime: Output only. Update time of the WorkflowTrigger.
     uuid: Output only. The internal id of the WorkflowTrigger.
+    webhookSecret: The webhook secret resource.
   """
 
   class EventTypeValueValuesEnum(_messages.Enum):
@@ -3538,10 +3527,12 @@ class WorkflowTrigger(_messages.Message):
   id = _messages.StringField(6)
   params = _messages.MessageField('Param', 7, repeated=True)
   pullRequest = _messages.MessageField('PullRequest', 8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  uuid = _messages.StringField(12)
+  source = _messages.MessageField('EventSource', 9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  uuid = _messages.StringField(13)
+  webhookSecret = _messages.MessageField('WebhookSecret', 14)
 
 
 class WorkspaceBinding(_messages.Message):

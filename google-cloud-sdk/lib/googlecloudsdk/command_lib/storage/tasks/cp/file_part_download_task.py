@@ -106,7 +106,7 @@ def _get_digesters(component_number, resource):
       digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
     elif resource.crc32c_hash and (
         check_hashes == properties.CheckHashes.ALWAYS.value
-        or fast_crc32c_util.check_if_fast_crc32c_available(
+        or fast_crc32c_util.check_if_will_use_fast_crc32c(
             install_if_missing=True
         )
     ):

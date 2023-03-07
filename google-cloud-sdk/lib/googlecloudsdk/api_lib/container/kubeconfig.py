@@ -122,17 +122,25 @@ class Kubeconfig(object):
     return cls(data, filename)
 
   @classmethod
-  def LoadOrCreate(cls, filename):
+  def LoadOrCreate(cls, path):
     """Read in the kubeconfig, and if it doesn't exist create one there."""
-    try:
-      return cls.LoadFromFile(filename)
-    except (Error, IOError) as error:
-      log.debug('unable to load default kubeconfig: {0}; recreating {1}'.format(
-          error, filename))
-      file_utils.MakeDir(os.path.dirname(filename))
-      kubeconfig = cls(EmptyKubeconfig(), filename)
-      kubeconfig.SaveToFile()
-      return kubeconfig
+    if os.path.isdir(path):
+      raise IsADirectoryError(
+          '{0} is a directory. File must be provided.'.format(path)
+      )
+    if os.path.isfile(path):
+      try:
+        return cls.LoadFromFile(path)
+      except (Error, IOError) as error:
+        log.debug(
+            'unable to load default kubeconfig: {0}; recreating {1}'.format(
+                error, path
+            )
+        )
+    file_utils.MakeDir(os.path.dirname(path))
+    kubeconfig = cls(EmptyKubeconfig(), path)
+    kubeconfig.SaveToFile()
+    return kubeconfig
 
   @classmethod
   def Default(cls):
@@ -144,8 +152,11 @@ class Kubeconfig(object):
 
     kubeconfig = encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
     if kubeconfig:
-      kubeconfig = kubeconfig.split(os.pathsep)[0]
-      return os.path.abspath(kubeconfig)
+      kubeconfigs = kubeconfig.split(os.pathsep)
+      for kubeconfig in kubeconfigs:
+        # KUBEONCIFG=$KUBECONFIG:~/.kube/config might be ':~/.kube/config'
+        if kubeconfig:
+          return os.path.abspath(kubeconfig)
 
     # This follows the same resolution process as kubectl for the config file.
     home_dir = encoding.GetEncodedValue(os.environ, 'HOME')

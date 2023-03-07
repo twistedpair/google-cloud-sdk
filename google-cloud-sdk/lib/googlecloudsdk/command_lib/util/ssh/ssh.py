@@ -48,6 +48,7 @@ import six
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 SECURITY_KEY_DIR = os.path.join('~', '.ssh', 'google_compute_engine_sk')
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
+OSLOGIN_ENABLE_2FA_METADATA_KEY = 'enable-oslogin-2fa'
 OSLOGIN_ENABLE_SK_METADATA_KEY = 'enable-oslogin-sk'
 
 
@@ -847,6 +848,7 @@ class OsloginState(object):
 
   Attributes:
     oslogin_enabled: bool, True if OS Login is enabled on the instance.
+    oslogin_2fa_enabled: bool, True if OS Login 2FA is enabled on the instance.
     security_keys_enabled: bool, True if Security Keys should be used for SSH
       authentication.
     user: str, The username that SSH should use for connecting.
@@ -857,10 +859,12 @@ class OsloginState(object):
       keys configured in the user's account.
   """
 
-  def __init__(self, oslogin_enabled=False, security_keys_enabled=False,
-               user=None, ssh_security_key_support=None, environment=None,
+  def __init__(self, oslogin_enabled=False, oslogin_2fa_enabled=False,
+               security_keys_enabled=False, user=None,
+               ssh_security_key_support=None, environment=None,
                security_keys=None):
     self.oslogin_enabled = oslogin_enabled
+    self.oslogin_2fa_enabled = oslogin_2fa_enabled
     self.security_keys_enabled = security_keys_enabled
     self.user = user
     self.ssh_security_key_support = ssh_security_key_support
@@ -873,13 +877,15 @@ class OsloginState(object):
   def __str__(self):
     return textwrap.dedent("""\
         OS Login Enabled: {0}
-        Security Keys Enabled: {1}
-        Username: {2}
-        SSH Security Key Support: {3}
-        Environment: {4}
+        2FA Enabled: {1}
+        Security Keys Enabled: {2}
+        Username: {3}
+        SSH Security Key Support: {4}
+        Environment: {5}
         Security Keys:
-        {5}
+        {6}
         """).format(self.oslogin_enabled,
+                    self.oslogin_2fa_enabled,
                     self.security_keys_enabled,
                     self.user,
                     self.ssh_security_key_support,
@@ -887,11 +893,13 @@ class OsloginState(object):
                     '\n'.join(self.security_keys))
 
   def __repr__(self):
-    return ('OsloginState(oslogin_enabled={0}, security_keys_enabled={1}, '
-            'user={2}, ssh_security_key_support={3} environment={4}, '
-            'security_keys={5})'
-            .format(self.oslogin_enabled, self.security_keys_enabled,
-                    self.user, self.ssh_security_key_support, self.environment,
+    return ('OsloginState(oslogin_enabled={0}, oslogin_2fa_enabled={1}, '
+            'security_keys_enabled={2}, user={3}, '
+            'ssh_security_key_support={4}, environment={5}, '
+            'security_keys={6})'
+            .format(self.oslogin_enabled, self.oslogin_2fa_enabled,
+                    self.security_keys_enabled, self.user,
+                    self.ssh_security_key_support, self.environment,
                     self.security_keys))
 
 
@@ -914,6 +922,7 @@ def GetOsloginState(instance,
                     release_track,
                     username_requested=False,
                     instance_enable_oslogin=False,
+                    instance_enable_2fa=False,
                     instance_enable_security_keys=False,
                     messages=None):
   """Check instance/project metadata for oslogin and return updated username.
@@ -936,10 +945,13 @@ def GetOsloginState(instance,
       the args.
     instance_enable_oslogin: bool, True if the instance's metadata indicates
       that OS Login is enabled. Used when the instance cannot be passed through
-      the instance object.
+      the instance argument.
+    instance_enable_2fa: bool, True if the instance's metadata indicates
+      that OS Login 2FA is enabled. Used when the instance cannot be passed
+      through the instance argument.
     instance_enable_security_keys: bool, True if the instance's metadata
-      indicates that OS Login is enabled. Used when the instance cannot be
-      passed through the instance object.
+      indicates that OS Login security keys are enabled. Used when the instance
+      cannot be passed through the instance argument.
     messages: API messages class, The compute API messages.
 
   Returns:
@@ -965,6 +977,9 @@ def GetOsloginState(instance,
     return oslogin_state
 
   oslogin_state.oslogin_enabled = oslogin_enabled
+  oslogin_state.oslogin_2fa_enabled = FeatureEnabledInMetadata(
+      instance, project, OSLOGIN_ENABLE_2FA_METADATA_KEY,
+      instance_override=instance_enable_2fa)
   oslogin_state.security_keys_enabled = FeatureEnabledInMetadata(
       instance, project, OSLOGIN_ENABLE_SK_METADATA_KEY,
       instance_override=instance_enable_security_keys)

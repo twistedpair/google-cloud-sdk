@@ -150,6 +150,37 @@ class Fallthrough(_FallthroughBase):
             other._function == self._function)  # pylint: disable=protected-access
 
 
+class ValueFallthrough(_FallthroughBase):
+  """Gets an attribute from a property."""
+
+  def __init__(self, value, hint=None, plural=False):
+    """Initializes a fallthrough for the property associated with the attribute.
+
+    Args:
+      value: str, Denoting the fixed value to provide to the attribute.
+      hint: str, Optional, If provided, used over default help_text.
+      plural: bool, whether the expected result should be a list. Should be
+        False for everything except the "anchor" arguments in a case where a
+        resource argument is plural (i.e. parses to a list).
+    """
+    hint = 'The default is `{}`'.format(value) if hint is None else hint
+
+    super(ValueFallthrough, self).__init__(hint, plural=plural)
+    self.value = value
+
+  def _Call(self, parsed_args):
+    del parsed_args  # Not used.
+    return self.value
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return False
+    return other.value == self.value
+
+  def __hash__(self):
+    return hash(self.value)
+
+
 class PropertyFallthrough(_FallthroughBase):
   """Gets an attribute from a property."""
 

@@ -741,7 +741,7 @@
           }
         },
         "bootDisk": {
-          "description": "Boot disk to be created and attached to each VM by this InstancePolicy. Boot disk will be deleted when the VM is deleted.",
+          "description": "Boot disk to be created and attached to each VM by this InstancePolicy. Boot disk will be deleted when the VM is deleted. Batch API now only supports booting from image.",
           "$ref": "Disk"
         },
         "disks": {
@@ -783,7 +783,7 @@
           "type": "string"
         },
         "snapshot": {
-          "description": "Name of a snapshot used as the data source.",
+          "description": "Name of a snapshot used as the data source. Snapshot is not supported as boot disk now.",
           "type": "string"
         },
         "type": {

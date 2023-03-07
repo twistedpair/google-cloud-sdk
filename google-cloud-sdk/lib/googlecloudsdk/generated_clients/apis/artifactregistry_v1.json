@@ -713,12 +713,14 @@
           }
         },
         "createTime": {
-          "description": "The time when the repository was created.",
+          "description": "Output only. The time when the repository was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time when the repository was last updated.",
+          "description": "Output only. The time when the repository was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -857,6 +859,10 @@
           "description": "Specific settings for an Apt remote repository.",
           "$ref": "AptRepository"
         },
+        "yumRepository": {
+          "description": "Specific settings for a Yum remote repository.",
+          "$ref": "YumRepository"
+        },
         "description": {
           "description": "The description of the remote source.",
           "type": "string"
@@ -882,17 +888,32 @@
         },
         "artifactRegistryRepository": {
           "description": "An Artifact Registry Repository.",
-          "$ref": "ArtifactRegistryRepository"
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository"
+        },
+        "customRepository": {
+          "description": "Customer-specified remote repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository"
         }
       }
     },
-    "ArtifactRegistryRepository": {
-      "id": "ArtifactRegistryRepository",
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository",
       "description": "A representation of an Artifact Registry repository.",
       "type": "object",
       "properties": {
         "repository": {
           "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository",
+      "description": "Customer-specified publicly available remote repository.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An http\/https uri reference to the custom remote repository, for ex: \"https:\/\/registry-1.docker.io\/v2\".",
           "type": "string"
         }
       }
@@ -916,7 +937,33 @@
         },
         "artifactRegistryRepository": {
           "description": "An Artifact Registry Repository.",
-          "$ref": "ArtifactRegistryRepository"
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository"
+        },
+        "customRepository": {
+          "description": "Customer-specified remote repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository",
+      "description": "A representation of an Artifact Registry repository.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository",
+      "description": "Customer-specified publicly available remote repository.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An http\/https uri reference to the upstream remote repository, for ex: \"https:\/\/my.maven.registry\/\".",
+          "type": "string"
         }
       }
     },
@@ -939,7 +986,33 @@
         },
         "artifactRegistryRepository": {
           "description": "An Artifact Registry Repository.",
-          "$ref": "ArtifactRegistryRepository"
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository"
+        },
+        "customRepository": {
+          "description": "Customer-specified remote repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository",
+      "description": "A representation of an Artifact Registry repository.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository",
+      "description": "Customer-specified publicly available remote repository.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An http\/https uri reference to the upstream remote repository, for ex: \"https:\/\/my.npm.registry\/\".",
+          "type": "string"
         }
       }
     },
@@ -962,7 +1035,33 @@
         },
         "artifactRegistryRepository": {
           "description": "An Artifact Registry Repository.",
-          "$ref": "ArtifactRegistryRepository"
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository"
+        },
+        "customRepository": {
+          "description": "Customer-specified remote repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository",
+      "description": "A representation of an Artifact Registry repository.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository",
+      "description": "Customer-specified publicly available remote repository.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An http\/https uri reference to the upstream remote repository, for ex: \"https:\/\/my.python.registry\/\".",
+          "type": "string"
         }
       }
     },
@@ -973,16 +1072,20 @@
       "properties": {
         "publicRepository": {
           "description": "One of the publicly available Apt repositories supported by Artifact Registry.",
-          "$ref": "PublicRepository"
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicRepository"
         },
         "artifactRegistryRepository": {
           "description": "An Artifact Registry Repository.",
-          "$ref": "ArtifactRegistryRepository"
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository"
+        },
+        "customRepository": {
+          "description": "Customer-specified remote repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryCustomRepository"
         }
       }
     },
-    "PublicRepository": {
-      "id": "PublicRepository",
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicRepository",
       "description": "Publicly available Apt repositories constructed from a common repository base and a custom repository path.",
       "type": "object",
       "properties": {
@@ -1002,6 +1105,100 @@
         },
         "repositoryPath": {
           "description": "A custom field to define a path to a specific repository from the base.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository",
+      "description": "A representation of an Artifact Registry repository.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryCustomRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryCustomRepository",
+      "description": "Customer-specified publicly available remote repository.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An http\/https uri reference to the upstream remote repository, for ex: \"https:\/\/my.apt.registry\/\".",
+          "type": "string"
+        }
+      }
+    },
+    "YumRepository": {
+      "id": "YumRepository",
+      "description": "Configuration for a Yum remote repository.",
+      "type": "object",
+      "properties": {
+        "publicRepository": {
+          "description": "One of the publicly available Yum repositories supported by Artifact Registry.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository"
+        },
+        "artifactRegistryRepository": {
+          "description": "An Artifact Registry Repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository"
+        },
+        "customRepository": {
+          "description": "Customer-specified remote repository.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryCustomRepository"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository",
+      "description": "Publicly available Yum repositories constructed from a common repository base and a custom repository path.",
+      "type": "object",
+      "properties": {
+        "repositoryBase": {
+          "description": "A common public repository base for Yum.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified repository base.",
+            "CentOS.",
+            "CentOS Debug.",
+            "CentOS Vault.",
+            "CentOS Stream.",
+            "Rocky."
+          ],
+          "enum": [
+            "REPOSITORY_BASE_UNSPECIFIED",
+            "CENTOS",
+            "CENTOS_DEBUG",
+            "CENTOS_VAULT",
+            "CENTOS_STREAM",
+            "ROCKY"
+          ]
+        },
+        "repositoryPath": {
+          "description": "A custom field to define a path to a specific repository from the base.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository",
+      "description": "A representation of an Artifact Registry repository.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryCustomRepository": {
+      "id": "GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryCustomRepository",
+      "description": "Customer-specified publicly available remote repository.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "An http\/https uri reference to the upstream remote repository, for ex: \"https:\/\/my.yum.registry\/\".",
           "type": "string"
         }
       }
@@ -2917,6 +3114,10 @@
                           "*/*"
                         ],
                         "protocols": {
+                          "resumable": {
+                            "multipart": true,
+                            "path": "/resumable/upload/v1/{+parent}/genericArtifacts:create"
+                          },
                           "simple": {
                             "multipart": true,
                             "path": "/upload/v1/{+parent}/genericArtifacts:create"

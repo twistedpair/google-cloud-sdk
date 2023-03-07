@@ -1918,14 +1918,15 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedIamPolicy(
       123/zones/zone1/instances/instance1`. See [Cloud Asset Inventory
       Resource Name Format](https://cloud.google.com/asset-
       inventory/docs/resource-name-format) for more information.
-    folders: The folder(s) that this IAM policy belongs to, in the form of
+    folders: The folder(s) that this IAM policy belongs to, in the format of
       folders/{FOLDER_NUMBER}. This field is available when the IAM policy
-      belongs(directly or cascadingly) to one or more folders.
+      belongs (directly or cascadingly) to one or more folders.
     organization: The organization that this IAM policy belongs to, in the
-      form of organizations/{ORGANIZATION_NUMBER}. This field is available
-      when the IAM policy belongs(directly or cascadingly) to an organization.
+      format of organizations/{ORGANIZATION_NUMBER}. This field is available
+      when the IAM policy belongs (directly or cascadingly) to an
+      organization.
     policy: The IAM policy directly set on the given resource.
-    project: The project that this IAM policy belongs to, in the form of
+    project: The project that this IAM policy belongs to, in the format of
       projects/{PROJECT_NUMBER}. This field is available when the IAM policy
       belongs to a project.
   """
@@ -1942,19 +1943,19 @@ class GoogleCloudAssetV1AnalyzeOrgPolicyGovernedAssetsResponseGovernedResource(_
   AnalyzeOrgPolicyGovernedAssetsRequest.constraint.
 
   Fields:
-    folders: The folder(s) that this resource belongs to, in the form of
+    folders: The folder(s) that this resource belongs to, in the format of
       folders/{FOLDER_NUMBER}. This field is available when the resource
-      belongs(directly or cascadingly) to one or more folders.
+      belongs (directly or cascadingly) to one or more folders.
     fullResourceName: The [full resource name]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
       the Google Cloud resource.
-    organization: The organization that this resource belongs to, in the form
-      of organizations/{ORGANIZATION_NUMBER}. This field is available when the
-      resource belongs(directly or cascadingly) to an organization.
+    organization: The organization that this resource belongs to, in the
+      format of organizations/{ORGANIZATION_NUMBER}. This field is available
+      when the resource belongs (directly or cascadingly) to an organization.
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedAssetsResponse.GovernedResource.full_resource_name.
-    project: The project that this resource belongs to, in the form of
+    project: The project that this resource belongs to, in the format of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project.
   """
@@ -2170,9 +2171,15 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
       ner.policy_bundle. The evaluation will respect the organization policy
       [hierarchy rules](https://cloud.google.com/resource-
       manager/docs/organization-policy/understanding-hierarchy).
+    folders: The folder(s) that this resource belongs to, in the format of
+      folders/{FOLDER_NUMBER}. This field is available when the resource
+      belongs (directly or cascadingly) to one or more folders.
     fullResourceName: The [full resource name]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
       an organization/folder/project resource.
+    organization: The organization that this resource belongs to, in the
+      format of organizations/{ORGANIZATION_NUMBER}. This field is available
+      when the resource belongs (directly or cascadingly) to an organization.
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedContainersResponse.GovernedContainer.full_resource_name.
@@ -2180,12 +2187,18 @@ class GoogleCloudAssetV1GovernedContainer(_messages.Message):
       zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
       rce. to the scope specified in the request. If the constraint is defined
       with default policy, it will also appear in the list.
+    project: The project that this resource belongs to, in the format of
+      projects/{PROJECT_NUMBER}. This field is available when the resource
+      belongs to a project.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
-  fullResourceName = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 4, repeated=True)
+  folders = _messages.StringField(2, repeated=True)
+  fullResourceName = _messages.StringField(3)
+  organization = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 6, repeated=True)
+  project = _messages.StringField(7)
 
 
 class GoogleCloudAssetV1GovernedResource(_messages.Message):
@@ -2199,22 +2212,22 @@ class GoogleCloudAssetV1GovernedResource(_messages.Message):
       evaluation will respect the organization policy [hierarchy
       rules](https://cloud.google.com/resource-manager/docs/organization-
       policy/understanding-hierarchy).
-    folders: The folder(s) that this resource belongs to, in the form of
+    folders: The folder(s) that this resource belongs to, in the format of
       folders/{FOLDER_NUMBER}. This field is available when the resource
-      belongs(directly or cascadingly) to one or more folders.
+      belongs (directly or cascadingly) to one or more folders.
     fullResourceName: The [full resource name]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
       the Google Cloud resource.
-    organization: The organization that this resource belongs to, in the form
-      of organizations/{ORGANIZATION_NUMBER}. This field is available when the
-      resource belongs(directly or cascadingly) to an organization.
+    organization: The organization that this resource belongs to, in the
+      format of organizations/{ORGANIZATION_NUMBER}. This field is available
+      when the resource belongs (directly or cascadingly) to an organization.
     parent: The [full resource name] (https://cloud.google.com/asset-
       inventory/docs/resource-name-format) of the parent of AnalyzeOrgPolicyGo
       vernedContainersResponse.GovernedContainer.full_resource_name.
     policyBundle: The ordered list of all organization policies from the Analy
       zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
       rce. to the scope specified in the request.
-    project: The project that this resource belongs to, in the form of
+    project: The project that this resource belongs to, in the format of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project.
   """
@@ -4094,14 +4107,28 @@ class OrgPolicyResult(_messages.Message):
       will respect the organization policy [hierarchy
       rules](https://cloud.google.com/resource-manager/docs/organization-
       policy/understanding-hierarchy).
+    folders: The folder(s) that this consolidated policy belongs to, in the
+      format of folders/{FOLDER_NUMBER}. This field is available when the
+      consolidated policy belongs (directly or cascadingly) to one or more
+      folders.
+    organization: The organization that this consolidated policy belongs to,
+      in the format of organizations/{ORGANIZATION_NUMBER}. This field is
+      available when the consolidated policy belongs (directly or cascadingly)
+      to an organization.
     policyBundle: The ordered list of all organization policies from the Analy
       zeOrgPoliciesResponse.OrgPolicyResult.consolidated_policy.attached_resou
       rce. to the scope specified in the request. If the constraint is defined
       with default policy, it will also appear in the list.
+    project: The project that this consolidated policy belongs to, in the
+      format of projects/{PROJECT_NUMBER}. This field is available when the
+      consolidated policy belongs to a project.
   """
 
   consolidatedPolicy = _messages.MessageField('AnalyzerOrgPolicy', 1)
-  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 2, repeated=True)
+  folders = _messages.StringField(2, repeated=True)
+  organization = _messages.StringField(3)
+  policyBundle = _messages.MessageField('AnalyzerOrgPolicy', 4, repeated=True)
+  project = _messages.StringField(5)
 
 
 class OsInfo(_messages.Message):

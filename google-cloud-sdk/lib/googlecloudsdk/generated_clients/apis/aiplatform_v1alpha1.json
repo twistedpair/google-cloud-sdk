@@ -4875,11 +4875,11 @@
           "type": "string"
         },
         "containerSpec": {
-          "description": "Input only. The specification of the container that is to be used when deploying this Model. The specification is ingested upon ModelService.UploadModel, and all binaries it contains are copied and stored internally by Vertex AI. Not present for AutoML Models.",
+          "description": "Input only. The specification of the container that is to be used when deploying this Model. The specification is ingested upon ModelService.UploadModel, and all binaries it contains are copied and stored internally by Vertex AI. Not present for AutoML Models or Large Models.",
           "$ref": "GoogleCloudAiplatformV1alpha1ModelContainerSpec"
         },
         "artifactUri": {
-          "description": "Immutable. The path to the directory containing the Model artifact and any of its supporting files. Not present for AutoML Models.",
+          "description": "Immutable. The path to the directory containing the Model artifact and any of its supporting files. Not present for AutoML Models or Large Models.",
           "type": "string"
         },
         "supportedDeploymentResourcesTypes": {
@@ -5228,7 +5228,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpec": {
       "id": "GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpec",
-      "description": "LINT.IfChange Specification for how the data should be sliced.",
+      "description": "Specification for how the data should be sliced.",
       "type": "object",
       "properties": {
         "configs": {
@@ -9082,6 +9082,53 @@
       "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
       "type": "object",
       "properties": {
+        "selectEntity": {
+          "description": "Response for request specifying the entities to delete",
+          "$ref": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectEntity"
+        },
+        "selectTimeRangeAndFeature": {
+          "description": "Response for request specifying time range and feature",
+          "$ref": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectTimeRangeAndFeature"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectEntity": {
+      "id": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectEntity",
+      "description": "Response message if the request uses the SelectEntity option.",
+      "type": "object",
+      "properties": {
+        "offlineStorageDeletedEntityRowCount": {
+          "description": "The count of deleted entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageDeletedEntityCount": {
+          "description": "The count of deleted entities in the online storage. Each entity ID corresponds to one entity.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectTimeRangeAndFeature": {
+      "id": "GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectTimeRangeAndFeature",
+      "description": "Response message if the request uses the SelectTimeRangeAndFeature option.",
+      "type": "object",
+      "properties": {
+        "impactedFeatureCount": {
+          "description": "The count of the features or columns impacted. This is the same as the feature count in the request.",
+          "type": "string",
+          "format": "int64"
+        },
+        "offlineStorageModifiedEntityRowCount": {
+          "description": "The count of modified entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage. Within each row, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageModifiedEntityCount": {
+          "description": "The count of modified entities in the online storage. Each entity ID corresponds to one entity. Within each entity, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        }
       }
     },
     "GoogleCloudAiplatformInternalPurgeArtifactsMetadata": {
@@ -12274,6 +12321,53 @@
       "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
       "type": "object",
       "properties": {
+        "selectEntity": {
+          "description": "Response for request specifying the entities to delete",
+          "$ref": "GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectEntity"
+        },
+        "selectTimeRangeAndFeature": {
+          "description": "Response for request specifying time range and feature",
+          "$ref": "GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectTimeRangeAndFeature"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectEntity": {
+      "id": "GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectEntity",
+      "description": "Response message if the request uses the SelectEntity option.",
+      "type": "object",
+      "properties": {
+        "offlineStorageDeletedEntityRowCount": {
+          "description": "The count of deleted entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageDeletedEntityCount": {
+          "description": "The count of deleted entities in the online storage. Each entity ID corresponds to one entity.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectTimeRangeAndFeature": {
+      "id": "GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectTimeRangeAndFeature",
+      "description": "Response message if the request uses the SelectTimeRangeAndFeature option.",
+      "type": "object",
+      "properties": {
+        "impactedFeatureCount": {
+          "description": "The count of the features or columns impacted. This is the same as the feature count in the request.",
+          "type": "string",
+          "format": "int64"
+        },
+        "offlineStorageModifiedEntityRowCount": {
+          "description": "The count of modified entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage. Within each row, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageModifiedEntityCount": {
+          "description": "The count of modified entities in the online storage. Each entity ID corresponds to one entity. Within each entity, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        }
       }
     },
     "GoogleCloudAiplatformUiMutateDeployedIndexOperationMetadata": {
@@ -18854,6 +18948,53 @@
       "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
       "type": "object",
       "properties": {
+        "selectEntity": {
+          "description": "Response for request specifying the entities to delete",
+          "$ref": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectEntity"
+        },
+        "selectTimeRangeAndFeature": {
+          "description": "Response for request specifying time range and feature",
+          "$ref": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectTimeRangeAndFeature"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectEntity": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectEntity",
+      "description": "Response message if the request uses the SelectEntity option.",
+      "type": "object",
+      "properties": {
+        "offlineStorageDeletedEntityRowCount": {
+          "description": "The count of deleted entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageDeletedEntityCount": {
+          "description": "The count of deleted entities in the online storage. Each entity ID corresponds to one entity.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectTimeRangeAndFeature": {
+      "id": "GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectTimeRangeAndFeature",
+      "description": "Response message if the request uses the SelectTimeRangeAndFeature option.",
+      "type": "object",
+      "properties": {
+        "impactedFeatureCount": {
+          "description": "The count of the features or columns impacted. This is the same as the feature count in the request.",
+          "type": "string",
+          "format": "int64"
+        },
+        "offlineStorageModifiedEntityRowCount": {
+          "description": "The count of modified entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage. Within each row, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageModifiedEntityCount": {
+          "description": "The count of modified entities in the online storage. Each entity ID corresponds to one entity. Within each entity, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata": {

@@ -34,7 +34,7 @@ database:
     help: |
       Database of the {resource}.
     fallthroughs:
-    - hook: googlecloudsdk.command_lib.firestore.util:GetDatabaseFallthrough
+    - value: (default)
       hint: |-
         the default value of argument [--database] is `(default)`
 

@@ -6735,7 +6735,54 @@ class GoogleCloudAiplatformInternalDeleteFeatureValuesOperationMetadata(_message
 
 
 class GoogleCloudAiplatformInternalDeleteFeatureValuesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
+  r"""Response message for FeaturestoreService.DeleteFeatureValues.
+
+  Fields:
+    selectEntity: Response for request specifying the entities to delete
+    selectTimeRangeAndFeature: Response for request specifying time range and
+      feature
+  """
+
+  selectEntity = _messages.MessageField('GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectEntity', 1)
+  selectTimeRangeAndFeature = _messages.MessageField('GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectTimeRangeAndFeature', 2)
+
+
+class GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectEntity(_messages.Message):
+  r"""Response message if the request uses the SelectEntity option.
+
+  Fields:
+    offlineStorageDeletedEntityRowCount: The count of deleted entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage.
+    onlineStorageDeletedEntityCount: The count of deleted entities in the
+      online storage. Each entity ID corresponds to one entity.
+  """
+
+  offlineStorageDeletedEntityRowCount = _messages.IntegerField(1)
+  onlineStorageDeletedEntityCount = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformInternalDeleteFeatureValuesResponseSelectTimeRangeAndFeature(_messages.Message):
+  r"""Response message if the request uses the SelectTimeRangeAndFeature
+  option.
+
+  Fields:
+    impactedFeatureCount: The count of the features or columns impacted. This
+      is the same as the feature count in the request.
+    offlineStorageModifiedEntityRowCount: The count of modified entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage. Within each row, only the features specified in the
+      request are deleted.
+    onlineStorageModifiedEntityCount: The count of modified entities in the
+      online storage. Each entity ID corresponds to one entity. Within each
+      entity, only the features specified in the request are deleted.
+  """
+
+  impactedFeatureCount = _messages.IntegerField(1)
+  offlineStorageModifiedEntityRowCount = _messages.IntegerField(2)
+  onlineStorageModifiedEntityCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformInternalDeleteMetadataStoreOperationMetadata(_messages.Message):
@@ -9627,7 +9674,54 @@ class GoogleCloudAiplatformUiDeleteFeatureValuesOperationMetadata(_messages.Mess
 
 
 class GoogleCloudAiplatformUiDeleteFeatureValuesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
+  r"""Response message for FeaturestoreService.DeleteFeatureValues.
+
+  Fields:
+    selectEntity: Response for request specifying the entities to delete
+    selectTimeRangeAndFeature: Response for request specifying time range and
+      feature
+  """
+
+  selectEntity = _messages.MessageField('GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectEntity', 1)
+  selectTimeRangeAndFeature = _messages.MessageField('GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectTimeRangeAndFeature', 2)
+
+
+class GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectEntity(_messages.Message):
+  r"""Response message if the request uses the SelectEntity option.
+
+  Fields:
+    offlineStorageDeletedEntityRowCount: The count of deleted entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage.
+    onlineStorageDeletedEntityCount: The count of deleted entities in the
+      online storage. Each entity ID corresponds to one entity.
+  """
+
+  offlineStorageDeletedEntityRowCount = _messages.IntegerField(1)
+  onlineStorageDeletedEntityCount = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformUiDeleteFeatureValuesResponseSelectTimeRangeAndFeature(_messages.Message):
+  r"""Response message if the request uses the SelectTimeRangeAndFeature
+  option.
+
+  Fields:
+    impactedFeatureCount: The count of the features or columns impacted. This
+      is the same as the feature count in the request.
+    offlineStorageModifiedEntityRowCount: The count of modified entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage. Within each row, only the features specified in the
+      request are deleted.
+    onlineStorageModifiedEntityCount: The count of modified entities in the
+      online storage. Each entity ID corresponds to one entity. Within each
+      entity, only the features specified in the request are deleted.
+  """
+
+  impactedFeatureCount = _messages.IntegerField(1)
+  offlineStorageModifiedEntityRowCount = _messages.IntegerField(2)
+  onlineStorageModifiedEntityCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformUiDeleteOperationMetadata(_messages.Message):
@@ -26174,7 +26268,54 @@ class GoogleCloudAiplatformV1beta1DeleteFeatureValuesRequestSelectTimeRangeAndFe
 
 
 class GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.DeleteFeatureValues."""
+  r"""Response message for FeaturestoreService.DeleteFeatureValues.
+
+  Fields:
+    selectEntity: Response for request specifying the entities to delete
+    selectTimeRangeAndFeature: Response for request specifying time range and
+      feature
+  """
+
+  selectEntity = _messages.MessageField('GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectEntity', 1)
+  selectTimeRangeAndFeature = _messages.MessageField('GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectTimeRangeAndFeature', 2)
+
+
+class GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectEntity(_messages.Message):
+  r"""Response message if the request uses the SelectEntity option.
+
+  Fields:
+    offlineStorageDeletedEntityRowCount: The count of deleted entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage.
+    onlineStorageDeletedEntityCount: The count of deleted entities in the
+      online storage. Each entity ID corresponds to one entity.
+  """
+
+  offlineStorageDeletedEntityRowCount = _messages.IntegerField(1)
+  onlineStorageDeletedEntityCount = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformV1beta1DeleteFeatureValuesResponseSelectTimeRangeAndFeature(_messages.Message):
+  r"""Response message if the request uses the SelectTimeRangeAndFeature
+  option.
+
+  Fields:
+    impactedFeatureCount: The count of the features or columns impacted. This
+      is the same as the feature count in the request.
+    offlineStorageModifiedEntityRowCount: The count of modified entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage. Within each row, only the features specified in the
+      request are deleted.
+    onlineStorageModifiedEntityCount: The count of modified entities in the
+      online storage. Each entity ID corresponds to one entity. Within each
+      entity, only the features specified in the request are deleted.
+  """
+
+  impactedFeatureCount = _messages.IntegerField(1)
+  offlineStorageModifiedEntityRowCount = _messages.IntegerField(2)
+  onlineStorageModifiedEntityCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1beta1DeleteMetadataStoreOperationMetadata(_messages.Message):
@@ -26866,7 +27007,7 @@ class GoogleCloudAiplatformV1beta1EnvVar(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ErrorAnalysisAnnotation(_messages.Message):
-  r"""LINT.IfChange Model error analysis for each annotation.
+  r"""Model error analysis for each annotation.
 
   Enums:
     QueryTypeValueValuesEnum: The query type used for finding the attributed
@@ -30794,11 +30935,13 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
 
   Fields:
     artifactUri: Immutable. The path to the directory containing the Model
-      artifact and any of its supporting files. Not present for AutoML Models.
+      artifact and any of its supporting files. Not present for AutoML Models
+      or Large Models.
     containerSpec: Input only. The specification of the container that is to
       be used when deploying this Model. The specification is ingested upon
       ModelService.UploadModel, and all binaries it contains are copied and
-      stored internally by Vertex AI. Not present for AutoML Models.
+      stored internally by Vertex AI. Not present for AutoML Models or Large
+      Models.
     createTime: Output only. Timestamp when this Model was uploaded into
       Vertex AI.
     deployedModels: Output only. The pointers to DeployedModels created from
@@ -30827,6 +30970,8 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
+    largeModelReference: Optional. Used to specify the large model reference.
+      Only present for Large Models.
     metadata: Immutable. An additional information about the Model; the schema
       of the metadata can be found in metadata_schema. Unset if the Model does
       not have any additional information.
@@ -30977,24 +31122,25 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
   etag = _messages.StringField(8)
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
   labels = _messages.MessageField('LabelsValue', 10)
-  metadata = _messages.MessageField('extra_types.JsonValue', 11)
-  metadataArtifact = _messages.StringField(12)
-  metadataSchemaUri = _messages.StringField(13)
-  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 14)
-  name = _messages.StringField(15)
-  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 16)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 17)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 18, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 19, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(20, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(21, repeated=True)
-  trainingPipeline = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
-  versionAliases = _messages.StringField(24, repeated=True)
-  versionCreateTime = _messages.StringField(25)
-  versionDescription = _messages.StringField(26)
-  versionId = _messages.StringField(27)
-  versionUpdateTime = _messages.StringField(28)
+  largeModelReference = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelLargeModelReference', 11)
+  metadata = _messages.MessageField('extra_types.JsonValue', 12)
+  metadataArtifact = _messages.StringField(13)
+  metadataSchemaUri = _messages.StringField(14)
+  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 15)
+  name = _messages.StringField(16)
+  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 17)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 18)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 19, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 20, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(21, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(22, repeated=True)
+  trainingPipeline = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  versionAliases = _messages.StringField(25, repeated=True)
+  versionCreateTime = _messages.StringField(26)
+  versionDescription = _messages.StringField(27)
+  versionId = _messages.StringField(28)
+  versionUpdateTime = _messages.StringField(29)
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
@@ -31555,7 +31701,7 @@ class GoogleCloudAiplatformV1beta1ModelEvaluationSliceSlice(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpec(_messages.Message):
-  r"""LINT.IfChange Specification for how the data should be sliced.
+  r"""Specification for how the data should be sliced.
 
   Messages:
     ConfigsValue: Mapping configuration for this SliceSpec. The key is the
@@ -31722,6 +31868,17 @@ class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
 
   exportableContents = _messages.EnumField('ExportableContentsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ModelLargeModelReference(_messages.Message):
+  r"""Contains information about the Large Model.
+
+  Fields:
+    name: Required. The unique name of the large Foundation or pre-built
+      model. Like "chat-panda", "text-panda".
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):

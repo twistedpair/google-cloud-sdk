@@ -7,6 +7,15 @@ policy:
     attribute_name: policy
     help: The name of the alerting policy.
 
+snooze:
+  name: snooze
+  collection: monitoring.projects.snoozes
+  request_id_field: name
+  attributes:
+  - parameter_name: snoozesId
+    attribute_name: snooze
+    help: The name of the snooze.
+
 project:
   name: project
   collection: monitoring.projects

@@ -460,20 +460,23 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      pass
+      if args.threads_per_core is not None:
+        settings.advancedMachineFeatures = (
+            sql_messages.AdvancedMachineFeatures()
+        )
+        settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
 
     return settings
 
   @classmethod
-  def _ConstructPatchSettingsFromArgs(cls,
-                                      sql_messages,
-                                      args,
-                                      instance,
-                                      release_track=DEFAULT_RELEASE_TRACK):
+  def _ConstructPatchSettingsFromArgs(
+      cls, sql_messages, args, instance, release_track=DEFAULT_RELEASE_TRACK
+  ):
     """Constructs patch settings object from base settings and args."""
     original_settings = instance.settings
-    settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
-                                                  release_track)
+    settings = cls._ConstructBaseSettingsFromArgs(
+        sql_messages, args, instance, release_track
+    )
 
     if args.clear_gae_apps:
       settings.authorizedGaeApplications = []
@@ -593,15 +596,25 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      if args.threads_per_core is not None:
+        settings.advancedMachineFeatures = (
+            sql_messages.AdvancedMachineFeatures()
+        )
+        settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
+
     return settings
 
   @classmethod
-  def _ConstructBaseInstanceFromArgs(cls,
-                                     sql_messages,
-                                     args,
-                                     original=None,
-                                     instance_ref=None,
-                                     release_track=DEFAULT_RELEASE_TRACK):
+  def _ConstructBaseInstanceFromArgs(
+      cls,
+      sql_messages,
+      args,
+      original=None,
+      instance_ref=None,
+      release_track=DEFAULT_RELEASE_TRACK,
+  ):
     """Construct a Cloud SQL instance from command line args.
 
     Args:

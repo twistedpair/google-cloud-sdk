@@ -500,7 +500,7 @@ class ClustersClient(client.ClientBase):
           gateway=ip_block['gateway'],
           netmask=ip_block['netmask'],
           ips=[
-              self._messages.VmwareHostIp(hostname=ip[0], ip=ip[1])
+              self._messages.VmwareHostIp(ip=ip[0], hostname=ip[1])
               for ip in ip_block['ips']
           ],
       )
@@ -537,6 +537,31 @@ class ClustersClient(client.ClientBase):
       return self._messages.VmwareHostConfig(**kwargs)
     return None
 
+  def _control_plane_ip_block(self, args):
+    """Constructs proto message ControlPlaneIpBlock."""
+    if 'control_plane_ip_block' not in args.GetSpecifiedArgsDict():
+      return None
+
+    kwargs = {
+        'gateway': args.control_plane_ip_block.get('gateway', None),
+        'netmask': args.control_plane_ip_block.get('netmask', None),
+        'ips': [
+            self._messages.VmwareHostIp(ip=ip[0], hostname=ip[1])
+            for ip in args.control_plane_ip_block.get('ips', [])
+        ],
+    }
+    return self._messages.VmwareIpBlock(**kwargs)
+
+  def _vmware_control_plane_v2_config(self, args):
+    """Constructs proto message VmwareControlPlaneV2Config."""
+    kwargs = {
+        'controlPlaneIpBlock': self._control_plane_ip_block(args),
+        'enableControlPlaneV2': flags.Get(args, 'enable_control_plane_v2'),
+    }
+    if any(kwargs.values()):
+      return self._messages.VmwareControlPlaneV2Config(**kwargs)
+    return None
+
   def _vmware_network_config(self, args):
     """Constructs proto message VmwareNetworkConfig."""
     kwargs = {
@@ -547,6 +572,7 @@ class ClustersClient(client.ClientBase):
         'staticIpConfig': self._vmware_static_ip_config(args),
         'dhcpIpConfig': self._vmware_dhcp_ip_config(args),
         'hostConfig': self._vmware_host_config(args),
+        'controlPlaneV2Config': self._vmware_control_plane_v2_config(args),
     }
     if any(kwargs.values()):
       return self._messages.VmwareNetworkConfig(**kwargs)

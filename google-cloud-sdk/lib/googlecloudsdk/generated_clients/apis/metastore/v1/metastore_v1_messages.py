@@ -78,6 +78,64 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuxiliaryVersionConfig(_messages.Message):
+  r"""Configuration information for the auxiliary service versions.
+
+  Messages:
+    ConfigOverridesValue: A mapping of Hive metastore configuration key-value
+      pairs to apply to the auxiliary Hive metastore (configured in hive-
+      site.xml) in addition to the primary version's overrides. If keys are
+      present in both the auxiliary version's overrides and the primary
+      version's overrides, the value from the auxiliary version's overrides
+      takes precedence.
+
+  Fields:
+    configOverrides: A mapping of Hive metastore configuration key-value pairs
+      to apply to the auxiliary Hive metastore (configured in hive-site.xml)
+      in addition to the primary version's overrides. If keys are present in
+      both the auxiliary version's overrides and the primary version's
+      overrides, the value from the auxiliary version's overrides takes
+      precedence.
+    networkConfig: Output only. The network configuration contains the
+      endpoint URI(s) of the auxiliary Hive metastore service.
+    version: The Hive metastore version of the auxiliary service. It must be
+      less than the primary Hive metastore service's version.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigOverridesValue(_messages.Message):
+    r"""A mapping of Hive metastore configuration key-value pairs to apply to
+    the auxiliary Hive metastore (configured in hive-site.xml) in addition to
+    the primary version's overrides. If keys are present in both the auxiliary
+    version's overrides and the primary version's overrides, the value from
+    the auxiliary version's overrides takes precedence.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigOverridesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigOverridesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigOverridesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configOverrides = _messages.MessageField('ConfigOverridesValue', 1)
+  networkConfig = _messages.MessageField('NetworkConfig', 2)
+  version = _messages.StringField(3)
+
+
 class BackendMetastore(_messages.Message):
   r"""Represents a backend metastore for the federation.
 
@@ -515,6 +573,14 @@ class HiveMetastoreConfig(_messages.Message):
   software as the metastore service.
 
   Messages:
+    AuxiliaryVersionsValue: A mapping of Hive metastore version to the
+      auxiliary version configuration. When specified, a secondary Hive
+      metastore service is created along with the primary service. All
+      auxiliary versions must be less than the service's primary version. The
+      key is the auxiliary service name and it must match the regular
+      expression a-z?. This means that the first character must be a lowercase
+      letter, and all the following characters must be hyphens, lowercase
+      letters, or digits, except the last character, which cannot be a hyphen.
     ConfigOverridesValue: A mapping of Hive metastore configuration key-value
       pairs to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
@@ -522,6 +588,14 @@ class HiveMetastoreConfig(_messages.Message):
       further customized in the auxiliary version's AuxiliaryVersionConfig.
 
   Fields:
+    auxiliaryVersions: A mapping of Hive metastore version to the auxiliary
+      version configuration. When specified, a secondary Hive metastore
+      service is created along with the primary service. All auxiliary
+      versions must be less than the service's primary version. The key is the
+      auxiliary service name and it must match the regular expression a-z?.
+      This means that the first character must be a lowercase letter, and all
+      the following characters must be hyphens, lowercase letters, or digits,
+      except the last character, which cannot be a hyphen.
     configOverrides: A mapping of Hive metastore configuration key-value pairs
       to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
@@ -534,6 +608,39 @@ class HiveMetastoreConfig(_messages.Message):
       while omitting this field from the request's service.
     version: Immutable. The Hive metastore schema version.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AuxiliaryVersionsValue(_messages.Message):
+    r"""A mapping of Hive metastore version to the auxiliary version
+    configuration. When specified, a secondary Hive metastore service is
+    created along with the primary service. All auxiliary versions must be
+    less than the service's primary version. The key is the auxiliary service
+    name and it must match the regular expression a-z?. This means that the
+    first character must be a lowercase letter, and all the following
+    characters must be hyphens, lowercase letters, or digits, except the last
+    character, which cannot be a hyphen.
+
+    Messages:
+      AdditionalProperty: An additional property for a AuxiliaryVersionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AuxiliaryVersionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AuxiliaryVersionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AuxiliaryVersionConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AuxiliaryVersionConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigOverridesValue(_messages.Message):
@@ -564,9 +671,10 @@ class HiveMetastoreConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  configOverrides = _messages.MessageField('ConfigOverridesValue', 1)
-  kerberosConfig = _messages.MessageField('KerberosConfig', 2)
-  version = _messages.StringField(3)
+  auxiliaryVersions = _messages.MessageField('AuxiliaryVersionsValue', 1)
+  configOverrides = _messages.MessageField('ConfigOverridesValue', 2)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 3)
+  version = _messages.StringField(4)
 
 
 class HiveMetastoreVersion(_messages.Message):

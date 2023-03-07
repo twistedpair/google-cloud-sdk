@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/blog/topics/telecommunications/network-automation-csps-linus-nephio-cloud-native",
   "protocol": "rest",
   "rootUrl": "https://telcoautomation.googleapis.com/",
   "mtlsRootUrl": "https://telcoautomation.mtls.googleapis.com/",

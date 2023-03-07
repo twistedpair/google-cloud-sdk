@@ -386,7 +386,7 @@ def _ValidateV1Flag(args):
     )
 
 
-def Run(args, track=None, enable_runtime=True):
+def Run(args, track=None):
   """Run a function deployment with the given args."""
   flags.ValidateV1TimeoutFlag(args)
 
@@ -463,19 +463,18 @@ def Run(args, track=None, enable_runtime=True):
     min_instances = 0 if args.clear_min_instances else args.min_instances
     function.minInstances = min_instances
     updated_fields.append('minInstances')
-  if enable_runtime:
-    if args.IsSpecified('runtime'):
-      function.runtime = args.runtime
-      updated_fields.append('runtime')
+  if args.IsSpecified('runtime'):
+    function.runtime = args.runtime
+    updated_fields.append('runtime')
 
-      warning = api_util.ValidateRuntime(args.runtime)
-      if warning:
-        log.warning(warning)
+    warning = api_util.ValidateRuntime(args.runtime)
+    if warning:
+      log.warning(warning)
 
-    elif is_new_function:
-      raise calliope_exceptions.RequiredArgumentException(
-          'runtime', 'Flag `--runtime` is required for new functions.'
-      )
+  elif is_new_function:
+    raise calliope_exceptions.RequiredArgumentException(
+        'runtime', 'Flag `--runtime` is required for new functions.'
+    )
   if args.vpc_connector or args.clear_vpc_connector:
     function.vpcConnector = (
         '' if args.clear_vpc_connector else args.vpc_connector

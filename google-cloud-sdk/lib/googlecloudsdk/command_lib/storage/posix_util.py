@@ -23,7 +23,9 @@ import datetime
 import os
 import stat
 
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 
@@ -32,15 +34,18 @@ _MISSING_UID_FORMAT = (
 _MISSING_GID_FORMAT = (
     "GID in {} metadata doesn't exist on current system. GID: {}")
 _INSUFFICIENT_USER_READ_ACCESS_FORMAT = (
-    'Insufficient access to local destination to copy {}. User {} owns'
-    ' file, but owner does not have read permission in mode {}.')
+    'Insufficient access to local destination to apply {}. User {} owns'
+    ' file, but owner does not have read permission in mode {}.'
+)
 _INSUFFICIENT_GROUP_READ_ACCESS_FORMAT = (
-    'Insufficient access to local destination to copy {}. Group {}'
-    ' would own file, but group does not have read permission in mode {}.')
+    'Insufficient access to local destination to apply {}. Group {}'
+    ' would own file, but group does not have read permission in mode {}.'
+)
 _INSUFFICIENT_OTHER_READ_ACCESS_FORMAT = (
-    'Insufficient access to local destination to copy {}. UID {} is not'
+    'Insufficient access to local destination to apply {}. UID {} is not'
     ' owner of file, and user is not in a group that owns the file. Users in'
-    ' "other" category do not have read permission in mode {}.')
+    ' "other" category do not have read permission in mode {}.'
+)
 
 # For transporting POSIX info through an object's custom metadata.
 _ATIME_METADATA_KEY = 'goog-reserved-file-atime'
@@ -162,7 +167,10 @@ def _raise_error_and_maybe_delete_file(error, delete_path):
 
 
 def raise_if_invalid_file_permissions(
-    user_request_args, resource, delete_path=None
+    user_request_args,
+    resource,
+    delete_path=None,
+    known_posix=None,
 ):
   """Detects permissions causing inaccessibility.
 
@@ -175,6 +183,13 @@ def raise_if_invalid_file_permissions(
       metadata used to determine if setting invalid file permissions.
     delete_path (str|None): If present, will delete file before raising error.
       Useful if file has been downloaded and needs to be cleaned up.
+    known_posix (PosixAttributes|None): Use pre-parsed POSIX data instead of
+      extracting from source. Not super important here because the source is a
+      cloud object and doesn't require an `os.stat` call to harvest metadata,
+      but it would be strange if we used `known_posix` for callers and only
+      `resource` here, especially if the values were different (which they
+      shouldn't be). Be careful using this because, if the data is wrong, it
+      could mess with these safety checks.
 
   Raises:
     PermissionError: Has explanatory message about permissions issue.
@@ -183,7 +198,9 @@ def raise_if_invalid_file_permissions(
     # User not preserving POSIX metadata that may cause permissions issues.
     return
 
-  _, _, uid, gid, mode = get_posix_attributes_from_resource(resource)
+  _, _, uid, gid, mode = (
+      known_posix or get_posix_attributes_from_cloud_resource(resource)
+  )
   if (uid is gid is mode is None) or platforms.OperatingSystem.IsWindows():
     # If the user isn't setting anything, the system's new file defaults
     # are used, which we assume are valid.
@@ -280,7 +297,11 @@ def get_posix_attributes_from_file(file_path):
 
 
 def set_posix_attributes_on_file_if_valid(
-    user_request_args, source_resource, destination_resource
+    user_request_args,
+    source_resource,
+    destination_resource,
+    known_source_posix=None,
+    known_destination_posix=None,
 ):
   """Sets custom POSIX attributes on file if the final metadata will be valid.
 
@@ -291,9 +312,14 @@ def set_posix_attributes_on_file_if_valid(
   Args:
     user_request_args (user_request_args_factory._UserRequestArgs|None): Checks
       if user intended to preserve file POSIX data and get system-wide POSIX.
-    source_resource (resource_reference.ObjectResource): Copy source.
-    destination_resource (resource_reference.FileObjectResource): Copy
-      destination.
+    source_resource (resource_reference.ObjectResource): Source resource with
+      POSIX attributes to apply.
+    destination_resource (resource_reference.FileObjectResource): Destination
+      resource to apply POSIX attributes to.
+    known_source_posix (PosixAttributes|None): Use pre-parsed POSIX data instead
+      of extracting from source.
+    known_destination_posix (PosixAttributes|None): Use pre-parsed POSIX data
+      instead of extracting from destination.
 
   Raises:
     PermissionError: Custom metadata asked for file ownership change that user
@@ -304,11 +330,20 @@ def set_posix_attributes_on_file_if_valid(
     return
   destination_path = destination_resource.storage_url.object_name
   raise_if_invalid_file_permissions(
-      user_request_args, source_resource, destination_path
+      user_request_args,
+      source_resource,
+      destination_path,
+      known_posix=known_source_posix,
   )
 
-  custom_posix_attributes = get_posix_attributes_from_resource(source_resource)
-  existing_posix_attributes = get_posix_attributes_from_file(destination_path)
+  custom_posix_attributes = (
+      known_source_posix
+      or get_posix_attributes_from_cloud_resource(source_resource)
+  )
+  existing_posix_attributes = (
+      known_destination_posix
+      or get_posix_attributes_from_file(destination_path)
+  )
 
   if custom_posix_attributes.atime is None:
     atime = existing_posix_attributes.atime
@@ -449,7 +484,7 @@ def _extract_mode_from_custom_metadata(resource):
   return None
 
 
-def get_posix_attributes_from_resource(resource):
+def get_posix_attributes_from_cloud_resource(resource):
   """Parses metadata_dict and returns PosixAttributes.
 
   Note: This parses an object's *custom* metadata with user-set fields,
@@ -468,6 +503,18 @@ def get_posix_attributes_from_resource(resource):
   gid = _extract_id_from_custom_metadata(resource, _GID_METADATA_KEY)
   mode = _extract_mode_from_custom_metadata(resource)
   return PosixAttributes(atime, mtime, uid, gid, mode)
+
+
+def get_posix_attributes_from_resource(resource):
+  """Parses unknown resource type for POSIX data."""
+  if isinstance(resource, resource_reference.ObjectResource):
+    return get_posix_attributes_from_cloud_resource(resource)
+  if isinstance(resource, resource_reference.FileObjectResource):
+    return get_posix_attributes_from_file(resource.storage_url.object_name)
+  raise errors.Error(
+      'Can only retrieve POSIX attributes from file or cloud'
+      ' object, not: {}'.format(resource.TYPE_STRING)
+  )
 
 
 def update_custom_metadata_dict_with_posix_attributes(metadata_dict,

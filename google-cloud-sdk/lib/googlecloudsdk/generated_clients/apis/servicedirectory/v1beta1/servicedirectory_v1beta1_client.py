@@ -58,87 +58,6 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a service workload, and returns the new service workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceWorkload) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads',
-        http_method='POST',
-        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['serviceWorkloadId'],
-        relative_path='v1beta1/{+parent}/serviceWorkloads',
-        request_field='serviceWorkload',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsCreateRequest',
-        response_type_name='ServiceWorkload',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a service workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}',
-        http_method='DELETE',
-        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['managerType'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets a service workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceWorkload) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}',
-        http_method='GET',
-        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest',
-        response_type_name='ServiceWorkload',
-        supports_download=False,
-    )
-
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the IAM Policy for a resource.
 
@@ -190,33 +109,6 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest',
         response_type_name='ListServiceWorkloadsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates a service workload.
-
-      Args:
-        request: (ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceWorkload) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}/serviceWorkloads/{serviceWorkloadsId}',
-        http_method='PATCH',
-        method_id='servicedirectory.projects.locations.namespaces.serviceWorkloads.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='serviceWorkload',
-        request_type_name='ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest',
-        response_type_name='ServiceWorkload',
         supports_download=False,
     )
 

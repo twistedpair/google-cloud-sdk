@@ -2348,6 +2348,16 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.netapp.v1beta1',
+                    client_classpath='netapp_v1beta1_client.NetappV1beta1',
+                    base_url='https://netapp.googleapis.com/',
+                    messages_modulepath='netapp_v1beta1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'networkconnectivity': {
         'v1':
@@ -2726,6 +2736,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'publicca': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.publicca.v1',
+                    client_classpath='publicca_v1_client.PubliccaV1',
+                    base_url='https://publicca.googleapis.com/',
+                    messages_modulepath='publicca_v1_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(

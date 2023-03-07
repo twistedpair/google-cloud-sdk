@@ -325,7 +325,7 @@ class FirestoreV1beta1(base_api.BaseApiClient):
     )
 
     def Listen(self, request, global_params=None):
-      r"""Listens to changes. This method is only available via the gRPC API (not REST).
+      r"""Listens to changes. This method is only available via gRPC or WebChannel (not REST).
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsListenRequest) input message
@@ -487,7 +487,7 @@ class FirestoreV1beta1(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      r"""Streams batches of document updates and deletes, in order. This method is only available via the gRPC API (not REST).
+      r"""Streams batches of document updates and deletes, in order. This method is only available via gRPC or WebChannel (not REST).
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsWriteRequest) input message

@@ -53,6 +53,7 @@ class SupportedFeatures:
       support_numa_node_count,
       support_visible_core_count,
       support_max_run_duration,
+      support_local_ssd_recovery_timeout,
       support_enable_target_shape,
       support_confidential_compute_type,
       support_provisioned_throughput=False,
@@ -83,6 +84,7 @@ class SupportedFeatures:
     self.support_confidential_compute_type = support_confidential_compute_type
     self.support_provisioned_throughput = support_provisioned_throughput
     self.support_max_count_per_zone = support_max_count_per_zone
+    self.support_local_ssd_recovery_timeout = support_local_ssd_recovery_timeout
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -241,7 +243,8 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
       support_min_node_cpu=supported_features.support_min_node_cpu,
       support_host_error_timeout_seconds=supported_features
       .support_host_error_timeout_seconds,
-      support_max_run_duration=supported_features.support_max_run_duration)
+      support_max_run_duration=supported_features.support_max_run_duration,
+      support_local_ssd_recovery_timeout=supported_features.support_local_ssd_recovery_timeout)
   tags = instance_utils.GetTags(args, compute_client)
   labels = instance_utils.GetLabels(
       args, compute_client, instance_properties=True)

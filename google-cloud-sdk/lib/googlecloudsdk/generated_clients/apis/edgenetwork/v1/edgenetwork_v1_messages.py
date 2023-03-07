@@ -38,6 +38,7 @@ class BgpPeer(_messages.Message):
     peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
       use a different value.
     peerIpv4Cidr: IP range of the BGP interface outside Google.
+    peerIpv6Cidr: IPv6 range of the BGP interface outside Google.
   """
 
   interface = _messages.StringField(1)
@@ -45,6 +46,7 @@ class BgpPeer(_messages.Message):
   name = _messages.StringField(3)
   peerAsn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   peerIpv4Cidr = _messages.StringField(5)
+  peerIpv6Cidr = _messages.StringField(6)
 
 
 class BgpPeerStatus(_messages.Message):
@@ -248,7 +250,7 @@ class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsCreateRequest(_mes
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -273,7 +275,7 @@ class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsDeleteRequest(_mes
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -388,7 +390,7 @@ class EdgenetworkProjectsLocationsZonesNetworksCreateRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -412,7 +414,7 @@ class EdgenetworkProjectsLocationsZonesNetworksDeleteRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -473,7 +475,7 @@ class EdgenetworkProjectsLocationsZonesRoutersCreateRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -501,7 +503,7 @@ class EdgenetworkProjectsLocationsZonesRoutersDeleteRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -562,7 +564,7 @@ class EdgenetworkProjectsLocationsZonesRoutersPatchRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -592,7 +594,7 @@ class EdgenetworkProjectsLocationsZonesSubnetsCreateRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -620,7 +622,7 @@ class EdgenetworkProjectsLocationsZonesSubnetsDeleteRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -671,7 +673,7 @@ class EdgenetworkProjectsLocationsZonesSubnetsPatchRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -893,6 +895,8 @@ class Interface(_messages.Message):
   Fields:
     ipv4Cidr: IP address and range of the interface. This value is only used
       when linked_interconnect_attachment is set.
+    ipv6Cidr: IPv6 address and range of the interface This value is only used
+      when linked_interconnect_attachment is set.
     linkedInterconnectAttachment: The canonical name of the linked
       Interconnect attachment.
     loopbackIpAddresses: Create loopback interface in the router when
@@ -904,10 +908,11 @@ class Interface(_messages.Message):
   """
 
   ipv4Cidr = _messages.StringField(1)
-  linkedInterconnectAttachment = _messages.StringField(2)
-  loopbackIpAddresses = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  subnetwork = _messages.StringField(5)
+  ipv6Cidr = _messages.StringField(2)
+  linkedInterconnectAttachment = _messages.StringField(3)
+  loopbackIpAddresses = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  subnetwork = _messages.StringField(6)
 
 
 class LinkLACPStatus(_messages.Message):

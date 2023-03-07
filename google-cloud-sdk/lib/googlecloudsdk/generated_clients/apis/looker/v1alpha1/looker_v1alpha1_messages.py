@@ -379,7 +379,7 @@ class CustomDomain(_messages.Message):
       CUSTOM_DOMAIN_STATE_UNSPECIFIED: Unspecified state
       UNVERIFIED: DNS record is not created
       VERIFIED: DNS record is created
-      PROVISIONING: Calling SLM to update
+      MODIFYING: Calling SLM to update
       AVAILABLE: ManagedCertificate is ready
       UNAVAILABLE: ManagedCertificate is not ready
       UNKNOWN: Status is not known
@@ -387,7 +387,7 @@ class CustomDomain(_messages.Message):
     CUSTOM_DOMAIN_STATE_UNSPECIFIED = 0
     UNVERIFIED = 1
     VERIFIED = 2
-    PROVISIONING = 3
+    MODIFYING = 3
     AVAILABLE = 4
     UNAVAILABLE = 5
     UNKNOWN = 6

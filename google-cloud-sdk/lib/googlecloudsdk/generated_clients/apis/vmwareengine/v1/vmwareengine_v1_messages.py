@@ -1332,12 +1332,18 @@ class Node(_messages.Message):
 class NodeType(_messages.Message):
   r"""Describes node type.
 
+  Enums:
+    KindValueValuesEnum: Output only. The type of the resource.
+
   Fields:
     availableCustomCoreCounts: Output only. List of possible values of custom
       core count.
     diskSizeGb: Output only. The amount of storage available, defined in GB.
     displayName: Output only. The friendly name for this node type. For
       example: ve1-standard-72
+    families: Output only. Families of the node type. For node types to be in
+      the same cluster they must share at least one element in the `families`.
+    kind: Output only. The type of the resource.
     memoryGb: Output only. The amount of physical memory available, defined in
       GB.
     name: Output only. The resource name of this node type. Resource names are
@@ -1352,14 +1358,28 @@ class NodeType(_messages.Message):
       node.
   """
 
+  class KindValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the resource.
+
+    Values:
+      KIND_UNSPECIFIED: The default value. This value should never be used.
+      STANDARD: Standard HCI node.
+      STORAGE_ONLY: Storage only Node.
+    """
+    KIND_UNSPECIFIED = 0
+    STANDARD = 1
+    STORAGE_ONLY = 2
+
   availableCustomCoreCounts = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   displayName = _messages.StringField(3)
-  memoryGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
-  nodeTypeId = _messages.StringField(6)
-  totalCoreCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  virtualCpuCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  families = _messages.StringField(4, repeated=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 5)
+  memoryGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  name = _messages.StringField(7)
+  nodeTypeId = _messages.StringField(8)
+  totalCoreCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  virtualCpuCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class NodeTypeConfig(_messages.Message):

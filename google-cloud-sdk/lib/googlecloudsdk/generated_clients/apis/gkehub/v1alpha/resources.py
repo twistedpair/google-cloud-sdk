@@ -85,13 +85,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_MEMBERSHIPS_NAMESPACEBINDINGS = (
-      'projects.locations.memberships.namespacebindings',
+  PROJECTS_LOCATIONS_MEMBERSHIPS_RBACROLEBINDINGS = (
+      'projects.locations.memberships.rbacrolebindings',
       '{+name}',
       {
           '':
               'projects/{projectsId}/locations/{locationsId}/memberships/'
-              '{membershipsId}/namespacebindings/{namespacebindingsId}',
+              '{membershipsId}/rbacrolebindings/{rbacrolebindingsId}',
       },
       ['name'],
       True
@@ -136,17 +136,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/scopes/'
               '{scopesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_WORKSPACES = (
-      'projects.locations.workspaces',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/workspaces/'
-              '{workspacesId}',
       },
       ['name'],
       True

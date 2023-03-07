@@ -44,6 +44,18 @@ urlList:
     attribute_name: url_list
     help: Id of the url list.
 
+tlsInspectionPolicy:
+  name: tls inspection policy
+  collection: networksecurity.projects.locations.tlsInspectionPolicies
+  request_id_field: tlsInspectionPolicyId
+  attributes:
+  - *project
+  - *location
+  - &tlsInspectionPolicy
+    parameter_name: tlsInspectionPoliciesId
+    attribute_name: tls_inspection_policy
+    help: Id of the tls inspection policy.
+
 gatewaySecurityPolicy:
   name: gateway security policy
   collection: networksecurity.projects.locations.gatewaySecurityPolicies

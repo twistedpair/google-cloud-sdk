@@ -1496,9 +1496,7 @@ class StorageClient(metaclass=StorageClientMeta):
                 with the ``*`` may accidentally reset the new field's
                 value.
 
-                Not specifying any fields is an error. Not specifying a
-                field while setting that field to a non-default value is
-                an error.
+                Not specifying any fields is an error.
 
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -2625,9 +2623,7 @@ class StorageClient(metaclass=StorageClientMeta):
                 with the ``*`` may accidentally reset the new field's
                 value.
 
-                Not specifying any fields is an error. Not specifying a
-                field while setting that field to a non-default value is
-                an error.
+                Not specifying any fields is an error.
 
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this

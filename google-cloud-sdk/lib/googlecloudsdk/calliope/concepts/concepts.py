@@ -689,13 +689,23 @@ class ResourceParameterAttributeConfig(object):
     default_config = DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(attribute_name)
     if default_config:
       fallthroughs += [
-          f for f in default_config.fallthroughs if f not in fallthroughs]
+          f for f in default_config.fallthroughs if f not in fallthroughs
+      ]
     # Add fallthroughs from python hooks.
     fallthrough_data = data.get('fallthroughs', [])
-    fallthroughs_from_hook = [
-        deps_lib.Fallthrough(util.Hook.FromPath(f['hook']), hint=f['hint'])
-        for f in fallthrough_data
-    ]
+    fallthroughs_from_hook = []
+    for f in fallthrough_data:
+      if 'value' in f:
+        fallthroughs_from_hook.append(
+            deps_lib.ValueFallthrough(
+                f['value'], f['hint'] if 'hint' in f else None
+            )
+        )
+      elif 'hook' in f:
+        fallthroughs_from_hook.append(
+            deps_lib.Fallthrough(util.Hook.FromPath(f['hook']), hint=f['hint'])
+        )
+
     fallthroughs += fallthroughs_from_hook
     return cls(
         name=attribute_name,

@@ -2700,6 +2700,9 @@ class Publishing(_messages.Message):
       tps://issuetracker.google.com/issues/new?component=190865&template=11611
       03
     organization: For whom the client library is being published.
+    protoReferenceDocumentationUri: Optional link to proto reference
+      documentation. Example:
+      https://cloud.google.com/pubsub/lite/docs/reference/rpc
   """
 
   class OrganizationValueValuesEnum(_messages.Enum):
@@ -2727,6 +2730,7 @@ class Publishing(_messages.Message):
   methodSettings = _messages.MessageField('MethodSettings', 7, repeated=True)
   newIssueUri = _messages.StringField(8)
   organization = _messages.EnumField('OrganizationValueValuesEnum', 9)
+  protoReferenceDocumentationUri = _messages.StringField(10)
 
 
 class PythonSettings(_messages.Message):

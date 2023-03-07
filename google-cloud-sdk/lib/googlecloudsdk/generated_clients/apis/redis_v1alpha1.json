@@ -1103,7 +1103,7 @@
           ]
         },
         "sizeGb": {
-          "description": "Optional. Redis memory size in GB for the entire cluster. See b\/257175558 for comments in naming the field. Use unit GB to follow GCE conventions: https:\/\/cloud.google.com\/compute\/docs\/instances\/creating-instance-with-custom-machine-type#memory_units.",
+          "description": "Optional. Redis memory size in GB for the entire cluster.",
           "type": "integer",
           "format": "int32"
         }

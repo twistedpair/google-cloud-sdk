@@ -1828,28 +1828,6 @@
         }
       }
     },
-    "GoogleCloudDatacatalogV1ReconcileTagsRequest": {
-      "id": "GoogleCloudDatacatalogV1ReconcileTagsRequest",
-      "description": "Request message for ReconcileTags.",
-      "type": "object",
-      "properties": {
-        "tagTemplate": {
-          "description": "Required. The name of the tag template, which is used for reconciliation.",
-          "type": "string"
-        },
-        "forceDeleteMissing": {
-          "description": "If set to `true`, deletes entry tags related to a tag template not listed in the tags source from an entry. If set to `false`, unlisted tags are retained.",
-          "type": "boolean"
-        },
-        "tags": {
-          "description": "A list of tags to apply to an entry. A tag can specify a tag template, which must be the template specified in the `ReconcileTagsRequest`. The sole entry and each of its columns must be mentioned at most once.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDatacatalogV1Tag"
-          }
-        }
-      }
-    },
     "GoogleCloudDatacatalogV1StarEntryRequest": {
       "id": "GoogleCloudDatacatalogV1StarEntryRequest",
       "description": "Request message for StarEntry.",
@@ -2325,58 +2303,6 @@
         }
       }
     },
-    "GoogleCloudDatacatalogV1ReconcileTagsMetadata": {
-      "id": "GoogleCloudDatacatalogV1ReconcileTagsMetadata",
-      "description": "Long-running operation metadata message returned by the ReconcileTags.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "State of the reconciliation operation.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "The reconciliation has been queued and awaits for execution.",
-            "The reconciliation is in progress.",
-            "The reconciliation has been finished."
-          ],
-          "enum": [
-            "RECONCILIATION_STATE_UNSPECIFIED",
-            "RECONCILIATION_QUEUED",
-            "RECONCILIATION_IN_PROGRESS",
-            "RECONCILIATION_DONE"
-          ]
-        },
-        "errors": {
-          "description": "Maps the name of each tagged column (or empty string for a sole entry) to tagging operation status.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "Status"
-          }
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1ReconcileTagsResponse": {
-      "id": "GoogleCloudDatacatalogV1ReconcileTagsResponse",
-      "description": "Long-running operation response message returned by ReconcileTags.",
-      "type": "object",
-      "properties": {
-        "createdTagsCount": {
-          "description": "Number of tags created in the request.",
-          "type": "string",
-          "format": "int64"
-        },
-        "updatedTagsCount": {
-          "description": "Number of tags updated in the request.",
-          "type": "string",
-          "format": "int64"
-        },
-        "deletedTagsCount": {
-          "description": "Number of tags deleted in the request.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "GoogleCloudDatacatalogV1ImportEntriesMetadata": {
       "id": "GoogleCloudDatacatalogV1ImportEntriesMetadata",
       "description": "Metadata message for long-running operation returned by the ImportEntries.",
@@ -2423,6 +2349,42 @@
           "description": "Number of entries deleted as a result of import operation.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DumpItem": {
+      "id": "GoogleCloudDatacatalogV1DumpItem",
+      "description": "Wrapper for any item that can be contained in the dump.",
+      "type": "object",
+      "properties": {
+        "taggedEntry": {
+          "description": "Entry and its tags.",
+          "$ref": "GoogleCloudDatacatalogV1TaggedEntry"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1TaggedEntry": {
+      "id": "GoogleCloudDatacatalogV1TaggedEntry",
+      "description": "Wrapper containing Entry and information about Tags that should and should not be attached to it.",
+      "type": "object",
+      "properties": {
+        "v1Entry": {
+          "description": "Non-encrypted Data Catalog v1 Entry.",
+          "$ref": "GoogleCloudDatacatalogV1Entry"
+        },
+        "presentTags": {
+          "description": "Tags that should be ingested into the Data Catalog. Caller should populate template name, column and fields.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1Tag"
+          }
+        },
+        "absentTags": {
+          "description": "Tags that should be deleted from the Data Catalog. Caller should populate template name and column only.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1Tag"
+          }
         }
       }
     }
@@ -3320,34 +3282,6 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Lists tags assigned to an Entry. The columns in the response are lowercased."
-                        },
-                        "reconcile": {
-                          "id": "datacatalog.projects.locations.entryGroups.entries.tags.reconcile",
-                          "path": "v1/{+parent}/tags:reconcile",
-                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags:reconcile",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "parent": {
-                              "description": "Required. Name of Entry to be tagged.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "request": {
-                            "$ref": "GoogleCloudDatacatalogV1ReconcileTagsRequest"
-                          },
-                          "response": {
-                            "$ref": "Operation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "`ReconcileTags` creates or updates a list of tags on the entry. If the ReconcileTagsRequest.force_delete_missing parameter is set, the operation deletes tags not included in the input tag list. `ReconcileTags` returns a long-running operation resource that can be queried with Operations.GetOperation to return ReconcileTagsMetadata and a ReconcileTagsResponse message."
                         }
                       }
                     }

@@ -440,7 +440,8 @@ class Disk(_messages.Message):
       size based on source image and task requirements if you do not speicify
       the size. If both this field and the boot_disk_mib field in task spec's
       compute_resource are defined, Batch will only honor this field.
-    snapshot: Name of a snapshot used as the data source.
+    snapshot: Name of a snapshot used as the data source. Snapshot is not
+      supported as boot disk now.
     type: Disk type as shown in `gcloud compute disk-types list`. For example,
       local SSD uses type "local-ssd". Persistent disks and boot disks use
       "pd-balanced", "pd-extreme", "pd-ssd" or "pd-standard".
@@ -559,7 +560,8 @@ class InstancePolicy(_messages.Message):
     accelerators: The accelerators attached to each VM instance.
     allowedMachineTypes: Deprecated: please use machine_type instead.
     bootDisk: Boot disk to be created and attached to each VM by this
-      InstancePolicy. Boot disk will be deleted when the VM is deleted.
+      InstancePolicy. Boot disk will be deleted when the VM is deleted. Batch
+      API now only supports booting from image.
     disks: Non-boot disks to be attached for each VM created by this
       InstancePolicy. New disks will be deleted when the VM is deleted.
     machineType: The Compute Engine machine type.

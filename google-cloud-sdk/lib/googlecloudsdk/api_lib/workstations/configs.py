@@ -114,11 +114,11 @@ class Configs:
 
     # Container
     config.container = self.messages.Container()
-    if args.container_predefined_image:
+    if args.container_custom_image:
+      config.container.image = args.container_custom_image
+    elif args.container_predefined_image:
       config.container.image = IMAGE_URL_MAP.get(
           args.container_predefined_image)
-    elif args.container_custom_image:
-      config.container.image = args.container_custom_image
     if args.container_command:
       config.container.command = args.container_command
     if args.container_args:

@@ -217,8 +217,8 @@ def AddAssignIp(parser):
       action=arg_parsers.StoreTrueFalseAction)
 
 
-def AddEnableGooglePrivatePath(parser):
-  kwargs = _GetKwargsForBoolFlag(False)
+def AddEnableGooglePrivatePath(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-google-private-path',
       required=False,
@@ -1308,6 +1308,18 @@ def AddSqlServerTimeZone(parser):
           'Only available for SQL Server instances.'
           ))
 
+
+def AddThreadsPerCore(parser):
+  """Adds the `--threads-per-core` flag to the parser."""
+  parser.add_argument(
+      '--threads-per-core',
+      type=int,
+      hidden=True,
+      required=False,
+      help=(
+          'Set a non-default number of threads per core. '
+          'Only available for SQL Server instances.'
+          ))
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 

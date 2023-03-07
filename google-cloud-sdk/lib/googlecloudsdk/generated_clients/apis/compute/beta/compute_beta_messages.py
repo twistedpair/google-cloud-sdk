@@ -5692,6 +5692,24 @@ class Binding(_messages.Message):
   role = _messages.StringField(4)
 
 
+class BulkInsertDiskResource(_messages.Message):
+  r"""A transient resource used in compute.disks.bulkInsert and
+  compute.regionDisks.bulkInsert. It is only used to process requests and is
+  not persisted.
+
+  Fields:
+    sourceConsistencyGroupPolicy: The URL of the DiskConsistencyGroupPolicy
+      for the group of disks to clone. This may be a full or partial URL, such
+      as: -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /resourcePolicies/resourcePolicy -
+      projects/project/regions/region/resourcePolicies/resourcePolicy -
+      regions/region/resourcePolicies/resourcePolicy
+  """
+
+  sourceConsistencyGroupPolicy = _messages.StringField(1)
+
+
 class BulkInsertInstanceResource(_messages.Message):
   r"""A transient resource used in compute.instances.bulkInsert and
   compute.regionInstances.bulkInsert . This resource is not persisted
@@ -8225,6 +8243,32 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeDisksBulkInsertRequest(_messages.Message):
+  r"""A ComputeDisksBulkInsertRequest object.
+
+  Fields:
+    bulkInsertDiskResource: A BulkInsertDiskResource resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  bulkInsertDiskResource = _messages.MessageField('BulkInsertDiskResource', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeDisksCreateSnapshotRequest(_messages.Message):
   r"""A ComputeDisksCreateSnapshotRequest object.
 
@@ -8504,6 +8548,87 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
   resource = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
   zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
+
+
+class ComputeDisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeDisksStartAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    disksStartAsyncReplicationRequest: A DisksStartAsyncReplicationRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  disksStartAsyncReplicationRequest = _messages.MessageField('DisksStartAsyncReplicationRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeDisksStopAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeDisksStopAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeDisksStopGroupAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeDisksStopGroupAsyncReplicationRequest object.
+
+  Fields:
+    disksStopGroupAsyncReplicationResource: A
+      DisksStopGroupAsyncReplicationResource resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request. This must be the zone of the
+      primary or secondary disks in the consistency group.
+  """
+
+  disksStopGroupAsyncReplicationResource = _messages.MessageField('DisksStopGroupAsyncReplicationResource', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeDisksTestIamPermissionsRequest(_messages.Message):
@@ -20206,6 +20331,32 @@ class ComputeRegionDisksAddResourcePoliciesRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionDisksBulkInsertRequest(_messages.Message):
+  r"""A ComputeRegionDisksBulkInsertRequest object.
+
+  Fields:
+    bulkInsertDiskResource: A BulkInsertDiskResource resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  bulkInsertDiskResource = _messages.MessageField('BulkInsertDiskResource', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
 class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
   r"""A ComputeRegionDisksCreateSnapshotRequest object.
 
@@ -20483,6 +20634,88 @@ class ComputeRegionDisksSetLabelsRequest(_messages.Message):
   regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
   requestId = _messages.StringField(4)
   resource = _messages.StringField(5, required=True)
+
+
+class ComputeRegionDisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeRegionDisksStartAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionDisksStartAsyncReplicationRequest: A
+      RegionDisksStartAsyncReplicationRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionDisksStartAsyncReplicationRequest = _messages.MessageField('RegionDisksStartAsyncReplicationRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksStopAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeRegionDisksStopAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionDisksStopGroupAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeRegionDisksStopGroupAsyncReplicationRequest object.
+
+  Fields:
+    disksStopGroupAsyncReplicationResource: A
+      DisksStopGroupAsyncReplicationResource resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: The name of the region for this request. This must be the region
+      of the primary or secondary disks in the consistency group.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  disksStopGroupAsyncReplicationResource = _messages.MessageField('DisksStopGroupAsyncReplicationResource', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
@@ -25788,6 +26021,7 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyRule: A SecurityPolicyRule resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
     validateOnly: If true, the request will not be committed.
   """
 
@@ -25795,7 +26029,8 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
-  validateOnly = _messages.BooleanField(5)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
@@ -32430,6 +32665,41 @@ class DisksScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class DisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A DisksStartAsyncReplicationRequest object.
+
+  Fields:
+    asyncSecondaryDisk: The secondary disk to start asynchronous replication
+      to. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+  """
+
+  asyncSecondaryDisk = _messages.StringField(1)
+
+
+class DisksStopGroupAsyncReplicationResource(_messages.Message):
+  r"""A transient resource used in compute.disks.stopGroupAsyncReplication and
+  compute.regionDisks.stopGroupAsyncReplication. It is only used to process
+  requests and is not persisted.
+
+  Fields:
+    resourcePolicy: The URL of the DiskConsistencyGroupPolicy for the group of
+      disks to stop. This may be a full or partial URL, such as: -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /resourcePolicies/resourcePolicy -
+      projects/project/regions/region/resourcePolicies/resourcePolicy -
+      regions/region/resourcePolicies/resourcePolicy
+  """
+
+  resourcePolicy = _messages.StringField(1)
+
+
 class DisplayDevice(_messages.Message):
   r"""A set of Display Device options
 
@@ -35195,23 +35465,25 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_SNP_CAPABLE For more information, see Enabling guest operating
-      system features.
+      SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
+      operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For
-      more information, see Enabling guest operating system features.
+      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
+      TDX_CAPABLE For more information, see Enabling guest operating system
+      features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more
-    information, see Enabling guest operating system features.
+    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
+    TDX_CAPABLE For more information, see Enabling guest operating system
+    features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -36953,7 +37225,8 @@ class HttpHealthCheck(_messages.Message):
     port: The TCP port number for the HTTP health check request. The default
       value is 80.
     requestPath: The request path of the HTTP health check request. The
-      default value is /. This field does not support query parameters.
+      default value is /. This field does not support query parameters. Must
+      comply with RFC3986.
     selfLink: [Output Only] Server-defined URL for the resource.
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have greater
@@ -37561,7 +37834,7 @@ class HttpsHealthCheck(_messages.Message):
     port: The TCP port number for the HTTPS health check request. The default
       value is 443.
     requestPath: The request path of the HTTPS health check request. The
-      default value is "/".
+      default value is "/". Must comply with RFC3986.
     selfLink: [Output Only] Server-defined URL for the resource.
     timeoutSec: How long (in seconds) to wait before claiming failure. The
       default value is 5 seconds. It is invalid for timeoutSec to have a
@@ -55877,6 +56150,24 @@ class RegionDisksResizeRequest(_messages.Message):
   sizeGb = _messages.IntegerField(1)
 
 
+class RegionDisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A RegionDisksStartAsyncReplicationRequest object.
+
+  Fields:
+    asyncSecondaryDisk: The secondary disk to start asynchronous replication
+      to. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+  """
+
+  asyncSecondaryDisk = _messages.StringField(1)
+
+
 class RegionInstanceGroupList(_messages.Message):
   r"""Contains a list of InstanceGroup resources.
 
@@ -58017,6 +58308,7 @@ class ResourcePolicy(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: A string attribute.
+    diskConsistencyGroupPolicy: Resource policy for disk consistency groups.
     groupPlacementPolicy: Resource policy for instances for placement
       configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -58059,16 +58351,17 @@ class ResourcePolicy(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  groupPlacementPolicy = _messages.MessageField('ResourcePolicyGroupPlacementPolicy', 3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  instanceSchedulePolicy = _messages.MessageField('ResourcePolicyInstanceSchedulePolicy', 5)
-  kind = _messages.StringField(6, default='compute#resourcePolicy')
-  name = _messages.StringField(7)
-  region = _messages.StringField(8)
-  resourceStatus = _messages.MessageField('ResourcePolicyResourceStatus', 9)
-  selfLink = _messages.StringField(10)
-  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  diskConsistencyGroupPolicy = _messages.MessageField('ResourcePolicyDiskConsistencyGroupPolicy', 3)
+  groupPlacementPolicy = _messages.MessageField('ResourcePolicyGroupPlacementPolicy', 4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  instanceSchedulePolicy = _messages.MessageField('ResourcePolicyInstanceSchedulePolicy', 6)
+  kind = _messages.StringField(7, default='compute#resourcePolicy')
+  name = _messages.StringField(8)
+  region = _messages.StringField(9)
+  resourceStatus = _messages.MessageField('ResourcePolicyResourceStatus', 10)
+  selfLink = _messages.StringField(11)
+  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):
@@ -58275,6 +58568,10 @@ class ResourcePolicyDailyCycle(_messages.Message):
   daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   duration = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class ResourcePolicyDiskConsistencyGroupPolicy(_messages.Message):
+  r"""Resource policy for disk consistency groups."""
 
 
 class ResourcePolicyGroupPlacementPolicy(_messages.Message):
@@ -59634,6 +59931,12 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
+    customLearnedIpRanges: A list of user-defined custom learned route IP
+      address ranges for a BGP session.
+    customLearnedRoutePriority: The user-defined custom learned route priority
+      for a BGP session. This value is applied to all custom learned route
+      ranges for the BGP session. If a priority is not provided, a Google-
+      managed priority of `100` is used.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -59734,18 +60037,20 @@ class RouterBgpPeer(_messages.Message):
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
-  enable = _messages.EnumField('EnableValueValuesEnum', 6)
-  enableIpv6 = _messages.BooleanField(7)
-  interfaceName = _messages.StringField(8)
-  ipAddress = _messages.StringField(9)
-  ipv6NexthopAddress = _messages.StringField(10)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
-  md5AuthenticationKeyName = _messages.StringField(12)
-  name = _messages.StringField(13)
-  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(15)
-  peerIpv6NexthopAddress = _messages.StringField(16)
-  routerApplianceInstance = _messages.StringField(17)
+  customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
+  customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  enable = _messages.EnumField('EnableValueValuesEnum', 8)
+  enableIpv6 = _messages.BooleanField(9)
+  interfaceName = _messages.StringField(10)
+  ipAddress = _messages.StringField(11)
+  ipv6NexthopAddress = _messages.StringField(12)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
+  md5AuthenticationKeyName = _messages.StringField(14)
+  name = _messages.StringField(15)
+  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(17)
+  peerIpv6NexthopAddress = _messages.StringField(18)
+  routerApplianceInstance = _messages.StringField(19)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -59801,6 +60106,19 @@ class RouterBgpPeerBfd(_messages.Message):
   minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   multiplier = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
   sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 4)
+
+
+class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
+  r"""A RouterBgpPeerCustomLearnedIpRange object.
+
+  Fields:
+    range: The custom learned route IP address range. Must be a valid CIDR-
+      formatted prefix. If an IP address is provided without a subnet mask, it
+      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
+      IPv6, `/128`.
+  """
+
+  range = _messages.StringField(1)
 
 
 class RouterInterface(_messages.Message):

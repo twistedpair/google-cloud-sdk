@@ -1648,12 +1648,9 @@ def AddProvisioningModelVmArgs(parser):
       """)
 
 
-def AddMaxRunDurationVmArgs(parser):
+def AddMaxRunDurationVmArgs(parser, is_update=False):
   """Set arguments for specifing max-run-duration and termination-time flags."""
-  parser.add_argument(
-      '--max-run-duration',
-      type=arg_parsers.Duration(),
-      help="""\
+  max_run_duration_help_text = """\
       Limits how long this VM instance can run, specified as a duration
       relative to the VM instance's most-recent start time. Format the duration,
       ``MAX_RUN_DURATION'', as the number of days, hours, minutes, and seconds
@@ -1672,27 +1669,63 @@ def AddMaxRunDurationVmArgs(parser):
       is stopped or suspended,  `--max-run-duration` and (unless the VM uses
       `--provisioning-model=SPOT`) `--instance-termination-action` are
       automatically removed from the VM.
-      """)
+      """
 
-  parser.add_argument(
-      '--termination-time',
-      type=arg_parsers.Datetime.Parse,
-      help="""
+  termination_time_help_text = """
       Limits how long this VM instance can run, specified as a time.
       Format the time, ``TERMINATION_TIME'', as a RFC 3339 timestamp. For more
       information, see https://tools.ietf.org/html/rfc3339.
       Alternatively, to specify a duration, use `--max-run-duration` instead.
 
-     If neither `--termination-time` nor `--max-run-duration`
-     is specified (default),
-     the VM instance runs until prompted by a user action or system event.
-     If either is specified, the VM instance is scheduled to be automatically
-     terminated using the action specified by `--instance-termination-action`.
-     For `--termination-time`, the VM instance is automatically terminated at the
-     specified timestamp. Note: Anytime the VM instance is stopped or suspended,
-     `--termination-time` and (unless the VM uses `--provisioning-model=SPOT`)
-     `--instance-termination-action` are automatically removed from the VM.
-     """)
+    If neither `--termination-time` nor `--max-run-duration`
+    is specified (default),
+    the VM instance runs until prompted by a user action or system event.
+    If either is specified, the VM instance is scheduled to be automatically
+    terminated using the action specified by `--instance-termination-action`.
+    For `--termination-time`, the VM instance is automatically terminated at the
+    specified timestamp. Note: Anytime the VM instance is stopped or suspended,
+    `--termination-time` and (unless the VM uses `--provisioning-model=SPOT`)
+    `--instance-termination-action` are automatically removed from the VM.
+    """
+  if is_update:
+    max_run_duration_group = parser.add_group('Max Run Duration', mutex=True)
+    max_run_duration_group.add_argument(
+        '--clear-max-run-duration',
+        action='store_true',
+        help="""\
+        Removes the max-run-duration field from the scheduling options.
+        """,
+    )
+    max_run_duration_group.add_argument(
+        '--max-run-duration',
+        type=arg_parsers.Duration(),
+        help=max_run_duration_help_text,
+    )
+
+    termination_time_group = parser.add_group('Termination Time', mutex=True)
+    termination_time_group.add_argument(
+        '--clear-termination-time',
+        action='store_true',
+        help="""\
+        Removes the termination-time field from the scheduling options.
+        """,
+    )
+    termination_time_group.add_argument(
+        '--termination-time',
+        type=arg_parsers.Datetime.Parse,
+        help=termination_time_help_text,
+    )
+  else:
+    parser.add_argument(
+        '--max-run-duration',
+        type=arg_parsers.Duration(),
+        help=max_run_duration_help_text,
+    )
+    parser.add_argument(
+        '--termination-time',
+        type=arg_parsers.Datetime.Parse,
+        help=termination_time_help_text,
+    )
 
 
 def AddHostErrorTimeoutSecondsArgs(parser):
@@ -1703,6 +1736,19 @@ def AddHostErrorTimeoutSecondsArgs(parser):
       The timeout in seconds for host error detection. The value must be
       set with 30 second increments, with a range of 90 to 330 seconds.
       If unset, the default behavior of the host error recovery is used.
+    """)
+
+
+def AddLocalSsdRecoveryTimeoutArgs(parser):
+  parser.add_argument(
+      '--local-ssd-recovery-timeout',
+      type=arg_parsers.Duration(
+          default_unit='h', lower_bound='0h', upper_bound='168h'),
+      help="""
+      Specifies the maximum amount of time a Local Ssd Vm should wait while
+      recovery of the Local Ssd state is attempted. Its value should be in
+      between 0 and 168 hours with hour granularity and the default value being 1
+      hour.
     """)
 
 

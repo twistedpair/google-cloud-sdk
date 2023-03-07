@@ -13,7 +13,76 @@ from apitools.base.py import extra_types
 package = 'policytroubleshooter'
 
 
-class GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation(_messages.Message):
+class GoogleCloudAuditAuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaAccessTuple(_messages.Message):
+  r"""Information about the member, resource, and permission to check.
+
+  Fields:
+    conditionContext: Optional. The Cloud IAM condition context under which
+      defines the kind of access being explained. TroubleshootIamPolicy would
+      explain if and why the principal has the queried permission on the
+      resource specified in full_resource_name under this context
+    fullResourceName: Required. The full resource name that identifies the
+      resource. For example, `//compute.googleapis.com/projects/my-
+      project/zones/us-central1-a/instances/my-instance`. For examples of full
+      resource names for Google Cloud services, see
+      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+    permission: Required. The IAM permission to check for the specified member
+      and resource. This field can be either permission or permission FQDN.
+      For a complete list of IAM permissions, see
+      https://cloud.google.com/iam/help/permissions/reference. For a complete
+      list of predefined IAM roles and the permissions in each role, see
+      https://cloud.google.com/iam/help/roles/reference. For a complete list
+      of IAM permission FQDNs used in IAM v2, see
+      https://cloud.google.com/iam/docs/deny-permissions-support
+    permissionFqdn: Output only. The FQDN of the IAM permission to check for
+      the specified member and resource. For a complete list of IAM permission
+      FQDNs used in IAM v2, see https://cloud.google.com/iam/docs/deny-
+      permissions-support
+    principal: Required. The member, or principal, whose access you want to
+      check, in the form of the email address that represents that member. For
+      example, `alice@example.com` or `my-service-account@my-
+      project.iam.gserviceaccount.com`. The member must be a Google Account or
+      a service account. Other types of members are not supported.
+  """
+
+  conditionContext = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionContext', 1)
+  fullResourceName = _messages.StringField(2)
+  permission = _messages.StringField(3)
+  permissionFqdn = _messages.StringField(4)
+  principal = _messages.StringField(5)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaAllowBindingExplanation(_messages.Message):
   r"""Details about how a binding in an allow policy affects a member's
   ability to use a permission.
 
@@ -189,19 +258,19 @@ class GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation(_messages.Me
 
       Fields:
         key: Name of the additional property.
-        value: A GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation
-          AnnotatedAllowMembership attribute.
+        value: A GoogleCloudPolicytroubleshooterIamV3alphaAllowBindingExplanat
+          ionAnnotatedAllowMembership attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership', 2)
+      value = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAllowBindingExplanationAnnotatedAllowMembership', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allowAccessState = _messages.EnumField('AllowAccessStateValueValuesEnum', 1)
-  combinedMembership = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership', 2)
+  combinedMembership = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAllowBindingExplanationAnnotatedAllowMembership', 2)
   condition = _messages.MessageField('GoogleTypeExpr', 3)
-  conditionExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation', 4)
+  conditionExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionExplanation', 4)
   memberships = _messages.MessageField('MembershipsValue', 5)
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 6)
   role = _messages.StringField(7)
@@ -209,7 +278,7 @@ class GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation(_messages.Me
   rolePermissionRelevance = _messages.EnumField('RolePermissionRelevanceValueValuesEnum', 9)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllowMembership(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaAllowBindingExplanationAnnotatedAllowMembership(_messages.Message):
   r"""Details about whether the binding includes the member.
 
   Enums:
@@ -266,7 +335,303 @@ class GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanationAnnotatedAllo
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaAllowPolicyExplanation(_messages.Message):
+  r"""Details about how IAM allow policies contributed to the access check.
+
+  Enums:
+    AllowAccessStateValueValuesEnum: Indicates whether the member has the
+      specified permission for the specified resource, based on evaluating all
+      applicable IAM allow policies.
+    RelevanceValueValuesEnum: The relevance of the allow policy type to the
+      overall access state.
+
+  Fields:
+    allowAccessState: Indicates whether the member has the specified
+      permission for the specified resource, based on evaluating all
+      applicable IAM allow policies.
+    explainedPolicies: List of IAM allow policies that were evaluated to check
+      the member's permissions, with annotations to indicate how each policy
+      contributed to the final result. The list of policies can include the
+      policy for the resource itself. It can also include policies that are
+      inherited from higher levels of the resource hierarchy, including the
+      organization, the folder, and the project. To learn more about the
+      resource hierarchy, see https://cloud.google.com/iam/help/resource-
+      hierarchy.
+    relevance: The relevance of the allow policy type to the overall access
+      state.
+  """
+
+  class AllowAccessStateValueValuesEnum(_messages.Enum):
+    r"""Indicates whether the member has the specified permission for the
+    specified resource, based on evaluating all applicable IAM allow policies.
+
+    Values:
+      ALLOW_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
+      ALLOW_ACCESS_STATE_GRANTED: Access is granted.
+      ALLOW_ACCESS_STATE_NOT_GRANTED: Access is not granted.
+      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is allowed only if a
+        condition expression evaluates to `true`.
+      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
+        access to all of the policies that Policy Troubleshooter needs to
+        evaluate.
+    """
+    ALLOW_ACCESS_STATE_UNSPECIFIED = 0
+    ALLOW_ACCESS_STATE_GRANTED = 1
+    ALLOW_ACCESS_STATE_NOT_GRANTED = 2
+    ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL = 3
+    ALLOW_ACCESS_STATE_UNKNOWN_INFO = 4
+
+  class RelevanceValueValuesEnum(_messages.Enum):
+    r"""The relevance of the allow policy type to the overall access state.
+
+    Values:
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
+        result. Changing the data point is unlikely to affect the overall
+        determination.
+      HEURISTIC_RELEVANCE_HIGH: The data point has a strong effect on the
+        result. Changing the data point is likely to affect the overall
+        determination.
+    """
+    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
+    HEURISTIC_RELEVANCE_NORMAL = 1
+    HEURISTIC_RELEVANCE_HIGH = 2
+
+  allowAccessState = _messages.EnumField('AllowAccessStateValueValuesEnum', 1)
+  explainedPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedAllowPolicy', 2, repeated=True)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 3)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionContext(_messages.Message):
+  r"""Represents the attributes that will be used to do IAM condition
+  evaluation.
+
+  Fields:
+    destination: The destination of a network activity, such as accepting a
+      TCP connection. In a multi hop network activity, the destination
+      represents the receiver of the last hop.
+    effectiveTags: Output only. Represents the effective tags on the resource.
+      The effective tags are fetched during Troubleshooting so this field in
+      output only.
+    request: Represents a network request, such as an HTTP request.
+    resource: Represents a target resource that is involved with a network
+      activity. If multiple resources are involved with an activity, this must
+      be the primary one.
+  """
+
+  destination = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionContextPeer', 1)
+  effectiveTags = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionContextEffectiveTag', 2, repeated=True)
+  request = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionContextRequest', 3)
+  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionContextResource', 4)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionContextEffectiveTag(_messages.Message):
+  r"""An EffectiveTag represents a tag that applies to a resource during
+  policy evaluation. Tags can be either directly bound to a resource or
+  inherited from its ancestor. EffectiveTag contains the name and
+  namespaced_name of the tag value and tag key, with additional fields of
+  `inherited` to indicate the inheritance status of the effective tag.
+
+  Fields:
+    inherited: Indicates the inheritance status of a tag value attached to the
+      given resource. If the tag value is inherited from one of the resource's
+      ancestors, inherited will be true. If false, then the tag value is
+      directly attached to the resource, inherited will be false.
+    namespacedTagKey: The namespaced_name of the TagKey. Now only supported in
+      the format of `{organization_id}/{tag_key_short_name}`. Other formats
+      will be supported when we add non-org parented tags.
+    namespacedTagValue: Namespaced name of the TagValue. Now only supported in
+      the format
+      `{organization_id}/{tag_key_short_name}/{tag_value_short_name}`. Other
+      formats will be supported when we add non-org parented tags.
+    tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
+      `tagKeys/123`.
+    tagKeyParentName: The parent name of the tag key. Must be in the format
+      `organizations/{organization_id}`.
+    tagValue: Resource name for TagValue in the format `tagValues/456`.
+  """
+
+  inherited = _messages.BooleanField(1)
+  namespacedTagKey = _messages.StringField(2)
+  namespacedTagValue = _messages.StringField(3)
+  tagKey = _messages.StringField(4)
+  tagKeyParentName = _messages.StringField(5)
+  tagValue = _messages.StringField(6)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionContextPeer(_messages.Message):
+  r"""This message defines attributes for a node that handles a network
+  request. The node can be either a service or an application that sends,
+  forwards, or receives the request. Service peers should fill in `principal`
+  and `labels` as appropriate.
+
+  Fields:
+    ip: The IPv4 or IPv6 address of the peer.
+    port: The network port of the peer.
+  """
+
+  ip = _messages.StringField(1)
+  port = _messages.IntegerField(2)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionContextRequest(_messages.Message):
+  r"""This message defines attributes for an HTTP request. If the actual
+  request is not an HTTP request, the runtime system should try to map the
+  actual request to an equivalent HTTP request.
+
+  Fields:
+    receiveTime: Optional. The timestamp when the `destination` service
+      receives the first byte of the request.
+    satisfiedAccessLevels: Optional. The information for access levels that
+      are satisfied for the given access tuple. This field is google internal
+      and can only be used by pantheon
+    unsatisfiedAccessLevels: Optional. The information for access levels that
+      are unsatisfied for the given access tuple. This field is google
+      internal and can only be used by pantheon
+  """
+
+  receiveTime = _messages.StringField(1)
+  satisfiedAccessLevels = _messages.StringField(2, repeated=True)
+  unsatisfiedAccessLevels = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionContextResource(_messages.Message):
+  r"""This message defines core attributes for a resource. A resource is an
+  addressable (named) entity provided by the destination service. For example,
+  a file stored on a network storage service.
+
+  Fields:
+    name: The stable identifier (name) of a resource on the `service`. A
+      resource can be logically identified as
+      "//{resource.service}/{resource.name}". The differences between a
+      resource name and a URI are: * Resource name is a logical identifier,
+      independent of network protocol and API version. For example,
+      `//pubsub.googleapis.com/projects/123/topics/news-feed`. * URI often
+      includes protocol and version information, so it can be used directly by
+      applications. For example,
+      `https://pubsub.googleapis.com/v1/projects/123/topics/news-feed`. See
+      https://google.aip.dev/122 for details.
+    service: The name of the service that this resource belongs to, such as
+      `pubsub.googleapis.com`. The service may be different from the DNS
+      hostname that actually serves the request.
+    type: The type of the resource. The syntax is platform-specific because
+      different platforms define their resources differently. For Google APIs,
+      the type format must be "{service}/{kind}".
+  """
+
+  name = _messages.StringField(1)
+  service = _messages.StringField(2)
+  type = _messages.StringField(3)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionExplanation(_messages.Message):
+  r"""Condition Explanation
+
+  Fields:
+    errors: The general errors contained in the overall expression
+      explanation.
+    evaluationStates: List of evaluated states of non boolean expression in
+      the condition
+    value: Value of the condition.
+  """
+
+  errors = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+  evaluationStates = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionExplanationEvaluationState', 2, repeated=True)
+  value = _messages.MessageField('extra_types.JsonValue', 3)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaConditionExplanationEvaluationState(_messages.Message):
+  r"""Evaluated state of an expression.
+
+  Fields:
+    end: End position of an expression in the original condition, by
+      character, end included, for example: the end position of the first part
+      of "a==b || c==d" would be 4.
+    errors: The general errors contained in the expression explanation.
+    start: Start position of an expression in the original condition, by
+      character.
+    value: Value of this expression.
+  """
+
+  end = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errors = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
+  start = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  value = _messages.MessageField('extra_types.JsonValue', 4)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaDenyPolicyExplanation(_messages.Message):
+  r"""Details about how IAM deny policies contributed to the access check.
+
+  Enums:
+    DenyAccessStateValueValuesEnum: Indicates whether the member is denied for
+      the specified permission for the specified resource, based on evaluating
+      all applicable IAM deny policies.
+    RelevanceValueValuesEnum: The relevance of the deny policy type to the
+      overall access state.
+
+  Fields:
+    denyAccessState: Indicates whether the member is denied for the specified
+      permission for the specified resource, based on evaluating all
+      applicable IAM deny policies.
+    explainedResources: List of resources with IAM deny policies that were
+      evaluated to check the member's denied permissions, with annotations to
+      indicate how each policy contributed to the final result. The list of
+      resources can include the policy for the resource itself. It can also
+      include policies that are inherited from higher levels of the resource
+      hierarchy, including the organization, the folder, and the project. The
+      order of the resources starts from the resource and climbs up the
+      resource hierarchy. To learn more about the resource hierarchy, see
+      https://cloud.google.com/iam/help/resource-hierarchy.
+    permissionDeniable: Indicates whether the permission to troubleshoot
+      supports deny.
+    relevance: The relevance of the deny policy type to the overall access
+      state.
+  """
+
+  class DenyAccessStateValueValuesEnum(_messages.Enum):
+    r"""Indicates whether the member is denied for the specified permission
+    for the specified resource, based on evaluating all applicable IAM deny
+    policies.
+
+    Values:
+      DENY_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
+      DENY_ACCESS_STATE_DENIED: Access is denied.
+      DENY_ACCESS_STATE_NOT_DENIED: Access is not denied.
+      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is denied only if a
+        condition expression evaluates to `true`.
+      DENY_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
+        access to all of the deny policies that Policy Troubleshooter needs to
+        evaluate.
+    """
+    DENY_ACCESS_STATE_UNSPECIFIED = 0
+    DENY_ACCESS_STATE_DENIED = 1
+    DENY_ACCESS_STATE_NOT_DENIED = 2
+    DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL = 3
+    DENY_ACCESS_STATE_UNKNOWN_INFO = 4
+
+  class RelevanceValueValuesEnum(_messages.Enum):
+    r"""The relevance of the deny policy type to the overall access state.
+
+    Values:
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
+        result. Changing the data point is unlikely to affect the overall
+        determination.
+      HEURISTIC_RELEVANCE_HIGH: The data point has a strong effect on the
+        result. Changing the data point is likely to affect the overall
+        determination.
+    """
+    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
+    HEURISTIC_RELEVANCE_NORMAL = 1
+    HEURISTIC_RELEVANCE_HIGH = 2
+
+  denyAccessState = _messages.EnumField('DenyAccessStateValueValuesEnum', 1)
+  explainedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedDenyResource', 2, repeated=True)
+  permissionDeniable = _messages.BooleanField(3)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanation(_messages.Message):
   r"""Details about how a deny rule in a deny policy affects a member's
   ability to use a permission.
 
@@ -400,12 +765,12 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation(_messages.Messag
 
       Fields:
         key: Name of the additional property.
-        value: A GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnno
-          tatedPermissionMatching attribute.
+        value: A GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationA
+          nnotatedPermissionMatching attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 2)
+      value = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -429,12 +794,12 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation(_messages.Messag
 
       Fields:
         key: Name of the additional property.
-        value: A GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnno
-          tatedDenyPrincipalMatching attribute.
+        value: A GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationA
+          nnotatedDenyPrincipalMatching attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 2)
+      value = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -459,12 +824,12 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation(_messages.Messag
 
       Fields:
         key: Name of the additional property.
-        value: A GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnno
-          tatedPermissionMatching attribute.
+        value: A GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationA
+          nnotatedPermissionMatching attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 2)
+      value = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -489,21 +854,21 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation(_messages.Messag
 
       Fields:
         key: Name of the additional property.
-        value: A GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnno
-          tatedDenyPrincipalMatching attribute.
+        value: A GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationA
+          nnotatedDenyPrincipalMatching attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 2)
+      value = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  combinedDeniedPermission = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 1)
-  combinedDeniedPrincipal = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 2)
-  combinedExceptionPermission = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 3)
-  combinedExceptionPrincipal = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 4)
+  combinedDeniedPermission = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 1)
+  combinedDeniedPrincipal = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 2)
+  combinedExceptionPermission = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedPermissionMatching', 3)
+  combinedExceptionPrincipal = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching', 4)
   condition = _messages.MessageField('GoogleTypeExpr', 5)
-  conditionExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation', 6)
+  conditionExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionExplanation', 6)
   deniedPermissions = _messages.MessageField('DeniedPermissionsValue', 7)
   deniedPrincipals = _messages.MessageField('DeniedPrincipalsValue', 8)
   denyAccessState = _messages.EnumField('DenyAccessStateValueValuesEnum', 9)
@@ -512,7 +877,7 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation(_messages.Messag
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 12)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedDenyPrincipalMatching(_messages.Message):
   r"""Details about whether the principal matches the principal set.
 
   Enums:
@@ -568,7 +933,7 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedDenyPrin
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissionMatching(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanationAnnotatedPermissionMatching(_messages.Message):
   r"""Details about whether the permission matches the permission pattern.
 
   Enums:
@@ -619,7 +984,7 @@ class GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanationAnnotatedPermissi
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaExplainedAllowPolicy(_messages.Message):
   r"""Details about how a specific IAM Policy contributed to the access check.
 
   Enums:
@@ -643,14 +1008,17 @@ class GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy(_messages.Messa
       permission, use the `access` field in the TroubleshootIamPolicyResponse.
     bindingExplanations: Details about how each binding in the policy affects
       the member's ability, or inability, to use the permission for the
-      resource. If the sender of the request does not have access to the
-      policy, this field is omitted.
+      resource. The order of the bindings matches the binding order in the
+      policy. If the sender of the request does not have access to the policy,
+      this field is omitted.
     fullResourceName: The full resource name that identifies the resource. For
       example, `//compute.googleapis.com/projects/my-project/zones/us-
       central1-a/instances/my-instance`. If the sender of the request does not
       have access to the policy, this field is omitted. For examples of full
       resource names for Google Cloud services, see
       https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+    policy: The IAM allow policy attached to the resource. If the sender of
+      the request does not have access to the policy, this field is empty.
     relevance: The relevance of this policy to the overall determination in
       the TroubleshootIamPolicyResponse. If the sender of the request does not
       have access to the policy, this field is omitted.
@@ -699,12 +1067,13 @@ class GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy(_messages.Messa
     HEURISTIC_RELEVANCE_HIGH = 2
 
   allowAccessState = _messages.EnumField('AllowAccessStateValueValuesEnum', 1)
-  bindingExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaAllowBindingExplanation', 2, repeated=True)
+  bindingExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAllowBindingExplanation', 2, repeated=True)
   fullResourceName = _messages.StringField(3)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
+  policy = _messages.MessageField('GoogleIamV1Policy', 4)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 5)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaExplainedDenyPolicy(_messages.Message):
   r"""Details about how a specific IAM deny policy Policy contributed to the
   access check.
 
@@ -727,23 +1096,15 @@ class GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy(_messages.Messag
       permission for the resource. There might be another policy that
       overrides this policy. To determine whether the member actually has the
       permission, use the `access` field in the TroubleshootIamPolicyResponse.
-    displayName: Display name of the IAM deny policy.
-    policy: Name of the IAM deny policy attached to the resource. The resource
-      name of [google.iam.v2.Policy], which must be unique. Format:
-      `policies/{attachment_point}/denypolicies/{policy_id}` The attachment
-      point is identified by its URL-encoded full resource name, which means
-      that the forward-slash character, `/`, must be written as `%2F`. For
-      example, `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
-      project/denypolicies/my-deny-policy`. For organizations and folders, use
-      the numeric ID in the full resource name. For projects, requests can use
-      the alphanumeric or the numeric ID. Responses always contain the numeric
-      ID.
+    policy: The IAM deny policy attached to the resource. If the sender of the
+      request does not have access to the policy, this field is omitted.
     relevance: The relevance of this policy to the overall determination in
       the TroubleshootIamPolicyResponse. If the sender of the request does not
       have access to the policy, this field is omitted.
     ruleExplanations: Details about how each rule in the policy affects the
-      member's inability to use the permission for the resource. If the sender
-      of the request does not have access to the policy, this field is
+      member's inability to use the permission for the resource. The order of
+      the deny rule matches the order of the rules in the deny policy. If the
+      sender of the request does not have access to the policy, this field is
       omitted.
   """
 
@@ -790,13 +1151,12 @@ class GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy(_messages.Messag
     HEURISTIC_RELEVANCE_HIGH = 2
 
   denyAccessState = _messages.EnumField('DenyAccessStateValueValuesEnum', 1)
-  displayName = _messages.StringField(2)
-  policy = _messages.StringField(3)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
-  ruleExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaDenyRuleExplanation', 5, repeated=True)
+  policy = _messages.MessageField('GoogleIamV2Policy', 2)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 3)
+  ruleExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyRuleExplanation', 4, repeated=True)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaExplainedDenyResource(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaExplainedDenyResource(_messages.Message):
   r"""Details about how a specific resource contributed to the deny access
   check.
 
@@ -877,303 +1237,12 @@ class GoogleCloudPolicytroubleshooterV3alphaExplainedDenyResource(_messages.Mess
     HEURISTIC_RELEVANCE_HIGH = 2
 
   denyAccessState = _messages.EnumField('DenyAccessStateValueValuesEnum', 1)
-  explainedPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaExplainedDenyPolicy', 2, repeated=True)
+  explainedPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedDenyPolicy', 2, repeated=True)
   fullResourceName = _messages.StringField(3)
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple(_messages.Message):
-  r"""Information about the member, resource, and permission to check.
-
-  Fields:
-    conditionContext: Optional. The Cloud IAM condition context under which
-      defines the kind of access being explained. TroubleshootIamPolicy would
-      explain if and why the principal has the queried permission on the
-      resource specified in full_resource_name under this context
-    fullResourceName: Required. The full resource name that identifies the
-      resource. For example, `//compute.googleapis.com/projects/my-
-      project/zones/us-central1-a/instances/my-instance`. For examples of full
-      resource names for Google Cloud services, see
-      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
-    permission: Required. The IAM permission to check for the specified member
-      and resource. This field can be either permission or permission FQDN.
-      For a complete list of IAM permissions, see
-      https://cloud.google.com/iam/help/permissions/reference. For a complete
-      list of predefined IAM roles and the permissions in each role, see
-      https://cloud.google.com/iam/help/roles/reference. For a complete list
-      of IAM permission FQDNs used in IAM v2, see
-      https://cloud.google.com/iam/docs/deny-permissions-support
-    permissionFqdn: Output only. The FQDN of the IAM permission to check for
-      the specified member and resource. For a complete list of IAM permission
-      FQDNs used in IAM v2, see https://cloud.google.com/iam/docs/deny-
-      permissions-support
-    principal: Required. The member, or principal, whose access you want to
-      check, in the form of the email address that represents that member. For
-      example, `alice@example.com` or `my-service-account@my-
-      project.iam.gserviceaccount.com`. The member must be a Google Account or
-      a service account. Other types of members are not supported.
-  """
-
-  conditionContext = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionContext', 1)
-  fullResourceName = _messages.StringField(2)
-  permission = _messages.StringField(3)
-  permissionFqdn = _messages.StringField(4)
-  principal = _messages.StringField(5)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamAllowPolicyExplanation(_messages.Message):
-  r"""Details about how IAM allow policies contributed to the access check.
-
-  Enums:
-    AllowAccessStateValueValuesEnum: Indicates whether the member has the
-      specified permission for the specified resource, based on evaluating all
-      applicable IAM allow policies.
-    RelevanceValueValuesEnum: The relevance of the allow policy type to the
-      overall access state.
-
-  Fields:
-    allowAccessState: Indicates whether the member has the specified
-      permission for the specified resource, based on evaluating all
-      applicable IAM allow policies.
-    explainedPolicies: List of IAM allow policies that were evaluated to check
-      the member's permissions, with annotations to indicate how each policy
-      contributed to the final result. The list of policies can include the
-      policy for the resource itself. It can also include policies that are
-      inherited from higher levels of the resource hierarchy, including the
-      organization, the folder, and the project. To learn more about the
-      resource hierarchy, see https://cloud.google.com/iam/help/resource-
-      hierarchy.
-    relevance: The relevance of the allow policy type to the overall access
-      state.
-  """
-
-  class AllowAccessStateValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the member has the specified permission for the
-    specified resource, based on evaluating all applicable IAM allow policies.
-
-    Values:
-      ALLOW_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      ALLOW_ACCESS_STATE_GRANTED: Access is granted.
-      ALLOW_ACCESS_STATE_NOT_GRANTED: Access is not granted.
-      ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is allowed only if a
-        condition expression evaluates to `true`.
-      ALLOW_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
-        access to all of the policies that Policy Troubleshooter needs to
-        evaluate.
-    """
-    ALLOW_ACCESS_STATE_UNSPECIFIED = 0
-    ALLOW_ACCESS_STATE_GRANTED = 1
-    ALLOW_ACCESS_STATE_NOT_GRANTED = 2
-    ALLOW_ACCESS_STATE_UNKNOWN_CONDITIONAL = 3
-    ALLOW_ACCESS_STATE_UNKNOWN_INFO = 4
-
-  class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the allow policy type to the overall access state.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
-      HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
-        result. Changing the data point is unlikely to affect the overall
-        determination.
-      HEURISTIC_RELEVANCE_HIGH: The data point has a strong effect on the
-        result. Changing the data point is likely to affect the overall
-        determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    HEURISTIC_RELEVANCE_NORMAL = 1
-    HEURISTIC_RELEVANCE_HIGH = 2
-
-  allowAccessState = _messages.EnumField('AllowAccessStateValueValuesEnum', 1)
-  explainedPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaExplainedAllowPolicy', 2, repeated=True)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 3)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamConditionContext(_messages.Message):
-  r"""Represents the attributes that will be used to do IAM condition
-  evaluation.
-
-  Fields:
-    destination: The destination of a network activity, such as accepting a
-      TCP connection. In a multi hop network activity, the destination
-      represents the receiver of the last hop.
-    request: Represents a network request, such as an HTTP request.
-    resource: Represents a target resource that is involved with a network
-      activity. If multiple resources are involved with an activity, this must
-      be the primary one.
-  """
-
-  destination = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionContextPeer', 1)
-  request = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionContextRequest', 2)
-  resource = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionContextResource', 3)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamConditionContextPeer(_messages.Message):
-  r"""This message defines attributes for a node that handles a network
-  request. The node can be either a service or an application that sends,
-  forwards, or receives the request. Service peers should fill in `principal`
-  and `labels` as appropriate.
-
-  Fields:
-    ip: The IPv4 or IPv6 address of the peer.
-    port: The network port of the peer.
-  """
-
-  ip = _messages.StringField(1)
-  port = _messages.IntegerField(2)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamConditionContextRequest(_messages.Message):
-  r"""This message defines attributes for an HTTP request. If the actual
-  request is not an HTTP request, the runtime system should try to map the
-  actual request to an equivalent HTTP request.
-
-  Fields:
-    receiveTime: Optional. The timestamp when the `destination` service
-      receives the first byte of the request.
-    satisfiedAccessLevels: Optional. The information for access levels that
-      are satisfied for the given access tuple. This field is google internal
-      and can only be used by pantheon
-    unsatisfiedAccessLevels: Optional. The information for access levels that
-      are unsatisfied for the given access tuple. This field is google
-      internal and can only be used by pantheon
-  """
-
-  receiveTime = _messages.StringField(1)
-  satisfiedAccessLevels = _messages.StringField(2, repeated=True)
-  unsatisfiedAccessLevels = _messages.StringField(3, repeated=True)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamConditionContextResource(_messages.Message):
-  r"""This message defines core attributes for a resource. A resource is an
-  addressable (named) entity provided by the destination service. For example,
-  a file stored on a network storage service.
-
-  Fields:
-    name: The stable identifier (name) of a resource on the `service`. A
-      resource can be logically identified as
-      "//{resource.service}/{resource.name}". The differences between a
-      resource name and a URI are: * Resource name is a logical identifier,
-      independent of network protocol and API version. For example,
-      `//pubsub.googleapis.com/projects/123/topics/news-feed`. * URI often
-      includes protocol and version information, so it can be used directly by
-      applications. For example,
-      `https://pubsub.googleapis.com/v1/projects/123/topics/news-feed`. See
-      https://google.aip.dev/122 for details.
-    service: The name of the service that this resource belongs to, such as
-      `pubsub.googleapis.com`. The service may be different from the DNS
-      hostname that actually serves the request.
-    type: The type of the resource. The syntax is platform-specific because
-      different platforms define their resources differently. For Google APIs,
-      the type format must be "{service}/{kind}".
-  """
-
-  name = _messages.StringField(1)
-  service = _messages.StringField(2)
-  type = _messages.StringField(3)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanation(_messages.Message):
-  r"""Condition Explanation
-
-  Fields:
-    evaluationStates: List of evaluated states of non boolean expression in
-      the condition
-    value: Value of the condition
-  """
-
-  evaluationStates = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanationEvaluationState', 1, repeated=True)
-  value = _messages.MessageField('extra_types.JsonValue', 2)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamConditionExplanationEvaluationState(_messages.Message):
-  r"""Evaluated state of an expression
-
-  Fields:
-    end: End position of an expression in the original condition, by
-      character, end included, for example: the end position of the first part
-      of "a==b || c==d" would be 4
-    start: Start position of an expression in the original condition, by
-      character
-    value: Value of this expression
-  """
-
-  end = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  start = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  value = _messages.MessageField('extra_types.JsonValue', 3)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaIamDenyPolicyExplanation(_messages.Message):
-  r"""Details about how IAM deny policies contributed to the access check.
-
-  Enums:
-    DenyAccessStateValueValuesEnum: Indicates whether the member is denied for
-      the specified permission for the specified resource, based on evaluating
-      all applicable IAM deny policies.
-    RelevanceValueValuesEnum: The relevance of the deny policy type to the
-      overall access state.
-
-  Fields:
-    denyAccessState: Indicates whether the member is denied for the specified
-      permission for the specified resource, based on evaluating all
-      applicable IAM deny policies.
-    explainedResources: List of resources with IAM deny policies that were
-      evaluated to check the member's denied permissions, with annotations to
-      indicate how each policy contributed to the final result. The list of
-      resources can include the policy for the resource itself. It can also
-      include policies that are inherited from higher levels of the resource
-      hierarchy, including the organization, the folder, and the project. To
-      learn more about the resource hierarchy, see
-      https://cloud.google.com/iam/help/resource-hierarchy.
-    permissionDeniable: Indicates whether the permission to troubleshoot
-      supports deny.
-    relevance: The relevance of the deny policy type to the overall access
-      state.
-  """
-
-  class DenyAccessStateValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the member is denied for the specified permission
-    for the specified resource, based on evaluating all applicable IAM deny
-    policies.
-
-    Values:
-      DENY_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      DENY_ACCESS_STATE_DENIED: Access is denied.
-      DENY_ACCESS_STATE_NOT_DENIED: Access is not denied.
-      DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL: Access is denied only if a
-        condition expression evaluates to `true`.
-      DENY_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
-        access to all of the deny policies that Policy Troubleshooter needs to
-        evaluate.
-    """
-    DENY_ACCESS_STATE_UNSPECIFIED = 0
-    DENY_ACCESS_STATE_DENIED = 1
-    DENY_ACCESS_STATE_NOT_DENIED = 2
-    DENY_ACCESS_STATE_UNKNOWN_CONDITIONAL = 3
-    DENY_ACCESS_STATE_UNKNOWN_INFO = 4
-
-  class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the deny policy type to the overall access state.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
-      HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
-        result. Changing the data point is unlikely to affect the overall
-        determination.
-      HEURISTIC_RELEVANCE_HIGH: The data point has a strong effect on the
-        result. Changing the data point is likely to affect the overall
-        determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    HEURISTIC_RELEVANCE_NORMAL = 1
-    HEURISTIC_RELEVANCE_HIGH = 2
-
-  denyAccessState = _messages.EnumField('DenyAccessStateValueValuesEnum', 1)
-  explainedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaExplainedDenyResource', 2, repeated=True)
-  permissionDeniable = _messages.BooleanField(3)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
-
-
-class GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyRequest(_messages.Message):
   r"""Request for TroubleshootIamPolicy.
 
   Fields:
@@ -1181,10 +1250,10 @@ class GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest(_messag
       permission for a resource.
   """
 
-  accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple', 1)
+  accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAccessTuple', 1)
 
 
-class GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse(_messages.Message):
+class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_messages.Message):
   r"""Response for TroubleshootIamPolicy.
 
   Enums:
@@ -1226,10 +1295,767 @@ class GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse(_messa
     CANNOT_ACCESS = 2
     UNKNOWN = 3
 
-  accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamAccessTuple', 1)
-  allowPolicyExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamAllowPolicyExplanation', 2)
-  denyPolicyExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterV3alphaIamDenyPolicyExplanation', 3)
+  accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAccessTuple', 1)
+  allowPolicyExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAllowPolicyExplanation', 2)
+  denyPolicyExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaDenyPolicyExplanation', 3)
   overallAccessState = _messages.EnumField('OverallAccessStateValueValuesEnum', 4)
+
+
+class GoogleIamV1AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class GoogleIamV1AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+
+
+class GoogleIamV1Binding(_messages.Message):
+  r"""Associates `members`, or principals, with a `role`.
+
+  Fields:
+    bindingId: A string attribute.
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the principals requesting access for a Google Cloud
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+  """
+
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
+
+
+class GoogleIamV1Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext
+        (go/security-realms). When used with IN, the condition indicates "any
+        of the request's realms match one of the given values; with NOT_IN,
+        "none of the realms match any of the given values". Note that a value
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
+        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
+
+
+class GoogleIamV1LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('GoogleIamV1LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('GoogleIamV1LogConfigCounterOptions', 2)
+  dataAccess = _messages.MessageField('GoogleIamV1LogConfigDataAccessOptions', 3)
+
+
+class GoogleIamV1LogConfigCloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('GoogleCloudAuditAuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class GoogleIamV1LogConfigCounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended. Field names
+  correspond to IAM request parameters and field values are their respective
+  values. Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields. Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('GoogleIamV1LogConfigCounterOptionsCustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class GoogleIamV1LogConfigCounterOptionsCustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleIamV1LogConfigDataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum:
+
+  Fields:
+    logMode: A LogModeValueValuesEnum attribute.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""LogModeValueValuesEnum enum type.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds. If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class GoogleIamV1Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
+  version: 3 For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  rules = _messages.MessageField('GoogleIamV1Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('GoogleIamV1Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('GoogleIamV1LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
+class GoogleIamV2AccessBoundaryRule(_messages.Message):
+  r"""An IAM access boundary rule, which defines an upper bound of IAM
+  permissions on a single resource. All access boundary rules in an access
+  boundary policy are evaluated together as a union. Even if this access
+  boundary rule does not allow access to the resource, another access boundary
+  rule might allow access.
+
+  Fields:
+    availabilityCondition: Optional. An availability condition that further
+      constrains the access allowed by the access boundary rule. If the
+      condition evaluates to `true`, then this access boundary rule will
+      provide access to the specified resource, assuming the principal has the
+      required permissions for the resource. If the condition does not
+      evaluate to `true`, then access to the specified resource will not be
+      available. The condition can only evaluate the access level for the
+      request. Access levels use the format
+      `accessPolicies/{policy_name}/accessLevels/{access_level_shortname}`.
+    availablePermissions: Required. A list of permissions that may be allowed
+      for use on the specified resource. The only supported value is `*`,
+      which represents all permissions.
+    availableResource: Required. The full resource name of a Google Cloud
+      resource. The format is defined at
+      https://cloud.google.com/apis/design/resource_names. The only supported
+      value is `*`, which represents all resources.
+  """
+
+  availabilityCondition = _messages.MessageField('GoogleTypeExpr', 1)
+  availablePermissions = _messages.StringField(2, repeated=True)
+  availableResource = _messages.StringField(3)
+
+
+class GoogleIamV2DenyRule(_messages.Message):
+  r"""A deny rule in an IAM deny policy.
+
+  Fields:
+    denialCondition: The condition that determines whether this deny rule
+      applies to a request. If the condition expression evaluates to `true`,
+      then the deny rule is applied; otherwise, the deny rule is not applied.
+      Each deny rule is evaluated independently. If this deny rule does not
+      apply to a request, other deny rules might still apply. The condition
+      can use CEL functions that evaluate [resource
+      tags](https://cloud.google.com/iam/help/conditions/resource-tags). Other
+      functions and operators are not supported.
+    deniedPermissions: The permissions that are explicitly denied by this
+      rule. Each permission uses the format
+      `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
+      qualified domain name for the service. For example,
+      `iam.googleapis.com/roles.list`.
+    deniedPrincipals: The identities that are prevented from using one or more
+      permissions on Google Cloud resources. This field can contain the
+      following values: * `principalSet://goog/public:all`: A special
+      identifier that represents any principal that is on the internet, even
+      if they do not have a Google Account or are not logged in. *
+      `principal://goog/subject/{email_id}`: A specific Google Account.
+      Includes Gmail, Cloud Identity, and Google Workspace user accounts. For
+      example, `principal://goog/subject/alice@example.com`. *
+      `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
+      Google Account that was deleted recently. For example,
+      `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
+      the Google Account is recovered, this identifier reverts to the standard
+      identifier for a Google Account. *
+      `principalSet://goog/group/{group_id}`: A Google group. For example,
+      `principalSet://goog/group/admins@example.com`. *
+      `deleted:principalSet://goog/group/{group_id}?uid={uid}`: A Google group
+      that was deleted recently. For example,
+      `deleted:principalSet://goog/group/admins@example.com?uid=1234567890`.
+      If the Google group is restored, this identifier reverts to the standard
+      identifier for a Google group. * `principal://iam.googleapis.com/project
+      s/-/serviceAccounts/{service_account_id}`: A Google Cloud service
+      account. For example,
+      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
+      account@iam.gserviceaccount.com`. * `deleted:principal://iam.googleapis.
+      com/projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
+      Cloud service account that was deleted recently. For example,
+      `deleted:principal://iam.googleapis.com/projects/-/serviceAccounts/my-
+      service-account@iam.gserviceaccount.com?uid=1234567890`. If the service
+      account is undeleted, this identifier reverts to the standard identifier
+      for a service account. *
+      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
+      principals associated with the specified Google Workspace or Cloud
+      Identity customer ID. For example,
+      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`.
+    exceptionPermissions: Specifies the permissions that this rule excludes
+      from the set of denied permissions given by `denied_permissions`. If a
+      permission appears in `denied_permissions` _and_ in
+      `exception_permissions` then it will _not_ be denied. The excluded
+      permissions can be specified using the same syntax as
+      `denied_permissions`.
+    exceptionPrincipals: The identities that are excluded from the deny rule,
+      even if they are listed in the `denied_principals`. For example, you
+      could add a Google group to the `denied_principals`, then exclude
+      specific users who belong to that group. This field can contain the same
+      values as the `denied_principals` field, excluding
+      `principalSet://goog/public:all`, which represents all users on the
+      internet.
+  """
+
+  denialCondition = _messages.MessageField('GoogleTypeExpr', 1)
+  deniedPermissions = _messages.StringField(2, repeated=True)
+  deniedPrincipals = _messages.StringField(3, repeated=True)
+  exceptionPermissions = _messages.StringField(4, repeated=True)
+  exceptionPrincipals = _messages.StringField(5, repeated=True)
+
+
+class GoogleIamV2Policy(_messages.Message):
+  r"""Data for an IAM policy.
+
+  Messages:
+    AnnotationsValue: A key-value map to store arbitrary metadata for the
+      `Policy`. Keys can be up to 63 characters. Values can be up to 255
+      characters.
+
+  Fields:
+    annotations: A key-value map to store arbitrary metadata for the `Policy`.
+      Keys can be up to 63 characters. Values can be up to 255 characters.
+    createTime: Output only. The time when the `Policy` was created.
+    deleteTime: Output only. The time when the `Policy` was deleted. Empty if
+      the policy is not deleted.
+    displayName: A user-specified description of the `Policy`. This value can
+      be up to 63 characters.
+    etag: An opaque tag that identifies the current version of the `Policy`.
+      IAM uses this value to help manage concurrent updates, so they do not
+      cause one update to be overwritten by another. If this field is present
+      in a CreatePolicy request, the value is ignored.
+    kind: Output only. The kind of the `Policy`. Always contains the value
+      `DenyPolicy`.
+    managingAuthority: Immutable. Specifies that this policy is managed by an
+      authority and can only be modified by that authority. Usage is
+      restricted.
+    name: Immutable. The resource name of the `Policy`, which must be unique.
+      Format: `policies/{attachment_point}/denypolicies/{policy_id}` The
+      attachment point is identified by its URL-encoded full resource name,
+      which means that the forward-slash character, `/`, must be written as
+      `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-deny-policy`. For organizations and folders, use
+      the numeric ID in the full resource name. For projects, requests can use
+      the alphanumeric or the numeric ID. Responses always contain the numeric
+      ID.
+    rules: A list of rules that specify the behavior of the `Policy`. All of
+      the rules should be of the `kind` specified in the `Policy`.
+    uid: Immutable. The globally unique ID of the `Policy`. Assigned
+      automatically when the `Policy` is created.
+    updateTime: Output only. The time when the `Policy` was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A key-value map to store arbitrary metadata for the `Policy`. Keys can
+    be up to 63 characters. Values can be up to 255 characters.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  kind = _messages.StringField(6)
+  managingAuthority = _messages.StringField(7)
+  name = _messages.StringField(8)
+  rules = _messages.MessageField('GoogleIamV2PolicyRule', 9, repeated=True)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class GoogleIamV2PolicyRule(_messages.Message):
+  r"""A single rule in a `Policy`.
+
+  Fields:
+    accessBoundaryRule: A rule for an access boundary policy.
+    denyRule: A rule for a deny policy.
+    description: A user-specified description of the rule. This value can be
+      up to 256 characters.
+  """
+
+  accessBoundaryRule = _messages.MessageField('GoogleIamV2AccessBoundaryRule', 1)
+  denyRule = _messages.MessageField('GoogleIamV2DenyRule', 2)
+  description = _messages.StringField(3)
+
+
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class GoogleTypeExpr(_messages.Message):
@@ -1331,6 +2157,8 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+encoding.AddCustomJsonFieldMapping(
+    GoogleIamV1Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

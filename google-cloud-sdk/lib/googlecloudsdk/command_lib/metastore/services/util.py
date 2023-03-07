@@ -121,38 +121,30 @@ def _GenerateUpdateMask(args):
   hive_metastore_configs = 'hive_metastore_config.config_overrides'
   labels = 'labels'
   arg_name_to_field = {
-      '--port':
-          'port',
-      '--tier':
-          'tier',
-      '--update-hive-metastore-configs-from-file':
-          'hive_metastore_config.config_overrides',
-      '--clear-hive-metastore-configs':
-          hive_metastore_configs,
-      '--clear-labels':
-          labels,
-      '--kerberos-principal':
-          'hive_metastore_config.kerberos_config.principal',
-      '--keytab':
-          'hive_metastore_config.kerberos_config.keytab',
-      '--krb5-config':
-          'hive_metastore_config.kerberos_config.krb5_config_gcs_uri',
-      '--maintenance-window-day':
-          'maintenance_window',
-      '--maintenance-window-hour':
-          'maintenance_window',
-      '--data-catalog-sync':
-          'metadataIntegration.dataCatalogConfig.enabled',
-      '--no-data-catalog-sync':
-          'metadataIntegration.dataCatalogConfig.enabled',
-      '--endpoint-protocol':
-          'hive_metastore_config.endpoint_protocol',
-      '--add-auxiliary-versions':
-          'hive_metastore_config.auxiliary_versions',
-      '--update-auxiliary-versions-from-file':
-          'hive_metastore_config.auxiliary_versions',
-      '--clear-auxiliary-versions':
-          'hive_metastore_config.auxiliary_versions',
+      '--port': 'port',
+      '--tier': 'tier',
+      '--instance-size': 'scaling_config.instance_size',
+      '--scaling-factor': 'scaling_config.scaling_factor',
+      '--update-hive-metastore-configs-from-file': (
+          'hive_metastore_config.config_overrides'
+      ),
+      '--clear-hive-metastore-configs': hive_metastore_configs,
+      '--clear-labels': labels,
+      '--kerberos-principal': 'hive_metastore_config.kerberos_config.principal',
+      '--keytab': 'hive_metastore_config.kerberos_config.keytab',
+      '--krb5-config': (
+          'hive_metastore_config.kerberos_config.krb5_config_gcs_uri'
+      ),
+      '--maintenance-window-day': 'maintenance_window',
+      '--maintenance-window-hour': 'maintenance_window',
+      '--data-catalog-sync': 'metadataIntegration.dataCatalogConfig.enabled',
+      '--no-data-catalog-sync': 'metadataIntegration.dataCatalogConfig.enabled',
+      '--endpoint-protocol': 'hive_metastore_config.endpoint_protocol',
+      '--add-auxiliary-versions': 'hive_metastore_config.auxiliary_versions',
+      '--update-auxiliary-versions-from-file': (
+          'hive_metastore_config.auxiliary_versions'
+      ),
+      '--clear-auxiliary-versions': 'hive_metastore_config.auxiliary_versions',
   }
 
   update_mask = set()

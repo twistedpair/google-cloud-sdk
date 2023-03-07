@@ -3361,7 +3361,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}`",
+          "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}` or `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/rbacrolebindings\/{rbacrolebinding}`",
           "type": "string"
         },
         "uid": {
@@ -3436,13 +3436,15 @@
             "UNKNOWN",
             "ADMIN has EDIT and RBAC permissions",
             "EDIT can edit all resources except RBAC",
-            "VIEW can only read resources"
+            "VIEW can only read resources",
+            "ANTHOS_SUPPORT gives Google Support read-only access to a number of cluster resources."
           ],
           "enum": [
             "UNKNOWN",
             "ADMIN",
             "EDIT",
-            "VIEW"
+            "VIEW",
+            "ANTHOS_SUPPORT"
           ]
         }
       }
@@ -5334,7 +5336,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}`",
+                          "description": "The resource name for the rbacrolebinding `projects\/{project}\/locations\/{location}\/namespaces\/{namespace}\/rbacrolebindings\/{rbacrolebinding}` or `projects\/{project}\/locations\/{location}\/memberships\/{membership}\/rbacrolebindings\/{rbacrolebinding}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/rbacrolebindings\/[^\/]+$",
                           "location": "path",
                           "required": true,

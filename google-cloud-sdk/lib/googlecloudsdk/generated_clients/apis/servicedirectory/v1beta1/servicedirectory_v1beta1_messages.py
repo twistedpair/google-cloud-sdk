@@ -1710,62 +1710,6 @@ class ServicedirectoryProjectsLocationsNamespacesPatchRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsCreateRequest(_messages.Message):
-  r"""A
-  ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The resource name of the namespace this service workload
-      will belong to.
-    serviceWorkload: A ServiceWorkload resource to be passed as the request
-      body.
-    serviceWorkloadId: Required. The Resource ID must be 1-63 characters long,
-      and comply with [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  serviceWorkload = _messages.MessageField('ServiceWorkload', 2)
-  serviceWorkloadId = _messages.StringField(3)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest(_messages.Message):
-  r"""A
-  ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsDeleteRequest
-  object.
-
-  Enums:
-    ManagerTypeValueValuesEnum: Stores extra information about what Google
-      resource is directly responsible for a given Service Workload resource.
-
-  Fields:
-    managerType: Stores extra information about what Google resource is
-      directly responsible for a given Service Workload resource.
-    name: Required. The name of the service workload to delete.
-  """
-
-  class ManagerTypeValueValuesEnum(_messages.Enum):
-    r"""Stores extra information about what Google resource is directly
-    responsible for a given Service Workload resource.
-
-    Values:
-      TYPE_UNSPECIFIED: Default. Should not be used.
-      GKE_HUB: Resource managed by GKE Hub.
-      BACKEND_SERVICE: Resource managed by Arcus, Backend Service
-    """
-    TYPE_UNSPECIFIED = 0
-    GKE_HUB = 1
-    BACKEND_SERVICE = 2
-
-  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolic
   yRequest object.
@@ -1781,17 +1725,6 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyReq
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the service workload to get.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest(_messages.Message):
@@ -1838,30 +1771,6 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest(_me
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest(_messages.Message):
-  r"""A
-  ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsPatchRequest
-  object.
-
-  Fields:
-    allowMissing: If set to true, and the service workload is not found, a new
-      service workload will be created. -- Will remain GOOGLE_INTERNAL
-      visibility post-launch.
-    name: Immutable. The resource name for the service workload in the format
-      `projects/*/locations/*/namespaces/*/serviceWorkloads/*`.
-    serviceWorkload: A ServiceWorkload resource to be passed as the request
-      body.
-    updateMask: Required. List of fields to be updated in this request.
-      Allowable fields: `display_name`, `annotations`. -- Internal
-      integrations may update other service_workload fields
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  serviceWorkload = _messages.MessageField('ServiceWorkload', 3)
-  updateMask = _messages.StringField(4)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest(_messages.Message):

@@ -436,17 +436,24 @@
       "type": "object",
       "properties": {
         "dimensions": {
-          "description": "The dimension columns. How many dimensions to choose and how they're configured will depend on the chart type.",
+          "description": "The dimension columns. How many dimensions to choose and how they're configured will depend on the chart type. A dimension is the labels for the data; e.g., the X axis for a line graph or the segment labels for a pie chart.",
           "type": "array",
           "items": {
             "$ref": "Dimension"
           }
         },
-        "dataSeries": {
-          "description": "The requested data series for the chart.",
+        "measures": {
+          "description": "The measures to be displayed within the chart. A measure is a data set to be displayed; e.g., a line on a line graph, a set of bars on a bar graph, or the segment widths on a pie chart.",
           "type": "array",
           "items": {
-            "$ref": "DataSeries"
+            "$ref": "Measure"
+          }
+        },
+        "breakdowns": {
+          "description": "The breakdowns for the measures of the chart. A breakdown turns a single measure into multiple effective measures, each one associated with a single value from the breakdown column.",
+          "type": "array",
+          "items": {
+            "$ref": "Breakdown"
           }
         }
       }
@@ -497,27 +504,6 @@
         }
       }
     },
-    "DataSeries": {
-      "id": "DataSeries",
-      "description": "A definition for a data series within the output. A data series is defined as a set of measures and breakdowns for those measures (see Measure and Breakdown above for descriptions of how those interact). The exact rendering of a data series will depend on the chart type chosen.",
-      "type": "object",
-      "properties": {
-        "measures": {
-          "description": "The measures within the data series.",
-          "type": "array",
-          "items": {
-            "$ref": "Measure"
-          }
-        },
-        "breakdowns": {
-          "description": "The breakdowns within the data series.",
-          "type": "array",
-          "items": {
-            "$ref": "Breakdown"
-          }
-        }
-      }
-    },
     "Measure": {
       "id": "Measure",
       "description": "A definition for a single measure column in the output table. Multiple measure columns will produce multiple curves, stacked bars, etc. depending on chart type.",
@@ -528,7 +514,7 @@
           "type": "string"
         },
         "aggregation": {
-          "description": "The aggregation to apply to the input column. May not be set to \"none\" unless binning is disabled in the dimension.",
+          "description": "The aggregation to apply to the input column. May not be set to \"none\" unless binning is disabled and this column is not set as the sort column in the dimension.",
           "$ref": "ChartingAggregation"
         }
       }

@@ -1300,6 +1300,13 @@
         }
       }
     },
+    "ResetQueuedResourceRequest": {
+      "id": "ResetQueuedResourceRequest",
+      "description": "Request for ResetQueuedResource.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GenerateServiceIdentityRequest": {
       "id": "GenerateServiceIdentityRequest",
       "description": "Request for GenerateServiceIdentity.",
@@ -2179,6 +2186,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a QueuedResource TPU instance."
+                },
+                "reset": {
+                  "id": "tpu.projects.locations.queuedResources.reset",
+                  "path": "v2alpha1/{+name}:reset",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}:reset",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the queued resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queuedResources\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ResetQueuedResourceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Resets a QueuedResource TPU instance"
                 }
               }
             },

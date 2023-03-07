@@ -225,14 +225,14 @@ class BareMetalAdminControlPlaneConfig(_messages.Message):
       documentation below to know the exact format:
       https://kubernetes.io/docs/reference/command-line-tools-reference/kube-
       apiserver/
-    nodePoolConfig: Configures the node pool running the control plane. If
-      specified the corresponding NodePool will be created for the cluster's
-      control plane. The NodePool will have the same name and namespace as the
-      cluster.
+    controlPlaneNodePoolConfig: Configures the node pool running the control
+      plane. If specified the corresponding NodePool will be created for the
+      cluster's control plane. The NodePool will have the same name and
+      namespace as the cluster.
   """
 
   apiServerArgs = _messages.MessageField('BareMetalAdminApiServerArgument', 1, repeated=True)
-  nodePoolConfig = _messages.MessageField('BareMetalAdminControlPlaneNodePoolConfig', 2)
+  controlPlaneNodePoolConfig = _messages.MessageField('BareMetalAdminControlPlaneNodePoolConfig', 2)
 
 
 class BareMetalAdminControlPlaneNodePoolConfig(_messages.Message):
@@ -670,12 +670,12 @@ class BareMetalControlPlaneConfig(_messages.Message):
       customized flags are supported. For the exact format, refer to the [API
       server documentation](https://kubernetes.io/docs/reference/command-line-
       tools-reference/kube-apiserver/).
-    nodePoolConfig: Required. Configures the node pool running the control
-      plane.
+    controlPlaneNodePoolConfig: Required. Configures the node pool running the
+      control plane.
   """
 
   apiServerArgs = _messages.MessageField('BareMetalApiServerArgument', 1, repeated=True)
-  nodePoolConfig = _messages.MessageField('BareMetalControlPlaneNodePoolConfig', 2)
+  controlPlaneNodePoolConfig = _messages.MessageField('BareMetalControlPlaneNodePoolConfig', 2)
 
 
 class BareMetalControlPlaneNodePoolConfig(_messages.Message):
@@ -725,6 +725,127 @@ class BareMetalIslandModeCidrConfig(_messages.Message):
 
   podAddressCidrBlocks = _messages.StringField(1, repeated=True)
   serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
+
+
+class BareMetalKubeletConfig(_messages.Message):
+  r"""KubeletConfig defines the modifiable kubelet configurations for
+  baremetal machines. Note: this list includes fields supported in GKE (see
+  https://cloud.google.com/kubernetes-engine/docs/how-to/node-system-
+  config#kubelet-options).
+
+  Enums:
+    CpuManagerPolicyValueValuesEnum: The kubelet CPU manager policy. Requires
+      the CPUManager feature gate to be enabled. This field should not be
+      updated without a full node reboot. It is safest to keep this value the
+      same as the local /var/lib/kubelet/cpu_manager_state value. See
+      https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+      policies/#configuration.
+
+  Messages:
+    FeatureGatesValue: A map of feature names to bools that enable or disable
+      experimental features. This field modifies the built-in default values
+      from "k8s.io/kubernetes/pkg/features/kube_features.go". Consider the
+      documentation for the features you are enabling or disabling. While we
+      encourage feature developers to make it possible to enable and disable
+      features, some changes may require node reboots, and some features may
+      require careful coordination to retroactively disable.
+
+  Fields:
+    cpuCfsQuotaDisabled: Disables CPU Completely Fair Scheduler (CFS) quota
+      enforcement for containers that specify CPU limits. Disabling this field
+      may reduce node stability.
+    cpuCfsQuotaPeriod: The CPU Completely Fair Scheduler (CFS) quota period
+      value. The value must be between 1 ms and 1 second, inclusive. Requires
+      the CustomCPUCFSQuotaPeriod feature gate to be enabled. When updating
+      this field, consider that limits set for containers will result in
+      different cpu.cfs_quota settings. This will trigger container restarts
+      on the node being reconfigured. Defaults to "100ms".
+    cpuManagerPolicy: The kubelet CPU manager policy. Requires the CPUManager
+      feature gate to be enabled. This field should not be updated without a
+      full node reboot. It is safest to keep this value the same as the local
+      /var/lib/kubelet/cpu_manager_state value. See
+      https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+      policies/#configuration.
+    featureGates: A map of feature names to bools that enable or disable
+      experimental features. This field modifies the built-in default values
+      from "k8s.io/kubernetes/pkg/features/kube_features.go". Consider the
+      documentation for the features you are enabling or disabling. While we
+      encourage feature developers to make it possible to enable and disable
+      features, some changes may require node reboots, and some features may
+      require careful coordination to retroactively disable.
+    podPidsLimit: The maximum number of PIDs in any pod. Lowering this may
+      prevent container processes from forking after the change. Defaults to
+      -1.
+    registryBurst: The maximum size of bursty pulls, temporarily allows pulls
+      to burst to this number, while still not exceeding registry_pull_qps.
+      The value must not be a negative number. Updating this field may impact
+      scalability by changing the amount of traffic produced by image pulls.
+      Defaults to 10.
+    registryPullQps: The limit of registry pulls per second. Setting this
+      value to 0 means no limit. Updating this field may impact scalability by
+      changing the amount of traffic produced by image pulls. Defaults to 5.
+    serializeImagePullsDisabled: Prevents the Kubelet from pulling multiple
+      images at a time. We recommend *not* changing the default value on nodes
+      that run docker daemon with version < 1.9 or an Another Union File
+      System (Aufs) storage backend. Issue
+      https://github.com/kubernetes/kubernetes/issues/10959 has more details.
+  """
+
+  class CpuManagerPolicyValueValuesEnum(_messages.Enum):
+    r"""The kubelet CPU manager policy. Requires the CPUManager feature gate
+    to be enabled. This field should not be updated without a full node
+    reboot. It is safest to keep this value the same as the local
+    /var/lib/kubelet/cpu_manager_state value. See
+    https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
+    policies/#configuration.
+
+    Values:
+      NONE: No cpu manager policy specified. The default policy.
+      STATIC: Allows pods with certain resource characteristics to be granted
+        increased CPU affinity and exclusivity on the node.
+    """
+    NONE = 0
+    STATIC = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FeatureGatesValue(_messages.Message):
+    r"""A map of feature names to bools that enable or disable experimental
+    features. This field modifies the built-in default values from
+    "k8s.io/kubernetes/pkg/features/kube_features.go". Consider the
+    documentation for the features you are enabling or disabling. While we
+    encourage feature developers to make it possible to enable and disable
+    features, some changes may require node reboots, and some features may
+    require careful coordination to retroactively disable.
+
+    Messages:
+      AdditionalProperty: An additional property for a FeatureGatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FeatureGatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FeatureGatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A boolean attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BooleanField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  cpuCfsQuotaDisabled = _messages.BooleanField(1)
+  cpuCfsQuotaPeriod = _messages.StringField(2)
+  cpuManagerPolicy = _messages.EnumField('CpuManagerPolicyValueValuesEnum', 3)
+  featureGates = _messages.MessageField('FeatureGatesValue', 4)
+  podPidsLimit = _messages.IntegerField(5)
+  registryBurst = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  registryPullQps = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  serializeImagePullsDisabled = _messages.BooleanField(8)
 
 
 class BareMetalLoadBalancerAddressPool(_messages.Message):
@@ -857,13 +978,24 @@ class BareMetalMetalLbConfig(_messages.Message):
     addressPools: Required. AddressPools is a list of non-overlapping IP pools
       used by load balancer typed services. All addresses must be routable to
       load balancer nodes. IngressVIP must be included in the pools.
-    nodePoolConfig: Specifies the node pool running the load balancer. L2
-      connectivity is required among nodes in this pool. If missing, the
-      control plane node pool is used as the load balancer pool.
+    loadBalancerNodePoolConfig: Specifies the node pool running the load
+      balancer. L2 connectivity is required among nodes in this pool. If
+      missing, the control plane node pool is used as the load balancer pool.
   """
 
   addressPools = _messages.MessageField('BareMetalLoadBalancerAddressPool', 1, repeated=True)
-  nodePoolConfig = _messages.MessageField('BareMetalLoadBalancerNodePoolConfig', 2)
+  loadBalancerNodePoolConfig = _messages.MessageField('BareMetalLoadBalancerNodePoolConfig', 2)
+
+
+class BareMetalMultipleNetworkInterfacesConfig(_messages.Message):
+  r"""Specifies the multiple networking interfaces cluster configuration.
+
+  Fields:
+    enabled: Whether to enable multiple network interfaces for your pods. When
+      set network_config.advanced_networking is automatically set to true.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class BareMetalNetworkConfig(_messages.Message):
@@ -880,10 +1012,15 @@ class BareMetalNetworkConfig(_messages.Message):
       one cluster never directly communicate with pods in another cluster.
       Instead, there are gateways that mediate between a pod in one cluster
       and a pod in another cluster.
+    multipleNetworkInterfacesConfig: Configuration for multiple network
+      interfaces.
+    srIovConfig: Configuration for SR-IOV.
   """
 
   advancedNetworking = _messages.BooleanField(1)
   islandModeCidr = _messages.MessageField('BareMetalIslandModeCidrConfig', 2)
+  multipleNetworkInterfacesConfig = _messages.MessageField('BareMetalMultipleNetworkInterfacesConfig', 3)
+  srIovConfig = _messages.MessageField('BareMetalSrIovConfig', 4)
 
 
 class BareMetalNodeAccessConfig(_messages.Message):
@@ -1084,6 +1221,8 @@ class BareMetalNodePoolConfig(_messages.Message):
       "mass": "1.3kg", "count": "3" }.
 
   Fields:
+    kubeletConfig: The modifiable kubelet configurations for the baremetal
+      machines.
     labels: The labels assigned to nodes of this node pool. An object
       containing a list of key/value pairs. Example: { "name": "wrench",
       "mass": "1.3kg", "count": "3" }.
@@ -1129,10 +1268,11 @@ class BareMetalNodePoolConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  nodeConfigs = _messages.MessageField('BareMetalNodeConfig', 2, repeated=True)
-  operatingSystem = _messages.EnumField('OperatingSystemValueValuesEnum', 3)
-  taints = _messages.MessageField('NodeTaint', 4, repeated=True)
+  kubeletConfig = _messages.MessageField('BareMetalKubeletConfig', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  nodeConfigs = _messages.MessageField('BareMetalNodeConfig', 3, repeated=True)
+  operatingSystem = _messages.EnumField('OperatingSystemValueValuesEnum', 4)
+  taints = _messages.MessageField('NodeTaint', 5, repeated=True)
 
 
 class BareMetalOsEnvironmentConfig(_messages.Message):
@@ -1181,6 +1321,16 @@ class BareMetalSecurityConfig(_messages.Message):
   """
 
   authorization = _messages.MessageField('Authorization', 1)
+
+
+class BareMetalSrIovConfig(_messages.Message):
+  r"""Specifies the SR-IOV networking operator config.
+
+  Fields:
+    enabled: Whether to install the SR-IOV operator.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class BareMetalStorageConfig(_messages.Message):
@@ -1435,6 +1585,7 @@ class EnrollVmwareClusterRequest(_messages.Message):
       Otherwise, it must match the object name of the VMware OnPremUserCluster
       custom resource. It is not modifiable outside / beyond the enrollment
       operation.
+    validateOnly: Validate the request without actually doing any updates.
     vmwareClusterId: User provided OnePlatform identifier that is used as part
       of the resource name. This must be unique among all GKE on-prem clusters
       within a project and location and will return a 409 if the cluster
@@ -1444,7 +1595,18 @@ class EnrollVmwareClusterRequest(_messages.Message):
 
   adminClusterMembership = _messages.StringField(1)
   localName = _messages.StringField(2)
-  vmwareClusterId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(3)
+  vmwareClusterId = _messages.StringField(4)
+
+
+class EnrollVmwareNodePoolRequest(_messages.Message):
+  r"""Message for enrolling a VMware node pool.
+
+  Fields:
+    vmwareNodepoolId: The target node pool id to be enrolled.
+  """
+
+  vmwareNodepoolId = _messages.StringField(1)
 
 
 class Expr(_messages.Message):
@@ -1768,10 +1930,13 @@ class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest
     etag: The current etag of the BareMetalNodePool. If an etag is provided
       and does not match the current etag of the node pool, deletion will be
       blocked and an ABORTED error will be returned.
-    ignoreErrors: If set to true, the deletion of BareMetalNodePool resource
-      will succeed even if errors occur during deletion in admin cluster
-      resource. Using this parameter may result in orphaned node pool in the
-      admin cluster.
+    ignoreErrors: If set to true, the deletion of a [BareMetalNodePool]
+      resource will succeed even if errors occur during deletion. This
+      parameter can be used when you want to delete GCP's node pool resource
+      and you've already deleted the on-prem admin cluster that hosted your
+      node pool. WARNING: Using this parameter when your user cluster still
+      exists may result in a deleted GCP node pool but an existing on-prem
+      node pool.
     name: Required. The name of the node pool to delete. Format: projects/{pro
       ject}/locations/{location}/bareMetalClusters/{cluster}/bareMetalNodePool
       s/{nodepool}
@@ -1844,7 +2009,7 @@ class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest(_
     parent: Required. The parent, which owns this collection of node pools.
       Format: projects/{project}/locations/{location}/bareMetalClusters/{bareM
       etalCluster}
-    showDeleted: If true, shows deleted bare metal Clusters.
+    showDeleted: If true, shows deleted bare metal node pools.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1978,10 +2143,13 @@ class GkeonpremProjectsLocationsBareMetalClustersDeleteRequest(_messages.Message
       blocked and an ABORTED error will be returned.
     force: If set to true, any node pools from the cluster will also be
       deleted.
-    ignoreErrors: If set to true, the deletion of BareMetalUserCluster
-      resource will succeed even if errors occur during deletion in admin
-      cluster resource. Using this parameter may result in orphaned user
-      cluster in the admin cluster.
+    ignoreErrors: If set to true, the deletion of a [BareMetalUserCluster]
+      resource will succeed even if errors occur during deletion. This
+      parameter can be used when you want to delete GCP's cluster resource and
+      the on-prem admin cluster that hosts your user cluster is disconnected /
+      unreachable or deleted. WARNING: Using this parameter when your user
+      cluster still exists may result in a deleted GCP user cluster but an
+      existing on-prem user cluster.
     name: Required. Name of the bare metal user cluster to be deleted. Format:
       "projects/{project}/locations/{location}/bareMetalClusters/{bare_metal_c
       luster}"
@@ -2505,10 +2673,13 @@ class GkeonpremProjectsLocationsVmwareClustersDeleteRequest(_messages.Message):
       and an ABORTED error will be returned.
     force: If set to true, any node pools from the cluster will also be
       deleted.
-    ignoreErrors: If set to true, the deletion of VmwareUserCluster resource
-      will succeed even if errors occur during deletion in admin cluster
-      resource. Using this parameter may result in orphaned user cluster in
-      the admin cluster.
+    ignoreErrors: If set to true, the deletion of a [VmwareUserCluster]
+      resource will succeed even if errors occur during deletion. This
+      parameter can be used when you want to delete GCP's cluster resource and
+      the on-prem admin cluster that hosts your user cluster is disconnected /
+      unreachable or deleted. WARNING: Using this parameter when your user
+      cluster still exists may result in a deleted GCP user cluster but an
+      existing on-prem user cluster.
     name: Required. Name of the VMware user cluster to be deleted. Format:
       "projects/{project}/locations/{location}/vmwareClusters/{vmware_cluster}
       "
@@ -2772,10 +2943,12 @@ class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(_mess
     etag: The current etag of the VmwareNodePool. If an etag is provided and
       does not match the current etag of the node pool, deletion will be
       blocked and an ABORTED error will be returned.
-    ignoreErrors: If set to true, the deletion of VmwareNodePool resource will
-      succeed even if errors occur during deletion in admin cluster resource.
-      Using this parameter may result in orphaned node pool in the admin
-      cluster.
+    ignoreErrors: If set to true, the deletion of a [VmwareNodePool] resource
+      will succeed even if errors occur during deletion. This parameter can be
+      used when you want to delete GCP's node pool resource and you've already
+      deleted the on-prem admin cluster that hosted your node pool. WARNING:
+      Using this parameter when your user cluster still exists may result in a
+      deleted GCP node pool but an existing on-prem node pool.
     name: Required. The name of the node pool to delete. Format: projects/{pro
       ject}/locations/{location}/vmwareClusters/{cluster}/vmwareNodePools/{nod
       epool}
@@ -2788,6 +2961,20 @@ class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(_mess
   ignoreErrors = _messages.BooleanField(3)
   name = _messages.StringField(4, required=True)
   validateOnly = _messages.BooleanField(5)
+
+
+class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest
+  object.
+
+  Fields:
+    enrollVmwareNodePoolRequest: A EnrollVmwareNodePoolRequest resource to be
+      passed as the request body.
+    parent: Required. The parent resource where the node pool is enrolled in.
+  """
+
+  enrollVmwareNodePoolRequest = _messages.MessageField('EnrollVmwareNodePoolRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetIamPolicyRequest(_messages.Message):
@@ -2947,6 +3134,30 @@ class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsTestIamPermissionsR
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsUnenrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsUnenrollRequest
+  object.
+
+  Fields:
+    allowMissing: If set to true, and the Vmware Node Pool is not found, the
+      request will succeed but no action will be taken on the server and
+      return a completed LRO.
+    etag: The current etag of the VMware Node Pool. If an etag is provided and
+      does not match the current etag of node pool, deletion will be blocked
+      and an ABORTED error will be returned.
+    name: Required. The name of the node pool to unenroll. Format: projects/{p
+      roject}/locations/{location}/vmwareClusters/{cluster}/vmwareNodePools/{n
+      odepool}
+    validateOnly: If set, only validate the request, but do not actually
+      unenroll the node pool.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
 
 
 class ListBareMetalAdminClustersResponse(_messages.Message):
@@ -3304,20 +3515,40 @@ class Operation(_messages.Message):
 class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Enums:
+    TypeValueValuesEnum: Output only. Type of operation being executed.
+
   Fields:
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      successfully been cancelled have [Operation.error] value with a
+      [google.rpc.Status.code] of 1, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
       operation.
+    type: Output only. Type of operation being executed.
     verb: Output only. Name of the verb executed by the operation.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of operation being executed.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Not set.
+      CREATE: The resource is being created.
+      DELETE: The resource is being deleted.
+      UPDATE: The resource is being updated.
+      UPGRADE: The resource is being upgraded.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    DELETE = 2
+    UPDATE = 3
+    UPGRADE = 4
 
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -3325,7 +3556,8 @@ class OperationMetadata(_messages.Message):
   requestedCancellation = _messages.BooleanField(4)
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  verb = _messages.StringField(8)
 
 
 class Policy(_messages.Message):
@@ -4305,6 +4537,18 @@ class VmwareControlPlaneNodeConfig(_messages.Message):
   vsphereConfig = _messages.MessageField('VmwareControlPlaneVsphereConfig', 5)
 
 
+class VmwareControlPlaneV2Config(_messages.Message):
+  r"""Specifies control plane V2 config.
+
+  Fields:
+    controlPlaneIpBlock: Static IP addresses for the control plane nodes.
+    enableControlPlaneV2: Enable control plane V2. Default to false.
+  """
+
+  controlPlaneIpBlock = _messages.MessageField('VmwareIpBlock', 1)
+  enableControlPlaneV2 = _messages.BooleanField(2)
+
+
 class VmwareControlPlaneVsphereConfig(_messages.Message):
   r"""Specifies control plane node config.
 
@@ -4458,6 +4702,7 @@ class VmwareNetworkConfig(_messages.Message):
   r"""Specifies network config for the VMware user cluster.
 
   Fields:
+    controlPlaneV2Config: Configuration for control plane V2 mode.
     dhcpIpConfig: Configuration settings for a DHCP IP configuration.
     hostConfig: Represents common network settings irrespective of the host's
       IP address.
@@ -4472,12 +4717,13 @@ class VmwareNetworkConfig(_messages.Message):
       name. Inherited from the admin cluster.
   """
 
-  dhcpIpConfig = _messages.MessageField('VmwareDhcpIpConfig', 1)
-  hostConfig = _messages.MessageField('VmwareHostConfig', 2)
-  podAddressCidrBlocks = _messages.StringField(3, repeated=True)
-  serviceAddressCidrBlocks = _messages.StringField(4, repeated=True)
-  staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 5)
-  vcenterNetwork = _messages.StringField(6)
+  controlPlaneV2Config = _messages.MessageField('VmwareControlPlaneV2Config', 1)
+  dhcpIpConfig = _messages.MessageField('VmwareDhcpIpConfig', 2)
+  hostConfig = _messages.MessageField('VmwareHostConfig', 3)
+  podAddressCidrBlocks = _messages.StringField(4, repeated=True)
+  serviceAddressCidrBlocks = _messages.StringField(5, repeated=True)
+  staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 6)
+  vcenterNetwork = _messages.StringField(7)
 
 
 class VmwareNodeConfig(_messages.Message):
@@ -4594,6 +4840,8 @@ class VmwareNodePool(_messages.Message):
       control.
     name: Immutable. The resource name of this node pool.
     nodePoolAutoscaling: Node Pool autoscaling config for the Nodepool.
+    onPremVersion: Output only. Anthos version for the node pool. Defaults to
+      the user cluster version.
     reconciling: Output only. If set, there are currently changes in flight to
       the node pool.
     state: Output only. The current state of the node pool.
@@ -4668,11 +4916,12 @@ class VmwareNodePool(_messages.Message):
   etag = _messages.StringField(6)
   name = _messages.StringField(7)
   nodePoolAutoscaling = _messages.MessageField('VmwareNodePoolAutoscalingConfig', 8)
-  reconciling = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  status = _messages.MessageField('ResourceStatus', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  onPremVersion = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  status = _messages.MessageField('ResourceStatus', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class VmwareNodePoolAutoscalingConfig(_messages.Message):

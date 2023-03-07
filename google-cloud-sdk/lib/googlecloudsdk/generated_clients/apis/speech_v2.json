@@ -1401,6 +1401,74 @@
         }
       }
     },
+    "LocationsMetadata": {
+      "id": "LocationsMetadata",
+      "description": "Main metadata for the Locations API for STT V2. Currently this is just the metadata about locales, models, and features",
+      "type": "object",
+      "properties": {
+        "languages": {
+          "description": "Information about available locales, models, and features represented in the hierarchical structure of locales -> models -> features",
+          "$ref": "LanguageMetadata"
+        }
+      }
+    },
+    "LanguageMetadata": {
+      "id": "LanguageMetadata",
+      "description": "The metadata about locales available in a given region. Currently this is just the models that are available for each locale",
+      "type": "object",
+      "properties": {
+        "models": {
+          "description": "Map of locale (language code) -> models",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ModelMetadata"
+          }
+        }
+      }
+    },
+    "ModelMetadata": {
+      "id": "ModelMetadata",
+      "description": "The metadata about the models in a given region for a specific locale. Currently this is just the features of the model",
+      "type": "object",
+      "properties": {
+        "modelFeatures": {
+          "description": "Map of the model name -> features of that model",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ModelFeatures"
+          }
+        }
+      }
+    },
+    "ModelFeatures": {
+      "id": "ModelFeatures",
+      "description": "Represents the collection of features belonging to a model",
+      "type": "object",
+      "properties": {
+        "modelFeature": {
+          "description": "Repeated field that contains all features of the model",
+          "type": "array",
+          "items": {
+            "$ref": "ModelFeature"
+          }
+        }
+      }
+    },
+    "ModelFeature": {
+      "id": "ModelFeature",
+      "description": "Representes a singular feature of a model. If the feature is `recognizer`, the release_state of the feature represents the release_state of the model",
+      "type": "object",
+      "properties": {
+        "feature": {
+          "description": "The name of the feature (Note: the feature can be `recognizer`)",
+          "type": "string"
+        },
+        "releaseState": {
+          "description": "The release state of the feature",
+          "type": "string"
+        }
+      }
+    },
     "StreamingRecognitionResult": {
       "id": "StreamingRecognitionResult",
       "description": "A streaming speech recognition result corresponding to a portion of the audio that is currently being processed.",

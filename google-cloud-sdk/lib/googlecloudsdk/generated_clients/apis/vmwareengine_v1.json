@@ -1157,6 +1157,29 @@
             "type": "integer",
             "format": "int32"
           }
+        },
+        "kind": {
+          "description": "Output only. The type of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "Standard HCI node.",
+            "Storage only Node."
+          ],
+          "enum": [
+            "KIND_UNSPECIFIED",
+            "STANDARD",
+            "STORAGE_ONLY"
+          ]
+        },
+        "families": {
+          "description": "Output only. Families of the node type. For node types to be in the same cluster they must share at least one element in the `families`.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

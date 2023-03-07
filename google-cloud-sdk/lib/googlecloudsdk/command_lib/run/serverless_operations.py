@@ -98,8 +98,9 @@ def Connect(conn_context):
   # connection context so that it does not pick up the api_endpoint_overrides
   # values from the connection context.
   # pylint: disable=protected-access
-  op_client = apis.GetClientInstance(conn_context.api_name,
-                                     conn_context.api_version)
+  op_client = apis.GetClientInstance(
+      conn_context.api_name, conn_context.api_version
+  )
   # pylint: enable=protected-access
 
   with conn_context as conn_info:
@@ -109,12 +110,18 @@ def Connect(conn_context):
         conn_info.api_version,
         # Only check response if not connecting to GKE
         check_response_func=apis.CheckResponseForApiEnablement()
-        if conn_context.supports_one_platform else None,
-        http_client=conn_context.HttpClient())
+        if conn_context.supports_one_platform
+        else None,
+        http_client=conn_context.HttpClient(),
+    )
     # pylint: enable=protected-access
-    yield ServerlessOperations(client, conn_info.api_name,
-                               conn_info.api_version, conn_info.region,
-                               op_client)
+    yield ServerlessOperations(
+        client,
+        conn_info.api_name,
+        conn_info.api_version,
+        conn_info.region,
+        op_client,
+    )
 
 
 class DomainMappingResourceRecordPoller(waiter.OperationPoller):
@@ -147,11 +154,9 @@ class ConditionPoller(waiter.OperationPoller):
   Takes in a reference to a StagedProgressTracker, and updates it with progress.
   """
 
-  def __init__(self,
-               resource_getter,
-               tracker,
-               dependencies=None,
-               ready_message='Done.'):
+  def __init__(
+      self, resource_getter, tracker, dependencies=None, ready_message='Done.'
+  ):
     """Initialize the ConditionPoller.
 
     Start any unblocked stages in the tracker immediately.
@@ -182,7 +187,8 @@ class ConditionPoller(waiter.OperationPoller):
         # Add dependencies, only if they're still not complete. If a stage isn't
         # in the tracker. consider it "already complete".
         self._dependencies[k] = {
-            c for c in dependencies[k]
+            c
+            for c in dependencies[k]
             if c in tracker and not tracker.IsComplete(c)
         }
     self._resource_getter = resource_getter
@@ -341,8 +347,9 @@ class ConditionPoller(waiter.OperationPoller):
     if condition not in self._tracker or self._tracker.IsComplete(condition):
       return
 
-    self._tracker.FailStage(condition, self._resource_fail_type(message),
-                            message)
+    self._tracker.FailStage(
+        condition, self._resource_fail_type(message), message
+    )
 
   def GetResult(self, conditions):
     """Overrides.
@@ -374,8 +381,7 @@ class ServiceConditionPoller(ConditionPoller):
   """A ConditionPoller for services."""
 
   def __init__(self, getter, tracker, dependencies=None, serv=None):
-    super(ServiceConditionPoller, self).__init__(getter, tracker,
-                                                 dependencies)
+    super(ServiceConditionPoller, self).__init__(getter, tracker, dependencies)
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
 
 
@@ -435,22 +441,26 @@ class ExecutionConditionPoller(ConditionPoller):
   """A ConditionPoller for jobs."""
 
   def __init__(self, getter, tracker, terminal_condition, dependencies=None):
-    super(ExecutionConditionPoller, self).__init__(getter, tracker,
-                                                   dependencies)
+    super(ExecutionConditionPoller, self).__init__(
+        getter, tracker, dependencies
+    )
     self._resource_fail_type = serverless_exceptions.ExecutionFailedError
     self._terminal_condition = terminal_condition
 
   def _PotentiallyUpdateInstanceCompletions(self, job_obj, conditions):
     """Maybe update the terminal condition stage message with number of completions."""
     terminal_condition = conditions.TerminalCondition()
-    if (terminal_condition not in self._tracker or
-        self._IsBlocked(terminal_condition)):
+    if terminal_condition not in self._tracker or self._IsBlocked(
+        terminal_condition
+    ):
       return
 
     self._tracker.UpdateStage(
         terminal_condition,
-        '{} / {} complete'.format(job_obj.status.succeededCount or 0,
-                                  job_obj.task_count))
+        '{} / {} complete'.format(
+            job_obj.status.succeededCount or 0, job_obj.task_count
+        ),
+    )
 
   def GetConditions(self):
     """Returns the resource conditions wrapped in condition.Conditions.
@@ -490,9 +500,11 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
 
     # Mutates through to metadata: Save the by-tag user intent.
     resource.annotations[container_resource.USER_IMAGE_ANNOTATION] = (
-        self._base_revision.image)
+        self._base_revision.image
+    )
     resource.template.annotations[container_resource.USER_IMAGE_ANNOTATION] = (
-        self._base_revision.image)
+        self._base_revision.image
+    )
     resource.template.image = self._base_revision.image_digest
     return resource
 
@@ -571,13 +583,17 @@ class ServerlessOperations(object):
         params={
             'namespacesId': service_ref.namespacesId,
         },
-        collection='run.namespaces.routes').RelativeName()
-    route_get_request = messages.RunNamespacesRoutesGetRequest(name=route_name,)
+        collection='run.namespaces.routes',
+    ).RelativeName()
+    route_get_request = messages.RunNamespacesRoutesGetRequest(
+        name=route_name,
+    )
 
     try:
       with metrics.RecordDuration(metric_names.GET_ROUTE):
         route_get_response = self._client.namespaces_routes.Get(
-            route_get_request)
+            route_get_request
+        )
       return route.Route(route_get_response, messages)
     except api_exceptions.HttpNotFoundError:
       return None
@@ -601,7 +617,8 @@ class ServerlessOperations(object):
       if max_wait_ms == 0:
         return waiter.PollUntilDone(poller, None, wait_ceiling_ms=1000)
       return waiter.PollUntilDone(
-          poller, None, max_wait_ms=max_wait_ms, wait_ceiling_ms=1000)
+          poller, None, max_wait_ms=max_wait_ms, wait_ceiling_ms=1000
+      )
     except retry.RetryException as err:
       conditions = poller.GetConditions()
       # err.message already indicates timeout. Check ready_cond_type for more
@@ -612,7 +629,8 @@ class ServerlessOperations(object):
       raise err
     if not conditions.IsReady():
       raise serverless_exceptions.ConfigurationError(
-          conditions.DescriptiveMessage())
+          conditions.DescriptiveMessage()
+      )
 
   def GetActiveRevisions(self, service_ref):
     """Return the actively serving revisions.
@@ -639,7 +657,8 @@ class ServerlessOperations(object):
     """Returns all services in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesServicesListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     try:
       with metrics.RecordDuration(metric_names.LIST_SERVICES):
         response = self._client.namespaces_services.List(request)
@@ -651,7 +670,8 @@ class ServerlessOperations(object):
     """Returns all configurations in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesConfigurationsListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     try:
       with metrics.RecordDuration(metric_names.LIST_CONFIGURATIONS):
         response = self._client.namespaces_configurations.List(request)
@@ -665,7 +685,8 @@ class ServerlessOperations(object):
     """Returns all routes in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesRoutesListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     with metrics.RecordDuration(metric_names.LIST_ROUTES):
       response = self._client.namespaces_routes.List(request)
     return [route.Route(item, messages) for item in response.items]
@@ -674,12 +695,14 @@ class ServerlessOperations(object):
     """Return the relevant Service from the server, or None if 404."""
     messages = self.messages_module
     service_get_request = messages.RunNamespacesServicesGetRequest(
-        name=service_ref.RelativeName())
+        name=service_ref.RelativeName()
+    )
 
     try:
       with metrics.RecordDuration(metric_names.GET_SERVICE):
         service_get_response = self._client.namespaces_services.Get(
-            service_get_request)
+            service_get_request
+        )
         return service.Service(service_get_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
@@ -695,16 +718,19 @@ class ServerlessOperations(object):
           params={
               'namespacesId': service_or_configuration_ref.namespacesId,
           },
-          collection='run.namespaces.configurations').RelativeName()
+          collection='run.namespaces.configurations',
+      ).RelativeName()
     else:
       name = service_or_configuration_ref.RelativeName()
-    configuration_get_request = (
-        messages.RunNamespacesConfigurationsGetRequest(name=name))
+    configuration_get_request = messages.RunNamespacesConfigurationsGetRequest(
+        name=name
+    )
 
     try:
       with metrics.RecordDuration(metric_names.GET_CONFIGURATION):
         configuration_get_response = self._client.namespaces_configurations.Get(
-            configuration_get_request)
+            configuration_get_request
+        )
       return configuration.Configuration(configuration_get_response, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
@@ -720,15 +746,17 @@ class ServerlessOperations(object):
           params={
               'namespacesId': service_or_route_ref.namespacesId,
           },
-          collection='run.namespaces.routes').RelativeName()
+          collection='run.namespaces.routes',
+      ).RelativeName()
     else:
       name = service_or_route_ref.RelativeName()
-    route_get_request = (messages.RunNamespacesRoutesGetRequest(name=name))
+    route_get_request = messages.RunNamespacesRoutesGetRequest(name=name)
 
     try:
       with metrics.RecordDuration(metric_names.GET_ROUTE):
         route_get_response = self._client.namespaces_routes.Get(
-            route_get_request)
+            route_get_request
+        )
       return route.Route(route_get_response, messages)
     except api_exceptions.HttpNotFoundError:
       return None
@@ -745,14 +773,16 @@ class ServerlessOperations(object):
     messages = self.messages_module
     service_name = service_ref.RelativeName()
     service_delete_request = messages.RunNamespacesServicesDeleteRequest(
-        name=service_name,)
+        name=service_name,
+    )
 
     try:
       with metrics.RecordDuration(metric_names.DELETE_SERVICE):
         self._client.namespaces_services.Delete(service_delete_request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.ServiceNotFoundError(
-          'Service [{}] could not be found.'.format(service_ref.servicesId))
+          'Service [{}] could not be found.'.format(service_ref.servicesId)
+      )
 
   def DeleteRevision(self, revision_ref):
     """Delete the provided Revision.
@@ -771,14 +801,16 @@ class ServerlessOperations(object):
         self._client.namespaces_revisions.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.RevisionNotFoundError(
-          'Revision [{}] could not be found.'.format(revision_ref.revisionsId))
+          'Revision [{}] could not be found.'.format(revision_ref.revisionsId)
+      )
 
   def GetRevisionsByNonce(self, namespace_ref, nonce):
     """Return all revisions with the given nonce."""
     messages = self.messages_module
     request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
-        labelSelector='{} = {}'.format(revision.NONCE_LABEL, nonce))
+        labelSelector='{} = {}'.format(revision.NONCE_LABEL, nonce),
+    )
     try:
       response = self._client.namespaces_revisions.List(request)
       return [revision.Revision(item, messages) for item in response.items]
@@ -818,11 +850,14 @@ class ServerlessOperations(object):
         revision_ref_getter = functools.partial(
             self._registry.Parse,
             params={'namespacesId': metadata.namespace},
-            collection='run.namespaces.revisions')
+            collection='run.namespaces.revisions',
+        )
         poller = RevisionNameBasedPoller(self, revision_ref_getter)
         base_revision = poller.GetResult(
             waiter.PollUntilDone(
-                poller, base_revision_name, sleep_ms=500, max_wait_ms=2000))
+                poller, base_revision_name, sleep_ms=500, max_wait_ms=2000
+            )
+        )
       except retry.RetryException:
         pass
     # Name polling didn't work. Fall back to nonce polling
@@ -835,14 +870,18 @@ class ServerlessOperations(object):
           # have different collection names for the namespaces.
           try:
             namespace_ref = self._registry.Parse(
-                metadata.namespace, collection='run.namespaces')
+                metadata.namespace, collection='run.namespaces'
+            )
           except resources.InvalidCollectionException:
             namespace_ref = self._registry.Parse(
-                metadata.namespace, collection='run.api.v1.namespaces')
+                metadata.namespace, collection='run.api.v1.namespaces'
+            )
           poller = NonceBasedRevisionPoller(self, namespace_ref)
           base_revision = poller.GetResult(
               waiter.PollUntilDone(
-                  poller, base_revision_nonce, sleep_ms=500, max_wait_ms=2000))
+                  poller, base_revision_nonce, sleep_ms=500, max_wait_ms=2000
+              )
+          )
         except retry.RetryException:
           pass
     # Nonce polling didn't work, because some client didn't post one or didn't
@@ -853,20 +892,23 @@ class ServerlessOperations(object):
         revision_ref = self._registry.Parse(
             status.latestCreatedRevisionName,
             params={'namespacesId': metadata.namespace},
-            collection='run.namespaces.revisions')
+            collection='run.namespaces.revisions',
+        )
         base_revision = self.GetRevision(revision_ref)
     return base_revision
 
   def _EnsureImageDigest(self, serv, config_changes):
     """Make config_changes include switch by-digest image if not so already."""
     if not _IsDigest(serv.template.image):
-      base_revision = self._GetBaseRevision(serv.template, serv.metadata,
-                                            serv.status)
+      base_revision = self._GetBaseRevision(
+          serv.template, serv.metadata, serv.status
+      )
       if base_revision:
         config_changes.append(_SwitchToDigestChange(base_revision))
 
-  def _UpdateOrCreateService(self, service_ref, config_changes, with_code,
-                             serv):
+  def _UpdateOrCreateService(
+      self, service_ref, config_changes, with_code, serv
+  ):
     """Apply config_changes to the service.
 
     Create it if necessary.
@@ -888,26 +930,28 @@ class ServerlessOperations(object):
         # PUT the changed Service
         serv = config_changes_mod.WithChanges(serv, config_changes)
         serv_name = service_ref.RelativeName()
-        serv_update_req = (
-            messages.RunNamespacesServicesReplaceServiceRequest(
-                service=serv.Message(), name=serv_name))
+        serv_update_req = messages.RunNamespacesServicesReplaceServiceRequest(
+            service=serv.Message(), name=serv_name
+        )
         with metrics.RecordDuration(metric_names.UPDATE_SERVICE):
           updated = self._client.namespaces_services.ReplaceService(
-              serv_update_req)
+              serv_update_req
+          )
         return service.Service(updated, messages)
 
       else:
         if not with_code:
           raise serverless_exceptions.ServiceNotFoundError(
-              'Service [{}] could not be found.'.format(service_ref.servicesId))
+              'Service [{}] could not be found.'.format(service_ref.servicesId)
+          )
         # POST a new Service
         new_serv = service.Service.New(self._client, service_ref.namespacesId)
         new_serv.name = service_ref.servicesId
         parent = service_ref.Parent().RelativeName()
         new_serv = config_changes_mod.WithChanges(new_serv, config_changes)
-        serv_create_req = (
-            messages.RunNamespacesServicesCreateRequest(
-                service=new_serv.Message(), parent=parent))
+        serv_create_req = messages.RunNamespacesServicesCreateRequest(
+            service=new_serv.Message(), parent=parent
+        )
         with metrics.RecordDuration(metric_names.CREATE_SERVICE):
           raw_service = self._client.namespaces_services.Create(serv_create_req)
         return service.Service(raw_service, messages)
@@ -921,26 +965,32 @@ class ServerlessOperations(object):
       if platform == 'gke':
         all_clusters = global_methods.ListClusters()
         clusters = ['* {} in {}'.format(c.name, c.zone) for c in all_clusters]
-        error_msg += (' Perhaps the provided cluster was invalid or '
-                      'does not have Cloud Run enabled. Pass the '
-                      '`--cluster` and `--cluster-location` flags or set the '
-                      '`run/cluster` and `run/cluster_location` properties to '
-                      'a valid cluster and zone and retry.'
-                      '\nAvailable clusters:\n{}'.format('\n'.join(clusters)))
+        error_msg += (
+            ' Perhaps the provided cluster was invalid or '
+            'does not have Cloud Run enabled. Pass the '
+            '`--cluster` and `--cluster-location` flags or set the '
+            '`run/cluster` and `run/cluster_location` properties to '
+            'a valid cluster and zone and retry.'
+            '\nAvailable clusters:\n{}'.format('\n'.join(clusters))
+        )
       elif platform == 'managed':
         all_regions = global_methods.ListRegions(self._op_client)
         if self._region not in all_regions:
           regions = ['* {}'.format(r) for r in all_regions]
-          error_msg += (' The provided region was invalid. '
-                        'Pass the `--region` flag or set the '
-                        '`run/region` property to a valid region and retry.'
-                        '\nAvailable regions:\n{}'.format('\n'.join(regions)))
+          error_msg += (
+              ' The provided region was invalid. '
+              'Pass the `--region` flag or set the '
+              '`run/region` property to a valid region and retry.'
+              '\nAvailable regions:\n{}'.format('\n'.join(regions))
+          )
       elif platform == 'kubernetes':
-        error_msg += (' Perhaps the provided cluster was invalid or '
-                      'does not have Cloud Run enabled. Ensure in your '
-                      'kubeconfig file that the cluster referenced in '
-                      'the current context or the specified context '
-                      'is a valid cluster and retry.')
+        error_msg += (
+            ' Perhaps the provided cluster was invalid or '
+            'does not have Cloud Run enabled. Ensure in your '
+            'kubeconfig file that the cluster referenced in '
+            'the current context or the specified context '
+            'is a valid cluster and retry.'
+        )
       raise serverless_exceptions.DeploymentFailedError(error_msg)
     except api_exceptions.HttpError as e:
       platform = properties.VALUES.run.platform.Get()
@@ -950,8 +1000,11 @@ class ServerlessOperations(object):
       causes = '\n\n'.join([c['message'] for c in k8s_error.causes])
       if not causes:
         causes = k8s_error.error
-      raise serverless_exceptions.KubernetesError('Error{}:\n{}\n'.format(
-          's' if len(k8s_error.causes) > 1 else '', causes))
+      raise serverless_exceptions.KubernetesError(
+          'Error{}:\n{}\n'.format(
+              's' if len(k8s_error.causes) > 1 else '', causes
+          )
+      )
 
   def UpdateTraffic(self, service_ref, config_changes, tracker, asyn):
     """Update traffic splits for service."""
@@ -959,17 +1012,20 @@ class ServerlessOperations(object):
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.UpdateTrafficStages(),
           interruptable=True,
-          aborted_message='aborted')
+          aborted_message='aborted',
+      )
     serv = self.GetService(service_ref)
     if not serv:
       raise serverless_exceptions.ServiceNotFoundError(
-          'Service [{}] could not be found.'.format(service_ref.servicesId))
+          'Service [{}] could not be found.'.format(service_ref.servicesId)
+      )
 
     if serv.configuration:
       raise serverless_exceptions.UnsupportedOperationError(
           'This service is using an old version of Cloud Run for Anthos '
           'that does not support traffic features. Please upgrade to 0.8 '
-          'or later.')
+          'or later.'
+      )
 
     self._UpdateOrCreateService(service_ref, config_changes, False, serv)
 
@@ -981,35 +1037,43 @@ class ServerlessOperations(object):
     """Get a new revision forcing config change for the given service."""
     curr_generation = serv.generation if serv is not None else 0
     revision_suffix = '{}-{}'.format(
-        str(curr_generation + 1).zfill(5), name_generator.GenerateName())
+        str(curr_generation + 1).zfill(5), name_generator.GenerateName()
+    )
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
   def _BuildFromSource(self, tracker, build_messages, build_config):
     """Build an image from source if a user specifies a source when deploying."""
     build, build_op = submit_util.Build(
-        build_messages, True, build_config, hide_logs=True)
+        build_messages, True, build_config, hide_logs=True
+    )
     build_op_ref = resources.REGISTRY.ParseRelativeName(
-        build_op.name, 'cloudbuild.operations')
+        build_op.name, 'cloudbuild.operations'
+    )
     build_log_url = build.logUrl
     tracker.StartStage(stages.BUILD_READY)
     tracker.UpdateHeaderMessage('Building Container.')
     tracker.UpdateStage(
-        stages.BUILD_READY, 'Logs are available at [{build_log_url}].'.format(
-            build_log_url=build_log_url))
+        stages.BUILD_READY,
+        'Logs are available at [{build_log_url}].'.format(
+            build_log_url=build_log_url
+        ),
+    )
     return build_op_ref, build_log_url
 
-  def ReleaseService(self,
-                     service_ref,
-                     config_changes,
-                     tracker=None,
-                     asyn=False,
-                     allow_unauthenticated=None,
-                     for_replace=False,
-                     prefetch=False,
-                     build_image=None,
-                     build_pack=None,
-                     build_source=None,
-                     repo_to_create=None):
+  def ReleaseService(
+      self,
+      service_ref,
+      config_changes,
+      tracker=None,
+      asyn=False,
+      allow_unauthenticated=None,
+      for_replace=False,
+      prefetch=False,
+      build_image=None,
+      build_pack=None,
+      build_source=None,
+      repo_to_create=None,
+  ):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -1045,27 +1109,34 @@ class ServerlessOperations(object):
           stages.ServiceStages(
               allow_unauthenticated is not None,
               include_build=build_source is not None,
-              include_create_repo=repo_to_create is not None),
+              include_create_repo=repo_to_create is not None,
+          ),
           interruptable=True,
-          aborted_message='aborted')
+          aborted_message='aborted',
+      )
 
     if repo_to_create:
       self._CreateRepository(tracker, repo_to_create)
 
     if build_source is not None:
-      build_messages, build_config = self._UploadSource(tracker, build_image,
-                                                        build_source,
-                                                        build_pack)
+      build_messages, build_config = self._UploadSource(
+          tracker, build_image, build_source, build_pack
+      )
       build_op_ref, build_log_url = self._BuildFromSource(
-          tracker, build_messages, build_config)
+          tracker, build_messages, build_config
+      )
       response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':
         tracker.FailStage(
             stages.BUILD_READY,
             None,
-            message='Container build failed and '
-            'logs are available at [{build_log_url}].'.format(
-                build_log_url=build_log_url))
+            message=(
+                'Container build failed and '
+                'logs are available at [{build_log_url}].'.format(
+                    build_log_url=build_log_url
+                )
+            ),
+        )
         return
       else:
         tracker.CompleteStage(stages.BUILD_READY)
@@ -1079,7 +1150,8 @@ class ServerlessOperations(object):
       with_image = True
     else:
       with_image = any(
-          isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
+          isinstance(c, config_changes_mod.ImageChange) for c in config_changes
+      )
       if config_changes_mod.AdjustsTemplate(config_changes):
         # Only force a new revision if there's other template-level changes that
         # warrant a new revision.
@@ -1091,18 +1163,24 @@ class ServerlessOperations(object):
     if serv and serv.metadata.deletionTimestamp is not None:
       raise serverless_exceptions.DeploymentFailedError(
           'Service [{}] is in the process of being deleted.'.format(
-              service_ref.servicesId))
+              service_ref.servicesId
+          )
+      )
 
     created_or_updated_service = self._UpdateOrCreateService(
-        service_ref, config_changes, with_image, serv)
+        service_ref, config_changes, with_image, serv
+    )
 
     if allow_unauthenticated is not None:
       try:
         tracker.StartStage(stages.SERVICE_IAM_POLICY_SET)
         tracker.UpdateStage(stages.SERVICE_IAM_POLICY_SET, '')
-        self.AddOrRemoveIamPolicyBinding(service_ref, allow_unauthenticated,
-                                         ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
-                                         ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+        self.AddOrRemoveIamPolicyBinding(
+            service_ref,
+            allow_unauthenticated,
+            ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+            ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+        )
         tracker.CompleteStage(stages.SERVICE_IAM_POLICY_SET)
       except api_exceptions.HttpError:
         warning_message = (
@@ -1111,14 +1189,18 @@ class ServerlessOperations(object):
             '--role=roles/run.invoker {service}"'.format(
                 'add' if allow_unauthenticated else 'remove',
                 region=self._region,
-                service=service_ref.servicesId))
+                service=service_ref.servicesId,
+            )
+        )
         tracker.CompleteStageWithWarning(
-            stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message)
+            stages.SERVICE_IAM_POLICY_SET, warning_message=warning_message
+        )
 
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
       poller = ServiceConditionPoller(
-          getter, tracker, dependencies=stages.ServiceDependencies(), serv=serv)
+          getter, tracker, dependencies=stages.ServiceDependencies(), serv=serv
+      )
       self.WaitForCondition(poller)
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
         tracker.AddWarning(msg)
@@ -1143,12 +1225,15 @@ class ServerlessOperations(object):
     # NB: This is a hack to compensate for apitools not generating this line.
     #     It's necessary to make the URL parameter be "continue".
     encoding.AddCustomJsonFieldMapping(
-        messages.RunNamespacesExecutionsListRequest, 'continue_', 'continue')
+        messages.RunNamespacesExecutionsListRequest, 'continue_', 'continue'
+    )
     request = messages.RunNamespacesExecutionsListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     if job_name is not None:
       request.labelSelector = '{label} = {name}'.format(
-          label=execution.JOB_LABEL, name=job_name)
+          label=execution.JOB_LABEL, name=job_name
+      )
     try:
       for result in list_pager.YieldFromList(
           service=self._client.namespaces_executions,
@@ -1157,17 +1242,20 @@ class ServerlessOperations(object):
           batch_size=page_size,
           current_token_attribute='continue_',
           next_token_attribute=('metadata', 'continue_'),
-          batch_size_attribute='limit'):
+          batch_size_attribute='limit',
+      ):
         yield execution.Execution(result, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
-  def ListTasks(self,
-                namespace_ref,
-                execution_name,
-                include_states=None,
-                limit=None,
-                page_size=100):
+  def ListTasks(
+      self,
+      namespace_ref,
+      execution_name,
+      include_states=None,
+      limit=None,
+      page_size=100,
+  ):
     """List all tasks for the given execution.
 
     Args:
@@ -1183,17 +1271,23 @@ class ServerlessOperations(object):
     messages = self.messages_module
     # NB: This is a hack to compensate for apitools not generating this line.
     #     It's necessary to make the URL parameter be "continue".
-    encoding.AddCustomJsonFieldMapping(messages.RunNamespacesTasksListRequest,
-                                       'continue_', 'continue')
+    encoding.AddCustomJsonFieldMapping(
+        messages.RunNamespacesTasksListRequest, 'continue_', 'continue'
+    )
     request = messages.RunNamespacesTasksListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     label_selectors = []
     if execution_name is not None:
-      label_selectors.append('{label} = {name}'.format(
-          label=task.EXECUTION_LABEL, name=execution_name))
+      label_selectors.append(
+          '{label} = {name}'.format(
+              label=task.EXECUTION_LABEL, name=execution_name
+          )
+      )
     if include_states is not None:
       status_selector = '{label} in ({states})'.format(
-          label=task.STATE_LABEL, states=','.join(include_states))
+          label=task.STATE_LABEL, states=','.join(include_states)
+      )
       label_selectors.append(status_selector)
     if label_selectors:
       request.labelSelector = ','.join(label_selectors)
@@ -1205,16 +1299,15 @@ class ServerlessOperations(object):
           batch_size=page_size,
           current_token_attribute='continue_',
           next_token_attribute=('metadata', 'continue_'),
-          batch_size_attribute='limit'):
+          batch_size_attribute='limit',
+      ):
         yield task.Task(result, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
-  def ListRevisions(self,
-                    namespace_ref,
-                    service_name,
-                    limit=None,
-                    page_size=100):
+  def ListRevisions(
+      self, namespace_ref, service_name, limit=None, page_size=100
+  ):
     """List all revisions for the given service.
 
     Revision list gets sorted by service name and creation timestamp.
@@ -1232,14 +1325,17 @@ class ServerlessOperations(object):
     # NB: This is a hack to compensate for apitools not generating this line.
     #     It's necessary to make the URL parameter be "continue".
     encoding.AddCustomJsonFieldMapping(
-        messages.RunNamespacesRevisionsListRequest, 'continue_', 'continue')
+        messages.RunNamespacesRevisionsListRequest, 'continue_', 'continue'
+    )
     request = messages.RunNamespacesRevisionsListRequest(
-        parent=namespace_ref.RelativeName(),)
+        parent=namespace_ref.RelativeName(),
+    )
     if service_name is not None:
       # For now, same as the service name, and keeping compatible with
       # 'service-less' operation.
       request.labelSelector = 'serving.knative.dev/service = {}'.format(
-          service_name)
+          service_name
+      )
     try:
       for result in list_pager.YieldFromList(
           service=self._client.namespaces_revisions,
@@ -1248,7 +1344,8 @@ class ServerlessOperations(object):
           batch_size=page_size,
           current_token_attribute='continue_',
           next_token_attribute=('metadata', 'continue_'),
-          batch_size_attribute='limit'):
+          batch_size_attribute='limit',
+      ):
         yield revision.Revision(result, messages)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
@@ -1264,18 +1361,21 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     request = messages.RunNamespacesDomainmappingsListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     with metrics.RecordDuration(metric_names.LIST_DOMAIN_MAPPINGS):
       response = self._client.namespaces_domainmappings.List(request)
     return [
         domain_mapping.DomainMapping(item, messages) for item in response.items
     ]
 
-  def CreateDomainMapping(self,
-                          domain_mapping_ref,
-                          service_name,
-                          config_changes,
-                          force_override=False):
+  def CreateDomainMapping(
+      self,
+      domain_mapping_ref,
+      service_name,
+      config_changes,
+      force_override=False,
+  ):
     """Create a domain mapping.
 
     Args:
@@ -1290,7 +1390,8 @@ class ServerlessOperations(object):
 
     messages = self.messages_module
     new_mapping = domain_mapping.DomainMapping.New(
-        self._client, domain_mapping_ref.namespacesId)
+        self._client, domain_mapping_ref.namespacesId
+    )
     new_mapping.name = domain_mapping_ref.domainmappingsId
     new_mapping.route_name = service_name
     new_mapping.force_override = force_override
@@ -1300,30 +1401,39 @@ class ServerlessOperations(object):
 
     request = messages.RunNamespacesDomainmappingsCreateRequest(
         domainMapping=new_mapping.Message(),
-        parent=domain_mapping_ref.Parent().RelativeName())
+        parent=domain_mapping_ref.Parent().RelativeName(),
+    )
     with metrics.RecordDuration(metric_names.CREATE_DOMAIN_MAPPING):
       try:
         response = self._client.namespaces_domainmappings.Create(request)
       except api_exceptions.HttpConflictError:
         raise serverless_exceptions.DomainMappingCreationError(
             'Domain mapping to [{}] already exists in this region.'.format(
-                domain_mapping_ref.Name()))
+                domain_mapping_ref.Name()
+            )
+        )
       # 'run domain-mappings create' is synchronous. Poll for its completion.x
       with progress_tracker.ProgressTracker('Creating...'):
         mapping = waiter.PollUntilDone(
-            DomainMappingResourceRecordPoller(self), domain_mapping_ref)
+            DomainMappingResourceRecordPoller(self), domain_mapping_ref
+        )
       ready = mapping.conditions.get('Ready')
       message = None
       if ready and ready.get('message'):
         message = ready['message']
       if not mapping.records:
-        if (mapping.ready_condition['reason'] ==
-            domain_mapping.MAPPING_ALREADY_EXISTS_CONDITION_REASON):
+        if (
+            mapping.ready_condition['reason']
+            == domain_mapping.MAPPING_ALREADY_EXISTS_CONDITION_REASON
+        ):
           raise serverless_exceptions.DomainMappingAlreadyExistsError(
               'Domain mapping to [{}] is already in use elsewhere.'.format(
-                  domain_mapping_ref.Name()))
+                  domain_mapping_ref.Name()
+              )
+          )
         raise serverless_exceptions.DomainMappingCreationError(
-            message or 'Could not create domain mapping.')
+            message or 'Could not create domain mapping.'
+        )
       if message:
         log.status.Print(message)
       return mapping
@@ -1339,7 +1449,8 @@ class ServerlessOperations(object):
     messages = self.messages_module
 
     request = messages.RunNamespacesDomainmappingsDeleteRequest(
-        name=domain_mapping_ref.RelativeName())
+        name=domain_mapping_ref.RelativeName()
+    )
     with metrics.RecordDuration(metric_names.DELETE_DOMAIN_MAPPING):
       self._client.namespaces_domainmappings.Delete(request)
 
@@ -1354,21 +1465,24 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     request = messages.RunNamespacesDomainmappingsGetRequest(
-        name=domain_mapping_ref.RelativeName())
+        name=domain_mapping_ref.RelativeName()
+    )
     with metrics.RecordDuration(metric_names.GET_DOMAIN_MAPPING):
       response = self._client.namespaces_domainmappings.Get(request)
     return domain_mapping.DomainMapping(response, messages)
 
-  def DeployJob(self,
-                job_ref,
-                config_changes,
-                tracker=None,
-                asyn=False,
-                build_image=None,
-                build_pack=None,
-                build_source=None,
-                repo_to_create=None,
-                prefetch=None):
+  def DeployJob(
+      self,
+      job_ref,
+      config_changes,
+      tracker=None,
+      asyn=False,
+      build_image=None,
+      build_pack=None,
+      build_source=None,
+      repo_to_create=None,
+      prefetch=None,
+  ):
     """Deploy to create a new Cloud Run Job or to update an existing one.
 
     Args:
@@ -1393,27 +1507,34 @@ class ServerlessOperations(object):
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.JobStages(
               include_build=build_source is not None,
-              include_create_repo=repo_to_create is not None),
+              include_create_repo=repo_to_create is not None,
+          ),
           interruptable=True,
-          aborted_message='aborted')
+          aborted_message='aborted',
+      )
 
     if repo_to_create:
       self._CreateRepository(tracker, repo_to_create)
 
     if build_source is not None:
-      build_messages, build_config = self._UploadSource(tracker, build_image,
-                                                        build_source,
-                                                        build_pack)
+      build_messages, build_config = self._UploadSource(
+          tracker, build_image, build_source, build_pack
+      )
       build_op_ref, build_log_url = self._BuildFromSource(
-          tracker, build_messages, build_config)
+          tracker, build_messages, build_config
+      )
       response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':
         tracker.FailStage(
             stages.BUILD_READY,
             None,
-            message='Container build failed and '
-            'logs are available at [{build_log_url}].'.format(
-                build_log_url=build_log_url))
+            message=(
+                'Container build failed and '
+                'logs are available at [{build_log_url}].'.format(
+                    build_log_url=build_log_url
+                )
+            ),
+        )
         return
       else:
         tracker.CompleteStage(stages.BUILD_READY)
@@ -1444,15 +1565,16 @@ class ServerlessOperations(object):
     parent = job_ref.Parent().RelativeName()
     for config_change in config_changes:
       new_job = config_change.Adjust(new_job)
-    create_request = (
-        messages.RunNamespacesJobsCreateRequest(
-            job=new_job.Message(), parent=parent))
+    create_request = messages.RunNamespacesJobsCreateRequest(
+        job=new_job.Message(), parent=parent
+    )
     with metrics.RecordDuration(metric_names.CREATE_JOB):
       try:
         created_job = self._client.namespaces_jobs.Create(create_request)
       except api_exceptions.HttpConflictError:
         raise serverless_exceptions.DeploymentFailedError(
-            'Job [{}] already exists.'.format(job_ref.Name()))
+            'Job [{}] already exists.'.format(job_ref.Name())
+        )
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)
@@ -1477,12 +1599,13 @@ class ServerlessOperations(object):
     update_job = self.GetJob(job_ref)
     if update_job is None:
       raise serverless_exceptions.JobNotFoundError(
-          'Job [{}] could not be found.'.format(job_ref.Name()))
+          'Job [{}] could not be found.'.format(job_ref.Name())
+      )
     for config_change in config_changes:
       update_job = config_change.Adjust(update_job)
-    replace_request = (
-        messages.RunNamespacesJobsReplaceJobRequest(
-            job=update_job.Message(), name=job_ref.RelativeName()))
+    replace_request = messages.RunNamespacesJobsReplaceJobRequest(
+        job=update_job.Message(), name=job_ref.RelativeName()
+    )
     with metrics.RecordDuration(metric_names.UPDATE_JOB):
       returned_job = self._client.namespaces_jobs.ReplaceJob(replace_request)
 
@@ -1493,12 +1616,9 @@ class ServerlessOperations(object):
 
     return job.Job(returned_job, messages)
 
-  def RunJob(self,
-             job_ref,
-             wait=False,
-             tracker=None,
-             asyn=False,
-             release_track=None):
+  def RunJob(
+      self, job_ref, wait=False, tracker=None, asyn=False, release_track=None
+  ):
     """Run a Cloud Run Job, creating an Execution.
 
     Args:
@@ -1513,7 +1633,8 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     run_request = messages.RunNamespacesJobsRunRequest(
-        name=job_ref.RelativeName())
+        name=job_ref.RelativeName()
+    )
 
     with metrics.RecordDuration(metric_names.RUN_JOB):
       try:
@@ -1523,7 +1644,8 @@ class ServerlessOperations(object):
           raise serverless_exceptions.DeploymentFailedError(
               'Resource exhausted error. This may mean that '
               'too many executions are already running. Please wait until one '
-              'completes before creating a new one.')
+              'completes before creating a new one.'
+          )
         raise e
     if asyn:
       return execution.Execution(execution_message, messages)
@@ -1531,32 +1653,38 @@ class ServerlessOperations(object):
     execution_ref = self._registry.Parse(
         execution_message.metadata.name,
         params={'namespacesId': execution_message.metadata.namespace},
-        collection='run.namespaces.executions')
+        collection='run.namespaces.executions',
+    )
     getter = functools.partial(self.GetExecution, execution_ref)
     terminal_condition = (
-        execution.COMPLETED_CONDITION if wait else execution.STARTED_CONDITION)
+        execution.COMPLETED_CONDITION if wait else execution.STARTED_CONDITION
+    )
     ex = self.GetExecution(execution_ref)
     for msg in run_condition.GetNonTerminalMessages(
-        ex.conditions, ignore_retry=True):
+        ex.conditions, ignore_retry=True
+    ):
       tracker.AddWarning(msg)
     poller = ExecutionConditionPoller(
         getter,
         tracker,
         terminal_condition,
-        dependencies=stages.ExecutionDependencies())
+        dependencies=stages.ExecutionDependencies(),
+    )
     try:
       self.WaitForCondition(poller, None if wait else 0)
     except serverless_exceptions.ExecutionFailedError:
       raise serverless_exceptions.ExecutionFailedError(
-          'The execution failed.' +
-          messages_util.GetExecutionCreatedMessage(release_track, ex))
+          'The execution failed.'
+          + messages_util.GetExecutionCreatedMessage(release_track, ex)
+      )
     return self.GetExecution(execution_ref)
 
   def GetJob(self, job_ref):
     """Return the relevant Job from the server, or None if 404."""
     messages = self.messages_module
     get_request = messages.RunNamespacesJobsGetRequest(
-        name=job_ref.RelativeName())
+        name=job_ref.RelativeName()
+    )
 
     try:
       with metrics.RecordDuration(metric_names.GET_JOB):
@@ -1572,7 +1700,8 @@ class ServerlessOperations(object):
     """Return the relevant Task from the server, or None if 404."""
     messages = self.messages_module
     get_request = messages.RunNamespacesTasksGetRequest(
-        name=task_ref.RelativeName())
+        name=task_ref.RelativeName()
+    )
 
     try:
       with metrics.RecordDuration(metric_names.GET_TASK):
@@ -1588,7 +1717,8 @@ class ServerlessOperations(object):
     """Return the relevant Execution from the server, or None if 404."""
     messages = self.messages_module
     get_request = messages.RunNamespacesExecutionsGetRequest(
-        name=execution_ref.RelativeName())
+        name=execution_ref.RelativeName()
+    )
 
     try:
       with metrics.RecordDuration(metric_names.GET_EXECUTION):
@@ -1604,7 +1734,8 @@ class ServerlessOperations(object):
     """Returns all jobs in the namespace."""
     messages = self.messages_module
     request = messages.RunNamespacesJobsListRequest(
-        parent=namespace_ref.RelativeName())
+        parent=namespace_ref.RelativeName()
+    )
     try:
       with metrics.RecordDuration(metric_names.LIST_JOBS):
         response = self._client.namespaces_jobs.List(request)
@@ -1624,13 +1755,15 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     request = messages.RunNamespacesJobsDeleteRequest(
-        name=job_ref.RelativeName())
+        name=job_ref.RelativeName()
+    )
     try:
       with metrics.RecordDuration(metric_names.DELETE_JOB):
         self._client.namespaces_jobs.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.JobNotFoundError(
-          'Job [{}] could not be found.'.format(job_ref.Name()))
+          'Job [{}] could not be found.'.format(job_ref.Name())
+      )
 
   def DeleteExecution(self, execution_ref):
     """Delete the provided Execution.
@@ -1643,13 +1776,15 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     request = messages.RunNamespacesExecutionsDeleteRequest(
-        name=execution_ref.RelativeName())
+        name=execution_ref.RelativeName()
+    )
     try:
       with metrics.RecordDuration(metric_names.DELETE_EXECUTION):
         self._client.namespaces_executions.Delete(request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.ExecutionNotFoundError(
-          'Execution [{}] could not be found.'.format(execution_ref.Name()))
+          'Execution [{}] could not be found.'.format(execution_ref.Name())
+      )
 
   def CancelExecution(self, execution_ref):
     """Cancel the provided Execution.
@@ -1662,27 +1797,28 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     request = messages.RunNamespacesExecutionsCancelRequest(
-        name=execution_ref.RelativeName())
+        name=execution_ref.RelativeName()
+    )
     try:
       with metrics.RecordDuration(metric_names.CANCEL_EXECUTION):
         self._client.namespaces_executions.Cancel(request)
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.ExecutionNotFoundError(
-          'Execution [{}] could not be found.'.format(execution_ref.Name()))
+          'Execution [{}] could not be found.'.format(execution_ref.Name())
+      )
 
   def _GetIamPolicy(self, service_name):
     """Gets the IAM policy for the service."""
     messages = self.messages_module
     request = messages.RunProjectsLocationsServicesGetIamPolicyRequest(
-        resource=six.text_type(service_name))
+        resource=six.text_type(service_name)
+    )
     response = self._op_client.projects_locations_services.GetIamPolicy(request)
     return response
 
-  def AddOrRemoveIamPolicyBinding(self,
-                                  service_ref,
-                                  add_binding=True,
-                                  member=None,
-                                  role=None):
+  def AddOrRemoveIamPolicyBinding(
+      self, service_ref, add_binding=True, member=None, role=None
+  ):
     """Add or remove the given IAM policy binding to the provided service.
 
     If no members or role are provided, set the IAM policy to the current IAM
@@ -1700,7 +1836,8 @@ class ServerlessOperations(object):
     """
     messages = self.messages_module
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
-        service_ref, self._region)
+        service_ref, self._region
+    )
     policy = self._GetIamPolicy(oneplatform_service)
     # Don't modify bindings if not member or roles provided
     if member and role:
@@ -1710,7 +1847,8 @@ class ServerlessOperations(object):
         iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     request = messages.RunProjectsLocationsServicesSetIamPolicyRequest(
         resource=six.text_type(oneplatform_service),
-        setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+        setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
+    )
     result = self._op_client.projects_locations_services.SetIamPolicy(request)
     return result
 
@@ -1718,13 +1856,17 @@ class ServerlessOperations(object):
     """Check if user has permission to set the iam policy on the service."""
     messages = self.messages_module
     oneplatform_service = resource_name_conversion.K8sToOnePlatform(
-        service_ref, self._region)
+        service_ref, self._region
+    )
     request = messages.RunProjectsLocationsServicesTestIamPermissionsRequest(
         resource=six.text_type(oneplatform_service),
         testIamPermissionsRequest=messages.TestIamPermissionsRequest(
-            permissions=NEEDED_IAM_PERMISSIONS))
+            permissions=NEEDED_IAM_PERMISSIONS
+        ),
+    )
     response = self._client.projects_locations_services.TestIamPermissions(
-        request)
+        request
+    )
     return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))
 
   def _CreateRepository(self, tracker, repo_to_create):
@@ -1755,13 +1897,15 @@ class ServerlessOperations(object):
         None,  # arg_disk_size
         None,  # arg_worker_pool
         build_pack,
-        hide_logs=True)
+        hide_logs=True,
+    )
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
     return build_messages, build_config
 
   def _PollUntilBuildCompletes(self, build_op_ref):
     client = cloudbuild_util.GetClientInstance()
-    poller = waiter.CloudOperationPoller(client.projects_builds,
-                                         client.operations)
+    poller = waiter.CloudOperationPoller(
+        client.projects_builds, client.operations
+    )
     operation = waiter.PollUntilDone(poller, build_op_ref)
     return encoding.MessageToPyValue(operation.response)

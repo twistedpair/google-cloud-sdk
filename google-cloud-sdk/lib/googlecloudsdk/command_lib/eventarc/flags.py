@@ -317,6 +317,24 @@ def AddEventFiltersPathPatternArg(parser,
         metavar='ATTRIBUTE=PATH_PATTERN')
 
 
+def AddEventDataContentTypeArg(
+    parser, release_track, required=False, hidden=True
+):
+  """Adds an argument for the trigger's event data content type."""
+  if release_track == base.ReleaseTrack.GA:
+    parser.add_argument(
+        '--event-data-content-type',
+        hidden=hidden,
+        required=required,
+        help=(
+            'The data content type that the payload of the CloudEvent event is '
+            'encoded in. Only "application/json" and "application/protobuf" are'
+            'supported data content types. If not specified, it is assumed that'
+            ' the event payload is encoded in JSON.'
+        ),
+    )
+
+
 def GetEventFiltersArg(args, release_track):
   """Gets the event filters from the arguments."""
   if release_track == base.ReleaseTrack.GA:
@@ -329,6 +347,13 @@ def GetEventFiltersPathPatternArg(args, release_track):
   """Gets the event filters with path pattern from the arguments."""
   if release_track == base.ReleaseTrack.GA:
     return args.event_filters_path_pattern
+  return None
+
+
+def GetEventDataContentTypeArg(args, release_track):
+  """Gets the event data content type from the arguments."""
+  if release_track == base.ReleaseTrack.GA:
+    return args.event_data_content_type
   return None
 
 

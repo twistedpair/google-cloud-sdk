@@ -758,7 +758,8 @@ class GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions(_messages.Message)
   workload
 
   Fields:
-    dataLogsViewer: Allow partner to view data and logs
+    dataLogsViewer: Allow the partner to view inspectability logs and
+      monitoring violations.
     remediateFolderViolations: Allow partner to monitor folder and remediate
       violations
     serviceAccessApprover: Allow partner to approve or reject Service Access

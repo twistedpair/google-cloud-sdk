@@ -221,6 +221,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_TLSINSPECTIONPOLICIES = (
+      'projects.locations.tlsInspectionPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'tlsInspectionPolicies/{tlsInspectionPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_URLLISTS = (
       'projects.locations.urlLists',
       '{+name}',

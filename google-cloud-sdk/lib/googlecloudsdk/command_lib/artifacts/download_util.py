@@ -24,12 +24,13 @@ import shutil
 from apitools.base.py import transfer
 from googlecloudsdk.command_lib.artifacts import requests
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import transports
 
 
 def Download(tmp_path, final_path, file_res_name, allow_overwrite):
   """Downloads a file to a local path."""
-  client = requests.GetClientV1beta2()
+  client = requests.GetClient()
 
   # call expanduser so that `~` can be used to represent the home directory.
   final_path = os.path.expanduser(final_path)
@@ -38,15 +39,27 @@ def Download(tmp_path, final_path, file_res_name, allow_overwrite):
   if os.path.exists(final_path) and not allow_overwrite:
     raise exceptions.Error('File {} already exists.'.format(final_path))
 
-  m = requests.GetMessagesV1beta2()
+  m = requests.GetMessages()
   request = m.ArtifactregistryMediaDownloadRequest(name=file_res_name)
   # Allow overwriting in /tmp.
-  d = transfer.Download.FromFile(tmp_path, True)
-  d.bytes_http = transports.GetApitoolsTransport(response_encoding=None)
+  with console_io.ProgressBar('Downloading the file') as progress_bar:
 
-  try:
-    client.media.Download(request, download=d)
-  finally:
-    d.stream.close()
+    def ProgressCallback(_, download):
+      """callback function to print the progress of the download."""
+      if download.total_size:
+        progress = download.progress / download.total_size
+        if progress < 1:
+          progress_bar.SetProgress(progress)
+
+    d = transfer.Download.FromFile(
+        tmp_path,
+        True,
+        progress_callback=ProgressCallback,
+    )
+    d.bytes_http = transports.GetApitoolsTransport(response_encoding=None)
+    try:
+      client.media.Download(request, download=d)
+    finally:
+      d.stream.close()
 
   shutil.move(tmp_path, final_path)

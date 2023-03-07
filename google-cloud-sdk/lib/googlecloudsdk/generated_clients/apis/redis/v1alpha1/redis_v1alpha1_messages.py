@@ -93,10 +93,7 @@ class Cluster(_messages.Message):
     privateServiceConnect: Optional. Populate to use private service connect
       network option.
     replicaCount: Optional. The number of replica nodes per shard.
-    sizeGb: Optional. Redis memory size in GB for the entire cluster. See
-      b/257175558 for comments in naming the field. Use unit GB to follow GCE
-      conventions: https://cloud.google.com/compute/docs/instances/creating-
-      instance-with-custom-machine-type#memory_units.
+    sizeGb: Optional. Redis memory size in GB for the entire cluster.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
     transitEncryptionMode: Optional. The in-transit encryption for the Redis

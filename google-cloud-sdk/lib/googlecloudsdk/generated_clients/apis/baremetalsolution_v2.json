@@ -264,6 +264,11 @@
             "WORKLOAD_PROFILE_GENERIC",
             "WORKLOAD_PROFILE_HANA"
           ]
+        },
+        "firmwareVersion": {
+          "description": "Output only. The firmware version for the instance.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -930,8 +935,8 @@
       "description": "Message requesting rename of a server.",
       "type": "object",
       "properties": {
-        "newName": {
-          "description": "Required. The new `name` of the instance. Format: {instancename}",
+        "newInstanceId": {
+          "description": "Required. The new `id` of the instance.",
           "type": "string"
         }
       }
@@ -1089,6 +1094,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "RenameVolumeRequest": {
+      "id": "RenameVolumeRequest",
+      "description": "Message requesting rename of a server.",
+      "type": "object",
+      "properties": {
+        "newVolumeId": {
+          "description": "Required. The new `id` of the volume.",
+          "type": "string"
         }
       }
     },
@@ -1586,6 +1602,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "RenameNfsShareRequest": {
+      "id": "RenameNfsShareRequest",
+      "description": "Message requesting rename of a server.",
+      "type": "object",
+      "properties": {
+        "newNfsshareId": {
+          "description": "Required. The new `id` of the nfsshare.",
+          "type": "string"
         }
       }
     },
@@ -2378,6 +2405,17 @@
         }
       }
     },
+    "RenameNetworkRequest": {
+      "id": "RenameNetworkRequest",
+      "description": "Message requesting rename of a server.",
+      "type": "object",
+      "properties": {
+        "newNetworkId": {
+          "description": "Required. The new `id` of the network.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -2633,7 +2671,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "RenameInstance sets a new name for an instance."
+                  "description": "RenameInstance sets a new name for an instance. Use with caution, previous names become immediately invalidated."
                 },
                 "create": {
                   "id": "baremetalsolution.projects.locations.instances.create",
@@ -3116,6 +3154,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Create a volume."
+                },
+                "rename": {
+                  "id": "baremetalsolution.projects.locations.volumes.rename",
+                  "path": "v2/{+name}:rename",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:rename",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The `name` field is used to identify the volume. Format: projects\/{project}\/locations\/{location}\/volumes\/{volume}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RenameVolumeRequest"
+                  },
+                  "response": {
+                    "$ref": "Volume"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RenameVolume sets a new name for a volume. Use with caution, previous names become immediately invalidated."
                 },
                 "createAndAttach": {
                   "id": "baremetalsolution.projects.locations.volumes.createAndAttach",
@@ -3654,6 +3720,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Update details of a single network."
+                },
+                "rename": {
+                  "id": "baremetalsolution.projects.locations.networks.rename",
+                  "path": "v2/{+name}:rename",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/networks/{networksId}:rename",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The `name` field is used to identify the network. Format: projects\/{project}\/locations\/{location}\/networks\/{network}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RenameNetworkRequest"
+                  },
+                  "response": {
+                    "$ref": "Network"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RenameNetwork sets a new name for a network. Use with caution, previous names become immediately invalidated."
                 }
               }
             },
@@ -3973,6 +4067,38 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete an NFS share. The underlying volume is automatically deleted."
+                }
+              }
+            },
+            "nfsshares": {
+              "methods": {
+                "rename": {
+                  "id": "baremetalsolution.projects.locations.nfsshares.rename",
+                  "path": "v2/{+name}:rename",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/nfsshares/{nfssharesId}:rename",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The `name` field is used to identify the nfsshare. Format: projects\/{project}\/locations\/{location}\/nfsshares\/{nfsshare}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nfsshares\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RenameNfsShareRequest"
+                  },
+                  "response": {
+                    "$ref": "NfsShare"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RenameNfsShare sets a new name for an nfsshare. Use with caution, previous names become immediately invalidated."
                 }
               }
             },
@@ -4319,7 +4445,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Get details about an operation. This method used only to work around CCFE lack of passthrough LRO support (b\/221498758)."
+                  "description": "Get details about an operation."
                 }
               }
             }

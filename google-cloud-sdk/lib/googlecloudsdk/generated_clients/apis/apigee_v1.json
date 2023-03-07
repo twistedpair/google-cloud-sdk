@@ -1619,6 +1619,22 @@
         "forwardProxyUri": {
           "description": "Optional. Url of the forward proxy to be applied to the runtime instances in this environment. Must be in the format of {scheme}:\/\/{hostname}:{port}. Note that scheme must be one of \"http\" or \"https\", and port must be supplied.",
           "type": "string"
+        },
+        "type": {
+          "description": "Optional. EnvironmentType selected for the environment.",
+          "type": "string",
+          "enumDescriptions": [
+            "Environment type not specified.",
+            "Developer environment has limited capacity and capabilities and are usually used when you are getting started with Apigee or while experimenting. Refer to Apigee's public documentation for more details.",
+            "This is the default type and it supports API management features and higher capacity than Developer environment. Refer to Apigee's public documentation for more details.",
+            "Advanced environment supports even higher capacity than Pro and advanced capabilites. Refer to Apigee's public documentation for more details."
+          ],
+          "enum": [
+            "ENVIRONMENT_TYPE_UNSPECIFIED",
+            "DEVELOPER",
+            "PRO",
+            "ADVANCED"
+          ]
         }
       }
     },
@@ -2003,6 +2019,20 @@
           "description": "Revision number which can be used by the runtime to detect if the deployment group has changed between two versions.",
           "type": "string",
           "format": "int64"
+        },
+        "deploymentGroupType": {
+          "description": "Type of the deployment group, which will be either Standard or Extensible.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type",
+            "Standard type",
+            "Extensible Type"
+          ],
+          "enum": [
+            "DEPLOYMENT_GROUP_TYPE_UNSPECIFIED",
+            "STANDARD",
+            "EXTENSIBLE"
+          ]
         }
       }
     },
@@ -6552,6 +6582,23 @@
           "description": "Total traffic detected as part of the incident.",
           "type": "string",
           "format": "int64"
+        },
+        "riskLevel": {
+          "description": "Output only. Risk level of the incident.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Risk Level Unspecified.",
+            "Risk level of the incident is low.",
+            "Risk level of the incident is moderate.",
+            "Risk level of the incident is severe."
+          ],
+          "enum": [
+            "RISK_LEVEL_UNSPECIFIED",
+            "LOW",
+            "MODERATE",
+            "SEVERE"
+          ]
         }
       }
     },
@@ -12040,7 +12087,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Security incident in the following format: `organizations\/{org}\/environments\/{environment}\/securityIncidents\/{incident}'. Example: organizations\/testOrg\/environments\/testEnv\/securityIncident\/1234-4567-890-111",
+                      "description": "Required. Security incident in the following format: `organizations\/{org}\/environments\/{environment}\/securityIncidents\/{incident}'. Example: organizations\/testOrg\/environments\/testEnv\/securityIncidents\/1234-4567-890-111",
                       "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/securityIncidents\/[^\/]+$",
                       "location": "path",
                       "required": true,

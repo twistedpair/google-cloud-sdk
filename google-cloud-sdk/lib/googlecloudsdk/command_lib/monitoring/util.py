@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,10 +29,13 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import times
 import six
 
 
 CHANNELS_FIELD_REMAPPINGS = {'channelLabels': 'labels'}
+
+SNOOZE_FIELD_DELETIONS = ['criteria']
 
 
 class YamlOrJsonLoadError(exceptions.Error):
@@ -71,12 +74,21 @@ def _RemapFields(yaml_obj, field_remappings):
   return yaml_obj
 
 
+def _DeleteFields(yaml_obj, field_deletions):
+  for field_name in field_deletions:
+    if field_name in yaml_obj:
+      yaml_obj.pop(field_name)
+  return yaml_obj
+
+
 def MessageFromString(msg_string, message_type, display_type,
-                      field_remappings=None):
+                      field_remappings=None, field_deletions=None):
   try:
     msg_as_yaml = yaml.load(msg_string)
     if field_remappings:
       msg_as_yaml = _RemapFields(msg_as_yaml, field_remappings)
+    if field_deletions:
+      msg_as_yaml = _DeleteFields(msg_as_yaml, field_deletions)
     msg = encoding.PyValueToMessage(message_type, msg_as_yaml)
     return msg
   except Exception as exc:  # pylint: disable=broad-except
@@ -469,3 +481,112 @@ def ParseMonitoredProject(monitored_project_name):
         properties.VALUES.core.project.Get(required=True))
     monitored_project_def = projects_util.ParseProject(monitored_project_name)
   return metrics_scope_def, monitored_project_def
+
+
+def ParseSnooze(snooze_name, project=None):
+  project = project or properties.VALUES.core.project.Get(required=True)
+  return resources.REGISTRY.Parse(
+      snooze_name,
+      params={'projectsId': project},
+      collection='monitoring.projects.snoozes',
+  )
+
+
+def GetBaseSnoozeMessageFromArgs(args, snooze_class, update=False):
+  """Returns the base snooze from args."""
+  if args.IsSpecified('snooze_from_file'):
+    snooze_string = args.snooze_from_file
+    if update:
+      snooze = MessageFromString(
+          snooze_string,
+          snooze_class,
+          'Snooze',
+          field_deletions=SNOOZE_FIELD_DELETIONS,
+      )
+    else:
+      snooze = MessageFromString(
+          snooze_string,
+          snooze_class,
+          'Snooze',
+      )
+  else:
+    snooze = snooze_class()
+  return snooze
+
+
+def ModifySnooze(
+    base_snooze,
+    messages,
+    display_name=None,
+    criteria_policies=None,
+    start_time=None,
+    end_time=None,
+    field_masks=None,
+):
+  """Override and/or add fields from other flags to an Snooze."""
+  if field_masks is None:
+    field_masks = []
+
+  start_time_target = None
+  start_time_from_base = False
+  if start_time is not None:
+    field_masks.append('interval.start_time')
+    start_time_target = start_time
+  else:
+    try:
+      start_time_target = times.ParseDateTime(base_snooze.interval.startTime)
+      start_time_from_base = True
+    except AttributeError:
+      pass
+
+  end_time_target = None
+  end_time_from_base = False
+  if end_time is not None:
+    field_masks.append('interval.end_time')
+    end_time_target = end_time
+  else:
+    try:
+      end_time_target = times.ParseDateTime(base_snooze.interval.endTime)
+      end_time_from_base = True
+    except AttributeError:
+      pass
+
+  try:
+    if start_time_target is not None and not start_time_from_base:
+      base_snooze.interval.startTime = times.FormatDateTime(start_time_target)
+    if end_time_target is not None and not end_time_from_base:
+      base_snooze.interval.endTime = times.FormatDateTime(end_time_target)
+  except AttributeError:
+    interval = messages.TimeInterval()
+    interval.startTime = times.FormatDateTime(start_time_target)
+    interval.endTime = times.FormatDateTime(end_time_target)
+    base_snooze.interval = interval
+
+  if display_name is not None:
+    field_masks.append('display_name')
+    base_snooze.displayName = display_name
+
+  if criteria_policies is not None:
+    field_masks.append('criteria_policies')
+    criteria = messages.Criteria()
+    criteria.policies = criteria_policies
+    base_snooze.criteria = criteria
+
+
+def CreateSnoozeFromArgs(args, messages):
+  """Builds a Snooze message from args."""
+  snooze_base_flags = ['--display-name', '--snooze-from-file']
+  ValidateAtleastOneSpecified(args, snooze_base_flags)
+
+  # Get a base snooze object from the flags
+  snooze = GetBaseSnoozeMessageFromArgs(args, messages.Snooze)
+
+  ModifySnooze(
+      snooze,
+      messages,
+      display_name=args.display_name,
+      criteria_policies=args.criteria_policies,
+      start_time=args.start_time,
+      end_time=args.end_time)
+
+  return snooze

@@ -971,6 +971,10 @@ class ExecuteSqlRequest(_messages.Message):
       statement with unbound parameters.
 
   Fields:
+    dataBoostEnabled: If this is for a partitioned query and this field is set
+      to `true`, the request will be executed via Spanner independent compute
+      resources. If the field is set to `true` but the request does not set
+      `partition_token`, the API will return an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
     paramTypes: It is not always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
@@ -1097,17 +1101,18 @@ class ExecuteSqlRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  directedReadOptions = _messages.MessageField('DirectedReadOptions', 1)
-  paramTypes = _messages.MessageField('ParamTypesValue', 2)
-  params = _messages.MessageField('ParamsValue', 3)
-  partitionToken = _messages.BytesField(4)
-  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 5)
-  queryOptions = _messages.MessageField('QueryOptions', 6)
-  requestOptions = _messages.MessageField('RequestOptions', 7)
-  resumeToken = _messages.BytesField(8)
-  seqno = _messages.IntegerField(9)
-  sql = _messages.StringField(10)
-  transaction = _messages.MessageField('TransactionSelector', 11)
+  dataBoostEnabled = _messages.BooleanField(1)
+  directedReadOptions = _messages.MessageField('DirectedReadOptions', 2)
+  paramTypes = _messages.MessageField('ParamTypesValue', 3)
+  params = _messages.MessageField('ParamsValue', 4)
+  partitionToken = _messages.BytesField(5)
+  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 6)
+  queryOptions = _messages.MessageField('QueryOptions', 7)
+  requestOptions = _messages.MessageField('RequestOptions', 8)
+  resumeToken = _messages.BytesField(9)
+  seqno = _messages.IntegerField(10)
+  sql = _messages.StringField(11)
+  transaction = _messages.MessageField('TransactionSelector', 12)
 
 
 class Expr(_messages.Message):
@@ -1434,14 +1439,17 @@ class Instance(_messages.Message):
       be between 2 and 64 characters in length.
     nodeCount: The number of nodes allocated to this instance. At most one of
       either node_count or processing_units should be present in the message.
-      This may be zero in API responses for instances that are not yet in
-      state `READY`. See [the
+      Users can set the node_count field to specify the target number of nodes
+      allocated to the instance. This may be zero in API responses for
+      instances that are not yet in state `READY`. See [the
       documentation](https://cloud.google.com/spanner/docs/compute-capacity)
       for more information about nodes and processing units.
     processingUnits: The number of processing units allocated to this
       instance. At most one of processing_units or node_count should be
-      present in the message. This may be zero in API responses for instances
-      that are not yet in state `READY`. See [the
+      present in the message. Users can set the processing_units field to
+      specify the target number of processing units allocated to the instance.
+      This may be zero in API responses for instances that are not yet in
+      state `READY`. See [the
       documentation](https://cloud.google.com/spanner/docs/compute-capacity)
       for more information about nodes and processing units.
     state: Output only. The current instance state. For CreateInstance, the
@@ -3021,6 +3029,10 @@ class ReadRequest(_messages.Message):
   Fields:
     columns: Required. The columns of table to be returned for each row
       matching this request.
+    dataBoostEnabled: If this is for a partitioned read and this field is set
+      to `true`, the request will be executed via Spanner independent compute
+      resources. If the field is set to `true` but the request does not set
+      `partition_token`, the API will return an `INVALID_ARGUMENT` error.
     directedReadOptions: Directed read options for this request.
     index: If non-empty, the name of an index on table. This index is used
       instead of the table primary key when interpreting key_set and sorting
@@ -3053,15 +3065,16 @@ class ReadRequest(_messages.Message):
   """
 
   columns = _messages.StringField(1, repeated=True)
-  directedReadOptions = _messages.MessageField('DirectedReadOptions', 2)
-  index = _messages.StringField(3)
-  keySet = _messages.MessageField('KeySet', 4)
-  limit = _messages.IntegerField(5)
-  partitionToken = _messages.BytesField(6)
-  requestOptions = _messages.MessageField('RequestOptions', 7)
-  resumeToken = _messages.BytesField(8)
-  table = _messages.StringField(9)
-  transaction = _messages.MessageField('TransactionSelector', 10)
+  dataBoostEnabled = _messages.BooleanField(2)
+  directedReadOptions = _messages.MessageField('DirectedReadOptions', 3)
+  index = _messages.StringField(4)
+  keySet = _messages.MessageField('KeySet', 5)
+  limit = _messages.IntegerField(6)
+  partitionToken = _messages.BytesField(7)
+  requestOptions = _messages.MessageField('RequestOptions', 8)
+  resumeToken = _messages.BytesField(9)
+  table = _messages.StringField(10)
+  transaction = _messages.MessageField('TransactionSelector', 11)
 
 
 class ReadWrite(_messages.Message):

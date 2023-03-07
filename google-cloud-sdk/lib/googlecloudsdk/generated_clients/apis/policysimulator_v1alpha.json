@@ -610,8 +610,8 @@
         }
       }
     },
-    "GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata": {
-      "id": "GoogleCloudPolicysimulatorV1beta1ReplayOperationMetadata",
+    "GoogleCloudPolicysimulatorV1ReplayOperationMetadata": {
+      "id": "GoogleCloudPolicysimulatorV1ReplayOperationMetadata",
       "description": "Metadata about a Replay operation.",
       "type": "object",
       "properties": {
@@ -622,8 +622,8 @@
         }
       }
     },
-    "GoogleCloudPolicysimulatorV1beta1Replay": {
-      "id": "GoogleCloudPolicysimulatorV1beta1Replay",
+    "GoogleCloudPolicysimulatorV1Replay": {
+      "id": "GoogleCloudPolicysimulatorV1Replay",
       "description": "A resource describing a `Replay`, or simulation.",
       "type": "object",
       "properties": {
@@ -637,7 +637,7 @@
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "The state is unspecified.",
+            "Default value. This value is unused.",
             "The `Replay` has not started yet.",
             "The `Replay` is currently running.",
             "The `Replay` has successfully completed.",
@@ -653,17 +653,17 @@
         },
         "config": {
           "description": "Required. The configuration used for the `Replay`.",
-          "$ref": "GoogleCloudPolicysimulatorV1beta1ReplayConfig"
+          "$ref": "GoogleCloudPolicysimulatorV1ReplayConfig"
         },
         "resultsSummary": {
           "description": "Output only. Summary statistics about the replayed log entries.",
           "readOnly": true,
-          "$ref": "GoogleCloudPolicysimulatorV1beta1ReplayResultsSummary"
+          "$ref": "GoogleCloudPolicysimulatorV1ReplayResultsSummary"
         }
       }
     },
-    "GoogleCloudPolicysimulatorV1beta1ReplayConfig": {
-      "id": "GoogleCloudPolicysimulatorV1beta1ReplayConfig",
+    "GoogleCloudPolicysimulatorV1ReplayConfig": {
+      "id": "GoogleCloudPolicysimulatorV1ReplayConfig",
       "description": "The configuration used for a Replay.",
       "type": "object",
       "properties": {
@@ -1072,8 +1072,8 @@
         }
       }
     },
-    "GoogleCloudPolicysimulatorV1beta1ReplayResultsSummary": {
-      "id": "GoogleCloudPolicysimulatorV1beta1ReplayResultsSummary",
+    "GoogleCloudPolicysimulatorV1ReplayResultsSummary": {
+      "id": "GoogleCloudPolicysimulatorV1ReplayResultsSummary",
       "description": "Summary statistics about the replayed log entries.",
       "type": "object",
       "properties": {
@@ -1126,119 +1126,6 @@
           "description": "Day of a month. Must be from 1 to 31 and valid for the year and month, or 0 to specify a year by itself or a year and month where the day isn't significant.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1ReplayOperationMetadata": {
-      "id": "GoogleCloudPolicysimulatorV1ReplayOperationMetadata",
-      "description": "Metadata about a Replay operation.",
-      "type": "object",
-      "properties": {
-        "startTime": {
-          "description": "Time when the request was received.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1Replay": {
-      "id": "GoogleCloudPolicysimulatorV1Replay",
-      "description": "A resource describing a `Replay`, or simulation.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The resource name of the `Replay`, which has the following format: `{projects|folders|organizations}\/{resource-id}\/locations\/global\/replays\/{replay-id}`, where `{resource-id}` is the ID of the project, folder, or organization that owns the Replay. Example: `projects\/my-example-project\/locations\/global\/replays\/506a5f7f-38ce-4d7d-8e03-479ce1833c36`",
-          "readOnly": true,
-          "type": "string"
-        },
-        "state": {
-          "description": "Output only. The current state of the `Replay`.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "The `Replay` has not started yet.",
-            "The `Replay` is currently running.",
-            "The `Replay` has successfully completed.",
-            "The `Replay` has finished with an error."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "PENDING",
-            "RUNNING",
-            "SUCCEEDED",
-            "FAILED"
-          ]
-        },
-        "config": {
-          "description": "Required. The configuration used for the `Replay`.",
-          "$ref": "GoogleCloudPolicysimulatorV1ReplayConfig"
-        },
-        "resultsSummary": {
-          "description": "Output only. Summary statistics about the replayed log entries.",
-          "readOnly": true,
-          "$ref": "GoogleCloudPolicysimulatorV1ReplayResultsSummary"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1ReplayConfig": {
-      "id": "GoogleCloudPolicysimulatorV1ReplayConfig",
-      "description": "The configuration used for a Replay.",
-      "type": "object",
-      "properties": {
-        "policyOverlay": {
-          "description": "A mapping of the resources that you want to simulate policies for and the policies that you want to simulate. Keys are the full resource names for the resources. For example, `\/\/cloudresourcemanager.googleapis.com\/projects\/my-project`. For examples of full resource names for Google Cloud services, see https:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names. Values are Policy objects representing the policies that you want to simulate. Replays automatically take into account any IAM policies inherited through the resource hierarchy, and any policies set on descendant resources. You do not need to include these policies in the policy overlay.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleIamV1Policy"
-          }
-        },
-        "logSource": {
-          "description": "The logs to use as input for the Replay.",
-          "type": "string",
-          "enumDescriptions": [
-            "An unspecified log source. If the log source is unspecified, the Replay defaults to using `RECENT_ACCESSES`.",
-            "All access logs from the last 90 days. These logs may not include logs from the most recent 7 days."
-          ],
-          "enum": [
-            "LOG_SOURCE_UNSPECIFIED",
-            "RECENT_ACCESSES"
-          ]
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1ReplayResultsSummary": {
-      "id": "GoogleCloudPolicysimulatorV1ReplayResultsSummary",
-      "description": "Summary statistics about the replayed log entries.",
-      "type": "object",
-      "properties": {
-        "logCount": {
-          "description": "The total number of log entries replayed.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "unchangedCount": {
-          "description": "The number of replayed log entries with no difference between baseline and simulated policies.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "differenceCount": {
-          "description": "The number of replayed log entries with a difference between baseline and simulated policies.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "errorCount": {
-          "description": "The number of log entries that could not be replayed.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "oldestDate": {
-          "description": "The date of the oldest log entry replayed.",
-          "$ref": "GoogleTypeDate"
-        },
-        "newestDate": {
-          "description": "The date of the newest log entry replayed.",
-          "$ref": "GoogleTypeDate"
         }
       }
     },

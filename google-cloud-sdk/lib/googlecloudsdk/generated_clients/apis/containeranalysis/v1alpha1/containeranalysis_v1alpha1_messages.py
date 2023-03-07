@@ -64,6 +64,10 @@ class Assessment(_messages.Message):
   Fields:
     cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
       tracking number for the vulnerability.
+    impacts: Contains information about the impact of this vulnerability, this
+      will change with time.
+    justification: Justification provides the justification when the state of
+      the assessment if NOT_AFFECTED.
     longDescription: A detailed description of this Vex.
     relatedUris: Holds a list of references associated with this vulnerability
       item and assessment. These uris have additional information about the
@@ -73,8 +77,6 @@ class Assessment(_messages.Message):
       vulnerability.
     shortDescription: A one sentence description of this Vex.
     state: Provides the state of this Vulnerability assessment.
-    threats: Contains information about this vulnerability, this will change
-      with time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -97,12 +99,13 @@ class Assessment(_messages.Message):
     UNDER_INVESTIGATION = 4
 
   cve = _messages.StringField(1)
-  longDescription = _messages.StringField(2)
-  relatedUris = _messages.MessageField('URI', 3, repeated=True)
-  remediations = _messages.MessageField('Remediation', 4, repeated=True)
-  shortDescription = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  threats = _messages.MessageField('Threat', 7, repeated=True)
+  impacts = _messages.StringField(2, repeated=True)
+  justification = _messages.MessageField('Justification', 3)
+  longDescription = _messages.StringField(4)
+  relatedUris = _messages.MessageField('URI', 5, repeated=True)
+  remediations = _messages.MessageField('Remediation', 6, repeated=True)
+  shortDescription = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class Attestation(_messages.Message):
@@ -3854,6 +3857,52 @@ class Installation(_messages.Message):
   version = _messages.MessageField('Version', 7)
 
 
+class Justification(_messages.Message):
+  r"""Justification provides the justification when the state of the
+  assessment if NOT_AFFECTED.
+
+  Enums:
+    JustificationTypeValueValuesEnum: The justification type for this
+      vulnerability.
+
+  Fields:
+    details: Additional details on why this justification was chosen.
+    justificationType: The justification type for this vulnerability.
+  """
+
+  class JustificationTypeValueValuesEnum(_messages.Enum):
+    r"""The justification type for this vulnerability.
+
+    Values:
+      JUSTIFICATION_TYPE_UNSPECIFIED: JUSTIFICATION_TYPE_UNSPECIFIED.
+      COMPONENT_NOT_PRESENT: The vulnerable component is not present in the
+        product.
+      VULNERABLE_CODE_NOT_PRESENT: The vulnerable code is not present.
+        Typically this case occurs when source code is configured or built in
+        a way that excludes the vulnerable code.
+      VULNERABLE_CODE_NOT_IN_EXECUTE_PATH: The vulnerable code can not be
+        executed. Typically this case occurs when the product includes the
+        vulnerable code but does not call or use the vulnerable code.
+      VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY: The vulnerable code
+        cannot be controlled by an attacker to exploit the vulnerability.
+      INLINE_MITIGATIONS_ALREADY_EXIST: The product includes built-in
+        protections or features that prevent exploitation of the
+        vulnerability. These built-in protections cannot be subverted by the
+        attacker and cannot be configured or disabled by the user. These
+        mitigations completely prevent exploitation based on known attack
+        vectors.
+    """
+    JUSTIFICATION_TYPE_UNSPECIFIED = 0
+    COMPONENT_NOT_PRESENT = 1
+    VULNERABLE_CODE_NOT_PRESENT = 2
+    VULNERABLE_CODE_NOT_IN_EXECUTE_PATH = 3
+    VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY = 4
+    INLINE_MITIGATIONS_ALREADY_EXIST = 5
+
+  details = _messages.StringField(1)
+  justificationType = _messages.EnumField('JustificationTypeValueValuesEnum', 2)
+
+
 class Layer(_messages.Message):
   r"""Layer holds metadata specific to a layer of a Docker image.
 
@@ -5827,34 +5876,6 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-class Threat(_messages.Message):
-  r"""Contains the vulnerability kinetic information. This information can
-  change as the vulnerability ages and new information becomes available.
-
-  Enums:
-    ThreatTypeValueValuesEnum: The type of threat.
-
-  Fields:
-    details: Represents a thorough human-readable discussion of the threat.
-    threatType: The type of threat.
-  """
-
-  class ThreatTypeValueValuesEnum(_messages.Enum):
-    r"""The type of threat.
-
-    Values:
-      THREAT_TYPE_UNSPECIFIED: No threat type specified.
-      IMPACT: IMPACT
-      EXPLOIT_STATUS: EXPLOIT_STATUS
-    """
-    THREAT_TYPE_UNSPECIFIED = 0
-    IMPACT = 1
-    EXPLOIT_STATUS = 2
-
-  details = _messages.StringField(1)
-  threatType = _messages.EnumField('ThreatTypeValueValuesEnum', 2)
-
-
 class TimeSpan(_messages.Message):
   r"""Start and end times for a build execution phase. Next ID: 3
 
@@ -6004,6 +6025,10 @@ class VexAssessment(_messages.Message):
   Fields:
     cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
       tracking number for the vulnerability.
+    impacts: Contains information about the impact of this vulnerability, this
+      will change with time.
+    justification: Justification provides the justification when the state of
+      the assessment if NOT_AFFECTED.
     noteName: The VulnerabilityAssessment note from which this VexAssessment
       was generated. This will be of the form:
       `projects/[PROJECT_ID]/notes/[NOTE_ID]`.
@@ -6014,8 +6039,6 @@ class VexAssessment(_messages.Message):
     remediations: Specifies details on how to handle (and presumably, fix) a
       vulnerability.
     state: Provides the state of this Vulnerability assessment.
-    threats: Contains information about this vulnerability, this will change
-      with time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -6038,11 +6061,12 @@ class VexAssessment(_messages.Message):
     UNDER_INVESTIGATION = 4
 
   cve = _messages.StringField(1)
-  noteName = _messages.StringField(2)
-  relatedUris = _messages.MessageField('URI', 3, repeated=True)
-  remediations = _messages.MessageField('Remediation', 4, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  threats = _messages.MessageField('Threat', 6, repeated=True)
+  impacts = _messages.StringField(2, repeated=True)
+  justification = _messages.MessageField('Justification', 3)
+  noteName = _messages.StringField(4)
+  relatedUris = _messages.MessageField('URI', 5, repeated=True)
+  remediations = _messages.MessageField('Remediation', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class Volume(_messages.Message):

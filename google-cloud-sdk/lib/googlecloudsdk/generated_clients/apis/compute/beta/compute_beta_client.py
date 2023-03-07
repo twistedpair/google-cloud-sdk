@@ -1502,6 +1502,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def BulkInsert(self, request, global_params=None):
+      r"""Bulk create a set of disks.
+
+      Args:
+        request: (ComputeDisksBulkInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkInsert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkInsert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.bulkInsert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/bulkInsert',
+        request_field='bulkInsertDiskResource',
+        request_type_name='ComputeDisksBulkInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def CreateSnapshot(self, request, global_params=None):
       r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 
@@ -1758,6 +1784,84 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/disks/{resource}/setLabels',
         request_field='zoneSetLabelsRequest',
         request_type_name='ComputeDisksSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StartAsyncReplication(self, request, global_params=None):
+      r"""Starts asynchronous replication. Must be invoked on the primary disk.
+
+      Args:
+        request: (ComputeDisksStartAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.startAsyncReplication',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/startAsyncReplication',
+        request_field='disksStartAsyncReplicationRequest',
+        request_type_name='ComputeDisksStartAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+
+      Args:
+        request: (ComputeDisksStopAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.stopAsyncReplication',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/stopAsyncReplication',
+        request_field='',
+        request_type_name='ComputeDisksStopAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopGroupAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+
+      Args:
+        request: (ComputeDisksStopGroupAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopGroupAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopGroupAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.stopGroupAsyncReplication',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/stopGroupAsyncReplication',
+        request_field='disksStopGroupAsyncReplicationResource',
+        request_type_name='ComputeDisksStopGroupAsyncReplicationRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -12238,6 +12342,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def BulkInsert(self, request, global_params=None):
+      r"""Bulk create a set of disks.
+
+      Args:
+        request: (ComputeRegionDisksBulkInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkInsert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkInsert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.bulkInsert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/bulkInsert',
+        request_field='bulkInsertDiskResource',
+        request_type_name='ComputeRegionDisksBulkInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def CreateSnapshot(self, request, global_params=None):
       r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 
@@ -12494,6 +12624,84 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/disks/{resource}/setLabels',
         request_field='regionSetLabelsRequest',
         request_type_name='ComputeRegionDisksSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StartAsyncReplication(self, request, global_params=None):
+      r"""Starts asynchronous replication. Must be invoked on the primary disk.
+
+      Args:
+        request: (ComputeRegionDisksStartAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.startAsyncReplication',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/startAsyncReplication',
+        request_field='regionDisksStartAsyncReplicationRequest',
+        request_type_name='ComputeRegionDisksStartAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+
+      Args:
+        request: (ComputeRegionDisksStopAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.stopAsyncReplication',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/stopAsyncReplication',
+        request_field='',
+        request_type_name='ComputeRegionDisksStopAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopGroupAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+
+      Args:
+        request: (ComputeRegionDisksStopGroupAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopGroupAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopGroupAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.stopGroupAsyncReplication',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/stopGroupAsyncReplication',
+        request_field='disksStopGroupAsyncReplicationResource',
+        request_type_name='ComputeRegionDisksStopGroupAsyncReplicationRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17140,7 +17348,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.securityPolicies.patchRule',
         ordered_params=['project', 'securityPolicy'],
         path_params=['project', 'securityPolicy'],
-        query_params=['priority', 'validateOnly'],
+        query_params=['priority', 'updateMask', 'validateOnly'],
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
         request_field='securityPolicyRule',
         request_type_name='ComputeSecurityPoliciesPatchRuleRequest',

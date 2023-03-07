@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.monitoring import completers
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
+from googlecloudsdk.core.util import times
 
 
 COMPARISON_TO_ENUM = {
@@ -35,6 +36,15 @@ COMPARISON_TO_ENUM = {
     '=': 'COMPARISON_EQ',
     '!=': 'COMPARISON_NE',
 }
+
+
+def AddFileMessageFlag(parser, resource, flag=None):
+  """Adds flags for specifying a message as a file to the parser."""
+  parser.add_argument(
+      '--{}-from-file'.format(flag or resource),
+      type=arg_parsers.FileContents(),
+      help='The path to a JSON or YAML file containing the {}.'.format(
+          resource))
 
 
 def AddMessageFlags(parser, resource, flag=None):
@@ -300,3 +310,76 @@ def GetMonitoredProjectIDNumberFlag(verb):
       completer=completers.MonitoredProjectCompleter,
       help='Monitored project ID or number for the project you want to {0}.'
       .format(verb))
+
+
+def AddCriteriaPoliciesFlag(parser, resource):
+  parser.add_argument(
+      '--criteria-policies',
+      metavar='CRITERIA_POLICIES',
+      type=arg_parsers.ArgList(min_length=1, max_length=16),
+      help='The policies that the {} applies to.'.format(resource))
+
+
+def AddStartTimeFlag(parser, resource):
+  parser.add_argument(
+      '--start-time',
+      type=arg_parsers.Datetime.Parse,
+      help='The start time for the {}.'.format(resource))
+
+
+def AddEndTimeFlag(parser, resource):
+  parser.add_argument(
+      '--end-time',
+      type=arg_parsers.Datetime.Parse,
+      help='The start time for the {}.'.format(resource))
+
+
+def AddSnoozeSettingsFlags(parser, update=False):
+  """Adds snooze settings flags to the parser."""
+  snooze_settings_group = parser.add_group(help="""\
+      Snooze Settings.
+      If any of these are specified, they will overwrite fields in the
+      `--snooze-from-file` flags if specified.""")
+  AddDisplayNameFlag(snooze_settings_group, resource='Snooze')
+  if not update:
+    AddCriteriaPoliciesFlag(snooze_settings_group, resource='Snooze')
+  AddStartTimeFlag(snooze_settings_group, resource='Snooze')
+  AddEndTimeFlag(snooze_settings_group, resource='Snooze')
+
+
+def ValidateSnoozeUpdateArgs(args):
+  """Validate snooze update args."""
+  if args.fields and not args.snooze_from_file:
+    raise exceptions.OneOfArgumentsRequiredException(
+        ['--snooze-from-file'], 'If --fields is specified.'
+    )
+
+
+def ValidateSnoozeInterval(
+    snooze,
+    display_name=None,
+    start_time=None,
+    end_time=None,
+):
+  """Validate snooze reference interval."""
+  snooze_past = False
+  end_time_ref = times.ParseDateTime(snooze.interval.endTime)
+  if end_time_ref < times.Now():
+    snooze_past = True
+
+  if snooze_past:
+    if display_name is not None:
+      raise exceptions.InvalidArgumentException(
+          '--display-name',
+          'Expired snoozes can no longer be updated.',
+      )
+    elif start_time is not None:
+      raise exceptions.InvalidArgumentException(
+          '--start-time',
+          'Expired snoozes can no longer be updated.',
+      )
+    elif end_time is not None:
+      raise exceptions.InvalidArgumentException(
+          '--end-time',
+          'Expired snoozes can no longer be updated.',
+      )

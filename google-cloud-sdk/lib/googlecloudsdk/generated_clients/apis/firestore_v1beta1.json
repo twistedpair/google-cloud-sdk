@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20230221",
+  "revision": "20230301",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -797,7 +797,7 @@
       "type": "object",
       "properties": {
         "select": {
-          "description": "The projection to return.",
+          "description": "Optional sub-set of the fields to return. This acts as a DocumentMask over the documents returned from a query. When not set, assumes that the caller wants all fields returned.",
           "$ref": "Projection"
         },
         "from": {
@@ -1157,7 +1157,7 @@
           "format": "byte"
         },
         "readTime": {
-          "description": "The time at which the aggregate value is valid for.",
+          "description": "The time at which the aggregate result was computed. This is always monotonically increasing; in this case, the previous AggregationResult in the result stream are guaranteed not to have changed between their `read_time` and this one. If the query returns no results, a response with `read_time` and no `result` will be sent, and this represents the time at which the query was run.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -2608,7 +2608,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/datastore"
                   ],
-                  "description": "Streams batches of document updates and deletes, in order. This method is only available via the gRPC API (not REST)."
+                  "description": "Streams batches of document updates and deletes, in order. This method is only available via gRPC or WebChannel (not REST)."
                 },
                 "listen": {
                   "id": "firestore.projects.databases.documents.listen",
@@ -2637,7 +2637,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/datastore"
                   ],
-                  "description": "Listens to changes. This method is only available via the gRPC API (not REST)."
+                  "description": "Listens to changes. This method is only available via gRPC or WebChannel (not REST)."
                 },
                 "listCollectionIds": {
                   "id": "firestore.projects.databases.documents.listCollectionIds",

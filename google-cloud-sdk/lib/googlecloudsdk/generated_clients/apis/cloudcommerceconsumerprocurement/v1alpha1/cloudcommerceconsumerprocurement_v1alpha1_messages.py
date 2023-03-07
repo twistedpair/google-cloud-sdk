@@ -2080,6 +2080,73 @@ class GoogleCloudCommerceConsumerProcurementV1mainModifyOrderMetadata(_messages.
 
 
 
+class GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation(_messages.Message):
+  r"""OrderAllocation represents the allocation of resources within a specific
+  order to a set of targets (projects). Next Id: 9
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the allocation.
+
+  Fields:
+    allocationEntry: Required. The currently effective allocation entry.
+    createTime: Output only. The time when the resource was created.
+    displayName: Optional. The user-specified name of the allocation. Must be
+      unique within an Order if specified.
+    etag: The weak etag of the order allocation, which can be optionally set.
+    name: The resource name of the allocation. This field is of the form: `bil
+      lingAccounts/{billing_account}/orders/{order}/orderAllocations/{order_al
+      location}`.
+    pendingAllocationEntry: Output only. The upcoming allocation entry.
+    state: Output only. The state of the allocation.
+    updateTime: Output only. The time when the resource was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the allocation.
+
+    Values:
+      STATE_UNSPECIFIED: Sentinel value. Do not use.
+      STATE_PENDING_ACTIVATION: The allocation is pending activation.
+      STATE_ACTIVE: The allocation is active.
+      STATE_PENDING_DELETION: The allocation is pending deletion.
+      STATE_CANCELLED: The allocation is cancelled. This can be caused by
+        failure in creating the allocation or the associated Order being
+        cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_PENDING_ACTIVATION = 1
+    STATE_ACTIVE = 2
+    STATE_PENDING_DELETION = 3
+    STATE_CANCELLED = 4
+
+  allocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  pendingAllocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainOrderAllocationAllocationEntry(_messages.Message):
+  r"""An allocation entry representing what resource is being allocated to
+  which targets.
+
+  Fields:
+    doubleResourceValue: Represents a double value.
+    int64ResourceValue: Represents an int64 value.
+    stringResourceValue: Represents a string value.
+    targets: Required. The targets of the allocation, only projects are
+      allowed at the moment.
+  """
+
+  doubleResourceValue = _messages.FloatField(1)
+  int64ResourceValue = _messages.IntegerField(2)
+  stringResourceValue = _messages.StringField(3)
+  targets = _messages.StringField(4, repeated=True)
+
+
 class GoogleCloudCommerceConsumerProcurementV1mainPlaceOrderMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.PlaceOrder.
@@ -2092,6 +2159,18 @@ class GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsMetadat
   ConsumerProcurementService.ReplaceOrderAllocations.
   """
 
+
+
+class GoogleCloudCommerceConsumerProcurementV1mainReplaceOrderAllocationsResponse(_messages.Message):
+  r"""Message stored in the response field of the Operation returned by
+  ConsumerProcurementService.ReplaceOrderAllocations.
+
+  Fields:
+    orderAllocations: The entire list of OrderAllocations of the parent Order
+      after the replacement.
+  """
+
+  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1mainOrderAllocation', 1, repeated=True)
 
 
 class GoogleCloudCommerceConsumerProcurementV1mainUpdateOrderAllocationMetadata(_messages.Message):

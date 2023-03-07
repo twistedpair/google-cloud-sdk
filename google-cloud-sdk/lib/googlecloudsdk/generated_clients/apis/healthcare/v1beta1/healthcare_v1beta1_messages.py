@@ -4881,7 +4881,10 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
       `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The time must
       be specified to the second and include a time zone.
     _type: String of comma-delimited FHIR resource types. If provided, only
-      resources of the specified resource type(s) are returned.
+      resources of the specified resource type(s) are returned. Specifying
+      multiple `_type` parameters isn't supported. For example, the result of
+      `_type=Observation&_type=Encounter` is undefined. Use
+      `_type=Observation,Encounter` instead.
     end: The response includes records prior to the end date. The date uses
       the format YYYY-MM-DD. If no end date is provided, all records
       subsequent to the start date are in scope.

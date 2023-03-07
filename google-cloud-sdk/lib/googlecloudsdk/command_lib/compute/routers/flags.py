@@ -518,6 +518,5 @@ def AddEncryptedInterconnectRouter(parser):
       required=False,
       action='store_true',
       default=None,
-      hidden=True,
       help='Indicates if a router is dedicated for use with encrypted '
       'interconnect attachments (VLAN attachments).')

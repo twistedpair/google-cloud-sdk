@@ -41,6 +41,12 @@ def NotificationChannelAttributeConfig():
       help_text='Name of the Notification Channel.')
 
 
+def SnoozeAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='snooze',
+      help_text='Name of the snooze.')
+
+
 def GetAlertPolicyResourceSpec():
   return concepts.ResourceSpec(
       'monitoring.projects.alertPolicies',
@@ -63,6 +69,14 @@ def GetNotificationChannelResourceSpec():
       'monitoring.projects.notificationChannels',
       resource_name='Notification Channel',
       notificationChannelsId=NotificationChannelAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetSnoozeResourceSpec():
+  return concepts.ResourceSpec(
+      'monitoring.projects.snoozes',
+      resource_name='Snooze',
+      snoozesId=SnoozeAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -115,6 +129,17 @@ def CreateNotificationChannelResourceArg(arg_name, extra_help, required=True,
       help_stem + extra_help,
       required=required,
       plural=plural)
+
+
+def CreateSnoozeResourceArg(verb):
+  name = 'snooze'
+  help_text = 'Name of the Snooze ' + verb
+
+  return presentation_specs.ResourcePresentationSpec(
+      name,
+      GetSnoozeResourceSpec(),
+      help_text,
+      required=True)
 
 
 def AddResourceArgs(parser, resources):

@@ -70,7 +70,6 @@ def CreateNatMessage(
     with_private_nat=False,
     with_subnet_all=False,
     with_auto_network_tier=False,
-    with_endpoint_types=False,
 ):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
@@ -100,7 +99,7 @@ def CreateNatMessage(
         compute_holder.client.messages.RouterNat.AutoNetworkTierValueValuesEnum(
             args.auto_network_tier))
 
-  if with_endpoint_types and args.endpoint_types is not None:
+  if args.endpoint_types is not None:
     params['endpointTypes'] = [
         compute_holder.client.messages.RouterNat.EndpointTypesValueListEntryValuesEnum(
             endpoint_type

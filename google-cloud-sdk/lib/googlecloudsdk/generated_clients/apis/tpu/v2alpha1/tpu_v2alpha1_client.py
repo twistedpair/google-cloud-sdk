@@ -600,6 +600,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Reset(self, request, global_params=None):
+      r"""Resets a QueuedResource TPU instance.
+
+      Args:
+        request: (TpuProjectsLocationsQueuedResourcesResetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/queuedResources/{queuedResourcesId}:reset',
+        http_method='POST',
+        method_id='tpu.projects.locations.queuedResources.reset',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:reset',
+        request_field='resetQueuedResourceRequest',
+        request_type_name='TpuProjectsLocationsQueuedResourcesResetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRuntimeVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_runtimeVersions resource."""
 

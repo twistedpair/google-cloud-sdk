@@ -102,7 +102,7 @@ class BackfillNoneStrategy(_messages.Message):
 
 
 class BigQueryDestinationConfig(_messages.Message):
-  r"""A BigQueryDestinationConfig object.
+  r"""BigQuery destination configuration
 
   Fields:
     dataFreshness: The guaranteed data freshness (in seconds) when querying
@@ -1926,7 +1926,7 @@ class SourceHierarchyDatasets(_messages.Message):
   data objects matches the source hierarchy.
 
   Fields:
-    datasetTemplate: A DatasetTemplate attribute.
+    datasetTemplate: The dataset template to use for dynamic dataset creation.
   """
 
   datasetTemplate = _messages.MessageField('DatasetTemplate', 1)
@@ -2028,7 +2028,11 @@ class StartBackfillJobResponse(_messages.Message):
 
 
 class StaticServiceIpConnectivity(_messages.Message):
-  r"""Static IP address connectivity."""
+  r"""Static IP address connectivity. Used when the source database is
+  configured to allow incoming connections from the Datastream public IP
+  addresses for the region specified in the connection profile.
+  """
+
 
 
 class Status(_messages.Message):

@@ -32,7 +32,7 @@ class PatchObjectTask(task.Task):
     """Initializes task.
 
     Args:
-      object_resource (resource_reference.ObjectResource): The bucket to update.
+      object_resource (resource_reference.ObjectResource): The object to update.
       user_request_args (UserRequestArgs|None): Describes metadata updates to
         perform.
     """

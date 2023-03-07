@@ -188,11 +188,17 @@ class DeclarativeArgumentGenerator(object):
     if not ref:
       return message
 
+    message_resource_map = {}
+    resource_method_params = resource_method_params or {}
+    for message_field_name, param_str in resource_method_params.items():
+      value = yaml_command_schema.FormatResourceAttrStr(param_str, ref)
+      message_resource_map[message_field_name] = value
+
     # For each method path field, get the value from the resource reference.
     if parse_resource_into_request:
       arg_utils.ParseResourceIntoMessage(
           ref, self.method, message,
-          resource_method_params=resource_method_params,
+          message_resource_map=message_resource_map,
           request_id_field=self.resource_arg.request_id_field,
           use_relative_name=use_relative_name)
 

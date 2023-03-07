@@ -169,10 +169,17 @@ class _BaseTriggersClient(EventarcClientBase):
 class _TriggersClient(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc GA API."""
 
-  def BuildTriggerMessage(self, trigger_ref, event_filters,
-                          event_filters_path_pattern, service_account,
-                          destination_message, transport_topic_ref,
-                          channel_ref):
+  def BuildTriggerMessage(
+      self,
+      trigger_ref,
+      event_filters,
+      event_filters_path_pattern,
+      event_data_content_type,
+      service_account,
+      destination_message,
+      transport_topic_ref,
+      channel_ref,
+  ):
     """Builds a Trigger message with the given data.
 
     Args:
@@ -180,6 +187,8 @@ class _TriggersClient(_BaseTriggersClient):
       event_filters: dict or None, the Trigger's event filters.
       event_filters_path_pattern: dict or None, the Trigger's event filters in
         path pattern format.
+      event_data_content_type: str or None, the data content type of the
+        Trigger's event.
       service_account: str or None, the Trigger's service account.
       destination_message: Destination message or None, the Trigger's
         destination.
@@ -208,10 +217,12 @@ class _TriggersClient(_BaseTriggersClient):
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         eventFilters=filter_messages,
+        eventDataContentType=event_data_content_type,
         serviceAccount=service_account,
         destination=destination_message,
         transport=transport,
-        channel=channel)
+        channel=channel,
+    )
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
                                       destination_run_job, destination_run_path,
@@ -377,10 +388,17 @@ class _TriggersClient(_BaseTriggersClient):
 class _TriggersClientBeta(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc beta API."""
 
-  def BuildTriggerMessage(self, trigger_ref, event_filters,
-                          event_filters_path_pattern, service_account,
-                          destination_message, transport_topic_ref,
-                          channel_ref):
+  def BuildTriggerMessage(
+      self,
+      trigger_ref,
+      event_filters,
+      event_filters_path_pattern,
+      event_data_content_type,
+      service_account,
+      destination_message,
+      transport_topic_ref,
+      channel_ref,
+  ):
     """Builds a Trigger message with the given data.
 
     Args:
@@ -388,6 +406,8 @@ class _TriggersClientBeta(_BaseTriggersClient):
       event_filters: dict or None, the Trigger's event filters.
       event_filters_path_pattern: dict or None, the Trigger's event filters in
         path pattern format. Ignored in Beta.
+      event_data_content_type: str or None, the data content type of the
+        Trigger's event. Ignored in Beta.
       service_account: str or None, the Trigger's service account.
       destination_message: Destination message or None, the Trigger's
         destination.

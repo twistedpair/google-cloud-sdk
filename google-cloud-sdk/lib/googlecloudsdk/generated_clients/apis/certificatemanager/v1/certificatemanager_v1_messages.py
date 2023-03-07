@@ -327,7 +327,7 @@ class CertificateMapEntry(_messages.Message):
 
   Fields:
     certificates: A set of Certificates defines for the given `hostname`.
-      There can be defined up to fifteen certificates in each Certificate Map
+      There can be defined up to four certificates in each Certificate Map
       Entry. Each certificate must match pattern
       `projects/*/locations/*/certificates/*`.
     createTime: Output only. The creation timestamp of a Certificate Map

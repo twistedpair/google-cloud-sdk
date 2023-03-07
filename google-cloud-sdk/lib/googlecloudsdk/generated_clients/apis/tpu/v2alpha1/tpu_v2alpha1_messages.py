@@ -1150,6 +1150,10 @@ class Range(_messages.Message):
   step = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class ResetQueuedResourceRequest(_messages.Message):
+  r"""Request for ResetQueuedResource."""
+
+
 class RingTraffic(_messages.Message):
   r"""Predefined traffic shape in which each (i_th) `group` member sends
   traffic to the subsequent (i_th+1) `group` member, looping around at the
@@ -1779,6 +1783,19 @@ class TpuProjectsLocationsQueuedResourcesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class TpuProjectsLocationsQueuedResourcesResetRequest(_messages.Message):
+  r"""A TpuProjectsLocationsQueuedResourcesResetRequest object.
+
+  Fields:
+    name: Required. The name of the queued resource.
+    resetQueuedResourceRequest: A ResetQueuedResourceRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resetQueuedResourceRequest = _messages.MessageField('ResetQueuedResourceRequest', 2)
 
 
 class TpuProjectsLocationsRuntimeVersionsGetRequest(_messages.Message):

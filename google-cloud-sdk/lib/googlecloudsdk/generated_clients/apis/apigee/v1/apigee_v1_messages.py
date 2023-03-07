@@ -2975,7 +2975,7 @@ class ApigeeOrganizationsEnvironmentsSecurityIncidentsGetRequest(_messages.Messa
   Fields:
     name: Required. Security incident in the following format: `organizations/
       {org}/environments/{environment}/securityIncidents/{incident}'. Example:
-      organizations/testOrg/environments/testEnv/securityIncident/1234-4567-
+      organizations/testOrg/environments/testEnv/securityIncidents/1234-4567-
       890-111
   """
 
@@ -6616,7 +6616,13 @@ class GoogleCloudApigeeV1DeploymentGroupConfig(_messages.Message):
   r"""DeploymentGroupConfig represents a deployment group that should be
   present in a particular environment.
 
+  Enums:
+    DeploymentGroupTypeValueValuesEnum: Type of the deployment group, which
+      will be either Standard or Extensible.
+
   Fields:
+    deploymentGroupType: Type of the deployment group, which will be either
+      Standard or Extensible.
     name: Name of the deployment group in the following format:
       `organizations/{org}/environments/{env}/deploymentGroups/{group}`.
     revisionId: Revision number which can be used by the runtime to detect if
@@ -6625,9 +6631,23 @@ class GoogleCloudApigeeV1DeploymentGroupConfig(_messages.Message):
       and recreated.
   """
 
-  name = _messages.StringField(1)
-  revisionId = _messages.IntegerField(2)
-  uid = _messages.StringField(3)
+  class DeploymentGroupTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the deployment group, which will be either Standard or
+    Extensible.
+
+    Values:
+      DEPLOYMENT_GROUP_TYPE_UNSPECIFIED: Unspecified type
+      STANDARD: Standard type
+      EXTENSIBLE: Extensible Type
+    """
+    DEPLOYMENT_GROUP_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    EXTENSIBLE = 2
+
+  deploymentGroupType = _messages.EnumField('DeploymentGroupTypeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  revisionId = _messages.IntegerField(3)
+  uid = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1Developer(_messages.Message):
@@ -6975,6 +6995,8 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       resource files * Creating, updating, or deleting target servers
     StateValueValuesEnum: Output only. State of the environment. Values other
       than ACTIVE means the resource is not ready to use.
+    TypeValueValuesEnum: Optional. EnvironmentType selected for the
+      environment.
 
   Fields:
     apiProxyType: Optional. API Proxy type supported by the environment. The
@@ -7004,6 +7026,7 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       environment.
     state: Output only. State of the environment. Values other than ACTIVE
       means the resource is not ready to use.
+    type: Optional. EnvironmentType selected for the environment.
   """
 
   class ApiProxyTypeValueValuesEnum(_messages.Enum):
@@ -7067,6 +7090,27 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. EnvironmentType selected for the environment.
+
+    Values:
+      ENVIRONMENT_TYPE_UNSPECIFIED: Environment type not specified.
+      DEVELOPER: Developer environment has limited capacity and capabilities
+        and are usually used when you are getting started with Apigee or while
+        experimenting. Refer to Apigee's public documentation for more
+        details.
+      PRO: This is the default type and it supports API management features
+        and higher capacity than Developer environment. Refer to Apigee's
+        public documentation for more details.
+      ADVANCED: Advanced environment supports even higher capacity than Pro
+        and advanced capabilites. Refer to Apigee's public documentation for
+        more details.
+    """
+    ENVIRONMENT_TYPE_UNSPECIFIED = 0
+    DEVELOPER = 1
+    PRO = 2
+    ADVANCED = 3
+
   apiProxyType = _messages.EnumField('ApiProxyTypeValueValuesEnum', 1)
   createdAt = _messages.IntegerField(2)
   deploymentType = _messages.EnumField('DeploymentTypeValueValuesEnum', 3)
@@ -7078,6 +7122,7 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
   nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 9)
   properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -10347,6 +10392,9 @@ class GoogleCloudApigeeV1SecurityActionsConfig(_messages.Message):
 class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
   r"""Represents an SecurityIncident resource.
 
+  Enums:
+    RiskLevelValueValuesEnum: Output only. Risk level of the incident.
+
   Fields:
     detectionTypes: Output only. Detection types which are part of the
       incident. Examples: Flooder, OAuth Abuser, Static Content Scraper,
@@ -10360,15 +10408,31 @@ class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
       ions/{org}/environments/{environment}/securityIncidents/{incident}
       Example: organizations/apigee-
       org/environments/dev/securityIncidents/1234-5678-9101-1111
+    riskLevel: Output only. Risk level of the incident.
     trafficCount: Total traffic detected as part of the incident.
   """
+
+  class RiskLevelValueValuesEnum(_messages.Enum):
+    r"""Output only. Risk level of the incident.
+
+    Values:
+      RISK_LEVEL_UNSPECIFIED: Risk Level Unspecified.
+      LOW: Risk level of the incident is low.
+      MODERATE: Risk level of the incident is moderate.
+      SEVERE: Risk level of the incident is severe.
+    """
+    RISK_LEVEL_UNSPECIFIED = 0
+    LOW = 1
+    MODERATE = 2
+    SEVERE = 3
 
   detectionTypes = _messages.StringField(1, repeated=True)
   displayName = _messages.StringField(2)
   firstDetectedTime = _messages.StringField(3)
   lastDetectedTime = _messages.StringField(4)
   name = _messages.StringField(5)
-  trafficCount = _messages.IntegerField(6)
+  riskLevel = _messages.EnumField('RiskLevelValueValuesEnum', 6)
+  trafficCount = _messages.IntegerField(7)
 
 
 class GoogleCloudApigeeV1SecurityIncidentEnvironment(_messages.Message):

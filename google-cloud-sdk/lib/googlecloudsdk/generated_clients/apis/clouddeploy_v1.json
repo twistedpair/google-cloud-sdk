@@ -1977,6 +1977,31 @@
       "description": "A deploy Job.",
       "type": "object",
       "properties": {
+        "artifact": {
+          "description": "Output only. The artifact of the latest deploy JobRun.",
+          "readOnly": true,
+          "$ref": "DeployArtifact"
+        }
+      }
+    },
+    "DeployArtifact": {
+      "id": "DeployArtifact",
+      "description": "The artifacts produced by a deploy operation.",
+      "type": "object",
+      "properties": {
+        "artifactUri": {
+          "description": "Output only. URI of a directory containing the artifacts. All paths are relative to this location.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "manifestPaths": {
+          "description": "Output only. File paths of the manifests applied during the deploy operation relative to the URI.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "VerifyJob": {
@@ -2273,6 +2298,11 @@
           "description": "Output only. Metadata containing information about the deploy job run.",
           "readOnly": true,
           "$ref": "DeployJobRunMetadata"
+        },
+        "artifact": {
+          "description": "Output only. The artifact of a deploy job run, if available.",
+          "readOnly": true,
+          "$ref": "DeployArtifact"
         }
       }
     },

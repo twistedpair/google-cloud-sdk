@@ -315,8 +315,10 @@ def AddMutationArgs(parser, required=True):
         debian             11
         debian             10
         debian             9
+        rhel               9.*
         rhel               8.*
         rhel               7.*
+        rocky              9.*
         rocky              8.*
         sles               12.*
         sles               15.*
@@ -334,8 +336,8 @@ def AddMutationArgs(parser, required=True):
 
       *short-name*::: Short name of the OS.
 
-      *Required*. Allowed values: ``centos'', ``debian'', ``rhel'', ``sles'',
-      ``sles_sap'', ``ubuntu''.
+      *Required*. Allowed values: ``centos'', ``debian'', ``rhel'', ``rocky'',
+      ``sles'', ``sles_sap'', ``ubuntu''.
 
       To inspect the exact OS short name of an instance, run:
 

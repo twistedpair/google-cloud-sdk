@@ -23,6 +23,14 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import connection_context
 
 
+SUPPORTS_PZS_ALIAS = (
+    "labels.'run.googleapis.com/supportsPzs':alias='supportsPzs'"
+)
+SATISFIES_PZS_ALIAS = (
+    "metadata.labels.'run.googleapis.com/satisfiesPzs':alias='satisfiesPzs'"
+)
+
+
 class List(base.ListCommand):
   """Base class for `run [resources] list` commands."""
 

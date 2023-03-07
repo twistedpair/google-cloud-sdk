@@ -1575,8 +1575,28 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class DeployArtifact(_messages.Message):
+  r"""The artifacts produced by a deploy operation.
+
+  Fields:
+    artifactUri: Output only. URI of a directory containing the artifacts. All
+      paths are relative to this location.
+    manifestPaths: Output only. File paths of the manifests applied during the
+      deploy operation relative to the URI.
+  """
+
+  artifactUri = _messages.StringField(1)
+  manifestPaths = _messages.StringField(2, repeated=True)
+
+
 class DeployJob(_messages.Message):
-  r"""A deploy Job."""
+  r"""A deploy Job.
+
+  Fields:
+    artifact: Output only. The artifact of the latest deploy JobRun.
+  """
+
+  artifact = _messages.MessageField('DeployArtifact', 1)
 
 
 class DeployJobRun(_messages.Message):
@@ -1588,6 +1608,7 @@ class DeployJobRun(_messages.Message):
       succeeded.
 
   Fields:
+    artifact: Output only. The artifact of a deploy job run, if available.
     build: Output only. The resource name of the Cloud Build `Build` object
       that is used to deploy. Format is
       projects/{project}/locations/{location}/builds/{build}.
@@ -1626,10 +1647,11 @@ class DeployJobRun(_messages.Message):
     MISSING_RESOURCES_FOR_CANARY = 4
     CLOUD_BUILD_REQUEST_FAILED = 5
 
-  build = _messages.StringField(1)
-  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 2)
-  failureMessage = _messages.StringField(3)
-  metadata = _messages.MessageField('DeployJobRunMetadata', 4)
+  artifact = _messages.MessageField('DeployArtifact', 1)
+  build = _messages.StringField(2)
+  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 3)
+  failureMessage = _messages.StringField(4)
+  metadata = _messages.MessageField('DeployJobRunMetadata', 5)
 
 
 class DeployJobRunMetadata(_messages.Message):

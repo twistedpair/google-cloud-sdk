@@ -87,6 +87,16 @@ definitions:
       # imperative, to follow "The attribute can be set in the following ways").
       hint: {type: string}
 
+  value_fallthrough:
+    required: [value]
+    additionalProperties: false
+    properties:
+      # A fixed value to use for fallthrough.
+      value: {type: string}
+      # Text to display to users if no fallthroughs are set (should be
+      # imperative, to follow "The attribute can be set in the following ways").
+      hint: {type: string}
+
   arg_fallthrough:
     required: [arg_name]
     additionalProperties: false
@@ -114,7 +124,10 @@ definitions:
       # not provided on the command line.
       fallthroughs:
         type: array
-        items: {$ref: "#/definitions/fallthrough"}
+        items:
+          oneOf:
+          - $ref: "#/definitions/fallthrough"
+          - $ref: "#/definitions/value_fallthrough"
       # The module path to a class that implements remote completion
       # for this resource.
       completer: {$ref: "#/definitions/python_hook"}
@@ -419,13 +432,13 @@ properties:
       # args namespace. The returned string will be the method used to create
       # and issue the request.
       modify_method_hook: {$ref: "#/definitions/python_hook"}
-      # A mapping of method parameter to resource reference field (or '', to use
-      # the full method name) for references or APIs that use non-standard
-      # naming. For example, if a resource ref has a project, location, and
-      # instance attribute, but the request URI has the structure
+      # A mapping of method parameter to format string that can include resource reference params(s)
+      # (or '__relative_name__' to use the full resource name or '__resource_id__' for resource id)
+      # for references or APIs that use non-standard naming. For example, if a resource ref has a
+      # project, location, and instance attribute, but the request URI has the structure
       # /projects/{project}/regions/{region}/instances/{instance}, you would use
       # resource_method_params:
-      #   region: location
+      #   region: '{location}'
       # To map the resource attribute to the correct method parameter.
       resource_method_params:
         type: object

@@ -465,6 +465,7 @@ class MembershipConstraint(_messages.Message):
 
   Fields:
     constraintRef: The constraint this data refers to.
+    content: The string content for the constraint resource.
     kind: The kind of the constraint on this membership, for display purposes.
     membershipRef: The membership this data refers to.
     metadata: Membership-specific constraint metadata.
@@ -473,11 +474,12 @@ class MembershipConstraint(_messages.Message):
   """
 
   constraintRef = _messages.MessageField('ConstraintRef', 1)
-  kind = _messages.StringField(2)
-  membershipRef = _messages.MessageField('MembershipRef', 3)
-  metadata = _messages.MessageField('MembershipConstraintMetadata', 4)
-  spec = _messages.MessageField('MembershipConstraintSpec', 5)
-  status = _messages.MessageField('MembershipConstraintStatus', 6)
+  content = _messages.MessageField('StringContent', 2)
+  kind = _messages.StringField(3)
+  membershipRef = _messages.MessageField('MembershipRef', 4)
+  metadata = _messages.MessageField('MembershipConstraintMetadata', 5)
+  spec = _messages.MessageField('MembershipConstraintSpec', 6)
+  status = _messages.MessageField('MembershipConstraintStatus', 7)
 
 
 class MembershipConstraintAuditViolation(_messages.Message):
@@ -887,6 +889,16 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class StringContent(_messages.Message):
+  r"""String content for a constraint resource.
+
+  Fields:
+    yaml: string json = 2;
+  """
+
+  yaml = _messages.StringField(1)
 
 
 class Target(_messages.Message):

@@ -411,7 +411,7 @@ def _MapChoice(choices, value):
   return choices.get(value, value)
 
 
-def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
+def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
                              request_id_field=None, use_relative_name=True):
   """Set fields in message corresponding to a resource.
 
@@ -419,14 +419,14 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
     ref: googlecloudsdk.core.resources.Resource, the resource reference.
     method: the API method.
     message: apitools Message object.
-    resource_method_params: {str: str}, A mapping of API method parameter name
-      to resource ref attribute name, if any
+    message_resource_map: {str: str}, A mapping of API method parameter name to
+      resource ref attribute, if any
     request_id_field: str, the name that the ID of the resource arg takes if the
       API method params and the resource params don't match.
     use_relative_name: Used ref.RelativeName() if True, otherwise ref.Name().
   """
-  resource_method_params = resource_method_params or {}
-  resource_method_params = resource_method_params.copy()
+  message_resource_map = message_resource_map or {}
+  message_resource_map = message_resource_map.copy()
 
   # This only happens for non-list methods where the API method params don't
   # match the resource parameters (basically only create methods). In this
@@ -443,11 +443,10 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
 
   ref_name = ref.RelativeName() if use_relative_name else ref.Name()
   for p in method.params:
-    value = getattr(ref, resource_method_params.pop(p, p), ref_name)
+    value = message_resource_map.pop(p, None) or getattr(ref, p, ref_name)
     SetFieldInMessage(message, p, value)
-  for message_field_name, ref_param_name in resource_method_params.items():
-    value = getattr(ref, ref_param_name, ref_name)
-    SetFieldInMessage(message, message_field_name, value)
+  for message_field_name, ref_param in message_resource_map.items():
+    SetFieldInMessage(message, message_field_name, ref_param)
 
 
 def ParseStaticFieldsIntoMessage(message, static_fields=None):

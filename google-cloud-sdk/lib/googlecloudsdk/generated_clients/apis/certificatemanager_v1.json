@@ -636,7 +636,7 @@
           ]
         },
         "certificates": {
-          "description": "A set of Certificates defines for the given `hostname`. There can be defined up to fifteen certificates in each Certificate Map Entry. Each certificate must match pattern `projects\/*\/locations\/*\/certificates\/*`.",
+          "description": "A set of Certificates defines for the given `hostname`. There can be defined up to four certificates in each Certificate Map Entry. Each certificate must match pattern `projects\/*\/locations\/*\/certificates\/*`.",
           "type": "array",
           "items": {
             "type": "string"

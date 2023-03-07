@@ -445,7 +445,7 @@
     },
     "StaticServiceIpConnectivity": {
       "id": "StaticServiceIpConnectivity",
-      "description": "Static IP address connectivity.",
+      "description": "Static IP address connectivity. Used when the source database is configured to allow incoming connections from the Datastream public IP addresses for the region specified in the connection profile.",
       "type": "object",
       "properties": {
       }
@@ -1150,6 +1150,7 @@
     },
     "BigQueryDestinationConfig": {
       "id": "BigQueryDestinationConfig",
+      "description": "BigQuery destination configuration",
       "type": "object",
       "properties": {
         "singleTargetDataset": {
@@ -1184,6 +1185,7 @@
       "type": "object",
       "properties": {
         "datasetTemplate": {
+          "description": "The dataset template to use for dynamic dataset creation.",
           "$ref": "DatasetTemplate"
         }
       }

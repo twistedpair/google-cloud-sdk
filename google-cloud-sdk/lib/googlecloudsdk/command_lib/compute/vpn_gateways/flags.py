@@ -109,7 +109,6 @@ def GetInterconnectAttachmentsFlag():
   return base.Argument(
       '--interconnect-attachments',
       type=arg_parsers.ArgList(max_length=2),
-      hidden=True,
       required=False,
       metavar='INTERCONNECT_ATTACHMENTS',
       help="""\

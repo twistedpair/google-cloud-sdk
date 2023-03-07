@@ -989,6 +989,10 @@ def AddVmwareNetworkConfig(parser, for_update=False):
   _AddIpConfiguration(vmware_network_config_group, for_update=for_update)
   _AddVmwareHostConfig(vmware_network_config_group, for_update=for_update)
 
+  # add create only flags.
+  if not for_update:
+    _AddVmwareControlPlaneV2Config(vmware_network_config_group)
+
 
 def AddConfigType(parser):
   """Adds flags to specify version config type.
@@ -1059,6 +1063,70 @@ def _AddVmwareDhcpIpConfig(ip_configuration_mutex_group, for_update=False):
   )
 
 
+def _ParseControlPlaneIpBlock(value):
+  """Parse the given value in IP block format.
+
+  Args:
+    value: str, supports format of either IP, or 'IP hostname'.
+
+  Returns:
+    tuple: of structure (IP, hostname).
+
+  Raises:
+    InvalidArgumentException: raise parsing error.
+  """
+
+  parsing_error = """Malformed IP block [{}].
+Expect an individual IP address, or an individual IP address with an optional hostname.
+Examples: --control-plane-ip-block 'netmask=255.255.255.0,gateway=10.0.0.0,ips=192.168.1.1;0.0.0.0 localhost'
+""".format(
+      value
+  )
+
+  if ' ' not in value:
+    return (value, None)
+  else:
+    ip_block = value.split(' ')
+    if len(ip_block) != 2:
+      raise InvalidArgumentException(
+          '--control-plane-ip-block', message=parsing_error
+      )
+    else:
+      return (ip_block[0], ip_block[1])
+
+
+def _ParseStaticIpConfigIpBlock(value):
+  """Parse the given value in IP block format.
+
+  Args:
+    value: str, supports either IP, IP hostname, or a CIDR range.
+
+  Returns:
+    tuple: of structure (IP, hostname).
+
+  Raises:
+    InvalidArgumentException: raise parsing error.
+  """
+
+  parsing_error = """Malformed IP block [{}].
+Expect an individual IP address, an individual IP address with an optional hostname, or a CIDR block.
+Examples: ips=192.168.1.1;0.0.0.0 localhost;192.168.1.2/16
+""".format(
+      value
+  )
+
+  if ' ' not in value:
+    return (value, None)
+  else:
+    ip_block = value.split(' ')
+    if len(ip_block) != 2:
+      raise InvalidArgumentException(
+          '--static-ip-config-ip-blocks', message=parsing_error
+      )
+    else:
+      return (ip_block[0], ip_block[1])
+
+
 def _AddVmwareStaticIpConfig(ip_configuration_mutex_group):
   """Adds flags to specify Static IP configuration.
 
@@ -1118,51 +1186,22 @@ New `ips` fields can be added, existing `ips` fields cannot be removed or update
       hidden=True,
   )
 
-  def _ParseIPBlocks(value):
-    """Parse the given value in IP block format.
-
-    Args:
-      value: str, supports either IP, IP hostname, or a CIDR range.
-
-    Returns:
-      tuple: of structure (IP, hostname).
-
-    Raises:
-      InvalidArgumentException: raise parsing error.
-    """
-
-    parsing_error = """Malformed IP block [{}].
-  Expect an individual IP address, an individual IP address with a hostname, or a CIDR block.
-  Examples: ips=192.168.1.1;0.0.0.0 localhost;192.168.1.2/16
-""".format(
-        value
-    )
-
-    if ' ' not in value:
-      return (None, value)
-    else:
-      ip_block = value.split(' ')
-      if len(ip_block) != 2:
-        raise InvalidArgumentException(
-            '--static-ip-config-ip-blocks', message=parsing_error
-        )
-      else:
-        return (ip_block[0], ip_block[1])
-
   static_ip_config_ip_blocks_help_text = """
-  Static IP configurations.
+Static IP configurations.
 
-  Example:
+Expect an individual IP address, an individual IP address with an optional hostname, or a CIDR block.
 
-  To specify two Static IP blocks,
+Example:
 
-  ```
-  $ gcloud {command}
-      --static-ip-config-ip-blocks 'gateway=192.168.0.1,netmask=255.255.255.0,ips=hostname-1:1.1.1.1;hostname-2:2.2.2.2'
-      --static-ip-config-ip-blocks 'gateway=192.168.1.1,netmask=255.255.0.0,ips=hostname-3:3.3.3.3;hostname-4:4.4.4.4'
-  ```
+To specify two Static IP blocks,
 
-  Use quote around the flag value to escape semicolon in the terminal.
+```
+$ gcloud {command}
+    --static-ip-config-ip-blocks 'gateway=192.168.0.1,netmask=255.255.255.0,ips=192.168.1.1;0.0.0.0 localhost;192.168.1.2/16'
+    --static-ip-config-ip-blocks 'gateway=192.168.1.1,netmask=255.255.0.0,ips=8.8.8.8;4.4.4.4'
+```
+
+Use quote around the flag value to escape semicolon in the terminal.
   """
 
   static_ip_config_mutex_group.add_argument(
@@ -1174,7 +1213,7 @@ New `ips` fields can be added, existing `ips` fields cannot be removed or update
               'gateway': str,
               'netmask': str,
               'ips': arg_parsers.ArgList(
-                  element_type=_ParseIPBlocks,
+                  element_type=_ParseStaticIpConfigIpBlock,
                   custom_delim_char=';',
               ),
           }
@@ -1611,4 +1650,53 @@ def AddIgnoreErrors(parser):
           ' even if errors occur during deletion.'
       ),
       action='store_true',
+  )
+
+
+def _AddVmwareControlPlaneV2Config(
+    vmware_network_config_group, for_update=False
+):
+  """Adds a flag for control_plane_v2_config message.
+
+  Args:
+    vmware_network_config_group: The parent group to add the flag to.
+    for_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  # control plane v2 config is immutable.
+  if for_update:
+    return None
+
+  vmware_control_plane_v2_config_group = vmware_network_config_group.add_group(
+      hidden=True
+  )
+  help_text = """
+Static IP addresses for the control plane nodes. The number of IP addresses should match the number of replicas for the control plane nodes, specified by `--replicas`.
+
+To specify the control plane IP block,
+
+```
+$ gcloud {command}
+    --control-plane-ip-block 'gateway=192.168.0.1,netmask=255.255.255.0,ips=192.168.1.1;0.0.0.0 localhost;'
+```
+
+  """
+  vmware_control_plane_v2_config_group.add_argument(
+      '--control-plane-ip-block',
+      help=help_text,
+      type=arg_parsers.ArgDict(
+          spec={
+              'gateway': str,
+              'netmask': str,
+              'ips': arg_parsers.ArgList(
+                  element_type=_ParseControlPlaneIpBlock,
+                  custom_delim_char=';',
+              ),
+          }
+      ),
+  )
+  vmware_control_plane_v2_config_group.add_argument(
+      '--enable-control-plane-v2',
+      action='store_true',
+      help='If set, enables control plane v2.',
   )

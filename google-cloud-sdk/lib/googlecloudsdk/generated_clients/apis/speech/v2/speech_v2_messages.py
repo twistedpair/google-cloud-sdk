@@ -524,6 +524,44 @@ class GcsOutputConfig(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class LanguageMetadata(_messages.Message):
+  r"""The metadata about locales available in a given region. Currently this
+  is just the models that are available for each locale
+
+  Messages:
+    ModelsValue: Map of locale (language code) -> models
+
+  Fields:
+    models: Map of locale (language code) -> models
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModelsValue(_messages.Message):
+    r"""Map of locale (language code) -> models
+
+    Messages:
+      AdditionalProperty: An additional property for a ModelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ModelMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ModelMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  models = _messages.MessageField('ModelsValue', 1)
+
+
 class ListCustomClassesResponse(_messages.Message):
   r"""Response message for the ListCustomClasses method.
 
@@ -670,6 +708,82 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LocationsMetadata(_messages.Message):
+  r"""Main metadata for the Locations API for STT V2. Currently this is just
+  the metadata about locales, models, and features
+
+  Fields:
+    languages: Information about available locales, models, and features
+      represented in the hierarchical structure of locales -> models ->
+      features
+  """
+
+  languages = _messages.MessageField('LanguageMetadata', 1)
+
+
+class ModelFeature(_messages.Message):
+  r"""Representes a singular feature of a model. If the feature is
+  `recognizer`, the release_state of the feature represents the release_state
+  of the model
+
+  Fields:
+    feature: The name of the feature (Note: the feature can be `recognizer`)
+    releaseState: The release state of the feature
+  """
+
+  feature = _messages.StringField(1)
+  releaseState = _messages.StringField(2)
+
+
+class ModelFeatures(_messages.Message):
+  r"""Represents the collection of features belonging to a model
+
+  Fields:
+    modelFeature: Repeated field that contains all features of the model
+  """
+
+  modelFeature = _messages.MessageField('ModelFeature', 1, repeated=True)
+
+
+class ModelMetadata(_messages.Message):
+  r"""The metadata about the models in a given region for a specific locale.
+  Currently this is just the features of the model
+
+  Messages:
+    ModelFeaturesValue: Map of the model name -> features of that model
+
+  Fields:
+    modelFeatures: Map of the model name -> features of that model
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModelFeaturesValue(_messages.Message):
+    r"""Map of the model name -> features of that model
+
+    Messages:
+      AdditionalProperty: An additional property for a ModelFeaturesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModelFeaturesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModelFeaturesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ModelFeatures attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ModelFeatures', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  modelFeatures = _messages.MessageField('ModelFeaturesValue', 1)
 
 
 class Operation(_messages.Message):

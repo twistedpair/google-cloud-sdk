@@ -59,23 +59,14 @@ class AptRepository(_messages.Message):
 
   Fields:
     artifactRegistryRepository: An Artifact Registry Repository.
+    customRepository: Customer-specified remote repository.
     publicRepository: One of the publicly available Apt repositories supported
       by Artifact Registry.
   """
 
-  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
-  publicRepository = _messages.MessageField('PublicRepository', 2)
-
-
-class ArtifactRegistryRepository(_messages.Message):
-  r"""A representation of an Artifact Registry repository.
-
-  Fields:
-    repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
-  """
-
-  repository = _messages.StringField(1)
+  artifactRegistryRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryCustomRepository', 2)
+  publicRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicRepository', 3)
 
 
 class ArtifactregistryMediaDownloadRequest(_messages.Message):
@@ -1018,6 +1009,7 @@ class DockerRepository(_messages.Message):
 
   Fields:
     artifactRegistryRepository: An Artifact Registry Repository.
+    customRepository: Customer-specified remote repository.
     publicRepository: One of the publicly available Docker repositories
       supported by Artifact Registry.
   """
@@ -1033,8 +1025,9 @@ class DockerRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     DOCKER_HUB = 1
 
-  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
+  artifactRegistryRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository', 2)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 3)
 
 
 class DockerRepositoryConfig(_messages.Message):
@@ -1159,6 +1152,202 @@ class GoogleDevtoolsArtifactregistryV1File(_messages.Message):
   owner = _messages.StringField(5)
   sizeBytes = _messages.IntegerField(6)
   updateTime = _messages.StringField(7)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryCustomRepository(_messages.Message):
+  r"""Customer-specified publicly available remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, for
+      ex: "https://my.apt.registry/".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicRepository(_messages.Message):
+  r"""Publicly available Apt repositories constructed from a common repository
+  base and a custom repository path.
+
+  Enums:
+    RepositoryBaseValueValuesEnum: A common public repository base for Apt.
+
+  Fields:
+    repositoryBase: A common public repository base for Apt.
+    repositoryPath: A custom field to define a path to a specific repository
+      from the base.
+  """
+
+  class RepositoryBaseValueValuesEnum(_messages.Enum):
+    r"""A common public repository base for Apt.
+
+    Values:
+      REPOSITORY_BASE_UNSPECIFIED: Unspecified repository base.
+      DEBIAN: Debian.
+      UBUNTU: Ubuntu LTS/Pro.
+    """
+    REPOSITORY_BASE_UNSPECIFIED = 0
+    DEBIAN = 1
+    UBUNTU = 2
+
+  repositoryBase = _messages.EnumField('RepositoryBaseValueValuesEnum', 1)
+  repositoryPath = _messages.StringField(2)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCustomRepository(_messages.Message):
+  r"""Customer-specified publicly available remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the custom remote repository, for ex:
+      "https://registry-1.docker.io/v2".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository(_messages.Message):
+  r"""Customer-specified publicly available remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, for
+      ex: "https://my.maven.registry/".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository(_messages.Message):
+  r"""Customer-specified publicly available remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, for
+      ex: "https://my.npm.registry/".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository(_messages.Message):
+  r"""Customer-specified publicly available remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, for
+      ex: "https://my.python.registry/".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository(_messages.Message):
+  r"""A representation of an Artifact Registry repository.
+
+  Fields:
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repositories/repo1".
+  """
+
+  repository = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryCustomRepository(_messages.Message):
+  r"""Customer-specified publicly available remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, for
+      ex: "https://my.yum.registry/".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository(_messages.Message):
+  r"""Publicly available Yum repositories constructed from a common repository
+  base and a custom repository path.
+
+  Enums:
+    RepositoryBaseValueValuesEnum: A common public repository base for Yum.
+
+  Fields:
+    repositoryBase: A common public repository base for Yum.
+    repositoryPath: A custom field to define a path to a specific repository
+      from the base.
+  """
+
+  class RepositoryBaseValueValuesEnum(_messages.Enum):
+    r"""A common public repository base for Yum.
+
+    Values:
+      REPOSITORY_BASE_UNSPECIFIED: Unspecified repository base.
+      CENTOS: CentOS.
+      CENTOS_DEBUG: CentOS Debug.
+      CENTOS_VAULT: CentOS Vault.
+      CENTOS_STREAM: CentOS Stream.
+      ROCKY: Rocky.
+    """
+    REPOSITORY_BASE_UNSPECIFIED = 0
+    CENTOS = 1
+    CENTOS_DEBUG = 2
+    CENTOS_VAULT = 3
+    CENTOS_STREAM = 4
+    ROCKY = 5
+
+  repositoryBase = _messages.EnumField('RepositoryBaseValueValuesEnum', 1)
+  repositoryPath = _messages.StringField(2)
 
 
 class Hash(_messages.Message):
@@ -1579,6 +1768,7 @@ class MavenRepository(_messages.Message):
 
   Fields:
     artifactRegistryRepository: An Artifact Registry Repository.
+    customRepository: Customer-specified remote repository.
     publicRepository: One of the publicly available Maven repositories
       supported by Artifact Registry.
   """
@@ -1594,8 +1784,9 @@ class MavenRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     MAVEN_CENTRAL = 1
 
-  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
+  artifactRegistryRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtifactRegistryRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryCustomRepository', 2)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 3)
 
 
 class MavenRepositoryConfig(_messages.Message):
@@ -1665,6 +1856,7 @@ class NpmRepository(_messages.Message):
 
   Fields:
     artifactRegistryRepository: An Artifact Registry Repository.
+    customRepository: Customer-specified remote repository.
     publicRepository: One of the publicly available Npm repositories supported
       by Artifact Registry.
   """
@@ -1680,8 +1872,9 @@ class NpmRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     NPMJS = 1
 
-  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
+  artifactRegistryRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifactRegistryRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryCustomRepository', 2)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 3)
 
 
 class Operation(_messages.Message):
@@ -1925,35 +2118,6 @@ class ProjectSettings(_messages.Message):
   name = _messages.StringField(2)
 
 
-class PublicRepository(_messages.Message):
-  r"""Publicly available Apt repositories constructed from a common repository
-  base and a custom repository path.
-
-  Enums:
-    RepositoryBaseValueValuesEnum: A common public repository base for Apt.
-
-  Fields:
-    repositoryBase: A common public repository base for Apt.
-    repositoryPath: A custom field to define a path to a specific repository
-      from the base.
-  """
-
-  class RepositoryBaseValueValuesEnum(_messages.Enum):
-    r"""A common public repository base for Apt.
-
-    Values:
-      REPOSITORY_BASE_UNSPECIFIED: Unspecified repository base.
-      DEBIAN: Debian.
-      UBUNTU: Ubuntu LTS/Pro.
-    """
-    REPOSITORY_BASE_UNSPECIFIED = 0
-    DEBIAN = 1
-    UBUNTU = 2
-
-  repositoryBase = _messages.EnumField('RepositoryBaseValueValuesEnum', 1)
-  repositoryPath = _messages.StringField(2)
-
-
 class PythonPackage(_messages.Message):
   r"""PythonPackage represents a python artifact.
 
@@ -1991,6 +2155,7 @@ class PythonRepository(_messages.Message):
 
   Fields:
     artifactRegistryRepository: An Artifact Registry Repository.
+    customRepository: Customer-specified remote repository.
     publicRepository: One of the publicly available Python repositories
       supported by Artifact Registry.
   """
@@ -2006,8 +2171,9 @@ class PythonRepository(_messages.Message):
     PUBLIC_REPOSITORY_UNSPECIFIED = 0
     PYPI = 1
 
-  artifactRegistryRepository = _messages.MessageField('ArtifactRegistryRepository', 1)
-  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 2)
+  artifactRegistryRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArtifactRegistryRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryCustomRepository', 2)
+  publicRepository = _messages.EnumField('PublicRepositoryValueValuesEnum', 3)
 
 
 class RemoteRepositoryConfig(_messages.Message):
@@ -2020,6 +2186,7 @@ class RemoteRepositoryConfig(_messages.Message):
     mavenRepository: Specific settings for a Maven remote repository.
     npmRepository: Specific settings for an Npm remote repository.
     pythonRepository: Specific settings for a Python remote repository.
+    yumRepository: Specific settings for a Yum remote repository.
   """
 
   aptRepository = _messages.MessageField('AptRepository', 1)
@@ -2028,6 +2195,7 @@ class RemoteRepositoryConfig(_messages.Message):
   mavenRepository = _messages.MessageField('MavenRepository', 4)
   npmRepository = _messages.MessageField('NpmRepository', 5)
   pythonRepository = _messages.MessageField('PythonRepository', 6)
+  yumRepository = _messages.MessageField('YumRepository', 7)
 
 
 class Repository(_messages.Message):
@@ -2054,7 +2222,7 @@ class Repository(_messages.Message):
       indicate when certain package versions can be automatically deleted. Map
       keys are policy IDs supplied by users during policy creation. They must
       unique within a repository and be under 128 characters in length.
-    createTime: The time when the repository was created.
+    createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
     dockerConfig: Docker repository config contains repository level
       configuration for the repositories of docker type.
@@ -2079,7 +2247,7 @@ class Repository(_messages.Message):
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
       this repository. Repositories that are generally available or in public
       preview use this to calculate storage costs.
-    updateTime: The time when the repository was last updated.
+    updateTime: Output only. The time when the repository was last updated.
     virtualRepositoryConfig: Configuration specific for a Virtual Repository.
   """
 
@@ -2690,6 +2858,21 @@ class YumArtifact(_messages.Message):
   name = _messages.StringField(2)
   packageName = _messages.StringField(3)
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
+
+
+class YumRepository(_messages.Message):
+  r"""Configuration for a Yum remote repository.
+
+  Fields:
+    artifactRegistryRepository: An Artifact Registry Repository.
+    customRepository: Customer-specified remote repository.
+    publicRepository: One of the publicly available Yum repositories supported
+      by Artifact Registry.
+  """
+
+  artifactRegistryRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifactRegistryRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryCustomRepository', 2)
+  publicRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicRepository', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

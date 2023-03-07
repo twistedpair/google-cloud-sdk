@@ -1766,6 +1766,7 @@ class TransferOperation(_messages.Message):
     endTime: End time of this transfer execution.
     errorBreakdowns: Summarizes errors encountered with sample error log
       entries.
+    loggingConfig: Cloud Logging configuration.
     name: A globally unique ID assigned by the system.
     notificationConfig: Notification configuration.
     projectId: The ID of the Google Cloud project that owns the operation.
@@ -1802,13 +1803,14 @@ class TransferOperation(_messages.Message):
   counters = _messages.MessageField('TransferCounters', 1)
   endTime = _messages.StringField(2)
   errorBreakdowns = _messages.MessageField('ErrorSummary', 3, repeated=True)
-  name = _messages.StringField(4)
-  notificationConfig = _messages.MessageField('NotificationConfig', 5)
-  projectId = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  transferJobName = _messages.StringField(9)
-  transferSpec = _messages.MessageField('TransferSpec', 10)
+  loggingConfig = _messages.MessageField('LoggingConfig', 4)
+  name = _messages.StringField(5)
+  notificationConfig = _messages.MessageField('NotificationConfig', 6)
+  projectId = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  transferJobName = _messages.StringField(10)
+  transferSpec = _messages.MessageField('TransferSpec', 11)
 
 
 class TransferOptions(_messages.Message):

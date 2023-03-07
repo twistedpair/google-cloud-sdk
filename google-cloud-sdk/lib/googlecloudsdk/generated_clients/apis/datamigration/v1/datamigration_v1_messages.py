@@ -575,8 +575,8 @@ class ColumnEntity(_messages.Message):
     ordinalPosition: Column order in the table.
     precision: Column precision - when relevant.
     scale: Column scale - when relevant.
-    setValues: Specifies the list of values allowed in the column. List is
-      empty if setValues is not required.
+    setValues: Specifies the list of values allowed in the column. Only used
+      for set data type.
     udt: Is the column a UDT.
   """
 
@@ -1006,6 +1006,7 @@ class DatabaseEntity(_messages.Message):
       DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package.
       DATABASE_ENTITY_TYPE_UDT: UDT.
       DATABASE_ENTITY_TYPE_MATERIAL_VIEW: Material View.
+      DATABASE_ENTITY_TYPE_DATABASE: Database.
     """
     DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
     DATABASE_ENTITY_TYPE_SCHEMA = 1
@@ -1022,6 +1023,7 @@ class DatabaseEntity(_messages.Message):
     DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
     DATABASE_ENTITY_TYPE_UDT = 13
     DATABASE_ENTITY_TYPE_MATERIAL_VIEW = 14
+    DATABASE_ENTITY_TYPE_DATABASE = 15
 
   class TreeValueValuesEnum(_messages.Enum):
     r"""The type of tree the entity belongs to.
@@ -3915,6 +3917,7 @@ class SynonymEntity(_messages.Message):
       DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package.
       DATABASE_ENTITY_TYPE_UDT: UDT.
       DATABASE_ENTITY_TYPE_MATERIAL_VIEW: Material View.
+      DATABASE_ENTITY_TYPE_DATABASE: Database.
     """
     DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
     DATABASE_ENTITY_TYPE_SCHEMA = 1
@@ -3931,6 +3934,7 @@ class SynonymEntity(_messages.Message):
     DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
     DATABASE_ENTITY_TYPE_UDT = 13
     DATABASE_ENTITY_TYPE_MATERIAL_VIEW = 14
+    DATABASE_ENTITY_TYPE_DATABASE = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomFeaturesValue(_messages.Message):

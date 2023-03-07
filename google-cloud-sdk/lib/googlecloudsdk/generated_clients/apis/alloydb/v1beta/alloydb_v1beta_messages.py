@@ -797,7 +797,7 @@ class Backup(_messages.Message):
     annotations: Annotations to allow client tools to store small amount of
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
     clusterName: Required. The full resource name of the backup source cluster
-      (e.g., projects//locations//clusters/).
+      (e.g., projects/{project}/locations/{region}/clusters/{cluster_id}).
     clusterUid: Output only. The system-generated UID of the cluster which was
       used to create this resource.
     createTime: Output only. Create time stamp

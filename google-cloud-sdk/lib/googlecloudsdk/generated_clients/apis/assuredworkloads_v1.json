@@ -564,7 +564,7 @@
           "type": "boolean"
         },
         "dataLogsViewer": {
-          "description": "Allow partner to view data and logs",
+          "description": "Allow the partner to view inspectability logs and monitoring violations.",
           "type": "boolean"
         },
         "serviceAccessApprover": {

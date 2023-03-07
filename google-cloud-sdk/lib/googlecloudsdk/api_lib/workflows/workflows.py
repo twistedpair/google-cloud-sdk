@@ -149,19 +149,22 @@ class WorkflowExecutionClient(object):
     self.messages = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_workflows_executions
 
-  def Create(self, workflow_ref, data, call_log_level=None):
+  def Create(self, workflow_ref, data, call_log_level=None, labels=None):
     """Creates a Workflow execution.
 
     Args:
       workflow_ref: Resource reference to the Workflow to execute.
       data: Argments to use for executing the workflow.
       call_log_level: Level of call logging to apply during execution.
+      labels: Labels associated to the execution.
 
     Returns:
       Execution: The workflow execution.
     """
     execution = self.messages.Execution()
     execution.argument = data
+    if labels is not None:
+      execution.labels = labels
     if call_log_level is not None and call_log_level != 'none':
       call_log_level_enum = self.messages.Execution.CallLogLevelValueValuesEnum
       execution.callLogLevel = arg_utils.ChoiceToEnum(

@@ -116,6 +116,34 @@ class BackupContext(_messages.Message):
   kind = _messages.StringField(2)
 
 
+class BackupReencryptionConfig(_messages.Message):
+  r"""Backup Reencryption Config
+
+  Enums:
+    BackupTypeValueValuesEnum: Type of backups users want to re-encrypt.
+
+  Fields:
+    backupLimit: Backup re-encryption limit
+    backupType: Type of backups users want to re-encrypt.
+  """
+
+  class BackupTypeValueValuesEnum(_messages.Enum):
+    r"""Type of backups users want to re-encrypt.
+
+    Values:
+      BACKUP_TYPE_UNSPECIFIED: Unknown backup type, will be defaulted to
+        AUTOMATIC backup type
+      AUTOMATED: Reencrypt automatic backups
+      ON_DEMAND: Reencrypt on-demand backups
+    """
+    BACKUP_TYPE_UNSPECIFIED = 0
+    AUTOMATED = 1
+    ON_DEMAND = 2
+
+  backupLimit = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 2)
+
+
 class BackupRetentionSettings(_messages.Message):
   r"""We currently only support backup retention by specifying the number of
   backups we will retain.
@@ -1621,6 +1649,16 @@ class InstancesListServerCasResponse(_messages.Message):
   kind = _messages.StringField(3)
 
 
+class InstancesReencryptRequest(_messages.Message):
+  r"""Database Instance reencrypt request.
+
+  Fields:
+    backupReencryptionConfig: Configuration specific to backup re-encryption
+  """
+
+  backupReencryptionConfig = _messages.MessageField('BackupReencryptionConfig', 1)
+
+
 class InstancesRestoreBackupRequest(_messages.Message):
   r"""Database instance restore backup request.
 
@@ -1983,6 +2021,7 @@ class Operation(_messages.Message):
       LOG_CLEANUP: Recovers logs from an instance's old data disk.
       AUTO_RESTART: Performs auto-restart of an HA-enabled Cloud SQL database
         for auto recovery.
+      REENCRYPT: Re-encrypts CMEK instances with latest key version.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2021,6 +2060,7 @@ class Operation(_messages.Message):
     START_EXTERNAL_SYNC = 34
     LOG_CLEANUP = 35
     AUTO_RESTART = 36
+    REENCRYPT = 37
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3082,6 +3122,16 @@ class SqlInstancesPromoteReplicaRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class SqlInstancesReencryptRequest(_messages.Message):
+  r"""Instance reencrypt request.
+
+  Fields:
+    body: Reencrypt body that users request
+  """
+
+  body = _messages.MessageField('InstancesReencryptRequest', 1)
+
+
 class SqlInstancesRescheduleMaintenanceRequestBody(_messages.Message):
   r"""Reschedule options for maintenance windows.
 
@@ -3934,10 +3984,12 @@ class User(_messages.Message):
       BUILT_IN: The database's built-in user type.
       CLOUD_IAM_USER: Cloud IAM user.
       CLOUD_IAM_SERVICE_ACCOUNT: Cloud IAM service account.
+      CLOUD_IAM_GROUP: Cloud IAM Group non-login user.
     """
     BUILT_IN = 0
     CLOUD_IAM_USER = 1
     CLOUD_IAM_SERVICE_ACCOUNT = 2
+    CLOUD_IAM_GROUP = 3
 
   dualPasswordType = _messages.EnumField('DualPasswordTypeValueValuesEnum', 1)
   etag = _messages.StringField(2)

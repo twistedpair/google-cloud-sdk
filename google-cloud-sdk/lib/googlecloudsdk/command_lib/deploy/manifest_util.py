@@ -33,6 +33,7 @@ API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
 METADATA_FIELDS = ['annotations', 'labels']
 USAGE_CHOICES = ['RENDER', 'DEPLOY']
+# If changing these fields also change them in the UI code.
 EXCLUDE_FIELDS = ['createTime', 'etag', 'uid', 'updateTime', 'name'
                  ] + METADATA_FIELDS
 

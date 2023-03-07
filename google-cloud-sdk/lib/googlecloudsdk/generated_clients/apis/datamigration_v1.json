@@ -1717,7 +1717,8 @@
             "Synonym.",
             "Package.",
             "UDT.",
-            "Material View."
+            "Material View.",
+            "Database."
           ],
           "enum": [
             "DATABASE_ENTITY_TYPE_UNSPECIFIED",
@@ -1734,7 +1735,8 @@
             "DATABASE_ENTITY_TYPE_SYNONYM",
             "DATABASE_ENTITY_TYPE_DATABASE_PACKAGE",
             "DATABASE_ENTITY_TYPE_UDT",
-            "DATABASE_ENTITY_TYPE_MATERIAL_VIEW"
+            "DATABASE_ENTITY_TYPE_MATERIAL_VIEW",
+            "DATABASE_ENTITY_TYPE_DATABASE"
           ]
         },
         "mappings": {
@@ -1952,7 +1954,7 @@
           }
         },
         "setValues": {
-          "description": "Specifies the list of values allowed in the column. List is empty if setValues is not required.",
+          "description": "Specifies the list of values allowed in the column. Only used for set data type.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2221,7 +2223,8 @@
             "Synonym.",
             "Package.",
             "UDT.",
-            "Material View."
+            "Material View.",
+            "Database."
           ],
           "enum": [
             "DATABASE_ENTITY_TYPE_UNSPECIFIED",
@@ -2238,7 +2241,8 @@
             "DATABASE_ENTITY_TYPE_SYNONYM",
             "DATABASE_ENTITY_TYPE_DATABASE_PACKAGE",
             "DATABASE_ENTITY_TYPE_UDT",
-            "DATABASE_ENTITY_TYPE_MATERIAL_VIEW"
+            "DATABASE_ENTITY_TYPE_MATERIAL_VIEW",
+            "DATABASE_ENTITY_TYPE_DATABASE"
           ]
         },
         "customFeatures": {

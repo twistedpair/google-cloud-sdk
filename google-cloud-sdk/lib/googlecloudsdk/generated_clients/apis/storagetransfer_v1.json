@@ -1128,6 +1128,10 @@
           "description": "Notification configuration.",
           "$ref": "NotificationConfig"
         },
+        "loggingConfig": {
+          "description": "Cloud Logging configuration.",
+          "$ref": "LoggingConfig"
+        },
         "startTime": {
           "description": "Start time of this transfer execution.",
           "type": "string",

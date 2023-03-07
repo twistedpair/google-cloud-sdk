@@ -38,6 +38,30 @@ def ValidatePort(port):
   return port
 
 
+def ValidateScalingFactor(scaling_factor):
+  """Python hook to validate the scaling factor."""
+  if scaling_factor < 0.1 or scaling_factor > 6:
+    raise exceptions.BadArgumentException(
+        '--scaling-factor',
+        'Scaling factor ({0}) is not in the range [0.1, 6.0].'.format(
+            scaling_factor
+        ),
+    )
+  elif scaling_factor < 1 and scaling_factor % 0.1 != 0:
+    raise exceptions.BadArgumentException(
+        '--scaling-factor',
+        'Scaling factor less than 1.0 ({0}) should be a'
+        ' multiple of 0.1 (e.g. (0.1, 0.2, 0.3))'.format(scaling_factor),
+    )
+  elif scaling_factor >= 1 and scaling_factor % 1.0 != 0:
+    raise exceptions.BadArgumentException(
+        '--scaling-factor',
+        'Scaling greater than 1.0 ({0}) should be a multiple'
+        ' of 1.0 (e.g. (1.0, 2.0, 3.0))'.format(scaling_factor),
+    )
+  return scaling_factor
+
+
 def ValidateGcsUri(arg_name):
   """Validates the gcs uri is formatted correctly."""
 
@@ -99,14 +123,6 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
     raise exceptions.BadArgumentException(
         '--data-catalog-sync',
         'Data Catalog synchronization cannot be used in conjunction with customer-managed encryption keys.'
-    )
-
-  if (req.service.hiveMetastoreConfig and
-      req.service.hiveMetastoreConfig.auxiliaryVersions and
-      _IsNetworkConfigPresentInService(req.service)):
-    raise exceptions.BadArgumentException(
-        '--auxiliary-versions',
-        'Auxiliary versions configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
     )
 
   return ValidateServiceMutexConfigForV1(unused_ref, unused_args, req)

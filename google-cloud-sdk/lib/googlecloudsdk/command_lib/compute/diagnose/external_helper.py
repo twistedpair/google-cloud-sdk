@@ -53,34 +53,6 @@ def RunSubprocess(proc_name, command_list):
     log.err.Print('INVOCATION: %s' % command_list_str)
 
 
-def CallSubprocess(proc_name, command_list, dry_run=False):
-  """Calls a subprocess and doesn't pipe stdout/stderr.
-
-  Args:
-    proc_name: The name of the subprocess to call.
-      Used for error logging.
-    command_list: A list with all the arguments for a subprocess call.
-      Must be able to be passed to a subprocess.Popen call.
-    dry_run: Only print the command, don't run it. Returns 0.
-  Returns:
-    The exit code of the subprocess.
-  Raises:
-    OSError: When there was an error running the subprocess command
-  """
-  if dry_run:
-    DryRunLog(' '.join(command_list))
-    return 0
-
-  try:
-    return subprocess.call(command_list)
-  except OSError as e:
-    log.error('Error running {proc_name}: {error_msg}'.format(
-        proc_name=proc_name, error_msg=six.text_type(e)))
-    command_list_str = ' '.join(command_list)
-    log.err.Print('INVOCATION: %s' % command_list_str)
-    raise e
-
-
 def RunSSHCommandToInstance(command_list,
                             instance,
                             user,

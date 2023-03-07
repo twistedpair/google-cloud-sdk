@@ -363,9 +363,7 @@ class UpdateBucketRequest(proto.Message):
             time, an older client updating with the ``*`` may
             accidentally reset the new field's value.
 
-            Not specifying any fields is an error. Not specifying a
-            field while setting that field to a non-default value is an
-            error.
+            Not specifying any fields is an error.
     """
 
     bucket = proto.Field(
@@ -1843,9 +1841,7 @@ class UpdateObjectRequest(proto.Message):
             time, an older client updating with the ``*`` may
             accidentally reset the new field's value.
 
-            Not specifying any fields is an error. Not specifying a
-            field while setting that field to a non-default value is an
-            error.
+            Not specifying any fields is an error.
         common_object_request_params (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CommonObjectRequestParams):
             A set of parameters common to Storage API
             requests concerning an object.
@@ -2655,15 +2651,6 @@ class Bucket(proto.Message):
             is_locked (bool):
                 Once locked, an object retention policy
                 cannot be modified.
-            retention_period (int):
-                The duration in seconds that objects need to
-                be retained. Retention duration must be greater
-                than zero and less than 100 years. Note that
-                enforcement of retention periods less than a day
-                is not guaranteed. Such periods should only be
-                used for testing purposes.
-
-                This field is a member of `oneof`_ ``_retention_period``.
             retention_duration (google.protobuf.duration_pb2.Duration):
                 The duration that objects need to be retained. Retention
                 duration must be greater than zero and less than 100 years.
@@ -2681,11 +2668,6 @@ class Bucket(proto.Message):
         is_locked = proto.Field(
             proto.BOOL,
             number=2,
-        )
-        retention_period = proto.Field(
-            proto.INT64,
-            number=3,
-            optional=True,
         )
         retention_duration = proto.Field(
             proto.MESSAGE,

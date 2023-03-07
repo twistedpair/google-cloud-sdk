@@ -23,7 +23,7 @@ class AddAddressGroupItemsRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -282,7 +282,7 @@ class CloneAddressGroupItemsRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -515,13 +515,17 @@ class GatewaySecurityPolicy(_messages.Message):
       t}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy
       } gateway_security_policy should match the
       pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    tlsInspectionPolicy: Optional. Name of a TLS Inspection Policy resource
+      that defines how TLS inspection will be performed for any rule(s) which
+      enables it.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  tlsInspectionPolicy = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class GatewaySecurityPolicyRule(_messages.Message):
@@ -548,6 +552,9 @@ class GatewaySecurityPolicyRule(_messages.Message):
     priority: Required. Priority of the rule. Lower number corresponds to
       higher precedence.
     sessionMatcher: Required. CEL expression for matching on session criteria.
+    tlsInspectionEnabled: Optional. Flag to enable TLS inspection of traffic
+      matching on , can only be true if the parent GatewaySecurityPolicy
+      references a TLSInspectionConfig.
     updateTime: Output only. Time when the rule was updated.
   """
 
@@ -572,7 +579,8 @@ class GatewaySecurityPolicyRule(_messages.Message):
   name = _messages.StringField(6)
   priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   sessionMatcher = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  tlsInspectionEnabled = _messages.BooleanField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudNetworksecurityV1alpha1CertificateProvider(_messages.Message):
@@ -1072,6 +1080,21 @@ class ListServerTlsPoliciesResponse(_messages.Message):
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
 
 
+class ListTlsInspectionPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListTlsInspectionPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+    tlsInspectionPolicies: List of TlsInspectionPolicies resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
+
+
 class ListUrlListsResponse(_messages.Message):
   r"""Response returned by the ListUrlLists method.
 
@@ -1080,11 +1103,13 @@ class ListUrlListsResponse(_messages.Message):
       response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
+    unreachable: Locations that could not be reached.
     urlLists: List of UrlList resources.
   """
 
   nextPageToken = _messages.StringField(1)
-  urlLists = _messages.MessageField('UrlList', 2, repeated=True)
+  unreachable = _messages.StringField(2, repeated=True)
+  urlLists = _messages.MessageField('UrlList', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1267,7 +1292,7 @@ class NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest(_messages.
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1293,7 +1318,7 @@ class NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest(_messages.
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1368,7 +1393,7 @@ class NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest(_messages.M
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1419,7 +1444,7 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest(_messa
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1444,7 +1469,7 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsDeleteRequest(_messa
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1795,7 +1820,7 @@ class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Messa
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1820,7 +1845,7 @@ class NetworksecurityProjectsLocationsAddressGroupsDeleteRequest(_messages.Messa
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -1921,7 +1946,7 @@ class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Messag
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2304,7 +2329,7 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest(
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2330,7 +2355,7 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsDeleteRequest(
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -2956,6 +2981,99 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the TlsInspectionPolicy. Must be
+      in the format `projects/{project}/locations/{location}`.
+    tlsInspectionPolicy: A TlsInspectionPolicy resource to be passed as the
+      request body.
+    tlsInspectionPolicyId: Required. Short name of the TlsInspectionPolicy
+      resource to be created. This value should be 1-63 characters long,
+      containing only letters, numbers, hyphens, and underscores, and should
+      not start with a number. E.g. "tls_inspection_policy1".
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  tlsInspectionPolicyId = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesDeleteRequest
+  object.
+
+  Fields:
+    force: If set to true, any rules for this TlsInspectionPolicy will also be
+      deleted. (Otherwise, the request will only work if the
+      TlsInspectionPolicy has no rules.)
+    name: Required. A name of the TlsInspectionPolicy to delete. Must be in
+      the format `projects/{project}/locations/{location}/tlsInspectionPolicie
+      s/{tls_inspection_policy}`.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the TlsInspectionPolicy to get. Must be in the
+      format `projects/{project}/locations/{location}/tlsInspectionPolicies/{t
+      ls_inspection_policy}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of TlsInspectionPolicies to return per call.
+    pageToken: The value returned by the last
+      'ListTlsInspectionPoliciesResponse' Indicates that this is a
+      continuation of a prior 'ListTlsInspectionPolicies' call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the
+      TlsInspectionPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}
+      tls_inspection_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    tlsInspectionPolicy: A TlsInspectionPolicy resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TlsInspectionPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
 class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
 
@@ -3179,7 +3297,7 @@ class RemoveAddressGroupItemsRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -3678,6 +3796,30 @@ class TlsCertificateFiles(_messages.Message):
 
   certificatePath = _messages.StringField(1)
   privateKeyPath = _messages.StringField(2)
+
+
+class TlsInspectionPolicy(_messages.Message):
+  r"""The TlsInspectionPolicy resource contains references to CA pools in
+  Certificate Authority Service and associated metadata.
+
+  Fields:
+    caPool: Required. A CA pool resource used to issue interception
+      certificates. The CA pool string has a relative resource path following
+      the form "projects/{project}/locations/{location}/caPools/{ca_pool}".
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}
+      tls_inspection_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  caPool = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class UrlList(_messages.Message):

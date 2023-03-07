@@ -65,9 +65,9 @@ class ParentTranslator(object):
         del params[new_param]
     return params
 
-  def ResourceMethodParams(self, message):
+  def MessageResourceMap(self, message, ref):
     """Get dict for translating parent params into the given message type."""
-    resource_method_params = {}
+    message_resource_map = {}
     # Parse resource with any params in the translator that are needed for the
     # request.
     for orig_param, special_param in six.iteritems(self.param_translation):
@@ -77,8 +77,8 @@ class ParentTranslator(object):
       # message.
       except KeyError:
         continue
-      resource_method_params[orig_param] = special_param
-    return resource_method_params
+      message_resource_map[orig_param] = getattr(ref, special_param, None)
+    return message_resource_map
 
   def Parse(self, parent_params, parameter_info, aggregations_dict):
     """Parse the parent resource from parameter info and aggregations.
@@ -345,14 +345,15 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
                             parent_translator=parent_translator)
     if not parent:
       return message
-    resource_method_params = {}
+    message_resource_map = {}
 
     if parent_translator:
-      resource_method_params = parent_translator.ResourceMethodParams(message)
+      message_resource_map = parent_translator.MessageResourceMap(
+          message, parent)
 
     arg_utils.ParseResourceIntoMessage(
         parent, method, message,
-        resource_method_params=resource_method_params)
+        message_resource_map=message_resource_map)
     return message
 
   def _GetParentTranslator(self, parameter_info, aggregations=None):

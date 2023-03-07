@@ -203,7 +203,8 @@
             "Reschedule maintenance to another time.",
             "Starts external sync of a Cloud SQL EM replica to an external primary instance.",
             "Recovers logs from an instance's old data disk.",
-            "Performs auto-restart of an HA-enabled Cloud SQL database for auto recovery."
+            "Performs auto-restart of an HA-enabled Cloud SQL database for auto recovery.",
+            "Re-encrypts CMEK instances with latest key version."
           ],
           "enum": [
             "SQL_OPERATION_TYPE_UNSPECIFIED",
@@ -242,7 +243,8 @@
             "RESCHEDULE_MAINTENANCE",
             "START_EXTERNAL_SYNC",
             "LOG_CLEANUP",
-            "AUTO_RESTART"
+            "AUTO_RESTART",
+            "REENCRYPT"
           ]
         },
         "importContext": {
@@ -1145,6 +1147,54 @@
         "kind": {
           "description": "This is always `sql#failoverContext`.",
           "type": "string"
+        }
+      }
+    },
+    "SqlInstancesReencryptRequest": {
+      "id": "SqlInstancesReencryptRequest",
+      "description": "Instance reencrypt request.",
+      "type": "object",
+      "properties": {
+        "body": {
+          "description": "Reencrypt body that users request",
+          "$ref": "InstancesReencryptRequest"
+        }
+      }
+    },
+    "InstancesReencryptRequest": {
+      "id": "InstancesReencryptRequest",
+      "description": "Database Instance reencrypt request.",
+      "type": "object",
+      "properties": {
+        "backupReencryptionConfig": {
+          "description": "Configuration specific to backup re-encryption",
+          "$ref": "BackupReencryptionConfig"
+        }
+      }
+    },
+    "BackupReencryptionConfig": {
+      "id": "BackupReencryptionConfig",
+      "description": "Backup Reencryption Config",
+      "type": "object",
+      "properties": {
+        "backupLimit": {
+          "description": "Backup re-encryption limit",
+          "type": "integer",
+          "format": "int32"
+        },
+        "backupType": {
+          "description": "Type of backups users want to re-encrypt.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown backup type, will be defaulted to AUTOMATIC backup type",
+            "Reencrypt automatic backups",
+            "Reencrypt on-demand backups"
+          ],
+          "enum": [
+            "BACKUP_TYPE_UNSPECIFIED",
+            "AUTOMATED",
+            "ON_DEMAND"
+          ]
         }
       }
     },
@@ -3161,12 +3211,14 @@
           "enumDescriptions": [
             "The database's built-in user type.",
             "Cloud IAM user.",
-            "Cloud IAM service account."
+            "Cloud IAM service account.",
+            "Cloud IAM Group non-login user."
           ],
           "enum": [
             "BUILT_IN",
             "CLOUD_IAM_USER",
-            "CLOUD_IAM_SERVICE_ACCOUNT"
+            "CLOUD_IAM_SERVICE_ACCOUNT",
+            "CLOUD_IAM_GROUP"
           ]
         },
         "sqlserverUserDetails": {
@@ -3956,6 +4008,41 @@
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
           "description": "Initiates a manual failover of a high availability (HA) primary instance to a standby instance, which becomes the primary instance. Users are then rerouted to the new primary. For more information, see the [Overview of high availability](https:\/\/cloud.google.com\/sql\/docs\/mysql\/high-availability) page in the Cloud SQL documentation. If using Legacy HA (MySQL only), this causes the instance to failover to its failover replica instance."
+        },
+        "reencrypt": {
+          "id": "sql.instances.reencrypt",
+          "path": "sql/v1beta4/projects/{project}/instances/{instance}/reencrypt",
+          "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/reencrypt",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "ID of the project that contains the instance.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "instance": {
+              "description": "Cloud SQL instance ID. This does not include the project ID.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "instance"
+          ],
+          "request": {
+            "$ref": "SqlInstancesReencryptRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/sqlservice.admin"
+          ],
+          "description": "Reencrypt CMEK instance with latest key version."
         },
         "get": {
           "id": "sql.instances.get",

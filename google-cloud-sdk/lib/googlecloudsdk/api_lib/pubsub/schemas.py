@@ -34,12 +34,19 @@ def CheckRevisionIdInSchemaPath(schema_ref):
   return len(find_id) > 1
 
 
+def InvalidSchemaType():
+  return InvalidArgumentError(
+      'The schema type must be either AVRO or PROTOCOL-BUFFER.'
+  )
+
+
 def ParseSchemaType(messages, schema_type):
   type_str = schema_type.lower()
-  if type_str == 'protocol-buffer':
+  if type_str == 'protocol-buffer' or type_str == 'protocol_buffer':
     return messages.Schema.TypeValueValuesEnum.PROTOCOL_BUFFER
   elif type_str == 'avro':
     return messages.Schema.TypeValueValuesEnum.AVRO
+  raise InvalidSchemaType()
 
 
 def GetClientInstance(no_http=False):

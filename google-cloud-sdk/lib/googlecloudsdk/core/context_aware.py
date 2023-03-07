@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import atexit
 import enum
+import json
 import os
 
 from google.auth import exceptions as google_auth_exceptions
@@ -144,6 +145,51 @@ def EncryptedSSLCredentials(config_path):
   raise ConfigException()
 
 
+def _GetCertificateConfigFile():
+  """Validates and returns the certificate config file path."""
+
+  # First see if there is a config file.
+  file_path = properties.VALUES.context_aware.certificate_config_file_path.Get()
+  if file_path is None:
+    file_path = config.CertConfigDefaultFilePath()
+  if not file_path:
+    return None
+
+  # Make sure the config file is a valid JSON file.
+  try:
+    content = files.ReadFileContents(file_path)
+    cert_config = json.loads(content)
+  except ValueError as caught_exc:
+    new_exc = CertProvisionException(
+        'The enterprise certificate config file is not a valid JSON file',
+        caught_exc,
+    )
+    six.raise_from(new_exc, caught_exc)
+  except files.Error as caught_exc:
+    new_exc = CertProvisionException(
+        'Failed to read enterprise certificate config file', caught_exc
+    )
+    six.raise_from(new_exc, caught_exc)
+
+  # Check if the config file contains the ecp binary path.
+  # If ecp binary path is not in the config file, return None
+  if 'libs' not in cert_config or 'ecp' not in cert_config['libs']:
+    return None
+
+  # If ecp binary path is provided but the binary doesn't exist, throw
+  # exception
+  if not os.path.exists(cert_config['libs']['ecp']):
+    raise CertProvisionException(
+        'Enterprise certificate provider (ECP) binary path'
+        ' (cert_config["libs"]["ecp"]) specified in enterprise certificate'
+        ' config file was not found. Cannot use mTLS with ECP if the ECP binary'
+        ' does not exist. Please check the ECP configuration. See `gcloud topic'
+        ' client-certificate` to learn more about ECP'
+    )
+
+  return file_path
+
+
 class ConfigType(enum.Enum):
   ENTERPRISE_CERTIFICATE = 1
   ON_DISK_CERTIFICATE = 2
@@ -164,15 +210,13 @@ class _ConfigImpl(object):
     if not properties.VALUES.context_aware.use_client_certificate.GetBool():
       return None
 
-    certificate_config_file_path = properties.VALUES.context_aware.certificate_config_file_path.Get(
-    )
-    if certificate_config_file_path is None:
-      certificate_config_file_path = config.CertConfigDefaultFilePath(
-      )
+    certificate_config_file_path = _GetCertificateConfigFile()
     if certificate_config_file_path is not None:
       # The enterprise cert config file path will be used.
+      log.debug('enterprise certificate is used for mTLS')
       return _EnterpriseCertConfigImpl(certificate_config_file_path)
 
+    log.debug('on disk certificate is used for mTLS')
     config_path = _AutoDiscoveryFilePath()
     # Raw cert and key
     cert_bytes, key_bytes = SSLCredentials(config_path)

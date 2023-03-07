@@ -1660,6 +1660,33 @@ class GkeonpremV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Enroll(self, request, global_params=None):
+      r"""Enrolls a VMware node pool to GKE OnPrem API.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Enroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools:enroll',
+        http_method='POST',
+        method_id='gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.enroll',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/vmwareNodePools:enroll',
+        request_field='enrollVmwareNodePoolRequest',
+        request_type_name='GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single VMware node pool.
 
@@ -1819,6 +1846,33 @@ class GkeonpremV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Unenroll(self, request, global_params=None):
+      r"""Unenrolls a VMware node pool to GKE OnPrem API.
+
+      Args:
+        request: (GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsUnenrollRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Unenroll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unenroll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}:unenroll',
+        http_method='DELETE',
+        method_id='gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.unenroll',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'validateOnly'],
+        relative_path='v1/{+name}:unenroll',
+        request_field='',
+        request_type_name='GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsUnenrollRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

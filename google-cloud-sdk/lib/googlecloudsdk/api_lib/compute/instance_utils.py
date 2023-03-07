@@ -253,7 +253,8 @@ def CreateSchedulingMessage(messages,
                             instance_termination_action=None,
                             host_error_timeout_seconds=None,
                             max_run_duration=None,
-                            termination_time=None):
+                            termination_time=None,
+                            local_ssd_recovery_timeout=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -281,10 +282,17 @@ def CreateSchedulingMessage(messages,
   if instance_termination_action:
     scheduling.instanceTerminationAction = (
         messages.Scheduling.InstanceTerminationActionValueValuesEnum(
-            instance_termination_action))
+            instance_termination_action
+        )
+    )
 
   if max_run_duration:
     scheduling.maxRunDuration = messages.Duration(seconds=max_run_duration)
+
+  if local_ssd_recovery_timeout:
+    scheduling.localSsdRecoveryTimeout = messages.Duration(
+        seconds=local_ssd_recovery_timeout
+    )
 
   if termination_time:
     scheduling.terminationTime = times.FormatDateTime(termination_time)
@@ -537,7 +545,8 @@ def GetScheduling(args,
                   support_min_node_cpu=True,
                   support_node_project=False,
                   support_host_error_timeout_seconds=False,
-                  support_max_run_duration=False):
+                  support_max_run_duration=False,
+                  support_local_ssd_recovery_timeout=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
@@ -577,6 +586,12 @@ def GetScheduling(args,
   if support_max_run_duration and hasattr(args, 'max_run_duration'):
     max_run_duration = args.max_run_duration
 
+  local_ssd_recovery_timeout = None
+  if support_local_ssd_recovery_timeout and hasattr(
+      args, 'local_ssd_recovery_timeout') and args.IsSpecified(
+          'local_ssd_recovery_timeout'):
+    local_ssd_recovery_timeout = args.local_ssd_recovery_timeout
+
   termination_time = None
   if support_max_run_duration and hasattr(args, 'termination_time'):
     termination_time = args.termination_time
@@ -592,7 +607,7 @@ def GetScheduling(args,
       'provisioning_model') and not restart_on_failure and
       not node_affinities and not max_run_duration and not termination_time and
       not freeze_duration and not host_error_timeout_seconds and
-      not maintenance_interval):
+      not maintenance_interval and not local_ssd_recovery_timeout):
     return None
 
   return CreateSchedulingMessage(
@@ -609,7 +624,8 @@ def GetScheduling(args,
       instance_termination_action=instance_termination_action,
       host_error_timeout_seconds=host_error_timeout_seconds,
       max_run_duration=max_run_duration,
-      termination_time=termination_time)
+      termination_time=termination_time,
+      local_ssd_recovery_timeout=local_ssd_recovery_timeout)
 
 
 def GetServiceAccounts(args, client, skip_defaults):

@@ -31,6 +31,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
+
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
 
 _INVALID_IMAGE_PATH_ERROR = """Invalid Docker string.
@@ -84,22 +85,16 @@ A valid container image can be referenced by tag or digest, has the format of
 """
 
 DOCKER_REPO_REGEX = (
-    r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)"
-)
+    r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)")
 
-DOCKER_IMG_BY_TAG_REGEX = (
-    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
-)
+DOCKER_IMG_BY_TAG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
 
 DOCKER_IMG_BY_DIGEST_REGEX = (
-    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)"
-)
+    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)")
 
 DOCKER_IMG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)"
 
-_VERSION_COLLECTION_NAME = (
-    "artifactregistry.projects.locations.repositories.packages.versions"
-)
+_VERSION_COLLECTION_NAME = "artifactregistry.projects.locations.repositories.packages.versions"
 
 
 def _GetDefaultResources():
@@ -263,22 +258,28 @@ def _GetDockerVersions(docker_img,
         messages.
         ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest
         .ViewValueValuesEnum.FULL)
-  ver_list = ar_requests.ListVersions(client, messages,
-                                      docker_img.GetPackageName(), ver_view,
-                                      page_size, order_by, limit)
 
-  # If there's no result, the package name might be part of a nested package.
-  # E.g. us-west1-docker.pkg.dev/fake-project/docker-repo/nested1 in
-  # us-west1-docker.pkg.dev/fake-project/docker-repo/nested1/nested2/test-image
-  # Try to get the list of versions through the list of all packages.
-  if not ver_list and search_subdirs:
-    return _GetDockerPackagesAndVersions(
-        docker_img.docker_repo,
-        include_tags,
-        page_size,
-        order_by,
-        limit,
-        package_prefix=docker_img.GetDockerString() + "/")
+  ver_list = []
+  try:
+    ver_list = ar_requests.ListVersions(client, messages,
+                                        docker_img.GetPackageName(), ver_view,
+                                        page_size, order_by, limit)
+
+  except api_exceptions.HttpNotFoundError:
+    # If there's no result, the package name might be part of a nested package.
+    # E.g. us-west1-docker.pkg.dev/fake-project/docker-repo/nested1 in
+    # us-west1-docker.pkg.dev/fake-project/docker-repo/nested1/nested2/test-image
+    # Try to get the list of versions through the list of all packages.
+    if search_subdirs:
+      return _GetDockerPackagesAndVersions(
+          docker_img.docker_repo,
+          include_tags,
+          page_size,
+          order_by,
+          limit,
+          package_prefix=docker_img.GetDockerString() + "/")
+    else:
+      return []
 
   img_list = []
   for ver in ver_list:
@@ -286,7 +287,7 @@ def _GetDockerVersions(docker_img,
         ver.name, collection=_VERSION_COLLECTION_NAME).Name()
     img_list.append({
         "package": docker_img.GetDockerString(),
-        "tags": ", ".join([tag.name.split("/")[-1] for tag in ver.relatedTags]),
+        "tags": ", ".join([t.name.split("/")[-1] for t in ver.relatedTags]),
         "version": v,
         "createTime": ver.createTime,
         "updateTime": ver.updateTime
@@ -610,9 +611,6 @@ def DescribeDockerImage(args):
 
   metadata = ca_util.GetContainerAnalysisMetadata(docker_version, args)
   result.update(metadata.ArtifactsDescribeView())
-  result["image_summary"].update({
-      "slsa_build_level": metadata.SLSABuildLevel()
-  })
   return result
 
 

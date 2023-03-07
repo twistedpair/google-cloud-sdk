@@ -5163,8 +5163,34 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagerResizeRequests.cancel',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}/cancel',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified resize request.
+      r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
 
       Args:
         request: (ComputeInstanceGroupManagerResizeRequestsDeleteRequest) input message
@@ -19287,7 +19313,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.securityPolicies.patchRule',
         ordered_params=['project', 'securityPolicy'],
         path_params=['project', 'securityPolicy'],
-        query_params=['priority', 'validateOnly'],
+        query_params=['priority', 'updateMask', 'validateOnly'],
         relative_path='projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
         request_field='securityPolicyRule',
         request_type_name='ComputeSecurityPoliciesPatchRuleRequest',

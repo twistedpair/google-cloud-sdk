@@ -259,60 +259,6 @@ class CloudbuildV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def AccessReadToken(self, request, global_params=None):
-      r"""Gets read token of a given connection.
-
-      Args:
-        request: (CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AccessReadTokenResponse) The response message.
-      """
-      config = self.GetMethodConfig('AccessReadToken')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AccessReadToken.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:accessReadToken',
-        http_method='POST',
-        method_id='cloudbuild.projects.locations.connections.accessReadToken',
-        ordered_params=['connection'],
-        path_params=['connection'],
-        query_params=[],
-        relative_path='v2/{+connection}:accessReadToken',
-        request_field='accessReadTokenRequest',
-        request_type_name='CloudbuildProjectsLocationsConnectionsAccessReadTokenRequest',
-        response_type_name='AccessReadTokenResponse',
-        supports_download=False,
-    )
-
-    def AccessReadWriteToken(self, request, global_params=None):
-      r"""Gets read/write token of a given connection.
-
-      Args:
-        request: (CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AccessReadWriteTokenResponse) The response message.
-      """
-      config = self.GetMethodConfig('AccessReadWriteToken')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AccessReadWriteToken.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/connections/{connectionsId}:accessReadWriteToken',
-        http_method='POST',
-        method_id='cloudbuild.projects.locations.connections.accessReadWriteToken',
-        ordered_params=['connection'],
-        path_params=['connection'],
-        query_params=[],
-        relative_path='v2/{+connection}:accessReadWriteToken',
-        request_field='accessReadWriteTokenRequest',
-        request_type_name='CloudbuildProjectsLocationsConnectionsAccessReadWriteTokenRequest',
-        response_type_name='AccessReadWriteTokenResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a Connection.
 
@@ -1180,6 +1126,33 @@ class CloudbuildV2(base_api.BaseApiClient):
         request_field='runWorkflowRequest',
         request_type_name='CloudbuildProjectsLocationsWorkflowsRunRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Webhook(self, request, global_params=None):
+      r"""Processes webhooks posted towards a WorkflowTrigger.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProcessWorkflowTriggerWebhookResponse) The response message.
+      """
+      config = self.GetMethodConfig('Webhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Webhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:webhook',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.workflows.webhook',
+        ordered_params=['workflow'],
+        path_params=['workflow'],
+        query_params=[],
+        relative_path='v2/{+workflow}:webhook',
+        request_field='processWorkflowTriggerWebhookRequest',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsWebhookRequest',
+        response_type_name='ProcessWorkflowTriggerWebhookResponse',
         supports_download=False,
     )
 

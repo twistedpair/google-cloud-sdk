@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Set up flags for creating or updating a github enterprise config."""
+"""Set up flags for creating or updating a Github Enterprise config."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -38,7 +38,10 @@ def AddGitHubEnterpriseConfigArgs(parser, update=False):
       '--app-id',
       type=int,
       required=not update,
-      help='The app id of the GitHub app that should be associated with this config.'
+      help=(
+          'The app id of the GitHub app that should be associated with this'
+          ' config.'
+      ),
   )
   if not update:
     parser.add_argument(
@@ -51,7 +54,8 @@ If not specified, calls will be made over the public internet.
   if update:
     parser.add_argument(
         'CONFIG',
-        help='The unique identifier of the GitHub Enterprise Config to be updated.'
+        help=
+        'The unique identifier of the GitHub Enterprise Config to be updated.'
     )
   parser.add_argument(
       '--webhook-key',
@@ -113,7 +117,8 @@ If this is not set, Cloud Build will read the latest version.
   )
   secretmanager.add_argument(
       '--oauth-client-id-version-name',
-      help='Secret Manager SecretVersion resource containing the oauth client id.'
+      help=
+      'Secret Manager SecretVersion resource containing the oauth client id.',
   )
   return parser
 

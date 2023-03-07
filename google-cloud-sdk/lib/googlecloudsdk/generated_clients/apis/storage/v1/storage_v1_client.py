@@ -1167,7 +1167,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.list',
         ordered_params=['bucket'],
         path_params=['bucket'],
-        query_params=['delimiter', 'endOffset', 'includeTrailingDelimiter', 'maxResults', 'pageToken', 'prefix', 'projection', 'startOffset', 'userProject', 'versions'],
+        query_params=['delimiter', 'endOffset', 'includeTrailingDelimiter', 'matchGlob', 'maxResults', 'pageToken', 'prefix', 'projection', 'startOffset', 'userProject', 'versions'],
         relative_path='b/{bucket}/o',
         request_field='',
         request_type_name='StorageObjectsListRequest',

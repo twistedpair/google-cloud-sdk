@@ -161,7 +161,7 @@ class Settings(dataobject.DataObject):
   def WithArgs(self, args):
     """Update parameters based on arguments."""
     project = properties.VALUES.core.project.Get()
-    region = run_flags.GetRegion(args, prompt=False)
+    region = run_flags.GetRegion(args, prompt=True)
     replacements = {'project': project, 'region': region}
 
     for override_arg in [
@@ -200,13 +200,15 @@ class Settings(dataobject.DataObject):
     return self.replace(**replacements)
 
   def Build(self):
-    ar_repo = docker_util.DockerRepo(
-        project_id=self.project,
-        location_id=self.region,
-        repo_id='cloud-run-source-deploy',
-    )
-    replacements = {'ar_repo': ar_repo}
+    replacements = {}
+
     if not self.image:
+      ar_repo = docker_util.DockerRepo(
+          project_id=self.project,
+          location_id=self.region,
+          repo_id='cloud-run-source-deploy',
+      )
+      replacements['ar_repo'] = ar_repo
       replacements['image'] = _DefaultImageName(ar_repo, self.service_name)
     return self.replace(**replacements)
 

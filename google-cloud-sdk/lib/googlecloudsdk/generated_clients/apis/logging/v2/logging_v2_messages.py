@@ -207,13 +207,21 @@ class ChartingQueryStep(_messages.Message):
   may not be used as the first step in a query.
 
   Fields:
-    dataSeries: The requested data series for the chart.
+    breakdowns: The breakdowns for the measures of the chart. A breakdown
+      turns a single measure into multiple effective measures, each one
+      associated with a single value from the breakdown column.
     dimensions: The dimension columns. How many dimensions to choose and how
-      they're configured will depend on the chart type.
+      they're configured will depend on the chart type. A dimension is the
+      labels for the data; e.g., the X axis for a line graph or the segment
+      labels for a pie chart.
+    measures: The measures to be displayed within the chart. A measure is a
+      data set to be displayed; e.g., a line on a line graph, a set of bars on
+      a bar graph, or the segment widths on a pie chart.
   """
 
-  dataSeries = _messages.MessageField('DataSeries', 1, repeated=True)
+  breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
   dimensions = _messages.MessageField('Dimension', 2, repeated=True)
+  measures = _messages.MessageField('Measure', 3, repeated=True)
 
 
 class CmekSettings(_messages.Message):
@@ -384,21 +392,6 @@ class CreateLinkRequest(_messages.Message):
   link = _messages.MessageField('Link', 1)
   linkId = _messages.StringField(2)
   parent = _messages.StringField(3)
-
-
-class DataSeries(_messages.Message):
-  r"""A definition for a data series within the output. A data series is
-  defined as a set of measures and breakdowns for those measures (see Measure
-  and Breakdown above for descriptions of how those interact). The exact
-  rendering of a data series will depend on the chart type chosen.
-
-  Fields:
-    breakdowns: The breakdowns within the data series.
-    measures: The measures within the data series.
-  """
-
-  breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
-  measures = _messages.MessageField('Measure', 2, repeated=True)
 
 
 class DeleteLinkRequest(_messages.Message):
@@ -5957,7 +5950,8 @@ class Measure(_messages.Message):
 
   Fields:
     aggregation: The aggregation to apply to the input column. May not be set
-      to "none" unless binning is disabled in the dimension.
+      to "none" unless binning is disabled and this column is not set as the
+      sort column in the dimension.
     column: Required. The column name within the output of the previous step
       to use. May be the same column as the dimension.
   """

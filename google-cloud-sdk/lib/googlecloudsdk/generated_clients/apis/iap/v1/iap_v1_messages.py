@@ -96,21 +96,22 @@ class AttributePropagationSettings(_messages.Message):
     enable: Whether the provided attribute propagation settings should be
       evaluated on user requests. If set to true, attributes returned from the
       expression will be propagated in the set output credentials.
-    expression: Raw string CEL expression. Must return a list of attributes.
-      Maximum of 45 attributes can be selected. Expressions can select
+    expression: Raw string CEL expression. Must return a list of attributes. A
+      maximum of 45 attributes can be selected. Expressions can select
       different attribute types from `attributes`:
-      `attributes.saml_attributes`, `attributes.iap_attributes`. Limited
-      functions are supported: - filter: .filter(, ) -> returns a subset of
-      where is true for every item - in: in -> returns true if contains -
-      selectByName: .selectByName() -> returns the attribute in with the given
-      name, otherwise returns empty. - emitAs: .emitAs() -> sets the name
-      field to the given for propagation in selected output credentials. -
-      strict: .strict() -> ignore the `x-goog-iap-attr-` prefix for the
-      provided attribute when propagating via the `HEADER` output credential,
-      i.e. request headers. - append: .append() OR .append() -> append the
-      provided or onto the end of Example expression:
-      attributes.saml_attributes.filter(x, x.name in ['test']).append(attribut
-      es.iap_attributes.selectByName('exact').emitAs('custom').strict())
+      `attributes.saml_attributes`, `attributes.iap_attributes`. The following
+      functions are supported: - filter `.filter(, )`: Returns a subset of ``
+      where `` is true for every item. - in ` in `: Returns true if ``
+      contains ``. - selectByName `.selectByName()`: Returns the attribute in
+      `` with the given `` name, otherwise returns empty. - emitAs
+      `.emitAs()`: Sets the `` name field to the given `` for propagation in
+      selected output credentials. - strict `.strict()`: Ignores the `x-goog-
+      iap-attr-` prefix for the provided `` when propagating with the `HEADER`
+      output credential, such as request headers. - append `.append()` OR
+      `.append()`: Appends the provided `` or `` to the end of ``. Example
+      expression: `attributes.saml_attributes.filter(x, x.name in ['test']).ap
+      pend(attributes.iap_attributes.selectByName('exact').emitAs('custom').st
+      rict())`
     outputCredentials: Which output credentials attributes selected by the CEL
       expression should be propagated in. All attributes will be fully
       duplicated in each selected output credential.
@@ -120,14 +121,14 @@ class AttributePropagationSettings(_messages.Message):
     r"""OutputCredentialsValueListEntryValuesEnum enum type.
 
     Values:
-      OUTPUT_CREDENTIALS_UNSPECIFIED: No output credential. This is
-        unsupported in IAP, there must be an output credential.
+      OUTPUT_CREDENTIALS_UNSPECIFIED: Output credential not provided. This is
+        unsupported in IAP. An output credential is required.
       HEADER: Propagate attributes in the headers with "x-goog-iap-attr-"
         prefix.
-      JWT: Propagate attributes in the JWT of the form: "additional_claims": {
-        "my_attribute": ["value1", "value2"] }
+      JWT: Propagate attributes in the JWT of the form: `"additional_claims":
+        { "my_attribute": ["value1", "value2"] }`
       RCTOKEN: Propagate attributes in the RCToken of the form:
-        "additional_claims": { "my_attribute": ["value1", "value2"] }
+        `"additional_claims": { "my_attribute": ["value1", "value2"] }`
     """
     OUTPUT_CREDENTIALS_UNSPECIFIED = 0
     HEADER = 1
@@ -843,7 +844,7 @@ class ReauthSettings(_messages.Message):
     Values:
       METHOD_UNSPECIFIED: Reauthentication disabled.
       LOGIN: Prompts the user to log in again.
-      PASSWORD: Deprecated, no longer accepted by IAP APIs.
+      PASSWORD: Deprecated.
       SECURE_KEY: User must use their secure key 2nd factor device.
       ENROLLED_SECOND_FACTORS: User can use any enabled 2nd factor.
     """

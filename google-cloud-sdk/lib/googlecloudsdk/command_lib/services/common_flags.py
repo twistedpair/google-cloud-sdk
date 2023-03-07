@@ -94,9 +94,10 @@ def available_service_flag(suffix='to act on', flag_name='service'):
       help='The name of the service(s) {0}.'.format(suffix))
 
 
-def _create_key_resource_arg(help_txt, api_version):
+def _create_key_resource_arg(help_txt, api_version, required=True):
   return presentation_specs.ResourcePresentationSpec(
-      'key', _get_key_resource_spec(api_version), help_txt, required=True)
+      'key', _get_key_resource_spec(api_version), help_txt, required=required
+  )
 
 
 def _get_key_resource_spec(api_version):
@@ -138,12 +139,16 @@ def _location_attribute_config():
       ])
 
 
-def key_flag(parser, suffix='to act on', api_version='v2'):
-  return concept_parsers.ConceptParser([
-      _create_key_resource_arg(
-          help_txt='The name of the key {0}.'.format(suffix),
-          api_version=api_version)
-  ]).AddToParser(parser)
+def key_flag(parser, suffix='to act on', api_version='v2', required=True):
+  return concept_parsers.ConceptParser(
+      [
+          _create_key_resource_arg(
+              help_txt='The name of the key {0}.'.format(suffix),
+              api_version=api_version,
+              required=required,
+          )
+      ]
+  ).AddToParser(parser)
 
 
 def display_name_flag(parser, suffix='to act on'):
@@ -152,8 +157,17 @@ def display_name_flag(parser, suffix='to act on'):
       help='Display name of the key {0}.'.format(suffix)).AddToParser(parser)
 
 
+def add_key_undelete_args(parser):
+  """Adds args for api-keys undelete command."""
+  undelete_set_group = parser.add_mutually_exclusive_group(required=True)
+  key_flag(
+      undelete_set_group, suffix='to undelete', api_version='v2', required=False
+  )
+  _key_string_flag(undelete_set_group)
+
+
 def add_key_update_args(parser):
-  """Add args for api-keys update command."""
+  """Adds args for api-keys update command."""
   update_set_restriction_group = parser.add_mutually_exclusive_group(
       required=False
   )
@@ -275,3 +289,9 @@ def _api_targets_arg(parser):
       with the `--flags-file`. See $ gcloud topic flags-file for details.
       See the examples section for how to use `--api-target` in
       `--flags-file`.""").AddToParser(parser)
+
+
+def _key_string_flag(parser):
+  base.Argument('--key-string', help='Key String of the key.').AddToParser(
+      parser
+  )

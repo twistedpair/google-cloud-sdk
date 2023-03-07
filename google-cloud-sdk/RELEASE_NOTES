@@ -5,6 +5,121 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 421.0.0 (2023-03-07)
+
+### Artifact Registry
+
+* Fixed an issue where `gcloud artifacts docker images list` does not return nested images.
+
+### BigQuery
+
+* Extended third-party identity login to support a web-based 3-legged OAuth
+  flow.
+* Extended `ls -p` to page through all projects.
+* Extended `--format` for `load` to support more formats.
+* Removes some unneeded shipped libraries.
+* Added logging support for all exceptions when `--apilog` is present.
+* Added `--encoding` for `load` to support csv encodings.
+* Updated the bundled cachetools library.
+
+### Cloud Filestore
+
+*   Added `--instance-location` flag to `gcloud filestore instances snapshots create`, which
+    accepts either a zone or region and allows clients to create Enterprise and HighScale snapshots.
+*   Added `--instance-location` flag to `gcloud filestore instances snapshots delete`, which
+    accepts either a zone or region and allows clients to delete Enterprise and HighScale snapshots.
+*   Added `--instance-location` flag to `gcloud filestore instances snapshots list`, which
+    accepts either a zone or region and allows clients to list Enterprise and HighScale snapshots.
+*   Added `--instance-location` flag to `gcloud filestore instances snapshots update`, which
+    accepts either a zone or region and allows clients to update Enterprise and HighScale snapshots.
+*   Added `--instance-location` flag to `gcloud filestore instances snapshots describe`, which
+    accepts either a zone or region and allows clients to describe Enterprise and HighScale snapshots.
+
+### Cloud Pub/Sub
+
+*   Fixed `gcloud schemas commit` to raise an Invalid Argument error
+    if `--type` is not equal to `protocol-buffer`, `protocol_buffer`, or `avro`.
+
+### Cloud Services
+
+*  Added key-string support for undelete command for api_keys in beta.
+
+### Cloud Spanner
+
+* Promoted `gcloud spanner databases roles list` to GA.
+* Promoted `--database-role` flag in `gcloud spanner databases execute-sql` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.21.
+
+### Cloud Workflows
+
+* Added `--labels` flag to `gcloud workflows <execute|run>` to allow adding
+  execution specific labels.
+
+### Cloud Workstations
+
+* Fixed issue with the custom container image not being properly set in
+`gcloud beta workstations configs create`.
+
+### Compute Engine
+
+* Added `--encryption` to `gcloud compute interconnects attachments dedicated create` to add
+  encryption option for dedicated interconnect attachment (VLAN attachment).
+* Added `--encryption` to `gcloud compute interconnects attachments partner create` to add
+  encryption option for partner interconnect attachment (VLAN attachment).
+* Added `--ipsec-internal-addresses` to `gcloud compute interconnects attachments dedicated create`
+  to add list of addresses that have been reserved for dedicated interconnect
+  attachment (VLAN attachment).
+* Added `--ipsec-internal-addresses` to `gcloud compute interconnects attachments partner create`
+  to add list of addresses that have been reserved for partner interconnect
+  attachment (VLAN attachment).
+* Added `--encrypted-interconnect-router` to `gcloud compute routers create` to indicate
+  that the router is dedicated for use with encrypted interconnect attachments (VLANs).
+* Added `--interconnect-attachments` to `gcloud compute vpn-gateways create` to add
+  interconnect attachments (VLAN attachments) associated with the VPN gateway interfaces.
+* Added `9` to allowed list of values for `--version` of `gcloud beta compute instances ops-agents policies [create|update]`.
+* Promoted `--locality_lb_policy` flag of `gcloud compute backend-services create/update` to GA.
+* Added `--max-run-duration` and `--termination-time` flags in `gcloud compute instances set-scheduling` to beta.
+* Added `--clear-max-run-duration` and `--clear-termination-time` flags in `gcloud compute instances set-scheduling` to beta.
+* Promoted `--endpoint-types` flag in `gcloud compute routers nats create` to GA.
+
+### Dataproc Metastore
+
+* Promoted `--auxiliary-versions` flag of `gcloud metastore services create` to GA. Modified flag to no longer be mutually exclusive with `--consumer-subnetworks` and `--network-config-from-file`.
+* Promoted `--auxiliary-versions-from-file` flag of `gcloud metastore services create` to GA. Modified flag to no longer be mutually exclusive with `--consumer-subnetworks` and `--network-config-from-file`.
+* Promoted `--instance-size` flag of `gcloud metastore services create` and `gcloud metastore services update` to GA.
+* Added `--instance-size` flag to `gcloud metastore services create` and `gcloud metastore services update` to specify a service instance size.
+* Promoted `--scaling-factor` flag of `gcloud metastore services create` and `gcloud metastore services update` to GA.
+* Added `--scaling-factor` flag to `gcloud metastore services create` and `gcloud metastore services update` to specify a service scaling factor.
+* Modified `--tier` flag of `gcloud metastore services create` and `gcloud metastore services update` to be mutually exclusive with `--instance-size` and `--scaling-factor` in all release tracks.
+
+### Identity and Access Management
+
+* Added support for credential sharing with bq and gsutil when using browser-based sign-in with Workforce identity federation to authenticate with the Google Cloud CLI via `gcloud auth login`.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.24 to v1.0.0-beta.27. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.27> and previous release notes for more details.
+
+### Kubernetes Engine
+
+*  Prevent overwriting directory permission when KUBECONFIG contains empty entry
+    or a directory. Instead, raise an error.
+* Updates default kubectl from 1.24.10 to 1.24.11.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.11)
+  * kubectl.1.25 (1.25.7)
+  * kubectl.1.26 (1.26.2)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 420.0.0 (2023-02-28)
 
 ### Breaking Changes
@@ -245,7 +360,7 @@ though the deletion succeeded.
 
 ### Stackdriver Debugger
 
-*   Deprecated `gcloud deploy`.  Cloud Debugger is deprecated and will be shut
+*   Deprecated `gcloud debug`.  Cloud Debugger is deprecated and will be shut
     down May 31, 2023.  For more information, see
     <https://cloud.google.com/debugger/docs/deprecations>.
 
@@ -667,7 +782,7 @@ model monitoring jobs regions.
   environments create/update` to enable Cloud Data Lineage integration.
 * Added `--disable-cloud-data-lineage-integration` to `gcloud composer
   environments update` to disable Cloud Data Lineage integration.
-* Enabled `db clean` and `db check` Airflow commands executable via `gcloud
+* Enabled `db check` Airflow command executable via `gcloud
  composer environments run` for environments with Airflow 2.3 or newer.
 
 ### Cloud Datalab

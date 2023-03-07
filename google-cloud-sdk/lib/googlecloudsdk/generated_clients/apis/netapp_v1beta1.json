@@ -1,0 +1,2398 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "netapp:v1beta1",
+  "name": "netapp",
+  "canonicalName": "NetApp Files",
+  "version": "v1beta1",
+  "revision": "0",
+  "title": "NetApp API",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/netapp/",
+  "protocol": "rest",
+  "rootUrl": "https://netapp.googleapis.com/",
+  "mtlsRootUrl": "https://netapp.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://netapp.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListStoragePoolsResponse": {
+      "id": "ListStoragePoolsResponse",
+      "description": "ListStoragePoolsResponse",
+      "type": "object",
+      "properties": {
+        "storagePools": {
+          "description": "The list of StoragePools",
+          "type": "array",
+          "items": {
+            "$ref": "StoragePool"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "StoragePool": {
+      "id": "StoragePool",
+      "description": "Resources StoragePool StoragePool is a container for volumes with a service level and capacity. Volumes can be created in a pool of sufficient available capacity. StoragePool capacity is what you are billed for.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the storage pool",
+          "readOnly": true,
+          "type": "string"
+        },
+        "serviceLevel": {
+          "description": "Required. Service level of the storage pool",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified service level",
+            "Premium",
+            "Extreme"
+          ],
+          "enum": [
+            "SERVICE_LEVEL_UNSPECIFIED",
+            "PREMIUM",
+            "EXTREME"
+          ]
+        },
+        "capacityGib": {
+          "description": "Required. Capacity in GIB of the pool",
+          "type": "string",
+          "format": "int64"
+        },
+        "volumeCapacityGib": {
+          "description": "Output only. Allocated size of all volumes in GIB in the storage pool",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "volumeCount": {
+          "description": "Output only. Volume count of the storage pool",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "state": {
+          "description": "Output only. State of the storage pool",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Storage Pool State",
+            "Storage Pool State is Ready",
+            "Storage Pool State is Creating",
+            "Storage Pool State is Deleting",
+            "Storage Pool State is Updating",
+            "Storage Pool State is Restoring",
+            "Storage Pool State is Disabled",
+            "Storage Pool State is Error"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING",
+            "RESTORING",
+            "DISABLED",
+            "ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Output only. State details of the storage pool",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time of the storage pool",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Description of the storage pool",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListVolumesResponse": {
+      "id": "ListVolumesResponse",
+      "description": "ListVolumesResponse Message for response to listing Volumes",
+      "type": "object",
+      "properties": {
+        "volumes": {
+          "description": "The list of Volume",
+          "type": "array",
+          "items": {
+            "$ref": "Volume"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Volume": {
+      "id": "Volume",
+      "description": "Volume Volume provides a filesystem that you can mount.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the volume",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the volume",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Volume State",
+            "Volume State is Ready",
+            "Volume State is Creating",
+            "Volume State is Deleting",
+            "Volume State is Updating",
+            "Volume State is Restoring",
+            "Volume State is Disabled",
+            "Volume State is Error"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING",
+            "RESTORING",
+            "DISABLED",
+            "ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Output only. State details of the volume",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time of the volume",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "shareName": {
+          "description": "Required. Share name of the volume",
+          "type": "string"
+        },
+        "psaRange": {
+          "description": "Optional. Name of the Private Service Access allocated range. This is optional. If not provided, any available range will be chosen.",
+          "type": "string"
+        },
+        "storagePool": {
+          "description": "Required. StoragePool name of the volume",
+          "type": "string"
+        },
+        "network": {
+          "description": "Required. VPC Network name",
+          "type": "string"
+        },
+        "serviceLevel": {
+          "description": "Output only. Service level of the volume",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified service level",
+            "Premium",
+            "Extreme"
+          ],
+          "enum": [
+            "SERVICE_LEVEL_UNSPECIFIED",
+            "PREMIUM",
+            "EXTREME"
+          ]
+        },
+        "capacityGib": {
+          "description": "Required. Capacity in GIB of the volume",
+          "type": "string",
+          "format": "int64"
+        },
+        "exportPolicy": {
+          "description": "Optional. Export policy of the volume",
+          "$ref": "ExportPolicy"
+        },
+        "protocols": {
+          "description": "Required. Protocols required for the volume",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified protocol",
+              "NFS V3 protocol",
+              "NFS V4 protocol",
+              "SMB protocol"
+            ],
+            "enum": [
+              "PROTOCOLS_UNSPECIFIED",
+              "NFSV3",
+              "NFSV4",
+              "SMB"
+            ]
+          }
+        },
+        "smbSettings": {
+          "description": "Optional. SMB share settings for the volume.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Unspecified default option",
+              "SMB setting encrypt data",
+              "SMB setting browsable",
+              "SMB setting notify change",
+              "SMB setting not to notify change",
+              "SMB setting oplocks",
+              "SMB setting to show snapshots",
+              "SMB setting to show previous versions",
+              "SMB setting to access volume based on enumerartion",
+              "Continuously available enumeration"
+            ],
+            "enum": [
+              "SMB_SETTINGS_UNSPECIFIED",
+              "ENCRYPT_DATA",
+              "BROWSABLE",
+              "CHANGE_NOTIFY",
+              "NON_BROWSABLE",
+              "OPLOCKS",
+              "SHOW_SNAPSHOT",
+              "SHOW_PREVIOUS_VERSIONS",
+              "ACCESS_BASED_ENUMERATION",
+              "CONTINUOUSLY_AVAILABLE"
+            ]
+          }
+        },
+        "mountOptions": {
+          "description": "Output only. Mount options of this volume",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "MountOption"
+          }
+        },
+        "unixPermissions": {
+          "description": "Optional. Default unix style permission (e.g. 777) the mount point will be created with. Applicable for NFS protocol types only.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. Description of the volume",
+          "type": "string"
+        },
+        "snapshotPolicy": {
+          "description": "Optional. SnapshotPolicy for a volume.",
+          "$ref": "SnapshotPolicy"
+        },
+        "snapReserve": {
+          "description": "Optional. Snap_reserve specifies percentage of volume storage reserved for snapshot storage. Default is 0 percent.",
+          "type": "number",
+          "format": "double"
+        },
+        "snapshotDirectory": {
+          "description": "Optional. Snapshot_directory if enabled (true) the volume will contain a read-only .snapshot directory which provides access to each of the volume's snapshots.",
+          "type": "boolean"
+        },
+        "usedGib": {
+          "description": "Output only. Used capacity in GIB of the volume. This is not realtime usage, periodically computed by SDE.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "securityStyle": {
+          "description": "Optional. Security Style of the Volume",
+          "type": "string",
+          "enumDescriptions": [
+            "SecurityStyle is unspecified",
+            "SecurityStyle uses NTFS",
+            "SecurityStyle uses NTFS"
+          ],
+          "enum": [
+            "SECURITY_STYLE_UNSPECIFIED",
+            "NTFS",
+            "UNIX"
+          ]
+        },
+        "kerberosEnabled": {
+          "description": "Optional. Flag indicating if the volume is a kerberos volume or not, export policy rules control kerberos security modes (krb5, krb5i, krb5p).",
+          "type": "boolean"
+        },
+        "ldapEnabled": {
+          "description": "Optional. Flag indicating if the volume is NFS LDAP enabled or not.",
+          "type": "boolean"
+        },
+        "activeDirectory": {
+          "description": "Optional. Specifies the AD to be used for creating a SMB volume. ActiveDirectory name of the volume",
+          "type": "string"
+        },
+        "restoreParameters": {
+          "description": "Optional. Specifies the source of the volume to be created from.",
+          "$ref": "RestoreParameters"
+        },
+        "kmsConfig": {
+          "description": "Optional. Specifies the KMS config to be used for volume encryption.",
+          "type": "string"
+        },
+        "encryptionType": {
+          "description": "Output only. Specified the current volume encryption key source.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The source of encryption key is not specified.",
+            "Google managed encryption key.",
+            "Customer managed encryption key, which is stored in KMS."
+          ],
+          "enum": [
+            "ENCRYPTION_TYPE_UNSPECIFIED",
+            "SERVICE_MANAGED",
+            "CLOUD_KMS"
+          ]
+        }
+      }
+    },
+    "ExportPolicy": {
+      "id": "ExportPolicy",
+      "description": "ExportPolicy Defined the export policy for the volume.",
+      "type": "object",
+      "properties": {
+        "rules": {
+          "description": "Required. List of export policy rules",
+          "type": "array",
+          "items": {
+            "$ref": "SimpleExportPolicyRule"
+          }
+        }
+      }
+    },
+    "SimpleExportPolicyRule": {
+      "id": "SimpleExportPolicyRule",
+      "description": "SimpleExportPolicyRule An export policy rule describing various export options.",
+      "type": "object",
+      "properties": {
+        "allowedClients": {
+          "description": "Comma separated list of allowed clients IP addresses",
+          "type": "string"
+        },
+        "hasRootAccess": {
+          "description": "Whether Unix root access will be granted.",
+          "type": "string"
+        },
+        "accessType": {
+          "description": "Access type (ReadWrite, ReadOnly, None)",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Access Type",
+            "Read Only",
+            "Read Write",
+            "None"
+          ],
+          "enum": [
+            "ACCESS_TYPE_UNSPECIFIED",
+            "READ_ONLY",
+            "READ_WRITE",
+            "READ_NONE"
+          ]
+        },
+        "nfsv3": {
+          "description": "NFS V3 protocol.",
+          "type": "boolean"
+        },
+        "nfsv4": {
+          "description": "NFS V4 protocol.",
+          "type": "boolean"
+        },
+        "kerberos5ReadOnly": {
+          "description": "If enabled (true) the rule defines a read only access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'authentication' kerberos security mode.",
+          "type": "boolean"
+        },
+        "kerberos5ReadWrite": {
+          "description": "If enabled (true) the rule defines read and write access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'authentication' kerberos security mode. The 'kerberos5ReadOnly' value be ignored if this is enabled.",
+          "type": "boolean"
+        },
+        "kerberos5iReadOnly": {
+          "description": "If enabled (true) the rule defines a read only access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'integrity' kerberos security mode.",
+          "type": "boolean"
+        },
+        "kerberos5iReadWrite": {
+          "description": "If enabled (true) the rule defines read and write access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'integrity' kerberos security mode. The 'kerberos5iReadOnly' value be ignored if this is enabled.",
+          "type": "boolean"
+        },
+        "kerberos5pReadOnly": {
+          "description": "If enabled (true) the rule defines a read only access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'privacy' kerberos security mode.",
+          "type": "boolean"
+        },
+        "kerberos5pReadWrite": {
+          "description": "If enabled (true) the rule defines read and write access for clients matching the 'allowedClients' specification. It enables nfs clients to mount using 'privacy' kerberos security mode. The 'kerberos5pReadOnly' value be ignored if this is enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "MountOption": {
+      "id": "MountOption",
+      "description": "MountOption View only mount options for a volume.",
+      "type": "object",
+      "properties": {
+        "export": {
+          "description": "Export string",
+          "type": "string"
+        },
+        "exportFull": {
+          "description": "Full export string",
+          "type": "string"
+        },
+        "protocol": {
+          "description": "Protocol to mount with.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified protocol",
+            "NFS V3 protocol",
+            "NFS V4 protocol",
+            "SMB protocol"
+          ],
+          "enum": [
+            "PROTOCOLS_UNSPECIFIED",
+            "NFSV3",
+            "NFSV4",
+            "SMB"
+          ]
+        },
+        "instructions": {
+          "description": "Instructions for mounting",
+          "type": "string"
+        }
+      }
+    },
+    "SnapshotPolicy": {
+      "id": "SnapshotPolicy",
+      "description": "Snapshot Policy for a volume.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "If enabled, make snapshots automatically according to the schedules. Default is false.",
+          "type": "boolean"
+        },
+        "hourlySchedule": {
+          "description": "Hourly schedule policy.",
+          "$ref": "HourlySchedule"
+        },
+        "dailySchedule": {
+          "description": "Daily schedule policy.",
+          "$ref": "DailySchedule"
+        },
+        "weeklySchedule": {
+          "description": "Weekly schedule policy.",
+          "$ref": "WeeklySchedule"
+        },
+        "monthlySchedule": {
+          "description": "Monthly schedule policy.",
+          "$ref": "MonthlySchedule"
+        }
+      }
+    },
+    "HourlySchedule": {
+      "id": "HourlySchedule",
+      "description": "Make a snapshot every hour e.g. at 04:00, 05:00, 06:00.",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "DailySchedule": {
+      "id": "DailySchedule",
+      "description": "Make a snapshot every day e.g. at 04:00, 05:20, 23:50",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "hour": {
+          "description": "Set the hour to start the snapshot (0-23), defaults to midnight (0).",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "WeeklySchedule": {
+      "id": "WeeklySchedule",
+      "description": "Make a snapshot every week e.g. at Monday 04:00, Wednesday 05:20, Sunday 23:50",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "hour": {
+          "description": "Set the hour to start the snapshot (0-23), defaults to midnight (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "day": {
+          "description": "Set the day or days of the week to make a snapshot. Accepts a comma separated days of the week. Defaults to 'Sunday'.",
+          "type": "string"
+        }
+      }
+    },
+    "MonthlySchedule": {
+      "id": "MonthlySchedule",
+      "description": "Make a snapshot once a month e.g. at 2nd 04:00, 7th 05:20, 24th 23:50",
+      "type": "object",
+      "properties": {
+        "snapshotsToKeep": {
+          "description": "The maximum number of Snapshots to keep for the hourly schedule",
+          "type": "number",
+          "format": "double"
+        },
+        "minute": {
+          "description": "Set the minute of the hour to start the snapshot (0-59), defaults to the top of the hour (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "hour": {
+          "description": "Set the hour to start the snapshot (0-23), defaults to midnight (0).",
+          "type": "number",
+          "format": "double"
+        },
+        "daysOfMonth": {
+          "description": "Set the day or days of the month to make a snapshot (1-31). Accepts a comma separated number of days. Defaults to '1'.",
+          "type": "string"
+        }
+      }
+    },
+    "RestoreParameters": {
+      "id": "RestoreParameters",
+      "description": "The RestoreParameters if volume is created from a snapshot or backup.",
+      "type": "object",
+      "properties": {
+        "sourceSnapshot": {
+          "description": "Full name of the snapshot resource. Format: projects\/{project}\/locations\/{location}\/volumes\/{volume}\/snapshots\/{snapshot}",
+          "type": "string"
+        }
+      }
+    },
+    "RevertVolumeRequest": {
+      "id": "RevertVolumeRequest",
+      "description": "RevertVolumeRequest reverts the given volume to the specified snapshot.",
+      "type": "object",
+      "properties": {
+        "snapshotId": {
+          "description": "Required. The snapshot resource ID, in the format 'my-snapshot', where the specified ID is the {snapshot_id} of the fully qualified name like projects\/{project_id}\/locations\/{location_id}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}",
+          "type": "string"
+        }
+      }
+    },
+    "ListSnapshotsResponse": {
+      "id": "ListSnapshotsResponse",
+      "description": "ListSnapshotsResponse is the result of ListSnapshotsRequest.",
+      "type": "object",
+      "properties": {
+        "snapshots": {
+          "description": "A list of snapshots in the project for the specified volume.",
+          "type": "array",
+          "items": {
+            "$ref": "Snapshot"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token you can use to retrieve the next page of results. Not returned if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Snapshot": {
+      "id": "Snapshot",
+      "description": "Snapshot",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the snapshot. Format: `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The snapshot state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Snapshot State",
+            "Snapshot State is Ready",
+            "Snapshot State is Creating",
+            "Snapshot State is Deleting",
+            "Snapshot State is Updating",
+            "Snapshot State is Disabled",
+            "Snapshot State is Error"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING",
+            "DISABLED",
+            "ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Output only. State details of the storage pool",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the snapshot with 2048 characters or less. Requests with longer descriptions will be rejected.",
+          "type": "string"
+        },
+        "usedBytes": {
+          "description": "Output only. Current storage usage for the snapshot in bytes.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
+        },
+        "createTime": {
+          "description": "Output only. The time when the snapshot was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListActiveDirectoriesResponse": {
+      "id": "ListActiveDirectoriesResponse",
+      "description": "ListActiveDirectoriesResponse contains all the active directories requested.",
+      "type": "object",
+      "properties": {
+        "activeDirectories": {
+          "description": "The list of active directories.",
+          "type": "array",
+          "items": {
+            "$ref": "ActiveDirectory"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ActiveDirectory": {
+      "id": "ActiveDirectory",
+      "description": "ActiveDirectory is the public representation of the active directory config.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activeDirectories\/{active_directory_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time of the active directory.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The state of the AD.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified Active Directory State",
+            "Active Directory State is Creating",
+            "Active Directory State is Ready",
+            "Active Directory State is Updating",
+            "Active Directory State is In use",
+            "Active Directory State is Deleting",
+            "Active Directory State is Error"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "UPDATING",
+            "IN_USE",
+            "DELETING",
+            "ERROR"
+          ]
+        },
+        "domain": {
+          "description": "Required. Name of the Active Directory domain",
+          "type": "string"
+        },
+        "site": {
+          "description": "The Active Directory site the service will limit Domain Controller discovery too.",
+          "type": "string"
+        },
+        "dns": {
+          "description": "Required. Comma separated list of DNS server IP addresses for the Active Directory domain.",
+          "type": "string"
+        },
+        "netBiosPrefix": {
+          "description": "Required. NetBIOSPrefix is used as a prefix for SMB server name.",
+          "type": "string"
+        },
+        "organizationalUnit": {
+          "description": "The Organizational Unit (OU) within the Windows Active Directory the user belongs to.",
+          "type": "string"
+        },
+        "aesEncryption": {
+          "description": "If enabled, AES encryption will be enabled for SMB communication.",
+          "type": "boolean"
+        },
+        "username": {
+          "description": "Required. Username of the Active Directory domain administrator.",
+          "type": "string"
+        },
+        "password": {
+          "description": "Required. Password of the Active Directory domain administrator.",
+          "type": "string"
+        },
+        "backupOperators": {
+          "description": "Users to be added to the Built-in Backup Operator active directory group.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "securityOperators": {
+          "description": "Domain users to be given the SeSecurityPrivilege.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kdcHostname": {
+          "description": "Name of the active directory machine. This optional parameter is used only while creating kerberos volume",
+          "type": "string"
+        },
+        "kdcIp": {
+          "description": "KDC server IP address for the active directory machine.",
+          "type": "string"
+        },
+        "nfsUsersWithLdap": {
+          "description": "If enabled, will allow access to local users and LDAP users. If access is needed for only LDAP users, it has to be disabled.",
+          "type": "boolean"
+        },
+        "description": {
+          "description": "Description of the active directory.",
+          "type": "string"
+        },
+        "ldapSigning": {
+          "description": "Specifies whether or not the LDAP traffic needs to be signed.",
+          "type": "boolean"
+        },
+        "encryptDcConnections": {
+          "description": "If enabled, traffic between the SMB server to Domain Controller (DC) will be encrypted.",
+          "type": "boolean"
+        },
+        "labels": {
+          "description": "Labels for the active directory.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "stateDetails": {
+          "description": "Output only. The state details of the Active Directory.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListKmsConfigsResponse": {
+      "id": "ListKmsConfigsResponse",
+      "description": "ListKmsConfigsResponse",
+      "type": "object",
+      "properties": {
+        "kmsConfigs": {
+          "description": "The list of KmsConfigs",
+          "type": "array",
+          "items": {
+            "$ref": "KmsConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "KmsConfig": {
+      "id": "KmsConfig",
+      "description": "KmsConfig is the customer managed encryption key(CMEK) configuration.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the KmsConfig.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cryptoKeyName": {
+          "description": "Required. Customer managed crypto key resource full name. Format: projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{key}.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the KmsConfig.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified KmsConfig State",
+            "KmsConfig State is Ready",
+            "KmsConfig State is Creating",
+            "KmsConfig State is Deleting",
+            "KmsConfig State is Updating",
+            "KmsConfig State is In Use.",
+            "KmsConfig State is Error"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "DELETING",
+            "UPDATING",
+            "IN_USE",
+            "ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Output only. State details of the KmsConfig.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Create time of the KmsConfig.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Description of the KmsConfig.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VerifyKmsConfigResponse": {
+      "id": "VerifyKmsConfigResponse",
+      "description": "VerifyKmsConfigResponse VerifyKmsConfigResponse contains the information if the config is correctly and error message.",
+      "type": "object",
+      "properties": {
+        "healthy": {
+          "description": "Output only. If the customer key configured correctly to the encrypt volume.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "healthError": {
+          "description": "Output only. Error message if config is not healthy.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "instructions": {
+          "description": "Output only. Instructions for the customers to provide the access to the encryption key.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "OperationMetadata Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been canceled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "netapp.projects.locations.list",
+              "path": "v1beta1/{+name}/locations",
+              "flatPath": "v1beta1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "includeUnrevealedLocations": {
+                  "description": "If true, the returned list will include locations which are not yet revealed.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "netapp.projects.locations.get",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "netapp.projects.locations.operations.list",
+                  "path": "v1beta1/{+name}/operations",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "netapp.projects.locations.operations.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "netapp.projects.locations.operations.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "netapp.projects.locations.operations.cancel",
+                  "path": "v1beta1/{+name}:cancel",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "storagePools": {
+              "methods": {
+                "list": {
+                  "id": "netapp.projects.locations.storagePools.list",
+                  "path": "v1beta1/{+parent}/storagePools",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListStoragePoolsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "ListStoragePools Returns descriptions of all storage pools owned by the caller."
+                },
+                "create": {
+                  "id": "netapp.projects.locations.storagePools.create",
+                  "path": "v1beta1/{+parent}/storagePools",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "storagePoolId": {
+                      "description": "Required. Id of the requesting storage pool If auto-generating Id server-side, remove this field and id from the method_signature of Create RPC",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "StoragePool"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateStoragePool Creates a new storage pool."
+                },
+                "get": {
+                  "id": "netapp.projects.locations.storagePools.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the storage pool",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "StoragePool"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetStoragePool Returns the description of the specified storage pool by poolId."
+                },
+                "patch": {
+                  "id": "netapp.projects.locations.storagePools.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. Name of the storage pool",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the StoragePool resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "StoragePool"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateStoragePool Updates the storage pool properties with the full spec"
+                },
+                "delete": {
+                  "id": "netapp.projects.locations.storagePools.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the storage pool",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/storagePools\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteStoragePool Warning! This operation will permanently delete the storage pool."
+                }
+              }
+            },
+            "volumes": {
+              "methods": {
+                "list": {
+                  "id": "netapp.projects.locations.volumes.list",
+                  "path": "v1beta1/{+parent}/volumes",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListVolumesRequest",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListVolumesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "ListVolumes Lists Volumes in a given project."
+                },
+                "get": {
+                  "id": "netapp.projects.locations.volumes.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the volume",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Volume"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetVolume Gets details of a single Volume."
+                },
+                "create": {
+                  "id": "netapp.projects.locations.volumes.create",
+                  "path": "v1beta1/{+parent}/volumes",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "volumeId": {
+                      "description": "Required. Id of the requesting volume If auto-generating Id server-side, remove this field and Id from the method_signature of Create RPC",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Volume"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateVolume Creates a new Volume in a given project and location."
+                },
+                "patch": {
+                  "id": "netapp.projects.locations.volumes.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. Name of the volume",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Volume resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Volume"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateVolume Updates the parameters of a single Volume."
+                },
+                "delete": {
+                  "id": "netapp.projects.locations.volumes.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the volume",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "force": {
+                      "description": "If this field is set as true, CCFE will not block the volume resource deletion even if it has any snapshots resource. (Otherwise, the request will only work if the volume has no snapshots.)",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteVolume Deletes a single Volume."
+                },
+                "revert": {
+                  "id": "netapp.projects.locations.volumes.revert",
+                  "path": "v1beta1/{+name}:revert",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:revert",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the volume, in the format of projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RevertVolumeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Revert an existing volume to a specified snapshot. Warning! This operation will permanently revert all changes made after the snapshot was created."
+                }
+              }
+              ,
+              "resources": {
+                "snapshots": {
+                  "methods": {
+                    "list": {
+                      "id": "netapp.projects.locations.volumes.snapshots.list",
+                      "path": "v1beta1/{+parent}/snapshots",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The volume for which to retrieve snapshot information, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListSnapshotsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns descriptions of all snapshots for a volume."
+                    },
+                    "get": {
+                      "id": "netapp.projects.locations.volumes.snapshots.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The snapshot resource name, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Snapshot"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Describe a snapshot for a volume."
+                    },
+                    "create": {
+                      "id": "netapp.projects.locations.volumes.snapshots.create",
+                      "path": "v1beta1/{+parent}/snapshots",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The NetApp volume to create the snapshots of, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "snapshotId": {
+                          "description": "Required. ID of the snapshot to create. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Snapshot"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a new snapshot for a volume."
+                    },
+                    "delete": {
+                      "id": "netapp.projects.locations.volumes.snapshots.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The snapshot resource name, in the format `projects\/*\/locations\/*\/volumes\/*\/snapshots\/{snapshot_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a snapshot."
+                    },
+                    "patch": {
+                      "id": "netapp.projects.locations.volumes.snapshots.patch",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of the snapshot. Format: `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/snapshots\/{snapshot_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Snapshot"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the settings of a specific snapshot."
+                    }
+                  }
+                }
+              }
+            },
+            "activeDirectories": {
+              "methods": {
+                "list": {
+                  "id": "netapp.projects.locations.activeDirectories.list",
+                  "path": "v1beta1/{+parent}/activeDirectories",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/activeDirectories",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListActiveDirectoriesRequest",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListActiveDirectoriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "ListActiveDirectories Lists active directories."
+                },
+                "get": {
+                  "id": "netapp.projects.locations.activeDirectories.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the active directory.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activeDirectories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ActiveDirectory"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DescribeActiveDirectory Describes a specified active directory."
+                },
+                "create": {
+                  "id": "netapp.projects.locations.activeDirectories.create",
+                  "path": "v1beta1/{+parent}/activeDirectories",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/activeDirectories",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "activeDirectoryId": {
+                      "description": "Required. ID of the active directory to create.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "ActiveDirectory"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateActiveDirectory Creates the active directory specified in the request."
+                },
+                "patch": {
+                  "id": "netapp.projects.locations.activeDirectories.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the active directory. Format: `projects\/{project_number}\/locations\/{location_id}\/activeDirectories\/{active_directory_id}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activeDirectories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Active Directory resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ActiveDirectory"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateActiveDirectory Update the parameters of an active directories."
+                },
+                "delete": {
+                  "id": "netapp.projects.locations.activeDirectories.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/activeDirectories/{activeDirectoriesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the active directory.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activeDirectories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteActiveDirectory Delete the active directory specified in the request."
+                }
+              }
+            },
+            "kmsConfigs": {
+              "methods": {
+                "list": {
+                  "id": "netapp.projects.locations.kmsConfigs.list",
+                  "path": "v1beta1/{+parent}/kmsConfigs",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListKmsConfigsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "ListKmsConfigs Returns descriptions of all KMS configs owned by the caller."
+                },
+                "create": {
+                  "id": "netapp.projects.locations.kmsConfigs.create",
+                  "path": "v1beta1/{+parent}/kmsConfigs",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "kmsConfigId": {
+                      "description": "Required. Id of the requesting KmsConfig If auto-generating Id server-side, remove this field and id from the method_signature of Create RPC",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "KmsConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "CreateKmsConfig Creates a new KMS config."
+                },
+                "get": {
+                  "id": "netapp.projects.locations.kmsConfigs.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the KmsConfig",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/kmsConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "KmsConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetKmsConfig Returns the description of the specified KMS config by kms_config_id."
+                },
+                "patch": {
+                  "id": "netapp.projects.locations.kmsConfigs.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. Name of the KmsConfig.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/kmsConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the KmsConfig resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "KmsConfig"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpdateKmsConfig Updates the Kms config properties with the full spec"
+                },
+                "encrypt": {
+                  "id": "netapp.projects.locations.kmsConfigs.encrypt",
+                  "path": "v1beta1/{+name}:encrypt",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}:encrypt",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the KmsConfig.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/kmsConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "EncryptVolumes Encrypt the existing volumes without CMEK encryption with the desired the KMS config for the whole region."
+                },
+                "verify": {
+                  "id": "netapp.projects.locations.kmsConfigs.verify",
+                  "path": "v1beta1/{+name}:verify",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}:verify",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the KMS Config to be verified.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/kmsConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "VerifyKmsConfigResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "VerifyKmsConfigRequest Verifies KMS config reachability."
+                },
+                "delete": {
+                  "id": "netapp.projects.locations.kmsConfigs.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/kmsConfigs/{kmsConfigsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the KmsConfig.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/kmsConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "DeleteKmsConfig Warning! This operation will permanently delete the Kms config."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

@@ -439,6 +439,11 @@
             "$ref": "GoogleCloudFunctionsV2betaStateMessage"
           }
         },
+        "upgradeInfo": {
+          "description": "Output only. UpgradeInfo for this Cloud Function",
+          "readOnly": true,
+          "$ref": "UpgradeInfo"
+        },
         "kmsKeyName": {
           "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function resources. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`.",
           "type": "string"
@@ -887,6 +892,41 @@
         "message": {
           "description": "The message.",
           "type": "string"
+        }
+      }
+    },
+    "UpgradeInfo": {
+      "id": "UpgradeInfo",
+      "description": "Information related to: * A function's eligibility for 1st Gen to 2nd Gen migration * Current state of migration for function undergoing migration.",
+      "type": "object",
+      "properties": {
+        "upgradeState": {
+          "description": "UpgradeState of the function",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state. Most functions are in this upgrade state.",
+            "Functions in this state are eligible for 1st Gen -> 2nd Gen upgrade.",
+            "An upgrade related operation is in progress.",
+            "SetupFunctionUpgradeConfig API was successful and a 2nd Gen function has been created based on 1st Gen function instance.",
+            "SetupFunctionUpgradeConfig API was un-successful.",
+            "AbortFunctionUpgrade API was un-successful.",
+            "RedirectFunctionUpgradeTraffic API was successful and traffic is served by 2nd Gen function stack.",
+            "RedirectFunctionUpgradeTraffic API was un-successful.",
+            "RollbackFunctionUpgradeTraffic API was un-successful.",
+            "CommitFunctionUpgrade API was un-successful."
+          ],
+          "enum": [
+            "UPGRADE_STATE_UNSPECIFIED",
+            "ELIGIBLE_FOR_2ND_GEN_UPGRADE",
+            "UPGRADE_OPERATION_IN_PROGRESS",
+            "SETUP_FUNCTION_UPGRADE_CONFIG_SUCCESSFUL",
+            "SETUP_FUNCTION_UPGRADE_CONFIG_ERROR",
+            "ABORT_FUNCTION_UPGRADE_ERROR",
+            "REDIRECT_FUNCTION_UPGRADE_TRAFFIC_SUCCESSFUL",
+            "REDIRECT_FUNCTION_UPGRADE_TRAFFIC_ERROR",
+            "ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR",
+            "COMMIT_FUNCTION_UPGRADE_ERROR"
+          ]
         }
       }
     },

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core.util import text
 
 
@@ -223,7 +224,7 @@ def ValidateFieldUpdateRequest(unused_ref, args, req):
   return req
 
 
-def AddIndexConfigToUpdateRequest(ref, args, req):
+def AddIndexConfigToUpdateRequest(unused_ref, args, req):
   """Update patch request to include indexConfig.
 
   The mapping of index config message to API behavior is as follows:
@@ -232,7 +233,7 @@ def AddIndexConfigToUpdateRequest(ref, args, req):
     indexes=[...] - Sets the index config to the indexes provided
 
   Args:
-    ref: The field resource reference.
+    unused_ref: The field resource reference.
     args: The parsed arg namespace.
     req: The auto-generated patch request.
   Returns:
@@ -247,15 +248,7 @@ def AddIndexConfigToUpdateRequest(ref, args, req):
   else:
     index_config = None
 
-  # TODO(b/261024675): Edit modify_request_hook whenever the resource arg can be
-  # automatically mapped to googleFirestoreAdminV1Field.name
-  req.googleFirestoreAdminV1Field = messages.GoogleFirestoreAdminV1Field(
-      name=ref.RelativeName(), indexConfig=index_config)
-  return req
-
-
-# TODO(b/261024675): Remove modify_request_hook whenever the resource arg can be
-# automatically mapped to googleFirestoreAdminV1Database.name
-def ModifyDatabaseUpdateRequest(ref, unused_args, req):
-  req.googleFirestoreAdminV1Database.name = ref.RelativeName()
+  arg_utils.SetFieldInMessage(req,
+                              'googleFirestoreAdminV1Field.indexConfig',
+                              index_config)
   return req

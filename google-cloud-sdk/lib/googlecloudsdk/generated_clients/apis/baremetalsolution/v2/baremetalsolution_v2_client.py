@@ -45,6 +45,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_networkQuotas = self.ProjectsLocationsNetworkQuotasService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
+    self.projects_locations_nfsshares = self.ProjectsLocationsNfssharesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
     self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
@@ -385,7 +386,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def Rename(self, request, global_params=None):
-      r"""RenameInstance sets a new name for an instance.
+      r"""RenameInstance sets a new name for an instance. Use with caution, previous names become immediately invalidated.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsInstancesRenameRequest) input message
@@ -647,6 +648,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Rename(self, request, global_params=None):
+      r"""RenameNetwork sets a new name for a network. Use with caution, previous names become immediately invalidated.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNetworksRenameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Network) The response message.
+      """
+      config = self.GetMethodConfig('Rename')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rename.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/networks/{networksId}:rename',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.networks.rename',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:rename',
+        request_field='renameNetworkRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsNetworksRenameRequest',
+        response_type_name='Network',
+        supports_download=False,
+    )
+
   class ProjectsLocationsNfsSharesService(base_api.BaseApiService):
     """Service class for the projects_locations_nfsShares resource."""
 
@@ -792,6 +820,43 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsNfssharesService(base_api.BaseApiService):
+    """Service class for the projects_locations_nfsshares resource."""
+
+    _NAME = 'projects_locations_nfsshares'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsNfssharesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Rename(self, request, global_params=None):
+      r"""RenameNfsShare sets a new name for an nfsshare. Use with caution, previous names become immediately invalidated.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNfssharesRenameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NfsShare) The response message.
+      """
+      config = self.GetMethodConfig('Rename')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rename.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsshares/{nfssharesId}:rename',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.nfsshares.rename',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:rename',
+        request_field='renameNfsShareRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsNfssharesRenameRequest',
+        response_type_name='NfsShare',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -803,7 +868,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get details about an operation. This method used only to work around CCFE lack of passthrough LRO support (b/221498758).
+      r"""Get details about an operation.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsOperationsGetRequest) input message
@@ -1743,6 +1808,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='volume',
         request_type_name='BaremetalsolutionProjectsLocationsVolumesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Rename(self, request, global_params=None):
+      r"""RenameVolume sets a new name for a volume. Use with caution, previous names become immediately invalidated.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesRenameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Volume) The response message.
+      """
+      config = self.GetMethodConfig('Rename')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rename.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:rename',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.rename',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:rename',
+        request_field='renameVolumeRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesRenameRequest',
+        response_type_name='Volume',
         supports_download=False,
     )
 

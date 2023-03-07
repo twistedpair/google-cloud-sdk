@@ -339,6 +339,10 @@
         "status": {
           "description": "Membership-specific constraint status.",
           "$ref": "MembershipConstraintStatus"
+        },
+        "content": {
+          "description": "The string content for the constraint resource.",
+          "$ref": "StringContent"
         }
       }
     },
@@ -506,6 +510,17 @@
           "description": "status.total_violations from the constraint.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "StringContent": {
+      "id": "StringContent",
+      "description": "String content for a constraint resource.",
+      "type": "object",
+      "properties": {
+        "yaml": {
+          "description": "string json = 2;",
+          "type": "string"
         }
       }
     },

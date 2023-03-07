@@ -1089,6 +1089,784 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudDatacatalogV1BigQueryConnectionSpec(_messages.Message):
+  r"""Specification for the BigQuery connection.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: The type of the BigQuery connection.
+
+  Fields:
+    cloudSql: Specification for the BigQuery connection to a Cloud SQL
+      instance.
+    connectionType: The type of the BigQuery connection.
+    hasCredential: True if there are credentials attached to the BigQuery
+      connection; false otherwise.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the BigQuery connection.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Unspecified type.
+      CLOUD_SQL: Cloud SQL connection.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    CLOUD_SQL = 1
+
+  cloudSql = _messages.MessageField('GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec', 1)
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
+  hasCredential = _messages.BooleanField(3)
+
+
+class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
+  r"""Specification for a group of BigQuery tables with the `[prefix]YYYYMMDD`
+  name pattern. For more information, see [Introduction to partitioned tables]
+  (https://cloud.google.com/bigquery/docs/partitioned-
+  tables#partitioning_versus_sharding).
+
+  Fields:
+    dataset: Output only. The Data Catalog resource name of the dataset entry
+      the current table belongs to. For example: `projects/{PROJECT_ID}/locati
+      ons/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`.
+    latestShardResource: Output only. BigQuery resource name of the latest
+      shard.
+    shardCount: Output only. Total number of shards.
+    tablePrefix: Output only. The table name prefix of the shards. The name of
+      any given shard is `[table_prefix]YYYYMMDD`. For example, for the
+      `MyTable20180101` shard, the `table_prefix` is `MyTable`.
+  """
+
+  dataset = _messages.StringField(1)
+  latestShardResource = _messages.StringField(2)
+  shardCount = _messages.IntegerField(3)
+  tablePrefix = _messages.StringField(4)
+
+
+class GoogleCloudDatacatalogV1BigQueryRoutineSpec(_messages.Message):
+  r"""Fields specific for BigQuery routines.
+
+  Fields:
+    importedLibraries: Paths of the imported libraries.
+  """
+
+  importedLibraries = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
+  r"""Describes a BigQuery table.
+
+  Enums:
+    TableSourceTypeValueValuesEnum: Output only. The table source type.
+
+  Fields:
+    tableSourceType: Output only. The table source type.
+    tableSpec: Specification of a BigQuery table. Populated only if the
+      `table_source_type` is `BIGQUERY_TABLE`.
+    viewSpec: Table view specification. Populated only if the
+      `table_source_type` is `BIGQUERY_VIEW`.
+  """
+
+  class TableSourceTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The table source type.
+
+    Values:
+      TABLE_SOURCE_TYPE_UNSPECIFIED: Default unknown type.
+      BIGQUERY_VIEW: Table view.
+      BIGQUERY_TABLE: BigQuery native table.
+      BIGQUERY_MATERIALIZED_VIEW: BigQuery materialized view.
+    """
+    TABLE_SOURCE_TYPE_UNSPECIFIED = 0
+    BIGQUERY_VIEW = 1
+    BIGQUERY_TABLE = 2
+    BIGQUERY_MATERIALIZED_VIEW = 3
+
+  tableSourceType = _messages.EnumField('TableSourceTypeValueValuesEnum', 1)
+  tableSpec = _messages.MessageField('GoogleCloudDatacatalogV1TableSpec', 2)
+  viewSpec = _messages.MessageField('GoogleCloudDatacatalogV1ViewSpec', 3)
+
+
+class GoogleCloudDatacatalogV1BusinessContext(_messages.Message):
+  r"""Business Context of the entry.
+
+  Fields:
+    contacts: Contact people for the entry.
+    entryOverview: Entry overview fields for rich text descriptions of
+      entries.
+  """
+
+  contacts = _messages.MessageField('GoogleCloudDatacatalogV1Contacts', 1)
+  entryOverview = _messages.MessageField('GoogleCloudDatacatalogV1EntryOverview', 2)
+
+
+class GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec(_messages.Message):
+  r"""Specification for the BigQuery connection to a Cloud SQL instance.
+
+  Enums:
+    TypeValueValuesEnum: Type of the Cloud SQL database.
+
+  Fields:
+    database: Database name.
+    instanceId: Cloud SQL instance ID in the format of
+      `project:location:instance`.
+    type: Type of the Cloud SQL database.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the Cloud SQL database.
+
+    Values:
+      DATABASE_TYPE_UNSPECIFIED: Unspecified database type.
+      POSTGRES: Cloud SQL for PostgreSQL.
+      MYSQL: Cloud SQL for MySQL.
+    """
+    DATABASE_TYPE_UNSPECIFIED = 0
+    POSTGRES = 1
+    MYSQL = 2
+
+  database = _messages.StringField(1)
+  instanceId = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
+  r"""A column within a schema. Columns can be nested inside other columns.
+
+  Enums:
+    HighestIndexingTypeValueValuesEnum: Optional. Most important inclusion of
+      this column.
+
+  Fields:
+    column: Required. Name of the column. Must be a UTF-8 string without dots
+      (.). The maximum size is 64 bytes.
+    defaultValue: Optional. Default value for the column.
+    description: Optional. Description of the column. Default value is an
+      empty string. The description must be a UTF-8 string with the maximum
+      size of 2000 bytes.
+    gcRule: Optional. Garbage collection policy for the column or column
+      family. Applies to systems like Cloud Bigtable.
+    highestIndexingType: Optional. Most important inclusion of this column.
+    lookerColumnSpec: Looker specific column info of this column.
+    mode: Optional. A column's mode indicates whether values in this column
+      are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
+      `REPEATED` values are supported. Default mode is `NULLABLE`.
+    ordinalPosition: Optional. Ordinal position
+    subcolumns: Optional. Schema of sub-columns. A column can have zero or
+      more sub-columns.
+    type: Required. Type of the column. Must be a UTF-8 string with the
+      maximum size of 128 bytes.
+  """
+
+  class HighestIndexingTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Most important inclusion of this column.
+
+    Values:
+      INDEXING_TYPE_UNSPECIFIED: Unspecified.
+      INDEXING_TYPE_NONE: Column not a part of an index.
+      INDEXING_TYPE_NON_UNIQUE: Column Part of non unique index.
+      INDEXING_TYPE_UNIQUE: Column part of unique index.
+      INDEXING_TYPE_PRIMARY_KEY: Column part of the primary key.
+    """
+    INDEXING_TYPE_UNSPECIFIED = 0
+    INDEXING_TYPE_NONE = 1
+    INDEXING_TYPE_NON_UNIQUE = 2
+    INDEXING_TYPE_UNIQUE = 3
+    INDEXING_TYPE_PRIMARY_KEY = 4
+
+  column = _messages.StringField(1)
+  defaultValue = _messages.StringField(2)
+  description = _messages.StringField(3)
+  gcRule = _messages.StringField(4)
+  highestIndexingType = _messages.EnumField('HighestIndexingTypeValueValuesEnum', 5)
+  lookerColumnSpec = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec', 6)
+  mode = _messages.StringField(7)
+  ordinalPosition = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 9, repeated=True)
+  type = _messages.StringField(10)
+
+
+class GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec(_messages.Message):
+  r"""Column info specific to Looker System.
+
+  Enums:
+    TypeValueValuesEnum: Looker specific column type of this column.
+
+  Fields:
+    type: Looker specific column type of this column.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Looker specific column type of this column.
+
+    Values:
+      LOOKER_COLUMN_TYPE_UNSPECIFIED: Unspecified.
+      DIMENSION: Dimension.
+      DIMENSION_GROUP: Dimension group - parent for Dimension.
+      FILTER: Filter.
+      MEASURE: Measure.
+      PAREMETER: Parameter.
+    """
+    LOOKER_COLUMN_TYPE_UNSPECIFIED = 0
+    DIMENSION = 1
+    DIMENSION_GROUP = 2
+    FILTER = 3
+    MEASURE = 4
+    PAREMETER = 5
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class GoogleCloudDatacatalogV1CommonUsageStats(_messages.Message):
+  r"""Common statistics on the entry's usage. They can be set on any system.
+
+  Fields:
+    viewCount: View count in source system.
+  """
+
+  viewCount = _messages.IntegerField(1)
+
+
+class GoogleCloudDatacatalogV1Contacts(_messages.Message):
+  r"""Contact people for the entry.
+
+  Fields:
+    people: The list of contact people for the entry.
+  """
+
+  people = _messages.MessageField('GoogleCloudDatacatalogV1ContactsPerson', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1ContactsPerson(_messages.Message):
+  r"""A contact person for the entry.
+
+  Fields:
+    designation: Designation of the person, for example, Data Steward.
+    email: Email of the person in the format of `john.doe@xyz`, ``, or `John
+      Doe`.
+  """
+
+  designation = _messages.StringField(1)
+  email = _messages.StringField(2)
+
+
+class GoogleCloudDatacatalogV1DataSource(_messages.Message):
+  r"""Physical location of an entry.
+
+  Enums:
+    ServiceValueValuesEnum: Service that physically stores the data.
+
+  Fields:
+    resource: Full name of a resource as defined by the service. For example:
+      `//bigquery.googleapis.com/projects/{PROJECT_ID}/locations/{LOCATION}/da
+      tasets/{DATASET_ID}/tables/{TABLE_ID}`
+    service: Service that physically stores the data.
+    sourceEntry: Output only. Data Catalog entry name, if applicable.
+    storageProperties: Detailed properties of the underlying storage.
+  """
+
+  class ServiceValueValuesEnum(_messages.Enum):
+    r"""Service that physically stores the data.
+
+    Values:
+      SERVICE_UNSPECIFIED: Default unknown service.
+      CLOUD_STORAGE: Google Cloud Storage service.
+      BIGQUERY: BigQuery service.
+    """
+    SERVICE_UNSPECIFIED = 0
+    CLOUD_STORAGE = 1
+    BIGQUERY = 2
+
+  resource = _messages.StringField(1)
+  service = _messages.EnumField('ServiceValueValuesEnum', 2)
+  sourceEntry = _messages.StringField(3)
+  storageProperties = _messages.MessageField('GoogleCloudDatacatalogV1StorageProperties', 4)
+
+
+class GoogleCloudDatacatalogV1DataSourceConnectionSpec(_messages.Message):
+  r"""Specification that applies to a data source connection. Valid only for
+  entries with the `DATA_SOURCE_CONNECTION` type. Only one of internal specs
+  can be set at the time, and cannot be changed later.
+
+  Fields:
+    bigqueryConnectionSpec: Output only. Fields specific to BigQuery
+      connections.
+  """
+
+  bigqueryConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryConnectionSpec', 1)
+
+
+class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
+  r"""Specification that applies to a table resource. Valid only for entries
+  with the `TABLE` type.
+
+  Enums:
+    TypeValueValuesEnum: Type of this table.
+
+  Fields:
+    databaseViewSpec: Spec what aplies to tables that are actually views. Not
+      set for "real" tables.
+    dataplexTable: Output only. Fields specific to a Dataplex table and
+      present only in the Dataplex table entries.
+    type: Type of this table.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this table.
+
+    Values:
+      TABLE_TYPE_UNSPECIFIED: Default unknown table type.
+      NATIVE: Native table.
+      EXTERNAL: External table.
+    """
+    TABLE_TYPE_UNSPECIFIED = 0
+    NATIVE = 1
+    EXTERNAL = 2
+
+  databaseViewSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec', 1)
+  dataplexTable = _messages.MessageField('GoogleCloudDatacatalogV1DataplexTableSpec', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudDatacatalogV1DatabaseTableSpecDatabaseViewSpec(_messages.Message):
+  r"""Specification that applies to database view.
+
+  Enums:
+    ViewTypeValueValuesEnum: Type of this view.
+
+  Fields:
+    baseTable: Name of a singular table this view reflects one to one.
+    sqlQuery: SQL query used to generate this view.
+    viewType: Type of this view.
+  """
+
+  class ViewTypeValueValuesEnum(_messages.Enum):
+    r"""Type of this view.
+
+    Values:
+      VIEW_TYPE_UNSPECIFIED: Default unknown view type.
+      STANDARD_VIEW: Standard view.
+      MATERIALIZED_VIEW: Materialized view.
+    """
+    VIEW_TYPE_UNSPECIFIED = 0
+    STANDARD_VIEW = 1
+    MATERIALIZED_VIEW = 2
+
+  baseTable = _messages.StringField(1)
+  sqlQuery = _messages.StringField(2)
+  viewType = _messages.EnumField('ViewTypeValueValuesEnum', 3)
+
+
+class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
+  r"""External table registered by Dataplex. Dataplex publishes data
+  discovered from an asset into multiple other systems (BigQuery, DPMS) in
+  form of tables. We call them "external tables". External tables are also
+  synced into the Data Catalog. This message contains pointers to those
+  external tables (fully qualified name, resource name et cetera) within the
+  Data Catalog.
+
+  Enums:
+    SystemValueValuesEnum: Service in which the external table is registered.
+
+  Fields:
+    dataCatalogEntry: Name of the Data Catalog entry representing the external
+      table.
+    fullyQualifiedName: Fully qualified name (FQN) of the external table.
+    googleCloudResource: Google Cloud resource name of the external table.
+    system: Service in which the external table is registered.
+  """
+
+  class SystemValueValuesEnum(_messages.Enum):
+    r"""Service in which the external table is registered.
+
+    Values:
+      INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
+      BIGQUERY: BigQuery.
+      CLOUD_PUBSUB: Cloud Pub/Sub.
+      DATAPROC_METASTORE: Dataproc Metastore.
+      DATAPLEX: Dataplex.
+      CLOUD_SQL: Cloud Sql
+      LOOKER: Looker
+    """
+    INTEGRATED_SYSTEM_UNSPECIFIED = 0
+    BIGQUERY = 1
+    CLOUD_PUBSUB = 2
+    DATAPROC_METASTORE = 3
+    DATAPLEX = 4
+    CLOUD_SQL = 5
+    LOOKER = 6
+
+  dataCatalogEntry = _messages.StringField(1)
+  fullyQualifiedName = _messages.StringField(2)
+  googleCloudResource = _messages.StringField(3)
+  system = _messages.EnumField('SystemValueValuesEnum', 4)
+
+
+class GoogleCloudDatacatalogV1DataplexFilesetSpec(_messages.Message):
+  r"""Entry specyfication for a Dataplex fileset.
+
+  Fields:
+    dataplexSpec: Common Dataplex fields.
+  """
+
+  dataplexSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataplexSpec', 1)
+
+
+class GoogleCloudDatacatalogV1DataplexSpec(_messages.Message):
+  r"""Common Dataplex fields.
+
+  Fields:
+    asset: Fully qualified resource name of an asset in Dataplex, to which the
+      underlying data source (Cloud Storage bucket or BigQuery dataset) of the
+      entity is attached.
+    compressionFormat: Compression format of the data, e.g., zip, gzip etc.
+    dataFormat: Format of the data.
+    projectId: Project ID of the underlying Cloud Storage or BigQuery data.
+      Note that this may not be the same project as the correspondingly
+      Dataplex lake / zone / asset.
+  """
+
+  asset = _messages.StringField(1)
+  compressionFormat = _messages.StringField(2)
+  dataFormat = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchema', 3)
+  projectId = _messages.StringField(4)
+
+
+class GoogleCloudDatacatalogV1DataplexTableSpec(_messages.Message):
+  r"""Entry specification for a Dataplex table.
+
+  Fields:
+    dataplexSpec: Common Dataplex fields.
+    externalTables: List of external tables registered by Dataplex in other
+      systems based on the same underlying data. External tables allow to
+      query this data in those systems.
+    userManaged: Indicates if the table schema is managed by the user or not.
+  """
+
+  dataplexSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataplexSpec', 1)
+  externalTables = _messages.MessageField('GoogleCloudDatacatalogV1DataplexExternalTable', 2, repeated=True)
+  userManaged = _messages.BooleanField(3)
+
+
+class GoogleCloudDatacatalogV1DumpItem(_messages.Message):
+  r"""Wrapper for any item that can be contained in the dump.
+
+  Fields:
+    taggedEntry: Entry and its tags.
+  """
+
+  taggedEntry = _messages.MessageField('GoogleCloudDatacatalogV1TaggedEntry', 1)
+
+
+class GoogleCloudDatacatalogV1Entry(_messages.Message):
+  r"""Entry metadata. A Data Catalog entry represents another resource in
+  Google Cloud Platform (such as a BigQuery dataset or a Pub/Sub topic) or
+  outside of it. You can use the `linked_resource` field in the entry resource
+  to refer to the original resource ID of the source system. An entry resource
+  contains resource details, for example, its schema. Additionally, you can
+  attach flexible metadata to an entry in the form of a Tag.
+
+  Enums:
+    IntegratedSystemValueValuesEnum: Output only. Indicates the entry's source
+      system that Data Catalog integrates with, such as BigQuery, Pub/Sub, or
+      Dataproc Metastore.
+    TypeValueValuesEnum: The type of the entry. Only used for entries with
+      types listed in the `EntryType` enum. Currently, only `FILESET` enum
+      value is allowed. All other entries created in Data Catalog must use the
+      `user_specified_type`.
+
+  Messages:
+    LabelsValue: Cloud labels attached to the entry. In Data Catalog, you can
+      create and modify labels attached only to custom entries. Synced entries
+      have unmodifiable labels that come from the source system.
+
+  Fields:
+    bigqueryDateShardedSpec: Output only. Specification for a group of
+      BigQuery tables with the `[prefix]YYYYMMDD` name pattern. For more
+      information, see [Introduction to partitioned tables]
+      (https://cloud.google.com/bigquery/docs/partitioned-
+      tables#partitioning_versus_sharding).
+    bigqueryTableSpec: Output only. Specification that applies to a BigQuery
+      table. Valid only for entries with the `TABLE` type.
+    businessContext: Business Context of the entry. Not supported for BigQuery
+      datasets
+    dataSource: Output only. Physical location of the entry.
+    dataSourceConnectionSpec: Specification that applies to a data source
+      connection. Valid only for entries with the `DATA_SOURCE_CONNECTION`
+      type.
+    databaseTableSpec: Specification that applies to a table resource. Valid
+      only for entries with the `TABLE` or `EXPLORE` type.
+    description: Entry description that can consist of several sentences or
+      paragraphs that describe entry contents. The description must not
+      contain Unicode non-characters as well as C0 and C1 control codes except
+      tabs (HT), new lines (LF), carriage returns (CR), and page breaks (FF).
+      The maximum size is 2000 bytes when encoded in UTF-8. Default value is
+      an empty string.
+    displayName: Display name of an entry. The maximum size is 500 bytes when
+      encoded in UTF-8. Default value is an empty string.
+    filesetSpec: Specification that applies to a fileset resource. Valid only
+      for entries with the `FILESET` type.
+    fullyQualifiedName: Fully qualified name (FQN) of the resource. Set
+      automatically for entries representing resources from synced systems.
+      Settable only during creation and read-only afterwards. Can be used for
+      search and lookup of the entries. FQNs take two forms: * For non-
+      regionalized resources:
+      `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
+      regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
+      RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
+      {PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`
+    gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
+      Valid only for entries with the `FILESET` type.
+    integratedSystem: Output only. Indicates the entry's source system that
+      Data Catalog integrates with, such as BigQuery, Pub/Sub, or Dataproc
+      Metastore.
+    labels: Cloud labels attached to the entry. In Data Catalog, you can
+      create and modify labels attached only to custom entries. Synced entries
+      have unmodifiable labels that come from the source system.
+    linkedResource: The resource this metadata entry refers to. For Google
+      Cloud Platform resources, `linked_resource` is the [Full Resource Name]
+      (https://cloud.google.com/apis/design/resource_names#full_resource_name)
+      . For example, the `linked_resource` for a table resource from BigQuery
+      is: `//bigquery.googleapis.com/projects/{PROJECT_ID}/datasets/{DATASET_I
+      D}/tables/{TABLE_ID}` Output only when the entry is one of the types in
+      the `EntryType` enum. For entries with a `user_specified_type`, this
+      field is optional and defaults to an empty string. The resource string
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      periods (.), colons (:), slashes (/), dashes (-), and hashes (#). The
+      maximum size is 200 bytes when encoded in UTF-8.
+    lookerSystemSpec: Specification that applies to Looker sysstem. Only
+      settable when `user_specified_system` is equal to `LOOKER`
+    name: Output only. The resource name of an entry in URL format. Note: The
+      entry itself and its child resources might not be stored in the location
+      specified in its name.
+    personalDetails: Output only. Additional information related to the entry.
+      Private to the current user.
+    routineSpec: Specification that applies to a user-defined function or
+      procedure. Valid only for entries with the `ROUTINE` type.
+    schema: Schema of the entry. An entry might not have any schema attached
+      to it.
+    sourceSystemTimestamps: Timestamps from the underlying resource, not from
+      the Data Catalog entry. Output only when the entry has a system listed
+      in the `IntegratedSystem` enum. For entries with
+      `user_specified_system`, this field is optional and defaults to an empty
+      timestamp.
+    sqlDatabaseSystemSpec: Specification that applies to a relational database
+      system. Only settable when `user_specified_system` is equal to
+      `SQL_DATABASE`
+    type: The type of the entry. Only used for entries with types listed in
+      the `EntryType` enum. Currently, only `FILESET` enum value is allowed.
+      All other entries created in Data Catalog must use the
+      `user_specified_type`.
+    usageSignal: Resource usage statistics.
+    userSpecifiedSystem: Indicates the entry's source system that Data Catalog
+      doesn't automatically integrate with. The `user_specified_system` string
+      has the following limitations: * Is case insensitive. * Must begin with
+      a letter or underscore. * Can only contain letters, numbers, and
+      underscores. * Must be at least 1 character and at most 64 characters
+      long.
+    userSpecifiedType: Custom entry type that doesn't match any of the values
+      allowed for input and listed in the `EntryType` enum. When creating an
+      entry, first check the type values in the enum. If there are no
+      appropriate types for the new entry, provide a custom value, for
+      example, `my_special_type`. The `user_specified_type` string has the
+      following limitations: * Is case insensitive. * Must begin with a letter
+      or underscore. * Can only contain letters, numbers, and underscores. *
+      Must be at least 1 character and at most 64 characters long.
+  """
+
+  class IntegratedSystemValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates the entry's source system that Data Catalog
+    integrates with, such as BigQuery, Pub/Sub, or Dataproc Metastore.
+
+    Values:
+      INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
+      BIGQUERY: BigQuery.
+      CLOUD_PUBSUB: Cloud Pub/Sub.
+      DATAPROC_METASTORE: Dataproc Metastore.
+      DATAPLEX: Dataplex.
+      CLOUD_SQL: Cloud Sql
+      LOOKER: Looker
+    """
+    INTEGRATED_SYSTEM_UNSPECIFIED = 0
+    BIGQUERY = 1
+    CLOUD_PUBSUB = 2
+    DATAPROC_METASTORE = 3
+    DATAPLEX = 4
+    CLOUD_SQL = 5
+    LOOKER = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the entry. Only used for entries with types listed in the
+    `EntryType` enum. Currently, only `FILESET` enum value is allowed. All
+    other entries created in Data Catalog must use the `user_specified_type`.
+
+    Values:
+      ENTRY_TYPE_UNSPECIFIED: Default unknown type.
+      TABLE: The entry type that has a GoogleSQL schema, including logical
+        views.
+      MODEL: Output only. The type of models. For more information, see
+        [Supported models in BigQuery ML] (https://cloud.google.com/bigquery-
+        ml/docs/introduction#supported_models_in).
+      DATA_STREAM: An entry type for streaming entries. For example, a Pub/Sub
+        topic.
+      FILESET: An entry type for a set of files or objects. For example, a
+        Cloud Storage fileset.
+      CLUSTER: A group of servers that work together. For example, a Kafka
+        cluster.
+      DATABASE: A database.
+      DATA_SOURCE_CONNECTION: Output only. Connection to a data source. For
+        example, a BigQuery connection.
+      ROUTINE: Output only. Routine, for example, a BigQuery routine.
+      LAKE: A Dataplex lake.
+      ZONE: A Dataplex zone.
+      SERVICE: A service, for example, a Dataproc Metastore service.
+      DATABASE_SCHEMA: Schema within a relational database.
+      DASHBOARD: A Dashboard, for example from Looker.
+      EXPLORE: A Looker Explore. For more information, see [Looker Explore
+        API] (https://developers.looker.com/api/explorer/4.0/methods/LookmlMod
+        el/lookml_model_explore).
+      LOOK: A Looker Look. For more information, see [Looker Look API]
+        (https://developers.looker.com/api/explorer/4.0/methods/Look).
+    """
+    ENTRY_TYPE_UNSPECIFIED = 0
+    TABLE = 1
+    MODEL = 2
+    DATA_STREAM = 3
+    FILESET = 4
+    CLUSTER = 5
+    DATABASE = 6
+    DATA_SOURCE_CONNECTION = 7
+    ROUTINE = 8
+    LAKE = 9
+    ZONE = 10
+    SERVICE = 11
+    DATABASE_SCHEMA = 12
+    DASHBOARD = 13
+    EXPLORE = 14
+    LOOK = 15
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cloud labels attached to the entry. In Data Catalog, you can create
+    and modify labels attached only to custom entries. Synced entries have
+    unmodifiable labels that come from the source system.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
+  bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
+  businessContext = _messages.MessageField('GoogleCloudDatacatalogV1BusinessContext', 3)
+  dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 4)
+  dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 5)
+  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 9)
+  fullyQualifiedName = _messages.StringField(10)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 11)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  linkedResource = _messages.StringField(14)
+  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 15)
+  name = _messages.StringField(16)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 17)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 18)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 19)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 20)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 23)
+  userSpecifiedSystem = _messages.StringField(24)
+  userSpecifiedType = _messages.StringField(25)
+
+
+class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
+  r"""Entry overview fields for rich text descriptions of entries.
+
+  Fields:
+    overview: Entry overview with support for rich text. The overview must
+      only contain Unicode characters, and should be formatted using HTML. The
+      maximum length is 10 MiB as this value holds HTML descriptions including
+      encoded images. The maximum length of the text without images is 100
+      KiB.
+  """
+
+  overview = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1FilesetSpec(_messages.Message):
+  r"""Specification that applies to a fileset. Valid only for entries with the
+  'FILESET' type.
+
+  Fields:
+    dataplexFileset: Fields specific to a Dataplex fileset and present only in
+      the Dataplex fileset entries.
+  """
+
+  dataplexFileset = _messages.MessageField('GoogleCloudDatacatalogV1DataplexFilesetSpec', 1)
+
+
+class GoogleCloudDatacatalogV1GcsFileSpec(_messages.Message):
+  r"""Specification of a single file in Cloud Storage.
+
+  Fields:
+    filePath: Required. Full file path. Example: `gs://bucket_name/a/b.txt`.
+    gcsTimestamps: Output only. Creation, modification, and expiration
+      timestamps of a Cloud Storage file.
+    sizeBytes: Output only. File size in bytes.
+  """
+
+  filePath = _messages.StringField(1)
+  gcsTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 2)
+  sizeBytes = _messages.IntegerField(3)
+
+
+class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
+  r"""Describes a Cloud Storage fileset entry.
+
+  Fields:
+    filePatterns: Required. Patterns to identify a set of files in Google
+      Cloud Storage. For more information, see [Wildcard Names]
+      (https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames).
+      Note: Currently, bucket wildcards are not supported. Examples of valid
+      `file_patterns`: * `gs://bucket_name/dir/*`: matches all files in
+      `bucket_name/dir` directory * `gs://bucket_name/dir/**`: matches all
+      files in `bucket_name/dir` and all subdirectories *
+      `gs://bucket_name/file*`: matches files prefixed by `file` in
+      `bucket_name` * `gs://bucket_name/??.txt`: matches files with two
+      characters followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[aeiou].txt`: matches files that contain a single
+      vowel character followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
+      or `m` followed by `.txt` in `bucket_name` * `gs://bucket_name/a/*/b`:
+      matches all files in `bucket_name` that match the `a/*/b` pattern, such
+      as `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
+      `gs://another_bucket/a.txt` You can combine wildcards to match complex
+      sets of files, for example: `gs://bucket_name/[a-m]??.j*g`
+    sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
+      not all files contained in this fileset are represented here.
+  """
+
+  filePatterns = _messages.StringField(1, repeated=True)
+  sampleGcsFileSpecs = _messages.MessageField('GoogleCloudDatacatalogV1GcsFileSpec', 2, repeated=True)
+
+
 class GoogleCloudDatacatalogV1ImportEntriesMetadata(_messages.Message):
   r"""Metadata message for long-running operation returned by the
   ImportEntries.
@@ -1140,78 +1918,502 @@ class GoogleCloudDatacatalogV1ImportEntriesResponse(_messages.Message):
   upsertedEntriesCount = _messages.IntegerField(2)
 
 
-class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
-  r"""Long-running operation metadata message returned by the ReconcileTags.
-
-  Enums:
-    StateValueValuesEnum: State of the reconciliation operation.
-
-  Messages:
-    ErrorsValue: Maps the name of each tagged column (or empty string for a
-      sole entry) to tagging operation status.
+class GoogleCloudDatacatalogV1LookerSystemSpec(_messages.Message):
+  r"""Specification that applies to entries that are part `LOOKER` system
+  (user_specified_type)
 
   Fields:
-    errors: Maps the name of each tagged column (or empty string for a sole
-      entry) to tagging operation status.
-    state: State of the reconciliation operation.
+    parentInstanceDisplayName: Name of the parent Looker Instance. Empty if it
+      does not exist.
+    parentInstanceId: ID of the parent Looker Instance. Empty if it does not
+      exist. Example value: `someinstance.looker.com`
+    parentModelDisplayName: Name of the parent Model. Empty if it does not
+      exist.
+    parentModelId: ID of the parent Model. Empty if it does not exist.
+    parentViewDisplayName: Name of the parent View. Empty if it does not
+      exist.
+    parentViewId: ID of the parent View. Empty if it does not exist.
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""State of the reconciliation operation.
+  parentInstanceDisplayName = _messages.StringField(1)
+  parentInstanceId = _messages.StringField(2)
+  parentModelDisplayName = _messages.StringField(3)
+  parentModelId = _messages.StringField(4)
+  parentViewDisplayName = _messages.StringField(5)
+  parentViewId = _messages.StringField(6)
+
+
+class GoogleCloudDatacatalogV1PersonalDetails(_messages.Message):
+  r"""Entry metadata relevant only to the user and private to them.
+
+  Fields:
+    starTime: Set if the entry is starred; unset otherwise.
+    starred: True if the entry is starred by the user; false otherwise.
+  """
+
+  starTime = _messages.StringField(1)
+  starred = _messages.BooleanField(2)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchema(_messages.Message):
+  r"""Native schema used by a resource represented as an entry. Used by query
+  engines for deserializing and parsing source data.
+
+  Fields:
+    avro: Schema in Avro JSON format.
+    csv: Marks a CSV-encoded data source.
+    orc: Marks an ORC-encoded data source.
+    parquet: Marks a Parquet-encoded data source.
+    protobuf: Schema in protocol buffer format.
+    thrift: Schema in Thrift format.
+  """
+
+  avro = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema', 1)
+  csv = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema', 2)
+  orc = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema', 3)
+  parquet = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema', 4)
+  protobuf = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema', 5)
+  thrift = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema', 6)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema(_messages.Message):
+  r"""Schema in Avro JSON format.
+
+  Fields:
+    text: JSON source of the Avro schema.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema(_messages.Message):
+  r"""Marks a CSV-encoded data source."""
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema(_messages.Message):
+  r"""Marks an ORC-encoded data source."""
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema(_messages.Message):
+  r"""Marks a Parquet-encoded data source."""
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema(_messages.Message):
+  r"""Schema in protocol buffer format.
+
+  Fields:
+    text: Protocol buffer source of the schema.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema(_messages.Message):
+  r"""Schema in Thrift format.
+
+  Fields:
+    text: Thrift IDL source of the schema.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1RoutineSpec(_messages.Message):
+  r"""Specification that applies to a routine. Valid only for entries with the
+  `ROUTINE` type.
+
+  Enums:
+    RoutineTypeValueValuesEnum: The type of the routine.
+
+  Fields:
+    bigqueryRoutineSpec: Fields specific for BigQuery routines.
+    definitionBody: The body of the routine.
+    language: The language the routine is written in. The exact value depends
+      on the source system. For BigQuery routines, possible values are: *
+      `SQL` * `JAVASCRIPT`
+    returnType: Return type of the argument. The exact value depends on the
+      source system and the language.
+    routineArguments: Arguments of the routine.
+    routineType: The type of the routine.
+  """
+
+  class RoutineTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the routine.
 
     Values:
-      RECONCILIATION_STATE_UNSPECIFIED: Default value. This value is unused.
-      RECONCILIATION_QUEUED: The reconciliation has been queued and awaits for
-        execution.
-      RECONCILIATION_IN_PROGRESS: The reconciliation is in progress.
-      RECONCILIATION_DONE: The reconciliation has been finished.
+      ROUTINE_TYPE_UNSPECIFIED: Unspecified type.
+      SCALAR_FUNCTION: Non-builtin permanent scalar function.
+      PROCEDURE: Stored procedure.
     """
-    RECONCILIATION_STATE_UNSPECIFIED = 0
-    RECONCILIATION_QUEUED = 1
-    RECONCILIATION_IN_PROGRESS = 2
-    RECONCILIATION_DONE = 3
+    ROUTINE_TYPE_UNSPECIFIED = 0
+    SCALAR_FUNCTION = 1
+    PROCEDURE = 2
+
+  bigqueryRoutineSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryRoutineSpec', 1)
+  definitionBody = _messages.StringField(2)
+  language = _messages.StringField(3)
+  returnType = _messages.StringField(4)
+  routineArguments = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpecArgument', 5, repeated=True)
+  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 6)
+
+
+class GoogleCloudDatacatalogV1RoutineSpecArgument(_messages.Message):
+  r"""Input or output argument of a function or stored procedure.
+
+  Enums:
+    ModeValueValuesEnum: Specifies whether the argument is input or output.
+
+  Fields:
+    mode: Specifies whether the argument is input or output.
+    name: The name of the argument. A return argument of a function might not
+      have a name.
+    type: Type of the argument. The exact value depends on the source system
+      and the language.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Specifies whether the argument is input or output.
+
+    Values:
+      MODE_UNSPECIFIED: Unspecified mode.
+      IN: The argument is input-only.
+      OUT: The argument is output-only.
+      INOUT: The argument is both an input and an output.
+    """
+    MODE_UNSPECIFIED = 0
+    IN = 1
+    OUT = 2
+    INOUT = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  type = _messages.StringField(3)
+
+
+class GoogleCloudDatacatalogV1Schema(_messages.Message):
+  r"""Represents a schema, for example, a BigQuery, GoogleSQL, or Avro schema.
+
+  Fields:
+    columns: The unified GoogleSQL-like schema of columns. The overall maximum
+      number of columns and nested columns is 10,000. The maximum nested depth
+      is 15 levels.
+  """
+
+  columns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1SqlDatabaseSystemSpec(_messages.Message):
+  r"""Specification that applies to entries that are part `SQL_DATABASE`
+  system (user_specified_type)
+
+  Fields:
+    databaseVersion: Version of the database engine.
+    instanceHost: Host of the SQL database enum InstanceHost { UNDEFINED = 0;
+      SELF_HOSTED = 1; CLOUD_SQL = 2; AMAZON_RDS = 3; AZURE_SQL = 4; } Host of
+      the enclousing database instance.
+    sqlEngine: SQL Database Engine. enum SqlEngine { UNDEFINED = 0; MY_SQL =
+      1; POSTGRE_SQL = 2; SQL_SERVER = 3; } Engine of the enclosing database
+      instance.
+  """
+
+  databaseVersion = _messages.StringField(1)
+  instanceHost = _messages.StringField(2)
+  sqlEngine = _messages.StringField(3)
+
+
+class GoogleCloudDatacatalogV1StorageProperties(_messages.Message):
+  r"""Details the properties of the underlying storage.
+
+  Fields:
+    filePattern: Patterns to identify a set of files for this fileset.
+      Examples of a valid `file_pattern`: * `gs://bucket_name/dir/*`: matches
+      all files in the `bucket_name/dir` directory *
+      `gs://bucket_name/dir/**`: matches all files in the `bucket_name/dir`
+      and all subdirectories recursively * `gs://bucket_name/file*`: matches
+      files prefixed by `file` in `bucket_name` * `gs://bucket_name/??.txt`:
+      matches files with two characters followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[aeiou].txt`: matches files that contain a single
+      vowel character followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
+      or `m` followed by `.txt` in `bucket_name` * `gs://bucket_name/a/*/b`:
+      matches all files in `bucket_name` that match the `a/*/b` pattern, such
+      as `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
+      `gs://another_bucket/a.txt`
+    fileType: File type in MIME format, for example, `text/plain`.
+  """
+
+  filePattern = _messages.StringField(1, repeated=True)
+  fileType = _messages.StringField(2)
+
+
+class GoogleCloudDatacatalogV1SystemTimestamps(_messages.Message):
+  r"""Timestamps associated with this resource in a particular system.
+
+  Fields:
+    createTime: Creation timestamp of the resource within the given system.
+    expireTime: Output only. Expiration timestamp of the resource within the
+      given system. Currently only applicable to BigQuery resources.
+    updateTime: Timestamp of the last modification of the resource or its
+      metadata within a given system. Note: Depending on the source system,
+      not every modification updates this timestamp. For example, BigQuery
+      timestamps every metadata modification but not data or permission
+      changes.
+  """
+
+  createTime = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+
+
+class GoogleCloudDatacatalogV1TableSpec(_messages.Message):
+  r"""Normal BigQuery table specification.
+
+  Fields:
+    groupedEntry: Output only. If the table is date-sharded, that is, it
+      matches the `[prefix]YYYYMMDD` name pattern, this field is the Data
+      Catalog resource name of the date-sharded grouped entry. For example: `p
+      rojects/{PROJECT_ID}/locations/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/e
+      ntries/{ENTRY_ID}`. Otherwise, `grouped_entry` is empty.
+  """
+
+  groupedEntry = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1Tag(_messages.Message):
+  r"""Tags contain custom metadata and are attached to Data Catalog resources.
+  Tags conform with the specification of their tag template. See [Data Catalog
+  IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
+  information on the permissions needed to create or view tags.
+
+  Messages:
+    FieldsValue: Required. Maps the ID of a tag field to its value and
+      additional information about that field. Tag template defines valid
+      field IDs. A tag must have at least 1 field and at most 500 fields.
+
+  Fields:
+    column: Resources like entry can have schemas associated with them. This
+      scope allows you to attach tags to an individual column based on that
+      schema. To attach a tag to a nested column, separate column names with a
+      dot (`.`). Example: `column.nested_column`.
+    fields: Required. Maps the ID of a tag field to its value and additional
+      information about that field. Tag template defines valid field IDs. A
+      tag must have at least 1 field and at most 500 fields.
+    name: The resource name of the tag in URL format where tag ID is a system-
+      generated identifier. Note: The tag itself might not be stored in the
+      location specified in its name.
+    template: Required. The resource name of the tag template this tag uses.
+      Example: `projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_T
+      EMPLATE_ID}` This field cannot be modified after creation.
+    templateDisplayName: Output only. The display name of the tag template.
+  """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ErrorsValue(_messages.Message):
-    r"""Maps the name of each tagged column (or empty string for a sole entry)
-    to tagging operation status.
+  class FieldsValue(_messages.Message):
+    r"""Required. Maps the ID of a tag field to its value and additional
+    information about that field. Tag template defines valid field IDs. A tag
+    must have at least 1 field and at most 500 fields.
 
     Messages:
-      AdditionalProperty: An additional property for a ErrorsValue object.
+      AdditionalProperty: An additional property for a FieldsValue object.
 
     Fields:
-      additionalProperties: Additional properties of type ErrorsValue
+      additionalProperties: Additional properties of type FieldsValue
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ErrorsValue object.
+      r"""An additional property for a FieldsValue object.
 
       Fields:
         key: Name of the additional property.
-        value: A Status attribute.
+        value: A GoogleCloudDatacatalogV1TagField attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('Status', 2)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1TagField', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  errors = _messages.MessageField('ErrorsValue', 1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  column = _messages.StringField(1)
+  fields = _messages.MessageField('FieldsValue', 2)
+  name = _messages.StringField(3)
+  template = _messages.StringField(4)
+  templateDisplayName = _messages.StringField(5)
 
 
-class GoogleCloudDatacatalogV1ReconcileTagsResponse(_messages.Message):
-  r"""Long-running operation response message returned by ReconcileTags.
+class GoogleCloudDatacatalogV1TagField(_messages.Message):
+  r"""Contains the value and additional information on a field within a Tag.
 
   Fields:
-    createdTagsCount: Number of tags created in the request.
-    deletedTagsCount: Number of tags deleted in the request.
-    updatedTagsCount: Number of tags updated in the request.
+    boolValue: The value of a tag field with a boolean type.
+    displayName: Output only. The display name of this field.
+    doubleValue: The value of a tag field with a double type.
+    enumValue: The value of a tag field with an enum type. This value must be
+      one of the allowed values listed in this enum.
+    order: Output only. The order of this field with respect to other fields
+      in this tag. Can be set by Tag. For example, a higher value can indicate
+      a more important field. The value can be negative. Multiple fields can
+      have the same order, and field orders within a tag don't have to be
+      sequential.
+    richtextValue: The value of a tag field with a rich text type. The maximum
+      length is 10 MiB as this value holds HTML descriptions including encoded
+      images. The maximum length of the text without images is 100 KiB.
+    stringValue: The value of a tag field with a string type. The maximum
+      length is 2000 UTF-8 characters.
+    timestampValue: The value of a tag field with a timestamp type.
   """
 
-  createdTagsCount = _messages.IntegerField(1)
-  deletedTagsCount = _messages.IntegerField(2)
-  updatedTagsCount = _messages.IntegerField(3)
+  boolValue = _messages.BooleanField(1)
+  displayName = _messages.StringField(2)
+  doubleValue = _messages.FloatField(3)
+  enumValue = _messages.MessageField('GoogleCloudDatacatalogV1TagFieldEnumValue', 4)
+  order = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  richtextValue = _messages.StringField(6)
+  stringValue = _messages.StringField(7)
+  timestampValue = _messages.StringField(8)
+
+
+class GoogleCloudDatacatalogV1TagFieldEnumValue(_messages.Message):
+  r"""An enum value.
+
+  Fields:
+    displayName: The display name of the enum value.
+  """
+
+  displayName = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1TaggedEntry(_messages.Message):
+  r"""Wrapper containing Entry and information about Tags that should and
+  should not be attached to it.
+
+  Fields:
+    absentTags: Tags that should be deleted from the Data Catalog. Caller
+      should populate template name and column only.
+    presentTags: Tags that should be ingested into the Data Catalog. Caller
+      should populate template name, column and fields.
+    v1Entry: Non-encrypted Data Catalog v1 Entry.
+  """
+
+  absentTags = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1, repeated=True)
+  presentTags = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 2, repeated=True)
+  v1Entry = _messages.MessageField('GoogleCloudDatacatalogV1Entry', 3)
+
+
+class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):
+  r"""The set of all usage signals that Data Catalog stores. Note: Usually,
+  these signals are updated daily. In rare cases, an update may fail but will
+  be performed again on the next day.
+
+  Messages:
+    CommonUsageWithinTimeRangeValue: Common usage statistics over each of the
+      predefined time ranges. Supported time ranges are `{"24H", "7D", "30D",
+      "Lifetime"}`.
+    UsageWithinTimeRangeValue: Output only. BigQuery usage statistics over
+      each of the predefined time ranges. Supported time ranges are `{"24H",
+      "7D", "30D"}`.
+
+  Fields:
+    commonUsageWithinTimeRange: Common usage statistics over each of the
+      predefined time ranges. Supported time ranges are `{"24H", "7D", "30D",
+      "Lifetime"}`.
+    favoriteCount: Favorite count in the source system.
+    updateTime: The end timestamp of the duration of usage statistics.
+    usageWithinTimeRange: Output only. BigQuery usage statistics over each of
+      the predefined time ranges. Supported time ranges are `{"24H", "7D",
+      "30D"}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CommonUsageWithinTimeRangeValue(_messages.Message):
+    r"""Common usage statistics over each of the predefined time ranges.
+    Supported time ranges are `{"24H", "7D", "30D", "Lifetime"}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        CommonUsageWithinTimeRangeValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        CommonUsageWithinTimeRangeValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CommonUsageWithinTimeRangeValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDatacatalogV1CommonUsageStats attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1CommonUsageStats', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UsageWithinTimeRangeValue(_messages.Message):
+    r"""Output only. BigQuery usage statistics over each of the predefined
+    time ranges. Supported time ranges are `{"24H", "7D", "30D"}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        UsageWithinTimeRangeValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UsageWithinTimeRangeValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UsageWithinTimeRangeValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDatacatalogV1UsageStats attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1UsageStats', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  commonUsageWithinTimeRange = _messages.MessageField('CommonUsageWithinTimeRangeValue', 1)
+  favoriteCount = _messages.IntegerField(2)
+  updateTime = _messages.StringField(3)
+  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 4)
+
+
+class GoogleCloudDatacatalogV1UsageStats(_messages.Message):
+  r"""Detailed statistics on the entry's usage. Usage statistics have the
+  following limitations: - Only BigQuery tables have them. - They only include
+  BigQuery query jobs. - They might be underestimated because wildcard table
+  references are not yet counted. For more information, see [Querying multiple
+  tables using a wildcard table]
+  (https://cloud.google.com/bigquery/docs/querying-wildcard-tables)
+
+  Fields:
+    totalCancellations: The number of cancelled attempts to use the underlying
+      entry.
+    totalCompletions: The number of successful uses of the underlying entry.
+    totalExecutionTimeForCompletionsMillis: Total time spent only on
+      successful uses, in milliseconds.
+    totalFailures: The number of failed attempts to use the underlying entry.
+  """
+
+  totalCancellations = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  totalCompletions = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  totalExecutionTimeForCompletionsMillis = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  totalFailures = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudDatacatalogV1ViewSpec(_messages.Message):
+  r"""Table view specification.
+
+  Fields:
+    viewQuery: Output only. The query that defines the table view.
+  """
+
+  viewQuery = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1beta1BigQueryDateShardedSpec(_messages.Message):

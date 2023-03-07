@@ -1272,7 +1272,7 @@
           "type": "string"
         },
         "clusterName": {
-          "description": "Required. The full resource name of the backup source cluster (e.g., projects\/\/locations\/\/clusters\/).",
+          "description": "Required. The full resource name of the backup source cluster (e.g., projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}).",
           "type": "string"
         },
         "reconciling": {

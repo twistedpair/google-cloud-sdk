@@ -623,7 +623,7 @@
             "CUSTOM_DOMAIN_STATE_UNSPECIFIED",
             "UNVERIFIED",
             "VERIFIED",
-            "PROVISIONING",
+            "MODIFYING",
             "AVAILABLE",
             "UNAVAILABLE",
             "UNKNOWN"

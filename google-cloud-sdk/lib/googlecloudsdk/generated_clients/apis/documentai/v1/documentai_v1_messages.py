@@ -475,6 +475,38 @@ class DocumentaiProjectsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsMetadata(_messages.Message):
+  r"""Metadata of the auto-labeling documents operation.
+
+  Fields:
+    commonMetadata: The basic metadata of the long running operation.
+    individualAutoLabelStatuses: The list of individual auto-labeling statuses
+      of the dataset documents.
+    totalDocumentCount: Total number of the auto-labeling documents.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3CommonOperationMetadata', 1)
+  individualAutoLabelStatuses = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsMetadataIndividualAutoLabelStatus', 2, repeated=True)
+  totalDocumentCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsMetadataIndividualAutoLabelStatus(_messages.Message):
+  r"""The status of individual documents in the auto-labeling process.
+
+  Fields:
+    gcsUri: The gcs_uri of the auto-labeling document, which uniquely
+      identifies a dataset document.
+    status: The status of the document auto-labeling.
+  """
+
+  gcsUri = _messages.StringField(1)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
+
+
+class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsResponse(_messages.Message):
+  r"""The response proto of AutoLabelDocuments method."""
+
+
 class GoogleCloudDocumentaiUiv1beta3BatchDeleteDocumentsMetadata(_messages.Message):
   r"""A GoogleCloudDocumentaiUiv1beta3BatchDeleteDocumentsMetadata object.
 

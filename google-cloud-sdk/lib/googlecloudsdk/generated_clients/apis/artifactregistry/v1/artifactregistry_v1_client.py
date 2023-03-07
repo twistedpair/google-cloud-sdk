@@ -351,8 +351,8 @@ class ArtifactregistryV1(base_api.BaseApiClient):
           'Upload': base_api.ApiUploadInfo(
               accept=['*/*'],
               max_size=None,
-              resumable_multipart=None,
-              resumable_path=None,
+              resumable_multipart=True,
+              resumable_path='/resumable/upload/v1/{+parent}/genericArtifacts:create',
               simple_multipart=True,
               simple_path='/upload/v1/{+parent}/genericArtifacts:create',
           ),

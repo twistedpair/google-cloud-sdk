@@ -570,7 +570,7 @@ class CORSPolicy(_messages.Message):
       credentials. This translates to the `Access-Control-Allow-Credentials`
       response header.
     allowHeaders: Optional. The content for the `Access-Control-Allow-Headers`
-      response header. You can specify up to five headers to include in the
+      response header. You can specify up to 25 headers to include in the
       `Access-Control-Allow-Headers` header.
     allowMethods: Optional. The content for the `Access-Control-Allow-Methods`
       response header. You can specify up to five allowed methods.
@@ -581,7 +581,7 @@ class CORSPolicy(_messages.Message):
       The default value is `false`, which indicates that the CORS policy is in
       effect.
     exposeHeaders: Optional. The content for the Access-Control-Expose-Headers
-      response header. You can specify up to five headers to expose in the
+      response header. You can specify up to 25 headers to expose in the
       `Access-Control-Expose-Headers` header.
     maxAge: Required. Specifies how long results of a preflight request can be
       cached by a client in seconds. Note that many browser clients enforce a
@@ -1566,18 +1566,18 @@ class HeaderAction(_messages.Message):
   Fields:
     requestHeadersToAdd: Optional. A list of headers to add to the request
       prior to forwarding the request to the origin. You can add a maximum of
-      five request headers.
+      25 request headers.
     requestHeadersToRemove: Optional. A list of header names to remove from
       the request before forwarding the request to the origin. You can specify
-      up to 10 request headers to remove.
+      up to 25 request headers to remove.
     responseHeadersToAdd: Optional. A list of headers to add to the response
-      before sending it back to the client. You can add a maximum of five
+      before sending it back to the client. You can add a maximum of 25
       response headers. Response headers are only sent to the client, and do
       not have an effect on the cache serving the response.
     responseHeadersToRemove: Optional. A list of headers to remove from the
       response before sending it back to the client. Response headers are only
       sent to the client, and do not have an effect on the cache serving the
-      response. You can specify up to 10 response headers to remove.
+      response. You can specify up to 25 response headers to remove.
   """
 
   requestHeadersToAdd = _messages.MessageField('HeaderActionAddHeader', 1, repeated=True)
@@ -2733,7 +2733,7 @@ class MatchRule(_messages.Message):
       `path_template_match` after removing any query parameters and anchors
       that might be part of the original URL. `path_template_match` must be
       between 1 and 255 characters (inclusive). The pattern specified by
-      `path_template_match` can have at most ten wildcard operators and ten
+      `path_template_match` can have at most 10 wildcard operators and 10
       variable captures. One of prefix_match, full_path_match, or
       `path_template_match` must be specified.
     prefixMatch: Optional. To satisfy the `MatchRule` condition, the request's
@@ -5730,7 +5730,7 @@ class OriginHeaderAction(_messages.Message):
 
   Fields:
     requestHeadersToAdd: Optional. A header to add. You can add a maximum of
-      five request headers.
+      25 request headers.
   """
 
   requestHeadersToAdd = _messages.MessageField('OriginHeaderActionAddHeader', 1, repeated=True)
@@ -6182,10 +6182,13 @@ class ServiceLbPolicy(_messages.Message):
         and capacity before spilling over to other regions.
       NEAREST_ZONE_FIRST: Attempt to keep traffic in a single zone closest to
         the client, before spilling over to other zones.
+      SPRAY_TO_WORLD: Balance traffic across all backends across the world
+        proportionally based on capacity.
     """
     LOAD_BALANCING_ALGORITHM_UNSPECIFIED = 0
     BALANCE_OVER_REGION = 1
     NEAREST_ZONE_FIRST = 2
+    SPRAY_TO_WORLD = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

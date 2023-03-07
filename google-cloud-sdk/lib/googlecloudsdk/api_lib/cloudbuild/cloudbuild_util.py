@@ -136,19 +136,25 @@ def EncodeUpdatedTriggerSubstitutions(old_substitutions, substitutions,
     The updated trigger substitutions.
   """
   if not substitutions:
-    return None
-  substitution_properties = []
-  for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
-    substitution_properties.append(
-        messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
-            key=key, value=value))
+    return old_substitutions
+  substitution_map = {}
   if old_substitutions:
     for sub in old_substitutions.additionalProperties:
-      substitution_properties.append(
-          messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
-              key=sub.key, value=sub.value))
+      substitution_map[sub.key] = sub.value
+
+  for key, value in six.iteritems(substitutions):
+    substitution_map[key] = value
+
+  updated_substitutions = []
+  for key, value in sorted(substitution_map.items()):  # Sort for tests.
+    updated_substitutions.append(
+        messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
+            key=key, value=value
+        )
+    )
+
   return messages.BuildTrigger.SubstitutionsValue(
-      additionalProperties=substitution_properties
+      additionalProperties=updated_substitutions
   )
 
 
@@ -565,10 +571,10 @@ def WorkerPoolRegion(resource_name):
 
 
 def GitHubEnterpriseConfigFromArgs(args, update=False):
-  """Construct the GitHubEnterpires resource from the command line args.
+  """Construct the GitHubEnterpriseConfig resource from the command line args.
 
   Args:
-    args: an argparse namespace. All the arguments that were provided to this
+    args: An argparse namespace. All the arguments that were provided to this
         command invocation.
       update: bool, if the args are for an update.
 

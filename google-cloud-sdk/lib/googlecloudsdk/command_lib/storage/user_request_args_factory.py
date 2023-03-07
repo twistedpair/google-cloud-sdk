@@ -254,16 +254,18 @@ class _UserRequestArgs:
   for "Attributes" docstring. Specifics depend on API client.
   """
 
-  def __init__(self,
-               gzip_settings=None,
-               manifest_path=None,
-               no_clobber=None,
-               precondition_generation_match=None,
-               precondition_metageneration_match=None,
-               predefined_acl_string=None,
-               predefined_default_object_acl_string=None,
-               resource_args=None,
-               system_posix_data=None):
+  def __init__(
+      self,
+      gzip_settings=None,
+      manifest_path=None,
+      no_clobber=None,
+      precondition_generation_match=None,
+      precondition_metageneration_match=None,
+      predefined_acl_string=None,
+      predefined_default_object_acl_string=None,
+      resource_args=None,
+      system_posix_data=None,
+  ):
     """Sets properties."""
     self.gzip_settings = gzip_settings
     self.manifest_path = (
@@ -272,25 +274,29 @@ class _UserRequestArgs:
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
     self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_object_acl_string = predefined_default_object_acl_string
+    self.predefined_default_object_acl_string = (
+        predefined_default_object_acl_string
+    )
     self.resource_args = resource_args
     self.system_posix_data = system_posix_data
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.gzip_settings == other.gzip_settings and
-            self.manifest_path == other.manifest_path and
-            self.no_clobber == other.no_clobber and
-            self.precondition_generation_match
-            == other.precondition_generation_match and
-            self.precondition_metageneration_match
-            == other.precondition_metageneration_match and
-            self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_object_acl_string
-            == other.predefined_default_object_acl_string and
-            self.resource_args == other.resource_args and
-            self.system_posix_data == other.system_posix_data)
+    return (
+        self.gzip_settings == other.gzip_settings
+        and self.manifest_path == other.manifest_path
+        and self.no_clobber == other.no_clobber
+        and self.precondition_generation_match
+        == other.precondition_generation_match
+        and self.precondition_metageneration_match
+        == other.precondition_metageneration_match
+        and self.predefined_acl_string == other.predefined_acl_string
+        and self.predefined_default_object_acl_string
+        == other.predefined_default_object_acl_string
+        and self.resource_args == other.resource_args
+        and self.system_posix_data == other.system_posix_data
+    )
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -426,11 +432,13 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       manifest_path=getattr(args, 'manifest_path', None),
       no_clobber=getattr(args, 'no_clobber', None),
       precondition_generation_match=getattr(args, 'if_generation_match', None),
-      precondition_metageneration_match=getattr(args, 'if_metageneration_match',
-                                                None),
+      precondition_metageneration_match=getattr(
+          args, 'if_metageneration_match', None
+      ),
       predefined_acl_string=getattr(args, 'predefined_acl', None),
       predefined_default_object_acl_string=getattr(
-          args, 'predefined_default_object_acl', None),
+          args, 'predefined_default_object_acl', None
+      ),
       resource_args=resource_args,
       system_posix_data=system_posix_data,
   )

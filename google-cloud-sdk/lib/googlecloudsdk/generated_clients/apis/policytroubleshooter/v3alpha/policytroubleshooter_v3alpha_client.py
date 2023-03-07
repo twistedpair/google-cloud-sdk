@@ -55,10 +55,10 @@ class PolicytroubleshooterV3alpha(base_api.BaseApiClient):
       r"""Checks whether a member has a specific permission for a specific resource, and explains why the member does or does not have that permission.
 
       Args:
-        request: (GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest) input message
+        request: (GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse) The response message.
+        (GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse) The response message.
       """
       config = self.GetMethodConfig('Troubleshoot')
       return self._RunMethod(
@@ -72,7 +72,7 @@ class PolicytroubleshooterV3alpha(base_api.BaseApiClient):
         query_params=[],
         relative_path='v3alpha/iam:troubleshoot',
         request_field='<request>',
-        request_type_name='GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyRequest',
-        response_type_name='GoogleCloudPolicytroubleshooterV3alphaTroubleshootIamPolicyResponse',
+        request_type_name='GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyRequest',
+        response_type_name='GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse',
         supports_download=False,
     )

@@ -1221,3 +1221,19 @@ def AddAdminWorkloadNodeConfig(parser):
   )
 
   _AddMaxPodsPerNode(bare_metal_workload_node_config_group)
+
+
+def AddIgnoreErrors(parser):
+  """Adds a flag for ignore_errors field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      help=(
+          'If set, the deletion of a bare metal user cluster resource will'
+          ' succeed even if errors occur during deletion.'
+      ),
+      action='store_true',
+  )

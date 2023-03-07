@@ -58,7 +58,8 @@ DEFAULT_LIST_FORMAT = """\
     table(
       name,
       natIpAllocateOption,
-      sourceSubnetworkIpRangesToNat
+      sourceSubnetworkIpRangesToNat,
+      endpointTypes.list():label=ENDPOINT_TYPES
     )"""
 
 
@@ -95,11 +96,18 @@ def AddTypeArg(parser):
 
 def AddEndpointTypesArg(parser):
   """Adds the --endpoint-type argument."""
-  help_text = (
-      'Endpoint Types supported by the NAT Gateway. Choices are'
-      ' ENDPOINT_TYPE_VM for VM Endpoints and ENDPOINT_TYPE_SWG for Secure Web'
-      ' Gateway Endpoints. Defaults to ENDPOINT_TYPE_VM if not specified'
-  )
+  help_text = textwrap.dedent("""\
+    Endpoint Types supported by the NAT Gateway.
+
+    ENDPOINT_TYPE must be one of:
+
+    ENDPOINT_TYPE_VM
+      For VM Endpoints
+    ENDPOINT_TYPE_SWG
+      For Secure Web Gateway Endpoints
+
+  The default is ENDPOINT_TYPE_VM.
+  """)
   choices = ['ENDPOINT_TYPE_VM', 'ENDPOINT_TYPE_SWG']
   parser.add_argument(
       '--endpoint-types',

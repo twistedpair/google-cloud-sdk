@@ -47,7 +47,7 @@ _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
     'any': 'Any Availability Domain',
 }
 
-_ENCRYPTION_CHOICES = frozenset({'IPSEC', 'NONE'})
+_ENCRYPTION_CHOICES = ('IPSEC', 'NONE')
 
 _CANDIDATE_SUBNETS_HELP_TEXT = """\
       Up to 16 candidate prefixes that can be used to restrict the allocation of
@@ -344,7 +344,6 @@ def AddEncryption(parser):
   """
   parser.add_argument(
       '--encryption',
-      hidden=True,
       required=False,
       choices=_ENCRYPTION_CHOICES,
       help="""\
@@ -361,7 +360,7 @@ def AddEncryption(parser):
       by an IPsec device; for example, an HA VPN gateway or third-party
       IPsec VPN. VMs cannot directly send traffic to or receive traffic from such
       an interconnect attachment. To use HA VPN over Cloud Interconnect,
-      you must create the interconnect attachment with this option.
+      the interconnect attachment must be created with this option.
 
       """)
 
@@ -383,18 +382,18 @@ def GetIpsecInternalAddressesFlag():
   return base.Argument(
       '--ipsec-internal-addresses',
       required=False,
-      hidden=True,
       type=arg_parsers.ArgList(max_length=1),
       metavar='ADDRESSES',
       help="""\
-      List of addresses in URL format that have been reserved for the interconnect
+      List of IP address range names that have been reserved for the interconnect
       attachment (VLAN attachment). Use this option only for an interconnect
-      attachment that has its encryption option set as IPSEC.
+      attachment that has its encryption option set as IPSEC. Currently only one
+      internal IP address range can be specified for each attachment.
       When creating an HA VPN gateway for the interconnect attachment, if the
       attachment is configured to use a regional internal IP address, then the VPN
       gateway's IP address is allocated from the IP address range specified here.
-      If this field is not specified when creating interconnect attachments,
-      then when creating a future HA VPN gateway for this interconnect attachment,
+      If this field is not specified when creating the interconnect attachment,
+      then when creating any HA VPN gateways for this interconnect attachment,
       the HA VPN gateway's IP address is allocated from a regional external IP
       address pool.
       """)

@@ -950,6 +950,9 @@ apis:
     v1alpha1:
       discovery_doc: netapp_v1alpha1.json
       default: true
+    v1beta1:
+      discovery_doc: netapp_v1beta1.json
+      default: false
   networkconnectivity:
     v1alpha1:
       discovery_doc: networkconnectivity_v1alpha1.json
@@ -1055,6 +1058,9 @@ apis:
     v1:
       discovery_doc: privateca_v1.json
   publicca:
+    v1:
+      discovery_doc: publicca_v1.json
+      enable_mtls: false
     v1beta1:
       default: true
       discovery_doc: publicca_v1beta1.json

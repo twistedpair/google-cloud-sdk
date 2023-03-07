@@ -381,6 +381,14 @@
         "advancedNetworking": {
           "description": "Enables the use of advanced Anthos networking features, such as Bundled Load Balancing with BGP or the egress NAT gateway. Setting configuration for advanced networking features will automatically set this flag.",
           "type": "boolean"
+        },
+        "multipleNetworkInterfacesConfig": {
+          "description": "Configuration for multiple network interfaces.",
+          "$ref": "BareMetalMultipleNetworkInterfacesConfig"
+        },
+        "srIovConfig": {
+          "description": "Configuration for SR-IOV.",
+          "$ref": "BareMetalSrIovConfig"
         }
       }
     },
@@ -405,12 +413,34 @@
         }
       }
     },
+    "BareMetalMultipleNetworkInterfacesConfig": {
+      "id": "BareMetalMultipleNetworkInterfacesConfig",
+      "description": "Specifies the multiple networking interfaces cluster configuration.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable multiple network interfaces for your pods. When set network_config.advanced_networking is automatically set to true.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BareMetalSrIovConfig": {
+      "id": "BareMetalSrIovConfig",
+      "description": "Specifies the SR-IOV networking operator config.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to install the SR-IOV operator.",
+          "type": "boolean"
+        }
+      }
+    },
     "BareMetalControlPlaneConfig": {
       "id": "BareMetalControlPlaneConfig",
       "description": "Specifies the control plane configuration.",
       "type": "object",
       "properties": {
-        "nodePoolConfig": {
+        "controlPlaneNodePoolConfig": {
           "description": "Required. Configures the node pool running the control plane.",
           "$ref": "BareMetalControlPlaneNodePoolConfig"
         },
@@ -471,6 +501,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "kubeletConfig": {
+          "description": "The modifiable kubelet configurations for the baremetal machines.",
+          "$ref": "BareMetalKubeletConfig"
         }
       }
     },
@@ -520,6 +554,60 @@
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
           ]
+        }
+      }
+    },
+    "BareMetalKubeletConfig": {
+      "id": "BareMetalKubeletConfig",
+      "description": "KubeletConfig defines the modifiable kubelet configurations for baremetal machines. Note: this list includes fields supported in GKE (see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/node-system-config#kubelet-options).",
+      "type": "object",
+      "properties": {
+        "cpuManagerPolicy": {
+          "description": "The kubelet CPU manager policy. Requires the CPUManager feature gate to be enabled. This field should not be updated without a full node reboot. It is safest to keep this value the same as the local \/var\/lib\/kubelet\/cpu_manager_state value. See https:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/#configuration.",
+          "type": "string",
+          "enumDescriptions": [
+            "No cpu manager policy specified. The default policy.",
+            "Allows pods with certain resource characteristics to be granted increased CPU affinity and exclusivity on the node."
+          ],
+          "enum": [
+            "NONE",
+            "STATIC"
+          ]
+        },
+        "cpuCfsQuotaDisabled": {
+          "description": "Disables CPU Completely Fair Scheduler (CFS) quota enforcement for containers that specify CPU limits. Disabling this field may reduce node stability.",
+          "type": "boolean"
+        },
+        "cpuCfsQuotaPeriod": {
+          "description": "The CPU Completely Fair Scheduler (CFS) quota period value. The value must be between 1 ms and 1 second, inclusive. Requires the CustomCPUCFSQuotaPeriod feature gate to be enabled. When updating this field, consider that limits set for containers will result in different cpu.cfs_quota settings. This will trigger container restarts on the node being reconfigured. Defaults to \"100ms\".",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "featureGates": {
+          "description": "A map of feature names to bools that enable or disable experimental features. This field modifies the built-in default values from \"k8s.io\/kubernetes\/pkg\/features\/kube_features.go\". Consider the documentation for the features you are enabling or disabling. While we encourage feature developers to make it possible to enable and disable features, some changes may require node reboots, and some features may require careful coordination to retroactively disable.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "podPidsLimit": {
+          "description": "The maximum number of PIDs in any pod. Lowering this may prevent container processes from forking after the change. Defaults to -1.",
+          "type": "string",
+          "format": "int64"
+        },
+        "registryPullQps": {
+          "description": "The limit of registry pulls per second. Setting this value to 0 means no limit. Updating this field may impact scalability by changing the amount of traffic produced by image pulls. Defaults to 5.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "registryBurst": {
+          "description": "The maximum size of bursty pulls, temporarily allows pulls to burst to this number, while still not exceeding registry_pull_qps. The value must not be a negative number. Updating this field may impact scalability by changing the amount of traffic produced by image pulls. Defaults to 10.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "serializeImagePullsDisabled": {
+          "description": "Prevents the Kubelet from pulling multiple images at a time. We recommend *not* changing the default value on nodes that run docker daemon with version < 1.9 or an Another Union File System (Aufs) storage backend. Issue https:\/\/github.com\/kubernetes\/kubernetes\/issues\/10959 has more details.",
+          "type": "boolean"
         }
       }
     },
@@ -600,7 +688,7 @@
             "$ref": "BareMetalLoadBalancerAddressPool"
           }
         },
-        "nodePoolConfig": {
+        "loadBalancerNodePoolConfig": {
           "description": "Specifies the node pool running the load balancer. L2 connectivity is required among nodes in this pool. If missing, the control plane node pool is used as the load balancer pool.",
           "$ref": "BareMetalLoadBalancerNodePoolConfig"
         }
@@ -1139,6 +1227,10 @@
         "adminClusterMembership": {
           "description": "Required. The admin cluster this VMware user cluster belongs to. This is the full resource name of the admin cluster's fleet membership. In the future, references to other resource types might be allowed if admin clusters are modeled as their own resources.",
           "type": "string"
+        },
+        "validateOnly": {
+          "description": "Validate the request without actually doing any updates.",
+          "type": "boolean"
         }
       }
     },
@@ -1419,6 +1511,10 @@
         "hostConfig": {
           "description": "Represents common network settings irrespective of the host's IP address.",
           "$ref": "VmwareHostConfig"
+        },
+        "controlPlaneV2Config": {
+          "description": "Configuration for control plane V2 mode.",
+          "$ref": "VmwareControlPlaneV2Config"
         }
       }
     },
@@ -1509,6 +1605,21 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "VmwareControlPlaneV2Config": {
+      "id": "VmwareControlPlaneV2Config",
+      "description": "Specifies control plane V2 config.",
+      "type": "object",
+      "properties": {
+        "controlPlaneIpBlock": {
+          "description": "Static IP addresses for the control plane nodes.",
+          "$ref": "VmwareIpBlock"
+        },
+        "enableControlPlaneV2": {
+          "description": "Enable control plane V2. Default to false.",
+          "type": "boolean"
         }
       }
     },
@@ -1923,6 +2034,11 @@
           "description": "Output only. ResourceStatus representing the detailed VMware node pool state.",
           "readOnly": true,
           "$ref": "ResourceStatus"
+        },
+        "onPremVersion": {
+          "description": "Output only. Anthos version for the node pool. Defaults to the user cluster version.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -2056,6 +2172,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "EnrollVmwareNodePoolRequest": {
+      "id": "EnrollVmwareNodePoolRequest",
+      "description": "Message for enrolling a VMware node pool.",
+      "type": "object",
+      "properties": {
+        "vmwareNodepoolId": {
+          "description": "The target node pool id to be enrolled.",
+          "type": "string"
         }
       }
     },
@@ -2706,7 +2833,7 @@
       "description": "BareMetalAdminControlPlaneConfig specifies the control plane configuration.",
       "type": "object",
       "properties": {
-        "nodePoolConfig": {
+        "controlPlaneNodePoolConfig": {
           "description": "Configures the node pool running the control plane. If specified the corresponding NodePool will be created for the cluster's control plane. The NodePool will have the same name and namespace as the cluster.",
           "$ref": "BareMetalAdminControlPlaneNodePoolConfig"
         },
@@ -3210,7 +3337,7 @@
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have [Operation.error] value with a [google.rpc.Status.code] of 1, corresponding to `Code.CANCELLED`.",
           "readOnly": true,
           "type": "boolean"
         },
@@ -3218,6 +3345,25 @@
           "description": "Output only. API version used to start the operation.",
           "readOnly": true,
           "type": "string"
+        },
+        "type": {
+          "description": "Output only. Type of operation being executed.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "The resource is being created.",
+            "The resource is being deleted.",
+            "The resource is being updated.",
+            "The resource is being upgraded."
+          ],
+          "enum": [
+            "OPERATION_TYPE_UNSPECIFIED",
+            "CREATE",
+            "DELETE",
+            "UPDATE",
+            "UPGRADE"
+          ]
         }
       }
     }
@@ -3493,7 +3639,7 @@
                       "type": "boolean"
                     },
                     "ignoreErrors": {
-                      "description": "If set to true, the deletion of BareMetalUserCluster resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned user cluster in the admin cluster.",
+                      "description": "If set to true, the deletion of a [BareMetalUserCluster] resource will succeed even if errors occur during deletion. This parameter can be used when you want to delete GCP's cluster resource and the on-prem admin cluster that hosts your user cluster is disconnected \/ unreachable or deleted. WARNING: Using this parameter when your user cluster still exists may result in a deleted GCP user cluster but an existing on-prem user cluster.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -3966,7 +4112,7 @@
                           "type": "boolean"
                         },
                         "ignoreErrors": {
-                          "description": "If set to true, the deletion of BareMetalNodePool resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned node pool in the admin cluster.",
+                          "description": "If set to true, the deletion of a [BareMetalNodePool] resource will succeed even if errors occur during deletion. This parameter can be used when you want to delete GCP's node pool resource and you've already deleted the on-prem admin cluster that hosted your node pool. WARNING: Using this parameter when your user cluster still exists may result in a deleted GCP node pool but an existing on-prem node pool.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -4032,7 +4178,7 @@
                           "type": "string"
                         },
                         "showDeleted": {
-                          "description": "If true, shows deleted bare metal Clusters.",
+                          "description": "If true, shows deleted bare metal node pools.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -4403,7 +4549,7 @@
                       "type": "boolean"
                     },
                     "ignoreErrors": {
-                      "description": "If set to true, the deletion of VmwareUserCluster resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned user cluster in the admin cluster.",
+                      "description": "If set to true, the deletion of a [VmwareUserCluster] resource will succeed even if errors occur during deletion. This parameter can be used when you want to delete GCP's cluster resource and the on-prem admin cluster that hosts your user cluster is disconnected \/ unreachable or deleted. WARNING: Using this parameter when your user cluster still exists may result in a deleted GCP user cluster but an existing on-prem user cluster.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -4803,7 +4949,7 @@
                           "type": "boolean"
                         },
                         "ignoreErrors": {
-                          "description": "If set to true, the deletion of VmwareNodePool resource will succeed even if errors occur during deletion in admin cluster resource. Using this parameter may result in orphaned node pool in the admin cluster.",
+                          "description": "If set to true, the deletion of a [VmwareNodePool] resource will succeed even if errors occur during deletion. This parameter can be used when you want to delete GCP's node pool resource and you've already deleted the on-prem admin cluster that hosted your node pool. WARNING: Using this parameter when your user cluster still exists may result in a deleted GCP node pool but an existing on-prem node pool.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -4928,6 +5074,74 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates the parameters of a single VMware Node Pool."
+                    },
+                    "enroll": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.enroll",
+                      "path": "v1/{+parent}/vmwareNodePools:enroll",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools:enroll",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource where the node pool is enrolled in.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "EnrollVmwareNodePoolRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Enrolls a VMware node pool to GKE OnPrem API"
+                    },
+                    "unenroll": {
+                      "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.unenroll",
+                      "path": "v1/{+name}:unenroll",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareClusters/{vmwareClustersId}/vmwareNodePools/{vmwareNodePoolsId}:unenroll",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node pool to unenroll. Format: projects\/{project}\/locations\/{location}\/vmwareClusters\/{cluster}\/vmwareNodePools\/{nodepool}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareClusters\/[^\/]+\/vmwareNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "The current etag of the VMware Node Pool. If an etag is provided and does not match the current etag of node pool, deletion will be blocked and an ABORTED error will be returned.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "allowMissing": {
+                          "description": "If set to true, and the Vmware Node Pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "validateOnly": {
+                          "description": "If set, only validate the request, but do not actually unenroll the node pool.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Unenrolls a VMware node pool to GKE OnPrem API"
                     },
                     "setIamPolicy": {
                       "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.setIamPolicy",

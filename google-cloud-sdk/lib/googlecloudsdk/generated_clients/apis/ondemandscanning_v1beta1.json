@@ -288,6 +288,14 @@
           "items": {
             "$ref": "LanguagePackageDependency"
           }
+        },
+        "maintainer": {
+          "description": "The maintainer of the package.",
+          "$ref": "Maintainer"
+        },
+        "architecture": {
+          "description": "The architecture of the package.",
+          "type": "string"
         }
       }
     },
@@ -311,6 +319,18 @@
           "type": "string"
         },
         "version": {
+          "type": "string"
+        }
+      }
+    },
+    "Maintainer": {
+      "id": "Maintainer",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
           "type": "string"
         }
       }
