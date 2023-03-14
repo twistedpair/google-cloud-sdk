@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.netapp.constants import ACTIVEDIRECTORIES_COLLECTION
+from googlecloudsdk.api_lib.netapp.constants import KMSCONFIGS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import LOCATIONS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import SNAPSHOTS_COLLECTION
@@ -103,6 +104,11 @@ def GetActiveDirectoryAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       'active_directory', 'The instance of the {resource}.'
   )
+
+
+def GetKmsConfigAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'kms_config', 'The instance of the {resource}')
 
 
 ## Resource Specs ##
@@ -194,6 +200,15 @@ def GetActiveDirectoryResourceSpec():
       locationsId=GetLocationAttributeConfig(),
       activeDirectoriesId=GetActiveDirectoryAttributeConfig())
 
+
+def GetKmsConfigResourceSpec():
+  return concepts.ResourceSpec(
+      KMSCONFIGS_COLLECTION,
+      resource_name='kms_config',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      kmsConfigsId=GetKmsConfigAttributeConfig())
+
 ## Presentation Specs ##
 
 
@@ -242,6 +257,13 @@ def GetActiveDirectoryPresentationSpec(group_help):
       group_help,
       required=True)
 
+
+def GetKmsConfigPresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'kms_config',
+      GetKmsConfigResourceSpec(),
+      group_help,
+      required=True)
 
 ## Add args to arg parser ##
 

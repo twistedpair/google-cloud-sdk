@@ -22,7 +22,6 @@ import collections
 import enum
 import os
 
-from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.core.util import debug_output
 
 
@@ -263,8 +262,8 @@ class _UserRequestArgs:
       precondition_metageneration_match=None,
       predefined_acl_string=None,
       predefined_default_object_acl_string=None,
+      preserve_posix=None,
       resource_args=None,
-      system_posix_data=None,
   ):
     """Sets properties."""
     self.gzip_settings = gzip_settings
@@ -277,8 +276,8 @@ class _UserRequestArgs:
     self.predefined_default_object_acl_string = (
         predefined_default_object_acl_string
     )
+    self.preserve_posix = preserve_posix
     self.resource_args = resource_args
-    self.system_posix_data = system_posix_data
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -295,7 +294,6 @@ class _UserRequestArgs:
         and self.predefined_default_object_acl_string
         == other.predefined_default_object_acl_string
         and self.resource_args == other.resource_args
-        and self.system_posix_data == other.system_posix_data
     )
 
   def __repr__(self):
@@ -422,10 +420,6 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           temporary_hold=temporary_hold)
 
   gzip_settings = _get_gzip_settings_from_command_args(args)
-  if getattr(args, 'preserve_posix', None):
-    system_posix_data = posix_util.get_system_posix_data()
-  else:
-    system_posix_data = None
 
   return _UserRequestArgs(
       gzip_settings=gzip_settings,
@@ -439,8 +433,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       predefined_default_object_acl_string=getattr(
           args, 'predefined_default_object_acl', None
       ),
+      preserve_posix=getattr(args, 'preserve_posix', None),
       resource_args=resource_args,
-      system_posix_data=system_posix_data,
   )
 
 

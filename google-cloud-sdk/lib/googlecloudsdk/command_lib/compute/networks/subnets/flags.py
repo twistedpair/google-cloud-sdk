@@ -111,14 +111,20 @@ def SubnetworkResolver():
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})
 
 
-def AddUpdateArgs(parser, include_alpha_logging,
-                  include_reserved_internal_range, api_version):
+def AddUpdateArgs(
+    parser,
+    include_alpha_logging,
+    include_reserved_internal_range,
+    include_external_ipv6_prefix,
+    api_version,
+):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_reserved_internal_range: Include reserved internal range args.
+    include_external_ipv6_prefix: Inlcude user assigned external IPv6 prefix.
     api_version: The api version of the request.
   """
   messages = apis.GetMessagesModule('compute',
@@ -164,6 +170,15 @@ def AddUpdateArgs(parser, include_alpha_logging,
          * `RANGE_NAME` - Name of the secondary range.
          * `INTERNAL_RANGE_URL` - `URL of an InternalRange resource.`
          """)
+
+  if include_external_ipv6_prefix:
+    parser.add_argument(
+        '--external-ipv6-prefix',
+        help=("""
+        Set external IPv6 prefix to be allocated for this subnetwork.
+
+        For example, `--external-ipv6-prefix 2600:1901:0:0:0:0:0:0/64`
+        """))
 
   updated_field.add_argument(
       '--remove-secondary-ranges',

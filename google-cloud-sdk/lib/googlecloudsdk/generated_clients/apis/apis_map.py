@@ -2225,6 +2225,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'marketplacesolutions': {
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.marketplacesolutions.v1alpha1',
+                    client_classpath='marketplacesolutions_v1alpha1_client.MarketplacesolutionsV1alpha1',
+                    base_url='https://marketplacesolutions.googleapis.com/',
+                    messages_modulepath='marketplacesolutions_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'mediaasset': {
         'v1alpha':
             APIDef(

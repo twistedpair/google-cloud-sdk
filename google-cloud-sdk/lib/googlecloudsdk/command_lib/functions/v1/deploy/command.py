@@ -475,15 +475,18 @@ def Run(args, track=None):
     raise calliope_exceptions.RequiredArgumentException(
         'runtime', 'Flag `--runtime` is required for new functions.'
     )
-  if args.vpc_connector or args.clear_vpc_connector:
+
+  vpc_connector_ref = args.CONCEPTS.vpc_connector.Parse()
+
+  if vpc_connector_ref or args.clear_vpc_connector:
     function.vpcConnector = (
-        '' if args.clear_vpc_connector else args.vpc_connector
+        '' if args.clear_vpc_connector else vpc_connector_ref.RelativeName()
     )
     updated_fields.append('vpcConnector')
   if args.IsSpecified('egress_settings'):
     will_have_vpc_connector = (
         had_vpc_connector and not args.clear_vpc_connector
-    ) or args.vpc_connector
+    ) or vpc_connector_ref
     if not will_have_vpc_connector:
       raise calliope_exceptions.RequiredArgumentException(
           'vpc-connector',

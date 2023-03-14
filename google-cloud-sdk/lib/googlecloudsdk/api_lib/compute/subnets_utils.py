@@ -82,6 +82,7 @@ def MakeSubnetworkUpdateRequest(
     private_ipv6_google_access_type=None,
     stack_type=None,
     ipv6_access_type=None,
+    external_ipv6_prefix=None,
 ):
   """Make the appropriate update request for the args.
 
@@ -93,7 +94,7 @@ def MakeSubnetworkUpdateRequest(
     add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
       for use in IP aliasing.
     add_secondary_ranges_with_reserved_internal_range: List of secondary IP
-    ranges that are associated with InternalRange resources.
+      ranges that are associated with InternalRange resources.
     remove_secondary_ranges: List of secondary ranges to remove from the
       subnetwork.
     enable_flow_logs: Enable/disable flow logging for this subnet.
@@ -110,6 +111,8 @@ def MakeSubnetworkUpdateRequest(
       VMs in this subnet.
     stack_type: The stack type for this subnet.
     ipv6_access_type: The IPv6 access type for this subnet.
+    external_ipv6_prefix: The IPv6 external prefix to be assigned to this
+      subnet.
 
   Returns:
     response, result of sending the update request for the subnetwork
@@ -257,6 +260,8 @@ def MakeSubnetworkUpdateRequest(
       subnetwork.ipv6AccessType = (
           client.messages.Subnetwork.Ipv6AccessTypeValueValuesEnum(
               ipv6_access_type))
+    if external_ipv6_prefix is not None:
+      subnetwork.externalIpv6Prefix = external_ipv6_prefix
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
 

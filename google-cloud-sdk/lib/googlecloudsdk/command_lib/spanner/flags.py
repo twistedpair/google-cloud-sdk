@@ -162,6 +162,16 @@ def DatabaseDialect(help_text):
   )
 
 
+def IncludeProtoDescriptors(help_text):
+  return base.Argument(
+      '--include-proto-descriptors',
+      action='store_true',
+      help=help_text,
+      default=False,
+      hidden=True,
+  )
+
+
 def GetDDLsFromArgs(args):
   if args.ddl_file:
     return [files.ReadFileContents(args.ddl_file)]

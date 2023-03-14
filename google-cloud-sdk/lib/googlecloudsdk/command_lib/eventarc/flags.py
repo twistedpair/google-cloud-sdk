@@ -700,5 +700,8 @@ def AddClearCryptoNameArg(parser, required=False, hidden=False):
       hidden=hidden,
       default=False,
       action='store_true',
-      help='Remove the previously configured crypto key. The channel will'
-      ' continue to be encrypted using Google-managed keys.')
+      help=(
+          'Remove the previously configured crypto key. The channel will'
+          ' continue to be encrypted using Google-managed keys.'
+      ),
+  )

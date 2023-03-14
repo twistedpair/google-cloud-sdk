@@ -5,6 +5,102 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 422.0.0 (2023-03-14)
+
+### Breaking Changes
+
+*   **(Cloud Pub/Sub)** Fixed output format of `gcloud schemas list` and `gcloud schemas list-revisions`
+    to remove the DEFINITION column if `--view` is not FULL.
+
+
+### Google Cloud CLI
+
+* Added `gcloud auth enterprise-certificate-config` to create
+  enterprise-certificate configurations.
+
+### Anthos Multi-Cloud
+
+*   Added `--clear-client` flag to `gcloud container azure clusters update` to
+    clear the Azure client. This flag is required when updating to use Azure
+    workload identity federation from Azure client to manage Azure resources.
+
+### App Engine
+
+* Updated the  Python App Engine devappserver to support a new flag
+ `--python_virtualenv_path`.
+  It is an optional directory that will be used to setup a Python 3 virtual env
+  for the local devappserver execution environment for Python 3 applications.
+  If the path does not exist it will be created and it will not be cleanup at
+  the end of the devappserver execution, allowing for caching between
+  invocations. If not defined, a temporary directory will be used and cleaned up
+  at the end of the execution.
+
+### Artifact Registry
+
+* `gcloud beta artifacts settings enable-upgrade-redirection` command no longer requires creating missing repos.
+
+### Bare Metal Solution
+
+* Promoted `gcloud bms instances enable-serial-console` to GA.
+* Promoted `gcloud bms instances disable-serial-console` to GA.
+
+### BigQuery
+
+* Updated the bundled google auth libraries.
+* Updated bundled libraries to use charset_normalizer with the request library.
+
+### Cloud Datastream
+
+* Added the `max_concurrent_backfill_tasks ` support to `--mysql-source-config`, `--oracle-source-config`, `--postgresql-source-config` flags in `gcloud datastream streams`.
+
+### Cloud Functions
+
+*  Preview of the CMEK support for Cloud Functions, 2nd Gen. In particular,
+   promoted `--docker-repository`, `--kms-key`, `--clear-docker-repository` and
+   `--clear-kms-key` flags of `gcloud functions deploy --gen2` to beta.
+
+### Cloud Run
+
+* Removed `--condition` flag from `gcloud run {services,jobs} {add,remove}-iam-policy-binding`.
+
+### Cloud Workflows
+
+* Added `--revision-id` flag to `gcloud workflows describe` to allow retrieving
+  the source code of a workflow at a specific revision.
+
+### Cloud Workstations
+
+* Added `gcloud beta workstations configs update` which updates a specified
+* Added `gcloud beta workstations ssh` which SSH's into a specified workstation.
+workstation configuration.
+
+### Compute Engine
+
+* Added `--plan` to `gcloud compute commitments update` to support commitment term upgrade.
+* Promoted `gcloud compute security-policies rules add-preconfig-waf-exclusion|remove-preconfig-waf-exclusion` to GA.
+* Promoted `--queue-count` flag in `--network-interface` of `gcloud compute instances create` to GA.
+* Promoted `--internal-ipv6-address` flag of `gcloud compute instances create` to GA.
+* Promoted `--internal-ipv6-prefix-length` flag of `gcloud compute instances create` to GA.
+* Added new `ADVANCED_PREVIEW` enum option to `--network-ddos-protection` flag of `gcloud compute security-policies update` in alpha and beta.
+
+### GKE Hub
+
+*   Changed `gcloud container fleet memberships unregister` command to assume
+membership region based on gke cluster region by default.
+
+### Network Connectivity
+
+*   Fixed issue where `sort-by` arguments in list spoke command produced type
+    validation errors.
+
+### Recaptcha
+
+* Support creating express enabled site keys using `recaptcha keys create --waf-feature=express`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 421.0.0 (2023-03-07)
 
 ### Artifact Registry

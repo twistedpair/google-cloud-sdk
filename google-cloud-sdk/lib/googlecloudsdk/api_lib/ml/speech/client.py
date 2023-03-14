@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import contextlib
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -54,15 +55,18 @@ class SpeechV2Client(object):
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(_API_NAME, _API_VERSION)
 
-  def _RecognizerServiceForLocation(self, location):
+  def _GetClientForLocation(self, location):
     with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
-      client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-    return client.projects_locations_recognizers
+      return apis.GetClientInstance(_API_NAME, _API_VERSION)
+
+  def _RecognizerServiceForLocation(self, location):
+    return self._GetClientForLocation(location).projects_locations_recognizers
 
   def _OperationsServiceForLocation(self, location):
-    with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
-      client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-    return client.projects_locations_operations
+    return self._GetClientForLocation(location).projects_locations_operations
+
+  def _LocationsServiceForLocation(self, location):
+    return self._GetClientForLocation(location).projects_locations
 
   def CreateRecognizer(self,
                        resource,
@@ -250,3 +254,28 @@ class SpeechV2Client(object):
         message=message,
         pre_start_sleep_ms=100,
         max_wait_ms=20000)
+
+  def GetLocation(self, location_resource):
+    request = self._messages.SpeechProjectsLocationsGetRequest(
+        name=location_resource.RelativeName()
+    )
+    return self._LocationsServiceForLocation(
+        location=location_resource.Name()
+    ).Get(request)
+
+  def ListLocations(self, filter_str=None, limit=None, page_size=None):
+    request = self._messages.SpeechProjectsLocationsListRequest(
+        name=properties.VALUES.core.project.Get()
+    )
+    if filter_str:
+      request.filter = filter_str
+    if page_size:
+      request.page_size = page_size
+    return list_pager.YieldFromList(
+        self._LocationsServiceForLocation('global'),
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='locations',
+    )

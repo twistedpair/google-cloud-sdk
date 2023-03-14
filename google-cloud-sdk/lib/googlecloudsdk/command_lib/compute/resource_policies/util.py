@@ -236,7 +236,10 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
         collocation=collocation,
         tpuTopology=args.tpu_topology,
     )
-  elif track == base.ReleaseTrack.ALPHA and args.IsSpecified('max_distance'):
+  elif track in (
+      base.ReleaseTrack.ALPHA,
+      base.ReleaseTrack.BETA,
+  ) and args.IsSpecified('max_distance'):
     placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
         vmCount=args.vm_count,
         collocation=collocation,

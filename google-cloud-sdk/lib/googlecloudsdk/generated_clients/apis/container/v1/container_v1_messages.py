@@ -203,15 +203,18 @@ class AutopilotCompatibilityIssue(_messages.Message):
 
     Values:
       UNSPECIFIED: Default value, should not be used.
-      INCOMPATIBILITY: Indicates that the issue is referring to an
-        incompatibility between the cluster and Autopilot mode.
-      WARNING: Indicates the issue is not an incompatibility, but depending on
-        the workloads business logic, there is a potential that they won't
-        work on Autopilot.
+      INCOMPATIBILITY: Indicates that the issue is a known incompatibility
+        between the cluster and Autopilot mode.
+      ADDITIONAL_CONFIG_REQUIRED: Indicates the issue is an incompatibility if
+        customers take no further action to resolve.
+      PASSED_WITH_OPTIONAL_CONFIG: Indicates the issue is not an
+        incompatibility, but depending on the workloads business logic, there
+        is a potential that they won't work on Autopilot.
     """
     UNSPECIFIED = 0
     INCOMPATIBILITY = 1
-    WARNING = 2
+    ADDITIONAL_CONFIG_REQUIRED = 2
+    PASSED_WITH_OPTIONAL_CONFIG = 3
 
   description = _messages.StringField(1)
   documentationUrl = _messages.StringField(2)
@@ -5592,8 +5595,9 @@ class UsableSubnetworkSecondaryRange(_messages.Message):
       UNKNOWN: UNKNOWN is the zero value of the Status enum. It's not a valid
         status.
       UNUSED: UNUSED denotes that this range is unclaimed by any cluster.
-      IN_USE_SERVICE: IN_USE_SERVICE denotes that this range is claimed by a
-        cluster for services. It cannot be used for other clusters.
+      IN_USE_SERVICE: IN_USE_SERVICE denotes that this range is claimed by
+        cluster(s) for services. User-managed services range can be shared
+        between clusters within the same subnetwork.
       IN_USE_SHAREABLE_POD: IN_USE_SHAREABLE_POD denotes this range was
         created by the network admin and is currently claimed by a cluster for
         pods. It can only be used by other clusters as a pod range.

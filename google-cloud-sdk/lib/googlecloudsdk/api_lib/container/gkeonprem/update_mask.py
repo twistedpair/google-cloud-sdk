@@ -115,10 +115,14 @@ BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'uri': 'proxy.uri',
     'no_proxy': 'proxy.no_proxy',
     'enable_application_logs': 'cluster_operations.enable_application_logs',
-    'maintenance_address_cidr_blocks':
-        'maintenance_config.maintenance_address_cidr_blocks',
+    'maintenance_address_cidr_blocks': (
+        'maintenance_config.maintenance_address_cidr_blocks'
+    ),
     'max_pods_per_node': 'node_config.max_pods_per_node',
     'login_user': 'node_access_config.login_user',
+    'island_mode_service_address_cidr_blocks': (
+        'network_config.island_mode_cidr.service_address_cidr_blocks'
+    ),
 }
 
 

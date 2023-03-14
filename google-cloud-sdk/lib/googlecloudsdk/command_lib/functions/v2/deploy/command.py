@@ -986,6 +986,7 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
   """
 
   egress_settings = None
+  vpc_connector = args.CONCEPTS.vpc_connector.Parse()
   if args.egress_settings:
     egress_settings = arg_utils.ChoiceEnumMapper(
         arg_name='egress_settings',
@@ -1002,10 +1003,10 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
             'service_config.vpc_connector_egress_settings',
         ]),
     )
-  elif args.vpc_connector:
+  elif vpc_connector:
     if args.egress_settings:
       return (
-          args.vpc_connector,
+          vpc_connector.RelativeName(),
           egress_settings,
           frozenset([
               'service_config.vpc_connector',
@@ -1014,7 +1015,7 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
       )
     else:
       return (
-          args.vpc_connector,
+          vpc_connector.RelativeName(),
           None,
           frozenset(['service_config.vpc_connector']),
       )
@@ -1046,7 +1047,7 @@ def _ValidateV1OnlyFlags(args, release_track):
   # TODO(b/242182323): Special handling of transitive flags that are in the
   # process of being supported across tracks. Remove once they reach the GA.
   if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-    if release_track != calliope_base.ReleaseTrack.ALPHA:
+    if release_track == calliope_base.ReleaseTrack.GA:
       flag_name = (
           '--kms-key' if args.IsSpecified('kms_key') else '--clear-kms-key'
       )
@@ -1054,7 +1055,7 @@ def _ValidateV1OnlyFlags(args, release_track):
   if args.IsSpecified('docker_repository') or args.IsSpecified(
       'clear_docker_repository'
   ):
-    if release_track != calliope_base.ReleaseTrack.ALPHA:
+    if release_track == calliope_base.ReleaseTrack.GA:
       flag_name = (
           '--docker-repository'
           if args.IsSpecified('docker_repository')
@@ -1110,7 +1111,7 @@ def _SetCmekFields(
     updated_fields_set: frozenset[str], set of update mask fields.
   """
   updated_fields = set()
-  if release_track != calliope_base.ReleaseTrack.ALPHA:
+  if release_track == calliope_base.ReleaseTrack.GA:
     return updated_fields
   function.kmsKeyName = (
       existing_function.kmsKeyName if existing_function else None
@@ -1148,7 +1149,7 @@ def _SetDockerRepositoryConfig(
   """
 
   updated_fields = set()
-  if release_track != calliope_base.ReleaseTrack.ALPHA:
+  if release_track == calliope_base.ReleaseTrack.GA:
     return updated_fields
   function.buildConfig.dockerRepository = (
       existing_function.buildConfig.dockerRepository

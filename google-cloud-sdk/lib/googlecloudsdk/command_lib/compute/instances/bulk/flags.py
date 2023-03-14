@@ -239,7 +239,9 @@ def AddBulkCreateArgs(
     )
 
 
-def AddBulkCreateNetworkingArgs(parser, support_no_address=False):
+def AddBulkCreateNetworkingArgs(
+    parser, support_no_address=False, support_network_queue_count=False
+):
   """Adds Networking Args for Bulk Create Command."""
 
   multiple_network_interface_cards_spec = {
@@ -287,6 +289,16 @@ def AddBulkCreateNetworkingArgs(parser, support_no_address=False):
       If not specified instances will get ephemeral IPs.
       """
 
+  if support_network_queue_count:
+    multiple_network_interface_cards_spec['queue-count'] = int
+    network_interface_help += """
+      *queue-count*::: Specifies the networking queue count for this interface.
+      Both Rx and Tx queues will be set to this number. If it's not
+      specified, a default queue count will be assigned. For Virtio-net,
+      each interface will get min(floor(#vCPU / #vNIC), 32) queues. For gVNIC,
+      each interface will get min(floor(#vCPU / #vNIC / 2), 16) qeueus.
+    """
+
   parser.add_argument(
       '--network-interface',
       type=arg_parsers.ArgDict(
@@ -317,6 +329,7 @@ def AddCommonBulkInsertArgs(
     support_provisioned_throughput=False,
     support_no_address_in_networking=False,
     support_max_count_per_zone=False,
+    support_network_queue_count=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -356,7 +369,11 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddNoAddressArg(parser)
   instances_flags.AddNetworkArgs(parser)
   instances_flags.AddNetworkTierArgs(parser, instance=True)
-  AddBulkCreateNetworkingArgs(parser, support_no_address_in_networking)
+  AddBulkCreateNetworkingArgs(
+      parser,
+      support_no_address_in_networking,
+      support_network_queue_count=support_network_queue_count,
+  )
 
   instances_flags.AddImageArgs(parser, enable_snapshots=True)
   instances_flags.AddShieldedInstanceConfigArgs(parser)

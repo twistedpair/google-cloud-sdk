@@ -73,28 +73,32 @@ def _should_perform_sliced_download(source_resource, destination_resource):
 class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
   """Represents a command operation triggering a file download."""
 
-  def __init__(self,
-               source_resource,
-               destination_resource,
-               delete_source=False,
-               do_not_decompress=False,
-               print_created_message=False,
-               user_request_args=None):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      delete_source=False,
+      do_not_decompress=False,
+      print_created_message=False,
+      system_posix_data=None,
+      user_request_args=None,
+  ):
     """Initializes task.
 
     Args:
-      source_resource (ObjectResource): Must contain
-        the full path of object to download, including bucket. Directories
-        will not be accepted. Does not need to contain metadata.
+      source_resource (ObjectResource): Must contain the full path of object to
+        download, including bucket. Directories will not be accepted. Does not
+        need to contain metadata.
       destination_resource (FileObjectResource|UnknownResource): Must contain
         local filesystem path to destination object. Does not need to contain
         metadata.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      do_not_decompress (bool): Prevents automatically decompressing
-        downloaded gzips.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
+      do_not_decompress (bool): Prevents automatically decompressing downloaded
+        gzips.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      system_posix_data (SystemPosixData): System-wide POSIX info.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FileDownloadTask, self).__init__(
@@ -104,6 +108,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._print_created_message = print_created_message
+    self._system_posix_data = system_posix_data
 
     self._temporary_destination_resource = (
         self._get_temporary_destination_resource())
@@ -156,7 +161,9 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
             self._destination_resource,
             delete_source=self._delete_source,
             do_not_decompress=self._do_not_decompress,
-            user_request_args=self._user_request_args)
+            system_posix_data=self._system_posix_data,
+            user_request_args=self._user_request_args,
+        )
     ]
 
     return (download_component_task_list, finalize_sliced_download_task_list)
@@ -170,8 +177,11 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
 
   def execute(self, task_status_queue=None):
     """Creates appropriate download tasks."""
-    posix_util.raise_if_invalid_file_permissions(
-        self._user_request_args, self._source_resource
+    posix_util.run_if_preserving_posix(
+        self._user_request_args,
+        posix_util.raise_if_invalid_file_permissions,
+        self._system_posix_data,
+        self._source_resource,
     )
 
     destination_url = self._destination_resource.storage_url
@@ -257,8 +267,10 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
     # were left behind.
     tracker_file_util.delete_download_tracker_files(temporary_file_url)
 
-    posix_util.set_posix_attributes_on_file_if_valid(
+    posix_util.run_if_preserving_posix(
         self._user_request_args,
+        posix_util.set_posix_attributes_on_file_if_valid,
+        self._system_posix_data,
         self._source_resource,
         self._destination_resource,
     )

@@ -437,29 +437,36 @@ class _RequestConfig(object):
     predefined_acl_string (str|None): ACL to set on resource.
     predefined_default_object_acl_string (str|None): Default ACL to set on
       resources.
+    preserve_posix (bool|None): Whether to apply source POSIX metadata to
+      destination.
     resource_args (_BucketConfig|_ObjectConfig|None): Holds settings for a cloud
       resource.
-    system_posix_data (posix_util.SystemPosixData|None): System-wide POSIX info.
   """
 
-  def __init__(self,
-               predefined_acl_string=None,
-               predefined_default_object_acl_string=None,
-               resource_args=None,
-               system_posix_data=None):
+  def __init__(
+      self,
+      predefined_acl_string=None,
+      predefined_default_object_acl_string=None,
+      preserve_posix=None,
+      resource_args=None,
+  ):
     self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_object_acl_string = predefined_default_object_acl_string
+    self.predefined_default_object_acl_string = (
+        predefined_default_object_acl_string
+    )
+    self.preserve_posix = preserve_posix
     self.resource_args = resource_args
-    self.system_posix_data = system_posix_data
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_object_acl_string
-            == other.predefined_default_object_acl_string and
-            self.resource_args == other.resource_args and
-            self.system_posix_data == other.system_posix_data)
+    return (
+        self.predefined_acl_string == other.predefined_acl_string
+        and self.predefined_default_object_acl_string
+        == other.predefined_default_object_acl_string
+        and self.preserve_posix == other.preserve_posix
+        and self.resource_args == other.resource_args
+    )
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -690,14 +697,16 @@ def _get_request_config_resource_args(url,
   return new_resource_args
 
 
-def get_request_config(url,
-                       content_type=None,
-                       decryption_key_hash_sha256=None,
-                       encryption_key=None,
-                       error_on_missing_key=True,
-                       md5_hash=None,
-                       size=None,
-                       user_request_args=None):
+def get_request_config(
+    url,
+    content_type=None,
+    decryption_key_hash_sha256=None,
+    encryption_key=None,
+    error_on_missing_key=True,
+    md5_hash=None,
+    size=None,
+    user_request_args=None,
+):
   """Generates API-specific RequestConfig. See output classes for arg info."""
   resource_args = _get_request_config_resource_args(
       url, content_type, decryption_key_hash_sha256, encryption_key,
@@ -725,7 +734,8 @@ def get_request_config(url,
                                                  'predefined_acl_string', None)
   request_config.predefined_default_object_acl_string = getattr(
       user_request_args, 'predefined_default_object_acl_string', None)
-  request_config.system_posix_data = getattr(user_request_args,
-                                             'system_posix_data', None)
+  request_config.preserve_posix = getattr(
+      user_request_args, 'preserve_posix', None
+  )
 
   return request_config

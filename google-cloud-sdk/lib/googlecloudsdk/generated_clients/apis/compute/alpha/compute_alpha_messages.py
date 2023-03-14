@@ -1720,6 +1720,10 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     values are: `PERIODIC`.
 
     Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
       PERIODIC: VMs receive infrastructure and hypervisor updates on a
         periodic basis, minimizing the number of maintenance operations (live
         migrations or terminations) on an individual VM. This may mean a VM
@@ -1733,8 +1737,9 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
         AS_NEEDED. Security updates will still be applied as soon as they are
         available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
     """
-    PERIODIC = 0
-    RECURRENT = 1
+    AS_NEEDED = 0
+    PERIODIC = 1
+    RECURRENT = 2
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
@@ -19625,6 +19630,34 @@ class ComputeNodeGroupsPatchRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeNodeGroupsPerformMaintenanceRequest(_messages.Message):
+  r"""A ComputeNodeGroupsPerformMaintenanceRequest object.
+
+  Fields:
+    nodeGroup: Name of the node group scoping this request.
+    nodeGroupsPerformMaintenanceRequest: A NodeGroupsPerformMaintenanceRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsPerformMaintenanceRequest = _messages.MessageField('NodeGroupsPerformMaintenanceRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeNodeGroupsSetIamPolicyRequest(_messages.Message):
   r"""A ComputeNodeGroupsSetIamPolicyRequest object.
 
@@ -34304,6 +34337,8 @@ class Disk(_messages.Message):
       provide an encryption key when creating the disk, then the disk is
       encrypted using an automatically generated key and you don't need to
       provide a key to use the disk later.
+    enableConfidentialCompute: Whether this disk is using confidential compute
+      mode. see go/confidential-mode-in-arcus for details.
     eraseWindowsVssSignature: Specifies whether the disk restored from a
       source snapshot should erase Windows specific VSS signature.
     guestOsFeatures: A list of features to enable on the guest operating
@@ -34602,53 +34637,54 @@ class Disk(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   description = _messages.StringField(5)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
-  eraseWindowsVssSignature = _messages.BooleanField(7)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
-  kind = _messages.StringField(11, default='compute#disk')
-  labelFingerprint = _messages.BytesField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  lastAttachTimestamp = _messages.StringField(14)
-  lastDetachTimestamp = _messages.StringField(15)
-  licenseCodes = _messages.IntegerField(16, repeated=True)
-  licenses = _messages.StringField(17, repeated=True)
-  locationHint = _messages.StringField(18)
-  locked = _messages.BooleanField(19)
-  multiWriter = _messages.BooleanField(20)
-  name = _messages.StringField(21)
-  options = _messages.StringField(22)
-  params = _messages.MessageField('DiskParams', 23)
-  physicalBlockSizeBytes = _messages.IntegerField(24)
-  provisionedIops = _messages.IntegerField(25)
-  provisionedThroughput = _messages.IntegerField(26)
-  region = _messages.StringField(27)
-  replicaZones = _messages.StringField(28, repeated=True)
-  resourcePolicies = _messages.StringField(29, repeated=True)
-  resourceStatus = _messages.MessageField('DiskResourceStatus', 30)
-  satisfiesPzs = _messages.BooleanField(31)
-  selfLink = _messages.StringField(32)
-  selfLinkWithId = _messages.StringField(33)
-  sizeGb = _messages.IntegerField(34)
-  sourceConsistencyGroupPolicy = _messages.StringField(35)
-  sourceConsistencyGroupPolicyId = _messages.StringField(36)
-  sourceDisk = _messages.StringField(37)
-  sourceDiskId = _messages.StringField(38)
-  sourceImage = _messages.StringField(39)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
-  sourceImageId = _messages.StringField(41)
-  sourceInstantSnapshot = _messages.StringField(42)
-  sourceInstantSnapshotId = _messages.StringField(43)
-  sourceSnapshot = _messages.StringField(44)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 45)
-  sourceSnapshotId = _messages.StringField(46)
-  sourceStorageObject = _messages.StringField(47)
-  status = _messages.EnumField('StatusValueValuesEnum', 48)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 49)
-  type = _messages.StringField(50)
-  userLicenses = _messages.StringField(51, repeated=True)
-  users = _messages.StringField(52, repeated=True)
-  zone = _messages.StringField(53)
+  enableConfidentialCompute = _messages.BooleanField(7)
+  eraseWindowsVssSignature = _messages.BooleanField(8)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 11)
+  kind = _messages.StringField(12, default='compute#disk')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  lastAttachTimestamp = _messages.StringField(15)
+  lastDetachTimestamp = _messages.StringField(16)
+  licenseCodes = _messages.IntegerField(17, repeated=True)
+  licenses = _messages.StringField(18, repeated=True)
+  locationHint = _messages.StringField(19)
+  locked = _messages.BooleanField(20)
+  multiWriter = _messages.BooleanField(21)
+  name = _messages.StringField(22)
+  options = _messages.StringField(23)
+  params = _messages.MessageField('DiskParams', 24)
+  physicalBlockSizeBytes = _messages.IntegerField(25)
+  provisionedIops = _messages.IntegerField(26)
+  provisionedThroughput = _messages.IntegerField(27)
+  region = _messages.StringField(28)
+  replicaZones = _messages.StringField(29, repeated=True)
+  resourcePolicies = _messages.StringField(30, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 31)
+  satisfiesPzs = _messages.BooleanField(32)
+  selfLink = _messages.StringField(33)
+  selfLinkWithId = _messages.StringField(34)
+  sizeGb = _messages.IntegerField(35)
+  sourceConsistencyGroupPolicy = _messages.StringField(36)
+  sourceConsistencyGroupPolicyId = _messages.StringField(37)
+  sourceDisk = _messages.StringField(38)
+  sourceDiskId = _messages.StringField(39)
+  sourceImage = _messages.StringField(40)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 41)
+  sourceImageId = _messages.StringField(42)
+  sourceInstantSnapshot = _messages.StringField(43)
+  sourceInstantSnapshotId = _messages.StringField(44)
+  sourceSnapshot = _messages.StringField(45)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 46)
+  sourceSnapshotId = _messages.StringField(47)
+  sourceStorageObject = _messages.StringField(48)
+  status = _messages.EnumField('StatusValueValuesEnum', 49)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 50)
+  type = _messages.StringField(51)
+  userLicenses = _messages.StringField(52, repeated=True)
+  users = _messages.StringField(53, repeated=True)
+  zone = _messages.StringField(54)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -41483,6 +41519,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   Enums:
     HealthStateValueValuesEnum: Health state of the network endpoint
       determined based on the health checks configured.
+    Ipv6HealthStateValueValuesEnum: Health state of the ipv6 network endpoint
+      determined based on the health checks configured.
 
   Fields:
     backendService: URL of the backend service associated with the health
@@ -41495,6 +41533,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
       health state of the network endpoint.
     healthState: Health state of the network endpoint determined based on the
       health checks configured.
+    ipv6HealthState: Health state of the ipv6 network endpoint determined
+      based on the health checks configured.
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
@@ -41502,10 +41542,25 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
     checks configured.
 
     Values:
-      DRAINING: <no description>
-      HEALTHY: <no description>
-      UNHEALTHY: <no description>
-      UNKNOWN: <no description>
+      DRAINING: Endpoint is being drained.
+      HEALTHY: Endpoint is healthy.
+      UNHEALTHY: Endpoint is unhealthy.
+      UNKNOWN: Health status of the endpoint is unknown.
+    """
+    DRAINING = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    UNKNOWN = 3
+
+  class Ipv6HealthStateValueValuesEnum(_messages.Enum):
+    r"""Health state of the ipv6 network endpoint determined based on the
+    health checks configured.
+
+    Values:
+      DRAINING: Endpoint is being drained.
+      HEALTHY: Endpoint is healthy.
+      UNHEALTHY: Endpoint is unhealthy.
+      UNKNOWN: Health status of the endpoint is unknown.
     """
     DRAINING = 0
     HEALTHY = 1
@@ -41517,6 +41572,7 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   healthCheck = _messages.MessageField('HealthCheckReference', 3)
   healthCheckService = _messages.MessageField('HealthCheckServiceReference', 4)
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
+  ipv6HealthState = _messages.EnumField('Ipv6HealthStateValueValuesEnum', 6)
 
 
 class Help(_messages.Message):
@@ -49031,6 +49087,7 @@ class Interconnect(_messages.Message):
   For more information, read the Dedicated Interconnect Overview.
 
   Enums:
+    AvailableFeaturesValueListEntryValuesEnum:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
       of the following values: - PARTNER: A partner-managed interconnection
       shared between customers though a partner. - DEDICATED: A dedicated
@@ -49050,6 +49107,7 @@ class Interconnect(_messages.Message):
       OS_UNDER_MAINTENANCE: An Interconnect that is undergoing internal
       maintenance. No attachments may be provisioned or updated on this
       Interconnect.
+    RequestedFeaturesValueListEntryValuesEnum:
     StateValueValuesEnum: [Output Only] The current state of Interconnect
       functionality, which can take one of the following values: - ACTIVE: The
       Interconnect is valid, turned up and ready to use. Attachments may be
@@ -49069,6 +49127,11 @@ class Interconnect(_messages.Message):
       to true, the Interconnect is functional and can carry traffic. When set
       to false, no packets can be carried over the interconnect and no BGP
       routes are exchanged over it. By default, the status is set to true.
+    availableFeatures: [Output only] List of features available for this
+      interconnect, which can take one of the following values: - MACSEC If
+      present then the interconnect was created on MACsec capable hardware
+      ports. If not present then the interconnect is provisioned on non-MACsec
+      capable ports and MACsec enablement will fail.
     circuitInfos: [Output Only] A list of CircuitInfo objects, that describe
       the individual circuits in this LAG.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -49147,6 +49210,14 @@ class Interconnect(_messages.Message):
     remoteLocation: Indicates that this is a Cross-Cloud Interconnect. This
       field specifies the location outside of Google's network that the
       interconnect is connected to.
+    requestedFeatures: Optional. List of features requested for this
+      interconnect, which can take one of the following values: - MACSEC If
+      specified then the interconnect will be created on MACsec capable
+      hardware ports. If not specified, the default value is false, which will
+      allocate non-MACsec capable ports first if available. This parameter can
+      only be provided during interconnect INSERT and cannot be changed using
+      interconnect PATCH. Please review Interconnect Pricing for implications
+      on enabling this flag.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     satisfiesPzs: [Output Only] Reserved for future use.
@@ -49161,6 +49232,14 @@ class Interconnect(_messages.Message):
       UNDER_MAINTENANCE: The Interconnect is undergoing internal maintenance.
       No attachments may be provisioned or updated on this Interconnect.
   """
+
+  class AvailableFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
 
   class InterconnectTypeValueValuesEnum(_messages.Enum):
     r"""Type of interconnect, which can take one of the following values: -
@@ -49214,6 +49293,14 @@ class Interconnect(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class RequestedFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""RequestedFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current state of Interconnect functionality, which
     can take one of the following values: - ACTIVE: The Interconnect is valid,
@@ -49259,34 +49346,36 @@ class Interconnect(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adminEnabled = _messages.BooleanField(1)
-  circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  customerName = _messages.StringField(4)
-  description = _messages.StringField(5)
-  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 6, repeated=True)
-  googleIpAddress = _messages.StringField(7)
-  googleReferenceId = _messages.StringField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  interconnectAttachments = _messages.StringField(10, repeated=True)
-  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
-  kind = _messages.StringField(12, default='compute#interconnect')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
-  location = _messages.StringField(16)
-  macsec = _messages.MessageField('InterconnectMacsec', 17)
-  macsecEnabled = _messages.BooleanField(18)
-  name = _messages.StringField(19)
-  nocContactEmail = _messages.StringField(20)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 21)
-  peerIpAddress = _messages.StringField(22)
-  provisionedLinkCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  remoteLocation = _messages.StringField(24)
-  requestedLinkCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(26)
-  selfLink = _messages.StringField(27)
-  selfLinkWithId = _messages.StringField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
+  availableFeatures = _messages.EnumField('AvailableFeaturesValueListEntryValuesEnum', 2, repeated=True)
+  circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 3, repeated=True)
+  creationTimestamp = _messages.StringField(4)
+  customerName = _messages.StringField(5)
+  description = _messages.StringField(6)
+  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 7, repeated=True)
+  googleIpAddress = _messages.StringField(8)
+  googleReferenceId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interconnectAttachments = _messages.StringField(11, repeated=True)
+  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 12)
+  kind = _messages.StringField(13, default='compute#interconnect')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 16)
+  location = _messages.StringField(17)
+  macsec = _messages.MessageField('InterconnectMacsec', 18)
+  macsecEnabled = _messages.BooleanField(19)
+  name = _messages.StringField(20)
+  nocContactEmail = _messages.StringField(21)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 22)
+  peerIpAddress = _messages.StringField(23)
+  provisionedLinkCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  remoteLocation = _messages.StringField(25)
+  requestedFeatures = _messages.EnumField('RequestedFeaturesValueListEntryValuesEnum', 26, repeated=True)
+  requestedLinkCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(28)
+  selfLink = _messages.StringField(29)
+  selfLinkWithId = _messages.StringField(30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -50793,6 +50882,8 @@ class InterconnectLocation(_messages.Message):
   VLAN Attachments.
 
   Enums:
+    AvailableFeaturesValueListEntryValuesEnum:
+    AvailableLinkTypesValueListEntryValuesEnum:
     ContinentValueValuesEnum: [Output Only] Continent for this location, which
       can take one of the following values: - AFRICA - ASIA_PAC - EUROPE -
       NORTH_AMERICA - SOUTH_AMERICA
@@ -50809,6 +50900,12 @@ class InterconnectLocation(_messages.Message):
       InterconnectLocation. Within a metropolitan area (metro), maintenance
       will not be simultaneously scheduled in more than one availability zone.
       Example: "zone1" or "zone2".
+    availableFeatures: [Output only] List of features available at this
+      interconnect location, which can take one of the following values: -
+      MACSEC
+    availableLinkTypes: [Output only] List of link types available at this
+      interconnect location, which can take one of the following values: -
+      LINK_TYPE_ETHERNET_10G_LR - LINK_TYPE_ETHERNET_100G_LR
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".
@@ -50842,6 +50939,25 @@ class InterconnectLocation(_messages.Message):
       Interconnects.
     supportsPzs: [Output Only] Reserved for future use.
   """
+
+  class AvailableFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
+
+  class AvailableLinkTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableLinkTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      LINK_TYPE_ETHERNET_100G_LR: 100G Ethernet, LR Optics.
+      LINK_TYPE_ETHERNET_10G_LR: 10G Ethernet, LR Optics. [(rate_bps) =
+        10000000000];
+    """
+    LINK_TYPE_ETHERNET_100G_LR = 0
+    LINK_TYPE_ETHERNET_10G_LR = 1
 
   class ContinentValueValuesEnum(_messages.Enum):
     r"""[Output Only] Continent for this location, which can take one of the
@@ -50888,21 +51004,23 @@ class InterconnectLocation(_messages.Message):
 
   address = _messages.StringField(1)
   availabilityZone = _messages.StringField(2)
-  city = _messages.StringField(3)
-  continent = _messages.EnumField('ContinentValueValuesEnum', 4)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  facilityProvider = _messages.StringField(7)
-  facilityProviderFacilityId = _messages.StringField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#interconnectLocation')
-  name = _messages.StringField(11)
-  peeringdbFacilityId = _messages.StringField(12)
-  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  selfLinkWithId = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  supportsPzs = _messages.BooleanField(17)
+  availableFeatures = _messages.EnumField('AvailableFeaturesValueListEntryValuesEnum', 3, repeated=True)
+  availableLinkTypes = _messages.EnumField('AvailableLinkTypesValueListEntryValuesEnum', 4, repeated=True)
+  city = _messages.StringField(5)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 6)
+  creationTimestamp = _messages.StringField(7)
+  description = _messages.StringField(8)
+  facilityProvider = _messages.StringField(9)
+  facilityProviderFacilityId = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default='compute#interconnectLocation')
+  name = _messages.StringField(13)
+  peeringdbFacilityId = _messages.StringField(14)
+  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  supportsPzs = _messages.BooleanField(19)
 
 
 class InterconnectLocationList(_messages.Message):
@@ -55239,6 +55357,7 @@ class NetworkEndpoint(_messages.Message):
       aliased IP range). If the IP address is not specified, then the primary
       IP address for the VM instance in the network that the network endpoint
       group belongs to will be used.
+    ipv6Address: Optional IPv6 address of network endpoint.
     port: Optional port number of network endpoint. If not specified, the
       defaultPort for the network endpoint group will be used.
   """
@@ -55272,7 +55391,8 @@ class NetworkEndpoint(_messages.Message):
   fqdn = _messages.StringField(2)
   instance = _messages.StringField(3)
   ipAddress = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  ipv6Address = _messages.StringField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class NetworkEndpointGroup(_messages.Message):
@@ -57010,6 +57130,9 @@ class NodeGroup(_messages.Message):
   nodes.
 
   Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events. The accepted values are: `AS_NEEDED` and
+      `RECURRENT`.
     MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
       node in the group undergoes maintenance. Set to one of: DEFAULT,
       RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is
@@ -57031,6 +57154,8 @@ class NodeGroup(_messages.Message):
       other resources. This field is for use by internal tools that use the
       public API. The location hint here on the NodeGroup overrides any
       location_hint present in the NodeTemplate.
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events. The accepted values are: `AS_NEEDED` and `RECURRENT`.
     maintenancePolicy: Specifies how to handle instances when a node in the
       group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
       or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
@@ -57053,6 +57178,32 @@ class NodeGroup(_messages.Message):
     zone: [Output Only] The name of the zone where the node group resides,
       such as us-central1-a.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies the frequency of planned maintenance events. The accepted
+    values are: `AS_NEEDED` and `RECURRENT`.
+
+    Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
+      PERIODIC: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
+    """
+    AS_NEEDED = 0
+    PERIODIC = 1
+    RECURRENT = 2
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
     r"""Specifies how to handle instances when a node in the group undergoes
@@ -57100,16 +57251,17 @@ class NodeGroup(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default='compute#nodeGroup')
   locationHint = _messages.StringField(7)
-  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 8)
-  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 9)
-  name = _messages.StringField(10)
-  nodeTemplate = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  shareSettings = _messages.MessageField('ShareSettings', 14)
-  size = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  zone = _messages.StringField(17)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 8)
+  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 9)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 10)
+  name = _messages.StringField(11)
+  nodeTemplate = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  shareSettings = _messages.MessageField('ShareSettings', 15)
+  size = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  zone = _messages.StringField(18)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -57536,6 +57688,8 @@ class NodeGroupNode(_messages.Message):
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
     totalResources: Total amount of available resources on the node.
+    upcomingMaintenance: [Output Only] The information about an upcoming
+      maintenance event.
   """
 
   class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
@@ -57579,6 +57733,7 @@ class NodeGroupNode(_messages.Message):
   serverId = _messages.StringField(11)
   status = _messages.EnumField('StatusValueValuesEnum', 12)
   totalResources = _messages.MessageField('InstanceConsumptionInfo', 13)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 14)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -57760,6 +57915,19 @@ class NodeGroupsListNodes(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NodeGroupsPerformMaintenanceRequest(_messages.Message):
+  r"""A NodeGroupsPerformMaintenanceRequest object.
+
+  Fields:
+    nodes: [Required] List of nodes affected by the call.
+    startTime: The start time of the schedule. The timestamp is an RFC3339
+      string.
+  """
+
+  nodes = _messages.StringField(1, repeated=True)
+  startTime = _messages.StringField(2)
 
 
 class NodeGroupsScopedList(_messages.Message):
@@ -67997,6 +68165,8 @@ class Route(_messages.Message):
     nextHopGateway: The URL to a gateway that should handle matching packets.
       You can only specify the internet gateway using a full or partial valid
       URL: projects/ project/global/gateways/default-internet-gateway
+    nextHopHub: [Output Only] The full resource name of the network
+      connectivity center hub that should handle matching packets.
     nextHopIlb: The URL to a forwarding rule of type
       loadBalancingScheme=INTERNAL that should handle matching packets or the
       IP address of the forwarding Rule. For example, the following are all
@@ -68238,20 +68408,21 @@ class Route(_messages.Message):
   name = _messages.StringField(9)
   network = _messages.StringField(10)
   nextHopGateway = _messages.StringField(11)
-  nextHopIlb = _messages.StringField(12)
-  nextHopInstance = _messages.StringField(13)
-  nextHopInterconnectAttachment = _messages.StringField(14)
-  nextHopIp = _messages.StringField(15)
-  nextHopNetwork = _messages.StringField(16)
-  nextHopPeering = _messages.StringField(17)
-  nextHopVpnTunnel = _messages.StringField(18)
-  priority = _messages.IntegerField(19, variant=_messages.Variant.UINT32)
-  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 20)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 21)
-  selfLink = _messages.StringField(22)
-  selfLinkWithId = _messages.StringField(23)
-  tags = _messages.StringField(24, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  nextHopHub = _messages.StringField(12)
+  nextHopIlb = _messages.StringField(13)
+  nextHopInstance = _messages.StringField(14)
+  nextHopInterconnectAttachment = _messages.StringField(15)
+  nextHopIp = _messages.StringField(16)
+  nextHopNetwork = _messages.StringField(17)
+  nextHopPeering = _messages.StringField(18)
+  nextHopVpnTunnel = _messages.StringField(19)
+  priority = _messages.IntegerField(20, variant=_messages.Variant.UINT32)
+  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 21)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 22)
+  selfLink = _messages.StringField(23)
+  selfLinkWithId = _messages.StringField(24)
+  tags = _messages.StringField(25, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 26, repeated=True)
 
 
 class RouteAsPath(_messages.Message):
@@ -68822,12 +68993,12 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
-    customLearnedIpRanges: A list of user-defined custom learned route IP
-      address ranges for a BGP session.
-    customLearnedRoutePriority: The user-defined custom learned route priority
-      for a BGP session. This value is applied to all custom learned route
-      ranges for the BGP session. If a priority is not provided, a Google-
-      managed priority of `100` is used.
+    customLearnedIpRanges: User-defined Custom Learned Route IP range list for
+      a BGP session.
+    customLearnedRoutePriority: User-defined Custom Learned Route Priority for
+      a BGP session. This will be applied to all Custom Learned Route ranges
+      of the BGP session, if not given, google-managed priority of 100 is
+      used.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -69079,10 +69250,9 @@ class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
   r"""A RouterBgpPeerCustomLearnedIpRange object.
 
   Fields:
-    range: The custom learned route IP address range. Must be a valid CIDR-
-      formatted prefix. If an IP address is provided without a subnet mask, it
-      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
-      IPv6, `/128`.
+    range: The Custom Learned Route IP range. Must be a valid CIDR-formatted
+      prefix. If an IP is provided without a subnet mask, it is interpreted as
+      a /32 singular IP range for IPv4, and /128 for IPv6.
   """
 
   range = _messages.StringField(1)
@@ -70495,6 +70665,10 @@ class Scheduling(_messages.Message):
     values are: `PERIODIC`.
 
     Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
       PERIODIC: VMs receive infrastructure and hypervisor updates on a
         periodic basis, minimizing the number of maintenance operations (live
         migrations or terminations) on an individual VM. This may mean a VM
@@ -70508,8 +70682,9 @@ class Scheduling(_messages.Message):
         AS_NEEDED. Security updates will still be applied as soon as they are
         available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
     """
-    PERIODIC = 0
-    RECURRENT = 1
+    AS_NEEDED = 0
+    PERIODIC = 1
+    RECURRENT = 2
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
     r"""Defines the maintenance behavior for this instance. For standard
@@ -73139,7 +73314,6 @@ class SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo(_messag
 
   Fields:
     error: A Status attribute.
-    operation: A string attribute.
     state: A StateValueValuesEnum attribute.
   """
 
@@ -73164,8 +73338,7 @@ class SetCommonInstanceMetadataOperationMetadataPerLocationOperationInfo(_messag
     UNSPECIFIED = 5
 
   error = _messages.MessageField('Status', 1)
-  operation = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class ShareSettings(_messages.Message):
@@ -81394,6 +81567,7 @@ class UpcomingMaintenance(_messages.Message):
   r"""Upcoming Maintenance notification information.
 
   Enums:
+    MaintenanceStatusValueValuesEnum:
     TypeValueValuesEnum: Defines the type of maintenance.
 
   Fields:
@@ -81402,13 +81576,32 @@ class UpcomingMaintenance(_messages.Message):
     date: [Output Only] The date when the maintenance will take place. This
       value is in RFC3339 text format. DEPRECATED: Use window_start_time
       instead.
+    latestWindowStartTime: The latest time for the planned maintenance window
+      to start. This timestamp value is in RFC3339 text format.
+    maintenanceStatus: A MaintenanceStatusValueValuesEnum attribute.
     startTimeWindow: [Output Only] The start time window of the maintenance
       disruption. DEPRECATED: Use window_start_time instead.
     time: [Output Only] The time when the maintenance will take place. This
       value is in RFC3339 text format. DEPRECATED: Use window_start_time
       instead.
     type: Defines the type of maintenance.
+    windowEndTime: The time by which the maintenance disruption will be
+      completed. This timestamp value is in RFC3339 text format.
+    windowStartTime: The current start time of the maintenance window. This
+      timestamp value is in RFC3339 text format.
   """
+
+  class MaintenanceStatusValueValuesEnum(_messages.Enum):
+    r"""MaintenanceStatusValueValuesEnum enum type.
+
+    Values:
+      ONGOING: There is ongoing maintenance on this VM.
+      PENDING: There is pending maintenance.
+      UNKNOWN: Unknown maintenance status. Do not use this value.
+    """
+    ONGOING = 0
+    PENDING = 1
+    UNKNOWN = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Defines the type of maintenance.
@@ -81426,9 +81619,13 @@ class UpcomingMaintenance(_messages.Message):
 
   canReschedule = _messages.BooleanField(1)
   date = _messages.StringField(2)
-  startTimeWindow = _messages.MessageField('UpcomingMaintenanceTimeWindow', 3)
-  time = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  latestWindowStartTime = _messages.StringField(3)
+  maintenanceStatus = _messages.EnumField('MaintenanceStatusValueValuesEnum', 4)
+  startTimeWindow = _messages.MessageField('UpcomingMaintenanceTimeWindow', 5)
+  time = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  windowEndTime = _messages.StringField(8)
+  windowStartTime = _messages.StringField(9)
 
 
 class UpcomingMaintenanceTimeWindow(_messages.Message):

@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 VALID_PLANS = ['12-month', '36-month']
+VALID_UPDATE_PLANS = ['36-month']
 _REQUIRED_RESOURCES = sorted(['vcpu', 'memory'])
 
 
@@ -52,10 +53,16 @@ def TranslatePlanArg(messages, plan_arg):
   return _GetFlagToPlanMap(messages)[plan_arg]
 
 
-def TranslateAutoRenewArg(args):
+def TranslateAutoRenewArgForCreate(args):
   if args.IsSpecified('auto_renew'):
     return args.auto_renew
   return False
+
+
+def TranslateAutoRenewArgForUpdate(args):
+  if args.IsSpecified('auto_renew'):
+    return args.auto_renew
+  return None
 
 
 def TranslateResourcesArg(messages, resources_arg):
@@ -113,7 +120,7 @@ def AddCreateFlags(parser,
                    support_share_setting=False,
                    support_stable_fleet=False):
   """Add general arguments for `commitments create` flag."""
-  AddPlan(parser)
+  AddPlanForCreate(parser)
   AddReservationArgGroup(parser, support_share_setting, support_stable_fleet)
   AddResourcesArgGroup(parser)
   AddSplitSourceCommitment(parser)
@@ -123,14 +130,24 @@ def AddCreateFlags(parser,
 def AddUpdateFlags(parser):
   """Add general arguments for `commitments update` flag."""
   AddAutoRenew(parser)
+  AddPlanForUpdate(parser)
 
 
-def AddPlan(parser):
+def AddPlanForCreate(parser):
   return parser.add_argument(
       '--plan',
       required=True,
       choices=VALID_PLANS,
       help='Duration of the commitment.')
+
+
+def AddPlanForUpdate(parser):
+  return parser.add_argument(
+      '--plan',
+      required=False,
+      choices=VALID_UPDATE_PLANS,
+      help='Duration of the commitment.',
+  )
 
 
 def AddAutoRenew(parser):
@@ -150,7 +167,7 @@ def AddLicenceBasedFlags(parser):
                            ' `3-4`, `5+`. Required for SAP licenses.')
   parser.add_argument('--amount', required=True, type=int,
                       help='Number of licenses purchased.')
-  AddPlan(parser)
+  AddPlanForCreate(parser)
 
 
 def AddSplitSourceCommitment(parser):

@@ -730,11 +730,15 @@
         }
       }
     },
-    "RestoreInstanceBackupRequest": {
-      "id": "RestoreInstanceBackupRequest",
+    "RestoreInstanceRequest": {
+      "id": "RestoreInstanceRequest",
       "description": "Request options for restoring an instance",
       "type": "object",
       "properties": {
+        "backupId": {
+          "description": "Required. Backup being used to restore the instance Format: projects\/{project}\/locations\/{location}\/instances\/{instance}\/backups\/{backup}",
+          "type": "string"
+        }
       }
     },
     "ImportInstanceRequest": {
@@ -755,28 +759,6 @@
       "properties": {
         "uri": {
           "description": "Required. The path to the folder in Google Cloud Storage where the export will be stored. The URI is in the form `gs:\/\/bucketName\/folderName`.",
-          "type": "string"
-        }
-      }
-    },
-    "IssueRedirectTicketInternalRequest": {
-      "id": "IssueRedirectTicketInternalRequest",
-      "description": "IssueRedirectTicketInternalRequest is the request to issue a redirect ticket for an instance. For internal use only.",
-      "type": "object",
-      "properties": {
-        "redirectUri": {
-          "description": "Required. URI to be used in the redirect.",
-          "type": "string"
-        }
-      }
-    },
-    "IssueRedirectTicketInternalResponse": {
-      "id": "IssueRedirectTicketInternalResponse",
-      "description": "IssueRedirectTicketInternalResponse is the response for issuing a redirect ticket. For internal use only.",
-      "type": "object",
-      "properties": {
-        "ticketId": {
-          "description": "ID of the created redirect ticket.",
           "type": "string"
         }
       }
@@ -1440,7 +1422,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "looker.projects.locations.operations.get",
@@ -1710,6 +1692,34 @@
                   ],
                   "description": "Restart instance."
                 },
+                "restore": {
+                  "id": "looker.projects.locations.instances.restore",
+                  "path": "v1alpha1/{+name}:restore",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Instance being restored Format: projects\/{project}\/locations\/{location}\/instances\/{instance}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RestoreInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Restore Looker instance."
+                },
                 "import": {
                   "id": "looker.projects.locations.instances.import",
                   "path": "v1alpha1/{+name}:import",
@@ -1765,34 +1775,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Export instance."
-                },
-                "issueRedirectTicketInternal": {
-                  "id": "looker.projects.locations.instances.issueRedirectTicketInternal",
-                  "path": "v1alpha1/{+instance}:issueRedirectTicketInternal",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:issueRedirectTicketInternal",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "instance": {
-                      "description": "Required. The instance resource to issue a redirect ticket for.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "instance"
-                  ],
-                  "request": {
-                    "$ref": "IssueRedirectTicketInternalRequest"
-                  },
-                  "response": {
-                    "$ref": "IssueRedirectTicketInternalResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "THIS METHOD IS FOR INTERNAL USE ONLY."
                 },
                 "setIamPolicy": {
                   "id": "looker.projects.locations.instances.setIamPolicy",
@@ -1951,34 +1933,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": ""
-                    },
-                    "restore": {
-                      "id": "looker.projects.locations.instances.backups.restore",
-                      "path": "v1alpha1/{+name}:restore",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}:restore",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Instance being restored Format: projects\/{project}\/locations\/{location}\/instances\/{instance}\/backups\/{backup}",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "RestoreInstanceBackupRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Restore Looker instance."
                     },
                     "create": {
                       "id": "looker.projects.locations.instances.backups.create",

@@ -21,6 +21,20 @@ from __future__ import unicode_literals
 import functools
 
 
+class FakeLruCache:
+  """Doesn't actually cache but supports LRU interface in Python 2."""
+
+  def __init__(self, function):
+    self._function = function
+
+  def cache_clear(self):
+    """Exposes this function of actual LRU to avoid missing attribute errors."""
+    pass
+
+  def __call__(self, *args, **kwargs):
+    return self._function(*args, **kwargs)
+
+
 def lru(maxsize=128):
   """Returns cached result if function was run with same args before.
 
@@ -38,10 +52,7 @@ def lru(maxsize=128):
 
   def _wrapper(function):
     if getattr(functools, 'lru_cache', None):
-      # Use size one since the function this wraps returns the contents of a
-      # single file.
       return functools.lru_cache(maxsize=maxsize)(function)
-    else:
-      return function
+    return FakeLruCache(function)
 
   return _wrapper

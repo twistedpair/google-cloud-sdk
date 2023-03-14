@@ -361,8 +361,7 @@ def update_object_metadata_dict_from_request_config(object_metadata,
     object_metadata (dict): Existing object metadata.
     request_config (request_config): May contain data to add to object_metadata.
     file_path (str|None): If present, used for parsing POSIX data from a file on
-      the system for the --preserve-posix flag. This flag's presence is
-      indicated by the system_posix_data field on request_config.
+      the system for the --preserve-posix flag.
 
   Returns:
     dict: Metadata for API request.

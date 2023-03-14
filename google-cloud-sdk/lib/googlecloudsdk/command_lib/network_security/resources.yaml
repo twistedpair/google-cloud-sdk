@@ -149,3 +149,27 @@ orgAddressGroup:
     parameter_name: addressGroupsId
     attribute_name: address_group
     help: Id of the address group.
+
+securityProfile:
+  name: security_profile
+  collection: networksecurity.organizations.locations.securityProfiles
+  request_id_field: securityProfileId
+  attributes:
+  - *organization
+  - *orgLocation
+  - &securityProfile
+    parameter_name: securityProfilesId
+    attribute_name: security_profile
+    help: Id of the security profile.
+
+securityProfileGroup:
+  name: security profile group
+  collection: networksecurity.organizations.locations.securityProfileGroups
+  request_id_field: securityProfileGroupId
+  attributes:
+  - *organization
+  - *orgLocation
+  - &securityProfileGroup
+    parameter_name: securityProfileGroupsId
+    attribute_name: security_profile_group
+    help: Id of the security profile group.

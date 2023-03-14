@@ -217,7 +217,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "description": "The token for the next page of the response. To see more results, use this value as the page_token for your next request. If this value is empty, there are no more results.",
           "type": "string"
         },
         "unreachable": {
@@ -736,7 +736,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "description": "The token for the next page of the response. To see more results, use this value as the page_token for your next request. If this value is empty, there are no more results.",
           "type": "string"
         },
         "unreachable": {
@@ -990,7 +990,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "description": "The token for the next page of the response. To see more results, use this value as the page_token for your next request. If this value is empty, there are no more results.",
           "type": "string"
         },
         "unreachable": {
@@ -1015,7 +1015,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The next pagination token in the List response. It should be used as page_token for the following request. An empty value means no more result.",
+          "description": "The token for the next page of the response. To see more results, use this value as the page_token for your next request. If this value is empty, there are no more results.",
           "type": "string"
         },
         "unreachable": {
@@ -1754,7 +1754,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "networkconnectivity.projects.locations.operations.get",
@@ -1865,7 +1865,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "An expression that filters the results listed in the response.",
+                          "description": "An expression that filters the list of results.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2032,7 +2032,7 @@
                           "type": "string"
                         },
                         "spokeLocations": {
-                          "description": "A list of locations. Specify a single region (`us-central1`), `global`, or a combination of values--for example, `[global, us-central1, us-west1]`. If the spoke_locations field is populated, the list of results includes only spokes in the specified location. If the spoke_locations field is not populated, the list of results includes spokes in all locations.",
+                          "description": "A list of locations. Specify one of the following: `[global]`, a single region (for example, `[us-central1]`), or a combination of values (for example, `[global, us-central1, us-west1]`). If the spoke_locations field is populated, the list of results includes only spokes in the specified location. If the spoke_locations field is not populated, the list of results includes spokes in all locations.",
                           "location": "query",
                           "repeated": true,
                           "type": "string"
@@ -2065,12 +2065,12 @@
                           "enumDescriptions": [
                             "The spoke view is unspecified. When the spoke view is unspecified, the API returns the same fields as the `BASIC` view.",
                             "Includes `name`, `create_time`, `hub`, `unique_id`, `state`, `state_reason`, and `spoke_type`. This is the default value.",
-                            "Include all spoke fields. You can use the `FULL` view only when you set the `spoke_locations` field to `[global]`."
+                            "Include all spoke fields. You can use the `DETAILED` view only when you set the `spoke_locations` field to `[global]`."
                           ],
                           "enum": [
                             "SPOKE_VIEW_UNSPECIFIED",
                             "BASIC",
-                            "FULL"
+                            "DETAILED"
                           ]
                         }
                       },
@@ -2227,7 +2227,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "An expression that filters the results listed in the response.",
+                              "description": "An expression that filters the list of results.",
                               "location": "query",
                               "type": "string"
                             },
@@ -2303,7 +2303,7 @@
                                   "type": "string"
                                 },
                                 "filter": {
-                                  "description": "An expression that filters the results listed in the response.",
+                                  "description": "An expression that filters the list of results.",
                                   "location": "query",
                                   "type": "string"
                                 },
@@ -2589,7 +2589,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "An expression that filters the results listed in the response.",
+                      "description": "An expression that filters the list of results.",
                       "location": "query",
                       "type": "string"
                     },

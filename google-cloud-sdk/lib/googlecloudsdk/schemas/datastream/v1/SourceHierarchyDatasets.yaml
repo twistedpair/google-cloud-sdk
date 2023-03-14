@@ -26,5 +26,5 @@ properties:
     items:
       type: string
   datasetTemplate:
-    description: A DatasetTemplate attribute.
+    description: The dataset template to use for dynamic dataset creation.
     $ref: DatasetTemplate.yaml

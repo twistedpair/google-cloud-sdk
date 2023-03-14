@@ -138,6 +138,7 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'client': 'azure_client',
+    'clear_client': 'azure_client',
     'cluster_version': 'control_plane.version',
     'vm_size': 'control_plane.vm_size',
     'admin_users': 'authorization.admin_users',

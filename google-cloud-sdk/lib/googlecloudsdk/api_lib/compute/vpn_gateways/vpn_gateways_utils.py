@@ -47,9 +47,15 @@ class VpnGatewayHelper(object):
   def _service(self):
     return self._client.vpnGateways
 
-  def GetVpnGatewayForInsert(self, name, description, network,
-                             vpn_interfaces_with_interconnect_attachments,
-                             stack_type):
+  def GetVpnGatewayForInsert(
+      self,
+      name,
+      description,
+      network,
+      vpn_interfaces_with_interconnect_attachments,
+      stack_type=None,
+      gateway_ip_version=None,
+  ):
     """Returns the VpnGateway message for an insert request.
 
     Args:
@@ -59,12 +65,28 @@ class VpnGatewayHelper(object):
       network: String representing the network URL the VPN gateway resource
         belongs to.
       vpn_interfaces_with_interconnect_attachments: Dict representing pairs
-      interface id and interconnected attachment associated with vpn gateway on
-      this interface.
+        interface id and interconnected attachment associated with vpn gateway
+        on this interface.
       stack_type: Enum presenting the stack type of the vpn gateway resource.
+      gateway_ip_version: Enum presenting the gateway IP version of the vpn
+        gateway resource.
+
     Returns:
       The VpnGateway message object that can be used in an insert request.
     """
+    target_stack_type = None
+    target_gateway_ip_version = None
+    if stack_type is not None:
+      target_stack_type = self._messages.VpnGateway.StackTypeValueValuesEnum(
+          stack_type
+      )
+    if gateway_ip_version is not None:
+      target_gateway_ip_version = (
+          self._messages.VpnGateway.GatewayIpVersionValueValuesEnum(
+              gateway_ip_version
+          )
+      )
+
     if vpn_interfaces_with_interconnect_attachments is not None:
       vpn_interfaces = []
       for key, value in sorted(
@@ -72,31 +94,37 @@ class VpnGatewayHelper(object):
         vpn_interfaces.append(
             self._messages.VpnGatewayVpnGatewayInterface(
                 id=int(key), interconnectAttachment=six.text_type(value)))
-      if stack_type is not None:
+      if gateway_ip_version is not None:
         return self._messages.VpnGateway(
             name=name,
             description=description,
             network=network,
             vpnInterfaces=vpn_interfaces,
-            stackType=self._messages.VpnGateway.StackTypeValueValuesEnum(
-                stack_type))
-      else:
-        return self._messages.VpnGateway(
-            name=name,
-            description=description,
-            network=network,
-            vpnInterfaces=vpn_interfaces)
+            stackType=target_stack_type,
+            gatewayIpVersion=target_gateway_ip_version,
+        )
+      return self._messages.VpnGateway(
+          name=name,
+          description=description,
+          network=network,
+          vpnInterfaces=vpn_interfaces,
+          stackType=target_stack_type,
+      )
     else:
-      if stack_type is not None:
+      if gateway_ip_version is not None:
         return self._messages.VpnGateway(
             name=name,
             description=description,
             network=network,
-            stackType=self._messages.VpnGateway.StackTypeValueValuesEnum(
-                stack_type))
-      else:
-        return self._messages.VpnGateway(
-            name=name, description=description, network=network)
+            stackType=target_stack_type,
+            gatewayIpVersion=target_gateway_ip_version,
+        )
+      return self._messages.VpnGateway(
+          name=name,
+          description=description,
+          network=network,
+          stackType=target_stack_type,
+      )
 
   def WaitForOperation(self, vpn_gateway_ref, operation_ref, wait_message):
     """Waits for the specified operation to complete and returns the target.

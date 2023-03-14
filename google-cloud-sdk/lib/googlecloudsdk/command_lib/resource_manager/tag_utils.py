@@ -35,18 +35,18 @@ class InvalidInputError(ResourceManagerError):
   """Exception for invalid input."""
 
 
-GetResourceFns = {
+GetRequests = {
     'tagKeys': tags.TagMessages().CloudresourcemanagerTagKeysGetRequest,
     'tagValues': tags.TagMessages().CloudresourcemanagerTagValuesGetRequest
 }
 
-ListResourceFns = {
+ListRequests = {
     'tagKeys': tags.TagMessages().CloudresourcemanagerTagKeysListRequest,
     'tagValues': tags.TagMessages().CloudresourcemanagerTagValuesListRequest,
     'tagBindings': tags.TagMessages().CloudresourcemanagerTagBindingsListRequest
 }
 
-ServiceFns = {
+Services = {
     'tagKeys': tags.TagKeysService,
     'tagValues': tags.TagValuesService,
     'tagBindings': tags.TagBindingsService
@@ -97,13 +97,13 @@ def GetTagKeyFromNamespacedName(namespaced_name):
 def ListTagKeys(parent_name, namespaced_name, next_page_token=None):
   """Calls ListTagKeys given the parent name, namespaced name and the token."""
   if next_page_token:
-    req = ListResourceFns['tagKeys'](
+    req = ListRequests['tagKeys'](
         parent=parent_name, pageToken=next_page_token, pageSize=MAX_TAG_KEYS)
   else:
-    req = ListResourceFns['tagKeys'](
+    req = ListRequests['tagKeys'](
         parent=parent_name, pageSize=MAX_TAG_KEYS)
 
-  service = ServiceFns['tagKeys']()
+  service = Services['tagKeys']()
 
   try:
     return service.List(req)
@@ -165,24 +165,25 @@ def GetTagValueFromNamespacedName(namespaced_name):
 def ListTagValues(parent_name, next_page_token=None):
   """Calls ListTagValuess."""
   if next_page_token:
-    req = ListResourceFns['tagValues'](
+    req = ListRequests['tagValues'](
         parent=parent_name, pageToken=next_page_token, pageSize=MAX_TAG_VALUES)
   else:
-    req = ListResourceFns['tagValues'](
+    req = ListRequests['tagValues'](
         parent=parent_name, pageSize=MAX_TAG_VALUES)
 
-  service = ServiceFns['tagValues']()
+  service = Services['tagValues']()
 
   return service.List(req)
 
 
-def GetResourceFromNamespacedName(namespaced_name, resource_type):
-  """Gets the resource from the namespaced name.
+def GetResource(resource_name, resource_type):
+  """Gets the resource from the resource name.
 
   Args:
-    namespaced_name: Could be the resource name or namespaced name
+    resource_name: The resource name, such as tagKeys/{tag_key_id} or
+      tagValues/{tag_value_id}
     resource_type: the type of the resource ie: 'tagKeys', 'tagValues'. Used to
-      determine which GET function to call
+      determine which service to use and which GET request to construct
 
   Returns:
     resource
@@ -190,8 +191,8 @@ def GetResourceFromNamespacedName(namespaced_name, resource_type):
 
   # TagKeys and TagValues GET require the global CRM API endpoint.
   with endpoints.CrmEndpointOverrides('global'):
-    service = ServiceFns[resource_type]()
-    req = GetResourceFns[resource_type](name=namespaced_name)
+    service = Services[resource_type]()
+    req = GetRequests[resource_type](name=resource_name)
     response = service.Get(req)
 
     return response
@@ -213,9 +214,9 @@ def ProjectNameToBinding(project_name, tag_value, location=None):
   Raises:
     InvalidInputError: project not found
   """
-  service = ServiceFns['tagBindings']()
+  service = Services['tagBindings']()
   with endpoints.CrmEndpointOverrides(location):
-    req = ListResourceFns['tagBindings'](parent=project_name)
+    req = ListRequests['tagBindings'](parent=project_name)
 
     response = service.List(req)
 

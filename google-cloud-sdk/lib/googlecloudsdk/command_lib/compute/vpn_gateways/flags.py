@@ -153,3 +153,29 @@ def GetStackType():
       The stack type of the protocol(s) enabled on this VPN gateway.
       If not provided, `IPV4_ONLY` will be used.
       """)
+
+
+def GetGatewayIpVersion():
+  """Returns the flag for VPN gateway IP version.
+
+  Return:
+    An enum presents the gateway IP version for the VPN gateway.
+  """
+  return base.Argument(
+      '--gateway-ip-version',
+      choices={
+          'IPV4': (
+              'Every HA-VPN gateway interface is configured with an IPv4'
+              ' address.'
+          ),
+          'IPV6': (
+              'Every HA-VPN gateway interface is configured with an IPv6'
+              ' address.'
+          ),
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      The IP family of the gateway IPs for the HA-VPN gateway interfaces. If not
+      specified, `IPV4` will be used.
+      """,
+  )

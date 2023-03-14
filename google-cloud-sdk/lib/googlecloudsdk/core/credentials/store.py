@@ -1396,16 +1396,20 @@ class _LegacyGenerator(object):
       # id and secret, those would override our id and secret, causing any
       # attempts to obtain an access token with our refresh token to fail.
       self._WriteFileContents(
-          self._gsutil_path, '\n'.join([
+          self._gsutil_path,
+          '\n'.join([
               '[OAuth2]',
               'client_id = {cid}',
               'client_secret = {secret}',
               '',
               '[Credentials]',
               'gs_oauth2_refresh_token = {token}',
-          ]).format(cid=config.CLOUDSDK_CLIENT_ID,
-                    secret=config.CLOUDSDK_CLIENT_NOTSOSECRET,
-                    token=self.credentials.refresh_token))
+          ]).format(
+              cid=self.credentials.client_id,
+              secret=self.credentials.client_secret,
+              token=self.credentials.refresh_token,
+          ),
+      )
     elif self._cred_type == c_creds.SERVICE_ACCOUNT_CREDS_NAME:
       self._WriteFileContents(
           self._gsutil_path, '\n'.join([

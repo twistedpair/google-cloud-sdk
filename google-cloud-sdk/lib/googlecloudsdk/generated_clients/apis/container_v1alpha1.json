@@ -1011,6 +1011,10 @@
           "description": "Set the Pod PID limits. See https:\/\/kubernetes.io\/docs\/concepts\/policy\/pid-limiting\/#pod-pid-limits Controls the maximum number of processes allowed to run in a pod. The value must be greater than or equal to 1024 and less than 4194304.",
           "type": "string",
           "format": "int64"
+        },
+        "insecureKubeletReadonlyPortEnabled": {
+          "description": "Enable or disable Kubelet read only port.",
+          "type": "boolean"
         }
       }
     },
@@ -1282,6 +1286,10 @@
         "gkeBackupAgentConfig": {
           "description": "Configuration for the Backup for GKE agent addon.",
           "$ref": "GkeBackupAgentConfig"
+        },
+        "gcsFuseCsiDriverConfig": {
+          "description": "Configuration for the Cloud Storage Fuse CSI driver.",
+          "$ref": "GcsFuseCsiDriverConfig"
         }
       }
     },
@@ -1458,6 +1466,17 @@
       "properties": {
         "enabled": {
           "description": "Whether the Backup for GKE agent is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GcsFuseCsiDriverConfig": {
+      "id": "GcsFuseCsiDriverConfig",
+      "description": "Configuration for the Cloud Storage Fuse CSI driver.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Cloud Storage Fuse CSI driver is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -2566,6 +2585,10 @@
         "imageType": {
           "description": "The image type to use for NAP created node. Please see https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/node-images for available image types.",
           "type": "string"
+        },
+        "insecureKubeletReadonlyPortEnabled": {
+          "description": "Enable or disable Kubelet read only port.",
+          "type": "boolean"
         }
       }
     },
@@ -3398,6 +3421,10 @@
         "managedPrometheusConfig": {
           "description": "Enable Google Cloud Managed Service for Prometheus in the cluster.",
           "$ref": "ManagedPrometheusConfig"
+        },
+        "advancedDatapathObservabilityConfig": {
+          "description": "Configuration of Advanced Datapath Observability features.",
+          "$ref": "AdvancedDatapathObservabilityConfig"
         }
       }
     },
@@ -3453,6 +3480,35 @@
         "enabled": {
           "description": "Enable Managed Collection.",
           "type": "boolean"
+        }
+      }
+    },
+    "AdvancedDatapathObservabilityConfig": {
+      "id": "AdvancedDatapathObservabilityConfig",
+      "description": "AdvancedDatapathObservabilityConfig specifies configuration of observability features of advanced datapath.",
+      "type": "object",
+      "properties": {
+        "enableMetrics": {
+          "description": "Expose flow metrics on nodes",
+          "type": "boolean"
+        },
+        "relayMode": {
+          "description": "Method used to make Relay available",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This shouldn't be used.",
+            "disabled",
+            "exposed via a Service object",
+            "exposed via internal load balancer",
+            "exposed via external load balancer"
+          ],
+          "enum": [
+            "RELAY_MODE_UNSPECIFIED",
+            "DISABLED",
+            "INTERNAL_CLUSTER_SERVICE",
+            "INTERNAL_VPC_LB",
+            "EXTERNAL_LB"
+          ]
         }
       }
     },
@@ -4271,6 +4327,10 @@
         },
         "desiredEnableFqdnNetworkPolicy": {
           "description": "Enable\/Disable FQDN Network Policy for the cluster.",
+          "type": "boolean"
+        },
+        "desiredAutopilotInsecureKubeletReadonlyPortEnabled": {
+          "description": "Enable\/disable kubelet readonly port for autopilot cluster",
           "type": "boolean"
         }
       }
@@ -5470,13 +5530,15 @@
           "type": "string",
           "enumDescriptions": [
             "Default value, should not be used.",
-            "Indicates that the issue is referring to an incompatibility between the cluster and Autopilot mode.",
+            "Indicates that the issue is a known incompatibility between the cluster and Autopilot mode.",
+            "Indicates the issue is an incompatibility if customers take no further action to resolve.",
             "Indicates the issue is not an incompatibility, but depending on the workloads business logic, there is a potential that they won't work on Autopilot."
           ],
           "enum": [
             "UNSPECIFIED",
             "INCOMPATIBILITY",
-            "WARNING"
+            "ADDITIONAL_CONFIG_REQUIRED",
+            "PASSED_WITH_OPTIONAL_CONFIG"
           ]
         },
         "subjects": {

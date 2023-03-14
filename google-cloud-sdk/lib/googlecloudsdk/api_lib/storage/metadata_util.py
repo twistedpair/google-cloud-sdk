@@ -73,13 +73,11 @@ def get_updated_custom_fields(existing_custom_fields,
   member of this group, meaning it can be set with any of these flags.
 
   Args:
-    existing_custom_fields (dict): Existing custom metadata provided by an
-      API.
+    existing_custom_fields (dict): Existing custom metadata provided by an API.
     request_config (request_config): May contain custom metadata fields that
       should be modified.
     file_path (str|None): If present, used for parsing POSIX data from a file on
-      the system for the --preserve-posix flag. This flag's presence is
-      indicated by the system_posix_data field on request_config.
+      the system for the --preserve-posix flag.
 
   Returns:
     Optional[dict] that should be the value of the storage provider's custom
@@ -90,7 +88,7 @@ def get_updated_custom_fields(existing_custom_fields,
   if not resource_args:
     return
 
-  should_parse_file_posix = request_config.system_posix_data and file_path
+  should_parse_file_posix = request_config.preserve_posix and file_path
   if (not should_parse_file_posix and not resource_args.custom_fields_to_set and
       not resource_args.custom_fields_to_remove and
       not resource_args.custom_fields_to_update):

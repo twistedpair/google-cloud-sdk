@@ -797,7 +797,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         path_params=['instance', 'project'],
         query_params=[],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/reencrypt',
-        request_field='sqlInstancesReencryptRequest',
+        request_field='instancesReencryptRequest',
         request_type_name='SqlInstancesReencryptRequest',
         response_type_name='Operation',
         supports_download=False,

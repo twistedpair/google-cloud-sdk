@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from cloudsdk.google.protobuf import descriptor_pb2
+from cloudsdk.google.protobuf import text_format
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 
@@ -116,6 +118,28 @@ def GetDdl(database_ref):
   req = msgs.SpannerProjectsInstancesDatabasesGetDdlRequest(
       database=database_ref.RelativeName())
   return client.projects_instances_databases.GetDdl(req).statements
+
+
+def GetDdlWithDescriptors(database_ref, args):
+  """Get a database's DDL description."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  req = msgs.SpannerProjectsInstancesDatabasesGetDdlRequest(
+      database=database_ref.RelativeName()
+  )
+  get_ddl_resp = client.projects_instances_databases.GetDdl(req)
+  if not args.include_proto_descriptors:
+    return get_ddl_resp.statements
+
+  ddls = ';\n\n'.join(get_ddl_resp.statements) + ';\n\n'
+  descriptors = descriptor_pb2.FileDescriptorSet.FromString(
+      get_ddl_resp.protoDescriptors
+  )
+  return (
+      ddls
+      + 'Proto Bundle Descriptors:\n'
+      + text_format.MessageToString(descriptors)
+  )
 
 
 def List(instance_ref):

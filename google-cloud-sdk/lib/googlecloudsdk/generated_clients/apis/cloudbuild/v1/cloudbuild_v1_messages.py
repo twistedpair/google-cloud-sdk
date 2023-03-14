@@ -637,6 +637,8 @@ class BuildOptions(_messages.Message):
   r"""Optional arguments to enable specific features of builds.
 
   Enums:
+    DefaultLogsBucketBehaviorValueValuesEnum: Optional. Option to specify how
+      default logs buckets are setup.
     DockerDaemonValueValuesEnum: Optional. Option to specify how (or if) a
       Docker daemon is provided for the build.
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
@@ -656,6 +658,8 @@ class BuildOptions(_messages.Message):
     anthosCluster: Details about how this build should be executed on a Anthos
       cluster.
     cluster: Details about how this build should be executed on a GKE cluster.
+    defaultLogsBucketBehavior: Optional. Option to specify how default logs
+      buckets are setup.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
       this is *NOT* "disk free"; some of the space will be used by the
       operating system and build utilities. Also note that this is the minimum
@@ -702,6 +706,18 @@ class BuildOptions(_messages.Message):
       configuration.
     workerPool: This field deprecated; please use `pool.name` instead.
   """
+
+  class DefaultLogsBucketBehaviorValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify how default logs buckets are setup.
+
+    Values:
+      DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED: Unspecified.
+      REGIONAL_USER_OWNED_BUCKET: Bucket is located in user-owned project in
+        the same region as the build. The builder service account must have
+        access to create and write to GCS buckets in the build project.
+    """
+    DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
+    REGIONAL_USER_OWNED_BUCKET = 1
 
   class DockerDaemonValueValuesEnum(_messages.Enum):
     r"""Optional. Option to specify how (or if) a Docker daemon is provided
@@ -814,20 +830,21 @@ class BuildOptions(_messages.Message):
 
   anthosCluster = _messages.MessageField('AnthosWorkerPool', 1)
   cluster = _messages.MessageField('ClusterOptions', 2)
-  diskSizeGb = _messages.IntegerField(3)
-  dockerDaemon = _messages.EnumField('DockerDaemonValueValuesEnum', 4)
-  dynamicSubstitutions = _messages.BooleanField(5)
-  env = _messages.StringField(6, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 7)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 8)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 9)
-  pool = _messages.MessageField('PoolOption', 10)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 11)
-  secretEnv = _messages.StringField(12, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 13, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 14)
-  volumes = _messages.MessageField('Volume', 15, repeated=True)
-  workerPool = _messages.StringField(16)
+  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 3)
+  diskSizeGb = _messages.IntegerField(4)
+  dockerDaemon = _messages.EnumField('DockerDaemonValueValuesEnum', 5)
+  dynamicSubstitutions = _messages.BooleanField(6)
+  env = _messages.StringField(7, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 8)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 9)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 10)
+  pool = _messages.MessageField('PoolOption', 11)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 12)
+  secretEnv = _messages.StringField(13, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 14, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 15)
+  volumes = _messages.MessageField('Volume', 16, repeated=True)
+  workerPool = _messages.StringField(17)
 
 
 class BuildStep(_messages.Message):

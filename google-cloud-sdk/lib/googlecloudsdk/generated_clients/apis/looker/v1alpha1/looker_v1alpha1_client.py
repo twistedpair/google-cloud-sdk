@@ -190,33 +190,6 @@ class LookerV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Restore(self, request, global_params=None):
-      r"""Restore Looker instance.
-
-      Args:
-        request: (LookerProjectsLocationsInstancesBackupsRestoreRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Restore')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Restore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/backups/{backupsId}:restore',
-        http_method='POST',
-        method_id='looker.projects.locations.instances.backups.restore',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:restore',
-        request_field='restoreInstanceBackupRequest',
-        request_type_name='LookerProjectsLocationsInstancesBackupsRestoreRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
@@ -443,33 +416,6 @@ class LookerV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def IssueRedirectTicketInternal(self, request, global_params=None):
-      r"""THIS METHOD IS FOR INTERNAL USE ONLY.
-
-      Args:
-        request: (LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (IssueRedirectTicketInternalResponse) The response message.
-      """
-      config = self.GetMethodConfig('IssueRedirectTicketInternal')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    IssueRedirectTicketInternal.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:issueRedirectTicketInternal',
-        http_method='POST',
-        method_id='looker.projects.locations.instances.issueRedirectTicketInternal',
-        ordered_params=['instance'],
-        path_params=['instance'],
-        query_params=[],
-        relative_path='v1alpha1/{+instance}:issueRedirectTicketInternal',
-        request_field='issueRedirectTicketInternalRequest',
-        request_type_name='LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest',
-        response_type_name='IssueRedirectTicketInternalResponse',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists Instances in a given project and location.
 
@@ -547,6 +493,33 @@ class LookerV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:restart',
         request_field='restartInstanceRequest',
         request_type_name='LookerProjectsLocationsInstancesRestartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restore Looker instance.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.restore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:restore',
+        request_field='restoreInstanceRequest',
+        request_type_name='LookerProjectsLocationsInstancesRestoreRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -697,7 +670,7 @@ class LookerV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (LookerProjectsLocationsOperationsListRequest) input message

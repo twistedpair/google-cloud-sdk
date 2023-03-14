@@ -87,8 +87,11 @@ class GetCredentialsCommand(hub_base.HubCommand, calliope_base.Command):
     log.status.Print('Current project_id: ' + project_id)
 
     self.RunIamCheck(project_id)
-    hub_endpoint_override = (
-        properties.VALUES.api_endpoint_overrides.AllValues().get('gkehub', ''))
+    try:
+      hub_endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
+          'gkehub').Get()
+    except properties.NoSuchPropertyError:
+      hub_endpoint_override = None
     # API enablement is only done once per environment, regardless of which
     # region is being accessed.
     CheckGatewayApiEnablement(

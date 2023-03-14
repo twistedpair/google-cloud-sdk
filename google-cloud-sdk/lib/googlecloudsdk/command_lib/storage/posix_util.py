@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
+from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import platforms
 
 _MISSING_UID_FORMAT = (
@@ -149,6 +150,7 @@ def _get_user_groups():
       [g.gr_gid for g in grp.getgrall() if user_name in g.gr_mem])
 
 
+@function_result_cache.lru(maxsize=1)
 def get_system_posix_data():
   """Gets POSIX info that should only be fetched once."""
   if platforms.OperatingSystem.IsWindows():
@@ -167,7 +169,7 @@ def _raise_error_and_maybe_delete_file(error, delete_path):
 
 
 def raise_if_invalid_file_permissions(
-    user_request_args,
+    system_posix_data,
     resource,
     delete_path=None,
     known_posix=None,
@@ -177,8 +179,8 @@ def raise_if_invalid_file_permissions(
   Can delete invalid file.
 
   Args:
-    user_request_args (UserRequestArgs): Contains SystemPosixData used to
-      determine if file will be made inaccessible in local environment.
+    system_posix_data (SystemPosixData): Helps determine if file will be made
+      inaccessible in local environment.
     resource (ObjectResource): Contains URL used for messages and custom POSIX
       metadata used to determine if setting invalid file permissions.
     delete_path (str|None): If present, will delete file before raising error.
@@ -194,10 +196,6 @@ def raise_if_invalid_file_permissions(
   Raises:
     PermissionError: Has explanatory message about permissions issue.
   """
-  if not (user_request_args and user_request_args.system_posix_data):
-    # User not preserving POSIX metadata that may cause permissions issues.
-    return
-
   _, _, uid, gid, mode = (
       known_posix or get_posix_attributes_from_cloud_resource(resource)
   )
@@ -232,7 +230,7 @@ def raise_if_invalid_file_permissions(
       _raise_error_and_maybe_delete_file(error, delete_path)
 
   if mode is None:
-    mode_to_set = user_request_args.system_posix_data.default_mode
+    mode_to_set = system_posix_data.default_mode
   else:
     mode_to_set = mode
 
@@ -249,7 +247,7 @@ def raise_if_invalid_file_permissions(
     )
     _raise_error_and_maybe_delete_file(error, delete_path)
 
-  if gid is None or gid in user_request_args.system_posix_data.user_groups:
+  if gid is None or gid in system_posix_data.user_groups:
     # No GID causes system to create file owned by user's primary group.
     # Group permissions take priority over "other" if user is member of group.
     if mode_to_set.base_ten_int & stat.S_IRGRP:
@@ -297,7 +295,7 @@ def get_posix_attributes_from_file(file_path):
 
 
 def set_posix_attributes_on_file_if_valid(
-    user_request_args,
+    system_posix_data,
     source_resource,
     destination_resource,
     known_source_posix=None,
@@ -310,8 +308,8 @@ def set_posix_attributes_on_file_if_valid(
   a download, but we call it again here to be safe.
 
   Args:
-    user_request_args (user_request_args_factory._UserRequestArgs|None): Checks
-      if user intended to preserve file POSIX data and get system-wide POSIX.
+    system_posix_data (SystemPosixData): System-wide POSIX. Helps fill in
+      missing data and determine validity of result.
     source_resource (resource_reference.ObjectResource): Source resource with
       POSIX attributes to apply.
     destination_resource (resource_reference.FileObjectResource): Destination
@@ -326,11 +324,9 @@ def set_posix_attributes_on_file_if_valid(
       did not have permission to perform. Other permission errors from calling
       OS functions are possible. Also see `raise_if_invalid_file_permissions`.
   """
-  if not (user_request_args and user_request_args.system_posix_data):
-    return
   destination_path = destination_resource.storage_url.object_name
   raise_if_invalid_file_permissions(
-      user_request_args,
+      system_posix_data,
       source_resource,
       destination_path,
       known_posix=known_source_posix,
@@ -533,11 +529,9 @@ def update_custom_metadata_dict_with_posix_attributes(metadata_dict,
 
 
 def raise_if_source_and_destination_not_valid_for_preserve_posix(
-    source_url, destination_url, user_request_args=None):
+    source_url, destination_url
+):
   """Logs errors and returns bool indicating if transfer is valid for POSIX."""
-  if not (user_request_args and user_request_args.system_posix_data):
-    return
-
   if isinstance(source_url, storage_url.FileUrl) and source_url.is_stream:
     raise ValueError(
         'Cannot preserve POSIX data from pipe: {}'.format(source_url))
@@ -548,3 +542,10 @@ def raise_if_source_and_destination_not_valid_for_preserve_posix(
   if isinstance(source_url, storage_url.CloudUrl) and isinstance(
       destination_url, storage_url.CloudUrl):
     raise ValueError('Cannot preserve POSIX data for cloud-to-cloud copies')
+
+
+def run_if_preserving_posix(user_request_args, function, *args, **kwargs):
+  """Useful for gating functions without repeating the below if statement."""
+  if user_request_args and user_request_args.preserve_posix:
+    return function(*args, **kwargs)
+  return None

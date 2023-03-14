@@ -36,7 +36,8 @@ def LocationAttributeConfig():
           deps.PropertyFallthrough(
               properties.VALUES.container_bare_metal.location,
           ),
-      ])
+      ],
+  )
 
 
 def GetLocationResourceSpec():
@@ -60,7 +61,8 @@ def AddLocationResourceArg(parser, verb):
       '--location',
       GetLocationResourceSpec(),
       'Google Cloud location {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def ClusterAttributeConfig():
@@ -80,11 +82,9 @@ def GetClusterResourceSpec():
   )
 
 
-def AddClusterResourceArg(parser,
-                          verb,
-                          positional=True,
-                          required=True,
-                          flag_name_overrides=None):
+def AddClusterResourceArg(
+    parser, verb, positional=True, required=True, flag_name_overrides=None
+):
   """Adds a resource argument for an Anthos cluster on Bare Metal.
 
   Args:
@@ -122,11 +122,9 @@ def GetAdminClusterResourceSpec():
   )
 
 
-def AddAdminClusterResourceArg(parser,
-                               verb,
-                               positional=True,
-                               required=True,
-                               flag_name_overrides=None):
+def AddAdminClusterResourceArg(
+    parser, verb, positional=True, required=True, flag_name_overrides=None
+):
   """Adds a resource argument for an Anthos on bare metal admin cluster.
 
   Args:
@@ -156,7 +154,10 @@ def AddForceCluster(parser):
   parser.add_argument(
       '--force',
       action='store_true',
-      help='If set, the operation will also apply to the child node pools. This flag is required if the cluster has any associated node pools.',
+      help=(
+          'If set, the operation will also apply to the child node pools. This'
+          ' flag is required if the cluster has any associated node pools.'
+      ),
   )
 
 
@@ -169,7 +170,10 @@ def AddAllowMissingCluster(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the Bare Metal cluster is not found, the request will succeed but no action will be taken.',
+      help=(
+          'If set, and the Bare Metal cluster is not found, the request will'
+          ' succeed but no action will be taken.'
+      ),
   )
 
 
@@ -187,7 +191,11 @@ def AddAllowMissingUpdateCluster(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the Anthos cluster on bare metal is not found, the update request will try to create a new cluster with the provided configuration.',
+      help=(
+          'If set, and the Anthos cluster on bare metal is not found, the'
+          ' update request will try to create a new cluster with the provided'
+          ' configuration.'
+      ),
   )
 
 
@@ -200,7 +208,10 @@ def AddValidationOnly(parser):
   parser.add_argument(
       '--validate-only',
       action='store_true',
-      help='If set, only validate the request, but do not actually perform the operation.',
+      help=(
+          'If set, only validate the request, but do not actually perform the'
+          ' operation.'
+      ),
   )
 
 
@@ -294,21 +305,27 @@ def AddVersion(parser, is_update=False):
   parser.add_argument(
       '--version',
       required=required,
-      help='Anthos cluster on bare metal version for the admin cluster resource.',
+      help=(
+          'Anthos cluster on bare metal version for the admin cluster resource.'
+      ),
   )
 
 
-def _AddServiceAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group):
+def _AddServiceAddressCIDRBlocks(
+    bare_metal_island_mode_cidr_config_group, is_update=False
+):
   """Adds a flag to specify the IPv4 address ranges used in the services in the cluster.
 
   Args:
     bare_metal_island_mode_cidr_config_group: The parent group to add the flag
       to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   bare_metal_island_mode_cidr_config_group.add_argument(
       '--island-mode-service-address-cidr-blocks',
       metavar='SERVICE_ADDRESS',
-      required=True,
+      required=required,
       type=arg_parsers.ArgList(
           min_length=1,
       ),
@@ -334,43 +351,55 @@ def _AddPodAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group):
   )
 
 
-def _AddIslandModeCIDRConfig(bare_metal_network_config_group):
+def _AddIslandModeCIDRConfig(bare_metal_network_config_group, is_update=False):
   """Adds island mode CIDR config related flags.
 
   Args:
     bare_metal_network_config_group: The parent group to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
-  bare_metal_island_mode_cidr_config_group = bare_metal_network_config_group.add_group(
-      help='Island mode CIDR network configuration.',
+  required = not is_update
+  bare_metal_island_mode_cidr_config_group = (
+      bare_metal_network_config_group.add_group(
+          help='Island mode CIDR network configuration.',
+      )
   )
-  _AddServiceAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group)
-  _AddPodAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group)
+  if required:
+    _AddServiceAddressCIDRBlocks(
+        bare_metal_island_mode_cidr_config_group, is_update
+    )
+    _AddPodAddressCIDRBlocks(bare_metal_island_mode_cidr_config_group)
+  else:
+    _AddServiceAddressCIDRBlocks(
+        bare_metal_island_mode_cidr_config_group, is_update
+    )
 
 
-def AddNetworkConfig(parser):
+def AddNetworkConfig(parser, is_update=False):
   """Adds network config related flags.
 
   Args:
     parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  required = not is_update
   network_config_mutex_group = parser.add_group(
       mutex=True,
-      required=True,
+      required=required,
       help='Populate one of the network configs.',
   )
-  _AddIslandModeCIDRConfig(network_config_mutex_group)
+  _AddIslandModeCIDRConfig(network_config_mutex_group, is_update)
 
 
 def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):
   """Adds flags to set the Metal LB node config.
 
   Args:
-    bare_metal_metal_lb_node_config: The parent group to add the flag
-      to.
+    bare_metal_metal_lb_node_config: The parent group to add the flag to.
   """
   node_config_mutex_group = bare_metal_metal_lb_node_config.add_group(
-      help='Populate MetalLB load balancer node config.',
-      mutex=True)
+      help='Populate MetalLB load balancer node config.', mutex=True
+  )
   metal_lb_node_configs_from_file_help_text = """
 Path of the YAML/JSON file that contains the Metal LB node configs.
 
@@ -418,8 +447,7 @@ def _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config):
   """Adds a flag to assign labels to nodes in a MetalLB node pool.
 
   Args:
-    bare_metal_metal_lb_node_config: The parent group to add the
-      flags to.
+    bare_metal_metal_lb_node_config: The parent group to add the flags to.
   """
   bare_metal_metal_lb_node_config.add_argument(
       '--metal-lb-load-balancer-node-labels',
@@ -433,8 +461,7 @@ def _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config):
   """Adds a flag to specify the node taint in the MetalLBnode pool.
 
   Args:
-   bare_metal_metal_lb_node_config: The parent group to add the
-      flags to.
+   bare_metal_metal_lb_node_config: The parent group to add the flags to.
   """
   bare_metal_metal_lb_node_config.add_argument(
       '--metal-lb-load-balancer-node-taints',
@@ -451,10 +478,16 @@ def _AddMetalLBNodePoolConfig(metal_lb_config_group):
    metal_lb_config_group: The argparse parser to add the flag to.
   """
   bare_metal_metal_lb_node_pool_config_group = metal_lb_config_group.add_group(
-      help='Anthos on bare metal node pool configuration for MetalLB load balancer nodes.',
+      help=(
+          'Anthos on bare metal node pool configuration for MetalLB load'
+          ' balancer nodes.'
+      ),
   )
-  bare_metal_metal_lb_node_config = bare_metal_metal_lb_node_pool_config_group.add_group(
-      help='MetalLB Node Pool configuration.')
+  bare_metal_metal_lb_node_config = (
+      bare_metal_metal_lb_node_pool_config_group.add_group(
+          help='MetalLB Node Pool configuration.'
+      )
+  )
 
   _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config)
   _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config)
@@ -533,7 +566,7 @@ def _AddMetalLBConfig(lb_config_mutex_group, is_update=False):
   """
   metal_lb_config_group = lb_config_mutex_group.add_group(
       'MetalLB Configuration',
-      )
+  )
 
   _AddMetalLBAddressPools(metal_lb_config_group, is_update)
   _AddMetalLBNodePoolConfig(metal_lb_config_group)
@@ -546,7 +579,8 @@ def _AddManualLBConfig(lb_config_mutex_group):
     lb_config_mutex_group: The parent mutex group to add the flags to.
   """
   manual_lb_config_group = lb_config_mutex_group.add_group(
-      help='Manual load balancer configuration.',)
+      help='Manual load balancer configuration.',
+  )
   manual_lb_config_group.add_argument(
       '--enable-manual-lb',
       required=True,
@@ -583,9 +617,11 @@ def _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group):
   Args:
     bare_metal_load_balancer_config_group: The parent group to add the flags to.
   """
-  control_plane_load_balancer_port_config_group = bare_metal_load_balancer_config_group.add_group(
-      help='Control plane load balancer port configuration.',
-      required=True,
+  control_plane_load_balancer_port_config_group = (
+      bare_metal_load_balancer_config_group.add_group(
+          help='Control plane load balancer port configuration.',
+          required=True,
+      )
   )
   control_plane_load_balancer_port_config_group.add_argument(
       '--control-plane-load-balancer-port',
@@ -706,15 +742,13 @@ def _AddControlPlaneNodeConfigs(bare_metal_node_config_group, is_update=False):
   """Adds flags to set the control plane node config.
 
   Args:
-    bare_metal_node_config_group: The parent mutex group to add the
-      flags to.
+    bare_metal_node_config_group: The parent mutex group to add the flags to.
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
   node_config_mutex_group = bare_metal_node_config_group.add_group(
-      help='Populate control plane node config.',
-      required=required,
-      mutex=True)
+      help='Populate control plane node config.', required=required, mutex=True
+  )
   control_plane_node_configs_from_file_help_text = """
 Path of the YAML/JSON file that contains the control plane node configs.
 
@@ -786,8 +820,9 @@ def _AddControlPlaneNodeTaints(bare_metal_node_config_group):
   )
 
 
-def _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group,
-                       is_update=False):
+def _AddNodePoolConfig(
+    bare_metal_control_plane_node_pool_config_group, is_update=False
+):
   """Adds a command group to set the node pool config.
 
   Args:
@@ -813,8 +848,9 @@ def _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group,
   _AddControlPlaneNodeTaints(bare_metal_node_config_group)
 
 
-def _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group,
-                                   is_update=False):
+def _AddControlPlaneNodePoolConfig(
+    bare_metal_control_plane_config_group, is_update=False
+):
   """Adds a command group to set the control plane node pool config.
 
   Args:
@@ -824,7 +860,9 @@ def _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group,
   """
   required = not is_update
   bare_metal_control_plane_node_pool_config_group = bare_metal_control_plane_config_group.add_group(
-      help='Anthos on bare metal cluster control plane node pool configuration.',
+      help=(
+          'Anthos on bare metal cluster control plane node pool configuration.'
+      ),
       required=required,
   )
   _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group, is_update)
@@ -856,8 +894,9 @@ def AddControlPlaneConfig(parser, is_update=False):
       help='Anthos on bare metal cluster control plane configuration.',
       required=required,
   )
-  _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group,
-                                 is_update)
+  _AddControlPlaneNodePoolConfig(
+      bare_metal_control_plane_config_group, is_update
+  )
   _AddControlPlaneAPIServerArgs(bare_metal_control_plane_config_group)
 
 
@@ -868,7 +907,8 @@ def AddDescription(parser):
     parser: The argparse parser to add the flag to.
   """
   parser.add_argument(
-      '--description', type=str, help='Description for the resource.')
+      '--description', type=str, help='Description for the resource.'
+  )
 
 
 def AddAnnotations(parser):
@@ -940,7 +980,10 @@ def AddClusterOperationsConfig(parser):
   bare_metal_cluster_operations_config_group.add_argument(
       '--enable-application-logs',
       action='store_true',
-      help='Whether collection of application logs/metrics should be enabled (in addition to system logs/metrics).',
+      help=(
+          'Whether collection of application logs/metrics should be enabled (in'
+          ' addition to system logs/metrics).'
+      ),
   )
 
 
@@ -986,7 +1029,10 @@ def _AddContainerRuntime(bare_metal_workload_node_config_group):
   """
   bare_metal_workload_node_config_group.add_argument(
       '--container-runtime',
-      help='Container runtime which will be used in the bare metal admin cluster.',
+      help=(
+          'Container runtime which will be used in the bare metal admin'
+          ' cluster.'
+      ),
   )
 
 
@@ -1013,11 +1059,17 @@ def _AddAuthorization(bare_metal_security_config_group, is_update=False):
   """
   required = not is_update
   authorization_group = bare_metal_security_config_group.add_group(
-      help='User cluster authorization configurations to bootstrap onto the admin cluster'
+      help=(
+          'User cluster authorization configurations to bootstrap onto the'
+          ' admin cluster'
+      )
   )
   authorization_group.add_argument(
       '--admin-users',
-      help='Users that will be granted the cluster-admin role on the cluster, providing full access to the cluster.',
+      help=(
+          'Users that will be granted the cluster-admin role on the cluster,'
+          ' providing full access to the cluster.'
+      ),
       action='append',
       required=required,
   )
@@ -1044,7 +1096,10 @@ def AddNodeAccessConfig(parser):
     parser: The argparse parser to add the flag to.
   """
   bare_metal_node_access_config_group = parser.add_group(
-      help='Anthos on bare metal node access related settings for the admin cluster.',
+      help=(
+          'Anthos on bare metal node access related settings for the admin'
+          ' cluster.'
+      ),
   )
 
   bare_metal_node_access_config_group.add_argument(
@@ -1059,7 +1114,8 @@ def GetOperationResourceSpec():
       'gkeonprem.projects.locations.operations',
       resource_name='operation',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def AddOperationResourceArg(parser, verb):
@@ -1073,13 +1129,17 @@ def AddOperationResourceArg(parser, verb):
       'operation_id',
       GetOperationResourceSpec(),
       'operation {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AdminClusterMembershipIdAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='admin_cluster_membership',
-      help_text='admin cluster membership of the {resource}, in the form of projects/PROJECT/locations/LOCATION/memberships/MEMBERSHIP. '
+      help_text=(
+          'admin cluster membership of the {resource}, in the form of'
+          ' projects/PROJECT/locations/LOCATION/memberships/MEMBERSHIP. '
+      ),
   )
 
 
@@ -1109,9 +1169,9 @@ def GetAdminClusterMembershipResourceSpec():
   )
 
 
-def AddAdminClusterMembershipResourceArg(parser,
-                                         positional=True,
-                                         required=True):
+def AddAdminClusterMembershipResourceArg(
+    parser, positional=True, required=True
+):
   """Adds a resource argument for a bare metal admin cluster membership.
 
   Args:
@@ -1119,16 +1179,22 @@ def AddAdminClusterMembershipResourceArg(parser,
     positional: bool, whether the argument is positional or not.
     required: bool, whether the argument is required or not.
   """
-  name = 'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  name = (
+      'admin_cluster_membership' if positional else '--admin-cluster-membership'
+  )
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAdminClusterMembershipResourceSpec(),
-      'membership of the admin cluster. Membership can be the membership ID or the full resource name.',
+      (
+          'membership of the admin cluster. Membership can be the membership ID'
+          ' or the full resource name.'
+      ),
       required=required,
       flag_name_overrides={
           'project': '--admin-cluster-membership-project',
           'location': '--admin-cluster-membership-location',
-      }).AddToParser(parser)
+      },
+  ).AddToParser(parser)
 
 
 def AddAdminLoadBalancerConfig(parser, is_update=False):
@@ -1169,7 +1235,8 @@ def _AddAdminVIPConfig(bare_metal_admin_load_balancer_config_group):
 
 
 def _AddAdminLoadBalancerPortConfig(
-    bare_metal_admin_load_balancer_config_group):
+    bare_metal_admin_load_balancer_config_group,
+):
   """Adds flags to set port for load balancer.
 
   Args:

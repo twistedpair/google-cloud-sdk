@@ -22,8 +22,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
@@ -236,8 +234,12 @@ def _GetGapicClientInstance(api_name,
     An instance of the specified GAPIC API client.
   """
   def AddressOverride(address):
-    endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-    endpoint_override = endpoint_overrides.get(api_name)
+    try:
+      endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
+          api_name).Get()
+    except properties.NoSuchPropertyError:
+      endpoint_override = None
+
     if endpoint_override:
       address = urlparse(endpoint_override).netloc
 
@@ -303,64 +305,18 @@ def _BuildEndpointOverride(endpoint_override, base_url):
 
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   """Returns effective endpoint for given api."""
-  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  endpoint_override = endpoint_overrides.get(api_name)
+  try:
+    endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
+        api_name).Get()
+  except properties.NoSuchPropertyError:
+    endpoint_override = None
+
   client_class = client_class or _GetClientClass(api_name, api_version)
   if endpoint_override:
     return _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
   if _MtlsEnabled(api_name, api_version):
     return _GetMtlsEndpoint(api_name, api_version, client_class)
   return client_class.BASE_URL
-
-
-_LEGACY_URL_FORMAT = r'(http|https)://www\.(.+?)/(.+?)/(.*)'
-
-
-def _ConvertLegacyToStandardURL(url):
-  """Convert a legacy reference format URL to the standard URL format.
-
-  Some URLs for resources, such as from GCE, are in the legacy URI reference
-  format. For example:
-    https://compute.googleapis.com/compute/v1/projects/{project}/zones/us-west4-c/instances/foo
-  Is returned as:
-    https://www.googleapis.com/compute/v1/projects/{project}/zones/us-west4-c/instances/foo
-
-  This methods converts URIs matching:
-    http(s)://www.googleapis.com/{api}/{version}/{resource-path}
-  into:
-    http(s)://{api}.googleapis.com/{api}/{version}/{resource-path}
-
-  Args:
-    url: str, URL.
-
-  Returns:
-    URL in standard reference format.
-  """
-  return re.sub(_LEGACY_URL_FORMAT, r'\1://\3.\2/\3/\4', url)
-
-
-def IsOverriddenURL(url):
-  """Check if a URL is the result of an endpoint override."""
-  api_name, _, _ = resource_util.SplitDefaultEndpointUrl(url)
-  try:
-    endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
-        api_name).Get()
-  except properties.NoSuchPropertyError:
-    return False
-
-  if not endpoint_override:
-    return False
-  if re.match(_LEGACY_URL_FORMAT, url):
-    normalized_url = _ConvertLegacyToStandardURL(url)
-  else:
-    normalized_url = url
-  if re.match(_LEGACY_URL_FORMAT, endpoint_override):
-    normalized_endpoint_override = _ConvertLegacyToStandardURL(
-        endpoint_override)
-  else:
-    normalized_endpoint_override = endpoint_override
-
-  return normalized_url.startswith(normalized_endpoint_override)
 
 
 def _GetMessagesModule(api_name, api_version):

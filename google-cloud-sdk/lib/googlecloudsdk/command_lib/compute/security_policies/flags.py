@@ -250,19 +250,37 @@ def AddDdosProtectionConfig(parser, required=False):
       required=required,
       help=(
           'The DDoS protection level for network load balancing and instances '
-          'with external IPs'))
+          'with external IPs'
+      ),
+  )
+
+
+def AddDdosProtectionConfigWithAdvancedPreview(parser, required=False):
+  """Adds the cloud armor DDoS protection config arguments to the argparse."""
+  parser.add_argument(
+      '--network-ddos-protection',
+      choices=['STANDARD', 'ADVANCED', 'ADVANCED_PREVIEW'],
+      type=lambda x: x.upper(),
+      required=required,
+      help=(
+          'The DDoS protection level for network load balancing and instances '
+          'with external IPs'
+      ),
+  )
 
 
 def AddDdosProtectionConfigOld(parser, required=False):
   """Adds the cloud armor DDoS protection config arguments to the argparse."""
   parser.add_argument(
       '--ddos-protection',
-      choices=['STANDARD', 'ADVANCED'],
+      choices=['STANDARD', 'ADVANCED', 'ADVANCED_PREVIEW'],
       type=lambda x: x.upper(),
       required=required,
       help=(
           'The DDoS protection level for network load balancing and instances '
-          'with external IPs'))
+          'with external IPs'
+      ),
+  )
 
 
 def AddRecaptchaOptions(parser, required=False):

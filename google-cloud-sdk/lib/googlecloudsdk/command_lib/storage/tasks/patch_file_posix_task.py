@@ -29,7 +29,7 @@ class PatchFilePosixTask(task.Task):
 
   def __init__(
       self,
-      user_request_args,
+      system_posix_data,
       source_resource,
       destination_resource,
       known_source_posix=None,
@@ -38,9 +38,7 @@ class PatchFilePosixTask(task.Task):
     """Initializes task.
 
     Args:
-      user_request_args (UserRequestArgs): Contains system-wide POSIX metadata.
-        This task won't do anything if the POSIX field is empty. The field is
-        typically populated by the --preserve-posix flag.
+      system_posix_data (SystemPosixData): Contains system-wide POSIX metadata.
       source_resource (resource_reference.ObjectResource): Contains custom POSIX
         metadata and URL for error logging.
       destination_resource (resource_reference.FileObjectResource): File to set
@@ -51,7 +49,7 @@ class PatchFilePosixTask(task.Task):
         instead of extracting from destination.
     """
     super(PatchFilePosixTask, self).__init__()
-    self._user_request_args = user_request_args
+    self._system_posix_data = system_posix_data
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._known_source_posix = known_source_posix
@@ -60,7 +58,7 @@ class PatchFilePosixTask(task.Task):
   def execute(self, task_status_queue=None):
     log.status.Print('Patching {}...'.format(self._destination_resource))
     posix_util.set_posix_attributes_on_file_if_valid(
-        self._user_request_args,
+        self._system_posix_data,
         self._source_resource,
         self._destination_resource,
         known_source_posix=self._known_source_posix,
@@ -74,7 +72,7 @@ class PatchFilePosixTask(task.Task):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (
-        self._user_request_args == other._user_request_args
+        self._system_posix_data == other._system_posix_data
         and self._source_resource == other._source_resource
         and self._destination_resource == other._destination_resource
         and self._known_source_posix == other._known_source_posix

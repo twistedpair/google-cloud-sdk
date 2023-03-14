@@ -61,6 +61,11 @@ class StsEndpoints(ByoidEndpoints):
     return '{}/{}'.format(self._base_url, api)
 
   @property
+  def oauth_token_url(self):
+    api = 'v1/oauthtoken'
+    return '{}/{}'.format(self._base_url, api)
+
+  @property
   def token_info_url(self):
     api = 'v1/introspect'
     return '{}/{}'.format(self._base_url, api)

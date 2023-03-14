@@ -714,8 +714,12 @@ def GetRedirectionEnablementReport(project):
     except apitools_exceptions.HttpNotFoundError:
       report_line.append(
           con.Colorize(
-              'None Found. Will create repo named "{}"'.format(
-                  gcr_repo["repository"]), "yellow"))
+              'None Found. Can create repo named "{}"'.format(
+                  gcr_repo["repository"]
+              ),
+              "yellow",
+          )
+      )
       missing_repos.append(gcr_repo)
     repo_report.append(report_line)
 
@@ -803,46 +807,49 @@ def EnableUpgradeRedirection(unused_ref, args):
     return None
 
   if missing_repos:
-    log.status.Print(
-        "Each GCR repo should have a matching Artifact Registry repository or tools that depend on GCR repos existing may fail."
-    )
-    log.status.Print(
-        "If you would like to customize settings (like CMEK) for these repos, choose N and create them manually. Example command:"
-    )
     example_repo = missing_repos[0]
-    log.status.Print(
-        "  gcloud artifacts repositories create {} --location={} --project={} --repository-format=DOCKER"
-        .format(example_repo["repository"], example_repo["location"], project))
     create_repos = console_io.PromptContinue(
-        "\nShould gcloud automatically create the {num} missing repo{s} in Artifact Registry?"
-        .format(
-            num=len(missing_repos), s=("s" if len(missing_repos) > 1 else "")),
-        default=False)
-    if not create_repos:
-      log.status.Print("No changes made.")
-      return None
-
-    op_resources = []
-    for missing_repo in missing_repos:
-      repository_message = messages.Repository(
-          name="projects/{}/locations/{}/repositories/{}".format(
-              project, missing_repo["location"], missing_repo["repository"]),
-          description="Created by gcloud. Deleting this repo may break tools that depend on GCR if redirection is enabled.",
-          format=messages.Repository.FormatValueValuesEnum.DOCKER,
-      )
-      op = ar_requests.CreateRepository(project, missing_repo["location"],
-                                        repository_message)
-      op_resources.append(
-          resources.REGISTRY.ParseRelativeName(
-              op.name,
-              collection="artifactregistry.projects.locations.operations"))
-    client = ar_requests.GetClient()
-    for resource in op_resources:
-      waiter.WaitFor(
-          waiter.CloudOperationPollerNoResources(
-              client.projects_locations_operations),
-          resource,
-          message="Waiting for repo creation to complete...")
+        "\nShould gcloud automatically create the {num} missing repo{s} in"
+        " Artifact Registry?\nIf you would like to customize settings (like"
+        " CMEK) for these repos, choose N and create them manually. Example"
+        " command:\n  gcloud artifacts repositories create {r} --location={l}"
+        " --project={p} --repository-format=DOCKER".format(
+            num=len(missing_repos),
+            s=("s" if len(missing_repos) > 1 else ""),
+            r=example_repo["repository"],
+            l=example_repo["location"],
+            p=project,
+        ),
+        default=False,
+    )
+    if create_repos:
+      op_resources = []
+      for missing_repo in missing_repos:
+        repository_message = messages.Repository(
+            name="projects/{}/locations/{}/repositories/{}".format(
+                project, missing_repo["location"], missing_repo["repository"]
+            ),
+            description="Created by gcloud",
+            format=messages.Repository.FormatValueValuesEnum.DOCKER,
+        )
+        op = ar_requests.CreateRepository(
+            project, missing_repo["location"], repository_message
+        )
+        op_resources.append(
+            resources.REGISTRY.ParseRelativeName(
+                op.name,
+                collection="artifactregistry.projects.locations.operations",
+            )
+        )
+      client = ar_requests.GetClient()
+      for resource in op_resources:
+        waiter.WaitFor(
+            waiter.CloudOperationPollerNoResources(
+                client.projects_locations_operations
+            ),
+            resource,
+            message="Waiting for repo creation to complete...",
+        )
   else:
     log.status.Print(
         con.Colorize("OK: ", "green") +

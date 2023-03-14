@@ -1700,3 +1700,19 @@ $ gcloud {command}
       action='store_true',
       help='If set, enables control plane v2.',
   )
+
+
+def AddNodePoolIgnoreErrors(parser):
+  """Adds a flag for ignore_errors field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      help=(
+          'If set, the deletion of a VMware node pool resource will succeed'
+          ' even if errors occur during deletion.'
+      ),
+      action='store_true',
+  )

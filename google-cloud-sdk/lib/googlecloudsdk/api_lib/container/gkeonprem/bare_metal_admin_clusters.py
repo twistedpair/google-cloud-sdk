@@ -51,10 +51,10 @@ class _BareMetalAdminClusterClient(client.ClientBase):
     """Constructs proto message BareMetalAdminIslandModeCidrConfig."""
     kwargs = {
         'serviceAddressCidrBlocks': getattr(
-            args, 'island_mode_service_address_cidr_blocks', None
+            args, 'island_mode_service_address_cidr_blocks', []
         ),
         'podAddressCidrBlocks': getattr(
-            args, 'island_mode_pod_address_cidr_blocks', None
+            args, 'island_mode_pod_address_cidr_blocks', []
         ),
     }
 

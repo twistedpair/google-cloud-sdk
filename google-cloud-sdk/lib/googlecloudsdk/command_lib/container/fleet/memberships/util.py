@@ -162,7 +162,7 @@ def GetConnectGatewayServiceName(endpoint_override, location):
 
   Args:
     endpoint_override: The URL set as the API endpoint override for 'gkehub'.
-      Empty string if the override is not set.
+      None if the override is not set.
     location: The location against which the command is supposed to run. This
       will be used to dynamically modify the service name to a location-specific
       value. If this is the value 'global' or None, a global service name is
@@ -180,7 +180,7 @@ def GetConnectGatewayServiceName(endpoint_override, location):
   # Determine the location prefix, if any
   prefix = '' if location in ('global', None) else '{}-'.format(location)
   if not endpoint_override:
-    # endpoint_override will be empty string for Prod.
+    # Production
     return '{}connectgateway.googleapis.com'.format(prefix)
   elif 'autopush-gkehub' in endpoint_override:
     return '{}autopush-connectgateway.sandbox.googleapis.com'.format(prefix)

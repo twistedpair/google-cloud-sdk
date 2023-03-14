@@ -28,6 +28,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.eventarc import flags as eventarc_flags
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import log
@@ -431,12 +432,20 @@ def AddRuntimeFlag(parser):
   )
 
 
+def GetVpcConnectorResourceSpec():
+  instance_data = yaml_data.ResourceYAMLData.FromPath(
+      'compute.networks.vpc_access.connector'
+  )
+  return concepts.ResourceSpec.FromYaml(instance_data.GetData())
+
+
 def AddVPCConnectorMutexGroup(parser):
   """Add flag for specifying VPC connector to the parser."""
   mutex_group = parser.add_group(mutex=True)
-  mutex_group.add_argument(
+  resource = presentation_specs.ResourcePresentationSpec(
       '--vpc-connector',
-      help="""\
+      GetVpcConnectorResourceSpec(),
+      """\
         The VPC Access connector that the function can connect to. It can be
         either the fully-qualified URI, or the short name of the VPC Access
         connector resource. If the short name is used, the connector must
@@ -445,7 +454,18 @@ def AddVPCConnectorMutexGroup(parser):
         or `${CONNECTOR}`, where `${CONNECTOR}` is the short name of the VPC
         Access connector.
       """,
+      group=mutex_group,
+      # This hides the region flag for the connector resource.
+      flag_name_overrides={'region': ''},
   )
+
+  concept_parsers.ConceptParser(
+      [resource],
+      # This configures the fallthrough from the vpc-connector's region to
+      # the primary flag for the function's region.
+      command_level_fallthroughs={'--vpc-connector.region': ['--region']},
+  ).AddToParser(parser)
+
   mutex_group.add_argument(
       '--clear-vpc-connector',
       action='store_true',

@@ -312,7 +312,7 @@ def GetArgDetails(arg, depth=0):
         one_of = 'one of'
       else:
         # TBD I guess?
-        one_of = '(currently only one value is supported)'
+        one_of = '(only one value is supported)'
       if isinstance(choices, dict):
         choices_iteritems = six.iteritems(choices)
         if not isinstance(choices, collections.OrderedDict):

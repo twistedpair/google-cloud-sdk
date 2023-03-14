@@ -564,13 +564,13 @@ def CertConfigDefaultFilePath():
   """Gets the certificate_config.json default file path.
 
   Returns:
-    str, The default path to the config file, or None if the file does not
+    str, The default path to the config file.
     exist.
   """
   # pylint:disable=protected-access
   config_path = os.path.join(_cloud_sdk.get_config_path(),
                              'certificate_config.json')
-  return config_path if os.path.isfile(config_path) else None
+  return config_path
 
 
 def ADCFilePath():

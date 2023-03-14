@@ -18,11 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.tasks import patch_file_posix_task
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
+from googlecloudsdk.command_lib.storage.tasks.objects import patch_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -216,17 +223,8 @@ def compare_metadata_and_return_copy_needed(
     source_mtime,
     destination_mtime,
     compare_only_hashes=False,
-    skip_if_destination_has_later_modification_time=False,
 ):
   """Compares metadata and returns if source should be copied to destination."""
-  have_both_mtimes = source_mtime is not None and destination_mtime is not None
-  if (
-      skip_if_destination_has_later_modification_time
-      and have_both_mtimes
-      and source_mtime < destination_mtime
-  ):
-    return False
-
   # Two cloud objects should have pre-generated hashes that are more reliable
   # than mtime for seeing file differences. This ignores the unusual case where
   # cloud hashes are missing, but we still skip mtime for gsutil parity.
@@ -234,7 +232,11 @@ def compare_metadata_and_return_copy_needed(
       isinstance(source_resource, resource_reference.ObjectResource)
       and isinstance(destination_resource, resource_reference.ObjectResource)
   )
-  if not skip_mtime_comparison and have_both_mtimes:
+  if (
+      not skip_mtime_comparison
+      and source_mtime is not None
+      and destination_mtime is not None
+  ):
     # Ignore hashes like gsutil.
     return not (
         source_mtime == destination_mtime
@@ -244,4 +246,200 @@ def compare_metadata_and_return_copy_needed(
   # Most expensive operation, computing hashes, saved as last resort.
   return not compute_hashes_and_return_match(
       source_resource, destination_resource
+  )
+
+
+class _IterateResource(enum.Enum):
+  """Indicates what resources to compare next."""
+
+  SOURCE = 'source'
+  DESTINATION = 'destination'
+  BOTH = 'both'
+
+
+def compare_equal_urls_to_get_task_and_iteration_instruction(
+    user_request_args,
+    source_object,
+    destination_object,
+    compare_only_hashes=False,
+    skip_if_destination_has_later_modification_time=False,
+):
+  """Similar to get_task_and_iteration_instruction except for equal URLs."""
+  if user_request_args.no_clobber:
+    return (None, _IterateResource.SOURCE)
+
+  source_posix = posix_util.get_posix_attributes_from_resource(source_object)
+  destination_posix = posix_util.get_posix_attributes_from_resource(
+      destination_object
+  )
+  if (
+      skip_if_destination_has_later_modification_time
+      and source_posix.mtime is not None
+      and destination_posix.mtime is not None
+      and source_posix.mtime < destination_posix.mtime
+  ):
+    # This is technically a metadata comparison, but it would complicate
+    # `compare_metadata_and_return_copy_needed`.
+    return (None, _IterateResource.SOURCE)
+
+  if compare_metadata_and_return_copy_needed(
+      source_object,
+      destination_object,
+      source_posix.mtime,
+      destination_posix.mtime,
+      compare_only_hashes,
+  ):
+    # Possible performance improvement would be adding infra to pass the known
+    # POSIX info to upload tasks to avoid an `os.stat` call.
+    return (
+        copy_task_factory.get_copy_task(
+            source_object,
+            destination_object,
+            user_request_args=user_request_args,
+        ),
+        _IterateResource.BOTH,
+    )
+
+  need_full_posix_update = (
+      user_request_args.preserve_posix and source_posix != destination_posix
+  )
+  need_mtime_update = (
+      source_posix.mtime is not None
+      and source_posix.mtime != destination_posix.mtime
+  )
+  if need_full_posix_update or need_mtime_update:
+    if need_full_posix_update:
+      new_posix = source_posix
+    else:
+      new_posix = posix_util.PosixAttributes(
+          None, source_posix.mtime, None, None, None
+      )
+    if isinstance(destination_object, resource_reference.ObjectResource):
+      posix_util.update_custom_metadata_dict_with_posix_attributes(
+          destination_object.custom_fields, new_posix
+      )
+      return (
+          patch_object_task.PatchObjectTask(
+              destination_object, user_request_args=user_request_args
+          ),
+          _IterateResource.BOTH,
+      )
+    else:
+      return (
+          patch_file_posix_task.PatchFilePosixTask(
+              posix_util.get_system_posix_data(),
+              source_object,
+              destination_object,
+              source_posix,
+              destination_posix,
+          ),
+          _IterateResource.BOTH,
+      )
+
+  return (None, _IterateResource.BOTH)
+
+
+def get_task_and_iteration_instruction(
+    user_request_args,
+    source_object,
+    destination_object,
+    destination_container,
+    compare_only_hashes=False,
+    delete_unmatched_destination_objects=False,
+    skip_if_destination_has_later_modification_time=False,
+):
+  """Compares resources and returns next rsync step.
+
+  Args:
+    user_request_args (UserRequestArgs): User flags.
+    source_object (FileObjectResource|ObjectResource|None): Source resource for
+      comparison. `None` indicates no sources left to copy.
+    destination_object (FileObjectResource|ObjectResource|None): Destination
+      resource for comparison. `None` indicates all remaining source resources
+      are new.
+    destination_container (FileDirectoryResource|PrefixResource|BucketResource):
+      If a copy task is generated for a source item with no equivalent existing
+      destination item, it will copy to this general container.
+    compare_only_hashes (bool): Skip modification time comparison.
+    delete_unmatched_destination_objects (bool): Clear objects at the
+      destination that are not present at the source.
+    skip_if_destination_has_later_modification_time (bool): Don't act if mtime
+      metadata indicates we'd be overwriting with an older version of an object.
+
+  Returns:
+    A pair of with a task and iteration instruction.
+
+    First entry:
+    None: Don't do anything for these resources.
+    DeleteObjectTask: Remove an extra object from the destination.
+    FileDownloadTask|FileUploadTask|IntraCloudCopyTask: Update the destination
+      with a copy of the source object.
+    PatchFilePosixTask: Update the file destination POSIX data with the source's
+      POSIX data.
+    PatchObjectTask: Update the cloud destination's POSIX data with the source's
+      POSIX data.
+
+    Second entry:
+    _IterateResource: Enum value indicating what to compare next.
+
+  Raises:
+    errors.Error: Missing a resource (does not account for subfunction errors).
+  """
+  if not (source_object or destination_object):
+    raise errors.Error(
+        'Comparison requires at least a source or a destination.'
+    )
+
+  if not source_object:
+    if delete_unmatched_destination_objects:
+      return (
+          delete_object_task.DeleteObjectTask(
+              destination_object.storage_url,
+              user_request_args=user_request_args,
+          ),
+          _IterateResource.DESTINATION,
+      )
+    return (None, _IterateResource.DESTINATION)
+
+  if not destination_object:
+    return (
+        copy_task_factory.get_copy_task(
+            source_object,
+            destination_container,
+            user_request_args=user_request_args,
+        ),
+        _IterateResource.SOURCE,
+    )
+
+  source_url = source_object.storage_url.versionless_url_string
+  destination_url = destination_object.storage_url.versionless_url_string
+  if source_url < destination_url:
+    return (
+        copy_task_factory.get_copy_task(
+            source_object,
+            destination_container,
+            user_request_args=user_request_args,
+        ),
+        _IterateResource.SOURCE,
+    )
+
+  if source_url > destination_url:
+    if delete_unmatched_destination_objects:
+      return (
+          delete_object_task.DeleteObjectTask(
+              destination_object.storage_url,
+              user_request_args=user_request_args,
+          ),
+          _IterateResource.DESTINATION,
+      )
+    return (None, _IterateResource.DESTINATION)
+
+  return compare_equal_urls_to_get_task_and_iteration_instruction(
+      user_request_args,
+      source_object,
+      destination_object,
+      compare_only_hashes=compare_only_hashes,
+      skip_if_destination_has_later_modification_time=(
+          skip_if_destination_has_later_modification_time
+      ),
   )

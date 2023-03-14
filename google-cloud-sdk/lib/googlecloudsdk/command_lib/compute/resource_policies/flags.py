@@ -205,10 +205,11 @@ def AddGroupPlacementArgs(parser, messages, track):
         '--tpu-topology',
         type=str,
         help='Specifies the shape of the TPU pod slice.')
+  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     parser.add_argument(
         '--max-distance',
         type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=2),
-        help='Specifies the number of max logical switches.'
+        help='Specifies the number of max logical switches between VMs.'
     )
 
 

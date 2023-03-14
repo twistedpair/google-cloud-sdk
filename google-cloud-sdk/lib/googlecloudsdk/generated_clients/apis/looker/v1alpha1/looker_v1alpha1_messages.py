@@ -773,28 +773,6 @@ class InstanceBackupInternal(_messages.Message):
   tenantProjectId = _messages.StringField(7)
 
 
-class IssueRedirectTicketInternalRequest(_messages.Message):
-  r"""IssueRedirectTicketInternalRequest is the request to issue a redirect
-  ticket for an instance. For internal use only.
-
-  Fields:
-    redirectUri: Required. URI to be used in the redirect.
-  """
-
-  redirectUri = _messages.StringField(1)
-
-
-class IssueRedirectTicketInternalResponse(_messages.Message):
-  r"""IssueRedirectTicketInternalResponse is the response for issuing a
-  redirect ticket. For internal use only.
-
-  Fields:
-    ticketId: ID of the created redirect ticket.
-  """
-
-  ticketId = _messages.StringField(1)
-
-
 class ListInstanceBackupsResponse(_messages.Message):
   r"""Response from listing Looker instance backups.
 
@@ -1038,20 +1016,6 @@ class LookerProjectsLocationsInstancesBackupsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
-class LookerProjectsLocationsInstancesBackupsRestoreRequest(_messages.Message):
-  r"""A LookerProjectsLocationsInstancesBackupsRestoreRequest object.
-
-  Fields:
-    name: Required. Instance being restored Format: projects/{project}/locatio
-      ns/{location}/instances/{instance}/backups/{backup}
-    restoreInstanceBackupRequest: A RestoreInstanceBackupRequest resource to
-      be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  restoreInstanceBackupRequest = _messages.MessageField('RestoreInstanceBackupRequest', 2)
-
-
 class LookerProjectsLocationsInstancesBackupsSetIamPolicyRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesBackupsSetIamPolicyRequest object.
 
@@ -1177,20 +1141,6 @@ class LookerProjectsLocationsInstancesImportRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest(_messages.Message):
-  r"""A LookerProjectsLocationsInstancesIssueRedirectTicketInternalRequest
-  object.
-
-  Fields:
-    instance: Required. The instance resource to issue a redirect ticket for.
-    issueRedirectTicketInternalRequest: A IssueRedirectTicketInternalRequest
-      resource to be passed as the request body.
-  """
-
-  instance = _messages.StringField(1, required=True)
-  issueRedirectTicketInternalRequest = _messages.MessageField('IssueRedirectTicketInternalRequest', 2)
-
-
 class LookerProjectsLocationsInstancesListRequest(_messages.Message):
   r"""A LookerProjectsLocationsInstancesListRequest object.
 
@@ -1238,6 +1188,20 @@ class LookerProjectsLocationsInstancesRestartRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   restartInstanceRequest = _messages.MessageField('RestartInstanceRequest', 2)
+
+
+class LookerProjectsLocationsInstancesRestoreRequest(_messages.Message):
+  r"""A LookerProjectsLocationsInstancesRestoreRequest object.
+
+  Fields:
+    name: Required. Instance being restored Format:
+      projects/{project}/locations/{location}/instances/{instance}
+    restoreInstanceRequest: A RestoreInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
 
 
 class LookerProjectsLocationsInstancesSetIamPolicyRequest(_messages.Message):
@@ -1619,8 +1583,16 @@ class RestartInstanceRequest(_messages.Message):
   r"""Request options for restarting an instance."""
 
 
-class RestoreInstanceBackupRequest(_messages.Message):
-  r"""Request options for restoring an instance"""
+class RestoreInstanceRequest(_messages.Message):
+  r"""Request options for restoring an instance
+
+  Fields:
+    backupId: Required. Backup being used to restore the instance Format: proj
+      ects/{project}/locations/{location}/instances/{instance}/backups/{backup
+      }
+  """
+
+  backupId = _messages.StringField(1)
 
 
 class Rule(_messages.Message):

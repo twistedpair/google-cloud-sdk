@@ -49,7 +49,8 @@ def _WorkflowTransform(workflow):
     workflow["workflowTriggers"] = workflow.pop("triggers")
 
   for workflow_trigger in workflow.get("workflowTriggers", []):
-    input_util.WorkflowTriggerTransform(workflow_trigger)
+    input_util.WorkflowTriggerTransform(
+        workflow_trigger, workflow.get("resources", {}))
 
   for param_spec in workflow.get("params", []):
     input_util.ParamSpecTransform(param_spec)
@@ -166,25 +167,11 @@ def _WorkspaceBindingTransform(workspace_binding):
   elif "volume" in workspace_binding:
     popped_volume = workspace_binding.pop("volume")
     # Volume Claim Template.
-    workspace_binding["volumeClaimTemplate"] = {"spec": {}}
-
-    if "accessMode" in popped_volume:
-      access_modes = []
-      for access_mode in popped_volume.pop("accessMode").split(" | "):
-        if access_mode == "read":
-          access_modes.append("READ_ONLY_MANY")
-        if access_mode == "read-write":
-          access_modes.append("READ_WRITE_ONCE")
-      workspace_binding["volumeClaimTemplate"]["spec"][
-          "accessModes"] = access_modes
+    workspace_binding["volumeClaim"] = {}
 
     if "storage" in popped_volume:
       storage = popped_volume.pop("storage")
-      workspace_binding["volumeClaimTemplate"]["spec"]["resources"] = {}
-      workspace_binding["volumeClaimTemplate"]["spec"]["resources"][
-          "requests"] = {
-              "storage": storage
-          }
+      workspace_binding["volumeClaim"]["storage"] = storage
 
   else:
     # Empty Workspace.

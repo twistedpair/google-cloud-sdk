@@ -38,14 +38,17 @@ from googlecloudsdk.core import properties
 class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
   """Performs final steps of sliced download."""
 
-  def __init__(self,
-               source_resource,
-               temporary_destination_resource,
-               final_destination_resource,
-               delete_source=False,
-               do_not_decompress=False,
-               print_created_message=False,
-               user_request_args=None):
+  def __init__(
+      self,
+      source_resource,
+      temporary_destination_resource,
+      final_destination_resource,
+      delete_source=False,
+      do_not_decompress=False,
+      print_created_message=False,
+      system_posix_data=None,
+      user_request_args=None,
+  ):
     """Initializes task.
 
     Args:
@@ -58,10 +61,11 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         contain local filesystem path to the final download destination.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      do_not_decompress (bool): Prevents automatically decompressing
-        downloaded gzips.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
+      do_not_decompress (bool): Prevents automatically decompressing downloaded
+        gzips.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      system_posix_data (SystemPosixData): System-wide POSIX info.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FinalizeSlicedDownloadTask, self).__init__(
@@ -73,6 +77,7 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._print_created_message = print_created_message
+    self._system_posix_data = system_posix_data
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
@@ -129,8 +134,10 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)
 
-    posix_util.set_posix_attributes_on_file_if_valid(
+    posix_util.run_if_preserving_posix(
         self._user_request_args,
+        posix_util.set_posix_attributes_on_file_if_valid,
+        self._system_posix_data,
         self._source_resource,
         self._final_destination_resource,
     )

@@ -313,19 +313,32 @@ class _TriggersClient(_BaseTriggersClient):
         project_id, destination_function_location, destination_function)
     return self._messages.Destination(cloudFunction=function_message)
 
-  def BuildUpdateMask(self, event_filters, event_filters_path_pattern,
-                      service_account, destination_run_service,
-                      destination_run_job, destination_run_path,
-                      destination_run_region, destination_gke_namespace,
-                      destination_gke_service, destination_gke_path,
-                      destination_workflow, destination_workflow_location,
-                      destination_function, destination_function_location):
+  def BuildUpdateMask(
+      self,
+      event_filters,
+      event_filters_path_pattern,
+      event_data_content_type,
+      service_account,
+      destination_run_service,
+      destination_run_job,
+      destination_run_path,
+      destination_run_region,
+      destination_gke_namespace,
+      destination_gke_service,
+      destination_gke_path,
+      destination_workflow,
+      destination_workflow_location,
+      destination_function,
+      destination_function_location,
+  ):
     """Builds an update mask for updating a Cloud Run trigger.
 
     Args:
       event_filters: bool, whether to update the event filters.
       event_filters_path_pattern: bool, whether to update the event filters with
         path pattern syntax.
+      event_data_content_type: bool, whether to update the event data content
+        type.
       service_account: bool, whether to update the service account.
       destination_run_service: bool, whether to update the destination Cloud Run
         service.
@@ -376,6 +389,8 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('eventFilters')
     if service_account:
       update_mask.append('serviceAccount')
+    if event_data_content_type:
+      update_mask.append('eventDataContentType')
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
@@ -458,13 +473,22 @@ class _TriggersClientBeta(_BaseTriggersClient):
         region=destination_run_region)
     return self._messages.Destination(cloudRunService=run_message)
 
-  def BuildUpdateMask(self, event_filters, service_account,
-                      destination_run_service, destination_run_job,
-                      destination_run_path, destination_run_region):
+  def BuildUpdateMask(
+      self,
+      event_filters,
+      event_data_content_type,
+      service_account,
+      destination_run_service,
+      destination_run_job,
+      destination_run_path,
+      destination_run_region,
+  ):
     """Builds an update mask for updating a trigger.
 
     Args:
       event_filters: bool, whether to update the event filters.
+      event_data_content_type: bool, whether to update the event data content
+        type.
       service_account: bool, whether to update the service account.
       destination_run_service: bool, whether to update the destination service.
       destination_run_job: this destination is not supported in the beta API,
@@ -491,6 +515,8 @@ class _TriggersClientBeta(_BaseTriggersClient):
       update_mask.append('matchingCriteria')
     if service_account:
       update_mask.append('serviceAccount')
+    if event_data_content_type:
+      update_mask.append('eventDataContentType')
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)

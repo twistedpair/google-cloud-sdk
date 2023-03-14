@@ -247,9 +247,13 @@ def APIEndpoint():
   Returns:
     One of prod, staging, autopush, or unknown.
   """
-  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  hub_endpoint_override = endpoint_overrides.get('gkehub', '')
-  if not hub_endpoint_override or 'gkehub.googleapis.com' in hub_endpoint_override:
+  try:
+    hub_endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
+        'gkehub').Get()
+  except properties.NoSuchPropertyError:
+    hub_endpoint_override = None
+  if (not hub_endpoint_override or
+      'gkehub.googleapis.com' in hub_endpoint_override):
     return PROD_API
   elif 'staging-gkehub' in hub_endpoint_override:
     return STAGING_API

@@ -85,16 +85,22 @@ A valid container image can be referenced by tag or digest, has the format of
 """
 
 DOCKER_REPO_REGEX = (
-    r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)")
+    r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)"
+)
 
-DOCKER_IMG_BY_TAG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
+DOCKER_IMG_BY_TAG_REGEX = (
+    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
+)
 
 DOCKER_IMG_BY_DIGEST_REGEX = (
-    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)")
+    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)"
+)
 
 DOCKER_IMG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)"
 
-_VERSION_COLLECTION_NAME = "artifactregistry.projects.locations.repositories.packages.versions"
+_VERSION_COLLECTION_NAME = (
+    "artifactregistry.projects.locations.repositories.packages.versions"
+)
 
 
 def _GetDefaultResources():
@@ -597,6 +603,7 @@ def DescribeDockerImage(args):
   _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
   docker_version = _ValidateAndGetDockerVersion(version_or_tag)
 
+  build_metadata = ca_util.GetBuildOnlyMetadata(docker_version)
   result = {}
   result["image_summary"] = {
       "digest":
@@ -607,6 +614,7 @@ def DescribeDockerImage(args):
           "{}-docker.pkg.dev".format(docker_version.image.docker_repo.location),
       "repository":
           docker_version.image.docker_repo.repo,
+      "slsa_build_level": build_metadata.SLSABuildLevel(),
   }
 
   metadata = ca_util.GetContainerAnalysisMetadata(docker_version, args)

@@ -1150,17 +1150,6 @@
         }
       }
     },
-    "SqlInstancesReencryptRequest": {
-      "id": "SqlInstancesReencryptRequest",
-      "description": "Instance reencrypt request.",
-      "type": "object",
-      "properties": {
-        "body": {
-          "description": "Reencrypt body that users request",
-          "$ref": "InstancesReencryptRequest"
-        }
-      }
-    },
     "InstancesReencryptRequest": {
       "id": "InstancesReencryptRequest",
       "description": "Database Instance reencrypt request.",
@@ -1793,6 +1782,10 @@
         "advancedMachineFeatures": {
           "description": "Specifies advance machine configuration for the instance relevant only for SQL Server.",
           "$ref": "AdvancedMachineFeatures"
+        },
+        "recreateReplicasOnPrimaryCrash": {
+          "description": "Specifies if replicas should automatically be recreated on a MySQL primary instance crashes when it is operating in low durability mode.",
+          "type": "boolean"
         }
       }
     },
@@ -2782,7 +2775,8 @@
             "The primary instance has unsupported binary log format.",
             "The primary instance's binary log retention setting.",
             "The primary instance has tables with unsupported storage engine.",
-            "Source has tables with limited support eg: PostgreSQL tables without primary keys"
+            "Source has tables with limited support eg: PostgreSQL tables without primary keys.",
+            "The replica instance contains existing data."
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2812,7 +2806,8 @@
             "UNSUPPORTED_BINLOG_FORMAT",
             "BINLOG_RETENTION_SETTING",
             "UNSUPPORTED_STORAGE_ENGINE",
-            "LIMITED_SUPPORT_TABLES"
+            "LIMITED_SUPPORT_TABLES",
+            "EXISTING_DATA_IN_REPLICA"
           ]
         },
         "detail": {
@@ -4033,7 +4028,7 @@
             "instance"
           ],
           "request": {
-            "$ref": "SqlInstancesReencryptRequest"
+            "$ref": "InstancesReencryptRequest"
           },
           "response": {
             "$ref": "Operation"

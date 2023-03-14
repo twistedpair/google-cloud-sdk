@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -125,17 +127,22 @@ def AddWorkstationResourceArg(parser, api_version='v1beta'):
   ).AddToParser(parser)
 
 
-def AddIdleTimeoutFlag(parser):
+def AddIdleTimeoutFlag(parser, use_default=True):
   """Adds an --idle-timeout flag to the given parser."""
   help_text = """\
   How long (in seconds) to wait before automatically stopping an instance that
   hasn't received any user traffic. A value of 0 indicates that this instance
   should never time out due to idleness.
   """
-  parser.add_argument('--idle-timeout', default=7200, type=int, help=help_text)
+  parser.add_argument(
+      '--idle-timeout',
+      default=7200 if use_default else None,
+      type=int,
+      help=help_text,
+  )
 
 
-def AddRunningTimeoutFlag(parser):
+def AddRunningTimeoutFlag(parser, use_default=True):
   """Adds an --running-timeout flag to the given parser."""
   help_text = """\
   How long (in seconds) to wait before automatically stopping a workstation
@@ -143,10 +150,14 @@ def AddRunningTimeoutFlag(parser):
   should never time out.
   """
   parser.add_argument(
-      '--running-timeout', default=7200, type=int, help=help_text)
+      '--running-timeout',
+      default=7200 if use_default else None,
+      type=int,
+      help=help_text,
+  )
 
 
-def AddMachineTypeFlag(parser):
+def AddMachineTypeFlag(parser, use_default=True):
   """Adds a --machine-type flag to the given parser."""
   help_text = """\
   Machine type determines the specifications of the Compute Engine machines
@@ -168,8 +179,9 @@ def AddMachineTypeFlag(parser):
           'n2d-standard-16',
           'n2d-standard-32',
       ],
-      default='e2-standard-4',
-      help=help_text)
+      default='e2-standard-4' if use_default else None,
+      help=help_text,
+  )
 
 
 def AddServiceAccountFlag(parser):
@@ -199,62 +211,93 @@ def AddNetworkTags(parser):
       help=help_text)
 
 
-def AddPoolSize(parser):
+def AddPoolSize(parser, use_default=True):
   """Adds a --pool-size flag to the given parser."""
   help_text = """\
   Number of instances to pool for faster Workstation starup."""
-  parser.add_argument('--pool-size', default=0, type=int, help=help_text)
+  parser.add_argument(
+      '--pool-size',
+      default=0 if use_default else None,
+      type=int,
+      help=help_text,
+  )
 
 
-def AddDisablePublicIpAddresses(parser):
+def AddDisablePublicIpAddresses(parser, use_default=True):
   """Adds a --disable-public-ip-addresses flag to the given parser."""
   help_text = """\
   Default value is false.
   If set, instances will have no public IP address."""
   parser.add_argument(
-      '--disable-public-ip-addresses', action='store_true', help=help_text)
+      '--disable-public-ip-addresses',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
 
 
-def AddShieldedSecureBoot(parser):
+def AddShieldedSecureBoot(parser, use_default=True):
   """Adds --shielded-secure-boot flag to the given parser."""
   help_text = """\
   Default value is false.
   If set, instances will have Secure Boot enabled."""
   parser.add_argument(
-      '--shielded-secure-boot', action='store_true', help=help_text)
+      '--shielded-secure-boot',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
 
 
-def AddShieldedVtpm(parser):
+def AddShieldedVtpm(parser, use_default=True):
   """Adds a --shielded-vtpm flag to the given parser."""
   help_text = """\
   Default value is false.
   If set, instances will have vTPM enabled."""
-  parser.add_argument('--shielded-vtpm', action='store_true', help=help_text)
+  parser.add_argument(
+      '--shielded-vtpm',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
 
 
-def AddShieldedIntegrityMonitoring(parser):
+def AddShieldedIntegrityMonitoring(parser, use_default=True):
   """Adds a --shielded-integrity-monitoring flag to the given parser."""
   help_text = """\
   Default value is false.
   If set, instances will have integrity monitoring enabled."""
   parser.add_argument(
-      '--shielded-integrity-monitoring', action='store_true', help=help_text)
+      '--shielded-integrity-monitoring',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
 
 
-def AddEnableConfidentialCompute(parser):
+def AddEnableConfidentialCompute(parser, use_default=True):
   """Adds an --enable-confidential-compute flag to the given parser."""
   help_text = """\
   Default value is false.
   If set, instances will have confidential compute enabled."""
   parser.add_argument(
-      '--enable-confidential-compute', action='store_true', help=help_text)
+      '--enable-confidential-compute',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
 
 
-def AddBootDiskSize(parser):
+def AddBootDiskSize(parser, use_default=True):
   """Adds a --boot-disk-size flag to the given parser."""
   help_text = """\
   Size of the boot disk in GB."""
-  parser.add_argument('--boot-disk-size', default=50, type=int, help=help_text)
+  parser.add_argument(
+      '--boot-disk-size',
+      default=50 if use_default else None,
+      type=int,
+      help=help_text,
+  )
 
 
 def AddPdDiskType(parser):
@@ -296,7 +339,7 @@ def AddPdReclaimPolicy(parser):
       help=help_text)
 
 
-def AddContainerImageField(parser):
+def AddContainerImageField(parser, use_default=True):
   """Adds the --container-predefined-image and --container-custom-image flags to the given parser.
   """
   predefined_image_help_text = """\
@@ -321,8 +364,9 @@ def AddContainerImageField(parser):
           'clion': 'CLion',
           'base-image': 'Base image - no IDE',
       },
-      default='codeoss',
-      help=predefined_image_help_text)
+      default='codeoss' if use_default else None,
+      help=predefined_image_help_text,
+  )
 
   group.add_argument(
       '--container-custom-image', type=str, help=custom_image_help_text)
@@ -395,6 +439,13 @@ def AddWorkstationPortField(parser):
   parser.add_argument('workstation_port', type=int, help=help_text)
 
 
+def AddPortField(parser):
+  """Adds a --port flag to the given parser."""
+  help_text = """\
+  The port on the workstation to which traffic should be sent."""
+  parser.add_argument('--port', type=int, default=22, help=help_text)
+
+
 def AddLocalHostPortField(parser):
   """Adds a --local-host-port flag to the given parser."""
   help_text = """\
@@ -410,3 +461,25 @@ def AddLocalHostPortField(parser):
       type=arg_parsers.HostPort.Parse,
       default='localhost:0',
       help=help_text)
+
+
+def AddCommandField(parser):
+  """Adds a --command flag to the given parser."""
+  help_text = """\
+      A command to run on the workstation.
+
+      Runs the command on the target workstation and then exits.
+      """
+  parser.add_argument('--command', type=str, help=help_text)
+
+
+def AddSshArgsAndUserField(parser):
+  """Adds a --user flag to the given parser."""
+  help_text = """\
+  The username with which to SSH.
+  """
+  parser.add_argument('--user', type=str, default='user', help=help_text)
+
+  help_text = """\
+  Flags and positionals passed to the underlying ssh implementation."""
+  parser.add_argument('ssh_args', nargs=argparse.REMAINDER, help=help_text)

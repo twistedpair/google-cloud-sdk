@@ -11161,6 +11161,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform maintenance on a subset of nodes in the node group.
+
+      Args:
+        request: (ComputeNodeGroupsPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.nodeGroups.performMaintenance',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/performMaintenance',
+        request_field='nodeGroupsPerformMaintenanceRequest',
+        request_type_name='ComputeNodeGroupsPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 

@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
@@ -77,13 +78,18 @@ def get_copy_task(source_resource,
           shared_stream,
           print_created_message=print_created_message,
           user_request_args=user_request_args)
+
     return file_download_task.FileDownloadTask(
         source_resource,
         destination_resource,
         delete_source=delete_source,
         do_not_decompress=do_not_decompress,
         print_created_message=print_created_message,
-        user_request_args=user_request_args)
+        system_posix_data=posix_util.run_if_preserving_posix(
+            user_request_args, posix_util.get_system_posix_data
+        ),
+        user_request_args=user_request_args,
+    )
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):

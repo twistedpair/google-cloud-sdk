@@ -150,12 +150,7 @@ def GetStateMessagesStrings(state_messages):
   )
 
 
-def _GetStageName(name_enum):
-  """Converts NameValueValuesEnum into human-readable text."""
-  return str(name_enum).replace('_', ' ').title()
-
-
-def _BuildOperationMetadata(messages):
+def GetOperationMetadata(messages):
   """Returns corresponding GoogleCloudFunctionsV2(alpha|beta|ga)OperationMetadata."""
   if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
     return messages.GoogleCloudFunctionsV2alphaOperationMetadata
@@ -169,9 +164,14 @@ def _BuildOperationMetadata(messages):
 
 def _GetOperationMetadata(messages, operation):
   return encoding.PyValueToMessage(
-      _BuildOperationMetadata(messages),
+      GetOperationMetadata(messages),
       encoding.MessageToPyValue(operation.metadata),
   )
+
+
+def _GetStageHeader(name_enum):
+  """Converts NameValueValuesEnum into the header to use in progress stages."""
+  return '[{}]'.format(str(name_enum).replace('_', ' ').title())
 
 
 def _GetOperation(client, request):
@@ -185,26 +185,24 @@ def _GetOperation(client, request):
     raise
 
 
-def _GetStages(client, request, messages):
-  """Returns None until stages have been loaded in the operation."""
+def _GetOperationAndStages(client, request, messages):
+  """Returns the stages in the operation."""
   operation = _GetOperation(client, request)
   if operation.error:
     raise exceptions.StatusToFunctionsError(operation.error)
 
-  if not operation.metadata:
-    return None
-  operation_metadata = _GetOperationMetadata(messages, operation)
-  if not operation_metadata.stages:
-    return None
-
   stages = []
-  for stage in operation_metadata.stages:
-    message = '[{}]'.format(_GetStageName(stage.name))
-    stages.append(progress_tracker.Stage(message, key=str(stage.name)))
-  return stages
+  if operation.metadata:
+    operation_metadata = _GetOperationMetadata(messages, operation)
+    stages = [
+        progress_tracker.Stage(_GetStageHeader(stage.name), key=str(stage.name))
+        for stage in operation_metadata.stages
+    ]
+
+  return operation, stages
 
 
-def _GetOperationStatus(client, request, tracker, messages):
+def _GetOperationAndLogProgress(client, request, tracker, messages):
   """Returns a Boolean indicating whether the request has completed."""
   operation = client.projects_locations_operations.Get(request)
   if operation.error:
@@ -213,6 +211,7 @@ def _GetOperationStatus(client, request, tracker, messages):
     )
 
   operation_metadata = _GetOperationMetadata(messages, operation)
+  # cs/symbol:google.cloud.functions.v2main.OperationMetadata.Stage
   for stage in operation_metadata.stages:
     stage_in_progress = (
         stage.state is GetStage(messages).StateValueValuesEnum.IN_PROGRESS
@@ -253,7 +252,8 @@ def _GetOperationStatus(client, request, tracker, messages):
         )
       else:
         tracker.CompleteStage(stage_key)
-  return operation.done
+
+  return operation
 
 
 def WaitForOperation(
@@ -269,7 +269,15 @@ def WaitForOperation(
     extra_stages: List[progress_tracker.Stage]|None, list of optional stages for
       the progress tracker to watch. The GCF 2nd api returns unexpected stages
       in the case of rollbacks.
+
+  Returns:
+    cloudfunctions_v2_messages.Operation, the finished operation.
   """
+
+  def IsNotDoneAndIsMissingStages(res, _):
+    op, stages = res
+    return not stages and not op.done
+
   request = messages.CloudfunctionsProjectsLocationsOperationsGetRequest(
       name=operation.name
   )
@@ -278,15 +286,15 @@ def WaitForOperation(
     retryer = retry.Retryer(max_wait_ms=MAX_WAIT_MS)
     try:
       # List[progress_tracker.Stage]
-      stages = retryer.RetryOnResult(
-          _GetStages,
+      operation, stages = retryer.RetryOnResult(
+          _GetOperationAndStages,
           args=[client, request, messages],
-          should_retry_if=None,
+          should_retry_if=IsNotDoneAndIsMissingStages,
           sleep_ms=SLEEP_MS,
       )
     except retry.WaitException:
       raise exceptions.FunctionsError(
-          'Operation {0} is taking too long'.format(request.name)
+          'Operation {0} is taking too long'.format(operation.name)
       )
 
   if extra_stages is not None:
@@ -294,19 +302,26 @@ def WaitForOperation(
 
   # Wait for LRO to complete.
   description += '...'
+
   with progress_tracker.StagedProgressTracker(description, stages) as tracker:
+    if operation.done and not stages:
+      # No stages to show in the progress tracker so just return the operation.
+      return operation
+
     retryer = retry.Retryer(max_wait_ms=MAX_WAIT_MS)
     try:
-      retryer.RetryOnResult(
-          _GetOperationStatus,
+      operation = retryer.RetryOnResult(
+          _GetOperationAndLogProgress,
           args=[client, request, tracker, messages],
-          should_retry_if=False,
+          should_retry_if=lambda op, _: not op.done,
           sleep_ms=SLEEP_MS,
       )
     except retry.WaitException:
       raise exceptions.FunctionsError(
           'Operation {0} is taking too long'.format(request.name)
       )
+
+  return operation
 
 
 def FormatTimestamp(timestamp):

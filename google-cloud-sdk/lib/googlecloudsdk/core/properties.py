@@ -1134,6 +1134,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.baremetalsolution = self._Add(
         'baremetalsolution', command='gcloud bms')
     self.batch = self._Add('batch', command='gcloud batch', hidden=True)
+    self.bigquery = self._Add('bigquery', hidden=True)
     self.bigtableadmin = self._Add('bigtableadmin', command='gcloud bigtable')
     self.binaryauthorization = self._Add(
         'binaryauthorization', command='gcloud container binauthz', hidden=True)
@@ -3276,6 +3277,14 @@ class _SectionStorage(_Section):
         'exponential_sleep_multiplier',
         default=2,
         help_text='Used in exponential backoff for retrying operations.')
+
+    self.json_api_version = self._Add(
+        'json_api_version',
+        hidden=True,
+        help_text='The version "v1" is hardcoded in the generated client for'
+        ' upload operations, e.g. /resumable/upload/storage/v1/b/{bucket}/o.'
+        'Setting this property will replace "v1" in the above path with the'
+        'specified value.')
 
     self.key_store_path = self._Add(
         'key_store_path',

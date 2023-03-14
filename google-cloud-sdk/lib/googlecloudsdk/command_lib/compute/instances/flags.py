@@ -3369,11 +3369,12 @@ def AddInternalIPv6AddressArgs(parser):
       '--internal-ipv6-address',
       type=NonEmptyString('--internal-ipv6-address'),
       help="""
-      Assigns the given internal IPv6 address or range to the instance
-        that is created. The address must be the first IP address in the range
-        or a /96 IP address range. This option can be used only when creating a single
-        instance.
-    """)
+      Assigns the given internal IPv6 address or range to the instance that is
+      created. The address must be the first IP address in the range or from a
+      /96 IP address range. This option can be used only when creating a single
+      instance.
+    """,
+  )
 
 
 def AddInternalIPv6PrefixLengthArgs(parser):
@@ -3382,11 +3383,12 @@ def AddInternalIPv6PrefixLengthArgs(parser):
       type=int,
       help="""
       Optional field that indicates the prefix length of the internal IPv6
-      address range, should be used together with --internal-ipv6-address. Only
-      /96 is supported and the default value is 96. If not set, the prefix
-      length from --internal-ipv6-address will be used or assigned a default
-      value of 96.
-    """)
+      address range. It should be used together with --internal-ipv6-address.
+      Only /96 IP address range is supported and the default value is 96. If
+      not set, either the prefix length from --internal-ipv6-address will be
+      used or the default value of 96 will be assigned.
+    """,
+  )
 
 
 def AddNetworkPerformanceConfigsArgs(parser):

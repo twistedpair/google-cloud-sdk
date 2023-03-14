@@ -132,3 +132,14 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
                   self._source_resource.storage_url)
           ]],
           messages=None)
+
+  def __eq__(self, other):
+    if not isinstance(other, IntraCloudCopyTask):
+      return NotImplemented
+    return (
+        self._source_resource == other._source_resource
+        and self._destination_resource == other._destination_resource
+        and self._delete_source == other._delete_source
+        and self._print_created_message == other._print_created_message
+        and self._user_request_args == other._user_request_args
+    )

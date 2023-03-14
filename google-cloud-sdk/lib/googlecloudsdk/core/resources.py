@@ -760,6 +760,17 @@ class GRI(object):
     return re.sub(r'(:+)', r'{\1}', segment)
 
 
+def HasOverriddenEndpoint(api_name):
+  """Check if a URL is the result of an endpoint override."""
+  try:
+    endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
+        api_name).Get()
+  except properties.NoSuchPropertyError:
+    return False
+
+  return bool(endpoint_override)
+
+
 class Registry(object):
   """Keep a list of all the resource collections and their parsing functions.
 
@@ -1004,15 +1015,19 @@ class Registry(object):
     api_name, api_version, resource_path = (
         resource_util.SplitDefaultEndpointUrl(url))
 
-    if apis_internal.IsOverriddenURL(url):
-      # Use last registered api version in case of override.
-      api_version = self.registered_apis.get(api_name, [api_version])[-1]
-
     try:
       # pylint:disable=protected-access
       versions = apis_internal._GetVersions(api_name)
     except apis_util.UnknownAPIError:
       raise InvalidResourceException(url, 'unknown api {}'.format(api_name))
+
+    if api_version not in versions:
+      if HasOverriddenEndpoint(api_name):
+        # Use last registered, or default, api version in case of override.
+        api_version = self.registered_apis.get(
+            # pylint:disable=protected-access
+            api_name, [apis_internal._GetDefaultVersion(api_name)])[-1]
+
     if api_version not in versions:
       raise InvalidResourceException(
           url, 'unknown api version {}'.format(api_version))

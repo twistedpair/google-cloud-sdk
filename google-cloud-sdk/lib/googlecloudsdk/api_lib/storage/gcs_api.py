@@ -210,6 +210,21 @@ def _get_encryption_headers(key):
   return {}
 
 
+def _update_api_version_for_uploads_if_needed(client):
+  api_version = properties.VALUES.storage.json_api_version.Get()
+  if api_version is None:
+    return
+
+  insert_config = client.objects._upload_configs.get('Insert')  # pylint: disable=protected-access
+  if insert_config is None:
+    return
+
+  insert_config.simple_path = insert_config.simple_path.replace(
+      'v1', api_version)
+  insert_config.resumable_path = insert_config.resumable_path.replace(
+      'v1', api_version)
+
+
 class GcsApi(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
 
@@ -228,6 +243,9 @@ class GcsApi(cloud_api.CloudApi):
   def __init__(self):
     super(GcsApi, self).__init__()
     self.client = core_apis.GetClientInstance('storage', 'v1')
+
+    _update_api_version_for_uploads_if_needed(self.client)
+
     self.client.overwrite_transfer_urls_with_client_base = True
     self.client.additional_http_headers = (
         headers_util.get_additional_header_dict())

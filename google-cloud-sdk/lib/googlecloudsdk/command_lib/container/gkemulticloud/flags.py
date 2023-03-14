@@ -837,6 +837,23 @@ def AddAzureServicesAuthentication(auth_config_group, create=True):
       '--azure-application-id',
       required=create,
       help=('ID of the Azure Application to manage Azure resources.'))
+  if not create:
+    AddClearClient(group)
+
+
+def AddClearClient(parser):
+  """Adds the --clear-client flag.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+  parser.add_argument(
+      '--clear-client',
+      action='store_true',
+      default=None,
+      help='Clear the Azure client. This flag is required when updating to use '
+           'Azure workload identity federation from Azure client to manage '
+           ' Azure resources.')
 
 
 def GetAzureTenantID(args):

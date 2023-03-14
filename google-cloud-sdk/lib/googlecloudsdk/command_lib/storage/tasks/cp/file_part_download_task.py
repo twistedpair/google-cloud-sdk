@@ -316,11 +316,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                   'length': self._length,
               }))
 
-    if (
-        server_encoding
-        and self._user_request_args
-        and self._user_request_args.system_posix_data
-    ):
+    if server_encoding:
       messages.append(
           task.Message(
               topic=task.Topic.API_DOWNLOAD_RESULT, payload=server_encoding

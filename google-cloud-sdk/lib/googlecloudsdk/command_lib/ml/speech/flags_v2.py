@@ -51,6 +51,19 @@ def AddLocationArgToParser(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddLocationPositionalArgToParser(parser):
+  """Parses location when there is no flag."""
+  location_data = yaml_data.ResourceYAMLData.FromPath('ml.speech.location')
+  resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='location',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='location.',
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddAllFlagsToParser(parser, create=False):
   """Parses all flags for v2 STT API."""
   AddRecognizerArgToParser(parser)

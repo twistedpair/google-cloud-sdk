@@ -1,0 +1,2320 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "marketplacesolutions:v1alpha1",
+  "name": "marketplacesolutions",
+  "canonicalName": "Marketplace Solutions",
+  "version": "v1alpha1",
+  "revision": "0",
+  "title": "marketplacesolutions API (prod)",
+  "description": "",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/bare-metal",
+  "protocol": "rest",
+  "rootUrl": "https://marketplacesolutions.googleapis.com/",
+  "mtlsRootUrl": "https://marketplacesolutions.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://marketplacesolutions.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ConvergeInstance": {
+      "id": "ConvergeInstance",
+      "description": "A Converge server.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this ConvergeInstance. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/convergeInstances\/{instance}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier generated for the ConvergeInstance.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "machineType": {
+          "description": "The server type.",
+          "type": "string"
+        },
+        "osImage": {
+          "description": "The OS image currently installed on the server.",
+          "type": "string"
+        },
+        "status": {
+          "description": "The status of the server.",
+          "type": "string",
+          "enumDescriptions": [
+            "The status of the server is unknown.",
+            "The server is ACTIVE.",
+            "The server has been SHUTOFF.",
+            "The server is INACTIVE.",
+            "The server is TIMEOUT.",
+            "The server is BUILDing.",
+            "The server is REBOOTing.",
+            "The server is in WARNING status.",
+            "The server has ERROR.",
+            "The server is resizing.",
+            "The server is verifying resize."
+          ],
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "ACTIVE",
+            "SHUTOFF",
+            "INACTIVE",
+            "TIMEOUT",
+            "BUILD",
+            "REBOOT",
+            "WARNING",
+            "ERROR",
+            "RESIZE",
+            "VERIFY_RESIZE"
+          ]
+        },
+        "networks": {
+          "description": "List of networks associated with this server, corresponds to `networks` field from Converge's API.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeNetwork"
+          }
+        },
+        "addresses": {
+          "description": "List of addresses associated with this server, corresponds to `addresses` field from Converge's API.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeNetwork"
+          }
+        },
+        "volumes": {
+          "description": "List of volumes associated with this server, retrieved by calling ListVolumes API.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeVolume"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Instance creation time",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ConvergeNetwork": {
+      "id": "ConvergeNetwork",
+      "description": "A ConvergeNetwork.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this ConvergeNetwork. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/convergeNetworks\/{network}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier for this ConvergeNetwork, generated by the backend.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "macAddress": {
+          "description": "A physical interface for this ConvergeNetwork.",
+          "type": "string"
+        },
+        "ips": {
+          "description": "List of ConvergeIPs attached to this network.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeIP"
+          }
+        },
+        "jumboFramesEnabled": {
+          "description": "Whether jumbo frames are enabled.",
+          "type": "boolean"
+        },
+        "type": {
+          "description": "Type of the vlan.",
+          "type": "string",
+          "enumDescriptions": [
+            "Value is not specified.",
+            "The type of the network is VLAN."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "VLAN"
+          ]
+        },
+        "vlanId": {
+          "description": "The vlan id of the network.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "cidr": {
+          "description": "The cidr of the network.",
+          "type": "string"
+        },
+        "gateway": {
+          "description": "The gateway of the network.",
+          "type": "string"
+        },
+        "ipAddressRanges": {
+          "description": "List of IP address ranges for the network",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeIPAddressRanges"
+          }
+        },
+        "dnsServers": {
+          "description": "List of DNS servers for network",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ConvergeIP": {
+      "id": "ConvergeIP",
+      "description": "A ConvergeIP.",
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "The ip address for this ip.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the IP.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of this ip is unknown.",
+            "The ip address is fixed.",
+            "The ip address is dynamic."
+          ],
+          "enum": [
+            "IPTYPE_UNSPECIFIED",
+            "FIXED",
+            "DYNAMIC"
+          ]
+        },
+        "version": {
+          "description": "IP protocol version.",
+          "type": "string",
+          "enumDescriptions": [
+            "The version of this ip is unknown.",
+            "The ip is an IPv4 address.",
+            "The ip is an IPv6 address."
+          ],
+          "enum": [
+            "IPVERSION_UNSPECIFIED",
+            "IPV4",
+            "IPV6"
+          ]
+        }
+      }
+    },
+    "ConvergeIPAddressRanges": {
+      "id": "ConvergeIPAddressRanges",
+      "description": "A ConvergeIPAddress Range",
+      "type": "object",
+      "properties": {
+        "endingIpAddress": {
+          "description": "The ending IP address of the network in IPv4 format.",
+          "type": "string"
+        },
+        "startingIpAddress": {
+          "description": "The starting IP address of the network in IPv4 format.",
+          "type": "string"
+        }
+      }
+    },
+    "ConvergeVolume": {
+      "id": "ConvergeVolume",
+      "description": "A ConvergeVolume.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this ConvergeVolume. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/convergeVolumes\/{volume}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier for this ConvergeVolume, generated by the backend.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "size": {
+          "description": "The size of the volume.",
+          "type": "string",
+          "format": "int64"
+        },
+        "shareable": {
+          "description": "An option indicates whether the volume is shareable.",
+          "type": "boolean"
+        },
+        "bootable": {
+          "description": "An option indicates whether the volume is bootable.",
+          "type": "boolean"
+        },
+        "type": {
+          "description": "The disk type of the volume. \/\/ ",
+          "type": "string"
+        },
+        "groupId": {
+          "description": "The group id this volume attached to.",
+          "type": "string"
+        },
+        "wwn": {
+          "description": "The world wide name for the volume.",
+          "type": "string"
+        },
+        "bootVolume": {
+          "description": "An option indicates whether the volume is the server's boot volume.",
+          "type": "boolean"
+        },
+        "volumeId": {
+          "description": "The volume id this volume attached to.",
+          "type": "string"
+        },
+        "state": {
+          "description": "The state of the volume.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of this volume is unknown.",
+            "The volume is being created.",
+            "The volume is ready to attach to an instance.",
+            "The volume is reserved for attaching or shelved.",
+            "The volume is attaching to an instance.",
+            "The volume is detaching from an instance.",
+            "The volume is attached to an instance.",
+            "The volume is locked and being migrated.",
+            "The volume is being deleted.",
+            "The volume is awaiting for transfer.",
+            "A volume creation error occurred.",
+            "A volume deletion error occurred.",
+            "The volume is being backed up.",
+            "A backup is being restored to the volume.",
+            "A backup error occurred.",
+            "A backup restoration error occurred.",
+            "An error occurred while attempting to extend a volume.",
+            "The volume is downloading an image.",
+            "The volume is being uploaded to an image.",
+            "The volume is changing type to another volume type.",
+            "The volume is being extended."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "AVAILABLE",
+            "RESERVED",
+            "ATTACHING",
+            "DETACHING",
+            "IN_USE",
+            "MAINTENANCE",
+            "DELETING",
+            "AWAITING_TRANSFER",
+            "ERROR",
+            "ERROR_DELETING",
+            "BACKING_UP",
+            "RESTORING_BACKUP",
+            "ERROR_BACKING_UP",
+            "ERROR_RESTORING",
+            "ERROR_EXTENDING",
+            "DOWNLOADING",
+            "UPLOADING",
+            "RETYPING",
+            "EXTENDING"
+          ]
+        }
+      }
+    },
+    "ListConvergeInstancesResponse": {
+      "id": "ListConvergeInstancesResponse",
+      "description": "Response message for the list of Converge servers.",
+      "type": "object",
+      "properties": {
+        "convergeInstances": {
+          "description": "The list of Converge servers.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeInstance"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AzureInstance": {
+      "id": "AzureInstance",
+      "description": "An Azure server.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this AzureInstance. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/azureInstances\/{instance}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier generated for the AzureInstance",
+          "readOnly": true,
+          "type": "string"
+        },
+        "machineType": {
+          "description": "The server type.",
+          "type": "string"
+        },
+        "osImage": {
+          "description": "The OS image currently installed on the server.",
+          "type": "string"
+        },
+        "status": {
+          "description": "The status of the server.",
+          "type": "string",
+          "enumDescriptions": [
+            "The status of the server is unknown.",
+            "The server is CREATING.",
+            "The server is STARTING.",
+            "The server is RUNNING.",
+            "The server is STOPPING.",
+            "The server is STOPPED.",
+            "The server is DEALLOCATING.",
+            "The server is DEALLOCATED."
+          ],
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "CREATING",
+            "STARTING",
+            "RUNNING",
+            "STOPPING",
+            "STOPPED",
+            "DEALLOCATING",
+            "DEALLOCATED"
+          ]
+        },
+        "networks": {
+          "description": "List of networks associated with this server.",
+          "type": "array",
+          "items": {
+            "$ref": "AzureNetwork"
+          }
+        }
+      }
+    },
+    "AzureNetwork": {
+      "id": "AzureNetwork",
+      "description": "A AzureNetwork.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this AzureNetwork. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/azureNetworks\/{network}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier for this AzureNetwork, generated by the backend.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "macAddress": {
+          "description": "A physical interface for this AzureNetwork.",
+          "type": "string"
+        },
+        "ips": {
+          "description": "List of AzureIPs attached to this network.",
+          "type": "array",
+          "items": {
+            "$ref": "AzureIP"
+          }
+        }
+      }
+    },
+    "AzureIP": {
+      "id": "AzureIP",
+      "description": "An AzureIP.",
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "The ip address for this ip.",
+          "type": "string"
+        },
+        "primary": {
+          "description": "The category of this ip, can be `primary` or `secondary`.",
+          "type": "boolean"
+        },
+        "type": {
+          "description": "Type of the IP.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of this ip is unknown.",
+            "The ip is a private ip address.",
+            "The ip is a public ip address."
+          ],
+          "enum": [
+            "IPTYPE_UNSPECIFIED",
+            "PRIVATE",
+            "PUBLIC"
+          ]
+        },
+        "version": {
+          "description": "IP protocol version.",
+          "type": "string",
+          "enumDescriptions": [
+            "The version of this ip is unknown.",
+            "The ip is a IPv4 address.",
+            "The ip is a IPv6 address."
+          ],
+          "enum": [
+            "IPVERSION_UNSPECIFIED",
+            "IPV4",
+            "IPV6"
+          ]
+        }
+      }
+    },
+    "ListAzureInstancesResponse": {
+      "id": "ListAzureInstancesResponse",
+      "description": "Response message for the list of Azure servers.",
+      "type": "object",
+      "properties": {
+        "azureInstances": {
+          "description": "The list of Azure servers.",
+          "type": "array",
+          "items": {
+            "$ref": "AzureInstance"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BareMetalInstance": {
+      "id": "BareMetalInstance",
+      "description": "A Bare Metal Server.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this BareMetalInstance. Format: `projects\/{project}\/locations\/{location}\/bareMetalInstances\/{instance}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier generated for the BareMetalInstance",
+          "readOnly": true,
+          "type": "string"
+        },
+        "machineType": {
+          "description": "The server type.",
+          "type": "string"
+        },
+        "osImage": {
+          "description": "The OS image currently installed on the server.",
+          "type": "string"
+        },
+        "state": {
+          "description": "The status of the server.",
+          "type": "string",
+          "enumDescriptions": [
+            "The server is in an unknown state.",
+            "The server is being provisioned.",
+            "The server is running.",
+            "The server has been deleted.",
+            "The server is being updated.",
+            "The server is starting.",
+            "The server is stopping.",
+            "The server is shutdown."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "RUNNING",
+            "DELETED",
+            "UPDATING",
+            "STARTING",
+            "STOPPING",
+            "SHUTDOWN"
+          ]
+        },
+        "labels": {
+          "description": "Labels as key value pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "ipAddress": {
+          "description": "IP address of the server",
+          "type": "string"
+        }
+      }
+    },
+    "ListBareMetalInstancesResponse": {
+      "id": "ListBareMetalInstancesResponse",
+      "description": "Response message for the list of Bare Metal Servers.",
+      "type": "object",
+      "properties": {
+        "bareMetalInstances": {
+          "description": "The list of bare metal servers.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalInstance"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ResetBareMetalInstanceRequest": {
+      "id": "ResetBareMetalInstanceRequest",
+      "description": "Message requesting to reset a Bare Metal Server.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "NetappVolume": {
+      "id": "NetappVolume",
+      "description": "A Netapp Volume.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the resource. Format: `projects\/{project}\/locations\/{location}\/netappVolumes\/{volume}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Unique identifier of the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the volume.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of this volume is unknown.",
+            "The volume is being created.",
+            "The volume is ready for use.",
+            "The volumes is being deleted.",
+            "The volume is being updated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "UPDATING"
+          ]
+        },
+        "requestedSizeGib": {
+          "description": "The requested size of this storage volume, in GiB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "availableSizeGib": {
+          "description": "The available space for this volume, in GiB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "bootVolume": {
+          "description": "Whether this volume contains a boot lun.",
+          "type": "boolean"
+        },
+        "storageType": {
+          "description": "The storage type for this volume.",
+          "type": "string",
+          "enumDescriptions": [
+            "The storage type for this volume is unknown.",
+            "The storage type for this volume is SSD.",
+            "This storage type for this volume is HDD."
+          ],
+          "enum": [
+            "STORAGE_TYPE_UNSPECIFIED",
+            "SSD",
+            "HDD"
+          ]
+        },
+        "aggregate": {
+          "description": "The storage container name where the volume is created.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels as key value pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListNetappVolumesResponse": {
+      "id": "ListNetappVolumesResponse",
+      "description": "Response message containing the list of Netapp volumes.",
+      "type": "object",
+      "properties": {
+        "netappVolumes": {
+          "description": "The list of volumes.",
+          "type": "array",
+          "items": {
+            "$ref": "NetappVolume"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListConvergeNetworksResponse": {
+      "id": "ListConvergeNetworksResponse",
+      "description": "Response message containing the list of Converge networks.",
+      "type": "object",
+      "properties": {
+        "convergeNetworks": {
+          "description": "The list of networks.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeNetwork"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ConvergeImage": {
+      "id": "ConvergeImage",
+      "description": "This is the description of a ConvergeImage.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this ConvergeImage. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/convergeImages\/{image}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier for this ConvergeImage, generated by the backend.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "imageType": {
+          "description": "The image type of this ConvergeImage.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of image is not specified",
+            "The image is a stock image.",
+            "The image is an imported image.",
+            "The image is a snapshot image.",
+            "The image is a captured image."
+          ],
+          "enum": [
+            "IMAGE_TYPE_UNSPECIFIED",
+            "STOCK",
+            "IMPORT",
+            "SNAPSHOT",
+            "CAPTURE"
+          ]
+        },
+        "operatingSystem": {
+          "description": "The operating system type of this ConvergeImage.",
+          "type": "string"
+        },
+        "state": {
+          "description": "The status of the server.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state is not specified.",
+            "The image identifier has been reserved for an image, no image data has been uploaded yet.",
+            "Denotes that an image\u2019s raw data is currently being uploaded.",
+            "Denotes that an import data-put call has been made.",
+            "Denotes that an import call has been made but that the image is not yet ready for use.",
+            "Denotes an image that is fully available.",
+            "Denotes that access to image data is not allowed to any non-admin user.",
+            "Denotes that an error occurred during the uploading of an image\u2019s data, and that the image is not readable.",
+            "Image is no longer available to use. An image in this state will be removed automatically at a later date.",
+            "This is similar to deleted, however, image data has not been removed. An image in this state is not recoverable."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "QUEUED",
+            "SAVING",
+            "UPLOADING",
+            "IMPORTING",
+            "ACTIVE",
+            "DEACTIVATED",
+            "KILLED",
+            "DELETED",
+            "PENDING_DELETE"
+          ]
+        },
+        "volumes": {
+          "description": "List of volumes for the image",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeVolume"
+          }
+        },
+        "virtualMachines": {
+          "description": "List of virtual machines associated with image",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListConvergeImagesResponse": {
+      "id": "ListConvergeImagesResponse",
+      "description": "Response message containing the list of Converge images.",
+      "type": "object",
+      "properties": {
+        "convergeImages": {
+          "description": "The list of images.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeImage"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListConvergeVolumesResponse": {
+      "id": "ListConvergeVolumesResponse",
+      "description": "Response message containing the list of Converge volumes.",
+      "type": "object",
+      "properties": {
+        "convergeVolumes": {
+          "description": "The list of volumes.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeVolume"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ConvergeSSHKey": {
+      "id": "ConvergeSSHKey",
+      "description": "A ConvergeSSHKey.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this ConvergeSSHKey. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: 'projects\/{project}\/locations\/{location}\/convergeSshKey\/{ssh_key}'",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. An unique identifier for this SSHKey, generated by the backend.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "sshKey": {
+          "description": "SSH Key value.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. SSH Key creation time",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListConvergeSSHKeysResponse": {
+      "id": "ListConvergeSSHKeysResponse",
+      "description": "Response message containing the list of Converge SSH Keys.",
+      "type": "object",
+      "properties": {
+        "convergeSshKeys": {
+          "description": "The list of SSH Keys.",
+          "type": "array",
+          "items": {
+            "$ref": "ConvergeSSHKey"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListFakesResponse": {
+      "id": "ListFakesResponse",
+      "description": "Message for response to listing Fakes",
+      "type": "object",
+      "properties": {
+        "fakes": {
+          "description": "The list of Fake",
+          "type": "array",
+          "items": {
+            "$ref": "Fake"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Fake": {
+      "id": "Fake",
+      "description": "Message describing Fake object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name of resource",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. [Output only] Create time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. [Output only] Update time stamp",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels as key value pairs",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "marketplacesolutions.projects.locations.list",
+              "path": "v1alpha1/{+name}/locations",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "marketplacesolutions.projects.locations.get",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.operations.list",
+                  "path": "v1alpha1/{+name}/operations",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.operations.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "marketplacesolutions.projects.locations.operations.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "marketplacesolutions.projects.locations.operations.cancel",
+                  "path": "v1alpha1/{+name}:cancel",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                },
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.operations.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/.*$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about an operation."
+                }
+              }
+            },
+            "convergeInstances": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.convergeInstances.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeInstances/{convergeInstancesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/convergeInstances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ConvergeInstance"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single server from Converge."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.convergeInstances.list",
+                  "path": "v1alpha1/{+parent}/convergeInstances",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeInstances",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListConvergeInstancesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List servers in a given project and location from Converge."
+                }
+              }
+            },
+            "azureInstances": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.azureInstances.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/azureInstances/{azureInstancesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureInstances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AzureInstance"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single server from Azure."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.azureInstances.list",
+                  "path": "v1alpha1/{+parent}/azureInstances",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/azureInstances",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAzureInstancesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List servers in a given project and location from Azure."
+                }
+              }
+            },
+            "bareMetalInstances": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.bareMetalInstances.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/bareMetalInstances/{bareMetalInstancesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalInstances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "BareMetalInstance"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single Bare Metal Server."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.bareMetalInstances.list",
+                  "path": "v1alpha1/{+parent}/bareMetalInstances",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/bareMetalInstances",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBareMetalInstancesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List Bare Metal Servers in a given project and location."
+                },
+                "create": {
+                  "id": "marketplacesolutions.projects.locations.bareMetalInstances.create",
+                  "path": "v1alpha1/{+parent}/bareMetalInstances",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/bareMetalInstances",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent project and location.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "BareMetalInstance"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a bare metal server."
+                },
+                "reset": {
+                  "id": "marketplacesolutions.projects.locations.bareMetalInstances.reset",
+                  "path": "v1alpha1/{+name}:reset",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/bareMetalInstances/{bareMetalInstancesId}:reset",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalInstances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ResetBareMetalInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Perform a hard reset on bare metal server."
+                }
+              }
+            },
+            "netappVolumes": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.netappVolumes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/netappVolumes/{netappVolumesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/netappVolumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "NetappVolume"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single Netapp Volume."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.netappVolumes.list",
+                  "path": "v1alpha1/{+parent}/netappVolumes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/netappVolumes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListNetappVolumesRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNetappVolumesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List Netapp Volumes in a given project and location."
+                },
+                "create": {
+                  "id": "marketplacesolutions.projects.locations.netappVolumes.create",
+                  "path": "v1alpha1/{+parent}/netappVolumes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/netappVolumes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent project and location.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "NetappVolume"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a Netapp Volume."
+                },
+                "delete": {
+                  "id": "marketplacesolutions.projects.locations.netappVolumes.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/netappVolumes/{netappVolumesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Volume to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/netappVolumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a Netapp Volume."
+                }
+              }
+            },
+            "convergeNetworks": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.convergeNetworks.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeNetworks/{convergeNetworksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/convergeNetworks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ConvergeNetwork"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single network from Converge."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.convergeNetworks.list",
+                  "path": "v1alpha1/{+parent}/convergeNetworks",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeNetworks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListConvergeNetworksRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListConvergeNetworksResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List networks in a given project and location from Converge."
+                }
+              }
+            },
+            "convergeImages": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.convergeImages.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeImages/{convergeImagesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/convergeImages\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ConvergeImage"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single image from Converge."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.convergeImages.list",
+                  "path": "v1alpha1/{+parent}/convergeImages",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeImages",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListConvergeImagesRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListConvergeImagesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List Images in a given project and location from Converge."
+                }
+              }
+            },
+            "convergeVolumes": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.convergeVolumes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeVolumes/{convergeVolumesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/convergeVolumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ConvergeVolume"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single volume from Converge."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.convergeVolumes.list",
+                  "path": "v1alpha1/{+parent}/convergeVolumes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeVolumes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListConvergeVolumesRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListConvergeVolumesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List servers in a given project and location from Converge."
+                }
+              }
+            },
+            "convergeSshKeys": {
+              "methods": {
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.convergeSshKeys.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeSshKeys/{convergeSshKeysId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/convergeSshKeys\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ConvergeSSHKey"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details about a single Converge SSH Key."
+                },
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.convergeSshKeys.list",
+                  "path": "v1alpha1/{+parent}/convergeSshKeys",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/convergeSshKeys",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListConvergeSSHKeysRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListConvergeSSHKeysResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List SSH Keys in a given project and location from Converge."
+                }
+              }
+            },
+            "fakes": {
+              "methods": {
+                "list": {
+                  "id": "marketplacesolutions.projects.locations.fakes.list",
+                  "path": "v1alpha1/{+parent}/fakes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/fakes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListFakesRequest",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering results",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Hint for how to order the results",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListFakesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Fakes in a given project and location."
+                },
+                "get": {
+                  "id": "marketplacesolutions.projects.locations.fakes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/fakes/{fakesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fakes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Fake"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Fake."
+                },
+                "create": {
+                  "id": "marketplacesolutions.projects.locations.fakes.create",
+                  "path": "v1alpha1/{+parent}/fakes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/fakes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Value for parent.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "fakeId": {
+                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and fake_id from the method_signature of Create RPC",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Fake"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Fake in a given project and location."
+                },
+                "patch": {
+                  "id": "marketplacesolutions.projects.locations.fakes.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/fakes/{fakesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "name of resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fakes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Fake resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Fake"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single Fake."
+                },
+                "delete": {
+                  "id": "marketplacesolutions.projects.locations.fakes.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/fakes/{fakesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fakes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Fake."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

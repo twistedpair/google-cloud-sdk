@@ -1097,6 +1097,18 @@
             "NON_PRIVILEGED",
             "PRIVILEGED"
           ]
+        },
+        "defaultLogsBucketBehavior": {
+          "description": "Optional. Option to specify how default logs buckets are setup.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Bucket is located in user-owned project in the same region as the build. The builder service account must have access to create and write to GCS buckets in the build project."
+          ],
+          "enum": [
+            "DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED",
+            "REGIONAL_USER_OWNED_BUCKET"
+          ]
         }
       }
     },

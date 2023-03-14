@@ -4496,6 +4496,20 @@ def AddThreadsPerCore(parser):
       default=None)
 
 
+def AddEnableNestedVirtualizationFlag(parser, for_node_pool=False, hidden=True):
+  target = 'node pool' if for_node_pool else 'default initial node pool'
+  help_text = """
+      Enables the use of nested virtualization on the {}.
+      Defaults to `false`. Can only be enabled on UBUNTU_CONTAINERD base image.
+    """.format(target)
+  parser.add_argument(
+      '--enable-nested-virtualization',
+      help=help_text,
+      default=None,
+      hidden=hidden,
+      action='store_true')
+
+
 def AddNumaNodeCount(parser):
   help_text = """
       The number of virtual NUMA nodes for the instance.

@@ -50,8 +50,6 @@ def TektonYamlDataToPipelineRun(data):
         "PipelineResources are dropped because they are deprecated: "
         "https://github.com/tektoncd/pipeline/blob/main/docs/resources.md")
 
-  for workspace in spec.get("workspaces", []):
-    _WorkspaceTransform(workspace)
   _ServiceAccountTransform(spec)
   input_util.ParamDictTransform(spec.get("params", []))
 
@@ -80,8 +78,6 @@ def TektonYamlDataToTaskRun(data):
     raise cloudbuild_exceptions.InvalidYamlError(
         "TaskSpec or TaskRef is required.")
 
-  for workspace in spec.get("workspaces", []):
-    _WorkspaceTransform(workspace)
   _ServiceAccountTransform(spec)
   input_util.ParamDictTransform(spec.get("params", []))
 
@@ -176,12 +172,3 @@ def _TaskTransform(task):
 def _ServiceAccountTransform(spec):
   if "serviceAccountName" in spec:
     spec["serviceAccount"] = spec.pop("serviceAccountName")
-
-
-def _WorkspaceTransform(workspace):
-  if "volumeClaimTemplate" in workspace and "spec" in workspace[
-      "volumeClaimTemplate"] and "accessModes" in workspace[
-          "volumeClaimTemplate"]["spec"]:
-    access_modes = workspace["volumeClaimTemplate"]["spec"]["accessModes"]
-    workspace["volumeClaimTemplate"]["spec"]["accessModes"] = list(
-        map(lambda mode: input_util.CamelToSnake(mode).upper(), access_modes))

@@ -54,6 +54,7 @@ class NodePoolsClient(client.ClientBase):
         'etag': flags.Get(args, 'etag'),
         'name': self._node_pool_name(args),
         'validateOnly': flags.Get(args, 'validate_only'),
+        'ignoreErrors': flags.Get(args, 'ignore_errors'),
     }
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsDeleteRequest(
         **kwargs)

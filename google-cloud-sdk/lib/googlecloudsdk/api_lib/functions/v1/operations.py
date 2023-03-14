@@ -126,7 +126,7 @@ def _WaitForOperation(
               'try_set_invoker': try_set_invoker,
               'on_every_poll': on_every_poll,
           },
-          should_retry_if=None,
+          should_retry_if=lambda done, _: not done,
           sleep_ms=SLEEP_MS,
       )
     except retry.WaitException:

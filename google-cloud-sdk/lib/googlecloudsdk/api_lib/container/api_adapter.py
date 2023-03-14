@@ -644,6 +644,7 @@ class CreateClusterOptions(object):
       logging_variant=None,
       enable_multi_networking=None,
       enable_security_posture=None,
+      enable_nested_virtualization=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -802,6 +803,7 @@ class CreateClusterOptions(object):
     self.cross_connect_subnetworks = cross_connect_subnetworks
     self.enable_service_externalips = enable_service_externalips
     self.threads_per_core = threads_per_core
+    self.enable_nested_virtualization = enable_nested_virtualization
     self.logging = logging
     self.monitoring = monitoring
     self.enable_managed_prometheus = enable_managed_prometheus
@@ -1157,7 +1159,8 @@ class CreateNodePoolOptions(object):
                logging_variant=None,
                windows_os_version=None,
                additional_node_network=None,
-               additional_pod_network=None):
+               additional_pod_network=None,
+               enable_nested_virtualization=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1217,6 +1220,7 @@ class CreateNodePoolOptions(object):
     self.create_pod_ipv4_range = create_pod_ipv4_range
     self.enable_private_nodes = enable_private_nodes
     self.threads_per_core = threads_per_core
+    self.enable_nested_virtualization = enable_nested_virtualization
     self.enable_blue_green_upgrade = enable_blue_green_upgrade
     self.enable_surge_upgrade = enable_surge_upgrade
     self.node_pool_soak_duration = node_pool_soak_duration
@@ -2026,15 +2030,24 @@ class APIAdapter(object):
       util.LoadSystemConfigFromYAML(node_config,
                                     options.system_config_from_file,
                                     self.messages)
-    if options.threads_per_core:
-      node_config.advancedMachineFeatures = self.messages.AdvancedMachineFeatures(
-          threadsPerCore=options.threads_per_core)
+
+    self.ParseAdvancedMachineFeatures(options, node_config)
 
     if options.gvnic is not None:
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
 
     return node_config
+
+  def ParseAdvancedMachineFeatures(self, options, node_config):
+    """Parses advanced machine feature node config options."""
+    features = self.messages.AdvancedMachineFeatures()
+    if options.threads_per_core:
+      features.threadsPerCore = options.threads_per_core
+    if options.enable_nested_virtualization:
+      features.enableNestedVirtualization = options.enable_nested_virtualization
+    if options.threads_per_core or options.enable_nested_virtualization:
+      node_config.advancedMachineFeatures = features
 
   def ParseCustomNodeConfig(self, options, node_config):
     """Parses custom node config options."""
@@ -3478,9 +3491,8 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.image_type:
       node_config.imageType = options.image_type
-    if options.threads_per_core:
-      node_config.advancedMachineFeatures = self.messages.AdvancedMachineFeatures(
-          threadsPerCore=options.threads_per_core)
+
+    self.ParseAdvancedMachineFeatures(options, node_config)
 
     custom_config = self.messages.CustomImageConfig()
     if options.image:

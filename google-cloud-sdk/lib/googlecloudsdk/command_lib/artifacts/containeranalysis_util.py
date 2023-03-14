@@ -19,14 +19,17 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import re
 
 from googlecloudsdk.api_lib.containeranalysis import filter_util
 from googlecloudsdk.api_lib.containeranalysis import requests as ca_requests
+from googlecloudsdk.api_lib.services import enable_api
 import six
 
 
 class ContainerAnalysisMetadata:
-  """ContainerAnalysisMetadata defines metadata retrieved from containeranalysis API."""
+  """ContainerAnalysisMetadata defines metadata retrieved from containeranalysis API.
+  """
 
   def __init__(self):
     self.vulnerability = PackageVulnerabilitySummary()
@@ -69,7 +72,11 @@ class ContainerAnalysisMetadata:
       self.discovery.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DSSE_ATTESTATION:
       self.provenance.AddOccurrence(occ)
-    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.intotoStatement:
+    elif (
+        occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD
+        and occ.build
+        and occ.build.intotoStatement
+    ):
       self.provenance.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.PACKAGE:
       self.package.AddOccurrence(occ)
@@ -85,7 +92,10 @@ class ContainerAnalysisMetadata:
       self.dsse_attestation.AddOccurrence(occ)
     # BUILD should also have its own section, even if it was already
     # added to the provenance section.
-    if occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and include_build:
+    if (
+        occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD
+        and include_build
+    ):
       self.build.AddOccurrence(occ)
 
   def ImagesListView(self):
@@ -145,6 +155,12 @@ class ContainerAnalysisMetadata:
     if self.dsse_attestation.dsse_attestations:
       view['dsse_attestation_summary'] = self.dsse_attestation
     return view
+
+  def SLSABuildLevel(self):
+    """Returns SLSA build level 0-3 or unknown."""
+    if self.provenance.provenance:
+      return _ComputeSLSABuildLevel(self.provenance.provenance)
+    return 'unknown'
 
 
 class PackageVulnerabilitySummary:
@@ -309,7 +325,7 @@ def GetContainerAnalysisMetadata(docker_version, args):
   metadata = ContainerAnalysisMetadata()
   docker_urls = [
       'https://{}'.format(docker_version.GetDockerString()),
-      docker_version.GetDockerString()
+      docker_version.GetDockerString(),
   ]
   occ_filter = _CreateFilterFromImagesDescribeArgs(docker_urls, args)
   if occ_filter is None:
@@ -322,9 +338,41 @@ def GetContainerAnalysisMetadata(docker_version, args):
   if metadata.vulnerability.vulnerabilities:
     vuln_summary = ca_requests.GetVulnerabilitySummary(
         docker_version.project,
-        filter_util.ContainerAnalysisFilter().WithResources(docker_urls)
-        .GetFilter())
+        filter_util.ContainerAnalysisFilter().WithResources(
+            docker_urls).GetFilter())
     metadata.vulnerability.AddSummary(vuln_summary)
+  return metadata
+
+
+def GetBuildOnlyMetadata(docker_version):
+  """Retrieves build metadata for a docker image.
+
+  This function is used only for SLSA build level computation. If the
+  containeranalysis API is disabled for the project, no request will be
+  sent and it returns empty metadata resulting in 'unknown' SLSA level.
+
+  Args:
+    docker_version: docker info about image and project.
+
+  Returns:
+    The build metadata for the given image.
+  """
+  metadata = ContainerAnalysisMetadata()
+  ca_enabled = enable_api.IsServiceEnabled(
+      docker_version.project, 'containeranalysis.googleapis.com'
+  )
+  if not ca_enabled:
+    return metadata
+
+  docker_urls = [
+      'https://{}'.format(docker_version.GetDockerString()),
+      docker_version.GetDockerString(),
+  ]
+  occ_filter = _CreateFilterForBuildOccurrences(docker_urls)
+  occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
+  for occ in occurrences:
+    metadata.AddOccurrence(occ, False)
+
   return metadata
 
 
@@ -361,8 +409,10 @@ def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
     The metadata about the given images.
   """
   metadata = collections.defaultdict(ContainerAnalysisMetadata)
-  prefixes = ['https://{}'.format(repo_or_image.GetDockerString()),
-              repo_or_image.GetDockerString()]
+  prefixes = [
+      'https://{}'.format(repo_or_image.GetDockerString()),
+      repo_or_image.GetDockerString()
+  ]
   image_urls = images + ['https://{}'.format(img) for img in images]
   occ_filters = _CreateFilterForImages(prefixes, occurrence_filter, image_urls)
   occurrences = ca_requests.ListOccurrencesWithFilters(repo_or_image.project,
@@ -392,6 +442,17 @@ def _CreateFilterForMaven(maven_resource):
 
   occ_filter.WithKinds(filter_kinds)
   occ_filter.WithResources([maven_resource])
+  return occ_filter.GetFilter()
+
+
+def _CreateFilterForBuildOccurrences(images):
+  """Builds filters for containeranalysis APIs for build occurrences."""
+  occ_filter = filter_util.ContainerAnalysisFilter()
+
+  filter_kinds = ['BUILD']
+
+  occ_filter.WithKinds(filter_kinds)
+  occ_filter.WithResources(images)
   return occ_filter.GetFilter()
 
 
@@ -460,8 +521,8 @@ def _CreateFilterForImages(prefixes, custom_filter, images):
   """Creates a list of filters from a docker image prefix, a custom filter and fully-qualified image URLs.
 
   Args:
-    prefixes: URL prefixes. Only metadata of images with any of these
-    prefixes will be retrieved.
+    prefixes: URL prefixes. Only metadata of images with any of these prefixes
+      will be retrieved.
     custom_filter: user provided filter string.
     images: fully-qualified docker image URLs. Only metadata of these images
       will be retrieved.
@@ -474,3 +535,110 @@ def _CreateFilterForImages(prefixes, custom_filter, images):
   occ_filter.WithResources(images)
   occ_filter.WithCustomFilter(custom_filter)
   return occ_filter.GetChunkifiedFilters()
+
+
+def _ComputeSLSABuildLevel(provenance):
+  """Computes SLSA build level from a build provenance.
+
+  Args:
+    provenance: build provenance list containing build occurrences.
+
+  Returns:
+    A string `unknown` if build provenance doesn't exist, otherwise
+    an integer from 0 to 3 indicating SLSA build level.
+  """
+  if not provenance:
+    return 'unknown'
+  builds = [
+      p for p in provenance
+      if hasattr(p, 'build') and hasattr(p.build, 'intotoStatement')
+  ]
+  if not builds or not hasattr(builds[0].build, 'intotoStatement'):
+    return 'unknown'
+  intoto = builds[0].build.intotoStatement
+
+  if _HasSteps(intoto):
+    if _HasValidKey(builds[0]):
+      if _HasLevel3BuildVersion(intoto):
+        return 3
+      return 2
+    return 1
+  return 0
+
+
+def _HasSteps(intoto):
+  """Check whether a build provenance contains build steps.
+
+  Args:
+    intoto: intoto statement in build occurrence.
+
+  Returns:
+    A boolean value indicating whether intoto contains build steps.
+  """
+  if (
+      intoto
+      and hasattr(intoto, 'slsaProvenance')
+      and hasattr(intoto.slsaProvenance, 'recipe')
+      and hasattr(intoto.slsaProvenance.recipe, 'arguments')
+      and hasattr(
+          intoto.slsaProvenance.recipe.arguments, 'additionalProperties'
+      )
+  ):
+    properties = intoto.slsaProvenance.recipe.arguments.additionalProperties
+    return any(p.key == 'steps' and p.value for p in properties)
+  return False
+
+
+def _HasValidKey(build):
+  """Check whether a build provenance contains valid signature and key id.
+
+  Args:
+    build: container analysis build occurrence.
+
+  Returns:
+    A boolean value indicating whether build occurrence contains valid signature
+    and key id.
+  """
+  if (
+      build
+      and hasattr(build, 'envelope')
+      and hasattr(build.envelope, 'signatures')
+      and build.envelope.signatures
+  ):
+    key_id_pattern = '^projects/verified-builder/locations/.+/keyRings/attestor/cryptoKeys/builtByGCB/cryptoKeyVersions/1$'
+
+    def CheckSignature(signature):
+      return (hasattr(signature, 'sig') and
+              signature.sig and
+              hasattr(signature, 'keyid') and
+              re.match(key_id_pattern, signature.keyid))
+    filtered = filter(CheckSignature, build.envelope.signatures)
+    if filtered:
+      return True
+  return False
+
+
+def _HasLevel3BuildVersion(intoto):
+  """Check whether a build provenance contains level 3 build version.
+
+  Args:
+    intoto: intoto statement in build occurrence.
+
+  Returns:
+    A boolean value indicating whether intoto contains level 3 build version.
+  """
+  if (
+      intoto
+      and hasattr(intoto, 'slsaProvenance')
+      and hasattr(intoto.slsaProvenance, 'builder')
+      and hasattr(intoto.slsaProvenance.builder, 'id')
+      and intoto.slsaProvenance.builder.id
+  ):
+    [uri, version] = intoto.slsaProvenance.builder.id.split('@v')
+    if (
+        uri == 'https://cloudbuild.googleapis.com/GoogleHostedWorker'
+        and version
+    ):
+      [major_version, minor_version] = version.split('.')
+      return int(major_version) > 0 or int(minor_version) >= 3
+  return False

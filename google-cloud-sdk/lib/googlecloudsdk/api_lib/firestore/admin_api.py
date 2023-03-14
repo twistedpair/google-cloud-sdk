@@ -200,3 +200,25 @@ def ListLocations(project):
           name='projects/{}'.format(project)),
       field='locations',
       batch_size_attribute='pageSize')
+
+
+def DeleteDatabase(project, database, etag, allow_missing):
+  """Performs a Firestore Admin v1 Database Deletion.
+
+  Args:
+    project: the project of the database to delete, a string.
+    database: the database id to delete, a string.
+    etag: the current etag of the Database, a string.
+    allow_missing: delete will success on non-existing database if true, a bool.
+
+  Returns:
+    an Operation.
+  """
+  messages = GetMessages()
+  return GetService().Delete(
+      messages.FirestoreProjectsDatabasesDeleteRequest(
+          name='projects/{}/databases/{}'.format(project, database),
+          etag=etag,
+          allowMissing=allow_missing,
+      )
+  )

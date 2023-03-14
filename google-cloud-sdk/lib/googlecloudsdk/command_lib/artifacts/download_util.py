@@ -31,6 +31,7 @@ from googlecloudsdk.core.credentials import transports
 def Download(tmp_path, final_path, file_res_name, allow_overwrite):
   """Downloads a file to a local path."""
   client = requests.GetClient()
+  chunksize = 3 * 1024 * 1024
 
   # call expanduser so that `~` can be used to represent the home directory.
   final_path = os.path.expanduser(final_path)
@@ -54,6 +55,7 @@ def Download(tmp_path, final_path, file_res_name, allow_overwrite):
     d = transfer.Download.FromFile(
         tmp_path,
         True,
+        chunksize=chunksize,
         progress_callback=ProgressCallback,
     )
     d.bytes_http = transports.GetApitoolsTransport(response_encoding=None)
