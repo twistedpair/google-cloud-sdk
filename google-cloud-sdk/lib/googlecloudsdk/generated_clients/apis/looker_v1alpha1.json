@@ -328,7 +328,9 @@
             "Instance update is in progress.",
             "Instance delete is in progress.",
             "Instance has been deleted.",
-            "Instance is being purged. (This is different from DELETING)."
+            "Instance is being purged. (This is different from DELETING).",
+            "Instance is being exported.",
+            "Instance is importing data."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -339,7 +341,9 @@
             "UPDATING",
             "DELETING",
             "DELETED",
-            "PURGING"
+            "PURGING",
+            "EXPORTING",
+            "IMPORTING"
           ]
         },
         "hostMetadata": {
@@ -746,19 +750,34 @@
       "description": "Requestion options for importing looker data to an Instance",
       "type": "object",
       "properties": {
-        "uri": {
-          "description": "Required. Path to the import folder in Google Cloud Storage, in the form `gs:\/\/bucketName\/folderName`.",
+        "gcsUri": {
+          "description": "Path to the import folder in Google Cloud Storage, in the form `gs:\/\/bucketName\/folderName`.",
           "type": "string"
         }
       }
     },
     "ExportInstanceRequest": {
       "id": "ExportInstanceRequest",
-      "description": "Requestion options for exporting data of an Instance",
+      "description": "Requestion options for exporting data of an Instance.",
       "type": "object",
       "properties": {
-        "uri": {
-          "description": "Required. The path to the folder in Google Cloud Storage where the export will be stored. The URI is in the form `gs:\/\/bucketName\/folderName`.",
+        "gcsUri": {
+          "description": "The path to the folder in Google Cloud Storage where the export will be stored. The URI is in the form `gs:\/\/bucketName\/folderName`.",
+          "type": "string"
+        },
+        "encryptionConfig": {
+          "description": "Encryption configuration (CMEK).",
+          "$ref": "ExportEncryptionConfig"
+        }
+      }
+    },
+    "ExportEncryptionConfig": {
+      "id": "ExportEncryptionConfig",
+      "description": "Configuration for Encryption - e.g. CMEK",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Name of the CMEK key in KMS.",
           "type": "string"
         }
       }

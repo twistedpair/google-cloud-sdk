@@ -122,9 +122,9 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4: TPU v4.
       TPU_V2_POD: TPU v2 POD.
       TPU_V3_POD: TPU v3 POD.
-      TPU_V4_POD: TPU v4 POD.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -135,9 +135,9 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
-    TPU_V2_POD = 9
-    TPU_V3_POD = 10
-    TPU_V4_POD = 11
+    TPU_V4 = 9
+    TPU_V2_POD = 10
+    TPU_V3_POD = 11
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -305,9 +305,9 @@ class GoogleCloudMlV1Capability(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
+      TPU_V4: TPU v4.
       TPU_V2_POD: TPU v2 POD.
       TPU_V3_POD: TPU v3 POD.
-      TPU_V4_POD: TPU v4 POD.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -318,9 +318,9 @@ class GoogleCloudMlV1Capability(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
-    TPU_V2_POD = 9
-    TPU_V3_POD = 10
-    TPU_V4_POD = 11
+    TPU_V4 = 9
+    TPU_V2_POD = 10
+    TPU_V3_POD = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.

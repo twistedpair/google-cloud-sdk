@@ -756,7 +756,7 @@
           "type": "string"
         },
         "dnsSuffix": {
-          "description": "Required. The DNS name suffix for the zones e.g. `example.com`.",
+          "description": "Required. The DNS name suffix for the zones e.g. `example.com.`. Cloud DNS requires that a DNS suffix ends with a trailing dot.",
           "type": "string"
         }
       }
@@ -801,7 +801,7 @@
       "type": "object",
       "properties": {
         "domain": {
-          "description": "Required. The DNS or domain name of the record set, e.g. `test.example.com`.",
+          "description": "Required. The DNS or domain name of the record set, e.g. `test.example.com`. Cloud DNS requires that a DNS suffix ends with a trailing dot.",
           "type": "string"
         },
         "type": {
@@ -1080,11 +1080,13 @@
           "type": "string",
           "enumDescriptions": [
             "Syntax `proto2`.",
-            "Syntax `proto3`."
+            "Syntax `proto3`.",
+            "Syntax `editions`."
           ],
           "enum": [
             "SYNTAX_PROTO2",
-            "SYNTAX_PROTO3"
+            "SYNTAX_PROTO3",
+            "SYNTAX_EDITIONS"
           ]
         }
       }
@@ -1126,11 +1128,13 @@
           "type": "string",
           "enumDescriptions": [
             "Syntax `proto2`.",
-            "Syntax `proto3`."
+            "Syntax `proto3`.",
+            "Syntax `editions`."
           ],
           "enum": [
             "SYNTAX_PROTO2",
-            "SYNTAX_PROTO3"
+            "SYNTAX_PROTO3",
+            "SYNTAX_EDITIONS"
           ]
         }
       }
@@ -1219,12 +1223,18 @@
           "type": "string",
           "enumDescriptions": [
             "Syntax `proto2`.",
-            "Syntax `proto3`."
+            "Syntax `proto3`.",
+            "Syntax `editions`."
           ],
           "enum": [
             "SYNTAX_PROTO2",
-            "SYNTAX_PROTO3"
+            "SYNTAX_PROTO3",
+            "SYNTAX_EDITIONS"
           ]
+        },
+        "edition": {
+          "description": "The source edition string, only valid when syntax is SYNTAX_EDITIONS.",
+          "type": "string"
         }
       }
     },
@@ -1366,12 +1376,18 @@
           "type": "string",
           "enumDescriptions": [
             "Syntax `proto2`.",
-            "Syntax `proto3`."
+            "Syntax `proto3`.",
+            "Syntax `editions`."
           ],
           "enum": [
             "SYNTAX_PROTO2",
-            "SYNTAX_PROTO3"
+            "SYNTAX_PROTO3",
+            "SYNTAX_EDITIONS"
           ]
+        },
+        "edition": {
+          "description": "The source edition string, only valid when syntax is SYNTAX_EDITIONS.",
+          "type": "string"
         }
       }
     },
@@ -2908,7 +2924,7 @@
           "type": "string"
         },
         "dnsSuffix": {
-          "description": "The DNS name suffix of this zone e.g. `example.com.`.",
+          "description": "The DNS name suffix of this zone e.g. `example.com.`. Cloud DNS requires that a DNS suffix ends with a trailing dot.",
           "type": "string"
         }
       }
@@ -3041,7 +3057,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
           ],
-          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
         },
         "get": {
           "id": "servicenetworking.operations.get",

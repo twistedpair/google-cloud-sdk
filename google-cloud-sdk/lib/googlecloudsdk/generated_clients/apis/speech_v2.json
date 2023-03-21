@@ -262,7 +262,7 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. Which model to use for recognition requests. Select the model best suited to your domain to get best results. Supported models: - `latest_long` Best for long form content like media or conversation. - `latest_short` Best for short form content like commands or single shot directed speech. When using this model, the service will stop transcribing audio after the first utterance is detected and completed. When using this model, SEPARATE_RECOGNITION_PER_CHANNEL is not supported; multi-channel audio is accepted, but only the first channel will be processed and transcribed. - `telephony` Best for audio that originated from a phone call (typically recorded at an 8khz sampling rate). - `medical_conversation` For conversations between a medical provider\u2014for example, a doctor or nurse\u2014and a patient. Use this model when both a provider and a patient are speaking. Words uttered by each speaker are automatically detected and labeled in the returned transcript. For supported features please see [medical models documentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/medical-models). - `medical_dictation` For dictated notes spoken by a single medical provider\u2014for example, a doctor dictating notes about a patient's blood test results. For supported features please see [medical models documentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/medical-models).",
+          "description": "Required. Which model to use for recognition requests. Select the model best suited to your domain to get best results. Supported models: - `latest_long` Best for long form content like media or conversation. - `latest_short` Best for short form content like commands or single shot directed speech. When using this model, the service will stop transcribing audio after the first utterance is detected and completed. When using this model, SEPARATE_RECOGNITION_PER_CHANNEL is not supported; multi-channel audio is accepted, but only the first channel will be processed and transcribed. - `telephony` Best for audio that originated from a phone call (typically recorded at an 8khz sampling rate). - `medical_conversation` For conversations between a medical provider\u2014for example, a doctor or nurse\u2014and a patient. Use this model when both a provider and a patient are speaking. Words uttered by each speaker are automatically detected and labeled in the returned transcript. For supported features please see [medical models documentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/medical-models). - `medical_dictation` For dictated notes spoken by a single medical provider\u2014for example, a doctor dictating notes about a patient's blood test results. For supported features please see [medical models documentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/medical-models). - `usm` The next generation of Speech-to-Text models from Google.",
           "type": "string"
         },
         "languageCodes": {
@@ -965,6 +965,10 @@
         "gcsOutputConfig": {
           "description": "The Cloud Storage URI prefix with which recognition results will be written.",
           "$ref": "GcsOutputConfig"
+        },
+        "inlineResponseConfig": {
+          "description": "The transcript will be provided under the BatchRecognizeResponse message of the Operation when completed. NOTE: This is on an allowlist only basis, and is only allowed when calling BatchRecognize with just one audio file.",
+          "$ref": "InlineOutputConfig"
         }
       }
     },
@@ -977,6 +981,13 @@
           "description": "The Cloud Storage URI prefix with which recognition results will be written.",
           "type": "string"
         }
+      }
+    },
+    "InlineOutputConfig": {
+      "id": "InlineOutputConfig",
+      "description": "Output configurations for inline response.",
+      "type": "object",
+      "properties": {
       }
     },
     "Config": {
@@ -1157,6 +1168,10 @@
         "undeletePhraseSetRequest": {
           "description": "The UndeletePhraseSetRequest that spawned the Operation.",
           "$ref": "UndeletePhraseSetRequest"
+        },
+        "updateConfigRequest": {
+          "description": "The UpdateConfigRequest that spawned the Operation.",
+          "$ref": "UpdateConfigRequest"
         },
         "progressPercent": {
           "description": "The percent progress of the Operation. Values can range from 0-100. If the value is 100, then the operation is finished.",
@@ -1364,6 +1379,22 @@
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields. This may be sent on update, undelete, and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        }
+      }
+    },
+    "UpdateConfigRequest": {
+      "id": "UpdateConfigRequest",
+      "description": "Request message for the UpdateConfig method.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "Required. The config to update. The config's `name` field is used to identify the config to be updated. The expected format is `projects\/{project}\/locations\/{location}\/config`.",
+          "$ref": "Config"
+        },
+        "updateMask": {
+          "description": "The list of fields to be updated.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -1660,7 +1691,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "speech.projects.locations.operations.get",

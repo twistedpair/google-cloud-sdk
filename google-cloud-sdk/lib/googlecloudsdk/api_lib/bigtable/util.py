@@ -79,8 +79,9 @@ def AwaitTable(operation_ref, message):
 def AwaitBackup(operation_ref, message):
   """Waits for backup long running operation to complete."""
   client = GetAdminClient()
-  return _Await(client.projects_instances_clusters_backups, operation_ref,
-                message)
+  return _Await(
+      client.projects_instances_clusters_backups, operation_ref, message
+  )
 
 
 def GetAppProfileRef(instance, app_profile):
@@ -91,7 +92,8 @@ def GetAppProfileRef(instance, app_profile):
           'projectsId': properties.VALUES.core.project.GetOrFail,
           'instancesId': instance,
       },
-      collection='bigtableadmin.projects.instances.appProfiles')
+      collection='bigtableadmin.projects.instances.appProfiles',
+  )
 
 
 def GetClusterRef(instance, cluster):
@@ -102,13 +104,15 @@ def GetClusterRef(instance, cluster):
           'projectsId': properties.VALUES.core.project.GetOrFail,
           'instancesId': instance,
       },
-      collection='bigtableadmin.projects.instances.clusters')
+      collection='bigtableadmin.projects.instances.clusters',
+  )
 
 
 def GetOperationRef(operation):
   """Get a resource reference to a long running operation."""
-  return resources.REGISTRY.ParseRelativeName(operation.name,
-                                              'bigtableadmin.operations')
+  return resources.REGISTRY.ParseRelativeName(
+      operation.name, 'bigtableadmin.operations'
+  )
 
 
 def GetInstanceRef(instance):
@@ -118,7 +122,8 @@ def GetInstanceRef(instance):
       params={
           'projectsId': properties.VALUES.core.project.GetOrFail,
       },
-      collection='bigtableadmin.projects.instances')
+      collection='bigtableadmin.projects.instances',
+  )
 
 
 def GetTableRef(instance, table):
@@ -129,7 +134,8 @@ def GetTableRef(instance, table):
           'projectsId': properties.VALUES.core.project.GetOrFail,
           'instancesId': instance,
       },
-      collection='bigtableadmin.projects.instances.tables')
+      collection='bigtableadmin.projects.instances.tables',
+  )
 
 
 WARNING_TYPE_PREFIX = 'CLOUD_BIGTABLE_APP_PROFILE_WARNING'
@@ -149,7 +155,7 @@ def FormatErrorMessages(exception):
     exceptions.HttpException: Reformatted error raised by API.
   """
   response = json.loads(exception.content)
-  if not (response['error'] and response['error']['details']):
+  if not response.get('error') or not response.get('error').get('details'):
     raise exception
   errors = ['Errors:']
   warnings = ['Warnings (use --force to ignore):']
@@ -170,4 +176,5 @@ def FormatErrorMessages(exception):
   if not error_msg:
     raise exception
   raise exceptions.HttpException(
-      exception, '{}\n{}'.format(response['error']['message'], error_msg))
+      exception, '{}\n{}'.format(response['error']['message'], error_msg)
+  )

@@ -269,7 +269,7 @@ def _FillContainerRequirements(container, settings):
       limit.value = settings.cpu
     elif limit.key == 'memory' and settings.memory:
       limit.value = settings.memory
-    found.append(limit.key)
+    found.add(limit.key)
 
   # if requirements weren't already specified add them
   if 'cpu' not in found and settings.cpu:

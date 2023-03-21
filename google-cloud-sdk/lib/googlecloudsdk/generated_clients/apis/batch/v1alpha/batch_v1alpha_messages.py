@@ -1446,7 +1446,8 @@ class PlacementPolicy(_messages.Message):
   Fields:
     collocation: UNSPECIFIED vs. COLLOCATED (default UNSPECIFIED). Use
       COLLOCATED when you want VMs to be located close to each other for low
-      network latency between the VMs.
+      network latency between the VMs. No placement policy will be generated
+      when collocation is UNSPECIFIED.
     maxDistance: When specified, causes the job to fail if more than
       max_distance logical switches are required between VMs. Batch uses the
       most compact possible placement of VMs even when max_distance is not
@@ -1758,7 +1759,7 @@ class TaskGroup(_messages.Message):
 
   Enums:
     SchedulingPolicyValueValuesEnum: Scheduling policy for Tasks in the
-      TaskGroup.
+      TaskGroup. The default value is AS_SOON_AS_POSSIBLE.
 
   Messages:
     LabelsValue: Labels for the TaskGroup. Labels could be user provided or
@@ -1779,13 +1780,15 @@ class TaskGroup(_messages.Message):
       on parent Job name. For example: "projects/123456/locations/us-
       west1/jobs/job01/taskGroups/group01".
     parallelism: Max number of tasks that can run in parallel. Default to
-      min(task_count, 1000).
+      min(task_count, 1000). Field parallelism must be 1 if the
+      scheduling_policy is IN_ORDER.
     permissiveSsh: When true, Batch will configure SSH to allow passwordless
       login between VMs running the Batch tasks in the same TaskGroup.
     requireHostsFile: When true, Batch will populate a file with a list of all
       VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment
       variable to the path of that file. Defaults to false.
-    schedulingPolicy: Scheduling policy for Tasks in the TaskGroup.
+    schedulingPolicy: Scheduling policy for Tasks in the TaskGroup. The
+      default value is AS_SOON_AS_POSSIBLE.
     taskCount: Number of Tasks in the TaskGroup. Default is 1.
     taskCountPerNode: Max number of tasks that can be run on a VM at the same
       time. If not specified, the system will decide a value based on
@@ -1803,14 +1806,20 @@ class TaskGroup(_messages.Message):
   """
 
   class SchedulingPolicyValueValuesEnum(_messages.Enum):
-    r"""Scheduling policy for Tasks in the TaskGroup.
+    r"""Scheduling policy for Tasks in the TaskGroup. The default value is
+    AS_SOON_AS_POSSIBLE.
 
     Values:
       SCHEDULING_POLICY_UNSPECIFIED: Unspecified.
-      AS_SOON_AS_POSSIBLE: Run Tasks as soon as resources are available.
+      AS_SOON_AS_POSSIBLE: Run Tasks as soon as resources are available. Tasks
+        might be executed in parallel depending on parallelism and task_count
+        values.
+      IN_ORDER: Run Tasks sequentially with increased task index. Not yet
+        implemented.
     """
     SCHEDULING_POLICY_UNSPECIFIED = 0
     AS_SOON_AS_POSSIBLE = 1
+    IN_ORDER = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

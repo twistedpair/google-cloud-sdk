@@ -368,6 +368,18 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "network": {
+          "description": "Required. VPC Network name. Format: projects\/{project}\/global\/networks\/{network}",
+          "type": "string"
+        },
+        "activeDirectory": {
+          "description": "Specifies the Active Directory to be used for creating a SMB volume.",
+          "type": "string"
+        },
+        "kmsConfig": {
+          "description": "Specifies the KMS config to be used for volume encryption.",
+          "type": "string"
         }
       }
     },
@@ -455,7 +467,8 @@
           "type": "string"
         },
         "network": {
-          "description": "Required. VPC Network name",
+          "description": "Output only. VPC Network name. Format: projects\/{project}\/global\/networks\/{network}",
+          "readOnly": true,
           "type": "string"
         },
         "serviceLevel": {
@@ -597,7 +610,8 @@
           "type": "boolean"
         },
         "activeDirectory": {
-          "description": "Optional. Specifies the AD to be used for creating a SMB volume. ActiveDirectory name of the volume",
+          "description": "Output only. Specifies the ActiveDirectory name of a SMB volume.",
+          "readOnly": true,
           "type": "string"
         },
         "restoreParameters": {
@@ -605,7 +619,8 @@
           "$ref": "RestoreParameters"
         },
         "kmsConfig": {
-          "description": "Optional. Specifies the KMS config to be used for volume encryption.",
+          "description": "Output only. Specifies the KMS config to be used for volume encryption.",
+          "readOnly": true,
           "type": "string"
         },
         "encryptionType": {
@@ -1199,6 +1214,20 @@
         }
       }
     },
+    "EncryptVolumesRequest": {
+      "id": "EncryptVolumesRequest",
+      "description": "EncryptVolumesRequest EncryptVolumesRequest specifies the KMS config to encrypt existing volumes.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "VerifyKmsConfigRequest": {
+      "id": "VerifyKmsConfigRequest",
+      "description": "VerifyKmsConfigRequest VerifyKmsConfigRequest specifies the KMS config to be validated.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "VerifyKmsConfigResponse": {
       "id": "VerifyKmsConfigResponse",
       "description": "VerifyKmsConfigResponse VerifyKmsConfigResponse contains the information if the config is correctly and error message.",
@@ -1219,6 +1248,252 @@
           "readOnly": true,
           "type": "string"
         }
+      }
+    },
+    "ListReplicationsResponse": {
+      "id": "ListReplicationsResponse",
+      "description": "ListReplicationsResponse is the result of ListReplicationsRequest.",
+      "type": "object",
+      "properties": {
+        "replications": {
+          "description": "A list of replications in the project for the specified volume.",
+          "type": "array",
+          "items": {
+            "$ref": "Replication"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token you can use to retrieve the next page of results. Not returned if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Replication": {
+      "id": "Replication",
+      "description": "Replication is a nested resource under Volume, that describes a cross-region replication relationship between 2 volumes in different regions.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the Replication. Format: `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/replications\/{replication_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the replication.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified replication State",
+            "Replication is creating.",
+            "Replication is ready.",
+            "Replication is stopped.",
+            "Replication is deleting.",
+            "Replication is in error state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "STOPPED",
+            "DELETING",
+            "ERROR"
+          ]
+        },
+        "stateDetails": {
+          "description": "Output only. State details of the replication.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "role": {
+          "description": "Output only. Indicates whether this points to source or destination.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified replication role",
+            "Indicates Source volume.",
+            "Indicates Destination volume."
+          ],
+          "enum": [
+            "REPLICATION_ROLE_UNSPECIFIED",
+            "SOURCE",
+            "DESTINATION"
+          ]
+        },
+        "replicationSchedule": {
+          "description": "Required. Indicates the schedule for replication.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified ReplicationSchedule",
+            "Replication happens once every 10 minutes.",
+            "Replication happens once every hour.",
+            "Replication happens once every day."
+          ],
+          "enum": [
+            "REPLICATION_SCHEDULE_UNSPECIFIED",
+            "EVERY_10_MINUTES",
+            "HOURLY",
+            "DAILY"
+          ]
+        },
+        "mirrorState": {
+          "description": "Output only. Indicates the state of mirroring.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified MirrorState",
+            "Destination volume has not been initialized.",
+            "Destination volume has been initialized and is ready to receive replication transfers.",
+            "Destination volume is not receiving replication transfers."
+          ],
+          "enum": [
+            "MIRROR_STATE_UNSPECIFIED",
+            "UNINITIALIZED",
+            "MIRRORED",
+            "BROKEN"
+          ]
+        },
+        "transferring": {
+          "description": "Output only. Indicates whether currently there is a data transfer in progress.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "healthy": {
+          "description": "Output only. Condition of the relationship. Can be one of the following: - true: The replication relationship is healthy. It has not missed the most recent scheduled transfer. - false: The replication relationship is not healthy. It has missed the most recent scheduled transfer.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. Replication create time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "replicationVolume": {
+          "description": "Output only. The other volume resource full path it is paired with for replication",
+          "readOnly": true,
+          "type": "string"
+        },
+        "transferStats": {
+          "description": "Output only. Replication transfer statistics.",
+          "readOnly": true,
+          "$ref": "TransferStats"
+        },
+        "labels": {
+          "description": "Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "A description about this replication relationship.",
+          "type": "string"
+        },
+        "destinationVolumeParameters": {
+          "description": "Required. Input only. Destination volume parameters",
+          "$ref": "DestinationVolumeParameters"
+        }
+      }
+    },
+    "TransferStats": {
+      "id": "TransferStats",
+      "description": "TransferStats reports all statistics related to replication transfer.",
+      "type": "object",
+      "properties": {
+        "transferPercent": {
+          "description": "Transfer progress percentage.",
+          "type": "number",
+          "format": "double"
+        },
+        "totalTransferDuration": {
+          "description": "Total time taken during transfer.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "lastTransferBytes": {
+          "description": "Last transfer size in bytes.",
+          "type": "string",
+          "format": "int64"
+        },
+        "lastTransferDuration": {
+          "description": "Time taken during last transfer.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "lagDuration": {
+          "description": "Lag duration indicates the duration by which Destination region volume content lags behind the primary region volume content.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "updateTime": {
+          "description": "Time when progress was updated last.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastTransferEndTime": {
+          "description": "Time when last transfer completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastTransferError": {
+          "description": "A message describing the cause of the last transfer failure.",
+          "type": "string"
+        }
+      }
+    },
+    "DestinationVolumeParameters": {
+      "id": "DestinationVolumeParameters",
+      "description": "DestinationVolumeParameters specify input parameters used for creating destination volume.",
+      "type": "object",
+      "properties": {
+        "storagePool": {
+          "description": "Required. Existing destination StoragePool name.",
+          "type": "string"
+        },
+        "volumeId": {
+          "description": "Desired destination volume resource id. If not specified, source volume's resource id will be used. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+          "type": "string"
+        },
+        "shareName": {
+          "description": "Destination volume's share name. If not specified, source volume's share name will be used.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description for the destination volume.",
+          "type": "string"
+        }
+      }
+    },
+    "StopReplicationRequest": {
+      "id": "StopReplicationRequest",
+      "description": "StopReplicationRequest stops a replication until resumed.",
+      "type": "object",
+      "properties": {
+        "force": {
+          "description": "Indicates whether to stop replication forcefully while data transfer is in progress. Warning! if force is true, this will abort any current transfers and can lead to data loss due to partial transfer. If force is false, stop replication will fail while data transfer is in progress and you will need to retry later.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ResumeReplicationRequest": {
+      "id": "ResumeReplicationRequest",
+      "description": "ResumeReplicationRequest resumes a stopped replication.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ReverseReplicationDirectionRequest": {
+      "id": "ReverseReplicationDirectionRequest",
+      "description": "ReverseReplicationDirectionRequest reverses direction of replication. Source becomes destination and destination becomes source.",
+      "type": "object",
+      "properties": {
       }
     },
     "OperationMetadata": {
@@ -1386,7 +1661,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "netapp.projects.locations.operations.get",
@@ -2002,6 +2277,257 @@
                       "description": "Updates the settings of a specific snapshot."
                     }
                   }
+                },
+                "replications": {
+                  "methods": {
+                    "list": {
+                      "id": "netapp.projects.locations.volumes.replications.list",
+                      "path": "v1beta1/{+parent}/replications",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The volume for which to retrieve replication information, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListReplicationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns descriptions of all replications for a volume."
+                    },
+                    "get": {
+                      "id": "netapp.projects.locations.volumes.replications.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The replication resource name, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/replications\/{replication_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/replications\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Replication"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Describe a replication for a volume."
+                    },
+                    "create": {
+                      "id": "netapp.projects.locations.volumes.replications.create",
+                      "path": "v1beta1/{+parent}/replications",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The NetApp volume to create the replications of, in the format `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "replicationId": {
+                          "description": "Required. ID of the replication to create. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Replication"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a new replication for a volume."
+                    },
+                    "delete": {
+                      "id": "netapp.projects.locations.volumes.replications.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The replication resource name, in the format `projects\/*\/locations\/*\/volumes\/*\/replications\/{replication_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/replications\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a replication."
+                    },
+                    "patch": {
+                      "id": "netapp.projects.locations.volumes.replications.patch",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of the Replication. Format: `projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/replications\/{replication_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/replications\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Replication"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the settings of a specific replication."
+                    },
+                    "stop": {
+                      "id": "netapp.projects.locations.volumes.replications.stop",
+                      "path": "v1beta1/{+name}:stop",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:stop",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the replication, in the format of projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/replications\/{replication_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/replications\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "StopReplicationRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Stop Cross Region Replication."
+                    },
+                    "resume": {
+                      "id": "netapp.projects.locations.volumes.replications.resume",
+                      "path": "v1beta1/{+name}:resume",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:resume",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the replication, in the format of projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/replications\/{replication_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/replications\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ResumeReplicationRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Resume Cross Region Replication."
+                    },
+                    "reverseDirection": {
+                      "id": "netapp.projects.locations.volumes.replications.reverseDirection",
+                      "path": "v1beta1/{+name}:reverseDirection",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:reverseDirection",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the replication, in the format of projects\/{project_id}\/locations\/{location}\/volumes\/{volume_id}\/replications\/{replication_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/replications\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ReverseReplicationDirectionRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "ReverseReplicationDirection reverses direction of replication. Source becomes destination and destination becomes source."
+                    }
+                  }
                 }
               }
             },
@@ -2329,6 +2855,9 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "EncryptVolumesRequest"
+                  },
                   "response": {
                     "$ref": "Operation"
                   },
@@ -2354,6 +2883,9 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "VerifyKmsConfigRequest"
+                  },
                   "response": {
                     "$ref": "VerifyKmsConfigResponse"
                   },

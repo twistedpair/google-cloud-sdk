@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ipaddress
 import re
 
 from googlecloudsdk.api_lib.util import apis
@@ -77,6 +78,24 @@ def IsValidIPV4(ip):
       return False
 
   return True
+
+
+def IsValidIPV6(ip):
+  """Validates a given ip address to be IPv6 address."""
+  try:
+    _ = ipaddress.IPv6Address(ip)
+  except ValueError:
+    return False
+  return True
+
+
+def IPArgument(value):
+  """Argparse argument type that checks for a valid ipv4 address."""
+  if not IsValidIPV4(value) and not IsValidIPV6(value):
+    raise arg_parsers.ArgumentTypeError(
+        "invalid IPv4 or IPv6 address: '{0}'".format(value)
+    )
+  return value
 
 
 def IPV4Argument(value):

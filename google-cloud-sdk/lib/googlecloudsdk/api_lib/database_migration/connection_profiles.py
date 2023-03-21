@@ -288,21 +288,42 @@ class ConnectionProfilesClient(object):
       return  cp_type.DataDiskTypeValueValuesEnum.SQL_DATA_DISK_TYPE_UNSPECIFIED
     return cp_type.DataDiskTypeValueValuesEnum.lookup_by_name(data_disk_type)
 
+  def _GetAvailabilityType(self, cp_type, availability_type):
+    if availability_type is None:
+      return (
+          cp_type.AvailabilityTypeValueValuesEnum.SQL_AVAILABILITY_TYPE_UNSPECIFIED
+      )
+    return cp_type.AvailabilityTypeValueValuesEnum.lookup_by_name(
+        availability_type
+    )
+
   def _GetCloudSqlSettings(self, args):
+    """Creates a Cloud SQL connection profile according to the given args.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      CloudSqlConnectionProfile, to use when creating the connection profile.
+    """
+
     cp_type = self.messages.CloudSqlSettings
     source_id = args.CONCEPTS.source_id.Parse().RelativeName()
     user_labels_value = labels_util.ParseCreateArgs(
         args, cp_type.UserLabelsValue, 'user_labels')
     database_flags = labels_util.ParseCreateArgs(
         args, cp_type.DatabaseFlagsValue, 'database_flags')
-    return self.messages.CloudSqlSettings(
+    cloud_sql_settings = self.messages.CloudSqlSettings(
         databaseVersion=self._GetDatabaseVersion(
-            cp_type, args.database_version),
+            cp_type, args.database_version
+        ),
         userLabels=user_labels_value,
         tier=args.tier,
         storageAutoResizeLimit=args.storage_auto_resize_limit,
         activationPolicy=self._GetActivationPolicy(
-            cp_type, args.activation_policy),
+            cp_type, args.activation_policy
+        ),
         ipConfig=self._GetIpConfig(args),
         autoStorageIncrease=args.auto_storage_increase,
         databaseFlags=database_flags,
@@ -310,7 +331,14 @@ class ConnectionProfilesClient(object):
         dataDiskSizeGb=args.data_disk_size,
         zone=args.zone,
         rootPassword=args.root_password,
-        sourceId=source_id)
+        sourceId=source_id,
+    )
+    if self._api_version == 'v1':
+      cloud_sql_settings.availabilityType = self._GetAvailabilityType(
+          cp_type, args.availability_type
+      )
+      cloud_sql_settings.secondaryZone = args.secondary_zone
+    return cloud_sql_settings
 
   def _GetCloudSqlConnectionProfile(self, args):
     settings = self._GetCloudSqlSettings(args)

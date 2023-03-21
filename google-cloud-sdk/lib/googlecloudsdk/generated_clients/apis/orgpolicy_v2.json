@@ -166,6 +166,10 @@
         "booleanConstraint": {
           "description": "Defines this constraint as being a BooleanConstraint.",
           "$ref": "GoogleCloudOrgpolicyV2ConstraintBooleanConstraint"
+        },
+        "supportsDryRun": {
+          "description": "Shows if dry run is supported for this constraint or not.",
+          "type": "boolean"
         }
       }
     },

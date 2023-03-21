@@ -1650,7 +1650,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkloadIdentityPoolProviderKeys in a project. If `show_deleted` is set to `true`, then deleted pools are also listed.
+      r"""Lists all non-deleted WorkloadIdentityPoolProviderKeys in a project. If show_deleted is set to `true`, then deleted pools are also listed.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysListRequest) input message

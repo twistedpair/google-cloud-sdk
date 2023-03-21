@@ -1696,12 +1696,13 @@ class StreamConfig(_messages.Message):
 
 
 class StreamContent(_messages.Message):
-  r"""Message describing StreamContent object
+  r"""Message describing StreamContent object Next ID: 10
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
+    apiVersion: The API version to create this Stream Content
     bucketName: Name of the Cloud Storage bucket in the consumer project that
       stores the content source.
     buildVersions: Output only. User-specified version tags and unique build
@@ -1739,18 +1740,19 @@ class StreamContent(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bucketName = _messages.StringField(1)
-  buildVersions = _messages.MessageField('BuildVersion', 2, repeated=True)
-  contentVersionTags = _messages.StringField(3, repeated=True)
-  createTime = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  lifecycleState = _messages.MessageField('LifecycleState', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  apiVersion = _messages.StringField(1)
+  bucketName = _messages.StringField(2)
+  buildVersions = _messages.MessageField('BuildVersion', 3, repeated=True)
+  contentVersionTags = _messages.StringField(4, repeated=True)
+  createTime = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  lifecycleState = _messages.MessageField('LifecycleState', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class StreamInstance(_messages.Message):
-  r"""Message describing StreamInstance object Next ID: 13
+  r"""Message describing StreamInstance object Next ID: 14
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -1763,6 +1765,7 @@ class StreamInstance(_messages.Message):
       connect to request a streaming session.
     apiKey: Output only. The API key that an Stream client must use when
       requesting a streaming session.
+    apiVersion: The API version used to create this Stream Instance
     content: The content that this instance serves.
     contentBuildVersion: The user-specified version tag and build ID of the
       content served.
@@ -1833,16 +1836,17 @@ class StreamInstance(_messages.Message):
 
   apiEndpoint = _messages.StringField(1)
   apiKey = _messages.StringField(2)
-  content = _messages.StringField(3)
-  contentBuildVersion = _messages.MessageField('BuildVersion', 4)
-  createTime = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  lifecycleState = _messages.MessageField('LifecycleState', 7)
-  locationConfigs = _messages.MessageField('LocationConfigsValue', 8)
-  name = _messages.StringField(9)
-  realmConfigs = _messages.MessageField('RealmConfig', 10, repeated=True)
-  streamConfig = _messages.MessageField('StreamConfig', 11)
-  updateTime = _messages.StringField(12)
+  apiVersion = _messages.StringField(3)
+  content = _messages.StringField(4)
+  contentBuildVersion = _messages.MessageField('BuildVersion', 5)
+  createTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  lifecycleState = _messages.MessageField('LifecycleState', 8)
+  locationConfigs = _messages.MessageField('LocationConfigsValue', 9)
+  name = _messages.StringField(10)
+  realmConfigs = _messages.MessageField('RealmConfig', 11, repeated=True)
+  streamConfig = _messages.MessageField('StreamConfig', 12)
+  updateTime = _messages.StringField(13)
 
 
 class StreamProjectsLocationsGetRequest(_messages.Message):

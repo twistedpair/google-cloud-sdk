@@ -99,6 +99,26 @@ BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'node_labels': 'node_pool_config.labels',
     'node_taints': 'node_pool_config.taints',
     'display_name': 'display_name',
+    'cpu_manager_policy': 'node_pool_config.kubelet_config.cpu_manager_policy',
+    'disable_cpu_cfs_quota': (
+        'node_pool_config.kubelet_config.cpu_cfs_quota_disabled'
+    ),
+    'enable_cpu_cfs_quota': (
+        'node_pool_config.kubelet_config.cpu_cfs_quota_disabled'
+    ),
+    'cpu_cfs_quota_period': (
+        'node_pool_config.kubelet_config.cpu_cfs_quota_period'
+    ),
+    'feature_gates': 'node_pool_config.kubelet_config.feature_gates',
+    'pod_pids_limit': 'node_pool_config.kubelet_config.pod_pids_limit',
+    'registry_pull_qps': 'node_pool_config.kubelet_config.registry_pull_qps',
+    'registry_burst': 'node_pool_config.kubelet_config.registry_burst',
+    'disable_serialize_image_pulls': (
+        'node_pool_config.kubelet_config.serialize_image_pulls_disabled'
+    ),
+    'enable_serialize_image_pulls': (
+        'node_pool_config.kubelet_config.serialize_image_pulls_disabled'
+    ),
 }
 
 BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {

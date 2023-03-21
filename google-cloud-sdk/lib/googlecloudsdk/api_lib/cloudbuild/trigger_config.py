@@ -131,11 +131,10 @@ def AddTriggerConfigFilePathArg(trigger_config):
 
   trigger_config.add_argument(
       '--trigger-config',
-      help=(
-          'Path to Build Trigger config file (JSON or YAML format). For more '
-          'details, see https://cloud.google.com/cloud-build/docs/api/'
-          'reference/rest/v1/projects.triggers#BuildTrigger'
-      ),
+      help=("""\
+Path to Build Trigger config file (JSON or YAML format). For more details, see
+https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.triggers#BuildTrigger
+"""),
       metavar='PATH',
   )
 
@@ -219,17 +218,16 @@ def AddRepoEventArgs(flag_config):
 
   flag_config.add_argument(
       '--included-files',
-      help=(
-          'Glob filter. Changes affecting at least one included file will'
-          ' trigger builds.'
-      ),
+      help=("""\
+Glob filter. Changes affecting at least one included file will trigger builds.
+"""),
       type=arg_parsers.ArgList(),
       metavar='GLOB',
   )
   flag_config.add_argument(
       '--ignored-files',
       help=("""\
- Glob filter. Changes only affecting ignored files won't trigger builds.
+Glob filter. Changes only affecting ignored files won't trigger builds.
 """),
       type=arg_parsers.ArgList(),
       metavar='GLOB',
@@ -245,10 +243,10 @@ def AddFilterArg(flag_config):
   """
   flag_config.add_argument(
       '--subscription-filter',
-      help="""\
-CEL filter expression for the trigger.
-See https://cloud.google.com/build/docs/filter-build-events-using-cel for more details.
-""")
+      help=("""\
+CEL filter expression for the trigger. See https://cloud.google.com/build/docs/filter-build-events-using-cel for more details.
+"""),
+  )
 
 
 def AddSubstitutions(argument_group):
@@ -623,32 +621,39 @@ def AddGitRepoSource(flag_config):
     flag_config: argparse argument group. Git repo source flags will be added to
       this group.
   """
-  flag_config.add_argument(
-      '--github-enterprise-config',
-      help="""\
-The resource name of the GitHub Enterprise config that should be applied to
-this source.
-Format: projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}
-or projects/{project}/githubEnterpriseConfigs/{id}
-""")
   repo_config = flag_config.add_argument_group(
+      help='Flags for repository and branch information')
+  gen_config = repo_config.add_mutually_exclusive_group(
+      required=True,
       help='Flags for repository information')
-  repo_config.add_argument(
+  gen_config.add_argument(
+      '--repository',
+      help="""\
+Repository resource (2nd gen) to use, in the format "projects/*/locations/*/connections/*/repositories/*".
+""")
+  v1_repo = gen_config.add_argument_group(help='1st-gen repository settings.')
+  v1_repo.add_argument(
       '--repo',
       required=True,
-      help=(
-          'URI of the repository. Currently only HTTP URIs for GitHub and Cloud'
-          ' Source Repositories are supported.'
-      ),
+      help=("""\
+URI of the repository (1st gen). Currently only HTTP URIs for GitHub and Cloud
+Source Repositories are supported.
+"""),
   )
-  repo_config.add_argument(
+  v1_repo.add_argument(
       '--repo-type',
       required=True,
-      help=(
-          'Type of the repository. Currently only GitHub and Cloud Source'
-          ' Repository types are supported.'
-      ),
+      help=("""\
+Type of the repository (1st gen). Currently only GitHub and Cloud Source Repository types
+are supported.
+"""),
   )
+  v1_repo.add_argument(
+      '--github-enterprise-config',
+      help="""\
+The resource name of the GitHub Enterprise config that should be applied to this source (1st gen).
+Format: projects/{project}/locations/{location}/githubEnterpriseConfigs/{id} or projects/{project}/githubEnterpriseConfigs/{id}
+""")
 
   ref_config = repo_config.add_mutually_exclusive_group(required=True)
   ref_config.add_argument('--branch', help='Branch to build.')
@@ -665,41 +670,53 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
     required: Whether or not the repository info is required.
   """
 
-  # AddGitRepoSource (defined earlier in this file) adds repo and branch/tag
-  # as required fields in the same argument group, so repo is set iff branch
-  # or tag is also set. Therefore, we only need to check for the presence
-  # of args.repo here.
-  if required and not args.repo:
+  # AddGitRepoSource (defined earlier in this file) adds repo/repository and
+  # branch/tag as required fields in the same argument group, so repo is set
+  # iff branch or tag is also set. Therefore, we only need to check for the
+  # presence of args.repo or args.repository here.
+  if required and not args.repo and not args.repository:
     raise c_exceptions.RequiredArgumentException(
         'REPO',
-        '--repo is required when specifying a --dockerfile or --build-config.')
+        (
+            '--repo or --repository is required when specifying a --dockerfile'
+            ' or --build-config.'
+        ),
+    )
 
   # Repoless trigger.
-  if not args.repo:
+  if not args.repo and not args.repository:
     return
-
-  if not args.repo_type:
-    raise c_exceptions.RequiredArgumentException(
-        'REPO_TYPE',
-        '--repo-type is required when specifying a --repo.')
 
   if args.branch:
     ref = 'refs/heads/' + args.branch
   else:
     ref = 'refs/tags/' + args.tag
 
+  parsed_git_repo_source_repo_type = (
+      None if not args.repo_type
+      else messages.GitRepoSource.RepoTypeValueValuesEnum(args.repo_type)
+  )
+
   trigger.sourceToBuild = messages.GitRepoSource(
+      repository=args.repository,
       uri=args.repo,
       ref=ref,
-      repoType=messages.GitRepoSource.RepoTypeValueValuesEnum(args.repo_type),
-      githubEnterpriseConfig=args.github_enterprise_config)
+      repoType=parsed_git_repo_source_repo_type,
+      githubEnterpriseConfig=args.github_enterprise_config,
+  )
+
+  parsed_git_file_source_repo_type = (
+      None if not args.repo_type
+      else messages.GitFileSource.RepoTypeValueValuesEnum(args.repo_type)
+  )
 
   if args.build_config:
     trigger.gitFileSource = messages.GitFileSource(
+        repository=args.repository,
         path=args.build_config,
         uri=args.repo,
         revision=ref,
-        repoType=messages.GitFileSource.RepoTypeValueValuesEnum(args.repo_type),
+        repoType=parsed_git_file_source_repo_type,
         githubEnterpriseConfig=args.github_enterprise_config)
 
 

@@ -1431,12 +1431,18 @@
           "type": "string",
           "enumDescriptions": [
             "Syntax proto2.",
-            "Syntax proto3."
+            "Syntax proto3.",
+            "Syntax editions."
           ],
           "enum": [
             "SYNTAX_PROTO2",
-            "SYNTAX_PROTO3"
+            "SYNTAX_PROTO3",
+            "SYNTAX_EDITIONS"
           ]
+        },
+        "edition": {
+          "description": "The source edition string, only valid when syntax is SYNTAX_EDITIONS.",
+          "type": "string"
         }
       }
     },

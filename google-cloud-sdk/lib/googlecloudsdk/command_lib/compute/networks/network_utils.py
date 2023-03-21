@@ -96,6 +96,15 @@ def AddMtuArg(parser):
               attached to this network.""")
 
 
+def AddRdmaArg(parser):
+  """Adds the --rdma flag."""
+  parser.add_argument(
+      '--rdma',
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""Enable/disable RDMA on this network.""")
+
+
 def AddEnableUlaInternalIpv6Arg(parser):
   """Adds the --enable-ula-internal-ipv6 flag."""
   parser.add_argument(

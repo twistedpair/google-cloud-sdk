@@ -3556,7 +3556,7 @@ class MonitoringConfig(_messages.Message):
   necessary information for where each underlying Cluster reports its metrics.
 
   Fields:
-    cluster: Output only. Cluster name used to report metrics. For Anthos on
+    cluster: Immutable. Cluster name used to report metrics. For Anthos on
       VMWare/Baremetal, it would be in format `memberClusters/cluster_name`;
       And for Anthos on MultiCloud, it would be in format `{azureClusters,
       awsClusters}/cluster_name`.
@@ -3569,8 +3569,8 @@ class MonitoringConfig(_messages.Message):
       kubernetes.io/anthos for Anthos eventually. Noted: Anthos MultiCloud
       will have kubernetes.io prefix today but will migration to be under
       kubernetes.io/anthos
-    location: Output only. Location used to report Metrics
-    projectId: Output only. Project used to report Metrics
+    location: Immutable. Location used to report Metrics
+    projectId: Immutable. Project used to report Metrics
   """
 
   cluster = _messages.StringField(1)

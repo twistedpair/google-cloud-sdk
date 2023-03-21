@@ -2471,6 +2471,29 @@
           ],
           "description": "Retrieves a TagKey. This method will return `PERMISSION_DENIED` if the key does not exist or the user does not have permission to view it."
         },
+        "getNamespaced": {
+          "id": "cloudresourcemanager.tagKeys.getNamespaced",
+          "path": "v3/tagKeys/namespaced",
+          "flatPath": "v3/tagKeys/namespaced",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. A namespaced tag key name is now only supported in the format `{orgID}\/{tagKeyShort}`, such as `42\/foo` for a key with short name \"foo\" under the organization with ID 42 or `r2-d2\/bar` for a key with short name \"bar\" under the project `r2-d2`. Other formats will be supported when we add non-org parented tags.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "TagKey"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Retrieves a TagKey by its namespaced name. This method will return `PERMISSION_DENIED` if the key does not exist or the user does not have permission to view it."
+        },
         "create": {
           "id": "cloudresourcemanager.tagKeys.create",
           "path": "v3/tagKeys",
@@ -2718,6 +2741,29 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
           "description": "Retrieves a TagValue. This method will return `PERMISSION_DENIED` if the value does not exist or the user does not have permission to view it."
+        },
+        "getNamespaced": {
+          "id": "cloudresourcemanager.tagValues.getNamespaced",
+          "path": "v3/tagValues/namespaced",
+          "flatPath": "v3/tagValues/namespaced",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. A namespaced tag value name in the following format: `{parentId}\/{tagKeyShort}\/{tagValueShort}` Examples: - `42\/foo\/abc` for a value with short name \"abc\" under the key with short name \"foo\" under the organization with ID 42 - `r2-d2\/bar\/xyz` for a value with short name \"xyz\" under the key with short name \"bar\" under the project with ID \"r2-d2\"",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "TagValue"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only"
+          ],
+          "description": "Retrieves a TagValue by its namespaced name. This method will return `PERMISSION_DENIED` if the value does not exist or the user does not have permission to view it."
         },
         "create": {
           "id": "cloudresourcemanager.tagValues.create",

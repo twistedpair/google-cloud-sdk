@@ -349,11 +349,14 @@ class _BaseInstances(object):
           settings.ipConfiguration.pscConfig = sql_messages.PscConfig()
         settings.ipConfiguration.pscConfig.allowedConsumerProjects = []
 
+      if args.recreate_replicas_on_primary_crash is not None:
+        settings.recreateReplicasOnPrimaryCrash = (
+            args.recreate_replicas_on_primary_crash)
+
     if _IsAlpha(release_track):
       if args.IsSpecified('workload_tier'):
         settings.workloadTier = _ParseWorkloadTier(sql_messages,
                                                    args.workload_tier)
-
     return settings
 
   @classmethod

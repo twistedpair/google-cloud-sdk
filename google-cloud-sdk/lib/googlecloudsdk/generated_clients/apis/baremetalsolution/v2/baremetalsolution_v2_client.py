@@ -45,7 +45,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_networkQuotas = self.ProjectsLocationsNetworkQuotasService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
-    self.projects_locations_nfsshares = self.ProjectsLocationsNfssharesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
     self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
@@ -820,21 +819,11 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsNfssharesService(base_api.BaseApiService):
-    """Service class for the projects_locations_nfsshares resource."""
-
-    _NAME = 'projects_locations_nfsshares'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsNfssharesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
     def Rename(self, request, global_params=None):
       r"""RenameNfsShare sets a new name for an nfsshare. Use with caution, previous names become immediately invalidated.
 
       Args:
-        request: (BaremetalsolutionProjectsLocationsNfssharesRenameRequest) input message
+        request: (BaremetalsolutionProjectsLocationsNfsSharesRenameRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (NfsShare) The response message.
@@ -844,15 +833,15 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Rename.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsshares/{nfssharesId}:rename',
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsShares/{nfsSharesId}:rename',
         http_method='POST',
-        method_id='baremetalsolution.projects.locations.nfsshares.rename',
+        method_id='baremetalsolution.projects.locations.nfsShares.rename',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v2/{+name}:rename',
         request_field='renameNfsShareRequest',
-        request_type_name='BaremetalsolutionProjectsLocationsNfssharesRenameRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsNfsSharesRenameRequest',
         response_type_name='NfsShare',
         supports_download=False,
     )

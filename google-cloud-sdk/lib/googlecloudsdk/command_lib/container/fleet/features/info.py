@@ -37,93 +37,83 @@ class Info(object):
 
 
 _INFO = {
-    'anthosobservability':
-        Info(
-            display_name='Anthos Observability',
-            api='anthosobservability.googleapis.com',
-            cmd_group='anthosobservability',
-        ),
-    'appdevexperience':
-        Info(
-            display_name='CloudRun',
-            api='appdevelopmentexperience.googleapis.com',
-            cmd_group='cloudrun',
-        ),
-    'authorizer':
-        Info(
-            display_name='Authorizer',
-            api='gkehub.googleapis.com',
-        ),
-    'cloudbuild':
-        Info(
-            display_name='Cloud Build',
-            api='cloudbuild.googleapis.com',
-            cmd_group='build',
-        ),
-    'clouddeploy':
-        Info(
-            display_name='Cloud Deploy',
-            api='clouddeploy.googleapis.com',
-            cmd_group='deploy',
-        ),
-    'clusterupgrade':
-        Info(
-            display_name='Cluster Upgrade',
-            api='gkehub.googleapis.com',
-            cmd_group='scopes',
-        ),
-    'configmanagement':
-        Info(
-            display_name='Config Management',
-            api='anthosconfigmanagement.googleapis.com',
-            cmd_group='config-management',
-        ),
-    'identityservice':
-        Info(
-            display_name='Identity Service',
-            api='anthosidentityservice.googleapis.com',
-            cmd_group='identity-service',
-        ),
-    'metering':
-        Info(
-            display_name='Metering',
-            api='multiclustermetering.googleapis.com',
-        ),
-    'multiclusteringress':
-        Info(
-            display_name='Ingress',
-            api='multiclusteringress.googleapis.com',
-            cmd_group='ingress',
-        ),
-    'multiclusterservicediscovery':
-        Info(
-            display_name='Multi-cluster Services',
-            api='multiclusterservicediscovery.googleapis.com',
-            cmd_group='multi-cluster-services',
-        ),
-    'policycontroller':
-        Info(
-            display_name='Policy Controller',
-            api='anthospolicycontroller.googleapis.com',
-            cmd_group='policycontroller',
-        ),
-    'servicedirectory':
-        Info(
-            display_name='Service Directory',
-            api='servicedirectory.googleapis.com',
-            cmd_group='service-directory',
-        ),
-    'servicemesh':
-        Info(
-            display_name='Service Mesh',
-            api='meshconfig.googleapis.com',
-            cmd_group='mesh',
-        ),
-    'workloadmigration':
-        Info(
-            display_name='Workload Migration',
-            cmd_group='workload-migration',
-        ),
+    'anthosobservability': Info(
+        display_name='Anthos Observability',
+        api='anthosobservability.googleapis.com',
+        cmd_group='anthosobservability',
+    ),
+    'appdevexperience': Info(
+        display_name='CloudRun',
+        api='appdevelopmentexperience.googleapis.com',
+        cmd_group='cloudrun',
+    ),
+    'authorizer': Info(
+        display_name='Authorizer',
+        api='gkehub.googleapis.com',
+    ),
+    'cloudbuild': Info(
+        display_name='Cloud Build',
+        api='cloudbuild.googleapis.com',
+        cmd_group='build',
+    ),
+    'clouddeploy': Info(
+        display_name='Cloud Deploy',
+        api='clouddeploy.googleapis.com',
+        cmd_group='deploy',
+    ),
+    'clusterupgrade': Info(
+        display_name='Cluster Upgrade',
+        api='gkehub.googleapis.com',
+        cmd_group='scopes',
+    ),
+    'configmanagement': Info(
+        display_name='Config Management',
+        api='anthosconfigmanagement.googleapis.com',
+        cmd_group='config-management',
+    ),
+    'dataplanev2': Info(
+        display_name='Dataplane V2 Encryption',
+        api='gkedataplanev2.googleapis.com',
+        cmd_group='dataplane-v2-encryption',
+    ),
+    'identityservice': Info(
+        display_name='Identity Service',
+        api='anthosidentityservice.googleapis.com',
+        cmd_group='identity-service',
+    ),
+    'metering': Info(
+        display_name='Metering',
+        api='multiclustermetering.googleapis.com',
+    ),
+    'multiclusteringress': Info(
+        display_name='Ingress',
+        api='multiclusteringress.googleapis.com',
+        cmd_group='ingress',
+    ),
+    'multiclusterservicediscovery': Info(
+        display_name='Multi-cluster Services',
+        api='multiclusterservicediscovery.googleapis.com',
+        cmd_group='multi-cluster-services',
+    ),
+    'policycontroller': Info(
+        display_name='Policy Controller',
+        api='anthospolicycontroller.googleapis.com',
+        cmd_group='policycontroller',
+    ),
+    'servicedirectory': Info(
+        display_name='Service Directory',
+        api='servicedirectory.googleapis.com',
+        cmd_group='service-directory',
+    ),
+    'servicemesh': Info(
+        display_name='Service Mesh',
+        api='meshconfig.googleapis.com',
+        cmd_group='mesh',
+    ),
+    'workloadmigration': Info(
+        display_name='Workload Migration',
+        cmd_group='workload-migration',
+    ),
 }
 
 

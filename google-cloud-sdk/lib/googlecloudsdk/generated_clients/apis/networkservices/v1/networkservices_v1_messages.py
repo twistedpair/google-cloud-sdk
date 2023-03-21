@@ -5676,7 +5676,7 @@ class Routing(_messages.Message):
     hostRules: Required. A list of HostRule rules to match against.
       `RouteRule` rules support advanced routing behavior, and can match on
       paths, headers and query parameters, as well as status codes and HTTP
-      methods. You can specify up to five host rules.
+      methods. You can specify up to 10 host rules.
     pathMatchers: Required. A list of PathMatcher values referenced by name by
       HostRule values. `PathMatcher` is used to match the path portion of the
       URL when a`HostRule` value matches the URL's host portion. You can

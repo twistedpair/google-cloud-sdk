@@ -40,6 +40,7 @@ from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import platforms
 
 import six
 
@@ -615,11 +616,13 @@ class InstallationState(object):
       return
     shutil.copyfile(my_properties, other_properties)
 
-  def CompilePythonFiles(self, force=False):
+  def CompilePythonFiles(self, force=False, workers=None):
     """Attempts to compile all the python files into .pyc files.
 
     Args:
       force: boolean, passed to force option of compileall.compiledir,
+      workers: int, can be used to explicitly set number of worker processes;
+        otherwise we determine it automatically. Only set for testing.
 
     This does not raise exceptions if compiling a given file fails.
     """
@@ -675,12 +678,25 @@ class InstallationState(object):
           'lib',
           'platform',
       ]
+      # Neither os.cpu_count nor the compile_dir workers kwarg are available
+      # in PY2; the former was added in 3.4 and the latter in 3.5.
+      # Only use multiple workers on Windows to start.
+      # TODO(b/269755636): Roll this out across all platforms.
+      if (not six.PY2 and platforms.OperatingSystem.Current() ==
+          platforms.OperatingSystem.WINDOWS):
+        # There are diminishing returns to using more worker processes past a
+        # certain point, so we cap it to a reasonable amount here.
+        num_workers = min(os.cpu_count(), 8) if workers is None else workers
+        additional_kwargs = {'workers': num_workers}
+      else:
+        additional_kwargs = {}
       for d in to_compile:
         # Using 2 for quiet, in python 2.7 this value is used as a bool in the
         # implementation and bool(2) is True. Starting in python 3.5 this
         # parameter was changed to a multilevel value, where 1 hides files
         # being processed and 2 suppresses output.
-        compileall.compile_dir(d, rx=regex_exclusion, quiet=2, force=force)
+        compileall.compile_dir(
+            d, rx=regex_exclusion, quiet=2, force=force, **additional_kwargs)
 
 
 class InstallationManifest(object):

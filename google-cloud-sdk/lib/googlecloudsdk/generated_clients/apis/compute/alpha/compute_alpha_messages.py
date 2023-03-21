@@ -607,27 +607,31 @@ class AccessConfig(_messages.Message):
       networkTier. If an AccessConfig with a valid external IP address is
       specified, it must match that of the networkTier associated with the
       Address resource owning that IP.
-    TypeValueValuesEnum: The type of configuration. The default and only
-      option is ONE_TO_ONE_NAT.
+    TypeValueValuesEnum: The type of configuration. In accessConfigs (IPv4),
+      the default and only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the
+      default and only option is DIRECT_IPV6.
 
   Fields:
-    externalIpv6: The first IPv6 address of the external IPv6 range associated
-      with this instance, prefix length is stored in externalIpv6PrefixLength
-      in ipv6AccessConfig. To use a static external IP address, it must be
-      unused and in the same region as the instance's zone. If not specified,
-      Google Cloud will automatically assign an external IPv6 address from the
-      instance's subnetwork.
-    externalIpv6PrefixLength: The prefix length of the external IPv6 range.
+    externalIpv6: Applies to ipv6AccessConfigs only. The first IPv6 address of
+      the external IPv6 range associated with this instance, prefix length is
+      stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static
+      external IP address, it must be unused and in the same region as the
+      instance's zone. If not specified, Google Cloud will automatically
+      assign an external IPv6 address from the instance's subnetwork.
+    externalIpv6PrefixLength: Applies to ipv6AccessConfigs only. The prefix
+      length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
-    name: The name of this access configuration. The default and recommended
-      name is External NAT, but you can use any arbitrary string, such as My
-      external IP or Network Access.
-    natIP: An external IP address associated with this instance. Specify an
-      unused static external IP address available to the project or leave this
-      field undefined to use an IP from a shared ephemeral IP address pool. If
-      you specify a static external IP address, it must live in the same
-      region as the zone of the instance.
+    name: The name of this access configuration. In accessConfigs (IPv4), the
+      default and recommended name is External NAT, but you can use any
+      arbitrary string, such as My external IP or Network Access. In
+      ipv6AccessConfigs, the recommend name is External IPv6.
+    natIP: Applies to accessConfigs (IPv4) only. An external IP address
+      associated with this instance. Specify an unused static external IP
+      address available to the project or leave this field undefined to use an
+      IP from a shared ephemeral IP address pool. If you specify a static
+      external IP address, it must live in the same region as the zone of the
+      instance.
     networkTier: This signifies the networking tier used for configuring this
       access configuration and can only take the following values: PREMIUM,
       STANDARD. If an AccessConfig is specified without a valid external IP
@@ -649,8 +653,9 @@ class AccessConfig(_messages.Message):
       created to map the external IP address of the instance to a DNS domain
       name. This field is not used in ipv6AccessConfig. A default PTR record
       will be created if the VM has external IPv6 range associated.
-    type: The type of configuration. The default and only option is
-      ONE_TO_ONE_NAT.
+    type: The type of configuration. In accessConfigs (IPv4), the default and
+      only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and
+      only option is DIRECT_IPV6.
   """
 
   class NetworkTierValueValuesEnum(_messages.Enum):
@@ -679,8 +684,9 @@ class AccessConfig(_messages.Message):
     STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of configuration. The default and only option is
-    ONE_TO_ONE_NAT.
+    r"""The type of configuration. In accessConfigs (IPv4), the default and
+    only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and only
+    option is DIRECT_IPV6.
 
     Values:
       DIRECT_IPV6: <no description>
@@ -700,7 +706,7 @@ class AccessConfig(_messages.Message):
   securityPolicy = _messages.StringField(9)
   setPublicDns = _messages.BooleanField(10)
   setPublicPtr = _messages.BooleanField(11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12, default='ONE_TO_ONE_NAT')
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class Address(_messages.Message):
@@ -4181,6 +4187,10 @@ class BackendService(_messages.Message):
       networks in the same scope as the backend service. Note: if not
       specified then GLOBAL_VPC_NETWORK will be used.
 
+  Messages:
+    MetadatasValue: Deployment metadata associated with the resource to be set
+      by a GKE hub controller and read by the backend RCTH
+
   Fields:
     affinityCookieTtlSec: Lifetime of cookies in seconds. This setting is
       applicable to external and internal HTTP(S) load balancers and Traffic
@@ -4322,6 +4332,8 @@ class BackendService(_messages.Message):
       configuration of the UrlMap that references this backend service. This
       field is only allowed when the loadBalancingScheme of the backend
       service is INTERNAL_SELF_MANAGED.
+    metadatas: Deployment metadata associated with the resource to be set by a
+      GKE hub controller and read by the backend RCTH
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -4639,6 +4651,31 @@ class BackendService(_messages.Message):
     GLOBAL_VPC_NETWORK = 0
     REGIONAL_VPC_NETWORK = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadatasValue(_messages.Message):
+    r"""Deployment metadata associated with the resource to be set by a GKE
+    hub controller and read by the backend RCTH
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadatasValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadatasValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadatasValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
@@ -4665,23 +4702,24 @@ class BackendService(_messages.Message):
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 24)
   logConfig = _messages.MessageField('BackendServiceLogConfig', 25)
   maxStreamDuration = _messages.MessageField('Duration', 26)
-  name = _messages.StringField(27)
-  network = _messages.StringField(28)
-  outlierDetection = _messages.MessageField('OutlierDetection', 29)
-  port = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(31)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 32)
-  region = _messages.StringField(33)
-  securityPolicy = _messages.StringField(34)
-  securitySettings = _messages.MessageField('SecuritySettings', 35)
-  selfLink = _messages.StringField(36)
-  selfLinkWithId = _messages.StringField(37)
-  serviceBindings = _messages.StringField(38, repeated=True)
-  serviceLbPolicy = _messages.StringField(39)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 40)
-  subsetting = _messages.MessageField('Subsetting', 41)
-  timeoutSec = _messages.IntegerField(42, variant=_messages.Variant.INT32)
-  vpcNetworkScope = _messages.EnumField('VpcNetworkScopeValueValuesEnum', 43)
+  metadatas = _messages.MessageField('MetadatasValue', 27)
+  name = _messages.StringField(28)
+  network = _messages.StringField(29)
+  outlierDetection = _messages.MessageField('OutlierDetection', 30)
+  port = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 33)
+  region = _messages.StringField(34)
+  securityPolicy = _messages.StringField(35)
+  securitySettings = _messages.MessageField('SecuritySettings', 36)
+  selfLink = _messages.StringField(37)
+  selfLinkWithId = _messages.StringField(38)
+  serviceBindings = _messages.StringField(39, repeated=True)
+  serviceLbPolicy = _messages.StringField(40)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 41)
+  subsetting = _messages.MessageField('Subsetting', 42)
+  timeoutSec = _messages.IntegerField(43, variant=_messages.Variant.INT32)
+  vpcNetworkScope = _messages.EnumField('VpcNetworkScopeValueValuesEnum', 44)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -10656,9 +10694,7 @@ class ComputeGlobalAddressesGetOwnerInstanceRequest(_messages.Message):
   r"""A ComputeGlobalAddressesGetOwnerInstanceRequest object.
 
   Fields:
-    ipAddress: The ip_address could be external IPv4, or internal IPv4 within
-      IPv6 form of virtual_network_id with internal IPv4. IPv6 is not
-      supported yet.
+    ipAddress: The VM IP address.
     project: Project ID for this request.
   """
 
@@ -29223,17 +29259,6 @@ class ComputeServiceAttachmentsPatchRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    reconcileConnections: This flag determines how to change the status of
-      consumer connections, when the connection policy for the corresponding
-      project or network is modified. If the flag is false, the default case,
-      then existing ACCEPTED and REJECTED consumer connections stay in that
-      state. For example, even if the project is removed from the accept list,
-      existing ACCEPTED connections will stay the same. If the flag is true,
-      then the connection can change from ACCEPTED or REJECTED to pending when
-      the connection policy is modified. For example, if a project is removed
-      from the reject list, its existing REJECTED connections will move to the
-      PENDING state. If the project is also added to the accept list, then
-      those connections will move to the ACCEPTED state.
     region: The region scoping this request and should conform to RFC1035.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -29253,11 +29278,10 @@ class ComputeServiceAttachmentsPatchRequest(_messages.Message):
   """
 
   project = _messages.StringField(1, required=True)
-  reconcileConnections = _messages.BooleanField(2)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  serviceAttachment = _messages.StringField(5, required=True)
-  serviceAttachmentResource = _messages.MessageField('ServiceAttachment', 6)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4, required=True)
+  serviceAttachmentResource = _messages.MessageField('ServiceAttachment', 5)
 
 
 class ComputeServiceAttachmentsSetIamPolicyRequest(_messages.Message):
@@ -49083,8 +49107,8 @@ class Int64RangeMatch(_messages.Message):
 
 class Interconnect(_messages.Message):
   r"""Represents an Interconnect resource. An Interconnect resource is a
-  dedicated connection between the GCP network and your on-premises network.
-  For more information, read the Dedicated Interconnect Overview.
+  dedicated connection between the Google Cloud network and your on-premises
+  network. For more information, read the Dedicated Interconnect Overview.
 
   Enums:
     AvailableFeaturesValueListEntryValuesEnum:
@@ -54262,7 +54286,7 @@ class Network(_messages.Message):
     firewallPolicy: [Output Only] URL of the firewall policy the network is
       associated with.
     gatewayIPv4: [Output Only] The gateway address for default routing out of
-      the network, selected by GCP.
+      the network, selected by Google Cloud.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     internalIpv6Range: When enabling ula internal ipv6, caller optionally can
@@ -56482,10 +56506,11 @@ class NetworkInterface(_messages.Message):
       IPV4_IPV6.
     NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
       This may be gVNIC or VirtioNet.
-    StackTypeValueValuesEnum: The stack type for this network interface to
-      identify whether the IPv6 feature is enabled or not. If not specified,
-      IPV4_ONLY will be used. This field can be both set at instance creation
-      and update network interface operations.
+    StackTypeValueValuesEnum: The stack type for this network interface. To
+      assign only IPv4 addresses, use IPV4_ONLY. To assign both IPv4 and IPv6
+      addresses, use IPV4_IPV6. If not specified, IPV4_ONLY is used. This
+      field can be both set at instance creation and update network interface
+      operations.
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
@@ -56544,10 +56569,10 @@ class NetworkInterface(_messages.Message):
     queueCount: The networking queue count that's specified by users for the
       network interface. Both Rx and Tx queues will be set to this number.
       It'll be empty if not specified by the users.
-    stackType: The stack type for this network interface to identify whether
-      the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
-      used. This field can be both set at instance creation and update network
-      interface operations.
+    stackType: The stack type for this network interface. To assign only IPv4
+      addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use
+      IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both
+      set at instance creation and update network interface operations.
     subinterfaces: SubInterfaces help enable L2 communication for the instance
       over subnetworks that support L2. Every network interface will get a
       default untagged (vlan not specified) subinterface. Users can specify
@@ -56595,10 +56620,10 @@ class NetworkInterface(_messages.Message):
     VIRTIO_NET = 3
 
   class StackTypeValueValuesEnum(_messages.Enum):
-    r"""The stack type for this network interface to identify whether the IPv6
-    feature is enabled or not. If not specified, IPV4_ONLY will be used. This
-    field can be both set at instance creation and update network interface
-    operations.
+    r"""The stack type for this network interface. To assign only IPv4
+    addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use
+    IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both set
+    at instance creation and update network interface operations.
 
     Values:
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
@@ -68993,12 +69018,13 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
-    customLearnedIpRanges: User-defined Custom Learned Route IP range list for
-      a BGP session.
-    customLearnedRoutePriority: User-defined Custom Learned Route Priority for
-      a BGP session. This will be applied to all Custom Learned Route ranges
-      of the BGP session, if not given, google-managed priority of 100 is
-      used.
+    customLearnedIpRanges: A list of user-defined custom learned route IP
+      address ranges for a BGP session.
+    customLearnedRoutePriority: The user-defined custom learned route priority
+      for a BGP session. This value is applied to all custom learned route
+      ranges for the session. You can choose a value from `0` to `65335`. If
+      you don't provide a value, Google Cloud assigns a priority of `100` to
+      the ranges.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -69250,9 +69276,10 @@ class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
   r"""A RouterBgpPeerCustomLearnedIpRange object.
 
   Fields:
-    range: The Custom Learned Route IP range. Must be a valid CIDR-formatted
-      prefix. If an IP is provided without a subnet mask, it is interpreted as
-      a /32 singular IP range for IPv4, and /128 for IPv6.
+    range: The custom learned route IP address range. Must be a valid CIDR-
+      formatted prefix. If an IP address is provided without a subnet mask, it
+      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
+      IPv6, `/128`.
   """
 
   range = _messages.StringField(1)
@@ -71421,6 +71448,8 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
       applicable when json_parsing is set to STANDARD.
     jsonParsing: A JsonParsingValueValuesEnum attribute.
     logLevel: A LogLevelValueValuesEnum attribute.
+    userIpRequestHeaders: An optional list of case-insensitive request header
+      names to use for resolving the callers client IP address.
   """
 
   class JsonParsingValueValuesEnum(_messages.Enum):
@@ -71446,6 +71475,7 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
   jsonCustomConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfigJsonCustomConfig', 1)
   jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 2)
   logLevel = _messages.EnumField('LogLevelValueValuesEnum', 3)
+  userIpRequestHeaders = _messages.StringField(4, repeated=True)
 
 
 class SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(_messages.Message):
@@ -72592,7 +72622,7 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource. A service attachment represents
   a service that a producer has exposed. It encapsulates the load balancer
   which fronts the service runs and a list of NAT IP ranges that the producers
-  uses to represent the consumers connecting to the service. next tag = 20
+  uses to represent the consumers connecting to the service.
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service
@@ -72648,6 +72678,16 @@ class ServiceAttachment(_messages.Message):
       this service attachment.
     pscServiceAttachmentId: [Output Only] An 128-bit global unique ID of the
       PSC service attachment.
+    reconcileConnections: This flag determines whether a consumer
+      accept/reject list change can reconcile the statuses of existing
+      ACCEPTED or REJECTED PSC endpoints. - If false, connection policy update
+      will only affect existing PENDING PSC endpoints. Existing
+      ACCEPTED/REJECTED endpoints will remain untouched regardless how the
+      connection policy is modified . - If true, update will affect both
+      PENDING and ACCEPTED/REJECTED PSC endpoints. For example, an ACCEPTED
+      PSC endpoint will be moved to REJECTED if its project is added to the
+      reject list. For newly created service attachment, this boolean defaults
+      to true.
     region: [Output Only] URL of the region where the service attachment
       resides. This field applies only to the region resource. You must
       specify this field as part of the HTTP request URL. It is not settable
@@ -72686,9 +72726,10 @@ class ServiceAttachment(_messages.Message):
   natSubnets = _messages.StringField(13, repeated=True)
   producerForwardingRule = _messages.StringField(14)
   pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  targetService = _messages.StringField(18)
+  reconcileConnections = _messages.BooleanField(16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  targetService = _messages.StringField(19)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):

@@ -593,7 +593,8 @@ def CreateDaisyBucketInProject(bucket_location, storage_client):
     if not bucket_in_project_created_or_found:
       # Give up attempting to create a Daisy scratch bucket
       raise DaisyBucketCreationException(
-          'Unable to create a temporary bucket `{0}` needed for the operation to proceed as it exists in another project.'
+          'Unable to create a temporary bucket `{0}` needed for the operation '
+          'to proceed as it exists in another project.'
           .format(bucket_name))
   return bucket_name
 
@@ -641,7 +642,7 @@ def RunImageImport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  # TODO (b/191234695)
+  # TODO(b/191234695)
   del release_track  # Unused argument
 
   AppendArg(import_args, 'client_version', config.CLOUD_SDK_VERSION)
@@ -777,7 +778,7 @@ def RunOnestepImageImport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  # TODO (b/191234695)
+  # TODO(b/191234695)
   del release_track  # Unused argument
 
   builder_region = _GetBuilderRegion(_GetImageImportRegion, args)
@@ -816,7 +817,7 @@ def RunImageExport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  # TODO (b/191234695)
+  # TODO(b/191234695)
   del release_track  # Unused argument
 
   AppendArg(export_args, 'client_version', config.CLOUD_SDK_VERSION)
@@ -897,6 +898,10 @@ def GetDaisyTimeout(args):
   # Prevent the daisy timeout from being <=0.
   daisy_timeout = max(1, daisy_timeout)
   return daisy_timeout
+
+
+def GetDefaultBuilderVersion():
+  return _DEFAULT_BUILDER_VERSION
 
 
 def _RunCloudBuild(args,
@@ -1298,7 +1303,7 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  # TODO (b/191234695)
+  # TODO(b/191234695)
   del release_track  # Unused argument
 
   project_id = projects_util.ParseProject(

@@ -581,6 +581,16 @@ class CloudkmsProjectsLocationsGenerateRandomBytesRequest(_messages.Message):
   location = _messages.StringField(2, required=True)
 
 
+class CloudkmsProjectsLocationsGetEkmConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsGetEkmConfigRequest object.
+
+  Fields:
+    name: Required. The name of the EkmConfig to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudkmsProjectsLocationsGetRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsGetRequest object.
 
@@ -1243,6 +1253,21 @@ class CloudkmsProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudkmsProjectsLocationsUpdateEkmConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsUpdateEkmConfigRequest object.
+
+  Fields:
+    ekmConfig: A EkmConfig resource to be passed as the request body.
+    name: Output only. The resource name for the EkmConfig in the format
+      `projects/*/locations/*/ekmConfig`.
+    updateMask: Required. List of fields to be updated in this request.
+  """
+
+  ekmConfig = _messages.MessageField('EkmConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class CryptoKey(_messages.Message):
   r"""A CryptoKey represents a logical key that can be used for cryptographic
   operations. A CryptoKey is made up of zero or more versions, which represent
@@ -1384,12 +1409,17 @@ class CryptoKeyVersion(_messages.Message):
       material was destroyed. Only present if state is DESTROYED.
     destroyTime: Output only. The time this CryptoKeyVersion's key material is
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
+    externalDestructionFailureReason: Output only. The root cause of the most
+      recent external destruction failure. Only present if state is
+      EXTERNAL_DESTRUCTION_FAILED.
     externalProtectionLevelOptions: ExternalProtectionLevelOptions stores a
       group of additional fields for configuring a CryptoKeyVersion that are
       specific to the EXTERNAL protection level and EXTERNAL_VPC protection
       levels.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
+    generationFailureReason: Output only. The root cause of the most recent
+      generation failure. Only present if state is GENERATION_FAILED.
     importFailureReason: Output only. The root cause of the most recent import
       failure. Only present if state is IMPORT_FAILED.
     importJob: Output only. The name of the ImportJob used in the most recent
@@ -1531,6 +1561,17 @@ class CryptoKeyVersion(_messages.Message):
         used, enabled, disabled, or destroyed. The submitted key material has
         been discarded. Additional details can be found in
         CryptoKeyVersion.import_failure_reason.
+      GENERATION_FAILED: This version was not generated successfully. It may
+        not be used, enabled, disabled, or destroyed. Additional details can
+        be found in CryptoKeyVersion.generation_failure_reason.
+      PENDING_EXTERNAL_DESTRUCTION: This version was destroyed, and it may not
+        be used or enabled again. Cloud KMS is waiting for the corresponding
+        key material residing in an external key manager to be destroyed.
+      EXTERNAL_DESTRUCTION_FAILED: This version was destroyed, and it may not
+        be used or enabled again. However, Cloud KMS could not confirm that
+        the corresponding key material residing in an external key manager was
+        destroyed. Additional details can be found in
+        CryptoKeyVersion.external_destruction_failure_reason.
     """
     CRYPTO_KEY_VERSION_STATE_UNSPECIFIED = 0
     PENDING_GENERATION = 1
@@ -1540,21 +1581,26 @@ class CryptoKeyVersion(_messages.Message):
     DESTROY_SCHEDULED = 5
     PENDING_IMPORT = 6
     IMPORT_FAILED = 7
+    GENERATION_FAILED = 8
+    PENDING_EXTERNAL_DESTRUCTION = 9
+    EXTERNAL_DESTRUCTION_FAILED = 10
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   attestation = _messages.MessageField('KeyOperationAttestation', 2)
   createTime = _messages.StringField(3)
   destroyEventTime = _messages.StringField(4)
   destroyTime = _messages.StringField(5)
-  externalProtectionLevelOptions = _messages.MessageField('ExternalProtectionLevelOptions', 6)
-  generateTime = _messages.StringField(7)
-  importFailureReason = _messages.StringField(8)
-  importJob = _messages.StringField(9)
-  importTime = _messages.StringField(10)
-  name = _messages.StringField(11)
-  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 12)
-  reimportEligible = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  externalDestructionFailureReason = _messages.StringField(6)
+  externalProtectionLevelOptions = _messages.MessageField('ExternalProtectionLevelOptions', 7)
+  generateTime = _messages.StringField(8)
+  generationFailureReason = _messages.StringField(9)
+  importFailureReason = _messages.StringField(10)
+  importJob = _messages.StringField(11)
+  importTime = _messages.StringField(12)
+  name = _messages.StringField(13)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 14)
+  reimportEligible = _messages.BooleanField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
 
 
 class CryptoKeyVersionTemplate(_messages.Message):
@@ -1794,15 +1840,41 @@ class Digest(_messages.Message):
   sha512 = _messages.BytesField(3)
 
 
+class EkmConfig(_messages.Message):
+  r"""An EkmConfig is a singleton resource that represents configuration
+  parameters that apply to all CryptoKeys and CryptoKeyVersions with a
+  ProtectionLevel of EXTERNAL_VPC in a given project and location.
+
+  Fields:
+    defaultEkmConnection: Optional. Resource name of the default
+      EkmConnection. Setting this field to the empty string removes the
+      default.
+    name: Output only. The resource name for the EkmConfig in the format
+      `projects/*/locations/*/ekmConfig`.
+  """
+
+  defaultEkmConnection = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class EkmConnection(_messages.Message):
   r"""An EkmConnection represents an individual EKM connection. It can be used
   for creating CryptoKeys and CryptoKeyVersions with a ProtectionLevel of
   EXTERNAL_VPC, as well as performing cryptographic operations using keys
   created within the EkmConnection.
 
+  Enums:
+    KeyManagementModeValueValuesEnum: Optional. Describes who can perform
+      control plane operations on the EKM. If unset, this defaults to MANUAL.
+
   Fields:
     createTime: Output only. The time at which the EkmConnection was created.
+    cryptoSpacePath: Optional. Identifies the EKM Crypto Space that this
+      EkmConnection maps to. Note: This field is required if KeyManagementMode
+      is CLOUD_KMS.
     etag: Optional. Etag of the currently stored EkmConnection.
+    keyManagementMode: Optional. Describes who can perform control plane
+      operations on the EKM. If unset, this defaults to MANUAL.
     name: Output only. The resource name for the EkmConnection in the format
       `projects/*/locations/*/ekmConnections/*`.
     serviceResolvers: A list of ServiceResolvers where the EKM can be reached.
@@ -1810,10 +1882,40 @@ class EkmConnection(_messages.Message):
       single ServiceResolver is supported.
   """
 
+  class KeyManagementModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Describes who can perform control plane operations on the
+    EKM. If unset, this defaults to MANUAL.
+
+    Values:
+      KEY_MANAGEMENT_MODE_UNSPECIFIED: Not specified.
+      MANUAL: EKM-side key management operations on CryptoKeys created with
+        this EkmConnection must be initiated from the EKM directly and cannot
+        be performed from Cloud KMS. This means that: * When creating a
+        CryptoKeyVersion associated with this EkmConnection, the caller must
+        supply the key path of pre-existing external key material that will be
+        linked to the CryptoKeyVersion. * Destruction of external key material
+        cannot be requested via the Cloud KMS API and must be performed
+        directly in the EKM. * Automatic rotation of key material is not
+        supported.
+      CLOUD_KMS: All CryptoKeys created with this EkmConnection use EKM-side
+        key management operations initiated from Cloud KMS. This means that: *
+        When a CryptoKeyVersion associated with this EkmConnection is created,
+        the EKM automatically generates new key material and a new key path.
+        The caller cannot supply the key path of pre-existing external key
+        material. * Destruction of external key material associated with this
+        EkmConnection can be requested by calling DestroyCryptoKeyVersion. *
+        Automatic rotation of key material is supported.
+    """
+    KEY_MANAGEMENT_MODE_UNSPECIFIED = 0
+    MANUAL = 1
+    CLOUD_KMS = 2
+
   createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  serviceResolvers = _messages.MessageField('ServiceResolver', 4, repeated=True)
+  cryptoSpacePath = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  keyManagementMode = _messages.EnumField('KeyManagementModeValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  serviceResolvers = _messages.MessageField('ServiceResolver', 6, repeated=True)
 
 
 class EncryptRequest(_messages.Message):

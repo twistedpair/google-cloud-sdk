@@ -206,16 +206,16 @@
     },
     "WorkloadCertificateFeature": {
       "id": "WorkloadCertificateFeature",
-      "description": "Represents the Managed Workload Certificate feature. This is a singleton resource of a project that contains the mode of the feature, trust-domain-level configurations, and etc. go\/workloadcert-enablement-api.",
+      "description": "Represents the Managed Workload Certificate feature. This is a singleton resource of a project that contains the mode of the feature, trust-domain-level configurations, and etc.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Name of the resource. Format: `projects\/*\/locations\/global\/workloadCertificateFeature`.",
+          "description": "Output only. Name of the resource. Format: `projects\/{project ID or number}\/locations\/global\/workloadCertificateFeature`.",
           "readOnly": true,
           "type": "string"
         },
         "defaultSpec": {
-          "description": "Optional. Workload certificate feature spec for the default project level trust domain (i.e. `.svc.id.goog`). If left unset, the feature is disabled.",
+          "description": "Required. Workload certificate feature spec for the default project level trust domain (i.e. `{project ID}.svc.id.goog`).",
           "$ref": "WorkloadCertificateFeatureSpec"
         },
         "defaultStatus": {
@@ -231,10 +231,10 @@
       "type": "object",
       "properties": {
         "mode": {
-          "description": "The mode for the workload certificate feature.",
+          "description": "Required. The mode for the workload certificate feature.",
           "type": "string",
           "enumDescriptions": [
-            "Workload certificate feature is disabled.",
+            "Do not use this value.",
             "Workload certificate feature is disabled.",
             "Workload certificate feature is enabled, and the entire certificate provisioning process is managed by Google, including the CA."
           ],
@@ -265,7 +265,7 @@
             "The feature status does not fully meet its spec at the moment but is trying to meet its spec.",
             "The feature status does not fully meet its spec at the moment but is trying to meet its spec.",
             "The feature status currently meets its spec.",
-            "The feature status does not fully meet its spec at the moment due to an internal error. Contact support."
+            "The feature status does not fully meet its spec at the moment due to an internal error but the backend is retrying. Contact support if this persists."
           ],
           "enum": [
             "FEATURE_STATE_UNSPECIFIED",
@@ -282,7 +282,7 @@
       "type": "object",
       "properties": {
         "caPools": {
-          "description": "The CA pool string has a relative resource path following the form \"projects\/{project_number}\/locations\/{location}\/caPools\/{ca_pool}\".",
+          "description": "The CA pool string has a relative resource path following the form \"projects\/{project number}\/locations\/{location}\/caPools\/{CA pool}\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -292,18 +292,18 @@
     },
     "ListWorkloadRegistrationsResponse": {
       "id": "ListWorkloadRegistrationsResponse",
-      "description": "Response message for response to listing WorkloadRegistrations.",
+      "description": "Response message for listing WorkloadRegistrations.",
       "type": "object",
       "properties": {
         "workloadRegistrations": {
-          "description": "The list of WorkloadRegistration",
+          "description": "The list of WorkloadRegistrations.",
           "type": "array",
           "items": {
             "$ref": "WorkloadRegistration"
           }
         },
         "nextPageToken": {
-          "description": "A token identifying a page of results the server should return.",
+          "description": "A token identifying a page of results the server should return for the next List request. Empty if this response is the last page.",
           "type": "string"
         },
         "unreachable": {
@@ -317,41 +317,32 @@
     },
     "WorkloadRegistration": {
       "id": "WorkloadRegistration",
-      "description": "Message describing WorkloadRegistration object defines in go\/workloadcert-registration-api.",
+      "description": "Message describing WorkloadRegistration object",
       "type": "object",
       "properties": {
         "name": {
-          "description": "name of resource",
+          "description": "Output only. Name of this WorkloadRegistration resource. Format: `projects\/{project ID or number}\/locations\/{location} \/workloadRegistrations\/{client-defined workload_registration_id}` {location} is Fleet membership location for GKE clusters and this is subject to change.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. [Output only] Create time stamp",
+          "description": "Output only. Time when this WorkloadRegistration resource was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. [Output only] Update time stamp",
+          "description": "Output only. Time when this WorkloadRegistration resource was most recently updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
-        "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "workloadNamespace": {
-          "description": "workload_namespace specifies the namespace (which must exist in the same project) the workloads are registered to. It's skipped for k8s workloads, but required for non-k8s workloads. optional.",
-          "type": "string"
-        },
         "workloadSelector": {
-          "description": "Criteria used to select the specific group of workloads in the registry on which this patch configuration should be applied. required.",
+          "description": "Required. Selects the workloads in the registration.",
           "$ref": "WorkloadSelector"
         },
         "status": {
-          "description": "Output only. The status of the workloadregistration resource.",
+          "description": "Output only. The status of the WorkloadRegistration resource.",
           "readOnly": true,
           "$ref": "RegistrationStatus"
         }
@@ -359,81 +350,39 @@
     },
     "WorkloadSelector": {
       "id": "WorkloadSelector",
-      "description": "WorkloadSelector specifies the criteria used to determine if a rule can be applied to a group of workload. The matching criteria is based on workload types.",
+      "description": "WorkloadSelector specifies the criteria used to determine if a workload is in a WorkloadRegistration. Different workload types have their own matching criteria.",
       "type": "object",
       "properties": {
         "k8sWorkloadSelector": {
           "description": "Selects K8S workloads.",
           "$ref": "K8SWorkloadSelector"
-        },
-        "gcpWorkloadSelector": {
-          "description": "Selects a group of GCP workloads.",
-          "$ref": "GCPWorkloadSelector"
         }
       }
     },
     "K8SWorkloadSelector": {
       "id": "K8SWorkloadSelector",
-      "description": "For kubernetes workloads, fleet_member_id is used as workload selector.",
+      "description": "For Kubernetes workloads, fleet_member_id is used as workload selector.",
       "type": "object",
       "properties": {
         "fleetMemberId": {
-          "description": "Fleet membership ID (only the name part, not the full URI). The \u201Cproject\u201D and \u201Clocation\u201D of the membership is the same as the WorkloadRegistration. required.",
-          "type": "string"
-        }
-      }
-    },
-    "GCPWorkloadSelector": {
-      "id": "GCPWorkloadSelector",
-      "description": "GCPWorkloadSelector selects a group of GCP workloads, like GCE or load balancer.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Type pecifies the workload type. It is either indicated by the identity dataplane P4SA, or in the resource identity case, the resource service (\u201Cgoogle.resource.service\u201D claim). required.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This value is unused and this field is invalid.",
-            ""
-          ],
-          "enum": [
-            "WORKLOAD_TYPE_UNSPECIFIED",
-            "GOOGLE_COMPUTE_ENGINE"
-          ]
-        },
-        "project": {
-          "description": "Project specifies the workloads\u2019 project in the format of \"\". required.",
-          "type": "string"
-        },
-        "attribute": {
-          "description": "GCPAttributeSelector selects a group of workloads that match the attribute. optional.",
-          "$ref": "GCPAttributeSelector"
-        }
-      }
-    },
-    "GCPAttributeSelector": {
-      "id": "GCPAttributeSelector",
-      "description": "GCPAttributeSelector is an \u201Coneof\u201D field, which can be a Google service account, a resource identity, etc. If not specified, all workloads of the given type in the project are selected.",
-      "type": "object",
-      "properties": {
-        "serviceAccount": {
-          "description": "Selects workloads with the GCP service account. It matches the \u201Cemail\u201D claim.",
+          "description": "Required. Fleet membership ID (only the name part, not the full URI). The \u201Cproject\u201D and \u201Clocation\u201D of the membership are the same as the WorkloadRegistration.",
           "type": "string"
         }
       }
     },
     "RegistrationStatus": {
       "id": "RegistrationStatus",
-      "description": "RegistrationStatus describes the certificate provisioning status of a workload registration resource.",
+      "description": "RegistrationStatus describes the certificate provisioning status of a WorkloadRegistration resource.",
       "type": "object",
       "properties": {
         "state": {
-          "description": "state represents the current state of registration.",
+          "description": "The current state of registration.",
           "type": "string",
           "enumDescriptions": [
             "REGISTRATION_STATE_UNSPECIFIED is the default value.",
             "REGISTRATION_STATE_READY indicates that the registration is ready.",
             "REGISTRATION_STATE_IN_PROGRESS indicates that the registration is in progress.",
-            "REGISTRATION_STATE_INTERNAL_ERROR indicates that the registration fails because of some internal errors."
+            "REGISTRATION_STATE_INTERNAL_ERROR indicates that the registration has encountered some internal errors but is retrying. Contact support if this persists."
           ],
           "enum": [
             "REGISTRATION_STATE_UNSPECIFIED",
@@ -441,10 +390,6 @@
             "REGISTRATION_STATE_IN_PROGRESS",
             "REGISTRATION_STATE_INTERNAL_ERROR"
           ]
-        },
-        "error": {
-          "description": "error describes the details when a certificate provisioning process fails.",
-          "type": "string"
         }
       }
     },
@@ -533,7 +478,7 @@
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Currently we don't support cancelling any operation. Consider applying the opposite mutation after the current operation is done. For example, call DeleteWorkloadRegistration afterwards if you want to cancel a CreateWorkloadRegistration operation.",
           "readOnly": true,
           "type": "boolean"
         },
@@ -660,7 +605,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "workloadcertificate.projects.locations.operations.get",
@@ -751,7 +696,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the `WorkloadCertificateFeature` resource. Format: `projects\/*\/locations\/global\/workloadCertificateFeature`.",
+                      "description": "Required. Name of the `WorkloadCertificateFeature` resource. Format: `projects\/{project ID or number}\/locations\/global\/workloadCertificateFeature`.",
                       "pattern": "^projects\/[^\/]+\/locations\/global\/workloadCertificateFeature$",
                       "location": "path",
                       "required": true,
@@ -776,7 +721,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the `WorkloadCertificateFeature` resource to update. Format: `projects\/*\/locations\/global\/workloadCertificateFeature`.",
+                      "description": "Required. Name of the `WorkloadCertificateFeature` resource to update. Format: `projects\/{project ID or number}\/locations\/global\/workloadCertificateFeature`.",
                       "pattern": "^projects\/[^\/]+\/locations\/global\/workloadCertificateFeature$",
                       "location": "path",
                       "required": true,
@@ -808,7 +753,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent value for ListWorkloadRegistrationsRequest.",
+                      "description": "Required. Parent value for ListWorkloadRegistrationsRequest. Format: `projects\/{project ID or number}\/locations\/{location}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -821,17 +766,17 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A token identifying a page of results the server should return.",
+                      "description": "The next_page_token value returned from a previous List request, if any.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filtering results.",
+                      "description": "Filtering results. See https:\/\/google.aip.dev\/160.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Hint for how to order the results.",
+                      "description": "Hint for how to order the results. See https:\/\/google.aip.dev\/132#ordering. Currently, only ordering by name and create_time are supported.",
                       "location": "query",
                       "type": "string"
                     }
@@ -854,7 +799,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the resource.",
+                      "description": "Required. Name of the resource. Format: `projects\/{project ID or number}\/locations\/{location}\/workloadRegistrations\/{workload_registration_id}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadRegistrations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -879,14 +824,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Value for parent.",
+                      "description": "Required. Value for parent. Format: `projects\/{project ID or number}\/locations\/{location}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "workloadRegistrationId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and workload_registration_id from the method_signature of Create RPC",
+                      "description": "Required. Client defined WorkloadRegistration name. This can be any unique string that matches the regex ^[a-zA-Z0-9-._~%!$&'()*+,;=@]+$ and has 1-63 characters in length.",
                       "location": "query",
                       "type": "string"
                     },
@@ -910,45 +855,6 @@
                   ],
                   "description": "Creates a new WorkloadRegistration in a given project and location."
                 },
-                "patch": {
-                  "id": "workloadcertificate.projects.locations.workloadRegistrations.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/workloadRegistrations/{workloadRegistrationsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "name of resource",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadRegistrations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the WorkloadRegistration resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "requestId": {
-                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "WorkloadRegistration"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the parameters of a single WorkloadRegistration."
-                },
                 "delete": {
                   "id": "workloadcertificate.projects.locations.workloadRegistrations.delete",
                   "path": "v1alpha1/{+name}",
@@ -956,7 +862,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the resource",
+                      "description": "Required. Name of the resource. Format: `projects\/{project ID or number}\/locations\/{location}\/workloadRegistrations\/{workload_registration_id}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadRegistrations\/[^\/]+$",
                       "location": "path",
                       "required": true,

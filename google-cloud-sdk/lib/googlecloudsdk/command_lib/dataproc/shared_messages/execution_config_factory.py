@@ -65,7 +65,9 @@ class ExecutionConfigFactory(object):
     if args.performance_tier:
       kwargs['performanceTier'] = (
           self.dataproc.messages.ExecutionConfig.PerformanceTierValueValuesEnum(
-              args.performance_tier.upper()))
+              args.performance_tier.upper()
+          )
+      )
 
     if args.service_account:
       kwargs['serviceAccount'] = args.service_account
@@ -125,8 +127,9 @@ def AddArguments(parser):
   parser.add_argument(
       '--ttl',
       type=arg_parsers.Duration(),
-      hidden=True,  # Not yet publicly launched
       help="""
-      The duration after the workload will be unconditionally terminated, e.g.
-      '20m' or '1h'. See $ gcloud topic datetimes for information on duration
-      formats.""")
+      The duration after the workload will be unconditionally terminated,
+      for example, '20m' or '1h'. Run
+      [gcloud topic datetimes](https://cloud.google.com/sdk/gcloud/reference/topic/datetimes)
+      for information on duration formats.""",
+  )

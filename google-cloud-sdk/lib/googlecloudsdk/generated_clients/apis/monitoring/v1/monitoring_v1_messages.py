@@ -2289,6 +2289,8 @@ class Type(_messages.Message):
     SyntaxValueValuesEnum: The source syntax.
 
   Fields:
+    edition: The source edition string, only valid when syntax is
+      SYNTAX_EDITIONS.
     fields: The list of fields.
     name: The fully qualified message name.
     oneofs: The list of types appearing in oneof definitions in this type.
@@ -2303,16 +2305,19 @@ class Type(_messages.Message):
     Values:
       SYNTAX_PROTO2: Syntax proto2.
       SYNTAX_PROTO3: Syntax proto3.
+      SYNTAX_EDITIONS: Syntax editions.
     """
     SYNTAX_PROTO2 = 0
     SYNTAX_PROTO3 = 1
+    SYNTAX_EDITIONS = 2
 
-  fields = _messages.MessageField('Field', 1, repeated=True)
-  name = _messages.StringField(2)
-  oneofs = _messages.StringField(3, repeated=True)
-  options = _messages.MessageField('Option', 4, repeated=True)
-  sourceContext = _messages.MessageField('SourceContext', 5)
-  syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
+  edition = _messages.StringField(1)
+  fields = _messages.MessageField('Field', 2, repeated=True)
+  name = _messages.StringField(3)
+  oneofs = _messages.StringField(4, repeated=True)
+  options = _messages.MessageField('Option', 5, repeated=True)
+  sourceContext = _messages.MessageField('SourceContext', 6)
+  syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
 
 
 class Widget(_messages.Message):

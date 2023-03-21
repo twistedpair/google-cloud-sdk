@@ -2536,14 +2536,14 @@ class KeyData(_messages.Message):
   Fields:
     format: Output only. The format of the key.
     key: Output only. The key data. The format of the key is represented by
-      the `format` field.
+      the format field.
     keySpec: Immutable. The specifications for the key.
     notAfterTime: Output only. Latest timestamp when this key is valid.
       Attempts to use this key after this time will fail. Only present if the
-      key data represents a x509 certificate.
+      key data represents a X.509 certificate.
     notBeforeTime: Output only. Earliest timestamp when this key is valid.
       Attempts to use this key before this time will fail. Only present if the
-      key data represents a x509 certificate.
+      key data represents a X.509 certificate.
   """
 
   class FormatValueValuesEnum(_messages.Enum):

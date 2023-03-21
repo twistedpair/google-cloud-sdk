@@ -1234,7 +1234,13 @@ class UpdateAction(argparse.Action):
     if existing_value is None:
       user_input = None
     else:
-      user_input = ', '.join([existing_value, new_value])
+      # Note this isn't quite right - the keys and values here have already been
+      # transformed by the key_type/value_type functions and/or spec in the
+      # ArgDict definition, so it's not the original user input. For simple
+      # key_type/value_type functions like int() it's hopefully clear enough.
+      # TODO(b/273284280): Maybe try to improve this.
+      user_input = ', '.join([
+          six.text_type(existing_value), six.text_type(new_value)])
     raise argparse.ArgumentError(
         self,
         _GenerateErrorMessage(

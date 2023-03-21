@@ -19609,7 +19609,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.patch',
         ordered_params=['project', 'region', 'serviceAttachment'],
         path_params=['project', 'region', 'serviceAttachment'],
-        query_params=['reconcileConnections', 'requestId'],
+        query_params=['requestId'],
         relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
         request_field='serviceAttachmentResource',
         request_type_name='ComputeServiceAttachmentsPatchRequest',

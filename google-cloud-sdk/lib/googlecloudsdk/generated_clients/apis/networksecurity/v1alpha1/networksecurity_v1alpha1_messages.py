@@ -2424,16 +2424,12 @@ class NetworksecurityProjectsLocationsGatewaySecurityPoliciesDeleteRequest(_mess
   object.
 
   Fields:
-    force: If set to true, any rules for this GatewaySecurityPolicy will also
-      be deleted. (Otherwise, the request will only work if the
-      GatewaySecurityPolicy has no rules.)
     name: Required. A name of the GatewaySecurityPolicy to delete. Must be in
       the format
       `projects/{project}/locations/{location}/gatewaySecurityPolicies/*`.
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class NetworksecurityProjectsLocationsGatewaySecurityPoliciesGetRequest(_messages.Message):

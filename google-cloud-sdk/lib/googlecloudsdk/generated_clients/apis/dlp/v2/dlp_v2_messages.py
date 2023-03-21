@@ -4783,6 +4783,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       CHILE: The infoType is typically used in Chile.
       CHINA: The infoType is typically used in China.
       COLOMBIA: The infoType is typically used in Colombia.
+      CROATIA: The infoType is typically used in Croatia.
       DENMARK: The infoType is typically used in Denmark.
       FRANCE: The infoType is typically used in France.
       FINLAND: The infoType is typically used in Finland.
@@ -4796,6 +4797,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       JAPAN: The infoType is typically used in Japan.
       KOREA: The infoType is typically used in Korea.
       MEXICO: The infoType is typically used in Mexico.
+      NEW_ZEALAND: The infoType is typically used in New Zealand.
       THE_NETHERLANDS: The infoType is typically used in the Netherlands.
       NORWAY: The infoType is typically used in Norway.
       PARAGUAY: The infoType is typically used in Paraguay.
@@ -4814,7 +4816,6 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       URUGUAY: The infoType is typically used in Uruguay.
       VENEZUELA: The infoType is typically used in Venezuela.
       INTERNAL: The infoType is typically used in Google internally.
-      NEW_ZEALAND: The infoType is typically used in New Zealand.
     """
     LOCATION_UNSPECIFIED = 0
     GLOBAL = 1
@@ -4826,38 +4827,39 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     CHILE = 7
     CHINA = 8
     COLOMBIA = 9
-    DENMARK = 10
-    FRANCE = 11
-    FINLAND = 12
-    GERMANY = 13
-    HONG_KONG = 14
-    INDIA = 15
-    INDONESIA = 16
-    IRELAND = 17
-    ISRAEL = 18
-    ITALY = 19
-    JAPAN = 20
-    KOREA = 21
-    MEXICO = 22
-    THE_NETHERLANDS = 23
-    NORWAY = 24
-    PARAGUAY = 25
-    PERU = 26
-    POLAND = 27
-    PORTUGAL = 28
-    SINGAPORE = 29
-    SOUTH_AFRICA = 30
-    SPAIN = 31
-    SWEDEN = 32
-    TAIWAN = 33
-    THAILAND = 34
-    TURKEY = 35
-    UNITED_KINGDOM = 36
-    UNITED_STATES = 37
-    URUGUAY = 38
-    VENEZUELA = 39
-    INTERNAL = 40
-    NEW_ZEALAND = 41
+    CROATIA = 10
+    DENMARK = 11
+    FRANCE = 12
+    FINLAND = 13
+    GERMANY = 14
+    HONG_KONG = 15
+    INDIA = 16
+    INDONESIA = 17
+    IRELAND = 18
+    ISRAEL = 19
+    ITALY = 20
+    JAPAN = 21
+    KOREA = 22
+    MEXICO = 23
+    NEW_ZEALAND = 24
+    THE_NETHERLANDS = 25
+    NORWAY = 26
+    PARAGUAY = 27
+    PERU = 28
+    POLAND = 29
+    PORTUGAL = 30
+    SINGAPORE = 31
+    SOUTH_AFRICA = 32
+    SPAIN = 33
+    SWEDEN = 34
+    TAIWAN = 35
+    THAILAND = 36
+    TURKEY = 37
+    UNITED_KINGDOM = 38
+    UNITED_STATES = 39
+    URUGUAY = 40
+    VENEZUELA = 41
+    INTERNAL = 42
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs

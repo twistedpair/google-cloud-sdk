@@ -585,6 +585,25 @@
           "items": {
             "$ref": "StateReason"
           }
+        },
+        "spokeType": {
+          "description": "Output only. The type of resource associated with the spoke.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified spoke type.",
+            "Spokes associated with VPN tunnels.",
+            "Spokes associated with VLAN attachments.",
+            "Spokes associated with router appliance instances.",
+            "Spokes associated with VPC networks."
+          ],
+          "enum": [
+            "SPOKE_TYPE_UNSPECIFIED",
+            "VPN_TUNNEL",
+            "INTERCONNECT_ATTACHMENT",
+            "ROUTER_APPLIANCE",
+            "VPC_NETWORK"
+          ]
         }
       }
     },
@@ -2064,7 +2083,7 @@
                           "type": "string",
                           "enumDescriptions": [
                             "The spoke view is unspecified. When the spoke view is unspecified, the API returns the same fields as the `BASIC` view.",
-                            "Includes `name`, `create_time`, `hub`, `unique_id`, `state`, `state_reason`, and `spoke_type`. This is the default value.",
+                            "Includes `name`, `create_time`, `hub`, `unique_id`, `state`, `reasons`, and `spoke_type`. This is the default value.",
                             "Include all spoke fields. You can use the `DETAILED` view only when you set the `spoke_locations` field to `[global]`."
                           ],
                           "enum": [

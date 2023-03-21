@@ -578,11 +578,6 @@
             "WORKAROUND"
           ]
         },
-        "remediationTime": {
-          "description": "Contains the date from which the remediation is available.",
-          "type": "string",
-          "format": "google-datetime"
-        },
         "details": {
           "description": "Contains a comprehensive human-readable discussion of the remediation.",
           "type": "string"
@@ -3210,7 +3205,7 @@
           "description": "Provides information about the authority of the issuing party to release the document, in particular, the party's constituency and responsibilities or other obligations.",
           "type": "string"
         },
-        "context": {
+        "publisherNamespace": {
           "description": "The context or namespace. Contains a URL which is under control of the issuing party and can be used as a globally unique identifier for that issuing party. Example: https:\/\/csaf.io",
           "type": "string"
         }
@@ -4582,6 +4577,18 @@
           "items": {
             "$ref": "ContaineranalysisGoogleDevtoolsCloudbuildV1Volume"
           }
+        },
+        "defaultLogsBucketBehavior": {
+          "description": "Optional. Option to specify how default logs buckets are setup.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Bucket is located in user-owned project in the same region as the build. The builder service account must have access to create and write to GCS buckets in the build project."
+          ],
+          "enum": [
+            "DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED",
+            "REGIONAL_USER_OWNED_BUCKET"
+          ]
         }
       }
     },

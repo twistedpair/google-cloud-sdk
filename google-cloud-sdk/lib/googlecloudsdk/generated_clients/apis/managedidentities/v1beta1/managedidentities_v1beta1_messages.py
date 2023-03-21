@@ -426,6 +426,8 @@ class DomainJoinMachineRequest(_messages.Message):
   method
 
   Fields:
+    force: Optional. force if True, forces domain join even if the computer
+      account already exists.
     ouName: Optional. OU name to which the VM needs to be domain joined. If
       the field is not provided, the VM is joined to the default OU which is
       created. The default OU for the domain join api is created as GCE
@@ -441,8 +443,9 @@ class DomainJoinMachineRequest(_messages.Message):
       identity#request_signature
   """
 
-  ouName = _messages.StringField(1)
-  vmIdToken = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  ouName = _messages.StringField(2)
+  vmIdToken = _messages.StringField(3)
 
 
 class DomainJoinMachineResponse(_messages.Message):

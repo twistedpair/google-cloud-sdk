@@ -61,6 +61,8 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    controlPlaneEncryption: Optional. Remote control plane disk encryption
+      options. This field is only used when enabling CMEK support.
     controlPlaneVersion: Output only. The control plane release version
     createTime: Output only. The time when the cluster was created.
     defaultMaxPodsPerNode: Optional. The default maximum number of pods per
@@ -106,17 +108,18 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlaneVersion = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  defaultMaxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(6)
-  fleet = _messages.MessageField('Fleet', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 9)
-  name = _messages.StringField(10)
-  networking = _messages.MessageField('ClusterNetworking', 11)
-  nodeVersion = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 3)
+  controlPlaneVersion = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  defaultMaxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(7)
+  fleet = _messages.MessageField('Fleet', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
+  name = _messages.StringField(11)
+  networking = _messages.MessageField('ClusterNetworking', 12)
+  nodeVersion = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class ClusterNetworking(_messages.Message):
@@ -143,6 +146,57 @@ class ClusterUser(_messages.Message):
   """
 
   username = _messages.StringField(1)
+
+
+class ControlPlaneEncryption(_messages.Message):
+  r"""Configuration for Customer-managed KMS key support for remote control
+  plane cluster disk encryption.
+
+  Enums:
+    KmsKeyStateValueValuesEnum: Output only. Availability of the Cloud KMS
+      CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they
+      cannot access their local data. This can be caused by a lack of
+      permissions to use the key, or if the key is disabled or deleted.
+
+  Fields:
+    kmsKey: Immutable. The Cloud KMS CryptoKey e.g. projects/{project}/locatio
+      ns/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
+      protecting control plane disks. If not specified, a Google-managed key
+      will be used instead.
+    kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
+      in use for protecting control plane disks. Only applicable if kms_key is
+      set.
+    kmsKeyState: Output only. Availability of the Cloud KMS CryptoKey. If not
+      `KEY_AVAILABLE`, then nodes may go offline as they cannot access their
+      local data. This can be caused by a lack of permissions to use the key,
+      or if the key is disabled or deleted.
+    kmsStatus: Output only. Error status returned by Cloud KMS when using this
+      key. This field may be populated only if `kms_key_state` is not
+      `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the
+      error status reported by Cloud KMS.
+  """
+
+  class KmsKeyStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Availability of the Cloud KMS CryptoKey. If not
+    `KEY_AVAILABLE`, then nodes may go offline as they cannot access their
+    local data. This can be caused by a lack of permissions to use the key, or
+    if the key is disabled or deleted.
+
+    Values:
+      KMS_KEY_STATE_UNSPECIFIED: Unspecified.
+      KMS_KEY_STATE_KEY_AVAILABLE: The key is available for use, and dependent
+        resources should be accessible.
+      KMS_KEY_STATE_KEY_UNAVAILABLE: The key is unavailable for an unspecified
+        reason. Dependent resources may be inaccessible.
+    """
+    KMS_KEY_STATE_UNSPECIFIED = 0
+    KMS_KEY_STATE_KEY_AVAILABLE = 1
+    KMS_KEY_STATE_KEY_UNAVAILABLE = 2
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyActiveVersion = _messages.StringField(2)
+  kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
+  kmsStatus = _messages.MessageField('Status', 4)
 
 
 class Details(_messages.Message):

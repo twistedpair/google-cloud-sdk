@@ -624,6 +624,33 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAuditLog(self, request, global_params=None):
+      r"""Returns the requested AuditLog resource.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog) The response message.
+      """
+      config = self.GetMethodConfig('GetAuditLog')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAuditLog.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/auditLog',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.getAuditLog',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Order resources that the user has access to, within the scope of the parent resource.
 

@@ -437,11 +437,11 @@ def AddReplaceCustomLearnedRoutesArgs(parser):
   """
 
   parser.add_argument(
-      '--set-custom-learned-route-priority',
-      type=int,
+      '--custom-learned-route-priority',
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=65535),
       metavar='PRIORITY',
-      help="""An integral value `0` <= priority <= `2^31-1`, to be applied to
-              all custom learned route IP address ranges for this peer. If not
+      help="""An integral value `0` <= priority <= `65535`, to be applied to all
+              custom learned route IP address ranges for this peer. If not
               specified, a Google-managed priority value 100 is used. The routes
               with lowest priority value win.""",
       hidden=True,

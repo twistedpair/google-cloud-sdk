@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*- #
 # Copyright 2022 Google LLC. All Rights Reserved.
 #
@@ -77,7 +76,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     return node_config_messages
 
-# TODO(b/260737834): Create a common function for all nodeConfigs
+  # TODO(b/260737834): Create a common function for all nodeConfigs
   def _bare_metal_node_config(self, node_config):
     """Constructs proto message BareMetalNodeConfig."""
     node_ip = node_config.get('nodeIP', '')
@@ -121,6 +120,68 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     return node_configs
 
+  def _cpu_cfs_quota_disabled(self, args):
+    if 'disable_cpu_cfs_quota' in args.GetSpecifiedArgsDict():
+      return True
+    elif 'enable_cpu_cfs_quota' in args.GetSpecifiedArgsDict():
+      return False
+    else:
+      return None
+
+  def _feature_gates(self, args):
+    feature_gates = self.GetFlag(args, 'feature_gates')
+    if not feature_gates:
+      return None
+
+    msg = self._messages.BareMetalKubeletConfig.FeatureGatesValue(
+        additionalProperties=[]
+    )
+    for key, value in feature_gates.items():
+      msg.additionalProperties.append(
+          self._messages.BareMetalKubeletConfig.FeatureGatesValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+    return msg
+
+  def _serialized_image_pulls_disabled(self, args):
+    if 'disable_serialize_image_pulls' in args.GetSpecifiedArgsDict():
+      return True
+    elif 'enable_serialize_image_pulls' in args.GetSpecifiedArgsDict():
+      return False
+    else:
+      return None
+
+  def _cpu_manager_policy(self, args):
+    cpu_manager_policy = self.GetFlag(args, 'cpu_manager_policy')
+    if cpu_manager_policy:
+      return self._messages.BareMetalKubeletConfig.CpuManagerPolicyValueValuesEnum.lookup_by_name(
+          cpu_manager_policy
+      )
+    return None
+
+  def _cpu_cfs_quota_period(self, args):
+    # TODO(b/273546993)
+    # Only supports second as unit, ms and other units are not supported.
+    return self.GetFlag(args, 'cpu_cfs_quota_period')
+
+  def _kubelet_config(self, args):
+    kwargs = {
+        'cpuManagerPolicy': self._cpu_manager_policy(args),
+        'cpuCfsQuotaDisabled': self._cpu_cfs_quota_disabled(args),
+        'cpuCfsQuotaPeriod': self._cpu_cfs_quota_period(args),
+        'featureGates': self._feature_gates(args),
+        'podPidsLimit': self.GetFlag(args, 'pod_pids_limit'),
+        'registryPullQps': self.GetFlag(args, 'registry_pull_qps'),
+        'registryBurst': self.GetFlag(args, 'registry_burst'),
+        'serializeImagePullsDisabled': self._serialized_image_pulls_disabled(
+            args
+        ),
+    }
+    if any(kwargs.values()):
+      return self._messages.BareMetalKubeletConfig(**kwargs)
+    return None
+
   def _node_pool_config(self, args):
     """Constructs proto message BareMetalNodePoolConfig."""
     if 'node_configs_from_file' in args.GetSpecifiedArgsDict():
@@ -131,6 +192,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
         'nodeConfigs': node_configs,
         'labels': self._node_labels(args),
         'taints': self._node_taints(args),
+        'kubeletConfig': self._kubelet_config(args),
     }
 
     if any(kwargs.values()):
@@ -198,8 +260,9 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
     """Deletes a GKE On-Prem Bare Metal API node pool resource."""
     kwargs = {
         'name': self._node_pool_name(args),
-        'allowMissing': getattr(args, 'allow_missing', False),
-        'validateOnly': getattr(args, 'validate_only', False),
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
+        'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest(
         **kwargs)
@@ -211,7 +274,7 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
     node_pool_ref = self._node_pool_ref(args)
     kwargs = {
         'parent': node_pool_ref.Parent().RelativeName(),
-        'validateOnly': getattr(args, 'validate_only', False),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalNodePool': self._bare_metal_node_pool(args),
         'bareMetalNodePoolId': self._node_pool_id(args),
     }
@@ -222,12 +285,12 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
   def Update(self, args):
     """Updates a GKE On-Prem Bare Metal API node pool resource."""
     kwargs = {
-        'allowMissing': getattr(args, 'allow_missing', False),
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
         'name': self._node_pool_name(args),
         'updateMask':
             update_mask.get_update_mask(
                 args, update_mask.BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS),
-        'validateOnly': getattr(args, 'validate_only', False),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalNodePool': self._bare_metal_node_pool(args),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest(

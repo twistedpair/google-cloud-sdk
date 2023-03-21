@@ -192,13 +192,30 @@ def AddDataDiskSizeFlag(parser):
   parser.add_argument('--data-disk-size', type=int, help=help_text)
 
 
+def AddAvailabilityTypeFlag(parser):
+  """Adds a --availability-type flag to the given parser."""
+  help_text = 'Cloud SQL availability type.'
+  choices = ['REGIONAL', 'ZONAL']
+  parser.add_argument('--availability-type', help=help_text, choices=choices)
+
+
 def AddZoneFlag(parser):
   """Adds a --zone flag to the given parser."""
   help_text = """\
-    Google Cloud Platform zone where your Cloud SQL datdabse instance is
+    Google Cloud Platform zone where your Cloud SQL database instance is
     located.
   """
   parser.add_argument('--zone', help=help_text)
+
+
+def AddSecondaryZoneFlag(parser):
+  """Adds a --secondary-zone flag to the given parser."""
+  help_text = """\
+    Google Cloud Platform zone where the failover Cloud SQL database
+    instance is located. Used when the Cloud SQL database availability type
+    is REGIONAL (i.e. multiple zones / highly available).
+  """
+  parser.add_argument('--secondary-zone', help=help_text)
 
 
 def AddRootPassword(parser):

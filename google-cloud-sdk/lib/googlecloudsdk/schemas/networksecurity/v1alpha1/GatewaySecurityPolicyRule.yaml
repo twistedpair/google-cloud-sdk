@@ -5,10 +5,10 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - basicProfile
-- description
 - enabled
 - name
 - priority
+- sessionMatcher
 additionalProperties: false
 properties:
   COMMENT:
@@ -61,3 +61,8 @@ properties:
   sessionMatcher:
     description: CEL expression for matching on session criteria.
     type: string
+  tlsInspectionEnabled:
+    description: |-
+      Flag to enable TLS inspection of traffic matching on , can only be true if
+      the parent GatewaySecurityPolicy references a TLSInspectionConfig.
+    type: boolean

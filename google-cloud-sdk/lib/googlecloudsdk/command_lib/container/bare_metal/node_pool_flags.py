@@ -26,7 +26,8 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 def NodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='node_pool', help_text='node pool of the {resource}.')
+      name='node_pool', help_text='node pool of the {resource}.'
+  )
 
 
 def GetNodePoolResourceSpec():
@@ -53,7 +54,8 @@ def AddNodePoolResourceArg(parser, verb, positional=True):
       name,
       GetNodePoolResourceSpec(),
       'node pool {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAllowMissingNodePool(parser):
@@ -65,7 +67,10 @@ def AddAllowMissingNodePool(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the Bare Metal Node Pool is not found, the request will succeed but no action will be taken.',
+      help=(
+          'If set, and the Bare Metal Node Pool is not found, the request will'
+          ' succeed but no action will be taken.'
+      ),
   )
 
 
@@ -84,7 +89,11 @@ def AddAllowMissingUpdateNodePool(parser):
   parser.add_argument(
       '--allow-missing',
       action='store_true',
-      help='If set, and the Anthos cluster on bare metal is not found, the update request will try to create a new cluster with the provided configuration.',
+      help=(
+          'If set, and the Anthos cluster on bare metal is not found, the'
+          ' update request will try to create a new cluster with the provided'
+          ' configuration.'
+      ),
   )
 
 
@@ -95,7 +104,8 @@ def AddNodePoolDisplayName(parser):
     parser: The argparse parser to add the flag to.
   """
   parser.add_argument(
-      '--display-name', type=str, help='Display name for the resource.')
+      '--display-name', type=str, help='Display name for the resource.'
+  )
 
 
 def AddNodePoolAnnotations(parser):
@@ -123,21 +133,22 @@ def AddNodePoolConfig(parser, is_update=False):
   _AddNodeConfigs(bare_metal_node_pool_config_group, is_update)
   _AddNodeLabels(bare_metal_node_pool_config_group)
   _AddNodeTaints(bare_metal_node_pool_config_group)
+  _AddBareMetalKubeletConfig(bare_metal_node_pool_config_group, is_update)
 
 
 def _AddNodeConfigs(bare_metal_node_pool_config_group, is_update=False):
   """Adds flags to set the node configs.
 
   Args:
-    bare_metal_node_pool_config_group: The parent group to add the
-      flags to.
+    bare_metal_node_pool_config_group: The parent group to add the flags to.
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
   node_config_mutex_group = bare_metal_node_pool_config_group.add_group(
       help='Populate Bare Metal Node Pool node config.',
       required=required,
-      mutex=True)
+      mutex=True,
+  )
   node_pool_configs_from_file_help_text = """
 Path of the YAML/JSON file that contains the node configs.
 
@@ -206,4 +217,148 @@ def _AddNodeTaints(bare_metal_node_pool_config_group):
       metavar='KEY=VALUE:EFFECT',
       help='Node taint applied to every Kubernetes node in a node pool.',
       type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddDisableCPUCFSQuota(bare_metal_kubelet_config_group, is_update=False):
+  """Adds a flag to specify the enablement of CPU CFS Quota.
+
+  Args:
+    bare_metal_kubelet_config_group: The parent group to add the flags to.
+    is_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if is_update:
+    cpu_cfs_quota_mutex_group = bare_metal_kubelet_config_group.add_group(
+        mutex=True
+    )
+    surface = cpu_cfs_quota_mutex_group
+  else:
+    surface = bare_metal_kubelet_config_group
+
+  surface.add_argument(
+      '--disable-cpu-cfs-quota',
+      action='store_true',
+      help=(
+          'If set, disable CPU Completely Fair Scheduler (CFS)  quota'
+          ' enforcement for containers that specify CPU limits.'
+      ),
+  )
+  if is_update:
+    surface.add_argument(
+        '--enable-cpu-cfs-quota',
+        action='store_true',
+        help=(
+            'If set, enable CPU Completely Fair Scheduler (CFS)  quota'
+            ' enforcement for containers that specify CPU limits.'
+        ),
+    )
+
+
+def _AddDisableSerializeImagePulls(
+    bare_metal_kubelet_config_group, is_update=False
+):
+  """Adds a flag to specify the enablement of serialize image pulls.
+
+  Args:
+    bare_metal_kubelet_config_group: The parent group to add the flags to.
+    is_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if is_update:
+    serialize_image_pulls_mutex_group = (
+        bare_metal_kubelet_config_group.add_group(mutex=True)
+    )
+    surface = serialize_image_pulls_mutex_group
+  else:
+    surface = bare_metal_kubelet_config_group
+
+  surface.add_argument(
+      '--disable-serialize-image-pulls',
+      action='store_true',
+      help=(
+          'If set, prevent the Kubelet from pulling multiple images at a time.'
+      ),
+  )
+  if is_update:
+    surface.add_argument(
+        '--enable-serialize-image-pulls',
+        action='store_true',
+        help='If set, enable the Kubelet to pull multiple images at a time.',
+    )
+
+
+def _AddBareMetalKubeletConfig(
+    bare_metal_node_pool_config_group, is_update=False
+):
+  """Adds flags to specify the kubelet configurations in the node pool.
+
+  Args:
+    bare_metal_node_pool_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  bare_metal_kubelet_config_group = bare_metal_node_pool_config_group.add_group(
+      'Sets the modifiable kubelet configurations for bare metal machines.'
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--cpu-manager-policy',
+      help='The kubelet CPU manager policy.',
+      choices=['NONE', 'STATIC'],
+  )
+  _AddDisableCPUCFSQuota(bare_metal_kubelet_config_group, is_update=is_update)
+
+  bare_metal_kubelet_config_group.add_argument(
+      '--cpu-cfs-quota-period',
+      help=(
+          'CPU Completely Fair Scheduler (CFS) quota period value. Specify with'
+          ' seconds as the time unit, such as 0.2s.'
+      ),
+      type=str,
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--feature-gates',
+      type=arg_parsers.ArgDict(
+          key_type=str,
+          value_type=arg_parsers.ArgBoolean(),
+      ),
+      metavar='FEATURE=BOOL',
+      help=(
+          'A map of feature names to bools that enable or disable experimental'
+          ' features.'
+      ),
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--pod-pids-limit', type=int, help='Maximum number of PIDs in any pod.'
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--registry-pull-qps',
+      type=int,
+      help='Limit of registry pulls per second.',
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--registry-burst',
+      type=int,
+      help=(
+          'Maximum size of bursty pulls, temporarily allows pulls to burst to'
+          ' this number, while still not exceeding registry_pull_qps.'
+      ),
+  )
+  _AddDisableSerializeImagePulls(
+      bare_metal_kubelet_config_group, is_update=is_update
+  )
+
+
+def AddIgnoreErrors(parser):
+  """Adds a flag for ignore_errors field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      help=(
+          'If set, the deletion of a Bare Metal Node Pool resource will'
+          ' succeed even if errors occur during deletion.'
+      ),
+      action='store_true',
   )

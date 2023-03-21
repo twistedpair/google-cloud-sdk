@@ -320,11 +320,13 @@
           "type": "string",
           "enumDescriptions": [
             "The metastore type is not set.",
+            "The backend metastore is Dataplex.",
             "The backend metastore is BigQuery.",
             "The backend metastore is Dataproc Metastore."
           ],
           "enum": [
             "METASTORE_TYPE_UNSPECIFIED",
+            "DATAPLEX",
             "BIGQUERY",
             "DATAPROC_METASTORE"
           ]
@@ -2427,8 +2429,8 @@
                 },
                 "alterTableProperties": {
                   "id": "metastore.projects.locations.services.alterTableProperties",
-                  "path": "v1alpha/{+service}:AlterTableProperties",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:AlterTableProperties",
+                  "path": "v1alpha/{+service}:alterTableProperties",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:alterTableProperties",
                   "httpMethod": "POST",
                   "parameters": {
                     "service": {

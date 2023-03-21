@@ -1277,12 +1277,19 @@ class DataflowProjectsJobsUpdateRequest(_messages.Message):
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
     projectId: The ID of the Cloud Platform project that the job belongs to.
+    updateMask: The list of fields to update relative to Job. If empty, only
+      RequestedJobState will be considered for update. If the FieldMask is not
+      empty and RequestedJobState is none/empty, The fields specified in the
+      update mask will be the only ones considered for update. If both
+      RequestedJobState and update_mask are specified, we will first handle
+      RequestedJobState and then the update_mask fields.
   """
 
   job = _messages.MessageField('Job', 1)
   jobId = _messages.StringField(2, required=True)
   location = _messages.StringField(3)
   projectId = _messages.StringField(4, required=True)
+  updateMask = _messages.StringField(5)
 
 
 class DataflowProjectsJobsWorkItemsLeaseRequest(_messages.Message):
@@ -1873,12 +1880,19 @@ class DataflowProjectsLocationsJobsUpdateRequest(_messages.Message):
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
     projectId: The ID of the Cloud Platform project that the job belongs to.
+    updateMask: The list of fields to update relative to Job. If empty, only
+      RequestedJobState will be considered for update. If the FieldMask is not
+      empty and RequestedJobState is none/empty, The fields specified in the
+      update mask will be the only ones considered for update. If both
+      RequestedJobState and update_mask are specified, we will first handle
+      RequestedJobState and then the update_mask fields.
   """
 
   job = _messages.MessageField('Job', 1)
   jobId = _messages.StringField(2, required=True)
   location = _messages.StringField(3, required=True)
   projectId = _messages.StringField(4, required=True)
+  updateMask = _messages.StringField(5)
 
 
 class DataflowProjectsLocationsJobsWorkItemsLeaseRequest(_messages.Message):
@@ -3878,6 +3892,10 @@ class JobMetadata(_messages.Message):
   r"""Metadata available primarily for filtering jobs. Will be included in the
   ListJob response and Job SUMMARY view.
 
+  Messages:
+    UserDisplayPropertiesValue: List of display properties to help UI filter
+      jobs.
+
   Fields:
     bigTableDetails: Identification of a Cloud Bigtable source used in the
       Dataflow job.
@@ -3891,7 +3909,34 @@ class JobMetadata(_messages.Message):
     sdkVersion: The SDK version used to run the job.
     spannerDetails: Identification of a Spanner source used in the Dataflow
       job.
+    userDisplayProperties: List of display properties to help UI filter jobs.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserDisplayPropertiesValue(_messages.Message):
+    r"""List of display properties to help UI filter jobs.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        UserDisplayPropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UserDisplayPropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserDisplayPropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bigTableDetails = _messages.MessageField('BigTableIODetails', 1, repeated=True)
   bigqueryDetails = _messages.MessageField('BigQueryIODetails', 2, repeated=True)
@@ -3900,6 +3945,7 @@ class JobMetadata(_messages.Message):
   pubsubDetails = _messages.MessageField('PubSubIODetails', 5, repeated=True)
   sdkVersion = _messages.MessageField('SdkVersion', 6)
   spannerDetails = _messages.MessageField('SpannerIODetails', 7, repeated=True)
+  userDisplayProperties = _messages.MessageField('UserDisplayPropertiesValue', 8)
 
 
 class JobMetrics(_messages.Message):
@@ -4944,6 +4990,9 @@ class ParameterMetadata(_messages.Message):
   Fields:
     customMetadata: Optional. Additional metadata for describing this
       parameter.
+    groupName: Optional. Specifies a group name for this parameter to be
+      rendered under. Group header text will be rendered exactly as specified
+      in this field. Only considered when parent_name is NOT provided.
     helpText: Required. The help text to display for the parameter.
     isOptional: Optional. Whether the parameter is optional. Defaults to
       false.
@@ -4951,6 +5000,15 @@ class ParameterMetadata(_messages.Message):
     name: Required. The name of the parameter.
     paramType: Optional. The type of the parameter. Used for selecting input
       picker.
+    parentName: Optional. Specifies the name of the parent parameter. Used in
+      conjunction with 'parent_trigger_values' to make this parameter
+      conditional (will only be rendered conditionally). Should be mappable to
+      a ParameterMetadata.name field.
+    parentTriggerValues: Optional. The value(s) of the 'parent_name' parameter
+      which will trigger this parameter to be shown. If left empty, ANY non-
+      empty value in parent_name will trigger this parameter to be shown. Only
+      considered when this parameter is conditional (when 'parent_name' has
+      been provided).
     regexes: Optional. Regexes that the parameter must match.
   """
 
@@ -5017,12 +5075,15 @@ class ParameterMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   customMetadata = _messages.MessageField('CustomMetadataValue', 1)
-  helpText = _messages.StringField(2)
-  isOptional = _messages.BooleanField(3)
-  label = _messages.StringField(4)
-  name = _messages.StringField(5)
-  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 6)
-  regexes = _messages.StringField(7, repeated=True)
+  groupName = _messages.StringField(2)
+  helpText = _messages.StringField(3)
+  isOptional = _messages.BooleanField(4)
+  label = _messages.StringField(5)
+  name = _messages.StringField(6)
+  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 7)
+  parentName = _messages.StringField(8)
+  parentTriggerValues = _messages.StringField(9, repeated=True)
+  regexes = _messages.StringField(10, repeated=True)
 
 
 class PartialGroupByKeyInstruction(_messages.Message):

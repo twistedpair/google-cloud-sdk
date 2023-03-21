@@ -213,14 +213,16 @@
             "The standard subscription.",
             "The trial subscription.",
             "The alpha subscription.",
-            "The demo subscription for channel partners."
+            "The demo subscription for channel partners.",
+            "Pay-as-you-go subscription."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "STANDARD",
             "TRIAL",
             "ALPHA",
-            "DEMO"
+            "DEMO",
+            "PAY_AS_YOU_GO"
           ]
         }
       }
@@ -1043,6 +1045,14 @@
           "items": {
             "$ref": "File"
           }
+        },
+        "cloudDlpInspection": {
+          "description": "Cloud DLP inspection associated with the finding.",
+          "$ref": "CloudDlpInspection"
+        },
+        "cloudDlpDataProfile": {
+          "description": "Cloud DLP data profile associated with the finding.",
+          "$ref": "CloudDlpDataProfile"
         },
         "kernelRootkit": {
           "description": "Kernel Rootkit signature.",
@@ -2252,6 +2262,41 @@
         }
       }
     },
+    "CloudDlpInspection": {
+      "id": "CloudDlpInspection",
+      "description": "Contains details about the Cloud DLP job that produced the infotype finding.",
+      "type": "object",
+      "properties": {
+        "inspectJob": {
+          "description": "Name of the inspect job Example projects\/123\/locations\/europe\/dlpJobs\/i-8383929",
+          "type": "string"
+        },
+        "infoType": {
+          "description": "The kind of information found, (e.g. email_address, street_address, etc.)",
+          "type": "string"
+        },
+        "infoTypeCount": {
+          "description": "The number of times Cloud DLP found this infoType within this job and resource.",
+          "type": "string",
+          "format": "int64"
+        },
+        "fullScan": {
+          "description": "Whether Cloud DLP scanned the complete resource or a sampled subset.",
+          "type": "boolean"
+        }
+      }
+    },
+    "CloudDlpDataProfile": {
+      "id": "CloudDlpDataProfile",
+      "description": "Contains details about the data profile that produced the finding.",
+      "type": "object",
+      "properties": {
+        "dataProfile": {
+          "description": "Name of the data profile. Example projects\/123\/locations\/europe\/tableProfiles\/8383929",
+          "type": "string"
+        }
+      }
+    },
     "KernelRootkit": {
       "id": "KernelRootkit",
       "description": "Kernel mode rootkit signatures.",
@@ -2422,6 +2467,29 @@
         "scope": {
           "description": "Project or folder to scope this config to. For example, \"project\/456\" would apply this config only to resources in \"project\/456\" scope will be checked with \"AND\" of other resources.",
           "type": "string"
+        },
+        "resourceLabelsSelector": {
+          "description": "List of resource labels to search for, evaluated with AND. E.g. \"resource_labels_selector\": {\"key\": \"value\", \"env\": \"prod\"} will match resources with labels \"key\": \"value\" AND \"env\": \"prod\" https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-labels",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Description of the resource value config.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp this resource value config was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp this resource value config was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

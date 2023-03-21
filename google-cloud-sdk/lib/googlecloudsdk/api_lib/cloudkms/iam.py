@@ -22,6 +22,73 @@ from googlecloudsdk.api_lib.cloudkms import base
 from googlecloudsdk.command_lib.iam import iam_util
 
 
+def GetEkmConfigIamPolicy(ekm_config_name):
+  """Fetch the IAM Policy attached to the EkmConfig.
+
+  Args:
+      ekm_config_name: A string name of the EkmConfig.
+
+  Returns:
+      An apitools wrapper for the IAM Policy.
+  """
+  client = base.GetClientInstance()
+  messages = base.GetMessagesModule()
+
+  req = messages.CloudkmsProjectsLocationsEkmConfigGetIamPolicyRequest(
+      options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION,
+      resource=ekm_config_name)
+
+  return client.projects_locations_ekmConfig.GetIamPolicy(req)
+
+
+def SetEkmConfigIamPolicy(ekm_config_name, policy, update_mask):
+  """Set the IAM Policy attached to the named EkmConfig to the given policy.
+
+  If 'policy' has no etag specified, this will BLINDLY OVERWRITE the IAM policy!
+
+  Args:
+      ekm_config_name:  A string name of the EkmConfig.
+      policy: An apitools wrapper for the IAM Policy.
+      update_mask: str, FieldMask represented as comma-separated field names.
+
+  Returns:
+      The IAM Policy.
+  """
+  client = base.GetClientInstance()
+  messages = base.GetMessagesModule()
+
+  policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
+  if not update_mask:
+    update_mask = 'version'
+  elif 'version' not in update_mask:
+    update_mask += ',version'
+
+  req = messages.CloudkmsProjectsLocationsEkmConfigSetIamPolicyRequest(
+      resource=ekm_config_name,
+      setIamPolicyRequest=messages.SetIamPolicyRequest(
+          policy=policy, updateMask=update_mask))
+
+  return client.projects_locations_ekmConfig.SetIamPolicy(req)
+
+
+def AddPolicyBindingToEkmConfig(ekm_config_name, member, role):
+  """Does an atomic Read-Modify-Write, adding the member to the role."""
+  messages = base.GetMessagesModule()
+
+  policy = GetEkmConfigIamPolicy(ekm_config_name)
+  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
+  return SetEkmConfigIamPolicy(
+      ekm_config_name, policy, update_mask='bindings,etag')
+
+
+def RemovePolicyBindingFromEkmConfig(ekm_config_name, member, role):
+  """Does an atomic Read-Modify-Write, removing the member from the role."""
+  policy = GetEkmConfigIamPolicy(ekm_config_name)
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return SetEkmConfigIamPolicy(
+      ekm_config_name, policy, update_mask='bindings,etag')
+
+
 def GetKeyRingIamPolicy(key_ring_ref):
   """Fetch the IAM Policy attached to the named KeyRing.
 

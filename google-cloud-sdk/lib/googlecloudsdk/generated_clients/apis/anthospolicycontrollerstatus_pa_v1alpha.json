@@ -185,6 +185,10 @@
         "name": {
           "description": "The name of the membership, for display purposes.",
           "type": "string"
+        },
+        "projectId": {
+          "description": "The project id of the membership, for checking IAM permissions.",
+          "type": "string"
         }
       }
     },

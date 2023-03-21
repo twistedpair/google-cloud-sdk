@@ -554,6 +554,13 @@
       "properties": {
       }
     },
+    "DemoteDestinationRequest": {
+      "id": "DemoteDestinationRequest",
+      "description": "Request message for 'DemoteDestination' request.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "VerifyMigrationJobRequest": {
       "id": "VerifyMigrationJobRequest",
       "description": "Request message for 'VerifyMigrationJob' request.",
@@ -863,6 +870,10 @@
         },
         "cloudSqlId": {
           "description": "If the source is a Cloud SQL database, use this field to provide the Cloud SQL instance ID of the source.",
+          "type": "string"
+        },
+        "alloydbClusterId": {
+          "description": "Optional. If the destination is an AlloyDB database, use this field to provide the AlloyDB cluster ID.",
           "type": "string"
         },
         "networkArchitecture": {
@@ -2950,7 +2961,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "datamigration.projects.locations.operations.get",
@@ -3328,6 +3339,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Promote a migration job, stopping replication to the destination and promoting the destination to be a standalone database."
+                },
+                "demoteDestination": {
+                  "id": "datamigration.projects.locations.migrationJobs.demoteDestination",
+                  "path": "v1/{+name}:demoteDestination",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:demoteDestination",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Name of the migration job resource to demote its destination.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DemoteDestinationRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Demotes the destination database to become a read replica of the source. This applicable for the following migrations: 1. MySQL to Cloud SQL (for MySQL) 2. PostgreSQL to Cloud SQL (for PostgreSQL) 3. PostgreSQL to AlloyDB."
                 },
                 "verify": {
                   "id": "datamigration.projects.locations.migrationJobs.verify",

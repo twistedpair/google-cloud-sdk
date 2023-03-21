@@ -1185,7 +1185,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest(_messages.
         view is unspecified, the API returns the same fields as the `BASIC`
         view.
       BASIC: Includes `name`, `create_time`, `hub`, `unique_id`, `state`,
-        `state_reason`, and `spoke_type`. This is the default value.
+        `reasons`, and `spoke_type`. This is the default value.
       DETAILED: Include all spoke fields. You can use the `DETAILED` view only
         when you set the `spoke_locations` field to `[global]`.
     """
@@ -2568,6 +2568,8 @@ class Spoke(_messages.Message):
   linked_router_appliance_instances
 
   Enums:
+    SpokeTypeValueValuesEnum: Output only. The type of resource associated
+      with the spoke.
     StateValueValuesEnum: Output only. The current lifecycle state of this
       spoke.
 
@@ -2594,6 +2596,7 @@ class Spoke(_messages.Message):
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
     reasons: The reasons for current state of the spoke.
+    spokeType: Output only. The type of resource associated with the spoke.
     state: Output only. The current lifecycle state of this spoke.
     uniqueId: Output only. The Google-generated UUID for the spoke. This value
       is unique across all spoke resources. If a spoke is deleted and another
@@ -2601,6 +2604,22 @@ class Spoke(_messages.Message):
       unique_id.
     updateTime: Output only. The time the spoke was last updated.
   """
+
+  class SpokeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of resource associated with the spoke.
+
+    Values:
+      SPOKE_TYPE_UNSPECIFIED: Unspecified spoke type.
+      VPN_TUNNEL: Spokes associated with VPN tunnels.
+      INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
+      ROUTER_APPLIANCE: Spokes associated with router appliance instances.
+      VPC_NETWORK: Spokes associated with VPC networks.
+    """
+    SPOKE_TYPE_UNSPECIFIED = 0
+    VPN_TUNNEL = 1
+    INTERCONNECT_ATTACHMENT = 2
+    ROUTER_APPLIANCE = 3
+    VPC_NETWORK = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -2667,9 +2686,10 @@ class Spoke(_messages.Message):
   linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 8)
   name = _messages.StringField(9)
   reasons = _messages.MessageField('StateReason', 10, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uniqueId = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uniqueId = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class SpokeStateCount(_messages.Message):

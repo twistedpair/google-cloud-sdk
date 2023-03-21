@@ -1034,11 +1034,6 @@ apis:
       default: true
       discovery_doc: policyanalyzer_v1beta1.json
   policysimulator:
-    v1beta1:
-      resources:
-        simulator:
-          path: simulator
-      discovery_doc: policysimulator_v1beta1.json
     v1:
       default: true
       resources:
@@ -1050,6 +1045,11 @@ apis:
         simulator:
           path: simulator
       discovery_doc: policysimulator_v1alpha.json
+    v1beta:
+      resources:
+        simulator:
+          path: simulator
+      discovery_doc: policysimulator_v1beta.json
   privateca:
     # TODO(b/158338643): Remove beta and set v1 as default when GA is public.
     v1beta1:
@@ -1434,6 +1434,10 @@ apis:
   telcoautomation:
     v1alpha1:
       discovery_doc: telcoautomation_v1alpha1.json
+      default: true
+  telecomdatafabric:
+    v1alpha:
+      discovery_doc: telecomdatafabric_v1alpha.json
       default: true
   workloadcertificate:
     v1alpha1:

@@ -145,11 +145,39 @@ class DailySchedule(_messages.Message):
   snapshotsToKeep = _messages.FloatField(3)
 
 
+class DestinationVolumeParameters(_messages.Message):
+  r"""DestinationVolumeParameters specify input parameters used for creating
+  destination volume.
+
+  Fields:
+    description: Description for the destination volume.
+    shareName: Destination volume's share name. If not specified, source
+      volume's share name will be used.
+    storagePool: Required. Existing destination StoragePool name.
+    volumeId: Desired destination volume resource id. If not specified, source
+      volume's resource id will be used. This value must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens, and cannot end with a hyphen.
+  """
+
+  description = _messages.StringField(1)
+  shareName = _messages.StringField(2)
+  storagePool = _messages.StringField(3)
+  volumeId = _messages.StringField(4)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
+class EncryptVolumesRequest(_messages.Message):
+  r"""EncryptVolumesRequest EncryptVolumesRequest specifies the KMS config to
+  encrypt existing volumes.
   """
 
 
@@ -307,6 +335,22 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListReplicationsResponse(_messages.Message):
+  r"""ListReplicationsResponse is the result of ListReplicationsRequest.
+
+  Fields:
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    replications: A list of replications in the project for the specified
+      volume.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  replications = _messages.MessageField('Replication', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSnapshotsResponse(_messages.Message):
@@ -601,10 +645,13 @@ class NetappProjectsLocationsKmsConfigsEncryptRequest(_messages.Message):
   r"""A NetappProjectsLocationsKmsConfigsEncryptRequest object.
 
   Fields:
+    encryptVolumesRequest: A EncryptVolumesRequest resource to be passed as
+      the request body.
     name: Required. Name of the KmsConfig.
   """
 
-  name = _messages.StringField(1, required=True)
+  encryptVolumesRequest = _messages.MessageField('EncryptVolumesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetappProjectsLocationsKmsConfigsGetRequest(_messages.Message):
@@ -660,9 +707,12 @@ class NetappProjectsLocationsKmsConfigsVerifyRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the KMS Config to be verified.
+    verifyKmsConfigRequest: A VerifyKmsConfigRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  verifyKmsConfigRequest = _messages.MessageField('VerifyKmsConfigRequest', 2)
 
 
 class NetappProjectsLocationsListRequest(_messages.Message):
@@ -886,6 +936,131 @@ class NetappProjectsLocationsVolumesPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   volume = _messages.MessageField('Volume', 3)
+
+
+class NetappProjectsLocationsVolumesReplicationsCreateRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsCreateRequest object.
+
+  Fields:
+    parent: Required. The NetApp volume to create the replications of, in the
+      format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
+    replication: A Replication resource to be passed as the request body.
+    replicationId: Required. ID of the replication to create. This value must
+      start with a lowercase letter followed by up to 62 lowercase letters,
+      numbers, or hyphens, and cannot end with a hyphen.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  replication = _messages.MessageField('Replication', 2)
+  replicationId = _messages.StringField(3)
+
+
+class NetappProjectsLocationsVolumesReplicationsDeleteRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsDeleteRequest object.
+
+  Fields:
+    name: Required. The replication resource name, in the format
+      `projects/*/locations/*/volumes/*/replications/{replication_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsVolumesReplicationsGetRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsGetRequest object.
+
+  Fields:
+    name: Required. The replication resource name, in the format `projects/{pr
+      oject_id}/locations/{location}/volumes/{volume_id}/replications/{replica
+      tion_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetappProjectsLocationsVolumesReplicationsListRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The volume for which to retrieve replication
+      information, in the format
+      `projects/{project_id}/locations/{location}/volumes/{volume_id}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetappProjectsLocationsVolumesReplicationsPatchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the Replication. Format: `projects
+      /{project_id}/locations/{location}/volumes/{volume_id}/replications/{rep
+      lication_id}`.
+    replication: A Replication resource to be passed as the request body.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+  """
+
+  name = _messages.StringField(1, required=True)
+  replication = _messages.MessageField('Replication', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetappProjectsLocationsVolumesReplicationsResumeRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsResumeRequest object.
+
+  Fields:
+    name: Required. The resource name of the replication, in the format of pro
+      jects/{project_id}/locations/{location}/volumes/{volume_id}/replications
+      /{replication_id}.
+    resumeReplicationRequest: A ResumeReplicationRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeReplicationRequest = _messages.MessageField('ResumeReplicationRequest', 2)
+
+
+class NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the replication, in the format of pro
+      jects/{project_id}/locations/{location}/volumes/{volume_id}/replications
+      /{replication_id}.
+    reverseReplicationDirectionRequest: A ReverseReplicationDirectionRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reverseReplicationDirectionRequest = _messages.MessageField('ReverseReplicationDirectionRequest', 2)
+
+
+class NetappProjectsLocationsVolumesReplicationsStopRequest(_messages.Message):
+  r"""A NetappProjectsLocationsVolumesReplicationsStopRequest object.
+
+  Fields:
+    name: Required. The resource name of the replication, in the format of pro
+      jects/{project_id}/locations/{location}/volumes/{volume_id}/replications
+      /{replication_id}.
+    stopReplicationRequest: A StopReplicationRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopReplicationRequest = _messages.MessageField('StopReplicationRequest', 2)
 
 
 class NetappProjectsLocationsVolumesRevertRequest(_messages.Message):
@@ -1115,6 +1290,146 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Replication(_messages.Message):
+  r"""Replication is a nested resource under Volume, that describes a cross-
+  region replication relationship between 2 volumes in different regions.
+
+  Enums:
+    MirrorStateValueValuesEnum: Output only. Indicates the state of mirroring.
+    ReplicationScheduleValueValuesEnum: Required. Indicates the schedule for
+      replication.
+    RoleValueValuesEnum: Output only. Indicates whether this points to source
+      or destination.
+    StateValueValuesEnum: Output only. State of the replication.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    createTime: Output only. Replication create time.
+    description: A description about this replication relationship.
+    destinationVolumeParameters: Required. Input only. Destination volume
+      parameters
+    healthy: Output only. Condition of the relationship. Can be one of the
+      following: - true: The replication relationship is healthy. It has not
+      missed the most recent scheduled transfer. - false: The replication
+      relationship is not healthy. It has missed the most recent scheduled
+      transfer.
+    labels: Resource labels to represent user provided metadata.
+    mirrorState: Output only. Indicates the state of mirroring.
+    name: Output only. The resource name of the Replication. Format: `projects
+      /{project_id}/locations/{location}/volumes/{volume_id}/replications/{rep
+      lication_id}`.
+    replicationSchedule: Required. Indicates the schedule for replication.
+    replicationVolume: Output only. The other volume resource full path it is
+      paired with for replication
+    role: Output only. Indicates whether this points to source or destination.
+    state: Output only. State of the replication.
+    stateDetails: Output only. State details of the replication.
+    transferStats: Output only. Replication transfer statistics.
+    transferring: Output only. Indicates whether currently there is a data
+      transfer in progress.
+  """
+
+  class MirrorStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates the state of mirroring.
+
+    Values:
+      MIRROR_STATE_UNSPECIFIED: Unspecified MirrorState
+      UNINITIALIZED: Destination volume has not been initialized.
+      MIRRORED: Destination volume has been initialized and is ready to
+        receive replication transfers.
+      BROKEN: Destination volume is not receiving replication transfers.
+    """
+    MIRROR_STATE_UNSPECIFIED = 0
+    UNINITIALIZED = 1
+    MIRRORED = 2
+    BROKEN = 3
+
+  class ReplicationScheduleValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the schedule for replication.
+
+    Values:
+      REPLICATION_SCHEDULE_UNSPECIFIED: Unspecified ReplicationSchedule
+      EVERY_10_MINUTES: Replication happens once every 10 minutes.
+      HOURLY: Replication happens once every hour.
+      DAILY: Replication happens once every day.
+    """
+    REPLICATION_SCHEDULE_UNSPECIFIED = 0
+    EVERY_10_MINUTES = 1
+    HOURLY = 2
+    DAILY = 3
+
+  class RoleValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates whether this points to source or destination.
+
+    Values:
+      REPLICATION_ROLE_UNSPECIFIED: Unspecified replication role
+      SOURCE: Indicates Source volume.
+      DESTINATION: Indicates Destination volume.
+    """
+    REPLICATION_ROLE_UNSPECIFIED = 0
+    SOURCE = 1
+    DESTINATION = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the replication.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified replication State
+      CREATING: Replication is creating.
+      READY: Replication is ready.
+      STOPPED: Replication is stopped.
+      DELETING: Replication is deleting.
+      ERROR: Replication is in error state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    STOPPED = 3
+    DELETING = 4
+    ERROR = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  destinationVolumeParameters = _messages.MessageField('DestinationVolumeParameters', 3)
+  healthy = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 8)
+  replicationVolume = _messages.StringField(9)
+  role = _messages.EnumField('RoleValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateDetails = _messages.StringField(12)
+  transferStats = _messages.MessageField('TransferStats', 13)
+  transferring = _messages.BooleanField(14)
+
+
 class RestoreParameters(_messages.Message):
   r"""The RestoreParameters if volume is created from a snapshot or backup.
 
@@ -1124,6 +1439,17 @@ class RestoreParameters(_messages.Message):
   """
 
   sourceSnapshot = _messages.StringField(1)
+
+
+class ResumeReplicationRequest(_messages.Message):
+  r"""ResumeReplicationRequest resumes a stopped replication."""
+
+
+class ReverseReplicationDirectionRequest(_messages.Message):
+  r"""ReverseReplicationDirectionRequest reverses direction of replication.
+  Source becomes destination and destination becomes source.
+  """
+
 
 
 class RevertVolumeRequest(_messages.Message):
@@ -1410,6 +1736,20 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StopReplicationRequest(_messages.Message):
+  r"""StopReplicationRequest stops a replication until resumed.
+
+  Fields:
+    force: Indicates whether to stop replication forcefully while data
+      transfer is in progress. Warning! if force is true, this will abort any
+      current transfers and can lead to data loss due to partial transfer. If
+      force is false, stop replication will fail while data transfer is in
+      progress and you will need to retry later.
+  """
+
+  force = _messages.BooleanField(1)
+
+
 class StoragePool(_messages.Message):
   r"""Resources StoragePool StoragePool is a container for volumes with a
   service level and capacity. Volumes can be created in a pool of sufficient
@@ -1423,11 +1763,16 @@ class StoragePool(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    activeDirectory: Specifies the Active Directory to be used for creating a
+      SMB volume.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
     description: Description of the storage pool
+    kmsConfig: Specifies the KMS config to be used for volume encryption.
     labels: Labels as key value pairs
     name: Output only. Name of the storage pool
+    network: Required. VPC Network name. Format:
+      projects/{project}/global/networks/{network}
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -1494,16 +1839,52 @@ class StoragePool(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGib = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateDetails = _messages.StringField(8)
-  volumeCapacityGib = _messages.IntegerField(9)
-  volumeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  activeDirectory = _messages.StringField(1)
+  capacityGib = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  kmsConfig = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateDetails = _messages.StringField(11)
+  volumeCapacityGib = _messages.IntegerField(12)
+  volumeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+
+
+class TransferStats(_messages.Message):
+  r"""TransferStats reports all statistics related to replication transfer.
+
+  Fields:
+    lagDuration: Lag duration indicates the duration by which Destination
+      region volume content lags behind the primary region volume content.
+    lastTransferBytes: Last transfer size in bytes.
+    lastTransferDuration: Time taken during last transfer.
+    lastTransferEndTime: Time when last transfer completed.
+    lastTransferError: A message describing the cause of the last transfer
+      failure.
+    totalTransferDuration: Total time taken during transfer.
+    transferPercent: Transfer progress percentage.
+    updateTime: Time when progress was updated last.
+  """
+
+  lagDuration = _messages.StringField(1)
+  lastTransferBytes = _messages.IntegerField(2)
+  lastTransferDuration = _messages.StringField(3)
+  lastTransferEndTime = _messages.StringField(4)
+  lastTransferError = _messages.StringField(5)
+  totalTransferDuration = _messages.StringField(6)
+  transferPercent = _messages.FloatField(7)
+  updateTime = _messages.StringField(8)
+
+
+class VerifyKmsConfigRequest(_messages.Message):
+  r"""VerifyKmsConfigRequest VerifyKmsConfigRequest specifies the KMS config
+  to be validated.
+  """
+
 
 
 class VerifyKmsConfigResponse(_messages.Message):
@@ -1539,8 +1920,8 @@ class Volume(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    activeDirectory: Optional. Specifies the AD to be used for creating a SMB
-      volume. ActiveDirectory name of the volume
+    activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
+      volume.
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
@@ -1550,14 +1931,15 @@ class Volume(_messages.Message):
     kerberosEnabled: Optional. Flag indicating if the volume is a kerberos
       volume or not, export policy rules control kerberos security modes
       (krb5, krb5i, krb5p).
-    kmsConfig: Optional. Specifies the KMS config to be used for volume
+    kmsConfig: Output only. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
     ldapEnabled: Optional. Flag indicating if the volume is NFS LDAP enabled
       or not.
     mountOptions: Output only. Mount options of this volume
     name: Output only. Name of the volume
-    network: Required. VPC Network name
+    network: Output only. VPC Network name. Format:
+      projects/{project}/global/networks/{network}
     protocols: Required. Protocols required for the volume
     psaRange: Optional. Name of the Private Service Access allocated range.
       This is optional. If not provided, any available range will be chosen.

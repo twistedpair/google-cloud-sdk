@@ -201,7 +201,7 @@ class WorkloadcertificateV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (WorkloadcertificateProjectsLocationsOperationsListRequest) input message
@@ -342,33 +342,6 @@ class WorkloadcertificateV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='WorkloadcertificateProjectsLocationsWorkloadRegistrationsListRequest',
         response_type_name='ListWorkloadRegistrationsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single WorkloadRegistration.
-
-      Args:
-        request: (WorkloadcertificateProjectsLocationsWorkloadRegistrationsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workloadRegistrations/{workloadRegistrationsId}',
-        http_method='PATCH',
-        method_id='workloadcertificate.projects.locations.workloadRegistrations.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='workloadRegistration',
-        request_type_name='WorkloadcertificateProjectsLocationsWorkloadRegistrationsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -23,6 +23,8 @@ class AcceleratorConfig(_messages.Message):
       instance.
     acceleratorType: The accelerator type resource name. List of supported
       accelerators [here](https://cloud.google.com/compute/docs/gpus)
+    gpuDriverInstallationConfig: The configuration for auto installation of
+      GPU driver.
     gpuPartitionSize: Size of partitions to create on the GPU. Valid values
       are described in the NVIDIA [mig user
       guide](https://docs.nvidia.com/datacenter/tesla/mig-user-
@@ -34,9 +36,10 @@ class AcceleratorConfig(_messages.Message):
 
   acceleratorCount = _messages.IntegerField(1)
   acceleratorType = _messages.StringField(2)
-  gpuPartitionSize = _messages.StringField(3)
-  gpuSharingConfig = _messages.MessageField('GPUSharingConfig', 4)
-  maxTimeSharedClientsPerGpu = _messages.IntegerField(5)
+  gpuDriverInstallationConfig = _messages.MessageField('GPUDriverInstallationConfig', 3)
+  gpuPartitionSize = _messages.StringField(4)
+  gpuSharingConfig = _messages.MessageField('GPUSharingConfig', 5)
+  maxTimeSharedClientsPerGpu = _messages.IntegerField(6)
 
 
 class AdditionalNodeNetworkConfig(_messages.Message):
@@ -2315,6 +2318,36 @@ class Fleet(_messages.Message):
   project = _messages.StringField(3)
 
 
+class GPUDriverInstallationConfig(_messages.Message):
+  r"""GPUDriverInstallationConfig specifies the version of GPU driver to be
+  auto installed.
+
+  Enums:
+    GpuDriverVersionValueValuesEnum: Mode for how the GPU driver is installed.
+
+  Fields:
+    gpuDriverVersion: Mode for how the GPU driver is installed.
+  """
+
+  class GpuDriverVersionValueValuesEnum(_messages.Enum):
+    r"""Mode for how the GPU driver is installed.
+
+    Values:
+      GPU_DRIVER_VERSION_UNSPECIFIED: Default value is to not install any GPU
+        driver.
+      INSTALLATION_DISABLED: Disable GPU driver auto installation and needs
+        manual installation
+      DEFAULT: "Default" GPU driver in COS and Ubuntu.
+      LATEST: "Latest" GPU driver in COS.
+    """
+    GPU_DRIVER_VERSION_UNSPECIFIED = 0
+    INSTALLATION_DISABLED = 1
+    DEFAULT = 2
+    LATEST = 3
+
+  gpuDriverVersion = _messages.EnumField('GpuDriverVersionValueValuesEnum', 1)
+
+
 class GPUSharingConfig(_messages.Message):
   r"""GPUSharingConfig represents the GPU sharing configuration for Hardware
   Accelerators.
@@ -2586,14 +2619,14 @@ class IPAllocationPolicy(_messages.Message):
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
-    podCidrOverprovisionConfig: Pod CIDR size overprovisioning config for the
-      nodepool. Pod CIDR size per node depends on max_pods_per_node. By
-      default, the value of max_pods_per_node is doubled and then rounded off
-      to next power of 2 to get the size of pod CIDR block per node. Example:
-      max_pods_per_node of 30 would result in 64 IPs (/26). This config can
-      disable the doubling of IPs (we still round off to next power of 2)
-      Example: max_pods_per_node of 30 will result in 32 IPs (/27) when
-      overprovisioning is disabled.
+    podCidrOverprovisionConfig: [PRIVATE FIELD] Pod CIDR size overprovisioning
+      config for the cluster. Pod CIDR size per node depends on
+      max_pods_per_node. By default, the value of max_pods_per_node is doubled
+      and then rounded off to next power of 2 to get the size of pod CIDR
+      block per node. Example: max_pods_per_node of 30 would result in 64 IPs
+      (/26). This config can disable the doubling of IPs (we still round off
+      to next power of 2) Example: max_pods_per_node of 30 will result in 32
+      IPs (/27) when overprovisioning is disabled.
     servicesIpv4Cidr: This field is deprecated, use services_ipv4_cidr_block.
     servicesIpv4CidrBlock: The IP address range of the services IPs in this
       cluster. If blank, a range will be automatically chosen with the default
@@ -4073,14 +4106,14 @@ class NodeNetworkConfig(_messages.Message):
       enable_private_nodes is not specified, then the value is derived from
       cluster.privateClusterConfig.enablePrivateNodes
     networkPerformanceConfig: Network bandwidth tier configuration.
-    podCidrOverprovisionConfig: Pod CIDR size overprovisioning config for the
-      nodepool. Pod CIDR size per node depends on max_pods_per_node. By
-      default, the value of max_pods_per_node is rounded off to next power of
-      2 and we then double that to get the size of pod CIDR block per node.
-      Example: max_pods_per_node of 30 would result in 64 IPs (/26). This
-      config can disable the doubling of IPs (we still round off to next power
-      of 2) Example: max_pods_per_node of 30 will result in 32 IPs (/27) when
-      overprovisioning is disabled.
+    podCidrOverprovisionConfig: [PRIVATE FIELD] Pod CIDR size overprovisioning
+      config for the nodepool. Pod CIDR size per node depends on
+      max_pods_per_node. By default, the value of max_pods_per_node is rounded
+      off to next power of 2 and we then double that to get the size of pod
+      CIDR block per node. Example: max_pods_per_node of 30 would result in 64
+      IPs (/26). This config can disable the doubling of IPs (we still round
+      off to next power of 2) Example: max_pods_per_node of 30 will result in
+      32 IPs (/27) when overprovisioning is disabled.
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
@@ -4585,7 +4618,7 @@ class PodAutoscaling(_messages.Message):
 
 
 class PodCIDROverprovisionConfig(_messages.Message):
-  r"""Config for pod CIDR size overprovisioning.
+  r"""[PRIVATE FIELD] Config for pod CIDR size overprovisioning.
 
   Fields:
     disable: Whether Pod CIDR overprovisioning is disabled. Note: Pod CIDR
@@ -6053,6 +6086,9 @@ class UpdateNodePoolRequest(_messages.Message):
   r"""SetNodePoolVersionRequest updates the version of a node pool.
 
   Fields:
+    accelerators: A list of hardware accelerators to be attached to each node.
+      See https://cloud.google.com/compute/docs/gpus for more information
+      about support for GPUs.
     clusterId: Required. Deprecated. The name of the cluster to upgrade. This
       field has been deprecated and replaced by the name field.
     confidentialNodes: Confidential nodes config. All the nodes in the node
@@ -6121,32 +6157,33 @@ class UpdateNodePoolRequest(_messages.Message):
       name field.
   """
 
-  clusterId = _messages.StringField(1)
-  confidentialNodes = _messages.MessageField('ConfidentialNodes', 2)
-  etag = _messages.StringField(3)
-  fastSocket = _messages.MessageField('FastSocket', 4)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 5)
-  gvnic = _messages.MessageField('VirtualNIC', 6)
-  image = _messages.StringField(7)
-  imageProject = _messages.StringField(8)
-  imageType = _messages.StringField(9)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
-  labels = _messages.MessageField('NodeLabels', 11)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
-  locations = _messages.StringField(13, repeated=True)
-  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 14)
-  name = _messages.StringField(15)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 16)
-  nodePoolId = _messages.StringField(17)
-  nodeVersion = _messages.StringField(18)
-  projectId = _messages.StringField(19)
-  resourceLabels = _messages.MessageField('ResourceLabels', 20)
-  tags = _messages.MessageField('NetworkTags', 21)
-  taints = _messages.MessageField('NodeTaints', 22)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 23)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 24)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 25)
-  zone = _messages.StringField(26)
+  accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
+  clusterId = _messages.StringField(2)
+  confidentialNodes = _messages.MessageField('ConfidentialNodes', 3)
+  etag = _messages.StringField(4)
+  fastSocket = _messages.MessageField('FastSocket', 5)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 6)
+  gvnic = _messages.MessageField('VirtualNIC', 7)
+  image = _messages.StringField(8)
+  imageProject = _messages.StringField(9)
+  imageType = _messages.StringField(10)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 11)
+  labels = _messages.MessageField('NodeLabels', 12)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 13)
+  locations = _messages.StringField(14, repeated=True)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 15)
+  name = _messages.StringField(16)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 17)
+  nodePoolId = _messages.StringField(18)
+  nodeVersion = _messages.StringField(19)
+  projectId = _messages.StringField(20)
+  resourceLabels = _messages.MessageField('ResourceLabels', 21)
+  tags = _messages.MessageField('NetworkTags', 22)
+  taints = _messages.MessageField('NodeTaints', 23)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 24)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 25)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 26)
+  zone = _messages.StringField(27)
 
 
 class UpgradeAvailableEvent(_messages.Message):

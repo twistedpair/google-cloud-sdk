@@ -485,6 +485,53 @@ class BareMetalApiServerArgument(_messages.Message):
   value = _messages.StringField(2)
 
 
+class BareMetalBgpLbConfig(_messages.Message):
+  r"""BareMetalBgpLbConfig represents configuration parameters for a Border
+  Gateway Protocol (BGP) load balancer.
+
+  Fields:
+    addressPools: Required. AddressPools is a list of non-overlapping IP pools
+      used by load balancer typed services. All addresses must be routable to
+      load balancer nodes. IngressVIP must be included in the pools.
+    asn: Required. BGP autonomous system number (ASN) of the cluster. This
+      field can be updated after cluster creation.
+    bgpPeerConfigs: Required. The list of BGP peers that the cluster will
+      connect to. At least one peer must be configured for each control plane
+      node. Control plane nodes will connect to these peers to advertise the
+      control plane VIP. The Services load balancer also uses these peers by
+      default. This field can be updated after cluster creation.
+    loadBalancerNodePoolConfig: Specifies the node pool running data plane
+      load balancing. L2 connectivity is required among nodes in this pool. If
+      missing, the control plane node pool is used for data plane load
+      balancing.
+  """
+
+  addressPools = _messages.MessageField('BareMetalLoadBalancerAddressPool', 1, repeated=True)
+  asn = _messages.IntegerField(2)
+  bgpPeerConfigs = _messages.MessageField('BareMetalBgpPeerConfig', 3, repeated=True)
+  loadBalancerNodePoolConfig = _messages.MessageField('BareMetalLoadBalancerNodePoolConfig', 4)
+
+
+class BareMetalBgpPeerConfig(_messages.Message):
+  r"""BareMetalBgpPeerConfig represents configuration parameters for a Border
+  Gateway Protocol (BGP) peer.
+
+  Fields:
+    asn: Required. BGP autonomous system number (ASN) for the network that
+      contains the external peer device.
+    controlPlaneNodes: The IP address of the control plane node that connects
+      to the external peer. If you don't specify any control plane nodes, all
+      control plane nodes can connect to the external peer. If you specify one
+      or more IP addresses, only the nodes specified participate in peering
+      sessions.
+    ipAddress: Required. The IP address of the external peer device.
+  """
+
+  asn = _messages.IntegerField(1)
+  controlPlaneNodes = _messages.StringField(2, repeated=True)
+  ipAddress = _messages.StringField(3)
+
+
 class BareMetalCluster(_messages.Message):
   r"""Resource that represents a bare metal user cluster.
 
@@ -873,16 +920,19 @@ class BareMetalLoadBalancerConfig(_messages.Message):
   r"""Specifies the load balancer configuration.
 
   Fields:
+    bgpLbConfig: Configuration for BGP typed load balancers. When set
+      network_config.advanced_networking is automatically set to true.
     manualLbConfig: Manually configured load balancers.
     metalLbConfig: Configuration for MetalLB load balancers.
     portConfig: Configures the ports that the load balancer will listen on.
     vipConfig: The VIPs used by the load balancer.
   """
 
-  manualLbConfig = _messages.MessageField('BareMetalManualLbConfig', 1)
-  metalLbConfig = _messages.MessageField('BareMetalMetalLbConfig', 2)
-  portConfig = _messages.MessageField('BareMetalPortConfig', 3)
-  vipConfig = _messages.MessageField('BareMetalVipConfig', 4)
+  bgpLbConfig = _messages.MessageField('BareMetalBgpLbConfig', 1)
+  manualLbConfig = _messages.MessageField('BareMetalManualLbConfig', 2)
+  metalLbConfig = _messages.MessageField('BareMetalMetalLbConfig', 3)
+  portConfig = _messages.MessageField('BareMetalPortConfig', 4)
+  vipConfig = _messages.MessageField('BareMetalVipConfig', 5)
 
 
 class BareMetalLoadBalancerNodePoolConfig(_messages.Message):
@@ -1333,6 +1383,555 @@ class BareMetalSrIovConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class BareMetalStandaloneApiServerArgument(_messages.Message):
+  r"""Represents an arg name->value pair. Only a subset of customized flags
+  are supported. For the exact format, refer to the [API server
+  documentation](https://kubernetes.io/docs/reference/command-line-tools-
+  reference/kube-apiserver/).
+
+  Fields:
+    argument: Required. The argument name as it appears on the API Server
+      command line, make sure to remove the leading dashes.
+    value: Required. The value of the arg as it will be passed to the API
+      Server command line.
+  """
+
+  argument = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class BareMetalStandaloneCluster(_messages.Message):
+  r"""Resource that represents a bare metal standalone cluster.
+
+  Enums:
+    ProfileValueValuesEnum: Profile specifies the installation profile for the
+      Anthos Bare Metal cluster.
+    StateValueValuesEnum: Output only. The current state of the bare metal
+      standalone cluster.
+
+  Messages:
+    AnnotationsValue: Annotations on the bare metal standalone cluster. This
+      field has the same restrictions as Kubernetes annotations. The total
+      size of all keys and values combined is limited to 256k. Key can have 2
+      segments: prefix (optional) and name (required), separated by a slash
+      (/). Prefix must be a DNS subdomain. Name must be 63 characters or less,
+      begin and end with alphanumerics, with dashes (-), underscores (_), dots
+      (.), and alphanumerics between.
+
+  Fields:
+    annotations: Annotations on the bare metal standalone cluster. This field
+      has the same restrictions as Kubernetes annotations. The total size of
+      all keys and values combined is limited to 256k. Key can have 2
+      segments: prefix (optional) and name (required), separated by a slash
+      (/). Prefix must be a DNS subdomain. Name must be 63 characters or less,
+      begin and end with alphanumerics, with dashes (-), underscores (_), dots
+      (.), and alphanumerics between.
+    bareMetalVersion: Required. The Anthos clusters on bare metal version for
+      your standalone cluster.
+    clusterOperations: Cluster operations configuration.
+    controlPlane: Required. Control plane configuration.
+    createTime: Output only. The time when the bare metal standalone cluster
+      was created.
+    deleteTime: Output only. The time when the bare metal standalone cluster
+      was deleted. If the resource is not deleted, this must be empty
+    description: A human readable description of this bare metal standalone
+      cluster.
+    endpoint: Output only. The IP address of the bare metal standalone
+      cluster's API server.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and may be sent on update and delete requests to
+      ensure the client has an up-to-date value before proceeding. Allows
+      clients to perform consistent read-modify-writes through optimistic
+      concurrency control.
+    fleet: Output only. Fleet configuration for the cluster.
+    loadBalancer: Required. Load balancer configuration.
+    localName: Output only. The object name of the bare metal standalone
+      cluster custom resource. This field is used to support conflicting names
+      when enrolling existing clusters to the API. When used as a part of
+      cluster enrollment, this field will differ from the name in the resource
+      name. For new clusters, this field will match the user provided cluster
+      name and be visible in the last component of the resource name. It is
+      not modifiable. When the local name and cluster name differ, the local
+      name is used in the admin cluster controller logs. You use the cluster
+      name when accessing the cluster using bmctl and kubectl.
+    maintenanceConfig: Maintenance configuration.
+    maintenanceStatus: Output only. Status of on-going maintenance tasks.
+    name: Immutable. The bare metal standalone cluster resource name.
+    networkConfig: Required. Network configuration.
+    nodeAccessConfig: Node access related configurations.
+    nodeConfig: Workload node configuration.
+    osEnvironmentConfig: OS environment related configurations.
+    profile: Profile specifies the installation profile for the Anthos Bare
+      Metal cluster.
+    proxy: Proxy configuration.
+    reconciling: Output only. If set, there are currently changes in flight to
+      the bare metal standalone cluster.
+    securityConfig: Security related setting configuration.
+    state: Output only. The current state of the bare metal standalone
+      cluster.
+    status: Output only. Detailed cluster status.
+    storage: Required. Storage configuration.
+    uid: Output only. The unique identifier of the bare metal standalone
+      cluster.
+    updateTime: Output only. The time when the bare metal standalone cluster
+      was last updated.
+    validationCheck: Output only. The result of the preflight check.
+  """
+
+  class ProfileValueValuesEnum(_messages.Enum):
+    r"""Profile specifies the installation profile for the Anthos Bare Metal
+    cluster.
+
+    Values:
+      DEFAULT: Default is the default installation profile.
+      EDGE: Edge profile is tailored for edge deployment.
+    """
+    DEFAULT = 0
+    EDGE = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the bare metal standalone cluster.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the cluster is being
+        created.
+      RUNNING: The RUNNING state indicates the cluster has been created and is
+        fully usable.
+      RECONCILING: The RECONCILING state indicates that the cluster is being
+        updated. It remains available, but potentially with degraded
+        performance.
+      STOPPING: The STOPPING state indicates the cluster is being deleted.
+      ERROR: The ERROR state indicates the cluster is in a broken
+        unrecoverable state.
+      DEGRADED: The DEGRADED state indicates the cluster requires user action
+        to restore full functionality.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    RECONCILING = 3
+    STOPPING = 4
+    ERROR = 5
+    DEGRADED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations on the bare metal standalone cluster. This field has the
+    same restrictions as Kubernetes annotations. The total size of all keys
+    and values combined is limited to 256k. Key can have 2 segments: prefix
+    (optional) and name (required), separated by a slash (/). Prefix must be a
+    DNS subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  bareMetalVersion = _messages.StringField(2)
+  clusterOperations = _messages.MessageField('BareMetalStandaloneClusterOperationsConfig', 3)
+  controlPlane = _messages.MessageField('BareMetalStandaloneControlPlaneConfig', 4)
+  createTime = _messages.StringField(5)
+  deleteTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  endpoint = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  fleet = _messages.MessageField('Fleet', 10)
+  loadBalancer = _messages.MessageField('BareMetalStandaloneLoadBalancerConfig', 11)
+  localName = _messages.StringField(12)
+  maintenanceConfig = _messages.MessageField('BareMetalStandaloneMaintenanceConfig', 13)
+  maintenanceStatus = _messages.MessageField('BareMetalStandaloneMaintenanceStatus', 14)
+  name = _messages.StringField(15)
+  networkConfig = _messages.MessageField('BareMetalStandaloneNetworkConfig', 16)
+  nodeAccessConfig = _messages.MessageField('BareMetalStandaloneNodeAccessConfig', 17)
+  nodeConfig = _messages.MessageField('BareMetalStandaloneWorkloadNodeConfig', 18)
+  osEnvironmentConfig = _messages.MessageField('BareMetalStandaloneOsEnvironmentConfig', 19)
+  profile = _messages.EnumField('ProfileValueValuesEnum', 20)
+  proxy = _messages.MessageField('BareMetalStandaloneProxyConfig', 21)
+  reconciling = _messages.BooleanField(22)
+  securityConfig = _messages.MessageField('BareMetalStandaloneSecurityConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  status = _messages.MessageField('ResourceStatus', 25)
+  storage = _messages.MessageField('BareMetalStandaloneStorageConfig', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  validationCheck = _messages.MessageField('ValidationCheck', 29)
+
+
+class BareMetalStandaloneClusterOperationsConfig(_messages.Message):
+  r"""Specifies the bare metal standalone cluster's observability
+  infrastructure.
+
+  Fields:
+    enableApplicationLogs: Whether collection of application logs/metrics
+      should be enabled (in addition to system logs/metrics).
+  """
+
+  enableApplicationLogs = _messages.BooleanField(1)
+
+
+class BareMetalStandaloneControlPlaneConfig(_messages.Message):
+  r"""Specifies the control plane configuration.
+
+  Fields:
+    apiServerArgs: Customizes the default API server args. Only a subset of
+      customized flags are supported. For the exact format, refer to the [API
+      server documentation](https://kubernetes.io/docs/reference/command-line-
+      tools-reference/kube-apiserver/).
+    controlPlaneNodePoolConfig: Required. Configures the node pool running the
+      control plane.
+  """
+
+  apiServerArgs = _messages.MessageField('BareMetalStandaloneApiServerArgument', 1, repeated=True)
+  controlPlaneNodePoolConfig = _messages.MessageField('BareMetalStandaloneControlPlaneNodePoolConfig', 2)
+
+
+class BareMetalStandaloneControlPlaneNodePoolConfig(_messages.Message):
+  r"""Specifies the control plane node pool configuration.
+
+  Fields:
+    nodePoolConfig: Required. The generic configuration for a node pool
+      running the control plane.
+  """
+
+  nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 1)
+
+
+class BareMetalStandaloneDrainedMachine(_messages.Message):
+  r"""Represents a machine that is currently drained.
+
+  Fields:
+    nodeIp: Drained machine IP address.
+  """
+
+  nodeIp = _messages.StringField(1)
+
+
+class BareMetalStandaloneDrainingMachine(_messages.Message):
+  r"""Represents a machine that is currently draining.
+
+  Fields:
+    nodeIp: Draining machine IP address.
+    podCount: The count of pods yet to drain.
+  """
+
+  nodeIp = _messages.StringField(1)
+  podCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class BareMetalStandaloneIslandModeCidrConfig(_messages.Message):
+  r"""Specifies the cluster CIDR configuration while running in island mode.
+
+  Fields:
+    podAddressCidrBlocks: Required. All pods in the cluster are assigned an
+      RFC1918 IPv4 address from these ranges. This field cannot be changed
+      after creation.
+    serviceAddressCidrBlocks: Required. All services in the cluster are
+      assigned an RFC1918 IPv4 address from these ranges. This field cannot be
+      changed after creation.
+  """
+
+  podAddressCidrBlocks = _messages.StringField(1, repeated=True)
+  serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
+
+
+class BareMetalStandaloneLoadBalancerAddressPool(_messages.Message):
+  r"""Represents an IP pool used by the load balancer.
+
+  Fields:
+    addresses: Required. The addresses that are part of this pool. Each
+      address must be either in the CIDR form (1.2.3.0/24) or range form
+      (1.2.3.1-1.2.3.5).
+    avoidBuggyIps: If true, avoid using IPs ending in .0 or .255. This avoids
+      buggy consumer devices mistakenly dropping IPv4 traffic for those
+      special IP addresses.
+    manualAssign: If true, prevent IP addresses from being automatically
+      assigned.
+    pool: Required. The name of the address pool.
+  """
+
+  addresses = _messages.StringField(1, repeated=True)
+  avoidBuggyIps = _messages.BooleanField(2)
+  manualAssign = _messages.BooleanField(3)
+  pool = _messages.StringField(4)
+
+
+class BareMetalStandaloneLoadBalancerConfig(_messages.Message):
+  r"""Specifies the load balancer configuration.
+
+  Fields:
+    manualLbConfig: Manually configured load balancers.
+    metalLbConfig: Configuration for MetalLB load balancers.
+    portConfig: Configures the ports that the load balancer will listen on.
+    vipConfig: The VIPs used by the load balancer.
+  """
+
+  manualLbConfig = _messages.MessageField('BareMetalStandaloneManualLbConfig', 1)
+  metalLbConfig = _messages.MessageField('BareMetalStandaloneMetalLbConfig', 2)
+  portConfig = _messages.MessageField('BareMetalStandalonePortConfig', 3)
+  vipConfig = _messages.MessageField('BareMetalStandaloneVipConfig', 4)
+
+
+class BareMetalStandaloneLoadBalancerNodePoolConfig(_messages.Message):
+  r"""Specifies the load balancer's node pool configuration.
+
+  Fields:
+    nodePoolConfig: The generic configuration for a node pool running a load
+      balancer.
+  """
+
+  nodePoolConfig = _messages.MessageField('BareMetalNodePoolConfig', 1)
+
+
+class BareMetalStandaloneMachineDrainStatus(_messages.Message):
+  r"""Represents the status of node machines that are undergoing drain
+  operations.
+
+  Fields:
+    drainedMachines: The list of drained machines.
+    drainingMachines: The list of draning machines.
+  """
+
+  drainedMachines = _messages.MessageField('BareMetalStandaloneDrainedMachine', 1, repeated=True)
+  drainingMachines = _messages.MessageField('BareMetalStandaloneDrainingMachine', 2, repeated=True)
+
+
+class BareMetalStandaloneMaintenanceConfig(_messages.Message):
+  r"""Specifies configurations to put bare metal nodes in and out of
+  maintenance.
+
+  Fields:
+    maintenanceAddressCidrBlocks: Required. All IPv4 address from these ranges
+      will be placed into maintenance mode. Nodes in maintenance mode will be
+      cordoned and drained. When both of these are true, the
+      "baremetal.cluster.gke.io/maintenance" annotation will be set on the
+      node resource.
+  """
+
+  maintenanceAddressCidrBlocks = _messages.StringField(1, repeated=True)
+
+
+class BareMetalStandaloneMaintenanceStatus(_messages.Message):
+  r"""Represents the maintenance status of the bare metal standalone cluster.
+
+  Fields:
+    machineDrainStatus: The maintenance status of node machines.
+  """
+
+  machineDrainStatus = _messages.MessageField('BareMetalStandaloneMachineDrainStatus', 1)
+
+
+class BareMetalStandaloneManualLbConfig(_messages.Message):
+  r"""Represents configuration parameters for a manual load balancer.
+
+  Fields:
+    enabled: Whether manual load balancing is enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class BareMetalStandaloneMetalLbConfig(_messages.Message):
+  r"""Represents configuration parameters for a MetalLB load balancer.
+
+  Fields:
+    addressPools: Required. AddressPools is a list of non-overlapping IP pools
+      used by load balancer typed services. All addresses must be routable to
+      load balancer nodes. IngressVIP must be included in the pools.
+    loadBalancerNodePoolConfig: Specifies the node pool running the load
+      balancer. L2 connectivity is required among nodes in this pool. If
+      missing, the control plane node pool is used as the load balancer pool.
+  """
+
+  addressPools = _messages.MessageField('BareMetalStandaloneLoadBalancerAddressPool', 1, repeated=True)
+  loadBalancerNodePoolConfig = _messages.MessageField('BareMetalStandaloneLoadBalancerNodePoolConfig', 2)
+
+
+class BareMetalStandaloneNetworkConfig(_messages.Message):
+  r"""Specifies the cluster network configuration.
+
+  Fields:
+    advancedNetworking: Enables the use of advanced Anthos networking
+      features, such as Bundled Load Balancing with BGP or the egress NAT
+      gateway. Setting configuration for advanced networking features will
+      automatically set this flag.
+    islandModeCidr: Configuration for island mode CIDR. In an island-mode
+      network, nodes have unique IP addresses, but pods don't have unique
+      addresses across clusters. This doesn't cause problems because pods in
+      one cluster never directly communicate with pods in another cluster.
+      Instead, there are gateways that mediate between a pod in one cluster
+      and a pod in another cluster.
+    multipleNetworkInterfacesConfig: Configuration for multiple network
+      interfaces.
+    srIovConfig: Configuration for SR-IOV.
+  """
+
+  advancedNetworking = _messages.BooleanField(1)
+  islandModeCidr = _messages.MessageField('BareMetalStandaloneIslandModeCidrConfig', 2)
+  multipleNetworkInterfacesConfig = _messages.MessageField('BareMetalStandloneMultipleNetworkInterfacesConfig', 3)
+  srIovConfig = _messages.MessageField('BareMetalStandaloneSrIovConfig', 4)
+
+
+class BareMetalStandaloneNodeAccessConfig(_messages.Message):
+  r"""Specifies the node access related settings for the bare metal standalone
+  cluster.
+
+  Fields:
+    loginUser: LoginUser is the user name used to access node machines. It
+      defaults to "root" if not set.
+  """
+
+  loginUser = _messages.StringField(1)
+
+
+class BareMetalStandaloneOsEnvironmentConfig(_messages.Message):
+  r"""Specifies operating system operation settings for cluster provisioning.
+
+  Fields:
+    packageRepoExcluded: Whether the package repo should be added when
+      initializing bare metal machines.
+  """
+
+  packageRepoExcluded = _messages.BooleanField(1)
+
+
+class BareMetalStandalonePortConfig(_messages.Message):
+  r"""Specifies load balancer ports for the bare metal standalone cluster.
+
+  Fields:
+    controlPlaneLoadBalancerPort: The port that control plane hosted load
+      balancers will listen on.
+  """
+
+  controlPlaneLoadBalancerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class BareMetalStandaloneProxyConfig(_messages.Message):
+  r"""Specifies the cluster proxy configuration.
+
+  Fields:
+    noProxy: A list of IPs, hostnames, and domains that should skip the proxy.
+      Examples: ["127.0.0.1", "example.com", ".corp", "localhost"].
+    uri: Required. Specifies the address of your proxy server. Examples:
+      `http://domain` Do not provide credentials in the format
+      `http://(username:password@)domain` these will be rejected by the
+      server.
+  """
+
+  noProxy = _messages.StringField(1, repeated=True)
+  uri = _messages.StringField(2)
+
+
+class BareMetalStandaloneSecurityConfig(_messages.Message):
+  r"""Specifies the security related settings for the bare metal standalone
+  cluster.
+
+  Fields:
+    authorization: Configures user access to the standalone cluster.
+  """
+
+  authorization = _messages.MessageField('Authorization', 1)
+
+
+class BareMetalStandaloneSrIovConfig(_messages.Message):
+  r"""Specifies the SR-IOV networking operator config.
+
+  Fields:
+    enabled: Whether to install the SR-IOV operator.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class BareMetalStandaloneStorageConfig(_messages.Message):
+  r"""BareMetalStandaloneStorageConfig specifies the cluster storage
+  configuration.
+
+  Fields:
+    lvpNodeMountsConfig: Required. Specifies the config for local
+      PersistentVolumes backed by mounted node disks. These disks need to be
+      formatted and mounted by the user, which can be done before or after
+      cluster creation.
+    lvpShareConfig: Required. Specifies the config for local PersistentVolumes
+      backed by subdirectories in a shared filesystem. These subdirectores are
+      automatically created during cluster creation.
+  """
+
+  lvpNodeMountsConfig = _messages.MessageField('BareMetalLvpConfig', 1)
+  lvpShareConfig = _messages.MessageField('BareMetalLvpShareConfig', 2)
+
+
+class BareMetalStandaloneVipConfig(_messages.Message):
+  r"""Specifies the VIP config for the bare metal load balancer.
+
+  Fields:
+    controlPlaneVip: The VIP which you previously set aside for the Kubernetes
+      API of this bare metal standalone cluster.
+    ingressVip: The VIP which you previously set aside for ingress traffic
+      into this bare metal standalone cluster.
+  """
+
+  controlPlaneVip = _messages.StringField(1)
+  ingressVip = _messages.StringField(2)
+
+
+class BareMetalStandaloneWorkloadNodeConfig(_messages.Message):
+  r"""Specifies the workload node configurations.
+
+  Enums:
+    ContainerRuntimeValueValuesEnum: Specifies which container runtime will be
+      used.
+
+  Fields:
+    containerRuntime: Specifies which container runtime will be used.
+    maxPodsPerNode: The maximum number of pods a node can run. The size of the
+      CIDR range assigned to the node will be derived from this parameter.
+  """
+
+  class ContainerRuntimeValueValuesEnum(_messages.Enum):
+    r"""Specifies which container runtime will be used.
+
+    Values:
+      CONTAINER_RUNTIME_UNSPECIFIED: No container runtime selected.
+      CONTAINERD: Containerd runtime.
+    """
+    CONTAINER_RUNTIME_UNSPECIFIED = 0
+    CONTAINERD = 1
+
+  containerRuntime = _messages.EnumField('ContainerRuntimeValueValuesEnum', 1)
+  maxPodsPerNode = _messages.IntegerField(2)
+
+
+class BareMetalStandloneMultipleNetworkInterfacesConfig(_messages.Message):
+  r"""Specifies the multiple networking interfaces cluster configuration.
+
+  Fields:
+    enabled: Whether to enable multiple network interfaces for your pods. When
+      set network_config.advanced_networking is automatically set to true.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class BareMetalStorageConfig(_messages.Message):
   r"""BareMetalStorageConfig specifies the cluster storage configuration.
 
@@ -1541,6 +2140,48 @@ class EnrollBareMetalClusterRequest(_messages.Message):
   adminClusterMembership = _messages.StringField(1)
   bareMetalClusterId = _messages.StringField(2)
   localName = _messages.StringField(3)
+
+
+class EnrollBareMetalNodePoolRequest(_messages.Message):
+  r"""Message for enrolling an existing bare metal node pool to the GKE on-
+  prem API.
+
+  Fields:
+    bareMetalNodePoolId: User provided OnePlatform identifier that is used as
+      part of the resource name. This value must be up to 40 characters and
+      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+    validateOnly: If set, only validate the request, but do not actually
+      enroll the node pool.
+  """
+
+  bareMetalNodePoolId = _messages.StringField(1)
+  validateOnly = _messages.BooleanField(2)
+
+
+class EnrollBareMetalStandaloneClusterRequest(_messages.Message):
+  r"""Message for enrolling an existing bare metal standalone cluster to the
+  GKE on-prem API.
+
+  Fields:
+    bareMetalStandaloneClusterId: User provided OnePlatform identifier that is
+      used as part of the resource name. This must be unique among all GKE on-
+      prem clusters within a project and location and will return a 409 if the
+      cluster already exists. This value must be up to 40 characters and
+      follow RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
+    localName: The object name of the bare metal OnPremAdminCluster custom
+      resource on the associated standalone cluster. This field is used to
+      support conflicting resource names when enrolling existing clusters to
+      the API. When not provided, this field will resolve to the
+      bare_metal_standalone_cluster_id. Otherwise, it must match the object
+      name of the bare metal OnPremAdminCluster custom resource. It is not
+      modifiable outside / beyond the enrollment operation.
+    membership: Required. This is the full resource name of this bare metal
+      standalone cluster's fleet membership.
+  """
+
+  bareMetalStandaloneClusterId = _messages.StringField(1)
+  localName = _messages.StringField(2)
+  membership = _messages.StringField(3)
 
 
 class EnrollVmwareAdminClusterRequest(_messages.Message):
@@ -1817,10 +2458,6 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest(
   object.
 
   Fields:
-    createConfig_bootstrapClusterMembership: The bootstrap cluster membership.
-      This is the full resource name of the bootstrap cluster's fleet
-      membership. Format:
-      "projects/{project}/locations/{location}/memberships/{membership}"
     parent: Required. The parent of the project and location to query for
       version config. Format: "projects/{project}/locations/{location}"
     upgradeConfig_clusterName: The admin cluster resource name. This is the
@@ -1829,9 +2466,8 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest(
       ter}"
   """
 
-  createConfig_bootstrapClusterMembership = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-  upgradeConfig_clusterName = _messages.StringField(3)
+  parent = _messages.StringField(1, required=True)
+  upgradeConfig_clusterName = _messages.StringField(2)
 
 
 class GkeonpremProjectsLocationsBareMetalAdminClustersSetIamPolicyRequest(_messages.Message):
@@ -1949,6 +2585,23 @@ class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest
   ignoreErrors = _messages.BooleanField(3)
   name = _messages.StringField(4, required=True)
   validateOnly = _messages.BooleanField(5)
+
+
+class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsEnrollRequest(_messages.Message):
+  r"""A
+  GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsEnrollRequest
+  object.
+
+  Fields:
+    enrollBareMetalNodePoolRequest: A EnrollBareMetalNodePoolRequest resource
+      to be passed as the request body.
+    parent: Required. The parent resource where this node pool will be
+      created.
+      projects/{project}/locations/{location}/bareMetalClusters/{cluster}
+  """
+
+  enrollBareMetalNodePoolRequest = _messages.MessageField('EnrollBareMetalNodePoolRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetIamPolicyRequest(_messages.Message):
@@ -2110,6 +2763,31 @@ class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsTestIamPermis
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsUnenrollRequest(_messages.Message):
+  r"""A
+  GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsUnenrollRequest
+  object.
+
+  Fields:
+    allowMissing: If set to true, and the Bare Metal Node Pool is not found,
+      the request will succeed but no action will be taken on the server and
+      return a completed LRO.
+    etag: The current etag of the Bare Metal Node Pool. If an etag is provided
+      and does not match the current etag of node pool, deletion will be
+      blocked and an ABORTED error will be returned.
+    name: Required. The name of the node pool to unenroll. Format: projects/{p
+      roject}/locations/{location}/bareMetalClusters/{cluster}/bareMetalNodePo
+      ols/{nodepool}
+    validateOnly: If set, only validate the request, but do not actually
+      unenroll the node pool.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
 class GkeonpremProjectsLocationsBareMetalClustersCreateRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsBareMetalClustersCreateRequest object.
 
@@ -2219,6 +2897,13 @@ class GkeonpremProjectsLocationsBareMetalClustersGetRequest(_messages.Message):
 class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsBareMetalClustersListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: View for bare metal Clusters. When `BASIC` is
+      specified, only the cluster resource name and admin cluster membership
+      is returned. The default/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the
+      same as `FULL', which returns the complete cluster configuration
+      details.
+
   Fields:
     filter: A resource filtering expression following
       https://google.aip.dev/160. When non-empty, only resource's whose
@@ -2231,13 +2916,37 @@ class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
       clusters are listed in. Format:
       "projects/{project}/locations/{location}"
     showDeleted: If true, shows deleted bare metal Clusters.
+    view: View for bare metal Clusters. When `BASIC` is specified, only the
+      cluster resource name and admin cluster membership is returned. The
+      default/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the same as `FULL',
+      which returns the complete cluster configuration details.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""View for bare metal Clusters. When `BASIC` is specified, only the
+    cluster resource name and admin cluster membership is returned. The
+    default/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the same as `FULL',
+    which returns the complete cluster configuration details.
+
+    Values:
+      CLUSTER_VIEW_UNSPECIFIED: If the value is not set, the default `FULL`
+        view is used.
+      BASIC: Includes basic information of a cluster resource including
+        cluster resource name and admin cluster membership.
+      FULL: Includes the complete configuration for Bare Metal Cluster
+        resource. This is the default value for ListBareMetalClustersRequest
+        method.
+    """
+    CLUSTER_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   showDeleted = _messages.BooleanField(5)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersOperationsGetRequest(_messages.Message):
@@ -2369,6 +3078,128 @@ class GkeonpremProjectsLocationsBareMetalClustersUnenrollRequest(_messages.Messa
     name: Required. Name of the bare metal user cluster to be unenrolled.
       Format:
       "projects/{project}/locations/{location}/bareMetalClusters/{cluster}"
+    validateOnly: Validate the request without actually doing any updates.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  force = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersEnrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersEnrollRequest
+  object.
+
+  Fields:
+    enrollBareMetalStandaloneClusterRequest: A
+      EnrollBareMetalStandaloneClusterRequest resource to be passed as the
+      request body.
+    parent: Required. The parent of the project and location where the cluster
+      is enrolled in. Format: "projects/{project}/locations/{location}"
+  """
+
+  enrollBareMetalStandaloneClusterRequest = _messages.MessageField('EnrollBareMetalStandaloneClusterRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersGetRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the bare metal standalone cluster to get. Format:
+      "projects/{project}/locations/{location}/bareMetalStandaloneClusters/{ba
+      re_metal_standalone_cluster}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersListRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersListRequest
+  object.
+
+  Fields:
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, at most 50 clusters will be returned. The
+      maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. The parent of the project and location where the
+      clusters are listed in. Format:
+      "projects/{project}/locations/{location}"
+    showDeleted: If true, shows deleted bare metal standalone clusters.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersPatchRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersPatchRequest
+  object.
+
+  Fields:
+    allowMissing: If set to true, and the bare metal standalone cluster is not
+      found, the request will create a new bare metal standalone cluster with
+      the provided configuration. The user must have both create and update
+      permission to call Update with allow_missing set to true.
+    bareMetalStandaloneCluster: A BareMetalStandaloneCluster resource to be
+      passed as the request body.
+    name: Immutable. The bare metal standalone cluster resource name.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the BareMetalStandaloneCluster resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all populated fields in the
+      BareMetalStandaloneCluster message will be updated. Empty fields will be
+      ignored unless a field mask is used.
+    validateOnly: Validate the request without actually doing any updates.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  bareMetalStandaloneCluster = _messages.MessageField('BareMetalStandaloneCluster', 2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersQueryVersionConfigRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersQueryVersionConfi
+  gRequest object.
+
+  Fields:
+    parent: Required. The parent of the project and location to query for
+      version config. Format: "projects/{project}/locations/{location}"
+    upgradeConfig_clusterName: The standalone cluster resource name. This is
+      the full resource name of the standalone cluster resource. Format: "proj
+      ects/{project}/locations/{location}/bareMetalStandaloneClusters/{bare_me
+      tal_standalone_cluster}"
+  """
+
+  parent = _messages.StringField(1, required=True)
+  upgradeConfig_clusterName = _messages.StringField(2)
+
+
+class GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest(_messages.Message):
+  r"""A GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest
+  object.
+
+  Fields:
+    allowMissing: If set to true, and the bare metal standalone cluster is not
+      found, the request will succeed but no action will be taken on the
+      server and return a completed LRO.
+    etag: The current etag of the bare metal standalone cluster. If an etag is
+      provided and does not match the current etag of the cluster, deletion
+      will be blocked and an ABORTED error will be returned.
+    force: This is required if the cluster has any associated node pools. When
+      set, any child node pools will also be unenrolled.
+    name: Required. Name of the bare metal standalone cluster to be
+      unenrolled. Format: "projects/{project}/locations/{location}/bareMetalSt
+      andaloneClusters/{cluster}"
     validateOnly: Validate the request without actually doing any updates.
   """
 
@@ -3209,6 +4040,23 @@ class ListBareMetalNodePoolsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListBareMetalStandaloneClustersResponse(_messages.Message):
+  r"""Response message for listing bare metal standalone clusters.
+
+  Fields:
+    bareMetalStandaloneClusters: The list of bare metal standalone cluster.
+    nextPageToken: A token identifying a page of results the server should
+      return. If the token is not empty this means that more results are
+      available and should be retrieved by repeating the request with the
+      provided page token.
+    unreachable: Locations that could not be reached.
+  """
+
+  bareMetalStandaloneClusters = _messages.MessageField('BareMetalStandaloneCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -3638,6 +4486,17 @@ class Policy(_messages.Message):
 
 class QueryBareMetalAdminVersionConfigResponse(_messages.Message):
   r"""Response message for querying bare metal admin cluster version config.
+
+  Fields:
+    versions: List of available versions to install or to upgrade to.
+  """
+
+  versions = _messages.MessageField('BareMetalVersionInfo', 1, repeated=True)
+
+
+class QueryBareMetalStandaloneVersionConfigResponse(_messages.Message):
+  r"""Response message for querying bare metal standalone cluster version
+  config.
 
   Fields:
     versions: List of available versions to install or to upgrade to.

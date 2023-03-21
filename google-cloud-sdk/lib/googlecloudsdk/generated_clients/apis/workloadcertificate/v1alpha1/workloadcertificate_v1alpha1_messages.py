@@ -19,7 +19,7 @@ class CaPoolsStatus(_messages.Message):
 
   Fields:
     caPools: The CA pool string has a relative resource path following the
-      form "projects/{project_number}/locations/{location}/caPools/{ca_pool}".
+      form "projects/{project number}/locations/{location}/caPools/{CA pool}".
   """
 
   caPools = _messages.StringField(1, repeated=True)
@@ -38,63 +38,13 @@ class Empty(_messages.Message):
 
 
 
-class GCPAttributeSelector(_messages.Message):
-  r"""GCPAttributeSelector is an "oneof" field, which can be a Google service
-  account, a resource identity, etc. If not specified, all workloads of the
-  given type in the project are selected.
-
-  Fields:
-    serviceAccount: Selects workloads with the GCP service account. It matches
-      the "email" claim.
-  """
-
-  serviceAccount = _messages.StringField(1)
-
-
-class GCPWorkloadSelector(_messages.Message):
-  r"""GCPWorkloadSelector selects a group of GCP workloads, like GCE or load
-  balancer.
-
-  Enums:
-    TypeValueValuesEnum: Type pecifies the workload type. It is either
-      indicated by the identity dataplane P4SA, or in the resource identity
-      case, the resource service ("google.resource.service" claim). required.
-
-  Fields:
-    attribute: GCPAttributeSelector selects a group of workloads that match
-      the attribute. optional.
-    project: Project specifies the workloads' project in the format of "".
-      required.
-    type: Type pecifies the workload type. It is either indicated by the
-      identity dataplane P4SA, or in the resource identity case, the resource
-      service ("google.resource.service" claim). required.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Type pecifies the workload type. It is either indicated by the
-    identity dataplane P4SA, or in the resource identity case, the resource
-    service ("google.resource.service" claim). required.
-
-    Values:
-      WORKLOAD_TYPE_UNSPECIFIED: Default value. This value is unused and this
-        field is invalid.
-      GOOGLE_COMPUTE_ENGINE: <no description>
-    """
-    WORKLOAD_TYPE_UNSPECIFIED = 0
-    GOOGLE_COMPUTE_ENGINE = 1
-
-  attribute = _messages.MessageField('GCPAttributeSelector', 1)
-  project = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-
-
 class K8SWorkloadSelector(_messages.Message):
-  r"""For kubernetes workloads, fleet_member_id is used as workload selector.
+  r"""For Kubernetes workloads, fleet_member_id is used as workload selector.
 
   Fields:
-    fleetMemberId: Fleet membership ID (only the name part, not the full URI).
-      The "project" and "location" of the membership is the same as the
-      WorkloadRegistration. required.
+    fleetMemberId: Required. Fleet membership ID (only the name part, not the
+      full URI). The "project" and "location" of the membership are the same
+      as the WorkloadRegistration.
   """
 
   fleetMemberId = _messages.StringField(1)
@@ -127,13 +77,14 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListWorkloadRegistrationsResponse(_messages.Message):
-  r"""Response message for response to listing WorkloadRegistrations.
+  r"""Response message for listing WorkloadRegistrations.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
-      return.
+      return for the next List request. Empty if this response is the last
+      page.
     unreachable: Locations that could not be reached.
-    workloadRegistrations: The list of WorkloadRegistration
+    workloadRegistrations: The list of WorkloadRegistrations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -337,9 +288,11 @@ class OperationMetadata(_messages.Message):
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have been
-      cancelled successfully have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      requested cancellation of the operation. Currently we don't support
+      cancelling any operation. Consider applying the opposite mutation after
+      the current operation is done. For example, call
+      DeleteWorkloadRegistration afterwards if you want to cancel a
+      CreateWorkloadRegistration operation.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -358,19 +311,17 @@ class OperationMetadata(_messages.Message):
 
 class RegistrationStatus(_messages.Message):
   r"""RegistrationStatus describes the certificate provisioning status of a
-  workload registration resource.
+  WorkloadRegistration resource.
 
   Enums:
-    StateValueValuesEnum: state represents the current state of registration.
+    StateValueValuesEnum: The current state of registration.
 
   Fields:
-    error: error describes the details when a certificate provisioning process
-      fails.
-    state: state represents the current state of registration.
+    state: The current state of registration.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""state represents the current state of registration.
+    r"""The current state of registration.
 
     Values:
       REGISTRATION_STATE_UNSPECIFIED: REGISTRATION_STATE_UNSPECIFIED is the
@@ -380,15 +331,15 @@ class RegistrationStatus(_messages.Message):
       REGISTRATION_STATE_IN_PROGRESS: REGISTRATION_STATE_IN_PROGRESS indicates
         that the registration is in progress.
       REGISTRATION_STATE_INTERNAL_ERROR: REGISTRATION_STATE_INTERNAL_ERROR
-        indicates that the registration fails because of some internal errors.
+        indicates that the registration has encountered some internal errors
+        but is retrying. Contact support if this persists.
     """
     REGISTRATION_STATE_UNSPECIFIED = 0
     REGISTRATION_STATE_READY = 1
     REGISTRATION_STATE_IN_PROGRESS = 2
     REGISTRATION_STATE_INTERNAL_ERROR = 3
 
-  error = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -508,16 +459,15 @@ class Status(_messages.Message):
 class WorkloadCertificateFeature(_messages.Message):
   r"""Represents the Managed Workload Certificate feature. This is a singleton
   resource of a project that contains the mode of the feature, trust-domain-
-  level configurations, and etc. go/workloadcert-enablement-api.
+  level configurations, and etc.
 
   Fields:
-    defaultSpec: Optional. Workload certificate feature spec for the default
-      project level trust domain (i.e. `.svc.id.goog`). If left unset, the
-      feature is disabled.
+    defaultSpec: Required. Workload certificate feature spec for the default
+      project level trust domain (i.e. `{project ID}.svc.id.goog`).
     defaultStatus: Output only. The current WorkloadCertificate feature status
       of the default project level trust domain.
-    name: Output only. Name of the resource. Format:
-      `projects/*/locations/global/workloadCertificateFeature`.
+    name: Output only. Name of the resource. Format: `projects/{project ID or
+      number}/locations/global/workloadCertificateFeature`.
   """
 
   defaultSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 1)
@@ -529,17 +479,18 @@ class WorkloadCertificateFeatureSpec(_messages.Message):
   r"""Spec for the workload certificate feature.
 
   Enums:
-    ModeValueValuesEnum: The mode for the workload certificate feature.
+    ModeValueValuesEnum: Required. The mode for the workload certificate
+      feature.
 
   Fields:
-    mode: The mode for the workload certificate feature.
+    mode: Required. The mode for the workload certificate feature.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The mode for the workload certificate feature.
+    r"""Required. The mode for the workload certificate feature.
 
     Values:
-      MODE_UNSPECIFIED: Workload certificate feature is disabled.
+      MODE_UNSPECIFIED: Do not use this value.
       MODE_DISABLED: Workload certificate feature is disabled.
       MODE_ENABLED_WITH_MANAGED_CA: Workload certificate feature is enabled,
         and the entire certificate provisioning process is managed by Google,
@@ -579,7 +530,8 @@ class WorkloadCertificateFeatureStatus(_messages.Message):
         spec at the moment but is trying to meet its spec.
       FEATURE_STATE_READY: The feature status currently meets its spec.
       FEATURE_STATE_INTERNAL_ERROR: The feature status does not fully meet its
-        spec at the moment due to an internal error. Contact support.
+        spec at the moment due to an internal error but the backend is
+        retrying. Contact support if this persists.
     """
     FEATURE_STATE_UNSPECIFIED = 0
     FEATURE_STATE_IN_PROGRESS = 1
@@ -616,71 +568,39 @@ class WorkloadCertificateFeatureStatus(_messages.Message):
 
 
 class WorkloadRegistration(_messages.Message):
-  r"""Message describing WorkloadRegistration object defines in
-  go/workloadcert-registration-api.
-
-  Messages:
-    LabelsValue: A LabelsValue object.
+  r"""Message describing WorkloadRegistration object
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: A LabelsValue attribute.
-    name: name of resource
-    status: Output only. The status of the workloadregistration resource.
-    updateTime: Output only. [Output only] Update time stamp
-    workloadNamespace: workload_namespace specifies the namespace (which must
-      exist in the same project) the workloads are registered to. It's skipped
-      for k8s workloads, but required for non-k8s workloads. optional.
-    workloadSelector: Criteria used to select the specific group of workloads
-      in the registry on which this patch configuration should be applied.
-      required.
+    createTime: Output only. Time when this WorkloadRegistration resource was
+      created.
+    name: Output only. Name of this WorkloadRegistration resource. Format:
+      `projects/{project ID or number}/locations/{location}
+      /workloadRegistrations/{client-defined workload_registration_id}`
+      {location} is Fleet membership location for GKE clusters and this is
+      subject to change.
+    status: Output only. The status of the WorkloadRegistration resource.
+    updateTime: Output only. Time when this WorkloadRegistration resource was
+      most recently updated.
+    workloadSelector: Required. Selects the workloads in the registration.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  status = _messages.MessageField('RegistrationStatus', 4)
-  updateTime = _messages.StringField(5)
-  workloadNamespace = _messages.StringField(6)
-  workloadSelector = _messages.MessageField('WorkloadSelector', 7)
+  name = _messages.StringField(2)
+  status = _messages.MessageField('RegistrationStatus', 3)
+  updateTime = _messages.StringField(4)
+  workloadSelector = _messages.MessageField('WorkloadSelector', 5)
 
 
 class WorkloadSelector(_messages.Message):
-  r"""WorkloadSelector specifies the criteria used to determine if a rule can
-  be applied to a group of workload. The matching criteria is based on
-  workload types.
+  r"""WorkloadSelector specifies the criteria used to determine if a workload
+  is in a WorkloadRegistration. Different workload types have their own
+  matching criteria.
 
   Fields:
-    gcpWorkloadSelector: Selects a group of GCP workloads.
     k8sWorkloadSelector: Selects K8S workloads.
   """
 
-  gcpWorkloadSelector = _messages.MessageField('GCPWorkloadSelector', 1)
-  k8sWorkloadSelector = _messages.MessageField('K8SWorkloadSelector', 2)
+  k8sWorkloadSelector = _messages.MessageField('K8SWorkloadSelector', 1)
 
 
 class WorkloadcertificateProjectsLocationsGetRequest(_messages.Message):
@@ -699,7 +619,8 @@ class WorkloadcertificateProjectsLocationsGlobalGetWorkloadCertificateFeatureReq
 
   Fields:
     name: Required. Name of the `WorkloadCertificateFeature` resource. Format:
-      `projects/*/locations/global/workloadCertificateFeature`.
+      `projects/{project ID or
+      number}/locations/global/workloadCertificateFeature`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -779,7 +700,8 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsCreateRequest(_me
   object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. Value for parent. Format: `projects/{project ID or
+      number}/locations/{location}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -793,9 +715,9 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsCreateRequest(_me
       not supported (00000000-0000-0000-0000-000000000000).
     workloadRegistration: A WorkloadRegistration resource to be passed as the
       request body.
-    workloadRegistrationId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      workload_registration_id from the method_signature of Create RPC
+    workloadRegistrationId: Required. Client defined WorkloadRegistration
+      name. This can be any unique string that matches the regex
+      ^[a-zA-Z0-9-._~%!$&'()*+,;=@]+$ and has 1-63 characters in length.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -809,7 +731,9 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource. Format: `projects/{project ID or num
+      ber}/locations/{location}/workloadRegistrations/{workload_registration_i
+      d}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -832,7 +756,9 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. Name of the resource.
+    name: Required. Name of the resource. Format: `projects/{project ID or num
+      ber}/locations/{location}/workloadRegistrations/{workload_registration_i
+      d}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -843,12 +769,16 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsListRequest(_mess
   object.
 
   Fields:
-    filter: Filtering results.
-    orderBy: Hint for how to order the results.
+    filter: Filtering results. See https://google.aip.dev/160.
+    orderBy: Hint for how to order the results. See
+      https://google.aip.dev/132#ordering. Currently, only ordering by name
+      and create_time are supported.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
     parent: Required. Parent value for ListWorkloadRegistrationsRequest.
+      Format: `projects/{project ID or number}/locations/{location}`
   """
 
   filter = _messages.StringField(1)
@@ -856,38 +786,6 @@ class WorkloadcertificateProjectsLocationsWorkloadRegistrationsListRequest(_mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class WorkloadcertificateProjectsLocationsWorkloadRegistrationsPatchRequest(_messages.Message):
-  r"""A WorkloadcertificateProjectsLocationsWorkloadRegistrationsPatchRequest
-  object.
-
-  Fields:
-    name: name of resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the WorkloadRegistration resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-    workloadRegistration: A WorkloadRegistration resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  updateMask = _messages.StringField(3)
-  workloadRegistration = _messages.MessageField('WorkloadRegistration', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

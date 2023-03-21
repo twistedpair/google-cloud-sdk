@@ -842,6 +842,11 @@ class GcsApi(cloud_api.CloudApi):
 
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsGetRequest)
+    global_params = None
+    if fields_scope == cloud_api.FieldsScope.SHORT:
+      global_params = self.messages.StandardQueryParameters(
+          fields='bucket,name,size,generation'
+      )
 
     decryption_key = getattr(
         getattr(request_config, 'resource_args', None), 'decryption_key', None)
@@ -851,7 +856,10 @@ class GcsApi(cloud_api.CloudApi):
               bucket=bucket_name,
               object=object_name,
               generation=generation,
-              projection=projection))
+              projection=projection,
+          ),
+          global_params=global_params,
+      )
     return gcs_metadata_util.get_object_resource_from_metadata(object_metadata)
 
   def list_objects(self,

@@ -171,7 +171,7 @@ def _GetOperationMetadata(messages, operation):
 
 def _GetStageHeader(name_enum):
   """Converts NameValueValuesEnum into the header to use in progress stages."""
-  return '[{}]'.format(str(name_enum).replace('_', ' ').title())
+  return '[{}]'.format(six.text_type(name_enum).replace('_', ' ').title())
 
 
 def _GetOperation(client, request):
@@ -194,10 +194,13 @@ def _GetOperationAndStages(client, request, messages):
   stages = []
   if operation.metadata:
     operation_metadata = _GetOperationMetadata(messages, operation)
-    stages = [
-        progress_tracker.Stage(_GetStageHeader(stage.name), key=str(stage.name))
-        for stage in operation_metadata.stages
-    ]
+
+    for stage in operation_metadata.stages:
+      stages.append(
+          progress_tracker.Stage(
+              _GetStageHeader(stage.name), key=six.text_type(stage.name)
+          )
+      )
 
   return operation, stages
 

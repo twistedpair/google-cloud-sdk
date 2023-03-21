@@ -1095,7 +1095,9 @@ class NetworkPeering(_messages.Message):
       names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
-    peerMtu: A integer attribute.
+    peerMtu: Optional. Maximum transmission unit (MTU) in bytes. The default
+      value is `1500`. If a value of `0` is provided for this field, VMware
+      Engine uses the default value instead.
     peerNetwork: Required. The relative resource name of the network to peer
       with a standard VMware Engine network. The provided network can be a
       consumer VPC network or another standard VMware Engine network. If the

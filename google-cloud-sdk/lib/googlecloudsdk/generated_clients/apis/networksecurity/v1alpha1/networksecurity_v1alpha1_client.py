@@ -551,7 +551,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsOperationsListRequest) input message
@@ -1992,7 +1992,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         method_id='networksecurity.projects.locations.gatewaySecurityPolicies.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['force'],
+        query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsGatewaySecurityPoliciesDeleteRequest',
@@ -2173,7 +2173,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (NetworksecurityProjectsLocationsOperationsListRequest) input message

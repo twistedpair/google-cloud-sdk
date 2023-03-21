@@ -360,6 +360,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Move(self, request, global_params=None):
+      r"""Moves the specified address resource.
+
+      Args:
+        request: (ComputeAddressesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.addresses.move',
+        ordered_params=['project', 'region', 'address'],
+        path_params=['address', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/addresses/{address}/move',
+        request_field='regionAddressesMoveRequest',
+        request_type_name='ComputeAddressesMoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetLabels(self, request, global_params=None):
       r"""Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
 
@@ -3109,6 +3135,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeGlobalAddressesListRequest',
         response_type_name='AddressList',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves the specified address resource from one project to another project.
+
+      Args:
+        request: (ComputeGlobalAddressesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.globalAddresses.move',
+        ordered_params=['project', 'address'],
+        path_params=['address', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/addresses/{address}/move',
+        request_field='globalAddressesMoveRequest',
+        request_type_name='ComputeGlobalAddressesMoveRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

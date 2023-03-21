@@ -191,6 +191,7 @@ _POSTGRESQL_UPDATE_SOURCE_CONFIG_HELP_TEXT = """\
           }
         ]
       },
+      "replicationSlot": "SAMPLE_REPLICATION_SLOT",
       "publication": "SAMPLE_PUBLICATION"
     }
   ```

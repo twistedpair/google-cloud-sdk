@@ -168,6 +168,16 @@ def AddMultiWriterFlag(parser):
       """)
 
 
+def AddEnableConfidentialComputeFlag(parser):
+  return parser.add_argument(
+      '--enable-confidential-compute',
+      action='store_true',
+      help="""
+      Create the disk in confidential compute mode, CMEK layer is required and only applicable to HyperDisk series.
+      """,
+  )
+
+
 def AddStopGroupAsyncReplicationArgs(parser):
   """Adds stop group async replication specific arguments to parser."""
   parser.add_argument(

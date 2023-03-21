@@ -29,7 +29,6 @@ class Bgp(_messages.Message):
 
 class BgpPeer(_messages.Message):
   r"""BGPPeer defines the peer side layer-3 information for building the BGP
-
   session.
 
   Fields:
@@ -237,7 +236,6 @@ class EdgenetworkProjectsLocationsZonesInitializeRequest(_messages.Message):
 
 class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsCreateRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesInterconnectAttachmentsCreateRequest
-
   object.
 
   Fields:
@@ -268,7 +266,6 @@ class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsCreateRequest(_mes
 
 class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsDeleteRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesInterconnectAttachmentsDeleteRequest
-
   object.
 
   Fields:
@@ -783,6 +780,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class InitializeZoneRequest(_messages.Message):
   r"""Message for initializing a specified zone"""
 
@@ -971,7 +969,6 @@ class InterconnectDiagnostics(_messages.Message):
 
 class Interface(_messages.Message):
   r"""Router Interface defines the GDCE zone side layer-3 information for
-
   building the BGP session.
 
   Fields:

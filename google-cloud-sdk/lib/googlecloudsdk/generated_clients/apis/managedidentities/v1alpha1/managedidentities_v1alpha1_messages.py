@@ -430,6 +430,8 @@ class DomainJoinMachineRequest(_messages.Message):
   method
 
   Fields:
+    force: Optional. force if True, forces domain join even if the computer
+      account already exists.
     ouName: Optional. OU name where the VM needs to be domain joined
     vmIdToken: Required. Full instance id token of compute engine VM to verify
       instance identity. More about this:
@@ -437,8 +439,9 @@ class DomainJoinMachineRequest(_messages.Message):
       identity#request_signature
   """
 
-  ouName = _messages.StringField(1)
-  vmIdToken = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  ouName = _messages.StringField(2)
+  vmIdToken = _messages.StringField(3)
 
 
 class DomainJoinMachineResponse(_messages.Message):

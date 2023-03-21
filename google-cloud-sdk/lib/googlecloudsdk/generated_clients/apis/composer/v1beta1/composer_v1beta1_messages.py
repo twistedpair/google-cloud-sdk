@@ -495,6 +495,26 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DagProcessorResource(_messages.Message):
+  r"""Configuration for resources used by Airflow DAG processors.
+
+  Fields:
+    count: Optional. The number of DAG processors. If not provided or set to
+      0, a single DAG processor instance will be created.
+    cpu: Optional. CPU request and limit for a single Airflow DAG processor
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow DAG
+      processor replica.
+    storageGb: Optional. Storage (GB) request and limit for a single Airflow
+      DAG processor replica.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
 class DataRetentionConfig(_messages.Message):
   r"""The configuration setting for Airflow database data retention mechanism.
 
@@ -594,6 +614,17 @@ class Date(_messages.Message):
   day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DnsZone(_messages.Message):
+  r"""Information about DNS zone for DNS peering.
+
+  Fields:
+    dnsZone: Optional. DNS Zone resource name in format
+      projects/{project}/managedZone/{managedZone}.
+  """
+
+  dnsZone = _messages.StringField(1)
 
 
 class Empty(_messages.Message):
@@ -1123,10 +1154,32 @@ class NodeConfig(_messages.Message):
   the Apache Airflow software.
 
   Fields:
+    composerInternalIpv4CidrBlock: Optional. The IP range in CIDR notation to
+      use internally by Cloud Composer. IP addresses are not reserved - and
+      the same range can be used by multiple Cloud Composer environments. In
+      case of overlap, IPs from this range will not be accessible in the
+      user's VPC network. Cannot be updated. If not specified, the default
+      value of '100.64.128.0/20' is used. This field is supported for Cloud
+      Composer environments in versions composer-2.5.*-airflow-*.*.*.
+    composerNetworkAttachment: Optional. Network Attachment that Cloud
+      Composer environment is connected to, which provides connectivity with a
+      user's VPC network. Takes precedence over network and subnetwork
+      settings. If not provided, but network and subnetwork are defined during
+      environment, it will be provisioned. If not provided and network and
+      subnetwork are also empty, then connectivity to user's VPC network is
+      disabled. Network attachment must be provided in format projects/{projec
+      t}/regions/{region}/networkAttachments/{networkAttachment}. This field
+      is supported for Cloud Composer environments in versions
+      composer-2.5.*-airflow-*.*.*.
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
       is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
+    dnsPeeringZones: Optional. The list of DNS Zones that are peered to the
+      Cloud Composer environment, enabling requests to endpoints using custom
+      domains. Can only be used if customer network connectivity is enabled.
+      This field is supported for Cloud Composer environments in versions
+      composer-2.5.*-airflow-*.*.*.
     enableIpMasqAgent: Optional. Deploys 'ip-masq-agent' daemon set in the GKE
       cluster and defines nonMasqueradeCIDRs equals to pod IP range so IP
       masquerading is used for all destination addresses, except between pods
@@ -1206,17 +1259,20 @@ class NodeConfig(_messages.Message):
       [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Cannot be updated.
   """
 
-  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  enableIpMasqAgent = _messages.BooleanField(2)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 3)
-  location = _messages.StringField(4)
-  machineType = _messages.StringField(5)
-  maxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  network = _messages.StringField(7)
-  oauthScopes = _messages.StringField(8, repeated=True)
-  serviceAccount = _messages.StringField(9)
-  subnetwork = _messages.StringField(10)
-  tags = _messages.StringField(11, repeated=True)
+  composerInternalIpv4CidrBlock = _messages.StringField(1)
+  composerNetworkAttachment = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  dnsPeeringZones = _messages.MessageField('DnsZone', 4, repeated=True)
+  enableIpMasqAgent = _messages.BooleanField(5)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 6)
+  location = _messages.StringField(7)
+  machineType = _messages.StringField(8)
+  maxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  network = _messages.StringField(10)
+  oauthScopes = _messages.StringField(11, repeated=True)
+  serviceAccount = _messages.StringField(12)
+  subnetwork = _messages.StringField(13)
+  tags = _messages.StringField(14, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -1677,6 +1733,9 @@ class SoftwareConfig(_messages.Message):
     schedulerCount: Optional. The number of schedulers for Airflow. This field
       is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-2.*.*.
+    supportWebServerPlugins: Optional. Whether or not the web server uses
+      custom plugins. This field is supported for Cloud Composer environments
+      in versions composer-2.5.*-airflow-2.*.*.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1787,6 +1846,7 @@ class SoftwareConfig(_messages.Message):
   pypiPackages = _messages.MessageField('PypiPackagesValue', 5)
   pythonVersion = _messages.StringField(6)
   schedulerCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  supportWebServerPlugins = _messages.BooleanField(8)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2025,16 +2085,20 @@ class WorkloadsConfig(_messages.Message):
   versions composer-2.*.*-airflow-*.*.* and newer.
 
   Fields:
+    dagProcessor: Optional. Resources used by Airflow DAG processors. This
+      field is supported for Cloud Composer environments in versions
+      composer-2.5.*-airflow-*.*.*.
     scheduler: Optional. Resources used by Airflow schedulers.
     triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.
     worker: Optional. Resources used by Airflow workers.
   """
 
-  scheduler = _messages.MessageField('SchedulerResource', 1)
-  triggerer = _messages.MessageField('TriggererResource', 2)
-  webServer = _messages.MessageField('WebServerResource', 3)
-  worker = _messages.MessageField('WorkerResource', 4)
+  dagProcessor = _messages.MessageField('DagProcessorResource', 1)
+  scheduler = _messages.MessageField('SchedulerResource', 2)
+  triggerer = _messages.MessageField('TriggererResource', 3)
+  webServer = _messages.MessageField('WebServerResource', 4)
+  worker = _messages.MessageField('WorkerResource', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

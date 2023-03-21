@@ -2062,9 +2062,9 @@ class GoogleCloudDocumentaiV1DocumentProvenance(_messages.Message):
       ADD: Add an element.
       REMOVE: Remove an element identified by `parent`.
       UPDATE: Updates any fields within the given provenance scope of the
-        message. It 'overwrites' the fields rather than replacing them. This
-        is especially relevant when we just want to update a field value of an
-        entity without also affecting all the child properties.
+        message. It overwrites the fields rather than replacing them. Use this
+        when you want to update a field value of an entity without also
+        updating all the child properties.
       REPLACE: Currently unused. Replace an element identified by `parent`.
       EVAL_REQUESTED: Deprecated. Request human review for the element
         identified by `parent`.
@@ -2980,6 +2980,7 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
       CREATING: The processor version is being created.
       DELETING: The processor version is being deleted.
       FAILED: The processor version failed and is in an indeterminate state.
+      IMPORTING: The processor version is being imported.
     """
     STATE_UNSPECIFIED = 0
     DEPLOYED = 1
@@ -2989,6 +2990,7 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
     CREATING = 5
     DELETING = 6
     FAILED = 7
+    IMPORTING = 8
 
   createTime = _messages.StringField(1)
   deprecationInfo = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersionDeprecationInfo', 2)
@@ -3911,9 +3913,9 @@ class GoogleCloudDocumentaiV1beta1DocumentProvenance(_messages.Message):
       ADD: Add an element.
       REMOVE: Remove an element identified by `parent`.
       UPDATE: Updates any fields within the given provenance scope of the
-        message. It 'overwrites' the fields rather than replacing them. This
-        is especially relevant when we just want to update a field value of an
-        entity without also affecting all the child properties.
+        message. It overwrites the fields rather than replacing them. Use this
+        when you want to update a field value of an entity without also
+        updating all the child properties.
       REPLACE: Currently unused. Replace an element identified by `parent`.
       EVAL_REQUESTED: Deprecated. Request human review for the element
         identified by `parent`.
@@ -4934,9 +4936,9 @@ class GoogleCloudDocumentaiV1beta2DocumentProvenance(_messages.Message):
       ADD: Add an element.
       REMOVE: Remove an element identified by `parent`.
       UPDATE: Updates any fields within the given provenance scope of the
-        message. It 'overwrites' the fields rather than replacing them. This
-        is especially relevant when we just want to update a field value of an
-        entity without also affecting all the child properties.
+        message. It overwrites the fields rather than replacing them. Use this
+        when you want to update a field value of an entity without also
+        updating all the child properties.
       REPLACE: Currently unused. Replace an element identified by `parent`.
       EVAL_REQUESTED: Deprecated. Request human review for the element
         identified by `parent`.
@@ -5512,6 +5514,27 @@ class GoogleCloudDocumentaiV1beta3HumanReviewStatus(_messages.Message):
   humanReviewOperation = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateMessage = _messages.StringField(3)
+
+
+class GoogleCloudDocumentaiV1beta3ImportProcessorVersionMetadata(_messages.Message):
+  r"""The long running operation metadata for the ImportProcessorVersion
+  method.
+
+  Fields:
+    commonMetadata: The basic metadata for the long running operation.
+  """
+
+  commonMetadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3CommonOperationMetadata', 1)
+
+
+class GoogleCloudDocumentaiV1beta3ImportProcessorVersionResponse(_messages.Message):
+  r"""The response message for the ImportProcessorVersion method.
+
+  Fields:
+    processorVersion: The destination processor version name.
+  """
+
+  processorVersion = _messages.StringField(1)
 
 
 class GoogleCloudDocumentaiV1beta3ReviewDocumentOperationMetadata(_messages.Message):

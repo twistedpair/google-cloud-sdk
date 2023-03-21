@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'recaptchaenterprise'
@@ -273,6 +274,9 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
       verification. The assessment event must include a token and site key to
       use this feature.
     event: The event being assessed.
+    firewallPolicyAssessment: Assessment returned when firewall policies
+      belonging to the project are evaluated using the field
+      firewall_policy_evaluation.
     fraudPreventionAssessment: Assessment returned by Fraud Prevention when
       TransactionData is provided.
     name: Output only. The resource name for the Assessment in the format
@@ -288,11 +292,12 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   accountDefenderAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment', 1)
   accountVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo', 2)
   event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 3)
-  fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 4)
-  name = _messages.StringField(5)
-  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 6)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 7)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 8)
+  firewallPolicyAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicyAssessment', 4)
+  fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 5)
+  name = _messages.StringField(6)
+  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 7)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 8)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 9)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
@@ -338,15 +343,26 @@ class GoogleCloudRecaptchaenterpriseV1EndpointVerificationInfo(_messages.Message
 
 
 class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
-  r"""A GoogleCloudRecaptchaenterpriseV1Event object.
+  r"""The event being assessed.
 
   Fields:
     expectedAction: Optional. The expected action for this type of event. This
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
+    express: Optional. Flag for a reCAPTCHA express request for an assessment
+      without a token. If enabled, `site_key` must reference a SCORE key with
+      WAF feature set to EXPRESS.
+    firewallPolicyEvaluation: Optional. Flag for enabling firewall policy
+      config assessment. If this flag is enabled, the firewall policy will be
+      evaluated and a suggested firewall action will be returned in the
+      response.
     hashedAccountId: Optional. Unique stable hashed user identifier for the
       request. The identifier must be hashed using hmac-sha256 with stable
       secret.
+    headers: Optional. HTTP header information about the request.
+    ja3: Optional. Optional JA3 fingerprint for SSL clients.
+    requestedUri: Optional. The URI resource the user requested that triggered
+      an assessment.
     siteKey: Optional. The site key that was used to invoke reCAPTCHA
       Enterprise on your site and generate the token.
     token: Optional. The user response token provided by the reCAPTCHA
@@ -358,15 +374,24 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       device related to this event.
     userIpAddress: Optional. The IP address in the request from the user's
       device related to this event.
+    wafTokenAssessment: Optional. Flag for running WAF token assessment. If
+      enabled, the token must be specified, and have been created by a WAF-
+      enabled key.
   """
 
   expectedAction = _messages.StringField(1)
-  hashedAccountId = _messages.BytesField(2)
-  siteKey = _messages.StringField(3)
-  token = _messages.StringField(4)
-  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 5)
-  userAgent = _messages.StringField(6)
-  userIpAddress = _messages.StringField(7)
+  express = _messages.BooleanField(2)
+  firewallPolicyEvaluation = _messages.BooleanField(3)
+  hashedAccountId = _messages.BytesField(4)
+  headers = _messages.StringField(5, repeated=True)
+  ja3 = _messages.StringField(6)
+  requestedUri = _messages.StringField(7)
+  siteKey = _messages.StringField(8)
+  token = _messages.StringField(9)
+  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 10)
+  userAgent = _messages.StringField(11)
+  userIpAddress = _messages.StringField(12)
+  wafTokenAssessment = _messages.BooleanField(13)
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
@@ -438,15 +463,15 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionSubstituteAction(_messages.M
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
-  r"""A FirewallPolicy message represents a single matching pattern and
-  resulting actions to take.
+  r"""A FirewallPolicy represents a single matching pattern and resulting
+  actions to take.
 
   Fields:
-    actions: The actions that the caller should take regarding the user. There
-      should be at most 1 terminal action. A terminal action is any action
-      that forces a response, such as Allow, Block or Substitute. If it makes
-      sense for it to happen multiple times, such as SetHeader, the action is
-      non-terminal. A maximum of 16 actions can be in a single policy.
+    actions: The actions that the caller should take regarding user access.
+      There should be at most one terminal action. A terminal action is any
+      action that forces a response, such as AllowAction, BlockAction or
+      SubstituteAction. Zero or more non-terminal actions such as SetHeader
+      might be specified. A single policy can contain up to 16 actions.
     condition: A CEL (Common Expression Language) conditional expression that
       specifies if this policy applies to an incoming user request. If this
       condition evaluates to true and the requested path matched the path
@@ -472,6 +497,21 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
   description = _messages.StringField(3)
   name = _messages.StringField(4)
   path = _messages.StringField(5)
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallPolicyAssessment(_messages.Message):
+  r"""Policy config assessment.
+
+  Fields:
+    error: If the processing of a policy config fails, an error will be
+      populated and the firewall_policy will be left empty.
+    firewallPolicy: Output only. The policy that matched the request. If more
+      than one policy may match, this is the first match. If no policy matches
+      the incoming request, the policy field will be left empty.
+  """
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  firewallPolicy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 2)
 
 
 class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Message):
@@ -543,7 +583,8 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
 
   Fields:
     androidSettings: Settings for keys that can be used by Android apps.
-    createTime: The timestamp corresponding to the creation of this Key.
+    createTime: Output only. The timestamp corresponding to the creation of
+      this key.
     displayName: Human-readable display name of this key. Modifiable by user.
     iosSettings: Settings for keys that can be used by iOS apps.
     labels: See Creating and managing labels.
@@ -953,7 +994,7 @@ class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):
 
 
 class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
-  r"""A GoogleCloudRecaptchaenterpriseV1TokenProperties object.
+  r"""Properties of the provided event token.
 
   Enums:
     InvalidReasonValueValuesEnum: Reason associated with the response when
@@ -1377,6 +1418,57 @@ class GoogleProtobufEmpty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class RecaptchaenterpriseProjectsAssessmentsAnnotateRequest(_messages.Message):

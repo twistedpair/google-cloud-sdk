@@ -1056,6 +1056,52 @@ class InTotoStatement(_messages.Message):
   subject = _messages.MessageField('Subject', 6, repeated=True)
 
 
+class Justification(_messages.Message):
+  r"""Justification provides the justification when the state of the
+  assessment if NOT_AFFECTED.
+
+  Enums:
+    JustificationTypeValueValuesEnum: The justification type for this
+      vulnerability.
+
+  Fields:
+    details: Additional details on why this justification was chosen.
+    justificationType: The justification type for this vulnerability.
+  """
+
+  class JustificationTypeValueValuesEnum(_messages.Enum):
+    r"""The justification type for this vulnerability.
+
+    Values:
+      JUSTIFICATION_TYPE_UNSPECIFIED: JUSTIFICATION_TYPE_UNSPECIFIED.
+      COMPONENT_NOT_PRESENT: The vulnerable component is not present in the
+        product.
+      VULNERABLE_CODE_NOT_PRESENT: The vulnerable code is not present.
+        Typically this case occurs when source code is configured or built in
+        a way that excludes the vulnerable code.
+      VULNERABLE_CODE_NOT_IN_EXECUTE_PATH: The vulnerable code can not be
+        executed. Typically this case occurs when the product includes the
+        vulnerable code but does not call or use the vulnerable code.
+      VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY: The vulnerable code
+        cannot be controlled by an attacker to exploit the vulnerability.
+      INLINE_MITIGATIONS_ALREADY_EXIST: The product includes built-in
+        protections or features that prevent exploitation of the
+        vulnerability. These built-in protections cannot be subverted by the
+        attacker and cannot be configured or disabled by the user. These
+        mitigations completely prevent exploitation based on known attack
+        vectors.
+    """
+    JUSTIFICATION_TYPE_UNSPECIFIED = 0
+    COMPONENT_NOT_PRESENT = 1
+    VULNERABLE_CODE_NOT_PRESENT = 2
+    VULNERABLE_CODE_NOT_IN_EXECUTE_PATH = 3
+    VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY = 4
+    INLINE_MITIGATIONS_ALREADY_EXIST = 5
+
+  details = _messages.StringField(1)
+  justificationType = _messages.EnumField('JustificationTypeValueValuesEnum', 2)
+
+
 class Jwt(_messages.Message):
   r"""A Jwt object.
 
@@ -1301,6 +1347,7 @@ class Occurrence(_messages.Message):
       UPGRADE: This represents an available package upgrade.
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
+      VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1313,6 +1360,7 @@ class Occurrence(_messages.Message):
     UPGRADE = 8
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
+    VULNERABILITY_ASSESSMENT = 11
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)
@@ -1831,6 +1879,44 @@ class RelatedUrl(_messages.Message):
 
   label = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class Remediation(_messages.Message):
+  r"""Specifies details on how to handle (and presumably, fix) a
+  vulnerability.
+
+  Enums:
+    RemediationTypeValueValuesEnum: The type of remediation that can be
+      applied.
+
+  Fields:
+    details: Contains a comprehensive human-readable discussion of the
+      remediation.
+    remediationType: The type of remediation that can be applied.
+    remediationUri: Contains the URL where to obtain the remediation.
+  """
+
+  class RemediationTypeValueValuesEnum(_messages.Enum):
+    r"""The type of remediation that can be applied.
+
+    Values:
+      REMEDIATION_TYPE_UNSPECIFIED: No remediation type specified.
+      MITIGATION: A MITIGATION is available.
+      NO_FIX_PLANNED: No fix is planned.
+      NONE_AVAILABLE: Not available.
+      VENDOR_FIX: A vendor fix is available.
+      WORKAROUND: A workaround is available.
+    """
+    REMEDIATION_TYPE_UNSPECIFIED = 0
+    MITIGATION = 1
+    NO_FIX_PLANNED = 2
+    NONE_AVAILABLE = 3
+    VENDOR_FIX = 4
+    WORKAROUND = 5
+
+  details = _messages.StringField(1)
+  remediationType = _messages.EnumField('RemediationTypeValueValuesEnum', 2)
+  remediationUri = _messages.MessageField('RelatedUrl', 3)
 
 
 class RepoId(_messages.Message):
@@ -2479,6 +2565,58 @@ class Version(_messages.Message):
   revision = _messages.StringField(6)
 
 
+class VexAssessment(_messages.Message):
+  r"""VexAssessment provides all publisher provided Vex information that is
+  related to this vulnerability.
+
+  Enums:
+    StateValueValuesEnum: Provides the state of this Vulnerability assessment.
+
+  Fields:
+    cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
+      tracking number for the vulnerability.
+    impacts: Contains information about the impact of this vulnerability, this
+      will change with time.
+    justification: Justification provides the justification when the state of
+      the assessment if NOT_AFFECTED.
+    noteName: The VulnerabilityAssessment note from which this VexAssessment
+      was generated. This will be of the form:
+      `projects/[PROJECT_ID]/notes/[NOTE_ID]`.
+    relatedUris: Holds a list of references associated with this vulnerability
+      item and assessment.
+    remediations: Specifies details on how to handle (and presumably, fix) a
+      vulnerability.
+    state: Provides the state of this Vulnerability assessment.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Provides the state of this Vulnerability assessment.
+
+    Values:
+      STATE_UNSPECIFIED: No state is specified.
+      AFFECTED: This product is known to be affected by this vulnerability.
+      NOT_AFFECTED: This product is known to be not affected by this
+        vulnerability.
+      FIXED: This product contains a fix for this vulnerability.
+      UNDER_INVESTIGATION: It is not known yet whether these versions are or
+        are not affected by the vulnerability. However, it is still under
+        investigation.
+    """
+    STATE_UNSPECIFIED = 0
+    AFFECTED = 1
+    NOT_AFFECTED = 2
+    FIXED = 3
+    UNDER_INVESTIGATION = 4
+
+  cve = _messages.StringField(1)
+  impacts = _messages.StringField(2, repeated=True)
+  justification = _messages.MessageField('Justification', 3)
+  noteName = _messages.StringField(4)
+  relatedUris = _messages.MessageField('RelatedUrl', 5, repeated=True)
+  remediations = _messages.MessageField('Remediation', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
 class VulnerabilityOccurrence(_messages.Message):
   r"""An occurrence of a severity vulnerability on a resource.
 
@@ -2527,6 +2665,7 @@ class VulnerabilityOccurrence(_messages.Message):
       vulnerability.
     type: The type of package; whether native or non native (e.g., ruby gems,
       node.js packages, etc.).
+    vexAssessment: A VexAssessment attribute.
   """
 
   class CvssVersionValueValuesEnum(_messages.Enum):
@@ -2598,6 +2737,7 @@ class VulnerabilityOccurrence(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 10)
   shortDescription = _messages.StringField(11)
   type = _messages.StringField(12)
+  vexAssessment = _messages.MessageField('VexAssessment', 13)
 
 
 class WindowsUpdate(_messages.Message):

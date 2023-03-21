@@ -603,27 +603,31 @@ class AccessConfig(_messages.Message):
       networkTier. If an AccessConfig with a valid external IP address is
       specified, it must match that of the networkTier associated with the
       Address resource owning that IP.
-    TypeValueValuesEnum: The type of configuration. The default and only
-      option is ONE_TO_ONE_NAT.
+    TypeValueValuesEnum: The type of configuration. In accessConfigs (IPv4),
+      the default and only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the
+      default and only option is DIRECT_IPV6.
 
   Fields:
-    externalIpv6: The first IPv6 address of the external IPv6 range associated
-      with this instance, prefix length is stored in externalIpv6PrefixLength
-      in ipv6AccessConfig. To use a static external IP address, it must be
-      unused and in the same region as the instance's zone. If not specified,
-      Google Cloud will automatically assign an external IPv6 address from the
-      instance's subnetwork.
-    externalIpv6PrefixLength: The prefix length of the external IPv6 range.
+    externalIpv6: Applies to ipv6AccessConfigs only. The first IPv6 address of
+      the external IPv6 range associated with this instance, prefix length is
+      stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static
+      external IP address, it must be unused and in the same region as the
+      instance's zone. If not specified, Google Cloud will automatically
+      assign an external IPv6 address from the instance's subnetwork.
+    externalIpv6PrefixLength: Applies to ipv6AccessConfigs only. The prefix
+      length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
-    name: The name of this access configuration. The default and recommended
-      name is External NAT, but you can use any arbitrary string, such as My
-      external IP or Network Access.
-    natIP: An external IP address associated with this instance. Specify an
-      unused static external IP address available to the project or leave this
-      field undefined to use an IP from a shared ephemeral IP address pool. If
-      you specify a static external IP address, it must live in the same
-      region as the zone of the instance.
+    name: The name of this access configuration. In accessConfigs (IPv4), the
+      default and recommended name is External NAT, but you can use any
+      arbitrary string, such as My external IP or Network Access. In
+      ipv6AccessConfigs, the recommend name is External IPv6.
+    natIP: Applies to accessConfigs (IPv4) only. An external IP address
+      associated with this instance. Specify an unused static external IP
+      address available to the project or leave this field undefined to use an
+      IP from a shared ephemeral IP address pool. If you specify a static
+      external IP address, it must live in the same region as the zone of the
+      instance.
     networkTier: This signifies the networking tier used for configuring this
       access configuration and can only take the following values: PREMIUM,
       STANDARD. If an AccessConfig is specified without a valid external IP
@@ -640,8 +644,9 @@ class AccessConfig(_messages.Message):
       created to map the external IP address of the instance to a DNS domain
       name. This field is not used in ipv6AccessConfig. A default PTR record
       will be created if the VM has external IPv6 range associated.
-    type: The type of configuration. The default and only option is
-      ONE_TO_ONE_NAT.
+    type: The type of configuration. In accessConfigs (IPv4), the default and
+      only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and
+      only option is DIRECT_IPV6.
   """
 
   class NetworkTierValueValuesEnum(_messages.Enum):
@@ -667,8 +672,9 @@ class AccessConfig(_messages.Message):
     STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of configuration. The default and only option is
-    ONE_TO_ONE_NAT.
+    r"""The type of configuration. In accessConfigs (IPv4), the default and
+    only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and only
+    option is DIRECT_IPV6.
 
     Values:
       DIRECT_IPV6: <no description>
@@ -685,7 +691,7 @@ class AccessConfig(_messages.Message):
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 6)
   publicPtrDomainName = _messages.StringField(7)
   setPublicPtr = _messages.BooleanField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9, default='ONE_TO_ONE_NAT')
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class Address(_messages.Message):
@@ -6945,6 +6951,34 @@ class ComputeAddressesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeAddressesMoveRequest(_messages.Message):
+  r"""A ComputeAddressesMoveRequest object.
+
+  Fields:
+    address: Name of the address resource to move.
+    project: Source project ID which the Address is moved from.
+    region: Name of the region for this request.
+    regionAddressesMoveRequest: A RegionAddressesMoveRequest resource to be
+      passed as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  address = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionAddressesMoveRequest = _messages.MessageField('RegionAddressesMoveRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeAddressesSetLabelsRequest(_messages.Message):
   r"""A ComputeAddressesSetLabelsRequest object.
 
@@ -9852,6 +9886,32 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeGlobalAddressesMoveRequest(_messages.Message):
+  r"""A ComputeGlobalAddressesMoveRequest object.
+
+  Fields:
+    address: Name of the address resource to move.
+    globalAddressesMoveRequest: A GlobalAddressesMoveRequest resource to be
+      passed as the request body.
+    project: Source project ID which the Address is moved from.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  address = _messages.StringField(1, required=True)
+  globalAddressesMoveRequest = _messages.MessageField('GlobalAddressesMoveRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeGlobalAddressesSetLabelsRequest(_messages.Message):
@@ -31124,12 +31184,17 @@ class Disk(_messages.Message):
       disk.
 
   Messages:
+    AsyncSecondaryDisksValue: [Output Only] A list of disks this disk is
+      asynchronously replicated to.
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the setLabels method.
 
   Fields:
     architecture: The architecture of the disk. Valid values are ARM64 or
       X86_64.
+    asyncPrimaryDisk: Disk asynchronously replicated into this disk.
+    asyncSecondaryDisks: [Output Only] A list of disks this disk is
+      asynchronously replicated to.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -31223,6 +31288,7 @@ class Disk(_messages.Message):
       Only applicable for regional resources.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations.
+    resourceStatus: [Output Only] Status information for the disk resource.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -31232,6 +31298,12 @@ class Disk(_messages.Message):
       persistent disk. If you specify this field along with a source, the
       value of sizeGb must not be less than the size of the source. Acceptable
       values are 1 to 65536, inclusive.
+    sourceConsistencyGroupPolicy: [Output Only] URL of the
+      DiskConsistencyGroupPolicy for a secondary disk that was created using a
+      consistency group.
+    sourceConsistencyGroupPolicyId: [Output Only] ID of the
+      DiskConsistencyGroupPolicy for a secondary disk that was created using a
+      consistency group.
     sourceDisk: The source disk used to create this disk. You can provide this
       as a partial or full URL to the resource. For example, the following are
       valid values: -
@@ -31368,6 +31440,33 @@ class Disk(_messages.Message):
     SSD = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AsyncSecondaryDisksValue(_messages.Message):
+    r"""[Output Only] A list of disks this disk is asynchronously replicated
+    to.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AsyncSecondaryDisksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AsyncSecondaryDisksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AsyncSecondaryDisksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DiskAsyncReplicationList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DiskAsyncReplicationList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels to apply to this disk. These can be later modified by the
     setLabels method.
@@ -31393,50 +31492,55 @@ class Disk(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  eraseWindowsVssSignature = _messages.BooleanField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
-  kind = _messages.StringField(9, default='compute#disk')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  lastAttachTimestamp = _messages.StringField(12)
-  lastDetachTimestamp = _messages.StringField(13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  locationHint = _messages.StringField(16)
-  locked = _messages.BooleanField(17)
-  multiWriter = _messages.BooleanField(18)
-  name = _messages.StringField(19)
-  options = _messages.StringField(20)
-  params = _messages.MessageField('DiskParams', 21)
-  physicalBlockSizeBytes = _messages.IntegerField(22)
-  provisionedIops = _messages.IntegerField(23)
-  provisionedThroughput = _messages.IntegerField(24)
-  region = _messages.StringField(25)
-  replicaZones = _messages.StringField(26, repeated=True)
-  resourcePolicies = _messages.StringField(27, repeated=True)
-  satisfiesPzs = _messages.BooleanField(28)
-  selfLink = _messages.StringField(29)
-  sizeGb = _messages.IntegerField(30)
-  sourceDisk = _messages.StringField(31)
-  sourceDiskId = _messages.StringField(32)
-  sourceImage = _messages.StringField(33)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 34)
-  sourceImageId = _messages.StringField(35)
-  sourceSnapshot = _messages.StringField(36)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
-  sourceSnapshotId = _messages.StringField(38)
-  sourceStorageObject = _messages.StringField(39)
-  status = _messages.EnumField('StatusValueValuesEnum', 40)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
-  type = _messages.StringField(42)
-  userLicenses = _messages.StringField(43, repeated=True)
-  users = _messages.StringField(44, repeated=True)
-  zone = _messages.StringField(45)
+  asyncPrimaryDisk = _messages.MessageField('DiskAsyncReplication', 2)
+  asyncSecondaryDisks = _messages.MessageField('AsyncSecondaryDisksValue', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
+  eraseWindowsVssSignature = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
+  kind = _messages.StringField(11, default='compute#disk')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastAttachTimestamp = _messages.StringField(14)
+  lastDetachTimestamp = _messages.StringField(15)
+  licenseCodes = _messages.IntegerField(16, repeated=True)
+  licenses = _messages.StringField(17, repeated=True)
+  locationHint = _messages.StringField(18)
+  locked = _messages.BooleanField(19)
+  multiWriter = _messages.BooleanField(20)
+  name = _messages.StringField(21)
+  options = _messages.StringField(22)
+  params = _messages.MessageField('DiskParams', 23)
+  physicalBlockSizeBytes = _messages.IntegerField(24)
+  provisionedIops = _messages.IntegerField(25)
+  provisionedThroughput = _messages.IntegerField(26)
+  region = _messages.StringField(27)
+  replicaZones = _messages.StringField(28, repeated=True)
+  resourcePolicies = _messages.StringField(29, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 30)
+  satisfiesPzs = _messages.BooleanField(31)
+  selfLink = _messages.StringField(32)
+  sizeGb = _messages.IntegerField(33)
+  sourceConsistencyGroupPolicy = _messages.StringField(34)
+  sourceConsistencyGroupPolicyId = _messages.StringField(35)
+  sourceDisk = _messages.StringField(36)
+  sourceDiskId = _messages.StringField(37)
+  sourceImage = _messages.StringField(38)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
+  sourceImageId = _messages.StringField(40)
+  sourceSnapshot = _messages.StringField(41)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 42)
+  sourceSnapshotId = _messages.StringField(43)
+  sourceStorageObject = _messages.StringField(44)
+  status = _messages.EnumField('StatusValueValuesEnum', 45)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 46)
+  type = _messages.StringField(47)
+  userLicenses = _messages.StringField(48, repeated=True)
+  users = _messages.StringField(49, repeated=True)
+  zone = _messages.StringField(50)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -31624,6 +31728,38 @@ class DiskAggregatedList(_messages.Message):
   selfLink = _messages.StringField(5)
   unreachables = _messages.StringField(6, repeated=True)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class DiskAsyncReplication(_messages.Message):
+  r"""A DiskAsyncReplication object.
+
+  Fields:
+    disk: The other disk asynchronously replicated to or from the current
+      disk. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      zones/zone/disks/disk
+    diskId: [Output Only] The unique ID of the other disk asynchronously
+      replicated to or from the current disk. This value identifies the exact
+      disk that was used to create this replication. For example, if you
+      started replicating the persistent disk from a disk that was later
+      deleted and recreated under the same name, the disk ID would identify
+      the exact version of the disk that was used.
+  """
+
+  disk = _messages.StringField(1)
+  diskId = _messages.StringField(2)
+
+
+class DiskAsyncReplicationList(_messages.Message):
+  r"""A DiskAsyncReplicationList object.
+
+  Fields:
+    asyncReplicationDisk: A DiskAsyncReplication attribute.
+  """
+
+  asyncReplicationDisk = _messages.MessageField('DiskAsyncReplication', 1)
 
 
 class DiskInstantiationConfig(_messages.Message):
@@ -31943,6 +32079,79 @@ class DiskParams(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
+
+
+class DiskResourceStatus(_messages.Message):
+  r"""A DiskResourceStatus object.
+
+  Messages:
+    AsyncSecondaryDisksValue: Key: disk, value: AsyncReplicationStatus message
+
+  Fields:
+    asyncPrimaryDisk: A DiskResourceStatusAsyncReplicationStatus attribute.
+    asyncSecondaryDisks: Key: disk, value: AsyncReplicationStatus message
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AsyncSecondaryDisksValue(_messages.Message):
+    r"""Key: disk, value: AsyncReplicationStatus message
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AsyncSecondaryDisksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AsyncSecondaryDisksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AsyncSecondaryDisksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DiskResourceStatusAsyncReplicationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DiskResourceStatusAsyncReplicationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  asyncPrimaryDisk = _messages.MessageField('DiskResourceStatusAsyncReplicationStatus', 1)
+  asyncSecondaryDisks = _messages.MessageField('AsyncSecondaryDisksValue', 2)
+
+
+class DiskResourceStatusAsyncReplicationStatus(_messages.Message):
+  r"""A DiskResourceStatusAsyncReplicationStatus object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      ACTIVE: Replication is active.
+      CREATED: Secondary disk is created and is waiting for replication to
+        start.
+      STARTING: Replication is starting.
+      STATE_UNSPECIFIED: <no description>
+      STOPPED: Replication is stopped.
+      STOPPING: Replication is stopping.
+    """
+    ACTIVE = 0
+    CREATED = 1
+    STARTING = 2
+    STATE_UNSPECIFIED = 3
+    STOPPED = 4
+    STOPPING = 5
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
 
 
 class DiskType(_messages.Message):
@@ -35300,6 +35509,25 @@ class GRPCHealthCheck(_messages.Message):
   portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 4)
 
 
+class GlobalAddressesMoveRequest(_messages.Message):
+  r"""A GlobalAddressesMoveRequest object.
+
+  Fields:
+    description: An optional destination address description if intended to be
+      different from the source.
+    destinationAddress: The URL of the destination address to move to. This
+      can be a full or partial URL. For example, the following are all valid
+      URLs to a address: -
+      https://www.googleapis.com/compute/v1/projects/project
+      /global/addresses/address - projects/project/global/addresses/address
+      Note that destination project must be different from the source project.
+      So /global/addresses/address is not valid partial url.
+  """
+
+  description = _messages.StringField(1)
+  destinationAddress = _messages.StringField(2)
+
+
 class GlobalNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
   r"""A GlobalNetworkEndpointGroupsAttachEndpointsRequest object.
 
@@ -35491,6 +35719,7 @@ class GuestOsFeature(_messages.Message):
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
+      SEV_LIVE_MIGRATABLE: <no description>
       SEV_SNP_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
@@ -35501,10 +35730,11 @@ class GuestOsFeature(_messages.Message):
     MULTI_IP_SUBNET = 2
     SECURE_BOOT = 3
     SEV_CAPABLE = 4
-    SEV_SNP_CAPABLE = 5
-    UEFI_COMPATIBLE = 6
-    VIRTIO_SCSI_MULTIQUEUE = 7
-    WINDOWS = 8
+    SEV_LIVE_MIGRATABLE = 5
+    SEV_SNP_CAPABLE = 6
+    UEFI_COMPATIBLE = 7
+    VIRTIO_SCSI_MULTIQUEUE = 8
+    WINDOWS = 9
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -36952,10 +37182,10 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
     checks configured.
 
     Values:
-      DRAINING: <no description>
-      HEALTHY: <no description>
-      UNHEALTHY: <no description>
-      UNKNOWN: <no description>
+      DRAINING: Endpoint is being drained.
+      HEALTHY: Endpoint is healthy.
+      UNHEALTHY: Endpoint is unhealthy.
+      UNKNOWN: Health status of the endpoint is unknown.
     """
     DRAINING = 0
     HEALTHY = 1
@@ -43112,8 +43342,8 @@ class Int64RangeMatch(_messages.Message):
 
 class Interconnect(_messages.Message):
   r"""Represents an Interconnect resource. An Interconnect resource is a
-  dedicated connection between the GCP network and your on-premises network.
-  For more information, read the Dedicated Interconnect Overview.
+  dedicated connection between the Google Cloud network and your on-premises
+  network. For more information, read the Dedicated Interconnect Overview.
 
   Enums:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
@@ -47029,7 +47259,7 @@ class Network(_messages.Message):
     firewallPolicy: [Output Only] URL of the firewall policy the network is
       associated with.
     gatewayIPv4: [Output Only] The gateway address for default routing out of
-      the network, selected by GCP.
+      the network, selected by Google Cloud.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     internalIpv6Range: When enabling ula internal ipv6, caller optionally can
@@ -49219,10 +49449,11 @@ class NetworkInterface(_messages.Message):
       IPV4_IPV6.
     NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
       This may be gVNIC or VirtioNet.
-    StackTypeValueValuesEnum: The stack type for this network interface to
-      identify whether the IPv6 feature is enabled or not. If not specified,
-      IPV4_ONLY will be used. This field can be both set at instance creation
-      and update network interface operations.
+    StackTypeValueValuesEnum: The stack type for this network interface. To
+      assign only IPv4 addresses, use IPV4_ONLY. To assign both IPv4 and IPv6
+      addresses, use IPV4_IPV6. If not specified, IPV4_ONLY is used. This
+      field can be both set at instance creation and update network interface
+      operations.
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
@@ -49279,10 +49510,10 @@ class NetworkInterface(_messages.Message):
     queueCount: The networking queue count that's specified by users for the
       network interface. Both Rx and Tx queues will be set to this number.
       It'll be empty if not specified by the users.
-    stackType: The stack type for this network interface to identify whether
-      the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
-      used. This field can be both set at instance creation and update network
-      interface operations.
+    stackType: The stack type for this network interface. To assign only IPv4
+      addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use
+      IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both
+      set at instance creation and update network interface operations.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not specify this field. If the
       network is in auto subnet mode, specifying the subnetwork is optional.
@@ -49319,10 +49550,10 @@ class NetworkInterface(_messages.Message):
     VIRTIO_NET = 2
 
   class StackTypeValueValuesEnum(_messages.Enum):
-    r"""The stack type for this network interface to identify whether the IPv6
-    feature is enabled or not. If not specified, IPV4_ONLY will be used. This
-    field can be both set at instance creation and update network interface
-    operations.
+    r"""The stack type for this network interface. To assign only IPv4
+    addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use
+    IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both set
+    at instance creation and update network interface operations.
 
     Values:
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
@@ -55791,6 +56022,25 @@ class Region(_messages.Message):
   zones = _messages.StringField(11, repeated=True)
 
 
+class RegionAddressesMoveRequest(_messages.Message):
+  r"""A RegionAddressesMoveRequest object.
+
+  Fields:
+    description: An optional destination address description if intended to be
+      different from the source.
+    destinationAddress: The URL of the destination address to move to. This
+      can be a full or partial URL. For example, the following are all valid
+      URLs to a address: -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /addresses/address - projects/project/regions/region/addresses/address
+      Note that destination project must be different from the source project.
+      So /regions/region/addresses/address is not valid partial url.
+  """
+
+  description = _messages.StringField(1)
+  destinationAddress = _messages.StringField(2)
+
+
 class RegionAutoscalerList(_messages.Message):
   r"""Contains a list of autoscalers.
 
@@ -59931,12 +60181,6 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
-    customLearnedIpRanges: A list of user-defined custom learned route IP
-      address ranges for a BGP session.
-    customLearnedRoutePriority: The user-defined custom learned route priority
-      for a BGP session. This value is applied to all custom learned route
-      ranges for the BGP session. If a priority is not provided, a Google-
-      managed priority of `100` is used.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -60037,20 +60281,18 @@ class RouterBgpPeer(_messages.Message):
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
-  customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
-  customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  enable = _messages.EnumField('EnableValueValuesEnum', 8)
-  enableIpv6 = _messages.BooleanField(9)
-  interfaceName = _messages.StringField(10)
-  ipAddress = _messages.StringField(11)
-  ipv6NexthopAddress = _messages.StringField(12)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
-  md5AuthenticationKeyName = _messages.StringField(14)
-  name = _messages.StringField(15)
-  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(17)
-  peerIpv6NexthopAddress = _messages.StringField(18)
-  routerApplianceInstance = _messages.StringField(19)
+  enable = _messages.EnumField('EnableValueValuesEnum', 6)
+  enableIpv6 = _messages.BooleanField(7)
+  interfaceName = _messages.StringField(8)
+  ipAddress = _messages.StringField(9)
+  ipv6NexthopAddress = _messages.StringField(10)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
+  md5AuthenticationKeyName = _messages.StringField(12)
+  name = _messages.StringField(13)
+  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(15)
+  peerIpv6NexthopAddress = _messages.StringField(16)
+  routerApplianceInstance = _messages.StringField(17)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -60106,19 +60348,6 @@ class RouterBgpPeerBfd(_messages.Message):
   minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   multiplier = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
   sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 4)
-
-
-class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
-  r"""A RouterBgpPeerCustomLearnedIpRange object.
-
-  Fields:
-    range: The custom learned route IP address range. Must be a valid CIDR-
-      formatted prefix. If an IP address is provided without a subnet mask, it
-      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
-      IPv6, `/128`.
-  """
-
-  range = _messages.StringField(1)
 
 
 class RouterInterface(_messages.Message):
@@ -62167,6 +62396,8 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
       applicable when json_parsing is set to STANDARD.
     jsonParsing: A JsonParsingValueValuesEnum attribute.
     logLevel: A LogLevelValueValuesEnum attribute.
+    userIpRequestHeaders: An optional list of case-insensitive request header
+      names to use for resolving the callers client IP address.
   """
 
   class JsonParsingValueValuesEnum(_messages.Enum):
@@ -62192,6 +62423,7 @@ class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
   jsonCustomConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfigJsonCustomConfig', 1)
   jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 2)
   logLevel = _messages.EnumField('LogLevelValueValuesEnum', 3)
+  userIpRequestHeaders = _messages.StringField(4, repeated=True)
 
 
 class SecurityPolicyAdvancedOptionsConfigJsonCustomConfig(_messages.Message):
@@ -63081,7 +63313,7 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource. A service attachment represents
   a service that a producer has exposed. It encapsulates the load balancer
   which fronts the service runs and a list of NAT IP ranges that the producers
-  uses to represent the consumers connecting to the service. next tag = 20
+  uses to represent the consumers connecting to the service.
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

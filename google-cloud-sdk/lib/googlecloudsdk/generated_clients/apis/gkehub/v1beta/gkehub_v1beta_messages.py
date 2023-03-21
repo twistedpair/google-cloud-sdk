@@ -3895,7 +3895,7 @@ class MonitoringConfig(_messages.Message):
   necessary information for where each underlying Cluster reports its metrics.
 
   Fields:
-    cluster: Output only. Cluster name used to report metrics. For Anthos on
+    cluster: Immutable. Cluster name used to report metrics. For Anthos on
       VMWare/Baremetal, it would be in format `memberClusters/cluster_name`;
       And for Anthos on MultiCloud, it would be in format `{azureClusters,
       awsClusters}/cluster_name`.
@@ -3908,8 +3908,8 @@ class MonitoringConfig(_messages.Message):
       kubernetes.io/anthos for Anthos eventually. Noted: Anthos MultiCloud
       will have kubernetes.io prefix today but will migration to be under
       kubernetes.io/anthos
-    location: Output only. Location used to report Metrics
-    projectId: Output only. Project used to report Metrics
+    location: Immutable. Location used to report Metrics
+    projectId: Immutable. Project used to report Metrics
   """
 
   cluster = _messages.StringField(1)
@@ -4297,16 +4297,18 @@ class PolicyControllerBundleInstallSpec(_messages.Message):
 
   Enums:
     ManagementValueValuesEnum: Management specifies how the bundle will be
-      managed by the controller.
+      managed by the controller. TODO (b/271878194): Remove this
 
   Fields:
     exemptedNamespaces: the set of namespaces to be exempted from the bundle
+      TODO (b/271878194): Decrement this
     management: Management specifies how the bundle will be managed by the
-      controller.
+      controller. TODO (b/271878194): Remove this
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
     r"""Management specifies how the bundle will be managed by the controller.
+    TODO (b/271878194): Remove this
 
     Values:
       MANAGEMENT_UNSPECIFIED: No Management strategy has been specified.
@@ -4358,7 +4360,7 @@ class PolicyControllerHubConfig(_messages.Message):
       that reference to objects other than the object currently being
       evaluated.
     templateLibraryConfig: Configures the library templates to install along
-      with Policy Controller.
+      with Policy Controller. TODO (b/271878194): Remove this
   """
 
   class InstallSpecValueValuesEnum(_messages.Enum):
@@ -4445,13 +4447,16 @@ class PolicyControllerMembershipState(_messages.Message):
     ComponentStatesValue: Currently these include (also serving as map keys):
       1. "admission" 2. "audit" 3. "mutation"
     ContentStatesValue: The state of the template library and any bundles
-      included in the chosen version of the manifest
+      included in the chosen version of the manifest TODO (b/271878194):
+      Remove this
 
   Fields:
     componentStates: Currently these include (also serving as map keys): 1.
       "admission" 2. "audit" 3. "mutation"
     contentStates: The state of the template library and any bundles included
-      in the chosen version of the manifest
+      in the chosen version of the manifest TODO (b/271878194): Remove this
+    policyContentState: The overall content state observed by the Hub Feature
+      controller. TODO (b/271878194): Decrement this
     state: The overall Policy Controller lifecycle state observed by the Hub
       Feature controller.
   """
@@ -4537,7 +4542,7 @@ class PolicyControllerMembershipState(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ContentStatesValue(_messages.Message):
     r"""The state of the template library and any bundles included in the
-    chosen version of the manifest
+    chosen version of the manifest TODO (b/271878194): Remove this
 
     Messages:
       AdditionalProperty: An additional property for a ContentStatesValue
@@ -4562,7 +4567,8 @@ class PolicyControllerMembershipState(_messages.Message):
 
   componentStates = _messages.MessageField('ComponentStatesValue', 1)
   contentStates = _messages.MessageField('ContentStatesValue', 2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  policyContentState = _messages.MessageField('PolicyControllerPolicyContentState', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class PolicyControllerMonitoringConfig(_messages.Message):
@@ -4674,6 +4680,7 @@ class PolicyControllerPolicyContentSpec(_messages.Message):
     bundles: map of bundle name to BundleInstallSpec. The bundle name maps to
       the `bundleName` key in the `policycontroller.gke.io/constraintData`
       annotation on a constraint.
+    templateLibrary: Configures the installation of the Template Library.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4703,6 +4710,50 @@ class PolicyControllerPolicyContentSpec(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bundles = _messages.MessageField('BundlesValue', 1)
+  templateLibrary = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 2)
+
+
+class PolicyControllerPolicyContentState(_messages.Message):
+  r"""The state of the policy controller policy content
+
+  Messages:
+    BundleStatesValue: The state of the any bundles included in the chosen
+      version of the manifest
+
+  Fields:
+    bundleStates: The state of the any bundles included in the chosen version
+      of the manifest
+    templateLibraryState: The state of the template library
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BundleStatesValue(_messages.Message):
+    r"""The state of the any bundles included in the chosen version of the
+    manifest
+
+    Messages:
+      AdditionalProperty: An additional property for a BundleStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type BundleStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BundleStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerOnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bundleStates = _messages.MessageField('BundleStatesValue', 1)
+  templateLibraryState = _messages.MessageField('PolicyControllerOnClusterState', 2)
 
 
 class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
@@ -4750,12 +4801,32 @@ class PolicyControllerResourceRequirements(_messages.Message):
 class PolicyControllerTemplateLibraryConfig(_messages.Message):
   r"""The config specifying which default library templates to install.
 
+  Enums:
+    InstallationValueValuesEnum: Configures the manner in which the template
+      library is installed on the cluster. TODO (b/271878194): Decrement this
+
   Fields:
     included: Whether the standard template library should be installed or
-      not.
+      not. TODO (b/271878194): Remove this
+    installation: Configures the manner in which the template library is
+      installed on the cluster. TODO (b/271878194): Decrement this
   """
 
+  class InstallationValueValuesEnum(_messages.Enum):
+    r"""Configures the manner in which the template library is installed on
+    the cluster. TODO (b/271878194): Decrement this
+
+    Values:
+      INSTALLATION_UNSPECIFIED: No installation strategy has been specified.
+      NOT_INSTALLED: Do not install the template library.
+      ALL: Install the entire template library.
+    """
+    INSTALLATION_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    ALL = 2
+
   included = _messages.BooleanField(1)
+  installation = _messages.EnumField('InstallationValueValuesEnum', 2)
 
 
 class PolicyControllerToleration(_messages.Message):

@@ -55,6 +55,60 @@ class CloudfunctionsV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AbortFunctionUpgrade(self, request, global_params=None):
+      r"""Aborts generation upgrade process for a function with the given name from the specified project. Deletes all 2nd Gen copy related configuration and resources which were created during the upgrade process.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AbortFunctionUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AbortFunctionUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:abortFunctionUpgrade',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.abortFunctionUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:abortFunctionUpgrade',
+        request_field='abortFunctionUpgradeRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CommitFunctionUpgrade(self, request, global_params=None):
+      r"""Finalizes the upgrade after which function upgrade can not be rolled back. This is the last step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Deletes all original 1st Gen related configuration and resources.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CommitFunctionUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CommitFunctionUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:commitFunctionUpgrade',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.commitFunctionUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:commitFunctionUpgrade',
+        request_field='commitFunctionUpgradeRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new function. If a function with the given name already exists in the specified project, the long running operation will return `ALREADY_EXISTS` error.
 
@@ -271,6 +325,60 @@ class CloudfunctionsV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RedirectFunctionUpgradeTraffic(self, request, global_params=None):
+      r"""Changes the traffic target of a function from the original 1st Gen function to the 2nd Gen copy. This is the second step of the multi step process to upgrade 1st Gen functions to 2nd Gen. After this operation, all new traffic will be served by 2nd Gen copy.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RedirectFunctionUpgradeTraffic')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RedirectFunctionUpgradeTraffic.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:redirectFunctionUpgradeTraffic',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.redirectFunctionUpgradeTraffic',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:redirectFunctionUpgradeTraffic',
+        request_field='redirectFunctionUpgradeTrafficRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RollbackFunctionUpgradeTraffic(self, request, global_params=None):
+      r"""Reverts the traffic target of a function from the 2nd Gen copy to the original 1st Gen function. After this operation, all new traffic would be served by the 1st Gen.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RollbackFunctionUpgradeTraffic')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RollbackFunctionUpgradeTraffic.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:rollbackFunctionUpgradeTraffic',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.rollbackFunctionUpgradeTraffic',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:rollbackFunctionUpgradeTraffic',
+        request_field='rollbackFunctionUpgradeTrafficRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
@@ -295,6 +403,33 @@ class CloudfunctionsV2(base_api.BaseApiClient):
         request_field='setIamPolicyRequest',
         request_type_name='CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetupFunctionUpgradeConfig(self, request, global_params=None):
+      r"""Creates a 2nd Gen copy of the function configuration based on the 1st Gen function with the given name. This is the first step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Only 2nd Gen configuration is setup as part of this request and traffic continues to be served by 1st Gen.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetupFunctionUpgradeConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetupFunctionUpgradeConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:setupFunctionUpgradeConfig',
+        http_method='POST',
+        method_id='cloudfunctions.projects.locations.functions.setupFunctionUpgradeConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:setupFunctionUpgradeConfig',
+        request_field='setupFunctionUpgradeConfigRequest',
+        request_type_name='CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -363,7 +498,7 @@ class CloudfunctionsV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (CloudfunctionsProjectsLocationsOperationsListRequest) input message

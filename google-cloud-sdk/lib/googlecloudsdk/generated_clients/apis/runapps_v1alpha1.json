@@ -318,7 +318,7 @@
     },
     "ResourceConfig": {
       "id": "ResourceConfig",
-      "description": "Message for the Resource configuration. Next tag: 8",
+      "description": "Message for the Resource configuration. Next tag: 9",
       "type": "object",
       "properties": {
         "router": {
@@ -332,6 +332,10 @@
         "redis": {
           "description": "Redis configuration.",
           "$ref": "RedisConfig"
+        },
+        "firebase-hosting": {
+          "description": "Firebase hosting configuration.",
+          "$ref": "FirebaseHostingConfig"
         },
         "latestDeployment": {
           "description": "Output only. The deployment name for the most recent deployment that has been triggered for a given resource. If a resource was never deployed then this field will be empty.",
@@ -464,6 +468,35 @@
           "description": "The redis instance memory size, in GB.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "FirebaseHostingConfig": {
+      "id": "FirebaseHostingConfig",
+      "description": "Message for defining firebase hosting resource.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "Hosting site configuration.",
+          "$ref": "HostingSiteConfig"
+        },
+        "resources": {
+          "description": "Reference to the target resources to add to the hosting site configuration. The resource binding's \"binding-config\" has no used fields currently.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceResourceBindingConfig"
+          }
+        }
+      }
+    },
+    "HostingSiteConfig": {
+      "id": "HostingSiteConfig",
+      "description": "Message for defining the firebase hosting site configuration.",
+      "type": "object",
+      "properties": {
+        "site-id": {
+          "description": "Firebase hosting site-ID.",
+          "type": "string"
         }
       }
     },
@@ -1337,7 +1370,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "runapps.projects.locations.operations.get",

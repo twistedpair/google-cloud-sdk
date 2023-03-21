@@ -18,9 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.functions.v1 import util as util_v1
 from googlecloudsdk.api_lib.functions.v2 import util
 from googlecloudsdk.core import properties
+
+import six
 
 
 class FunctionsClient(object):
@@ -67,3 +71,111 @@ class FunctionsClient(object):
     )
 
     return self.client.projects_locations_runtimes.List(request)
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def GetFunction(self, name):
+    # type: (str) -> cloudfunctions_v2_messages.Function | None
+    """Gets the function with the given name or None if not found.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      cloudfunctions_v2_messages.Function, the fetched GCFv2 function.
+    """
+    try:
+      return self.client.projects_locations_functions.Get(
+          self.messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+              name=name
+          )
+      )
+    except apitools_exceptions.HttpError as error:
+      if error.status_code == six.moves.http_client.NOT_FOUND:
+        return None
+
+      raise
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def AbortFunctionUpgrade(self, name):
+    # type: (str) -> cloudfunctions_v2_messages.Operation
+    """Aborts the function upgrade for the given function.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.AbortFunctionUpgrade(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(
+            name=name
+        )
+    )
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def CommitFunctionUpgrade(self, name):
+    # type: (str) -> cloudfunctions_v2_messages.Operation
+    """Commits the function upgrade for the given function.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.CommitFunctionUpgrade(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest(
+            name=name
+        )
+    )
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def RedirectFunctionUpgradeTraffic(self, name):
+    # type: (str) -> cloudfunctions_v2_messages.Operation
+    """Redirects function upgrade traffic for the given function.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.RedirectFunctionUpgradeTraffic(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest(
+            name=name
+        )
+    )
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def RollbackFunctionUpgradeTraffic(self, name):
+    # type: (str) -> cloudfunctions_v2_messages.Operation
+    """Rolls back function upgrade traffic for the given function.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.RollbackFunctionUpgradeTraffic(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest(
+            name=name
+        )
+    )
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
+  def SetupFunctionUpgradeConfig(self, name):
+    # type: (str) -> cloudfunctions_v2_messages.Operation
+    """Sets up the function upgrade config for the given function.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.SetupFunctionUpgradeConfig(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest(
+            name=name
+        )
+    )

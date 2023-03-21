@@ -160,7 +160,7 @@ def create_ecp_config(args, config_type):
             ' configuration. Valid options are: [PKCS11, KEYCHAIN, MYSTORE]'
         ).format(config_type)
     )
-  return {key: vars(ecp_config), 'libs': vars(lib_config)}
+  return {'cert_configs': {key: vars(ecp_config)}, 'libs': vars(lib_config)}
 
 
 def create_config(args, config_type):

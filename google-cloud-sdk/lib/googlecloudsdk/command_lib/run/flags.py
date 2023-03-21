@@ -677,6 +677,28 @@ def AddMutexEnvVarsFlagsForCreate(parser):
   )
 
 
+def AddOverrideEnvVarsFlag(parser):
+  """Add the --override-env-vars flag."""
+  parser.add_argument(
+      '--update-env-vars',
+      hidden=True,
+      metavar='KEY=VALUE',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=env_vars_util.EnvVarKeyType,
+          value_type=env_vars_util.EnvVarValueType,
+      ),
+      help=(
+          'List of key-value pairs to set as environment variables overrides'
+          ' for an execution of a job. If provided, an execution will be'
+          ' created with the merge result of the input values and the existing'
+          ' environment variables. New value overrides existing value if they'
+          ' have the same key. If not provided, existing environment variables'
+          ' are used.'
+      ),
+  )
+
+
 def AddMemoryFlag(parser):
   parser.add_argument('--memory', help='Set a memory limit. Ex: 1024Mi, 4Gi.')
 
@@ -1033,20 +1055,31 @@ def AddCommandFlag(parser):
   )
 
 
-def AddArgsFlag(parser):
+def AddArgsFlag(parser, for_execution_overrides=False):
   """Add flags for specifying container's startup args."""
+  help_text = (
+      'Comma-separated arguments passed to the command run by the container'
+      ' image.'
+  )
+  if for_execution_overrides:
+    help_text += (
+        ' If provided, an execution will be created with the input values.'
+        ' Otherwise, the existing arguments of the job are used.'
+    )
+  else:
+    help_text += (
+        " If not specified and no '--command' is provided, the"
+        " container image's default Cmd is used. Otherwise, if not specified,"
+        ' no arguments are passed. To reset this field to its default, pass'
+        ' an empty string.'
+    )
   parser.add_argument(
       '--args',
+      hidden=for_execution_overrides,
       metavar='ARG',
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
-      help=(
-          'Comma-separated arguments passed to the command run by the container'
-          " image. If not specified and no '--command' is provided, the"
-          " container image's default Cmd is used. Otherwise, if not specified,"
-          ' no arguments are passed. To reset this field to its default, pass'
-          ' an empty string.'
-      ),
+      help=help_text,
   )
 
 
@@ -1172,17 +1205,33 @@ def AddParallelismFlag(parser):
   )
 
 
-def AddTasksFlag(parser):
+def AddTasksFlag(parser, for_execution_overrides=False):
   """Add job number of tasks flag which maps to job.spec.template.spec.task_count."""
-  parser.add_argument(
-      '--tasks',
-      type=arg_parsers.BoundedInt(lower_bound=1),
-      default=1,
-      help=(
-          'Number of tasks that must run to completion for the job to be '
-          'considered done. Use this flag to trigger multiple runs of the job.'
-      ),
+  help_text = (
+      'Number of tasks that must run to completion for the job to be'
+      ' considered done.'
   )
+  if for_execution_overrides:
+    help_text += (
+        ' If provided, an execution will be created with this value. Otherwise'
+        ' the existing task count of the job is used. Use this flag to trigger'
+        ' multiple runs of the job.'
+    )
+    parser.add_argument(
+        '--tasks',
+        hidden=for_execution_overrides,
+        type=arg_parsers.BoundedInt(lower_bound=1),
+        help=help_text,
+    )
+  else:
+    help_text += ' Use this flag to trigger multiple runs of the job.'
+    parser.add_argument(
+        '--tasks',
+        hidden=for_execution_overrides,
+        type=arg_parsers.BoundedInt(lower_bound=1),
+        default=1,
+        help=help_text,
+    )
 
 
 def AddMaxRetriesFlag(parser):
@@ -1212,19 +1261,32 @@ def AddWaitForCompletionFlag(parser, implies_execute_now=False):
   )
 
 
-def AddTaskTimeoutFlags(parser):
+def AddTaskTimeoutFlags(parser, for_execution_overrides=False):
   """Add job flags for job and task deadline."""
+  help_text = (
+      ' In the case of retries, this deadline applies to each attempt of a'
+      ' task. If the task attempt does not complete within this time, it will'
+      ' be killed. It is specified as a duration; for example, "10m5s" is ten'
+      " minutes, and five seconds. If you don't specify a unit, seconds is"
+      ' assumed. For example, "10" is 10 seconds.'
+  )
+  if for_execution_overrides:
+    help_text = (
+        'The existing maximum time (deadline) a job task attempt can run for.'
+        ' If provided, an execution will be created with this value. Otherwise'
+        ' existing maximum time of the job is used.'
+        + help_text
+    )
+  else:
+    help_text = (
+        'Set the maximum time (deadline) a job task attempt can run for.'
+        + help_text
+    )
   parser.add_argument(
       '--task-timeout',
+      hidden=for_execution_overrides,
       type=arg_parsers.Duration(lower_bound='1s'),
-      help=(
-          'Set the maximum time (deadline) a job task attempt can run for. In'
-          ' the case of retries, this deadline applies to each attempt of a'
-          ' task. If the task attempt does not complete within this time, it'
-          ' will be killed. It is specified as a duration; for example, "10m5s"'
-          " is ten minutes, and five seconds. If you don't specify a unit,"
-          ' seconds is assumed. For example, "10" is 10 seconds.'
-      ),
+      help=help_text,
   )
 
 
@@ -1441,6 +1503,24 @@ def _HasCustomAudiencesChanges(args):
       'clear_custom_audiences',
   ]
   return _HasChanges(args, instances_flags)
+
+
+def HasExecutionOverrides(args):
+  overrides_flags = [
+      'args',
+      'update_env_vars',
+      'task_timeout',
+      'tasks',
+  ]
+  return _HasChanges(args, overrides_flags)
+
+
+def HasContainerOverrides(args):
+  overrides_flags = [
+      'args',
+      'update_env_vars',
+  ]
+  return _HasChanges(args, overrides_flags)
 
 
 def _GetEnvChanges(args):

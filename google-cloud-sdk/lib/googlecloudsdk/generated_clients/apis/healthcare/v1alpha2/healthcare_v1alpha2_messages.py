@@ -5090,7 +5090,8 @@ class SchemaConfig(_messages.Message):
       SCHEMA_TYPE_UNSPECIFIED: No schema type specified. This type is
         unsupported.
       LOSSLESS: A data-driven schema generated from the fields present in the
-        FHIR data being exported, with no additional simplification.
+        FHIR data being exported, with no additional simplification. This type
+        cannot be used for streaming to BigQuery.
       ANALYTICS: Analytics schema defined by the FHIR community. See
         https://github.com/FHIR/sql-on-fhir/blob/master/sql-on-fhir.md.
         BigQuery only allows a maximum of 10,000 columns per table. Due to

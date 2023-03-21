@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20230301",
+  "revision": "20230313",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2399,6 +2399,62 @@
           "items": {
             "$ref": "FirewallPolicyRuleSecureTag"
           }
+        },
+        "destAddressGroups": {
+          "description": "Address groups which should be matched against the traffic destination. Maximum number of destination address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcAddressGroups": {
+          "description": "Address groups which should be matched against the traffic source. Maximum number of source address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcFqdns": {
+          "description": "Fully Qualified Domain Name (FQDN) which should be matched against traffic source. Maximum number of source fqdn allowed is 100.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destFqdns": {
+          "description": "Fully Qualified Domain Name (FQDN) which should be matched against traffic destination. Maximum number of destination fqdn allowed is 100.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcRegionCodes": {
+          "description": "Region codes whose IP addresses will be used to match for source of traffic. Should be specified as 2 letter country code defined as per ISO 3166 alpha-2 country codes. ex.\"US\" Maximum number of source region codes allowed is 5000.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destRegionCodes": {
+          "description": "Region codes whose IP addresses will be used to match for destination of traffic. Should be specified as 2 letter country code defined as per ISO 3166 alpha-2 country codes. ex.\"US\" Maximum number of dest region codes allowed is 5000.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destThreatIntelligences": {
+          "description": "Names of Network Threat Intelligence lists. The IPs in these lists will be matched against traffic destination.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcThreatIntelligences": {
+          "description": "Names of Network Threat Intelligence lists. The IPs in these lists will be matched against traffic source.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3402,6 +3458,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -3410,6 +3467,7 @@
             "MULTI_IP_SUBNET",
             "SECURE_BOOT",
             "SEV_CAPABLE",
+            "SEV_LIVE_MIGRATABLE",
             "SEV_SNP_CAPABLE",
             "UEFI_COMPATIBLE",
             "VIRTIO_SCSI_MULTIQUEUE",
@@ -4834,7 +4892,7 @@
           "format": "byte"
         },
         "stackType": {
-          "description": "The stack type for this network interface to identify whether the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be used. This field can be both set at instance creation and update network interface operations.",
+          "description": "The stack type for this network interface. To assign only IPv4 addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both set at instance creation and update network interface operations.",
           "type": "string",
           "enumDescriptions": [
             "The network interface can have both IPv4 and IPv6 addresses.",
@@ -4893,8 +4951,7 @@
           "type": "string"
         },
         "type": {
-          "description": "The type of configuration. The default and only option is ONE_TO_ONE_NAT.",
-          "default": "ONE_TO_ONE_NAT",
+          "description": "The type of configuration. In accessConfigs (IPv4), the default and only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and only option is DIRECT_IPV6.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -4906,19 +4963,19 @@
           ]
         },
         "name": {
-          "description": "The name of this access configuration. The default and recommended name is External NAT, but you can use any arbitrary string, such as My external IP or Network Access.",
+          "description": "The name of this access configuration. In accessConfigs (IPv4), the default and recommended name is External NAT, but you can use any arbitrary string, such as My external IP or Network Access. In ipv6AccessConfigs, the recommend name is External IPv6.",
           "type": "string"
         },
         "natIP": {
-          "description": "An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.",
+          "description": "Applies to accessConfigs (IPv4) only. An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.",
           "type": "string"
         },
         "externalIpv6": {
-          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static external IP address, it must be unused and in the same region as the instance's zone. If not specified, Google Cloud will automatically assign an external IPv6 address from the instance's subnetwork.",
+          "description": "Applies to ipv6AccessConfigs only. The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static external IP address, it must be unused and in the same region as the instance's zone. If not specified, Google Cloud will automatically assign an external IPv6 address from the instance's subnetwork.",
           "type": "string"
         },
         "externalIpv6PrefixLength": {
-          "description": "The prefix length of the external IPv6 range.",
+          "description": "Applies to ipv6AccessConfigs only. The prefix length of the external IPv6 range.",
           "type": "integer",
           "format": "int32"
         },
@@ -17865,7 +17922,7 @@
     },
     "Interconnect": {
       "id": "Interconnect",
-      "description": "Represents an Interconnect resource. An Interconnect resource is a dedicated connection between the GCP network and your on-premises network. For more information, read the Dedicated Interconnect Overview.",
+      "description": "Represents an Interconnect resource. An Interconnect resource is a dedicated connection between the Google Cloud network and your on-premises network. For more information, read the Dedicated Interconnect Overview.",
       "type": "object",
       "properties": {
         "kind": {
@@ -21414,10 +21471,10 @@
           "description": "Health state of the network endpoint determined based on the health checks configured.",
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
+            "Endpoint is being drained.",
+            "Endpoint is healthy.",
+            "Endpoint is unhealthy.",
+            "Health status of the endpoint is unknown."
           ],
           "enum": [
             "DRAINING",
@@ -21651,7 +21708,7 @@
           "type": "string"
         },
         "gatewayIPv4": {
-          "description": "[Output Only] The gateway address for default routing out of the network, selected by GCP.",
+          "description": "[Output Only] The gateway address for default routing out of the network, selected by Google Cloud.",
           "pattern": "[0-9]{1,3}(?:\\.[0-9]{1,3}){3}",
           "type": "string"
         },
@@ -22882,6 +22939,19 @@
         "nodeTemplate": {
           "description": "Full or partial URL of the node template resource to be updated for this node group.",
           "type": "string"
+        }
+      }
+    },
+    "NodeGroupsSimulateMaintenanceEventRequest": {
+      "id": "NodeGroupsSimulateMaintenanceEventRequest",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "Names of the nodes to go under maintenance simulation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -29132,7 +29202,7 @@
     },
     "ServiceAttachment": {
       "id": "ServiceAttachment",
-      "description": "Represents a ServiceAttachment resource. A service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service. next tag = 20",
+      "description": "Represents a ServiceAttachment resource. A service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service.",
       "type": "object",
       "properties": {
         "kind": {
@@ -58850,6 +58920,56 @@
             "https://www.googleapis.com/auth/compute"
           ],
           "description": "Updates the specified node group."
+        },
+        "simulateMaintenanceEvent": {
+          "id": "compute.nodeGroups.simulateMaintenanceEvent",
+          "path": "projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/simulateMaintenanceEvent",
+          "flatPath": "projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/simulateMaintenanceEvent",
+          "httpMethod": "POST",
+          "parameters": {
+            "nodeGroup": {
+              "description": "Name of the NodeGroup resource whose nodes will go under maintenance simulation.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "zone": {
+              "description": "The name of the zone for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "zone",
+            "nodeGroup"
+          ],
+          "request": {
+            "$ref": "NodeGroupsSimulateMaintenanceEventRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Simulates maintenance event on specified nodes from the node group."
         },
         "getIamPolicy": {
           "id": "compute.nodeGroups.getIamPolicy",

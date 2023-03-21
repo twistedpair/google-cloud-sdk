@@ -117,6 +117,38 @@ class AssociatedFinding(_messages.Message):
   name = _messages.StringField(3)
 
 
+class CloudDlpDataProfile(_messages.Message):
+  r"""Contains details about the data profile that produced the finding.
+
+  Fields:
+    dataProfile: Name of the data profile. Example
+      projects/123/locations/europe/tableProfiles/8383929
+  """
+
+  dataProfile = _messages.StringField(1)
+
+
+class CloudDlpInspection(_messages.Message):
+  r"""Contains details about the Cloud DLP job that produced the infotype
+  finding.
+
+  Fields:
+    fullScan: Whether Cloud DLP scanned the complete resource or a sampled
+      subset.
+    infoType: The kind of information found, (e.g. email_address,
+      street_address, etc.)
+    infoTypeCount: The number of times Cloud DLP found this infoType within
+      this job and resource.
+    inspectJob: Name of the inspect job Example
+      projects/123/locations/europe/dlpJobs/i-8383929
+  """
+
+  fullScan = _messages.BooleanField(1)
+  infoType = _messages.StringField(2)
+  infoTypeCount = _messages.IntegerField(3)
+  inspectJob = _messages.StringField(4)
+
+
 class Compliance(_messages.Message):
   r"""Contains compliance information about a security standard indicating
   unmet recommendations.
@@ -638,12 +670,14 @@ class Details(_messages.Message):
       TRIAL: The trial subscription.
       ALPHA: The alpha subscription.
       DEMO: The demo subscription for channel partners.
+      PAY_AS_YOU_GO: Pay-as-you-go subscription.
     """
     TYPE_UNSPECIFIED = 0
     STANDARD = 1
     TRIAL = 2
     ALPHA = 3
     DEMO = 4
+    PAY_AS_YOU_GO = 5
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
@@ -867,6 +901,8 @@ class Finding(_messages.Message):
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
+    cloudDlpDataProfile: Cloud DLP data profile associated with the finding.
+    cloudDlpInspection: Cloud DLP inspection associated with the finding.
     compliances: Contains compliance information for security standards
       associated to the finding.
     connections: Contains information about the IP connection associated with
@@ -1141,38 +1177,40 @@ class Finding(_messages.Message):
   access = _messages.MessageField('Access', 1)
   canonicalName = _messages.StringField(2)
   category = _messages.StringField(3)
-  compliances = _messages.MessageField('Compliance', 4, repeated=True)
-  connections = _messages.MessageField('Connection', 5, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 6)
-  containers = _messages.MessageField('Container', 7, repeated=True)
-  createTime = _messages.StringField(8)
-  database = _messages.MessageField('Database', 9)
-  description = _messages.StringField(10)
-  eventTime = _messages.StringField(11)
-  exfiltration = _messages.MessageField('Exfiltration', 12)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 13)
-  externalUri = _messages.StringField(14)
-  files = _messages.MessageField('File', 15, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 16)
-  iamBindings = _messages.MessageField('IamBinding', 17, repeated=True)
-  indicator = _messages.MessageField('Indicator', 18)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 19)
-  kubernetes = _messages.MessageField('Kubernetes', 20)
-  mitreAttack = _messages.MessageField('MitreAttack', 21)
-  mute = _messages.EnumField('MuteValueValuesEnum', 22)
-  muteInitiator = _messages.StringField(23)
-  muteUpdateTime = _messages.StringField(24)
-  name = _messages.StringField(25)
-  nextSteps = _messages.StringField(26)
-  parent = _messages.StringField(27)
-  parentDisplayName = _messages.StringField(28)
-  processes = _messages.MessageField('Process', 29, repeated=True)
-  resourceName = _messages.StringField(30)
-  securityMarks = _messages.MessageField('SecurityMarks', 31)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 32)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 33)
-  state = _messages.EnumField('StateValueValuesEnum', 34)
-  vulnerability = _messages.MessageField('Vulnerability', 35)
+  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 4)
+  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 5)
+  compliances = _messages.MessageField('Compliance', 6, repeated=True)
+  connections = _messages.MessageField('Connection', 7, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 8)
+  containers = _messages.MessageField('Container', 9, repeated=True)
+  createTime = _messages.StringField(10)
+  database = _messages.MessageField('Database', 11)
+  description = _messages.StringField(12)
+  eventTime = _messages.StringField(13)
+  exfiltration = _messages.MessageField('Exfiltration', 14)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 15)
+  externalUri = _messages.StringField(16)
+  files = _messages.MessageField('File', 17, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 18)
+  iamBindings = _messages.MessageField('IamBinding', 19, repeated=True)
+  indicator = _messages.MessageField('Indicator', 20)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 21)
+  kubernetes = _messages.MessageField('Kubernetes', 22)
+  mitreAttack = _messages.MessageField('MitreAttack', 23)
+  mute = _messages.EnumField('MuteValueValuesEnum', 24)
+  muteInitiator = _messages.StringField(25)
+  muteUpdateTime = _messages.StringField(26)
+  name = _messages.StringField(27)
+  nextSteps = _messages.StringField(28)
+  parent = _messages.StringField(29)
+  parentDisplayName = _messages.StringField(30)
+  processes = _messages.MessageField('Process', 31, repeated=True)
+  resourceName = _messages.StringField(32)
+  securityMarks = _messages.MessageField('SecurityMarks', 33)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 34)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 35)
+  state = _messages.EnumField('StateValueValuesEnum', 36)
+  vulnerability = _messages.MessageField('Vulnerability', 37)
 
 
 class Folder(_messages.Message):
@@ -1446,8 +1484,22 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
     ResourceValueValueValuesEnum: Required. Resource value level this
       expression represents
 
+  Messages:
+    ResourceLabelsSelectorValue: List of resource labels to search for,
+      evaluated with AND. E.g. "resource_labels_selector": {"key": "value",
+      "env": "prod"} will match resources with labels "key": "value" AND
+      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels
+
   Fields:
+    createTime: Output only. Timestamp this resource value config was created.
+    description: Description of the resource value config.
     name: Name for the resource value config
+    resourceLabelsSelector: List of resource labels to search for, evaluated
+      with AND. E.g. "resource_labels_selector": {"key": "value", "env":
+      "prod"} will match resources with labels "key": "value" AND "env":
+      "prod" https://cloud.google.com/resource-manager/docs/creating-managing-
+      labels
     resourceType: Apply resource_value only to resources that match
       resource_type. resource_type will be checked with "AND" of other
       resources. E.g. "storage.googleapis.com/Bucket" with resource_value
@@ -1461,6 +1513,8 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
       in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
       "tagValues/789" ] https://cloud.google.com/resource-
       manager/docs/tags/tags-creating-and-managing
+    updateTime: Output only. Timestamp this resource value config was last
+      updated.
   """
 
   class ResourceValueValueValuesEnum(_messages.Enum):
@@ -1479,11 +1533,44 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
     LOW = 3
     NONE = 4
 
-  name = _messages.StringField(1)
-  resourceType = _messages.StringField(2)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 3)
-  scope = _messages.StringField(4)
-  tagValues = _messages.StringField(5, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsSelectorValue(_messages.Message):
+    r"""List of resource labels to search for, evaluated with AND. E.g.
+    "resource_labels_selector": {"key": "value", "env": "prod"} will match
+    resources with labels "key": "value" AND "env": "prod"
+    https://cloud.google.com/resource-manager/docs/creating-managing-labels
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceLabelsSelectorValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceLabelsSelectorValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsSelectorValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 4)
+  resourceType = _messages.StringField(5)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
+  scope = _messages.StringField(7)
+  tagValues = _messages.StringField(8, repeated=True)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):

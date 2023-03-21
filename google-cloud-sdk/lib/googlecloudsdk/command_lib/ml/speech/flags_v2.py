@@ -139,3 +139,25 @@ def AddAllFlagsToParser(parser, create=False):
       help="""\
         Maximum number of speakers in the conversation.
         """)
+  parser.add_argument(
+      '--encoding',
+      help="""\
+          Encoding format of the provided audio. For headerless formats, must be set to `LINEAR16`, `MULAW,` or `ALAW`. For other formats, set to `AUTO`.
+          """,
+  )
+  parser.add_argument(
+      '--sample-rate',
+      type=arg_parsers.BoundedInt(8000, 48000),
+      help="""\
+          Sample rate in Hertz of the audio data sent for recognition.
+          Required if using explicit decoding.
+          """,
+  )
+  parser.add_argument(
+      '--audio-channel-count',
+      type=arg_parsers.BoundedInt(1, 8),
+      help="""\
+          Number of channels present in the audio data sent for recognition.
+          Supported for LINEAR16, MULAW, ALAW.
+          """,
+  )

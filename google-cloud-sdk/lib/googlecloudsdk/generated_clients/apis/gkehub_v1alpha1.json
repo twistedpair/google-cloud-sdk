@@ -1197,7 +1197,7 @@
           "type": "boolean"
         },
         "templateLibraryConfig": {
-          "description": "Configures the library templates to install along with Policy Controller.",
+          "description": "Configures the library templates to install along with Policy Controller. TODO (b\/271878194): Remove this",
           "$ref": "TemplateLibraryConfig"
         },
         "monitoring": {
@@ -1228,8 +1228,22 @@
       "type": "object",
       "properties": {
         "included": {
-          "description": "Whether the standard template library should be installed or not.",
+          "description": "Whether the standard template library should be installed or not. TODO (b\/271878194): Remove this",
           "type": "boolean"
+        },
+        "installation": {
+          "description": "Configures the manner in which the template library is installed on the cluster. TODO (b\/271878194): Decrement this",
+          "type": "string",
+          "enumDescriptions": [
+            "No installation strategy has been specified.",
+            "Do not install the template library.",
+            "Install the entire template library."
+          ],
+          "enum": [
+            "INSTALLATION_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "ALL"
+          ]
         }
       }
     },
@@ -1268,6 +1282,10 @@
           "additionalProperties": {
             "$ref": "BundleInstallSpec"
           }
+        },
+        "templateLibrary": {
+          "description": "Configures the installation of the Template Library.",
+          "$ref": "TemplateLibraryConfig"
         }
       }
     },
@@ -1277,7 +1295,7 @@
       "type": "object",
       "properties": {
         "management": {
-          "description": "Management specifies how the bundle will be managed by the controller.",
+          "description": "Management specifies how the bundle will be managed by the controller. TODO (b\/271878194): Remove this",
           "type": "string",
           "enumDescriptions": [
             "No Management strategy has been specified.",
@@ -1289,7 +1307,7 @@
           ]
         },
         "exemptedNamespaces": {
-          "description": "the set of namespaces to be exempted from the bundle",
+          "description": "the set of namespaces to be exempted from the bundle TODO (b\/271878194): Decrement this",
           "type": "array",
           "items": {
             "type": "string"
@@ -2715,11 +2733,15 @@
           }
         },
         "contentStates": {
-          "description": "The state of the template library and any specified bundles",
+          "description": "The state of the template library and any specified bundles TODO (b\/271878194): Remove this",
           "type": "object",
           "additionalProperties": {
             "$ref": "OnClusterState"
           }
+        },
+        "policyContentState": {
+          "description": "The overall content state observed by the Hub Feature controller. TODO (b\/271878194): Decrement this",
+          "$ref": "PolicyContentState"
         }
       }
     },
@@ -2757,6 +2779,24 @@
         "details": {
           "description": "Surface potential errors or information logs.",
           "type": "string"
+        }
+      }
+    },
+    "PolicyContentState": {
+      "id": "PolicyContentState",
+      "description": "The state of the policy controller policy content",
+      "type": "object",
+      "properties": {
+        "templateLibraryState": {
+          "description": "The state of the template library",
+          "$ref": "OnClusterState"
+        },
+        "bundleStates": {
+          "description": "The state of the any bundles included in the chosen version of the manifest",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "OnClusterState"
+          }
         }
       }
     },
@@ -3612,7 +3652,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "gkehub.projects.locations.operations.get",

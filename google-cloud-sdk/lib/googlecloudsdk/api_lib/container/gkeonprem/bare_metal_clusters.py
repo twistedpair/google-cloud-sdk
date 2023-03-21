@@ -877,3 +877,18 @@ class ClustersClient(_BareMetalClusterClient):
     )
 
     return self._service.Patch(req)
+
+  def CreateFromImport(self, args, bare_metal_cluster, bare_metal_cluster_ref):
+    """Creates an Anthos cluster on bare metal."""
+    kwargs = {
+        'parent': bare_metal_cluster_ref.Parent().RelativeName(),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
+        'bareMetalCluster': bare_metal_cluster,
+        'bareMetalClusterId': bare_metal_cluster_ref.Name(),
+    }
+    req = (
+        self._messages.GkeonpremProjectsLocationsBareMetalClustersCreateRequest(
+            **kwargs
+        )
+    )
+    return self._service.Create(req)

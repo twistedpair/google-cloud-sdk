@@ -489,8 +489,8 @@ class BaremetalsolutionProjectsLocationsNfsSharesPatchRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
-class BaremetalsolutionProjectsLocationsNfssharesRenameRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsNfssharesRenameRequest object.
+class BaremetalsolutionProjectsLocationsNfsSharesRenameRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsNfsSharesRenameRequest object.
 
   Fields:
     name: Required. The `name` field is used to identify the nfsshare. Format:

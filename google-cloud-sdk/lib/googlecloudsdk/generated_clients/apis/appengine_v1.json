@@ -201,7 +201,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Full path to the Application resource in the API. Example: apps\/myapp.@OutputOnly",
+          "description": "Output only. Full path to the Application resource in the API. Example: apps\/myapp.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "id": {
@@ -224,7 +225,8 @@
           "type": "string"
         },
         "codeBucket": {
-          "description": "Google Cloud Storage bucket that can be used for storing files associated with this application. This bucket is associated with the application and can be used by the gcloud deployment commands.@OutputOnly",
+          "description": "Output only. Google Cloud Storage bucket that can be used for storing files associated with this application. This bucket is associated with the application and can be used by the gcloud deployment commands.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "defaultCookieExpiration": {
@@ -249,11 +251,13 @@
           ]
         },
         "defaultHostname": {
-          "description": "Hostname used to reach this application, as resolved by App Engine.@OutputOnly",
+          "description": "Output only. Hostname used to reach this application, as resolved by App Engine.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "defaultBucket": {
-          "description": "Google Cloud Storage bucket that can be used by this application to store content.@OutputOnly",
+          "description": "Output only. Google Cloud Storage bucket that can be used by this application to store content.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         },
         "serviceAccount": {
@@ -264,7 +268,8 @@
           "$ref": "IdentityAwareProxy"
         },
         "gcrDomain": {
-          "description": "The Google Container Registry domain used for storing managed build docker images for this application.",
+          "description": "Output only. The Google Container Registry domain used for storing managed build docker images for this application.",
+          "readOnly": true,
           "type": "string"
         },
         "databaseType": {
@@ -326,7 +331,8 @@
           "type": "string"
         },
         "oauth2ClientSecretSha256": {
-          "description": "Hex-encoded SHA-256 hash of the client secret.@OutputOnly",
+          "description": "Output only. Hex-encoded SHA-256 hash of the client secret.@OutputOnly",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -2663,7 +2669,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
-              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED."
             },
             "get": {
               "id": "appengine.apps.operations.get",

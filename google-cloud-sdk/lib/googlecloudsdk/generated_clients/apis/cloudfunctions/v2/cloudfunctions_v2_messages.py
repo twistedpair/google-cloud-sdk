@@ -14,6 +14,10 @@ from apitools.base.py import extra_types
 package = 'cloudfunctions'
 
 
+class AbortFunctionUpgradeRequest(_messages.Message):
+  r"""Request for the `AbortFunctionUpgrade` method."""
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -260,6 +264,36 @@ class BuildConfig(_messages.Message):
   workerPool = _messages.StringField(10)
 
 
+class CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest
+  object.
+
+  Fields:
+    abortFunctionUpgradeRequest: A AbortFunctionUpgradeRequest resource to be
+      passed as the request body.
+    name: Required. The name of the function for which upgrade should be
+      aborted.
+  """
+
+  abortFunctionUpgradeRequest = _messages.MessageField('AbortFunctionUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeRequest
+  object.
+
+  Fields:
+    commitFunctionUpgradeRequest: A CommitFunctionUpgradeRequest resource to
+      be passed as the request body.
+    name: Required. The name of the function for which upgrade should be
+      finalized.
+  """
+
+  commitFunctionUpgradeRequest = _messages.MessageField('CommitFunctionUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsCreateRequest object.
 
@@ -401,6 +435,38 @@ class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsRedirectFunctionUpgradeTraffic
+  Request object.
+
+  Fields:
+    name: Required. The name of the function for which traffic target should
+      be changed to 2nd Gen from 1st Gen.
+    redirectFunctionUpgradeTrafficRequest: A
+      RedirectFunctionUpgradeTrafficRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  redirectFunctionUpgradeTrafficRequest = _messages.MessageField('RedirectFunctionUpgradeTrafficRequest', 2)
+
+
+class CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsFunctionsRollbackFunctionUpgradeTraffic
+  Request object.
+
+  Fields:
+    name: Required. The name of the function for which traffic target should
+      be changed back to 1st Gen from 2nd Gen.
+    rollbackFunctionUpgradeTrafficRequest: A
+      RollbackFunctionUpgradeTrafficRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackFunctionUpgradeTrafficRequest = _messages.MessageField('RollbackFunctionUpgradeTrafficRequest', 2)
+
+
 class CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest object.
 
@@ -415,6 +481,22 @@ class CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest(_messages.Message):
+  r"""A
+  CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest
+  object.
+
+  Fields:
+    name: Required. The name of the function which should have configuration
+      copied for upgrade.
+    setupFunctionUpgradeConfigRequest: A SetupFunctionUpgradeConfigRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setupFunctionUpgradeConfigRequest = _messages.MessageField('SetupFunctionUpgradeConfigRequest', 2)
 
 
 class CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest(_messages.Message):
@@ -499,6 +581,10 @@ class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
+
+
+class CommitFunctionUpgradeRequest(_messages.Message):
+  r"""Request for the `CommitFunctionUpgrade` method."""
 
 
 class EventFilter(_messages.Message):
@@ -651,6 +737,7 @@ class Function(_messages.Message):
     stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
     upgradeInfo: Output only. UpgradeInfo for this Cloud Function
+    url: Output only. The deployed url for the function.
   """
 
   class EnvironmentValueValuesEnum(_messages.Enum):
@@ -722,6 +809,7 @@ class Function(_messages.Message):
   stateMessages = _messages.MessageField('GoogleCloudFunctionsV2StateMessage', 11, repeated=True)
   updateTime = _messages.StringField(12)
   upgradeInfo = _messages.MessageField('UpgradeInfo', 13)
+  url = _messages.StringField(14)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -1618,6 +1706,10 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RedirectFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""Request for the `RedirectFunctionUpgradeTraffic` method."""
+
+
 class RepoSource(_messages.Message):
   r"""Location of the source in a Google Cloud Source Repository.
 
@@ -1647,6 +1739,10 @@ class RepoSource(_messages.Message):
   projectId = _messages.StringField(5)
   repoName = _messages.StringField(6)
   tagName = _messages.StringField(7)
+
+
+class RollbackFunctionUpgradeTrafficRequest(_messages.Message):
+  r"""Request for the `RollbackFunctionUpgradeTraffic` method."""
 
 
 class Runtime(_messages.Message):
@@ -1964,6 +2060,10 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SetupFunctionUpgradeConfigRequest(_messages.Message):
+  r"""Request for the `SetupFunctionUpgradeConfig` method."""
+
+
 class Source(_messages.Message):
   r"""The location of the function source code.
 
@@ -2158,6 +2258,12 @@ class UpgradeInfo(_messages.Message):
     UpgradeStateValueValuesEnum: UpgradeState of the function
 
   Fields:
+    buildConfig: Describes the Build step of the function that builds a
+      container to prepare for 2nd gen upgrade.
+    eventTrigger: Describes the Event trigger which has been setup to prepare
+      for 2nd gen upgrade.
+    serviceConfig: Describes the Cloud Run service which has been setup to
+      prepare for 2nd gen upgrade.
     upgradeState: UpgradeState of the function
   """
 
@@ -2199,7 +2305,10 @@ class UpgradeInfo(_messages.Message):
     ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
     COMMIT_FUNCTION_UPGRADE_ERROR = 9
 
-  upgradeState = _messages.EnumField('UpgradeStateValueValuesEnum', 1)
+  buildConfig = _messages.MessageField('BuildConfig', 1)
+  eventTrigger = _messages.MessageField('EventTrigger', 2)
+  serviceConfig = _messages.MessageField('ServiceConfig', 3)
+  upgradeState = _messages.EnumField('UpgradeStateValueValuesEnum', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

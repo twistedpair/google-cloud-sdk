@@ -783,7 +783,7 @@
           "type": "string",
           "enumDescriptions": [
             "Default value. This value will create a database with the GOOGLE_STANDARD_SQL dialect.",
-            "Google standard SQL.",
+            "GoogleSQL supported SQL.",
             "PostgreSQL supported SQL."
           ],
           "enum": [
@@ -919,7 +919,7 @@
           "type": "string",
           "enumDescriptions": [
             "Default value. This value will create a database with the GOOGLE_STANDARD_SQL dialect.",
-            "Google standard SQL.",
+            "GoogleSQL supported SQL.",
             "PostgreSQL supported SQL."
           ],
           "enum": [
@@ -1177,7 +1177,7 @@
           "type": "string",
           "enumDescriptions": [
             "Default value. This value will create a database with the GOOGLE_STANDARD_SQL dialect.",
-            "Google standard SQL.",
+            "GoogleSQL supported SQL.",
             "PostgreSQL supported SQL."
           ],
           "enum": [
@@ -3213,7 +3213,7 @@
           }
         },
         "throttled": {
-          "description": "Output only. When true, indicates that the operation is throttled e.g due to resource constraints. When resources become available the operation will resume and this field will be false again.",
+          "description": "Output only. When true, indicates that the operation is throttled e.g. due to resource constraints. When resources become available the operation will resume and this field will be false again.",
           "readOnly": true,
           "type": "boolean"
         },
@@ -3577,7 +3577,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "spanner.projects.instanceConfigs.operations.get",
@@ -4387,7 +4387,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.admin"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "spanner.projects.instances.databases.operations.get",
@@ -5029,7 +5029,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "spanner.projects.instances.operations.get",
@@ -5459,7 +5459,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.admin"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "spanner.projects.instances.backups.operations.get",

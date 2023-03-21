@@ -92,6 +92,19 @@ class NodePoolsClient(client.ClientBase):
         **kwargs)
     return self._service.Patch(req)
 
+  def Enroll(self, args):
+    """Enrolls an Anthos on VMware node pool API resource."""
+    enroll_vmware_node_pool_request = (
+        self._messages.EnrollVmwareNodePoolRequest(
+            vmwareNodepoolId=self._node_pool_id(args),
+        )
+    )
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest(
+        enrollVmwareNodePoolRequest=enroll_vmware_node_pool_request,
+        parent=self._node_pool_parent(args),
+    )
+    return self._service.Enroll(req)
+
   def _vmware_node_pool(self, args):
     """Constructs proto message VmwareNodePool."""
     kwargs = {

@@ -662,7 +662,7 @@ class GoogleCloudPolicysimulatorV1alphaResourceContext(_messages.Message):
   resource = _messages.StringField(3)
 
 
-class GoogleCloudPolicysimulatorV1mainGenerateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
+class GoogleCloudPolicysimulatorV1betaGenerateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
   r"""GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
   OrgPolicyViolationsPreview generations operation.
 
@@ -708,7 +708,7 @@ class GoogleCloudPolicysimulatorV1mainGenerateOrgPolicyViolationsPreviewOperatio
   state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
-class GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay(_messages.Message):
+class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay(_messages.Message):
   r"""The proposed changes to OrgPolicy.
 
   Fields:
@@ -722,11 +722,11 @@ class GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay(_messages.Message):
       were created or updated.
   """
 
-  customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
-  policies = _messages.MessageField('GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay', 2, repeated=True)
+  customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
+  policies = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay', 2, repeated=True)
 
 
-class GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay(_messages.Message):
+class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay(_messages.Message):
   r"""A change to an OrgPolicy custom constraint.
 
   Fields:
@@ -739,7 +739,7 @@ class GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay(_m
   customConstraintParent = _messages.StringField(2)
 
 
-class GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay(_messages.Message):
+class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay(_messages.Message):
   r"""A change to an OrgPolicy.
 
   Fields:
@@ -752,7 +752,7 @@ class GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay(_messages.Me
   policyParent = _messages.StringField(2)
 
 
-class GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreview(_messages.Message):
+class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview(_messages.Message):
   r"""OrgPolicyViolationsPreview is a resource providing a preview of the
   violations that will exist if an OrgPolicy change is made. The list of
   violations are modeled as child resources and retrieved via a
@@ -803,13 +803,13 @@ class GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreview(_messages.Messa
     PREVIEW_FAILED = 4
 
   name = _messages.StringField(1)
-  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay', 2)
-  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts', 3)
+  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay', 2)
+  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts', 3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   violationsCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
-class GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts(_messages.Message):
+class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts(_messages.Message):
   r"""A summary of the state of all resources scanned for compliance with the
   changed OrgPolicy.
 

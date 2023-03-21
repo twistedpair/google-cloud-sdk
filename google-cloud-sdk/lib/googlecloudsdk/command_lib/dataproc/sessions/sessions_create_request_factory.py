@@ -106,13 +106,12 @@ def AddArguments(parser):
   parser.add_argument(
       '--max-idle',
       type=arg_parsers.Duration(),
-      hidden=True,  # Not yet publicly launched
       help="""
           The duration after which an idle session will be automatically
-          terminated, e.g. "20m" or "2h". A session is considered idle if it
-          has no active Spark applications and no active Jupyter kernels.
-          See $ gcloud topic datetimes for information on duration formats.
-          """)
+          terminated, for example, "20m" or "2h". A session is considered idle
+          if it has no active Spark applications and no active Jupyter kernels.
+          Run [gcloud topic datetimes](https://cloud.google.com/sdk/gcloud/reference/topic/datetimes)
+          for information on duration formats.""")
 
   _AddDependency(parser)
 

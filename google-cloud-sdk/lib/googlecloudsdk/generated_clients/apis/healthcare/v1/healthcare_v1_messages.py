@@ -175,8 +175,8 @@ class AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -236,17 +236,27 @@ class Binding(_messages.Message):
       policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the principals requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -263,9 +273,7 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
+      group retains the role in the binding.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -731,10 +739,13 @@ class CryptoHashConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
       based on this key. A default key is generated for each Deidentify
-      operation and is used wherever crypto_key is not specified.
+      operation and is used when neither `crypto_key` nor `kms_wrapped` is
+      specified. Must not be set if `kms_wrapped` is set.
+    kmsWrapped: KMS wrapped key. Must not be set if `crypto_key` is set.
   """
 
   cryptoKey = _messages.BytesField(1)
+  kmsWrapped = _messages.MessageField('KmsWrappedCryptoKey', 2)
 
 
 class Dataset(_messages.Message):
@@ -761,13 +772,35 @@ class DateShiftConfig(_messages.Message):
   consistent for a given patient and crypto key combination.
 
   Fields:
-    cryptoKey: An AES 128/192/256 bit key. Causes the shift to be computed
-      based on this key and the patient ID. A default key is generated for
-      each Deidentify operation and is used wherever crypto_key is not
-      specified.
+    cryptoKey: An AES 128/192/256 bit key. The date shift is computed based on
+      this key and the patient ID. If the patient ID is empty for a DICOM
+      resource, the date shift is computed based on this key and the study
+      instance UID. If `crypto_key` is not set, then `kms_wrapped` is used to
+      calculate the date shift. If neither is set, a default key is generated
+      for each de-identify operation. Must not be set if `kms_wrapped` is set.
+    kmsWrapped: KMS wrapped key. If `kms_wrapped` is not set, then
+      `crypto_key` is used to calculate the date shift. If neither is set, a
+      default key is generated for each de-identify operation. Must not be set
+      if `crypto_key` is set.
   """
 
   cryptoKey = _messages.BytesField(1)
+  kmsWrapped = _messages.MessageField('KmsWrappedCryptoKey', 2)
+
+
+class DeidentifiedStoreDestination(_messages.Message):
+  r"""Contains configuration for streaming de-identified FHIR export.
+
+  Fields:
+    config: The configuration to use when de-identifying resources that are
+      added to this store.
+    store: The full resource name of a Cloud Healthcare FHIR store, for
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/fhirStores/{fhir_store_id}`.
+  """
+
+  config = _messages.MessageField('DeidentifyConfig', 1)
+  store = _messages.StringField(2)
 
 
 class DeidentifyConfig(_messages.Message):
@@ -794,22 +827,32 @@ class DeidentifyDatasetRequest(_messages.Message):
   r"""Redacts identifying information from the specified dataset.
 
   Fields:
-    config: Deidentify configuration.
+    config: Deidentify configuration. Only one of `config` and
+      `gcs_config_uri` can be specified.
     destinationDataset: The name of the dataset resource to create and write
       the redacted data to. * The destination dataset must not exist. * The
       destination dataset must be in the same location as the source dataset.
       De-identifying data across multiple locations is not supported.
+    gcsConfigUri: Cloud Storage location to read the JSON
+      cloud.healthcare.deidentify.DeidentifyConfig from, overriding the
+      default config. Must be of the form `gs://{bucket_id}/path/to/object`.
+      The Cloud Storage location must grant the Cloud IAM role
+      `roles/storage.objectViewer` to the project's Cloud Healthcare Service
+      Agent service account. Only one of `config` and `gcs_config_uri` can be
+      specified.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationDataset = _messages.StringField(2)
+  gcsConfigUri = _messages.StringField(3)
 
 
 class DeidentifyDicomStoreRequest(_messages.Message):
   r"""Creates a new DICOM store with sensitive information de-identified.
 
   Fields:
-    config: Deidentify configuration.
+    config: Deidentify configuration. Only one of `config` and
+      `gcs_config_uri` can be specified.
     destinationStore: The name of the DICOM store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
@@ -819,18 +862,27 @@ class DeidentifyDicomStoreRequest(_messages.Message):
       store must not exist. * The caller must have the necessary permissions
       to create the destination DICOM store.
     filterConfig: Filter configuration.
+    gcsConfigUri: Cloud Storage location to read the JSON
+      cloud.healthcare.deidentify.DeidentifyConfig from, overriding the
+      default config. Must be of the form `gs://{bucket_id}/path/to/object`.
+      The Cloud Storage location must grant the Cloud IAM role
+      `roles/storage.objectViewer` to the project's Cloud Healthcare Service
+      Agent service account. Only one of `config` and `gcs_config_uri` can be
+      specified.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationStore = _messages.StringField(2)
   filterConfig = _messages.MessageField('DicomFilterConfig', 3)
+  gcsConfigUri = _messages.StringField(4)
 
 
 class DeidentifyFhirStoreRequest(_messages.Message):
   r"""Creates a new FHIR store with sensitive information de-identified.
 
   Fields:
-    config: Deidentify configuration.
+    config: Deidentify configuration. Only one of `config` and
+      `gcs_config_uri` can be specified.
     destinationStore: The name of the FHIR store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
@@ -839,13 +891,24 @@ class DeidentifyFhirStoreRequest(_messages.Message):
       across multiple locations is not supported. * The destination FHIR store
       must exist. * The caller must have the healthcare.fhirResources.update
       permission to write to the destination FHIR store.
+    gcsConfigUri: Cloud Storage location to read the JSON
+      cloud.healthcare.deidentify.DeidentifyConfig from, overriding the
+      default config. Must be of the form `gs://{bucket_id}/path/to/object`.
+      The Cloud Storage location must grant the Cloud IAM role
+      `roles/storage.objectViewer` to the project's Cloud Healthcare Service
+      Agent service account. Only one of `config` and `gcs_config_uri` can be
+      specified.
     resourceFilter: A filter specifying the resources to include in the
       output. If not specified, all resources are included in the output.
+    skipModifiedResources: If true, skips resources that are created or
+      modified after the de-identify operation is created.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationStore = _messages.StringField(2)
-  resourceFilter = _messages.MessageField('FhirFilter', 3)
+  gcsConfigUri = _messages.StringField(3)
+  resourceFilter = _messages.MessageField('FhirFilter', 4)
+  skipModifiedResources = _messages.BooleanField(5)
 
 
 class DeidentifySummary(_messages.Message):
@@ -1030,7 +1093,7 @@ class EntityMention(_messages.Message):
       number between 0 and 1.
     linkedEntities: linked_entities are candidate ontological concepts that
       this entity mention may refer to. They are sorted by decreasing
-      confidence.it
+      confidence.
     mentionId: mention_id uniquely identifies each entity mention in a single
       response.
     subject: The subject this entity mention relates to. Its value is one of:
@@ -1245,18 +1308,20 @@ class ExportMessagesRequest(_messages.Message):
 
   Fields:
     endTime: The end of the range in `send_time` (MSH.7, https://www.hl7.org/d
-      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/conf/HL
-      7MSH.htm) to process. If not specified, the time when the export is
-      scheduled is used. This value has to come after the `start_time` defined
-      below. Only messages whose `send_time` lies in the range `start_time`
-      (inclusive) to `end_time` (exclusive) are exported.
+      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-
+      0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
+      time when the export is scheduled is used. This value has to come after
+      the `start_time` defined below. Only messages whose `send_time` lies in
+      the range `start_time` (inclusive) to `end_time` (exclusive) are
+      exported.
     gcsDestination: Export to a Cloud Storage destination.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
-      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/con
-      f/HL7MSH.htm) to process. If not specified, the UNIX epoch
-      (1970-01-01T00:00:00Z) is used. This value has to come before the
-      `end_time` defined below. Only messages whose `send_time` lies in the
-      range `start_time` (inclusive) to `end_time` (exclusive) are exported.
+      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-
+      0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
+      UNIX epoch (1970-01-01T00:00:00Z) is used. This value has to come before
+      the `end_time` defined below. Only messages whose `send_time` lies in
+      the range `start_time` (inclusive) to `end_time` (exclusive) are
+      exported.
   """
 
   endTime = _messages.StringField(1)
@@ -1393,6 +1458,15 @@ class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
   Enums:
+    ComplexDataTypeReferenceParsingValueValuesEnum: Enable parsing of
+      references within complex FHIR data types such as Extensions. If this
+      value is set to ENABLED, then features like referential integrity and
+      Bundle reference rewriting apply to all references. If this flag has not
+      been specified the behavior of the FHIR store will not change,
+      references in complex data types will not be parsed. New stores will
+      have this value set to ENABLED after a notification period. Warning:
+      turning on this flag causes processing existing resources to fail if
+      they contain references to non-existent resources.
     VersionValueValuesEnum: Immutable. The FHIR specification version that
       this FHIR store supports natively. This field is immutable after store
       creation. Requests are rejected if they contain FHIR resources of a
@@ -1409,6 +1483,15 @@ class FhirStore(_messages.Message):
       with a given store.
 
   Fields:
+    complexDataTypeReferenceParsing: Enable parsing of references within
+      complex FHIR data types such as Extensions. If this value is set to
+      ENABLED, then features like referential integrity and Bundle reference
+      rewriting apply to all references. If this flag has not been specified
+      the behavior of the FHIR store will not change, references in complex
+      data types will not be parsed. New stores will have this value set to
+      ENABLED after a notification period. Warning: turning on this flag
+      causes processing existing resources to fail if they contain references
+      to non-existent resources.
     defaultSearchHandlingStrict: If true, overrides the default search
       behavior for this FHIR store to `handling=strict` which returns an error
       for unrecognized search parameters. If false, uses the FHIR
@@ -1479,6 +1562,27 @@ class FhirStore(_messages.Message):
       version. Version is required for every FHIR store.
   """
 
+  class ComplexDataTypeReferenceParsingValueValuesEnum(_messages.Enum):
+    r"""Enable parsing of references within complex FHIR data types such as
+    Extensions. If this value is set to ENABLED, then features like
+    referential integrity and Bundle reference rewriting apply to all
+    references. If this flag has not been specified the behavior of the FHIR
+    store will not change, references in complex data types will not be
+    parsed. New stores will have this value set to ENABLED after a
+    notification period. Warning: turning on this flag causes processing
+    existing resources to fail if they contain references to non-existent
+    resources.
+
+    Values:
+      COMPLEX_DATA_TYPE_REFERENCE_PARSING_UNSPECIFIED: No parsing behavior
+        specified. This is the same as DISABLED for backwards compatibility.
+      DISABLED: References in complex data types are ignored.
+      ENABLED: References in complex data types are parsed.
+    """
+    COMPLEX_DATA_TYPE_REFERENCE_PARSING_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
   class VersionValueValuesEnum(_messages.Enum):
     r"""Immutable. The FHIR specification version that this FHIR store
     supports natively. This field is immutable after store creation. Requests
@@ -1529,16 +1633,48 @@ class FhirStore(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  defaultSearchHandlingStrict = _messages.BooleanField(1)
-  disableReferentialIntegrity = _messages.BooleanField(2)
-  disableResourceVersioning = _messages.BooleanField(3)
-  enableUpdateCreate = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  notificationConfig = _messages.MessageField('NotificationConfig', 7)
-  streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 9)
-  version = _messages.EnumField('VersionValueValuesEnum', 10)
+  complexDataTypeReferenceParsing = _messages.EnumField('ComplexDataTypeReferenceParsingValueValuesEnum', 1)
+  defaultSearchHandlingStrict = _messages.BooleanField(2)
+  disableReferentialIntegrity = _messages.BooleanField(3)
+  disableResourceVersioning = _messages.BooleanField(4)
+  enableUpdateCreate = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  notificationConfig = _messages.MessageField('NotificationConfig', 8)
+  streamConfigs = _messages.MessageField('StreamConfig', 9, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 10)
+  version = _messages.EnumField('VersionValueValuesEnum', 11)
+
+
+class FhirStoreMetric(_messages.Message):
+  r"""Count of resources and total storage size by type for a given FHIR
+  store.
+
+  Fields:
+    count: The total count of FHIR resources in the store of this resource
+      type.
+    resourceType: The FHIR resource type this metric applies to.
+    structuredStorageSizeBytes: The total amount of structured storage used by
+      FHIR resources of this resource type in the store.
+  """
+
+  count = _messages.IntegerField(1)
+  resourceType = _messages.StringField(2)
+  structuredStorageSizeBytes = _messages.IntegerField(3)
+
+
+class FhirStoreMetrics(_messages.Message):
+  r"""List of metrics for a given FHIR store.
+
+  Fields:
+    metrics: List of FhirStoreMetric by resource type.
+    name: The resource name of the FHIR store to get metrics for, in the
+      format `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_sto
+      re_id}`.
+  """
+
+  metrics = _messages.MessageField('FhirStoreMetric', 1, repeated=True)
+  name = _messages.StringField(2)
 
 
 class Field(_messages.Message):
@@ -1752,9 +1888,9 @@ class GoogleCloudHealthcareV1DicomBigQueryDestination(_messages.Message):
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
         WRITE_EMPTY.
       WRITE_EMPTY: Only export data if the destination table is empty.
-      WRITE_TRUNCATE: Erase all existing data in a table before writing the
-        instances.
-      WRITE_APPEND: Append data to the existing table.
+      WRITE_TRUNCATE: Erase all existing data in the destination table before
+        writing the instances.
+      WRITE_APPEND: Append data to the destination table.
     """
     WRITE_DISPOSITION_UNSPECIFIED = 0
     WRITE_EMPTY = 1
@@ -1860,9 +1996,9 @@ class GoogleCloudHealthcareV1FhirBigQueryDestination(_messages.Message):
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
         WRITE_EMPTY.
       WRITE_EMPTY: Only export data if the destination tables are empty.
-      WRITE_TRUNCATE: Erase all existing data in the tables before writing the
-        instances.
-      WRITE_APPEND: Append data to the existing tables.
+      WRITE_TRUNCATE: Erase all existing data in the destination tables before
+        writing the FHIR resources.
+      WRITE_APPEND: Append data to the destination tables.
     """
     WRITE_DISPOSITION_UNSPECIFIED = 0
     WRITE_EMPTY = 1
@@ -2400,8 +2536,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messa
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2481,8 +2618,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest(_messa
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2498,8 +2636,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest(
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2742,8 +2881,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2890,8 +3030,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest(_message
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -3193,8 +3334,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest(_m
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -3375,13 +3517,18 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
       `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The time must
       be specified to the second and include a time zone.
     _type: String of comma-delimited FHIR resource types. If provided, only
-      resources of the specified resource type(s) are returned.
-    end: The response includes records prior to the end date. If no end date
-      is provided, all records subsequent to the start date are in scope.
+      resources of the specified resource type(s) are returned. Specifying
+      multiple `_type` parameters isn't supported. For example, the result of
+      `_type=Observation&_type=Encounter` is undefined. Use
+      `_type=Observation,Encounter` instead.
+    end: The response includes records prior to the end date. The date uses
+      the format YYYY-MM-DD. If no end date is provided, all records
+      subsequent to the start date are in scope.
     name: Name of the `Patient` resource for which the information is
       required.
-    start: The response includes records subsequent to the start date. If no
-      start date is provided, all records prior to the end date are in scope.
+    start: The response includes records subsequent to the start date. The
+      date uses the format YYYY-MM-DD. If no start date is provided, all
+      records prior to the end date are in scope.
   """
 
   _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3423,7 +3570,12 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirResourceValidateRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store that holds the profiles being used for
       validation.
-    profile: A profile that this resource should be validated against.
+    profile: The canonical URL of a profile that this resource should be
+      validated against. For example, to validate a Patient resource against
+      the US Core Patient profile this parameter would be
+      `http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient`. A
+      StructureDefinition with this canonical URL must exist in the FHIR
+      store.
     type: The FHIR resource type of the resource being validated. For a
       complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org/imple
       ment/standards/fhir/DSTU2/resourcelist.html),
@@ -3493,6 +3645,18 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirVreadRequest(_messages.Me
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsFhirStoresGetFHIRStoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the FHIR store to get metrics for.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest
   object.
@@ -3511,8 +3675,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetIamPolicyRequest(_messages
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3609,8 +3774,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest(_messages
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -3625,8 +3791,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresTestIamPermissionsRequest(_me
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -3652,8 +3819,9 @@ class HealthcareProjectsLocationsDatasetsGetIamPolicyRequest(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3729,8 +3897,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_message
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3986,9 +4155,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesPatchRequest(_messag
 
   Fields:
     message: A Message resource to be passed as the request body.
-    name: Resource name of the Message, of the form `projects/{project_id}/dat
-      asets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}/messages/{message_id}`.
-      Assigned by the server.
+    name: Resource name of the Message, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}
+      /messages/{message_id}`. Assigned by the server.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -4005,7 +4174,8 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
     name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
+      id}`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -4022,8 +4192,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresSetIamPolicyRequest(_message
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -4039,8 +4210,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresTestIamPermissionsRequest(_m
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -4127,8 +4299,9 @@ class HealthcareProjectsLocationsDatasetsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -4142,8 +4315,9 @@ class HealthcareProjectsLocationsDatasetsTestIamPermissionsRequest(_messages.Mes
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -4347,7 +4521,8 @@ class Hl7V2Store(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_id}`.
+      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
+      id}`.
     notificationConfigs: A list of notification configs. Each configuration
       uses a filter to determine whether to publish a message (both Ingest &
       Create) on the corresponding notification destination. Only the message
@@ -4502,7 +4677,9 @@ class ImageConfig(_messages.Message):
       TEXT_REDACTION_MODE_UNSPECIFIED: No text redaction specified. Same as
         REDACT_NO_TEXT.
       REDACT_ALL_TEXT: Redact all text.
-      REDACT_SENSITIVE_TEXT: Redact sensitive text.
+      REDACT_SENSITIVE_TEXT: Redact sensitive text. Uses the set of [Default
+        DICOM InfoTypes](https://cloud.google.com/healthcare-api/docs/how-
+        tos/dicom-deidentify#default_dicom_infotypes).
       REDACT_NO_TEXT: Do not redact text.
     """
     TEXT_REDACTION_MODE_UNSPECIFIED = 0
@@ -4652,6 +4829,25 @@ class IngestMessageResponse(_messages.Message):
 
   hl7Ack = _messages.BytesField(1)
   message = _messages.MessageField('Message', 2)
+
+
+class KmsWrappedCryptoKey(_messages.Message):
+  r"""Include to use an existing data crypto key wrapped by KMS. The wrapped
+  key must be a 128-, 192-, or 256-bit key. The key must grant the Cloud IAM
+  permission `cloudkms.cryptoKeyVersions.useToDecrypt` to the project's Cloud
+  Healthcare Service Agent service account. For more information, see
+  [Creating a wrapped key] (https://cloud.google.com/dlp/docs/create-wrapped-
+  key).
+
+  Fields:
+    cryptoKey: Required. The resource name of the KMS CryptoKey to use for
+      unwrapping. For example, `projects/{project_id}/locations/{location_id}/
+      keyRings/{keyring}/cryptoKeys/{key}`.
+    wrappedKey: Required. The wrapped data crypto key.
+  """
+
+  cryptoKey = _messages.StringField(1)
+  wrappedKey = _messages.BytesField(2)
 
 
 class LinkedEntity(_messages.Message):
@@ -4961,9 +5157,9 @@ class Message(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     messageType: The message type for this message. MSH-9.1.
-    name: Resource name of the Message, of the form `projects/{project_id}/dat
-      asets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}/messages/{message_id}`.
-      Assigned by the server.
+    name: Resource name of the Message, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}
+      /messages/{message_id}`. Assigned by the server.
     parsedData: Output only. The parsed version of the raw message data.
     patientIds: All patient IDs listed in the PID-2, PID-3, and PID-4 segments
       of this message.
@@ -5222,10 +5418,17 @@ class ParserConfig(_messages.Message):
         segment starts with the MSH-2 field and the field numbers are off-by-
         one with respect to the HL7 standard.
       V2: The `parsed_data` includes every given non-empty message field.
+      V3: This version is the same as V2, with the following change. The
+        `parsed_data` contains unescaped escaped field separators, component
+        separators, sub-component separators, repetition separators, escape
+        characters, and truncation characters. If `schema` is specified, the
+        schematized parser uses improved parsing heuristics compared to
+        previous versions.
     """
     PARSER_VERSION_UNSPECIFIED = 0
     V1 = 1
     V2 = 2
+    V3 = 3
 
   allowNullHeader = _messages.BooleanField(1)
   schema = _messages.MessageField('SchemaPackage', 2)
@@ -5545,6 +5748,8 @@ class SchemaConfig(_messages.Message):
       is required.
 
   Fields:
+    lastUpdatedPartitionConfig: The configuration for exported BigQuery tables
+      to be partitioned by FHIR resource's last updated time column.
     recursiveStructureDepth: The depth for all recursive structures in the
       output analytics schema. For example, `concept` in the CodeSystem
       resource is a recursive structure; when the depth is 2, the CodeSystem
@@ -5569,14 +5774,16 @@ class SchemaConfig(_messages.Message):
         `Bundle.entry.response.outcome`.
       ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
         community, with added support for extensions with one or more
-        occurrences and contained resources in stringified JSON.
+        occurrences and contained resources in stringified JSON. Analytics V2
+        uses more space in the destination table than Analytics V1.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     ANALYTICS = 1
     ANALYTICS_V2 = 2
 
-  recursiveStructureDepth = _messages.IntegerField(1)
-  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
+  lastUpdatedPartitionConfig = _messages.MessageField('TimePartitioning', 1)
+  recursiveStructureDepth = _messages.IntegerField(2)
+  schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 3)
 
 
 class SchemaGroup(_messages.Message):
@@ -5786,8 +5993,8 @@ class SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -5992,6 +6199,24 @@ class StreamConfig(_messages.Message):
       errors are logged to Cloud Logging. For more information, see [Viewing
       error logs in Cloud
       Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
+    deidentifiedStoreDestination: The destination FHIR store for de-identified
+      resources. After this field is added, all subsequent
+      creates/updates/patches to the source store will be de-identified using
+      the provided configuration and applied to the destination store.
+      Importing resources to the source store will not trigger the streaming.
+      If the source store already contains resources when this option is
+      enabled, those resources will not be copied to the destination store
+      unless they are subsequently updated. This may result in invalid
+      references in the destination store. Before adding this config, you must
+      grant the healthcare.fhirResources.update permission on the destination
+      store to your project's **Cloud Healthcare Service Agent** [service
+      account](https://cloud.google.com/healthcare/docs/how-tos/permissions-
+      healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The
+      destination store must set enable_update_create to true. The destination
+      store must have disable_referential_integrity set to true. If a resource
+      cannot be de-identified, errors will be logged to Cloud Logging (see
+      [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an
@@ -6000,7 +6225,8 @@ class StreamConfig(_messages.Message):
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirBigQueryDestination', 1)
-  resourceTypes = _messages.StringField(2, repeated=True)
+  deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
+  resourceTypes = _messages.StringField(3, repeated=True)
 
 
 class TagFilterList(_messages.Message):
@@ -6022,7 +6248,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
@@ -6046,6 +6272,7 @@ class TextConfig(_messages.Message):
 
   Fields:
     transformations: The transformations to apply to the detected data.
+      Deprecated. Use `additional_transformations` instead.
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
@@ -6061,6 +6288,38 @@ class TextSpan(_messages.Message):
 
   beginOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   content = _messages.StringField(2)
+
+
+class TimePartitioning(_messages.Message):
+  r"""Configuration for FHIR BigQuery time-partitioned tables.
+
+  Enums:
+    TypeValueValuesEnum: Type of partitioning.
+
+  Fields:
+    expirationMs: Number of milliseconds for which to keep the storage for a
+      partition.
+    type: Type of partitioning.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of partitioning.
+
+    Values:
+      PARTITION_TYPE_UNSPECIFIED: Default unknown time.
+      HOUR: Data partitioned by hour.
+      DAY: Data partitioned by day.
+      MONTH: Data partitioned by month.
+      YEAR: Data partitioned by year.
+    """
+    PARTITION_TYPE_UNSPECIFIED = 0
+    HOUR = 1
+    DAY = 2
+    MONTH = 3
+    YEAR = 4
+
+  expirationMs = _messages.IntegerField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Type(_messages.Message):

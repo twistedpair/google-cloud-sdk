@@ -1286,6 +1286,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
   r"""Optional arguments to enable specific features of builds.
 
   Enums:
+    DefaultLogsBucketBehaviorValueValuesEnum: Optional. Option to specify how
+      default logs buckets are setup.
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
       behavior to Google Cloud Storage.
     LoggingValueValuesEnum: Option to specify the logging mode, which
@@ -1300,6 +1302,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       configuration file.
 
   Fields:
+    defaultLogsBucketBehavior: Optional. Option to specify how default logs
+      buckets are setup.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
       this is *NOT* "disk free"; some of the space will be used by the
       operating system and build utilities. Also note that this is the minimum
@@ -1344,6 +1348,18 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       configuration.
     workerPool: This field deprecated; please use `pool.name` instead.
   """
+
+  class DefaultLogsBucketBehaviorValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify how default logs buckets are setup.
+
+    Values:
+      DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED: Unspecified.
+      REGIONAL_USER_OWNED_BUCKET: Bucket is located in user-owned project in
+        the same region as the build. The builder service account must have
+        access to create and write to GCS buckets in the build project.
+    """
+    DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
+    REGIONAL_USER_OWNED_BUCKET = 1
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
     r"""Option to define build log streaming behavior to Google Cloud Storage.
@@ -1433,19 +1449,20 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  diskSizeGb = _messages.IntegerField(1)
-  dynamicSubstitutions = _messages.BooleanField(2)
-  env = _messages.StringField(3, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 5)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
-  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 7)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
-  secretEnv = _messages.StringField(9, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 12, repeated=True)
-  workerPool = _messages.StringField(13)
+  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 1)
+  diskSizeGb = _messages.IntegerField(2)
+  dynamicSubstitutions = _messages.BooleanField(3)
+  env = _messages.StringField(4, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 5)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 6)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 7)
+  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 8)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 9)
+  secretEnv = _messages.StringField(10, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 11, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 12)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 13, repeated=True)
+  workerPool = _messages.StringField(14)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption(_messages.Message):
@@ -4824,18 +4841,18 @@ class Publisher(_messages.Message):
   r"""Publisher contains information about the publisher of this Note.
 
   Fields:
-    context: The context or namespace. Contains a URL which is under control
-      of the issuing party and can be used as a globally unique identifier for
-      that issuing party. Example: https://csaf.io
     issuingAuthority: Provides information about the authority of the issuing
       party to release the document, in particular, the party's constituency
       and responsibilities or other obligations.
     name: Name of the publisher. Examples: 'Google', 'Google Cloud Platform'.
+    publisherNamespace: The context or namespace. Contains a URL which is
+      under control of the issuing party and can be used as a globally unique
+      identifier for that issuing party. Example: https://csaf.io
   """
 
-  context = _messages.StringField(1)
-  issuingAuthority = _messages.StringField(2)
-  name = _messages.StringField(3)
+  issuingAuthority = _messages.StringField(1)
+  name = _messages.StringField(2)
+  publisherNamespace = _messages.StringField(3)
 
 
 class Recipe(_messages.Message):
@@ -5247,8 +5264,6 @@ class Remediation(_messages.Message):
   Fields:
     details: Contains a comprehensive human-readable discussion of the
       remediation.
-    remediationTime: Contains the date from which the remediation is
-      available.
     remediationType: The type of remediation that can be applied.
     remediationUri: Contains the URL where to obtain the remediation.
   """
@@ -5272,9 +5287,8 @@ class Remediation(_messages.Message):
     WORKAROUND = 5
 
   details = _messages.StringField(1)
-  remediationTime = _messages.StringField(2)
-  remediationType = _messages.EnumField('RemediationTypeValueValuesEnum', 3)
-  remediationUri = _messages.MessageField('URI', 4)
+  remediationType = _messages.EnumField('RemediationTypeValueValuesEnum', 2)
+  remediationUri = _messages.MessageField('URI', 3)
 
 
 class RepoSource(_messages.Message):

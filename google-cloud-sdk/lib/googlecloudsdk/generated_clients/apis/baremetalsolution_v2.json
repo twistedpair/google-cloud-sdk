@@ -4043,6 +4043,34 @@
                   ],
                   "description": "Create an NFS share."
                 },
+                "rename": {
+                  "id": "baremetalsolution.projects.locations.nfsShares.rename",
+                  "path": "v2/{+name}:rename",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/nfsShares/{nfsSharesId}:rename",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The `name` field is used to identify the nfsshare. Format: projects\/{project}\/locations\/{location}\/nfsshares\/{nfsshare}",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nfsShares\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RenameNfsShareRequest"
+                  },
+                  "response": {
+                    "$ref": "NfsShare"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RenameNfsShare sets a new name for an nfsshare. Use with caution, previous names become immediately invalidated."
+                },
                 "delete": {
                   "id": "baremetalsolution.projects.locations.nfsShares.delete",
                   "path": "v2/{+name}",
@@ -4067,38 +4095,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete an NFS share. The underlying volume is automatically deleted."
-                }
-              }
-            },
-            "nfsshares": {
-              "methods": {
-                "rename": {
-                  "id": "baremetalsolution.projects.locations.nfsshares.rename",
-                  "path": "v2/{+name}:rename",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/nfsshares/{nfssharesId}:rename",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The `name` field is used to identify the nfsshare. Format: projects\/{project}\/locations\/{location}\/nfsshares\/{nfsshare}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nfsshares\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "RenameNfsShareRequest"
-                  },
-                  "response": {
-                    "$ref": "NfsShare"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "RenameNfsShare sets a new name for an nfsshare. Use with caution, previous names become immediately invalidated."
                 }
               }
             },

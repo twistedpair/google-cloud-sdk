@@ -30,6 +30,18 @@ from six.moves import urllib
 _API_NAME = 'speech'
 _API_VERSION = 'v2'
 
+PUBLIC_ALLOWED_LOCATIONS = (
+    'us',
+    'eu',
+    'global',
+    'us-central1',
+    'northamerica-northeast1',
+    'australia-southeast1',
+    'europe-west2',
+)
+EXPLICIT_ENCODING_OPTIONS = ('LINEAR16', 'MULAW', 'ALAW')
+ENCODING_OPTIONS = frozenset(EXPLICIT_ENCODING_OPTIONS) | {'AUTO'}
+
 
 @contextlib.contextmanager
 def _OverrideEndpoint(override):
@@ -50,10 +62,18 @@ class SpeechV2Client(object):
   def __init__(self):
     client_class = apis.GetClientClass(_API_NAME, _API_VERSION)
     self._net_loc = urllib.parse.urlsplit(client_class.BASE_URL).netloc
-    self._messages = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+    messages = apis.GetMessagesModule(_API_NAME, _API_VERSION)
 
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(_API_NAME, _API_VERSION)
+    self._encoding_to_message = {
+        'LINEAR16': (
+            messages.ExplicitDecodingConfig.EncodingValueValuesEnum.LINEAR16
+        ),
+        'MULAW': messages.ExplicitDecodingConfig.EncodingValueValuesEnum.MULAW,
+        'ALAW': messages.ExplicitDecodingConfig.EncodingValueValuesEnum.ALAW,
+    }
+    self._messages = messages
 
   def _GetClientForLocation(self, location):
     with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
@@ -68,19 +88,49 @@ class SpeechV2Client(object):
   def _LocationsServiceForLocation(self, location):
     return self._GetClientForLocation(location).projects_locations
 
-  def CreateRecognizer(self,
-                       resource,
-                       display_name,
-                       model,
-                       language_codes,
-                       profanity_filter=False,
-                       enable_word_time_offsets=False,
-                       enable_word_confidence=False,
-                       enable_automatic_punctuation=False,
-                       enable_spoken_punctuation=False,
-                       enable_spoken_emojis=False,
-                       min_speaker_count=None,
-                       max_speaker_count=None):
+  def _MatchEncoding(
+      self, recognizer, encoding, update=False, update_mask=None
+  ):
+    """Matches encoding type based on auto or explicit decoding option."""
+    if encoding is not None:
+      if encoding == 'AUTO':
+        recognizer.defaultRecognitionConfig.autoDecodingConfig = (
+            self._messages.AutoDetectDecodingConfig()
+        )
+      elif encoding in EXPLICIT_ENCODING_OPTIONS:
+        recognizer.defaultRecognitionConfig.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+        recognizer.defaultRecognitionConfig.explicitDecodingConfig.encoding = (
+            self._encoding_to_message[encoding]
+        )
+      if update:
+        if encoding == 'AUTO':
+          update_mask.append('default_recognition_config.auto_decoding_config')
+        else:
+          update_mask.append(
+              'default_recognition_config.explicit_decoding_config'
+          )
+    return recognizer, update_mask
+
+  def CreateRecognizer(
+      self,
+      resource,
+      display_name,
+      model,
+      language_codes,
+      profanity_filter=False,
+      enable_word_time_offsets=False,
+      enable_word_confidence=False,
+      enable_automatic_punctuation=False,
+      enable_spoken_punctuation=False,
+      enable_spoken_emojis=False,
+      min_speaker_count=None,
+      max_speaker_count=None,
+      encoding=None,
+      sample_rate=None,
+      audio_channel_count=None,
+  ):
     """Call API CreateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer(
         displayName=display_name, model=model, languageCodes=language_codes)
@@ -105,6 +155,15 @@ class SpeechV2Client(object):
       )
       recognizer.defaultRecognitionConfig.features.diarizationConfig.minSpeakerCount = min_speaker_count
       recognizer.defaultRecognitionConfig.features.diarizationConfig.maxSpeakerCount = max_speaker_count
+
+    recognizer, _ = self._MatchEncoding(recognizer, encoding)
+    if encoding is not None and encoding != 'AUTO':
+      recognizer.defaultRecognitionConfig.explicitDecodingConfig.sampleRateHertz = (
+          sample_rate
+      )
+      recognizer.defaultRecognitionConfig.explicitDecodingConfig.audioChannelCount = (
+          audio_channel_count
+      )
 
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent(
@@ -139,19 +198,24 @@ class SpeechV2Client(object):
         batch_size=page_size,
         field='recognizers')
 
-  def UpdateRecognizer(self,
-                       resource,
-                       display_name=None,
-                       model=None,
-                       language_codes=None,
-                       profanity_filter=None,
-                       enable_word_time_offsets=None,
-                       enable_word_confidence=None,
-                       enable_automatic_punctuation=None,
-                       enable_spoken_punctuation=None,
-                       enable_spoken_emojis=None,
-                       min_speaker_count=None,
-                       max_speaker_count=None):
+  def UpdateRecognizer(
+      self,
+      resource,
+      display_name=None,
+      model=None,
+      language_codes=None,
+      profanity_filter=None,
+      enable_word_time_offsets=None,
+      enable_word_confidence=None,
+      enable_automatic_punctuation=None,
+      enable_spoken_punctuation=None,
+      enable_spoken_emojis=None,
+      min_speaker_count=None,
+      max_speaker_count=None,
+      encoding=None,
+      sample_rate=None,
+      audio_channel_count=None,
+  ):
     """Call API UpdateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer()
     update_mask = []
@@ -215,6 +279,34 @@ class SpeechV2Client(object):
       features.diarizationConfig.maxSpeakerCount = max_speaker_count
       update_mask.append(
           'default_recognition_config.features.diarization_config.max_speaker_count'
+      )
+
+    recognizer, update_mask = self._MatchEncoding(
+        recognizer, encoding, update=True, update_mask=update_mask
+    )
+
+    if sample_rate is not None:
+      if recognizer.defaultRecognitionConfig.explicitDecodingConfig is None:
+        recognizer.defaultRecognitionConfig.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+      recognizer.defaultRecognitionConfig.explicitDecodingConfig.sampleRateHertz = (
+          sample_rate
+      )
+      update_mask.append(
+          'default_recognition_config.explicit_decoding_config.sample_rate_hertz'
+      )
+
+    if audio_channel_count is not None:
+      if recognizer.defaultRecognitionConfig.explicitDecodingConfig is None:
+        recognizer.defaultRecognitionConfig.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+      recognizer.defaultRecognitionConfig.explicitDecodingConfig.audioChannelCount = (
+          audio_channel_count
+      )
+      update_mask.append(
+          'default_recognition_config.explicit_decoding_config.audio_channel_count'
       )
 
     request = self._messages.SpeechProjectsLocationsRecognizersPatchRequest(

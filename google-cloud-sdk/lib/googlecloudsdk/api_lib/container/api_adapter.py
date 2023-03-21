@@ -312,6 +312,12 @@ API_SERVER = 'API_SERVER'
 SCHEDULER = 'SCHEDULER'
 CONTROLLER_MANAGER = 'CONTROLLER_MANAGER'
 ADDON_MANAGER = 'ADDON_MANAGER'
+STORAGE = 'STORAGE'
+HPA_COMPONENT = 'HPA'
+POD = 'POD'
+DAEMONSET = 'DAEMONSET'
+DEPLOYMENT = 'DEPLOYMENT'
+STATEFULSET = 'STATEFULSET'
 LOGGING_OPTIONS = [
     NONE,
     SYSTEM,
@@ -328,6 +334,12 @@ MONITORING_OPTIONS = [
     API_SERVER,
     SCHEDULER,
     CONTROLLER_MANAGER,
+    STORAGE,
+    HPA_COMPONENT,
+    POD,
+    DAEMONSET,
+    DEPLOYMENT,
+    STATEFULSET,
 ]
 PRIMARY_LOGS_OPTIONS = [
     APISERVER,
@@ -645,6 +657,7 @@ class CreateClusterOptions(object):
       enable_multi_networking=None,
       enable_security_posture=None,
       enable_nested_virtualization=None,
+      network_performance_config=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -826,6 +839,7 @@ class CreateClusterOptions(object):
     self.logging_variant = logging_variant
     self.enable_multi_networking = enable_multi_networking
     self.enable_security_posture = enable_security_posture
+    self.network_performance_config = network_performance_config
 
 
 class UpdateClusterOptions(object):
@@ -947,6 +961,7 @@ class UpdateClusterOptions(object):
       enable_fleet=None,
       clear_fleet_project=None,
       enable_security_posture=None,
+      network_performance_config=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1063,6 +1078,7 @@ class UpdateClusterOptions(object):
     self.enable_fleet = enable_fleet
     self.clear_fleet_project = clear_fleet_project
     self.enable_security_posture = enable_security_posture
+    self.network_performance_config = network_performance_config
 
 
 class SetMasterAuthOptions(object):
@@ -1972,7 +1988,27 @@ class APIAdapter(object):
             self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
         )
 
+    if options.network_performance_config:
+      perf = self._GetClusterNetworkPerformanceConfig(options)
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig(
+            networkPerformanceConfig=perf)
+      else:
+        cluster.networkConfig.networkPerformanceConfig = perf
     return cluster
+
+  def _GetClusterNetworkPerformanceConfig(self, options):
+    network_perf_args = options.network_performance_config
+    network_perf_configs = self.messages.ClusterNetworkPerformanceConfig()
+
+    for config in network_perf_args:
+      total_tier = config.get('total-egress-bandwidth-tier', '').upper()
+      if total_tier:
+        network_perf_configs.totalEgressBandwidthTier = (
+            self.messages.ClusterNetworkPerformanceConfig
+            .TotalEgressBandwidthTierValueValuesEnum(total_tier))
+
+    return network_perf_configs
 
   def ParseNodeConfig(self, options):
     """Creates node config based on node config options."""
@@ -3111,6 +3147,10 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredSecurityPostureConfig=security_posture_config)
 
+    if options.network_performance_config:
+      perf = self._GetClusterNetworkPerformanceConfig(options)
+      update = self.messages.ClusterUpdate(
+          desiredNetworkPerformanceConfig=perf)
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -5917,6 +5957,30 @@ def _GetMonitoringConfig(options, messages):
       comp.enableComponents.append(
           messages.MonitoringComponentConfig
           .EnableComponentsValueListEntryValuesEnum.CONTROLLER_MANAGER)
+    if STORAGE in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.STORAGE)
+    if HPA_COMPONENT in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.HPA)
+    if POD in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.POD)
+    if DAEMONSET in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.DAEMONSET)
+    if DEPLOYMENT in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.DEPLOYMENT)
+    if STATEFULSET in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.STATEFULSET)
 
     config.componentConfig = comp
 

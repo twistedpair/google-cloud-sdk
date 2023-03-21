@@ -404,12 +404,16 @@ class S3Api(cloud_api.CloudApi):
     return self.client.delete_object(**delete_object_kwargs)
 
   def _download_object(self, cloud_resource, download_stream, digesters,
-                       progress_callback, start_byte):
+                       progress_callback, start_byte, end_byte):
     get_object_args = {
         'Bucket': cloud_resource.bucket,
         'Key': cloud_resource.name,
-        'Range': 'bytes={}-'.format(start_byte),
     }
+    if end_byte is None:
+      get_object_args['Range'] = 'bytes={}-'.format(start_byte)
+    else:
+      get_object_args['Range'] = 'bytes={}-{}'.format(start_byte, end_byte)
+
     if cloud_resource.generation is not None:
       get_object_args['VersionId'] = str(cloud_resource.generation)
     response = self.client.get_object(**get_object_args)
@@ -428,8 +432,9 @@ class S3Api(cloud_api.CloudApi):
     return response.get('ContentEncoding')
 
   def _download_object_resumable(self, cloud_resource, download_stream,
-                                 digesters, progress_callback, start_byte):
-    progress_state = {'start_byte': start_byte}
+                                 digesters, progress_callback, start_byte,
+                                 end_byte):
+    progress_state = {'start_byte': start_byte, 'end_byte': end_byte}
 
     def _call_download_object():
       # We use this inner function instead of passing _download_object
@@ -437,7 +442,7 @@ class S3Api(cloud_api.CloudApi):
       # updated args values.
       return self._download_object(
           cloud_resource, download_stream, digesters, progress_callback,
-          progress_state['start_byte'])
+          progress_state['start_byte'], progress_state['end_byte'])
 
     def _should_retry_resumable_download(exc_type, exc_value, exc_traceback,
                                          state):
@@ -475,7 +480,7 @@ class S3Api(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
-    del request_config, do_not_decompress, end_byte  # Unused.
+    del request_config, do_not_decompress  # Unused.
     if download_util.return_and_report_if_nothing_to_download(
         cloud_resource, progress_callback
     ):
@@ -489,11 +494,11 @@ class S3Api(cloud_api.CloudApi):
     if download_strategy == cloud_api.DownloadStrategy.RESUMABLE:
       content_encoding = self._download_object_resumable(
           cloud_resource, download_stream, digesters_dict, progress_callback,
-          start_byte)
+          start_byte, end_byte)
     else:
       content_encoding = self._download_object(
           cloud_resource, download_stream, digesters_dict, progress_callback,
-          start_byte)
+          start_byte, end_byte)
 
     return content_encoding
 

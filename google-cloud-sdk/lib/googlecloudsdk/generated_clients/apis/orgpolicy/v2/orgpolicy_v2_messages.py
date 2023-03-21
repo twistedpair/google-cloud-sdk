@@ -92,6 +92,7 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
       `folders/{folder_id}/constraints/{constraint_name}` *
       `organizations/{organization_id}/constraints/{constraint_name}` For
       example, "/projects/123/constraints/compute.disableSerialPortAccess".
+    supportsDryRun: Shows if dry run is supported for this constraint or not.
   """
 
   class ConstraintDefaultValueValuesEnum(_messages.Enum):
@@ -115,6 +116,7 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
   displayName = _messages.StringField(4)
   listConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintListConstraint', 5)
   name = _messages.StringField(6)
+  supportsDryRun = _messages.BooleanField(7)
 
 
 class GoogleCloudOrgpolicyV2ConstraintBooleanConstraint(_messages.Message):

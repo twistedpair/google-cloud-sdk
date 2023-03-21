@@ -5013,7 +5013,11 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
       the language does not exist, then the speech is recognized using the
       standard version of the specified model. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details.
+      text/docs/basics#select-model) for more details. If you specify a model,
+      the following models typically have the best performance: - phone_call
+      (best for Agent Assist and telephony) - latest_short (best for
+      Dialogflow non-telephony) - command_and_search (best for very short
+      utterances and commands)
     modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
@@ -7189,7 +7193,11 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
       the language does not exist, then the speech is recognized using the
       standard version of the specified model. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details.
+      text/docs/basics#select-model) for more details. If you specify a model,
+      the following models typically have the best performance: - phone_call
+      (best for Agent Assist and telephony) - latest_short (best for
+      Dialogflow non-telephony) - command_and_search (best for very short
+      utterances and commands)
     modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
@@ -11382,7 +11390,11 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       language does not exist, then the speech is recognized using the
       standard version of the specified model. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details.
+      text/docs/basics#select-model) for more details. If you specify a model,
+      the following models typically have the best performance: - phone_call
+      (best for Agent Assist and telephony) - latest_short (best for
+      Dialogflow non-telephony) - command_and_search (best for very short
+      utterances and commands)
     modelVariant: Which variant of the Speech model to use.
     phraseHints: A list of strings containing words and phrases that the
       speech recognizer should recognize with higher likelihood. See [the

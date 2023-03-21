@@ -1212,8 +1212,11 @@ class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
   Fields:
     endpointId: Immutable. The ID to use for endpoint, which will become the
       final component of the endpoint resource name. If not provided, Vertex
-      AI will generate a value for this ID. This value should be 1-10
-      characters, and valid characters are /[0-9]/. When using HTTP/JSON, this
+      AI will generate a value for this ID. If the first character is a
+      letter, this value may be up to 63 characters, and valid characters are
+      `[a-z0-9-]`. The last character must be a letter or number. If the first
+      character is a number, this value may be up to 9 characters, and valid
+      characters are `[0-9]` with no leading zeros. When using HTTP/JSON, this
       field is populated based on a query string argument, such as
       `?endpoint_id=12345`. This is the fallback for fields that are not
       included in either the URI or the body.
@@ -7950,9 +7953,7 @@ class GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigSnapshotAnalysis(
       Explicitly Disable the snapshot analysis based monitoring.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
-      days. If both monitoring_interval_days and the deprecated
-      `monitoring_interval` field are set when creating/updating
-      EntityTypes/Features, monitoring_interval_days will be used.
+      days.
     stalenessDays: Customized export features time window for snapshot
       analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1
       day. Maximum value is 4000 days.
@@ -8517,7 +8518,7 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4_POD: TPU v4.
+      TPU_V4: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -8529,7 +8530,7 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_A100_80GB = 7
     TPU_V2 = 8
     TPU_V3 = 9
-    TPU_V4_POD = 10
+    TPU_V4 = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -11090,12 +11091,12 @@ class GoogleCloudAiplatformUiFeaturestoreMonitoringConfigSnapshotAnalysis(_messa
       Explicitly Disable the snapshot analysis based monitoring.
     monitoringInterval: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value is rolled up to full
-      day.
-    monitoringIntervalDays: Configuration of the snapshot analysis based
-      monitoring pipeline running interval. The value indicates number of
-      days. If both monitoring_interval_days and the deprecated
+      day. If both monitoring_interval_days and the deprecated
       `monitoring_interval` field are set when creating/updating
       EntityTypes/Features, monitoring_interval_days will be used.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days.
     stalenessDays: Customized export features time window for snapshot
       analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1
       day. Maximum value is 4000 days.
@@ -11413,7 +11414,7 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4_POD: TPU v4.
+      TPU_V4: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -11424,7 +11425,7 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
-    TPU_V4_POD = 9
+    TPU_V4 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -12862,9 +12863,8 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecasting(_messa
 
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
-  r"""A
-  GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs
-  object.
+  r"""TODO(b/272337970) Extract redundant protos like Transformation into a
+  separate file.
 
   Fields:
     additionalExperiments: Additional experiment flags for the time series
@@ -16172,6 +16172,68 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1DeleteFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that delete Feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore delete Features
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1DeleteFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.DeleteFeatureValues.
+
+  Fields:
+    selectEntity: Response for request specifying the entities to delete
+    selectTimeRangeAndFeature: Response for request specifying time range and
+      feature
+  """
+
+  selectEntity = _messages.MessageField('GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectEntity', 1)
+  selectTimeRangeAndFeature = _messages.MessageField('GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectTimeRangeAndFeature', 2)
+
+
+class GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectEntity(_messages.Message):
+  r"""Response message if the request uses the SelectEntity option.
+
+  Fields:
+    offlineStorageDeletedEntityRowCount: The count of deleted entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage.
+    onlineStorageDeletedEntityCount: The count of deleted entities in the
+      online storage. Each entity ID corresponds to one entity.
+  """
+
+  offlineStorageDeletedEntityRowCount = _messages.IntegerField(1)
+  onlineStorageDeletedEntityCount = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectTimeRangeAndFeature(_messages.Message):
+  r"""Response message if the request uses the SelectTimeRangeAndFeature
+  option.
+
+  Fields:
+    impactedFeatureCount: The count of the features or columns impacted. This
+      is the same as the feature count in the request.
+    offlineStorageModifiedEntityRowCount: The count of modified entity rows in
+      the offline storage. Each row corresponds to the combination of an
+      entity ID and a timestamp. One entity ID can have multiple rows in the
+      offline storage. Within each row, only the features specified in the
+      request are deleted.
+    onlineStorageModifiedEntityCount: The count of modified entities in the
+      online storage. Each entity ID corresponds to one entity. Within each
+      entity, only the features specified in the request are deleted.
+  """
+
+  impactedFeatureCount = _messages.IntegerField(1)
+  offlineStorageModifiedEntityRowCount = _messages.IntegerField(2)
+  onlineStorageModifiedEntityCount = _messages.IntegerField(3)
+
+
 class GoogleCloudAiplatformV1DeleteMetadataStoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform MetadataService.DeleteMetadataStore.
 
@@ -17399,7 +17461,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4_POD: TPU v4.
+      TPU_V4: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -17410,7 +17472,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
-    TPU_V4_POD = 9
+    TPU_V4 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -19118,9 +19180,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecasting(_messa
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
-  r"""A
-  GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs
-  object.
+  r"""TODO(b/272337970) Extract redundant protos like Transformation into a
+  separate file.
 
   Fields:
     additionalExperiments: Additional experiment flags for the time series
@@ -22592,7 +22653,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4_POD: TPU v4.
+      TPU_V4: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -22603,7 +22664,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_A100 = 6
     TPU_V2 = 7
     TPU_V3 = 8
-    TPU_V4_POD = 9
+    TPU_V4 = 9
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -24534,6 +24595,12 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       batch prediction. If the Model supports DEDICATED_RESOURCES this config
       may be provided (and the job will use these resources), if the Model
       doesn't support AUTOMATIC_RESOURCES, this config must be provided.
+    disableContainerLogging: For custom-trained Models and AutoML Tabular
+      Models, the container of the DeployedModel instances will send `stderr`
+      and `stdout` streams to Stackdriver Logging by default. Please note that
+      the logs incur cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/stackdriver/pricing). User can disable
+      container logging by setting this flag to true.
     displayName: Required. The user-defined name of this BatchPredictionJob.
     encryptionSpec: Customer-managed encryption key options for a
       BatchPredictionJob. If this is set, then all resources created by the
@@ -24689,32 +24756,33 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
   completionStats = _messages.MessageField('GoogleCloudAiplatformV1beta1CompletionStats', 1)
   createTime = _messages.StringField(2)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchDedicatedResources', 3)
-  displayName = _messages.StringField(4)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
-  endTime = _messages.StringField(6)
-  error = _messages.MessageField('GoogleRpcStatus', 7)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 8)
-  generateExplanation = _messages.BooleanField(9)
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig', 10)
-  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInstanceConfig', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ManualBatchTuningParameters', 13)
-  model = _messages.StringField(14)
-  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringConfig', 15)
-  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies', 16, repeated=True)
-  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 17)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 18)
-  modelVersionId = _messages.StringField(19)
-  name = _messages.StringField(20)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig', 21)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo', 22)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 23, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 24)
-  serviceAccount = _messages.StringField(25)
-  startTime = _messages.StringField(26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1beta1UnmanagedContainerModel', 28)
-  updateTime = _messages.StringField(29)
+  disableContainerLogging = _messages.BooleanField(4)
+  displayName = _messages.StringField(5)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 6)
+  endTime = _messages.StringField(7)
+  error = _messages.MessageField('GoogleRpcStatus', 8)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
+  generateExplanation = _messages.BooleanField(10)
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig', 11)
+  instanceConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobInstanceConfig', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1beta1ManualBatchTuningParameters', 14)
+  model = _messages.StringField(15)
+  modelMonitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringConfig', 16)
+  modelMonitoringStatsAnomalies = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies', 17, repeated=True)
+  modelMonitoringStatus = _messages.MessageField('GoogleRpcStatus', 18)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 19)
+  modelVersionId = _messages.StringField(20)
+  name = _messages.StringField(21)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig', 22)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo', 23)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 24, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 25)
+  serviceAccount = _messages.StringField(26)
+  startTime = _messages.StringField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1beta1UnmanagedContainerModel', 29)
+  updateTime = _messages.StringField(30)
 
 
 class GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig(_messages.Message):
@@ -24892,10 +24960,7 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequest(_messages.Messag
       `2012-07-30T10:43:17.123Z`.
     destination: Required. Specifies output location and format.
     entityTypeSpecs: Required. Specifies EntityType grouping Features to read
-      values of and settings. Each EntityType referenced in
-      [BatchReadFeatureValuesRequest.entity_type_specs] must have a column
-      specifying entity IDs in the EntityType in
-      BatchReadFeatureValuesRequest.request .
+      values of and settings.
     passThroughFields: When not empty, the specified fields in the
       *_read_instances source will be joined as-is in the output, in addition
       to those fields from the Featurestore Entity. For BigQuery source, the
@@ -28877,12 +28942,12 @@ class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis(_
       Explicitly Disable the snapshot analysis based monitoring.
     monitoringInterval: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value is rolled up to full
-      day.
-    monitoringIntervalDays: Configuration of the snapshot analysis based
-      monitoring pipeline running interval. The value indicates number of
-      days. If both monitoring_interval_days and the deprecated
+      day. If both monitoring_interval_days and the deprecated
       `monitoring_interval` field are set when creating/updating
       EntityTypes/Features, monitoring_interval_days will be used.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days.
     stalenessDays: Customized export features time window for snapshot
       analysis. Unit is one day. Default value is 3 weeks. Minimum value is 1
       day. Maximum value is 4000 days.
@@ -30531,7 +30596,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4_POD: TPU v4.
+      TPU_V4: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -30543,7 +30608,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_A100_80GB = 7
     TPU_V2 = 8
     TPU_V3 = 9
-    TPU_V4_POD = 10
+    TPU_V4 = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -30970,8 +31035,6 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
-    largeModelReference: Optional. Used to specify the large model reference.
-      Only present for Large Models.
     metadata: Immutable. An additional information about the Model; the schema
       of the metadata can be found in metadata_schema. Unset if the Model does
       not have any additional information.
@@ -31122,25 +31185,24 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
   etag = _messages.StringField(8)
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
   labels = _messages.MessageField('LabelsValue', 10)
-  largeModelReference = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelLargeModelReference', 11)
-  metadata = _messages.MessageField('extra_types.JsonValue', 12)
-  metadataArtifact = _messages.StringField(13)
-  metadataSchemaUri = _messages.StringField(14)
-  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 15)
-  name = _messages.StringField(16)
-  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 17)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 18)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 19, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 20, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(21, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(22, repeated=True)
-  trainingPipeline = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  versionAliases = _messages.StringField(25, repeated=True)
-  versionCreateTime = _messages.StringField(26)
-  versionDescription = _messages.StringField(27)
-  versionId = _messages.StringField(28)
-  versionUpdateTime = _messages.StringField(29)
+  metadata = _messages.MessageField('extra_types.JsonValue', 11)
+  metadataArtifact = _messages.StringField(12)
+  metadataSchemaUri = _messages.StringField(13)
+  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 14)
+  name = _messages.StringField(15)
+  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 16)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 17)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 18, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 19, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(20, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(21, repeated=True)
+  trainingPipeline = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  versionAliases = _messages.StringField(24, repeated=True)
+  versionCreateTime = _messages.StringField(25)
+  versionDescription = _messages.StringField(26)
+  versionId = _messages.StringField(27)
+  versionUpdateTime = _messages.StringField(28)
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
@@ -31771,8 +31833,8 @@ class GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecSliceConfig(
   10000, "high": 20000 } }, "country": { "value": { "string_value": "US" } } }
   A single slice containing data where the zip_codes between 10000 and 20000
   has the country "US". For this example, data with the zip_code of 12345 and
-  country "US" will be in this slice. Example 4: { "country": { "all_values":
-  { "value": true } } } Three slices are computed, one for each unique country
+  country "US" will be in this slice. Example 4: { "country": {"all_values": {
+  "value": true } } } Three slices are computed, one for each unique country
   in the dataset. Example 5: { "country": { "all_values": { "value": true } },
   "zip_code": { "value": { "float_value": 12345.0 } } } Three slices are
   computed, one for each unique country in the dataset where the zip_code is
@@ -31783,12 +31845,12 @@ class GoogleCloudAiplatformV1beta1ModelEvaluationSliceSliceSliceSpecSliceConfig(
   Fields:
     allValues: If all_values is set to true, then all possible labels of the
       keyed feature will have another slice computed. Example:
-      {"all_values":{"value":true}}
+      `{"all_values":{"value":true}}`
     range: A range of values for a numerical feature. Example:
-      {"range":{"low":10000.0,"high":50000.0}} will capture 12345 and 23334 in
-      the slice.
-    value: A unique specific value for a given feature. Example: { "value": {
-      "string_value": "12345" } }
+      `{"range":{"low":10000.0,"high":50000.0}}` will capture 12345 and 23334
+      in the slice.
+    value: A unique specific value for a given feature. Example: `{ "value": {
+      "string_value": "12345" } }`
   """
 
   allValues = _messages.BooleanField(1)
@@ -31868,17 +31930,6 @@ class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
 
   exportableContents = _messages.EnumField('ExportableContentsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1beta1ModelLargeModelReference(_messages.Message):
-  r"""Contains information about the Large Model.
-
-  Fields:
-    name: Required. The unique name of the large Foundation or pre-built
-      model. Like "chat-panda", "text-panda".
-  """
-
-  name = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
@@ -32280,6 +32331,8 @@ class GoogleCloudAiplatformV1beta1ModelSourceInfo(_messages.Message):
     SourceTypeValueValuesEnum: Type of the model source.
 
   Fields:
+    copy: If this Model is copy of another Model. If true then source_type
+      pertains to the original.
     sourceType: Type of the model source.
   """
 
@@ -32291,13 +32344,16 @@ class GoogleCloudAiplatformV1beta1ModelSourceInfo(_messages.Message):
       AUTOML: The Model is uploaded by automl training pipeline.
       CUSTOM: The Model is uploaded by user or custom training pipeline.
       BQML: The Model is registered and sync'ed from BigQuery ML.
+      MODEL_GARDEN: The Model is saved or tuned from Model Garden.
     """
     MODEL_SOURCE_TYPE_UNSPECIFIED = 0
     AUTOML = 1
     CUSTOM = 2
     BQML = 3
+    MODEL_GARDEN = 4
 
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 1)
+  copy = _messages.BooleanField(1)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 2)
 
 
 class GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata(_messages.Message):
@@ -35328,8 +35384,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasting(_
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
-  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasti
-  ngInputs object.
+  r"""TODO(b/272337970) Extract redundant protos like Transformation into a
+  separate file.
 
   Fields:
     additionalExperiments: Additional experiment flags for the time series

@@ -1237,11 +1237,16 @@ class StoragePool(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    activeDirectory: Specifies the Active Directory to be used for creating a
+      SMB volume.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
     description: Description of the storage pool
+    kmsConfig: Specifies the KMS config to be used for volume encryption.
     labels: Labels as key value pairs
     name: Output only. Name of the storage pool
+    network: Required. VPC Network name. Format:
+      projects/{project}/global/networks/{network}
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -1308,16 +1313,19 @@ class StoragePool(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGib = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateDetails = _messages.StringField(8)
-  volumeCapacityGib = _messages.IntegerField(9)
-  volumeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  activeDirectory = _messages.StringField(1)
+  capacityGib = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  kmsConfig = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateDetails = _messages.StringField(11)
+  volumeCapacityGib = _messages.IntegerField(12)
+  volumeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
 
 
 class Volume(_messages.Message):
@@ -1336,8 +1344,8 @@ class Volume(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    activeDirectory: Optional. Specifies the AD to be used for creating a SMB
-      volume. ActiveDirectory name of the volume
+    activeDirectory: Output only. Specifies the ActiveDirectory name of a SMB
+      volume.
     capacityGib: Required. Capacity in GIB of the volume
     createTime: Output only. Create time of the volume
     description: Optional. Description of the volume
@@ -1347,14 +1355,15 @@ class Volume(_messages.Message):
     kerberosEnabled: Optional. Flag indicating if the volume is a kerberos
       volume or not, export policy rules control kerberos security modes
       (krb5, krb5i, krb5p).
-    kmsConfig: Optional. Specifies the KMS config to be used for volume
+    kmsConfig: Output only. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
     ldapEnabled: Optional. Flag indicating if the volume is NFS LDAP enabled
       or not.
     mountOptions: Output only. Mount options of this volume
     name: Output only. Name of the volume
-    network: Required. VPC Network name
+    network: Output only. VPC Network name. Format:
+      projects/{project}/global/networks/{network}
     protocols: Required. Protocols required for the volume
     psaRange: Optional. Name of the Private Service Access allocated range.
       This is optional. If not provided, any available range will be chosen.

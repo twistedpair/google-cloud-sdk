@@ -2250,10 +2250,10 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation.Operation:
-        r"""Asynchronously creates linked dataset in BigQuery
-        which makes it possible to use BugQuery to read the logs
-        stored in the bucket. A bucket may currently only
-        contain one link.
+        r"""Asynchronously creates a linked dataset in BigQuery
+        which makes it possible to use BigQuery to read the logs
+        stored in the log bucket. A log bucket may currently
+        only contain one link.
 
         .. code-block:: python
 

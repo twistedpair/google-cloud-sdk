@@ -1129,185 +1129,6 @@
         }
       }
     },
-    "GoogleCloudPolicysimulatorV1mainGenerateOrgPolicyViolationsPreviewOperationMetadata": {
-      "id": "GoogleCloudPolicysimulatorV1mainGenerateOrgPolicyViolationsPreviewOperationMetadata",
-      "description": "GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an OrgPolicyViolationsPreview generations operation.",
-      "type": "object",
-      "properties": {
-        "requestTime": {
-          "description": "Time when the request was received.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "startTime": {
-          "description": "Time when the request started processing, i.e. when the state was set to RUNNING.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "state": {
-          "description": "The current state of the operation.",
-          "type": "string",
-          "enumDescriptions": [
-            "The state is unspecified.",
-            "The OrgPolicyViolationsPreview has not been created yet.",
-            "The OrgPolicyViolationsPreview is currently being created.",
-            "The OrgPolicyViolationsPreview creation finished successfully.",
-            "The OrgPolicyViolationsPreview creation failed with an error."
-          ],
-          "enum": [
-            "PREVIEW_STATE_UNSPECIFIED",
-            "PREVIEW_PENDING",
-            "PREVIEW_RUNNING",
-            "PREVIEW_SUCCEEDED",
-            "PREVIEW_FAILED"
-          ]
-        },
-        "resourcesFound": {
-          "description": "Total number of resources that need scanning. Should equal resource_scanned + resources_pending",
-          "type": "integer",
-          "format": "int32"
-        },
-        "resourcesScanned": {
-          "description": "Number of resources already scanned.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "resourcesPending": {
-          "description": "Number of resources still to scan.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreview": {
-      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreview",
-      "description": "OrgPolicyViolationsPreview is a resource providing a preview of the violations that will exist if an OrgPolicy change is made. The list of violations are modeled as child resources and retrieved via a ListOrgPolicyViolations API call. There are potentially more OrgPolicyViolations than could fit in an embedded field. Thus, the use of a child resource instead of a field.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The resource name of the `OrgPolicyViolationsPreview`. It has the following format: `organizations\/{organization}\/locations\/{location}\/orgPolicyViolationsPreviews\/{orgPolicyViolationsPreview}` Example: `organizations\/my-example-org\/locations\/global\/orgPolicyViolationsPreviews\/506a5f7f`",
-          "readOnly": true,
-          "type": "string"
-        },
-        "state": {
-          "description": "Output only. The state of the `OrgPolicyViolationsPreview`.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The state is unspecified.",
-            "The OrgPolicyViolationsPreview has not been created yet.",
-            "The OrgPolicyViolationsPreview is currently being created.",
-            "The OrgPolicyViolationsPreview creation finished successfully.",
-            "The OrgPolicyViolationsPreview creation failed with an error."
-          ],
-          "enum": [
-            "PREVIEW_STATE_UNSPECIFIED",
-            "PREVIEW_PENDING",
-            "PREVIEW_RUNNING",
-            "PREVIEW_SUCCEEDED",
-            "PREVIEW_FAILED"
-          ]
-        },
-        "overlay": {
-          "description": "Required. The proposed changes we are previewing violations for.",
-          "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay"
-        },
-        "violationsCount": {
-          "description": "Output only. The number of OrgPolicyViolations in this `OrgPolicyViolationsPreview`. This count may differ from `resource_summary.noncompliant_count` because each OrgPolicyViolation is specific to a resource **and** constraint. If there are multiple constraints being evaluated (i.e. multiple policies in the overlay), a single resource may violate multiple constraints.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "resourceCounts": {
-          "description": "Output only. A summary of the state of all resources scanned for compliance with the changed OrgPolicy.",
-          "readOnly": true,
-          "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay": {
-      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlay",
-      "description": "The proposed changes to OrgPolicy.",
-      "type": "object",
-      "properties": {
-        "policies": {
-          "description": "The OrgPolicy changes to preview violations for. Any existing OrgPolicies with the same name will be overridden in the simulation. That is, violations will be determined as if all policies in the overlay were created or updated.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay"
-          }
-        },
-        "customConstraints": {
-          "description": "The OrgPolicy CustomConstraint changes to preview violations for. Any existing CustomConstraints with the same name will be overridden in the simulation. That is, violations will be determined as if all custom constraints in the overlay were instantiated.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay"
-          }
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay": {
-      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayPolicyOverlay",
-      "description": "A change to an OrgPolicy.",
-      "type": "object",
-      "properties": {
-        "policyParent": {
-          "description": "The parent of the policy we are attaching to. Example: \"projects\/123456\"",
-          "type": "string"
-        },
-        "policy": {
-          "description": "The new or updated OrgPolicy.",
-          "$ref": "GoogleCloudOrgpolicyV2Policy"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay": {
-      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyOverlayCustomConstraintOverlay",
-      "description": "A change to an OrgPolicy custom constraint.",
-      "type": "object",
-      "properties": {
-        "customConstraintParent": {
-          "description": "Resource the constraint is attached to. Example: \"organization\/987654\"",
-          "type": "string"
-        },
-        "customConstraint": {
-          "description": "The new or updated custom constraint.",
-          "$ref": "GoogleCloudOrgpolicyV2CustomConstraint"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts": {
-      "id": "GoogleCloudPolicysimulatorV1mainOrgPolicyViolationsPreviewResourceCounts",
-      "description": "A summary of the state of all resources scanned for compliance with the changed OrgPolicy.",
-      "type": "object",
-      "properties": {
-        "scanned": {
-          "description": "Number of resources checked for compliance. Must equal: unenforced + noncompliant + compliant + error",
-          "type": "integer",
-          "format": "int32"
-        },
-        "noncompliant": {
-          "description": "Number of scanned resources with at least one violation.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "compliant": {
-          "description": "Number of scanned resources with zero violations.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "unenforced": {
-          "description": "Number of resources where the constraint was not enforced, i.e. the Policy set `enforced: false` for that resource.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "errors": {
-          "description": "Number of resources that returned an error when scanned.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "GoogleCloudPolicysimulatorV1alphaGenerateOrgPolicyViolationsPreviewOperationMetadata": {
       "id": "GoogleCloudPolicysimulatorV1alphaGenerateOrgPolicyViolationsPreviewOperationMetadata",
       "description": "GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an OrgPolicyViolationsPreview generations operation.",
@@ -1357,6 +1178,185 @@
           "format": "int32"
         }
       }
+    },
+    "GoogleCloudPolicysimulatorV1betaGenerateOrgPolicyViolationsPreviewOperationMetadata": {
+      "id": "GoogleCloudPolicysimulatorV1betaGenerateOrgPolicyViolationsPreviewOperationMetadata",
+      "description": "GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an OrgPolicyViolationsPreview generations operation.",
+      "type": "object",
+      "properties": {
+        "requestTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "Time when the request started processing, i.e. when the state was set to RUNNING.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "The current state of the operation.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state is unspecified.",
+            "The OrgPolicyViolationsPreview has not been created yet.",
+            "The OrgPolicyViolationsPreview is currently being created.",
+            "The OrgPolicyViolationsPreview creation finished successfully.",
+            "The OrgPolicyViolationsPreview creation failed with an error."
+          ],
+          "enum": [
+            "PREVIEW_STATE_UNSPECIFIED",
+            "PREVIEW_PENDING",
+            "PREVIEW_RUNNING",
+            "PREVIEW_SUCCEEDED",
+            "PREVIEW_FAILED"
+          ]
+        },
+        "resourcesFound": {
+          "description": "Total number of resources that need scanning. Should equal resource_scanned + resources_pending",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourcesScanned": {
+          "description": "Number of resources already scanned.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourcesPending": {
+          "description": "Number of resources still to scan.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview": {
+      "id": "GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview",
+      "description": "OrgPolicyViolationsPreview is a resource providing a preview of the violations that will exist if an OrgPolicy change is made. The list of violations are modeled as child resources and retrieved via a ListOrgPolicyViolations API call. There are potentially more OrgPolicyViolations than could fit in an embedded field. Thus, the use of a child resource instead of a field.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the `OrgPolicyViolationsPreview`. It has the following format: `organizations\/{organization}\/locations\/{location}\/orgPolicyViolationsPreviews\/{orgPolicyViolationsPreview}` Example: `organizations\/my-example-org\/locations\/global\/orgPolicyViolationsPreviews\/506a5f7f`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the `OrgPolicyViolationsPreview`.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state is unspecified.",
+            "The OrgPolicyViolationsPreview has not been created yet.",
+            "The OrgPolicyViolationsPreview is currently being created.",
+            "The OrgPolicyViolationsPreview creation finished successfully.",
+            "The OrgPolicyViolationsPreview creation failed with an error."
+          ],
+          "enum": [
+            "PREVIEW_STATE_UNSPECIFIED",
+            "PREVIEW_PENDING",
+            "PREVIEW_RUNNING",
+            "PREVIEW_SUCCEEDED",
+            "PREVIEW_FAILED"
+          ]
+        },
+        "overlay": {
+          "description": "Required. The proposed changes we are previewing violations for.",
+          "$ref": "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay"
+        },
+        "violationsCount": {
+          "description": "Output only. The number of OrgPolicyViolations in this `OrgPolicyViolationsPreview`. This count may differ from `resource_summary.noncompliant_count` because each OrgPolicyViolation is specific to a resource **and** constraint. If there are multiple constraints being evaluated (i.e. multiple policies in the overlay), a single resource may violate multiple constraints.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "resourceCounts": {
+          "description": "Output only. A summary of the state of all resources scanned for compliance with the changed OrgPolicy.",
+          "readOnly": true,
+          "$ref": "GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay": {
+      "id": "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay",
+      "description": "The proposed changes to OrgPolicy.",
+      "type": "object",
+      "properties": {
+        "policies": {
+          "description": "The OrgPolicy changes to preview violations for. Any existing OrgPolicies with the same name will be overridden in the simulation. That is, violations will be determined as if all policies in the overlay were created or updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay"
+          }
+        },
+        "customConstraints": {
+          "description": "The OrgPolicy CustomConstraint changes to preview violations for. Any existing CustomConstraints with the same name will be overridden in the simulation. That is, violations will be determined as if all custom constraints in the overlay were instantiated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay"
+          }
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay": {
+      "id": "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay",
+      "description": "A change to an OrgPolicy.",
+      "type": "object",
+      "properties": {
+        "policyParent": {
+          "description": "The parent of the policy we are attaching to. Example: \"projects\/123456\"",
+          "type": "string"
+        },
+        "policy": {
+          "description": "The new or updated OrgPolicy.",
+          "$ref": "GoogleCloudOrgpolicyV2Policy"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay": {
+      "id": "GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay",
+      "description": "A change to an OrgPolicy custom constraint.",
+      "type": "object",
+      "properties": {
+        "customConstraintParent": {
+          "description": "Resource the constraint is attached to. Example: \"organization\/987654\"",
+          "type": "string"
+        },
+        "customConstraint": {
+          "description": "The new or updated custom constraint.",
+          "$ref": "GoogleCloudOrgpolicyV2CustomConstraint"
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts": {
+      "id": "GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts",
+      "description": "A summary of the state of all resources scanned for compliance with the changed OrgPolicy.",
+      "type": "object",
+      "properties": {
+        "scanned": {
+          "description": "Number of resources checked for compliance. Must equal: unenforced + noncompliant + compliant + error",
+          "type": "integer",
+          "format": "int32"
+        },
+        "noncompliant": {
+          "description": "Number of scanned resources with at least one violation.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "compliant": {
+          "description": "Number of scanned resources with zero violations.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "unenforced": {
+          "description": "Number of resources where the constraint was not enforced, i.e. the Policy set `enforced: false` for that resource.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "errors": {
+          "description": "Number of resources that returned an error when scanned.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
     }
   },
   "resources": {
@@ -1401,7 +1401,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
         },
         "get": {
           "id": "policysimulator.operations.get",
@@ -1477,7 +1477,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "policysimulator.projects.locations.replays.operations.get",
@@ -1592,7 +1592,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "policysimulator.folders.locations.replays.operations.get",
@@ -1738,7 +1738,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "policysimulator.organizations.locations.replays.operations.get",

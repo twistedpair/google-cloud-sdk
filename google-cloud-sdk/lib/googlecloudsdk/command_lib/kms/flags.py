@@ -486,6 +486,46 @@ def AddServerCertificatesFilesFlag(parser, required=False):
       required=required)
 
 
+def AddKeyManagementModeFlags(parser):
+  """Adds key-management-mode flags and related flags."""
+
+  group = parser.add_group(
+      help=(
+          'Specifies the key management mode for the EkmConnection and'
+          ' associated fields.'
+      )
+  )
+  group.add_argument(
+      '--key-management-mode',
+      choices=['manual', 'cloud-kms'],
+      help=(
+          'Key management mode of the ekm connection. An EkmConnection in'
+          ' `cloud-kms` mode means Cloud KMS will attempt to create and manage'
+          ' the key material that resides on the EKM for crypto keys created'
+          ' with this EkmConnection. An EkmConnection in `manual` mode means'
+          ' the external key material will not be managed by Cloud KMS.'
+          ' Omitting the flag defaults to `manual`.'
+      ),
+  )
+  group.add_argument(
+      '--crypto-space-path',
+      help=(
+          'Crypto space path for the EkmConnection. Required during '
+          'EkmConnection creation if `--key-management-mode=cloud-kms`.'
+      ),
+  )
+
+
+def AddDefaultEkmConnectionFlag(parser, required=False):
+  parser.add_argument(
+      '--default-ekm-connection',
+      help='The resource name of the EkmConnection to be used as the '
+      'default EkmConnection for all `external-vpc` CryptoKeys in a project '
+      'and location. Can be an empty string to remove the default '
+      'EkmConnection.',
+      required=required)
+
+
 # Parsing.
 def ParseLocationName(args):
   return resources.REGISTRY.Parse(

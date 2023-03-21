@@ -6,7 +6,7 @@
   "canonicalName": "SQL Admin",
   "version": "v1beta4",
   "revision": "0",
-  "title": "sqladmin API (prod)",
+  "title": "Cloud SQL Admin API",
   "description": "API for Cloud SQL database instance management",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -408,6 +408,28 @@
             "striped": {
               "description": "Whether or not the backup set being restored is striped. Applies only to Cloud SQL for SQL Server.",
               "type": "boolean"
+            },
+            "noRecovery": {
+              "description": "Whether or not the backup importing will restore database with NORECOVERY option Applies only to Cloud SQL for SQL Server.",
+              "type": "boolean"
+            },
+            "recoveryOnly": {
+              "description": "Whether or not the backup importing request will just bring database online without downloading Bak content only one of \"no_recovery\" and \"recovery_only\" can be true otherwise error will return. Applies only to Cloud SQL for SQL Server.",
+              "type": "boolean"
+            },
+            "bakType": {
+              "description": "Type of the bak content, FULL or DIFF.",
+              "type": "string",
+              "enumDescriptions": [
+                "default type to meet enum requirement, will be set to FULL if not set",
+                "Full backup.",
+                "Differential backup."
+              ],
+              "enum": [
+                "BAK_TYPE_UNSPECIFIED",
+                "FULL",
+                "DIFF"
+              ]
             }
           }
         }
@@ -2517,6 +2539,14 @@
         "restoreBackupContext": {
           "description": "Parameters required to perform the restore backup operation.",
           "$ref": "RestoreBackupContext"
+        },
+        "backup": {
+          "description": "The name of the backup to restore from in following format: projects\/{project-id}\/locations\/{location}\/backups\/{backup-uid} Only one of restore_backup_context or backup can be passed to the input.",
+          "type": "string"
+        },
+        "restoreInstanceSettings": {
+          "description": "Restore instance settings overrides the instance settings stored as part of the backup. Instance's major database version cannot be changed and the disk size can only be increased. This feature is only available for restores to new instances using the backup name.",
+          "$ref": "DatabaseInstance"
         }
       }
     },

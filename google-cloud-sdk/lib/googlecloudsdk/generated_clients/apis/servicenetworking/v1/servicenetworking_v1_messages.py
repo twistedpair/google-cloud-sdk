@@ -57,7 +57,9 @@ class AddDnsZoneRequest(_messages.Message):
       connect with services. Must be in the form of
       projects/{project}/global/networks/{network} {project} is the project
       number, as in '12345' {network} is the network name.
-    dnsSuffix: Required. The DNS name suffix for the zones e.g. `example.com`.
+    dnsSuffix: Required. The DNS name suffix for the zones e.g.
+      `example.com.`. Cloud DNS requires that a DNS suffix ends with a
+      trailing dot.
     name: Required. The name for both the private zone in the shared producer
       host project and the peering zone in the consumer project. Must be
       unique within both projects. The name must be 1-63 characters long, must
@@ -266,9 +268,11 @@ class Api(_messages.Message):
     Values:
       SYNTAX_PROTO2: Syntax `proto2`.
       SYNTAX_PROTO3: Syntax `proto3`.
+      SYNTAX_EDITIONS: Syntax `editions`.
     """
     SYNTAX_PROTO2 = 0
     SYNTAX_PROTO3 = 1
+    SYNTAX_EDITIONS = 2
 
   methods = _messages.MessageField('Method', 1, repeated=True)
   mixins = _messages.MessageField('Mixin', 2, repeated=True)
@@ -970,7 +974,8 @@ class DnsRecordSet(_messages.Message):
       3.6.1) for examples see https://cloud.google.com/dns/records/json-
       record.
     domain: Required. The DNS or domain name of the record set, e.g.
-      `test.example.com`.
+      `test.example.com`. Cloud DNS requires that a DNS suffix ends with a
+      trailing dot.
     ttl: Required. The period of time for which this RecordSet can be cached
       by resolvers.
     type: Required. The identifier of a supported record type.
@@ -986,7 +991,8 @@ class DnsZone(_messages.Message):
   r"""Represents a DNS zone resource.
 
   Fields:
-    dnsSuffix: The DNS name suffix of this zone e.g. `example.com.`.
+    dnsSuffix: The DNS name suffix of this zone e.g. `example.com.`. Cloud DNS
+      requires that a DNS suffix ends with a trailing dot.
     name: User assigned name for this resource. Must be unique within the
       project. The name must be 1-63 characters long, must begin with a
       letter, end with a letter or digit, and only contain lowercase letters,
@@ -1157,6 +1163,8 @@ class Enum(_messages.Message):
     SyntaxValueValuesEnum: The source syntax.
 
   Fields:
+    edition: The source edition string, only valid when syntax is
+      SYNTAX_EDITIONS.
     enumvalue: Enum value definitions.
     name: Enum type name.
     options: Protocol buffer options.
@@ -1170,15 +1178,18 @@ class Enum(_messages.Message):
     Values:
       SYNTAX_PROTO2: Syntax `proto2`.
       SYNTAX_PROTO3: Syntax `proto3`.
+      SYNTAX_EDITIONS: Syntax `editions`.
     """
     SYNTAX_PROTO2 = 0
     SYNTAX_PROTO3 = 1
+    SYNTAX_EDITIONS = 2
 
-  enumvalue = _messages.MessageField('EnumValue', 1, repeated=True)
-  name = _messages.StringField(2)
-  options = _messages.MessageField('Option', 3, repeated=True)
-  sourceContext = _messages.MessageField('SourceContext', 4)
-  syntax = _messages.EnumField('SyntaxValueValuesEnum', 5)
+  edition = _messages.StringField(1)
+  enumvalue = _messages.MessageField('EnumValue', 2, repeated=True)
+  name = _messages.StringField(3)
+  options = _messages.MessageField('Option', 4, repeated=True)
+  sourceContext = _messages.MessageField('SourceContext', 5)
+  syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
 
 
 class EnumValue(_messages.Message):
@@ -1834,9 +1845,11 @@ class Method(_messages.Message):
     Values:
       SYNTAX_PROTO2: Syntax `proto2`.
       SYNTAX_PROTO3: Syntax `proto3`.
+      SYNTAX_EDITIONS: Syntax `editions`.
     """
     SYNTAX_PROTO2 = 0
     SYNTAX_PROTO3 = 1
+    SYNTAX_EDITIONS = 2
 
   name = _messages.StringField(1)
   options = _messages.MessageField('Option', 2, repeated=True)
@@ -3849,6 +3862,8 @@ class Type(_messages.Message):
     SyntaxValueValuesEnum: The source syntax.
 
   Fields:
+    edition: The source edition string, only valid when syntax is
+      SYNTAX_EDITIONS.
     fields: The list of fields.
     name: The fully qualified message name.
     oneofs: The list of types appearing in `oneof` definitions in this type.
@@ -3863,16 +3878,19 @@ class Type(_messages.Message):
     Values:
       SYNTAX_PROTO2: Syntax `proto2`.
       SYNTAX_PROTO3: Syntax `proto3`.
+      SYNTAX_EDITIONS: Syntax `editions`.
     """
     SYNTAX_PROTO2 = 0
     SYNTAX_PROTO3 = 1
+    SYNTAX_EDITIONS = 2
 
-  fields = _messages.MessageField('Field', 1, repeated=True)
-  name = _messages.StringField(2)
-  oneofs = _messages.StringField(3, repeated=True)
-  options = _messages.MessageField('Option', 4, repeated=True)
-  sourceContext = _messages.MessageField('SourceContext', 5)
-  syntax = _messages.EnumField('SyntaxValueValuesEnum', 6)
+  edition = _messages.StringField(1)
+  fields = _messages.MessageField('Field', 2, repeated=True)
+  name = _messages.StringField(3)
+  oneofs = _messages.StringField(4, repeated=True)
+  options = _messages.MessageField('Option', 5, repeated=True)
+  sourceContext = _messages.MessageField('SourceContext', 6)
+  syntax = _messages.EnumField('SyntaxValueValuesEnum', 7)
 
 
 class UpdateConsumerConfigRequest(_messages.Message):

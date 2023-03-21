@@ -801,7 +801,7 @@
             "NVIDIA_TESLA_A100",
             "TPU_V2",
             "TPU_V3",
-            "TPU_V4_POD"
+            "TPU_V4"
           ]
         },
         "acceleratorCount": {
@@ -2877,10 +2877,6 @@
           "description": "The config of resources used by the Model during the batch prediction. If the Model supports DEDICATED_RESOURCES this config may be provided (and the job will use these resources), if the Model doesn't support AUTOMATIC_RESOURCES, this config must be provided.",
           "$ref": "GoogleCloudAiplatformV1alpha1BatchDedicatedResources"
         },
-        "serviceAccount": {
-          "description": "The service account that the DeployedModel's container runs as. If not specified, a system generated one will be used, which has minimal permissions and the custom container, if used, may not have enough permission to access other Google Cloud resources. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
-          "type": "string"
-        },
         "manualBatchTuningParameters": {
           "description": "Immutable. Parameters configuring the batch behavior. Currently only applicable when dedicated_resources are used (in other cases Vertex AI does the tuning itself).",
           "$ref": "GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters"
@@ -3002,6 +2998,10 @@
           "description": "Output only. The running status of the model monitoring pipeline.",
           "readOnly": true,
           "$ref": "GoogleRpcStatus"
+        },
+        "disableContainerLogging": {
+          "description": "For custom-trained Models and AutoML Tabular Models, the container of the DeployedModel instances will send `stderr` and `stdout` streams to Stackdriver Logging by default. Please note that the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing). User can disable container logging by setting this flag to true.",
+          "type": "boolean"
         }
       }
     },
@@ -5242,19 +5242,19 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecSliceConfig": {
       "id": "GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecSliceConfig",
-      "description": "Specification message containing the config for this SliceSpec. When `kind` is selected as `value` and\/or `range`, only a single slice will be computed. When `all_values` is present, a separate slice will be computed for each possible label\/value for the corresponding key in `config`. Examples, with feature zip_code with values 12345, 23334, 88888 and feature country with values \"US\", \"Canada\", \"Mexico\" in the dataset: Example 1: { \"zip_code\": { \"value\": { \"float_value\": 12345.0 } } } A single slice for any data with zip_code 12345 in the dataset. Example 2: { \"zip_code\": { \"range\": { \"low\": 12345, \"high\": 20000 } } } A single slice containing data where the zip_codes between 12345 and 20000 For this example, data with the zip_code of 12345 will be in this slice. Example 3: { \"zip_code\": { \"range\": { \"low\": 10000, \"high\": 20000 } }, \"country\": { \"value\": { \"string_value\": \"US\" } } } A single slice containing data where the zip_codes between 10000 and 20000 has the country \"US\". For this example, data with the zip_code of 12345 and country \"US\" will be in this slice. Example 4: { \"country\": { \"all_values\": { \"value\": true } } } Three slices are computed, one for each unique country in the dataset. Example 5: { \"country\": { \"all_values\": { \"value\": true } }, \"zip_code\": { \"value\": { \"float_value\": 12345.0 } } } Three slices are computed, one for each unique country in the dataset where the zip_code is also 12345. For this example, data with zip_code 12345 and country \"US\" will be in one slice, zip_code 12345 and country \"Canada\" in another slice, and zip_code 12345 and country \"Mexico\" in another slice, totaling 3 slices.",
+      "description": "Specification message containing the config for this SliceSpec. When `kind` is selected as `value` and\/or `range`, only a single slice will be computed. When `all_values` is present, a separate slice will be computed for each possible label\/value for the corresponding key in `config`. Examples, with feature zip_code with values 12345, 23334, 88888 and feature country with values \"US\", \"Canada\", \"Mexico\" in the dataset: Example 1: { \"zip_code\": { \"value\": { \"float_value\": 12345.0 } } } A single slice for any data with zip_code 12345 in the dataset. Example 2: { \"zip_code\": { \"range\": { \"low\": 12345, \"high\": 20000 } } } A single slice containing data where the zip_codes between 12345 and 20000 For this example, data with the zip_code of 12345 will be in this slice. Example 3: { \"zip_code\": { \"range\": { \"low\": 10000, \"high\": 20000 } }, \"country\": { \"value\": { \"string_value\": \"US\" } } } A single slice containing data where the zip_codes between 10000 and 20000 has the country \"US\". For this example, data with the zip_code of 12345 and country \"US\" will be in this slice. Example 4: { \"country\": {\"all_values\": { \"value\": true } } } Three slices are computed, one for each unique country in the dataset. Example 5: { \"country\": { \"all_values\": { \"value\": true } }, \"zip_code\": { \"value\": { \"float_value\": 12345.0 } } } Three slices are computed, one for each unique country in the dataset where the zip_code is also 12345. For this example, data with zip_code 12345 and country \"US\" will be in one slice, zip_code 12345 and country \"Canada\" in another slice, and zip_code 12345 and country \"Mexico\" in another slice, totaling 3 slices.",
       "type": "object",
       "properties": {
         "value": {
-          "description": "A unique specific value for a given feature. Example: { \"value\": { \"string_value\": \"12345\" } }",
+          "description": "A unique specific value for a given feature. Example: `{ \"value\": { \"string_value\": \"12345\" } }`",
           "$ref": "GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecValue"
         },
         "range": {
-          "description": "A range of values for a numerical feature. Example: {\"range\":{\"low\":10000.0,\"high\":50000.0}} will capture 12345 and 23334 in the slice.",
+          "description": "A range of values for a numerical feature. Example: `{\"range\":{\"low\":10000.0,\"high\":50000.0}}` will capture 12345 and 23334 in the slice.",
           "$ref": "GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSliceSliceSpecRange"
         },
         "allValues": {
-          "description": "If all_values is set to true, then all possible labels of the keyed feature will have another slice computed. Example: {\"all_values\":{\"value\":true}}",
+          "description": "If all_values is set to true, then all possible labels of the keyed feature will have another slice computed. Example: `{\"all_values\":{\"value\":true}}`",
           "type": "boolean"
         }
       }
@@ -7272,7 +7272,7 @@
           "type": "boolean"
         },
         "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days.",
           "type": "integer",
           "format": "int32"
         },
@@ -7822,7 +7822,7 @@
             "NVIDIA_A100_80GB",
             "TPU_V2",
             "TPU_V3",
-            "TPU_V4_POD"
+            "TPU_V4"
           ]
         },
         "acceleratorCount": {
@@ -10469,12 +10469,12 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
           "type": "string",
           "format": "google-duration"
         },
         "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days.",
           "type": "integer",
           "format": "int32"
         },
@@ -11090,7 +11090,7 @@
             "NVIDIA_TESLA_A100",
             "TPU_V2",
             "TPU_V3",
-            "TPU_V4_POD"
+            "TPU_V4"
           ]
         },
         "acceleratorCount": {
@@ -12999,6 +12999,7 @@
     },
     "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs": {
       "id": "GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs",
+      "description": "TODO(b\/272337970) Extract redundant protos like Transformation into a separate file.",
       "type": "object",
       "properties": {
         "targetColumn": {
@@ -17198,12 +17199,12 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
           "type": "string",
           "format": "google-duration"
         },
         "monitoringIntervalDays": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both monitoring_interval_days and the deprecated `monitoring_interval` field are set when creating\/updating EntityTypes\/Features, monitoring_interval_days will be used.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days.",
           "type": "integer",
           "format": "int32"
         },
@@ -18072,7 +18073,7 @@
             "NVIDIA_A100_80GB",
             "TPU_V2",
             "TPU_V3",
-            "TPU_V4_POD"
+            "TPU_V4"
           ]
         },
         "acceleratorCount": {
@@ -20258,6 +20259,7 @@
     },
     "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputs": {
       "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputs",
+      "description": "TODO(b\/272337970) Extract redundant protos like Transformation into a separate file.",
       "type": "object",
       "properties": {
         "targetColumn": {
@@ -23779,6 +23781,71 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1DeleteFeatureValuesOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1DeleteFeatureValuesOperationMetadata",
+      "description": "Details of operations that delete Feature values.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for Featurestore delete Features values.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeleteFeatureValuesResponse": {
+      "id": "GoogleCloudAiplatformV1DeleteFeatureValuesResponse",
+      "description": "Response message for FeaturestoreService.DeleteFeatureValues.",
+      "type": "object",
+      "properties": {
+        "selectEntity": {
+          "description": "Response for request specifying the entities to delete",
+          "$ref": "GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectEntity"
+        },
+        "selectTimeRangeAndFeature": {
+          "description": "Response for request specifying time range and feature",
+          "$ref": "GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectTimeRangeAndFeature"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectEntity": {
+      "id": "GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectEntity",
+      "description": "Response message if the request uses the SelectEntity option.",
+      "type": "object",
+      "properties": {
+        "offlineStorageDeletedEntityRowCount": {
+          "description": "The count of deleted entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageDeletedEntityCount": {
+          "description": "The count of deleted entities in the online storage. Each entity ID corresponds to one entity.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectTimeRangeAndFeature": {
+      "id": "GoogleCloudAiplatformV1DeleteFeatureValuesResponseSelectTimeRangeAndFeature",
+      "description": "Response message if the request uses the SelectTimeRangeAndFeature option.",
+      "type": "object",
+      "properties": {
+        "impactedFeatureCount": {
+          "description": "The count of the features or columns impacted. This is the same as the feature count in the request.",
+          "type": "string",
+          "format": "int64"
+        },
+        "offlineStorageModifiedEntityRowCount": {
+          "description": "The count of modified entity rows in the offline storage. Each row corresponds to the combination of an entity ID and a timestamp. One entity ID can have multiple rows in the offline storage. Within each row, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        },
+        "onlineStorageModifiedEntityCount": {
+          "description": "The count of modified entities in the online storage. Each entity ID corresponds to one entity. Within each entity, only the features specified in the request are deleted.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1DeleteOperationMetadata": {
       "id": "GoogleCloudAiplatformV1DeleteOperationMetadata",
       "description": "Details of operations that perform deletes of any entities.",
@@ -23944,7 +24011,7 @@
             "NVIDIA_TESLA_A100",
             "TPU_V2",
             "TPU_V3",
-            "TPU_V4_POD"
+            "TPU_V4"
           ]
         },
         "acceleratorCount": {
@@ -25959,6 +26026,7 @@
     },
     "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs": {
       "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs",
+      "description": "TODO(b\/272337970) Extract redundant protos like Transformation into a separate file.",
       "type": "object",
       "properties": {
         "targetColumn": {
@@ -28815,7 +28883,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "aiplatform.projects.locations.operations.get",
@@ -28968,7 +29036,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.featurestores.operations.get",
@@ -29180,7 +29248,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.featurestores.entityTypes.operations.get",
@@ -29333,7 +29401,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                             },
                             "get": {
                               "id": "aiplatform.projects.locations.featurestores.entityTypes.features.operations.get",
@@ -29716,7 +29784,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.datasets.operations.get",
@@ -29869,7 +29937,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.datasets.savedQueries.operations.get",
@@ -30074,7 +30142,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.datasets.dataItems.operations.get",
@@ -30277,7 +30345,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                             },
                             "get": {
                               "id": "aiplatform.projects.locations.datasets.dataItems.annotations.operations.get",
@@ -30468,7 +30536,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.datasets.annotationSpecs.operations.get",
@@ -30927,7 +30995,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.endpoints.operations.get",
@@ -31300,7 +31368,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.indexes.operations.get",
@@ -31701,7 +31769,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.indexEndpoints.operations.get",
@@ -32012,7 +32080,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -32323,7 +32391,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.dataLabelingJobs.operations.get",
@@ -32634,7 +32702,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.hyperparameterTuningJobs.operations.get",
@@ -33192,7 +33260,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.get",
@@ -34112,7 +34180,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.migratableResources.operations.get",
@@ -34423,7 +34491,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.models.operations.get",
@@ -34679,7 +34747,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.models.evaluations.operations.get",
@@ -35068,7 +35136,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.trainingPipelines.operations.get",
@@ -35378,7 +35446,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.pipelineJobs.operations.get",
@@ -35695,7 +35763,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.specialistPools.operations.get",
@@ -36019,7 +36087,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.tensorboards.operations.get",
@@ -36374,7 +36442,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.tensorboards.experiments.operations.get",
@@ -36757,7 +36825,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                             },
                             "get": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.operations.get",
@@ -37258,7 +37326,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                                 },
                                 "get": {
                                   "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.get",
@@ -37564,7 +37632,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "aiplatform.projects.locations.studies.operations.get",
@@ -38002,7 +38070,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "aiplatform.projects.locations.studies.trials.operations.get",

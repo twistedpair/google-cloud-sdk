@@ -171,10 +171,11 @@ class AudioStream(_messages.Message):
     codec: The codec for this audio stream. The default is `aac`. Supported
       audio codecs: - `aac` - `aac-he` - `aac-he-v2` - `mp3` - `ac3` - `eac3`
     displayName: The name for this particular audio stream that will be added
-      to the HLS/DASH manifest.
+      to the HLS/DASH manifest. Not supported in MP4 files.
     languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
       more information, see
-      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier. Not
+      supported in MP4 files.
     mapping: The mapping for the `Job.edit_list` atoms with audio
       `EditAtom.inputs`.
     sampleRateHertz: The audio sample rate in Hertz. The default is 48000
@@ -637,9 +638,8 @@ class Job(_messages.Message):
     startTime: Output only. The time the transcoding started.
     state: Output only. The current state of the job.
     templateId: Input only. Specify the `template_id` to use for populating
-      `Job.config`. The default is `preset/web-hd`. Preset Transcoder
-      templates: - `preset/{preset_id}` - User defined JobTemplate:
-      `{job_template_id}`
+      `Job.config`. The default is `preset/web-hd`, which is the only
+      supported preset. User defined JobTemplate: `{job_template_id}`
     ttlAfterCompletionDays: Job time to live value in days, which will be
       effective after job completion. Job should be deleted automatically
       after the given TTL. Enter a value between 1 and 90. The default is 30.
@@ -1169,10 +1169,11 @@ class TextStream(_messages.Message):
     codec: The codec for this text stream. The default is `webvtt`. Supported
       text codecs: - `srt` - `ttml` - `cea608` - `cea708` - `webvtt`
     displayName: The name for this particular text stream that will be added
-      to the HLS/DASH manifest.
+      to the HLS/DASH manifest. Not supported in MP4 files.
     languageCode: The BCP-47 language code, such as `en-US` or `sr-Latn`. For
       more information, see
-      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+      https://www.unicode.org/reports/tr35/#Unicode_locale_identifier. Not
+      supported in MP4 files.
     mapping: The mapping for the `Job.edit_list` atoms with text
       `EditAtom.inputs`.
   """

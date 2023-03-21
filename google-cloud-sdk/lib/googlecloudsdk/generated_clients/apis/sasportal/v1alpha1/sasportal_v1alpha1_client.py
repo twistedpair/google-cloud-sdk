@@ -15,7 +15,7 @@ class SasportalV1alpha1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://sasportal.mtls.googleapis.com/'
 
   _PACKAGE = 'sasportal'
-  _SCOPES = ['https://www.googleapis.com/auth/sasportal']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/sasportal']
   _VERSION = 'v1alpha1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'

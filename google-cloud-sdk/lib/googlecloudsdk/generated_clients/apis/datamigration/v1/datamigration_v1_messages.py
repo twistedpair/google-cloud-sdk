@@ -1719,6 +1719,20 @@ class DatamigrationProjectsLocationsMigrationJobsDeleteRequest(_messages.Message
   requestId = _messages.StringField(3)
 
 
+class DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest
+  object.
+
+  Fields:
+    demoteDestinationRequest: A DemoteDestinationRequest resource to be passed
+      as the request body.
+    name: Name of the migration job resource to demote its destination.
+  """
+
+  demoteDestinationRequest = _messages.MessageField('DemoteDestinationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest
   object.
@@ -2064,6 +2078,10 @@ class DatamigrationProjectsLocationsPrivateConnectionsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DemoteDestinationRequest(_messages.Message):
+  r"""Request message for 'DemoteDestination' request."""
 
 
 class DescribeConversionWorkspaceRevisionsResponse(_messages.Message):
@@ -3165,6 +3183,8 @@ class PostgreSqlConnectionProfile(_messages.Message):
       associated with.
 
   Fields:
+    alloydbClusterId: Optional. If the destination is an AlloyDB database, use
+      this field to provide the AlloyDB cluster ID.
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
     host: Required. The IP or hostname of the source PostgreSQL database.
@@ -3202,16 +3222,17 @@ class PostgreSqlConnectionProfile(_messages.Message):
     NETWORK_ARCHITECTURE_OLD_CSQL_PRODUCER = 1
     NETWORK_ARCHITECTURE_NEW_CSQL_PRODUCER = 2
 
-  cloudSqlId = _messages.StringField(1)
-  host = _messages.StringField(2)
-  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 3)
-  password = _messages.StringField(4)
-  passwordSet = _messages.BooleanField(5)
-  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 7)
-  ssl = _messages.MessageField('SslConfig', 8)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 9)
-  username = _messages.StringField(10)
+  alloydbClusterId = _messages.StringField(1)
+  cloudSqlId = _messages.StringField(2)
+  host = _messages.StringField(3)
+  networkArchitecture = _messages.EnumField('NetworkArchitectureValueValuesEnum', 4)
+  password = _messages.StringField(5)
+  passwordSet = _messages.BooleanField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 8)
+  ssl = _messages.MessageField('SslConfig', 9)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 10)
+  username = _messages.StringField(11)
 
 
 class PrimaryInstanceSettings(_messages.Message):

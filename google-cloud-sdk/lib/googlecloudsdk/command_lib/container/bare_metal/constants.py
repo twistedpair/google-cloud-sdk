@@ -44,3 +44,13 @@ table(
   state:label=STATE
 )
 """
+
+BARE_METAL_STANDALONE_CLUSTERS_FORMAT = """
+table(
+    name.segment(5):label=NAME,
+    name.segment(3):label=LOCATION,
+    bareMetalVersion:label=VERSION,
+    fleet.membership.segment(5):label=MEMBERSHIP,
+    state:label=STATE
+)
+"""

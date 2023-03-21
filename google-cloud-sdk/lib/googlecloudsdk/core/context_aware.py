@@ -185,7 +185,11 @@ def _GetCertificateConfigFile():
         ' (cert_config["libs"]["ecp"]) specified in enterprise certificate'
         ' config file was not found. Cannot use mTLS with ECP if the ECP binary'
         ' does not exist. Please check the ECP configuration. See `gcloud topic'
-        ' client-certificate` to learn more about ECP'
+        ' client-certificate` to learn more about ECP. \nIf this error is'
+        ' unexpected either delete {} or generate a new configuration with `$'
+        ' gcloud auth enterprise-certificate-config create --help` '.format(
+            file_path
+        )
     )
 
   return file_path

@@ -18,11 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
 import os
 import random
 import re
 import string
 
+from apitools.base.py import base_api
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
@@ -30,7 +32,7 @@ from googlecloudsdk.api_lib.functions import api_enablement
 from googlecloudsdk.api_lib.functions import cmek_util
 from googlecloudsdk.api_lib.functions import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
-from googlecloudsdk.api_lib.functions.v2 import client as api_client_v2
+from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.storage import storage_api
@@ -50,11 +52,13 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 from googlecloudsdk.core import transports
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
+
 import six
 
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
@@ -169,12 +173,14 @@ _CPU_VALUE_PATTERN = r"""
 
 
 def _GcloudIgnoreCreationPredicate(directory):
+  # type: (str) -> bool
   return gcloudignore.AnyFileOrDirExists(
       directory, gcloudignore.GIT_FILES + ['node_modules']
   )
 
 
 def _GetSourceGCS(messages, source):
+  # type: (_, str) -> cloudfunctions_v2_messages.Source
   """Constructs a `Source` message from a Cloud Storage object.
 
   Args:
@@ -182,7 +188,7 @@ def _GetSourceGCS(messages, source):
     source: str, the Cloud Storage URL
 
   Returns:
-    function_source: cloud.functions.v2main.Source
+    function_source: cloudfunctions_v2_messages.Source
   """
   match = _GCS_SOURCE_REGEX.match(source)
   if not match:
@@ -196,6 +202,7 @@ def _GetSourceGCS(messages, source):
 
 
 def _GetSourceCSR(messages, source):
+  # type: (_,str) -> cloudfunctions_v2_messages.Source
   """Constructs a `Source` message from a Cloud Source Repository reference.
 
   Args:
@@ -203,7 +210,7 @@ def _GetSourceCSR(messages, source):
     source: str, the Cloud Source Repository reference
 
   Returns:
-    function_source: cloud.functions.v2main.Source
+    function_source: cloudfunctions_v2_messages.Source
   """
   match = _CSR_SOURCE_REGEX.match(source)
 
@@ -233,6 +240,7 @@ def _GetSourceCSR(messages, source):
 
 
 def _UploadToStageBucket(region, function_name, zip_file_path, stage_bucket):
+  # type: (str, str, str, str) -> storage_util.ObjectReference
   """Uploads a ZIP file to a user-provided stage bucket.
 
   Args:
@@ -258,6 +266,7 @@ def _UploadToStageBucket(region, function_name, zip_file_path, stage_bucket):
 
 
 def _UploadToGeneratedUrl(zip_file_path, url):
+  # type: (str, str) -> None
   """Uploads a ZIP file to a signed Cloud Storage URL.
 
   Args:
@@ -281,43 +290,40 @@ def _UploadToGeneratedUrl(zip_file_path, url):
 
 
 def _GetSourceLocal(
+    args,
     client,
-    messages,
-    region,
-    function_name,
+    function_ref,
     source,
-    stage_bucket_arg,
-    ignore_file_arg,
     kms_key=None,
 ):
+  # type: (argparse.Namespace, base_api.BaseApiClient, resources.Resource, str) -> Source # pylint: disable=line-too-long
   """Constructs a `Source` message from a local file system path.
 
   Args:
-    client: The GCFv2 API client
-    messages: messages module, the GCFv2 message stubs
-    region: str, the region to deploy the function to
-    function_name: str, the name of the function
-    source: str, the path
-    stage_bucket_arg: str, the passed in --stage-bucket flag argument
-    ignore_file_arg: str, the passed in --ignore-file flag argument
+    args: arguments that this command was invoked with.
+    client: The GCFv2 Base API client
+    function_ref: The GCFv2 functions resource reference.
+    source: the path
     kms_key: resource name of the customer managed KMS key | None
 
   Returns:
-    function_source: cloud.functions.v2main.Source
+    cloudfunctions_v2_messages.Source
   """
+  messages = client.MESSAGES_MODULE
+  region = function_ref.locationsId
   with file_utils.TemporaryDirectory() as tmp_dir:
     zip_file_path = os.path.join(tmp_dir, 'fun.zip')
     chooser = gcloudignore.GetFileChooserForDir(
         source,
         default_ignore_file=_DEFAULT_IGNORE_FILE,
         gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate,
-        ignore_file=ignore_file_arg,
+        ignore_file=args.ignore_file,
     )
     archive.MakeZipFromDir(zip_file_path, source, predicate=chooser.IsIncluded)
 
-    if stage_bucket_arg:
+    if args.stage_bucket:
       dest_object = _UploadToStageBucket(
-          region, function_name, zip_file_path, stage_bucket_arg
+          region, function_ref.Name(), zip_file_path, args.stage_bucket
       )
       return messages.Source(
           storageSource=messages.StorageSource(
@@ -332,9 +338,7 @@ def _GetSourceLocal(
         dest = client.projects_locations_functions.GenerateUploadUrl(
             messages.CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(
                 generateUploadUrlRequest=generate_upload_url_request,
-                parent='projects/{}/locations/{}'.format(
-                    api_util.GetProject(), region
-                ),
+                parent=function_ref.Parent().RelativeName(),
             )
         )
       except apitools_exceptions.HttpError as e:
@@ -347,35 +351,26 @@ def _GetSourceLocal(
 
 
 def _GetSource(
+    args,
     client,
-    messages,
-    region,
-    function_name,
-    source_arg,
-    stage_bucket_arg,
-    ignore_file_arg,
+    function_ref,
     existing_function,
-    kms_key=None,
 ):
+  # type: (argparse.Namespace, base_api.BaseApiClient, resources.Resource) -> _
   """Parses the source bucket and object from the --source flag.
 
   Args:
+    args: arguments that this command was invoked with.
     client: The GCFv2 API client
-    messages: messages module, the GCFv2 message stubs
-    region: str, the region to deploy the function to
-    function_name: str, the name of the function
-    source_arg: str, the passed in --source flag argument
-    stage_bucket_arg: str, the passed in --stage-bucket flag argument
-    ignore_file_arg: str, the passed in --ignore-file flag argument
+    function_ref: The GCFv2 functions resource reference.
     existing_function: cloudfunctions_v2alpha_messages.Function | None
-    kms_key: resource name of the customer managed KMS key | None
 
   Returns:
     function_source: cloud.functions.v2main.Source | None
     update_field_set: frozenset, set of update mask fields
   """
   if (
-      source_arg is None
+      args.source is None
       and existing_function is not None
       and existing_function.buildConfig.source.repoSource
   ):
@@ -384,38 +379,35 @@ def _GetSource(
     # so the control plane will reuse the original one.
     return None, frozenset()
 
-  source = source_arg or '.'
+  source = args.source or '.'
 
+  messages = client.MESSAGES_MODULE
   if source.startswith('gs://'):
     return _GetSourceGCS(messages, source), frozenset(['build_config.source'])
   elif source.startswith('https://'):
     return _GetSourceCSR(messages, source), frozenset(['build_config.source'])
   else:
     return _GetSourceLocal(
+        args,
         client,
-        messages,
-        region,
-        function_name,
+        function_ref,
         source,
-        stage_bucket_arg,
-        ignore_file_arg,
-        kms_key,
+        kms_key=_GetActiveKmsKey(args, existing_function),
     ), frozenset(['build_config.source'])
 
 
 def _GetServiceConfig(args, messages, existing_function):
+  # type: (argparse.Namespace, _, Function) -> (ServiceConfig, frozenset[str])
   """Constructs a ServiceConfig message from the command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
-    existing_function: cloudfunctions_v2alpha_messages.Function | None
+    args: arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
+    existing_function: the existing function.
 
   Returns:
-    vpc_connector: str, the vpc connector name
-    vpc_egress_settings: VpcConnectorEgressSettingsValueValuesEnum, the vpc
-      enum value
-    updated_fields_set: frozenset, set of update mask fields
+    service_config: the resulting ServiceConfig.
+    updated_fields_set: a set of update mask fields.
   """
 
   old_env_vars = {}
@@ -539,6 +531,7 @@ def _GetServiceConfig(args, messages, existing_function):
 
 
 def _ParseMemoryStrToK8sMemory(memory):
+  # type: (str) -> str
   """Parses user provided memory to kubernetes expected format.
 
   Ensure --gen2 continues to parse Gen1 --memory passed in arguments. Defaults
@@ -589,6 +582,7 @@ def _ParseMemoryStrToK8sMemory(memory):
 
 
 def _ValidateK8sCpuStr(cpu):
+  # type: (str) -> str
   """Validates user provided cpu to kubernetes expected format.
 
   k8s format:
@@ -630,6 +624,7 @@ def _ValidateK8sCpuStr(cpu):
 
 
 def _GetEventTrigger(args, messages, existing_function):
+  # type: (argparse.Namespace, _, Function) -> (EventTrigger, frozenset[str])
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
@@ -707,11 +702,12 @@ def _GetEventTrigger(args, messages, existing_function):
 
 
 def _GetEventTriggerForEventType(args, messages):
+  # type: (argparse.Namespace, _) -> cloudfunctions_v2_messages.EventTrigger
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
+    args: arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
 
   Returns:
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
@@ -757,11 +753,12 @@ def _GetEventTriggerForEventType(args, messages):
 
 
 def _GetEventTriggerForOther(args, messages):
+  # type: (argparse.Namespace, _) -> cloudfunctions_v2_messages.EventTrigger
   """Constructs an EventTrigger when using --trigger-bucket/topic/filters.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the GCFv2 message stubs
+    args: arguments that this command was invoked with.
+    messages: messages module, the GCFv2 message stubs.
 
   Returns:
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
@@ -811,6 +808,7 @@ def _GetEventTriggerForOther(args, messages):
 
 
 def _GetRetry(args, messages, event_trigger):
+  # type: (argparse.Namespace, _, messages.EventTrigger) -> messages.EventTrigger.RetryPolicyValueValuesEnum # pylint: disable=line-too-long
   """Constructs an RetryPolicy enum from --(no-)retry flag.
 
   Args:
@@ -843,35 +841,26 @@ def _BuildFullPubsubTopic(pubsub_topic):
   return 'projects/{}/topics/{}'.format(api_util.GetProject(), pubsub_topic)
 
 
-def _GetBuildConfig(
-    args, client, messages, region, function_name, existing_function
-):
+def _GetBuildConfig(args, client, function_ref, existing_function):
+  # type: (argparse.Namespace, client_v2.FunctionsClient, resources.Resource, Function) -> (BuildConfig, frozenset[str]) # pylint: disable=line-too-long
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    client: The GCFv2 API client
-    messages: messages module, the GCFv2 message stubs
-    region: str, the region to deploy the function to
-    function_name: str, the name of the function
-    existing_function: cloudfunctions_v2alpha_messages.Function | None
+    args: argparse.Namespace, arguments that this command was invoked with.
+    client: client_v2.FunctionsClient, The GCFv2 API client
+    function_ref: resources.Resource, The GCFv2 functions resource reference.
+    existing_function: cloudfunctions_v2_messages.Function | None
 
   Returns:
-    build_config: cloudfunctions_v2alpha_messages.BuildConfig, describes the
+    build_config: cloudfunctions_v2_messages.BuildConfig, describes the
       build step for the function
     updated_fields_set: frozenset[str], set of update mask fields
   """
-  kms_key = _GetActiveKmsKey(args, existing_function)
   function_source, source_updated_fields = _GetSource(
+      args,
       client,
-      messages,
-      region,
-      function_name,
-      args.source,
-      args.stage_bucket,
-      args.ignore_file,
+      function_ref,
       existing_function,
-      kms_key,
   )
 
   old_build_env_vars = {}
@@ -910,6 +899,7 @@ def _GetBuildConfig(
     updated_fields.add('build_config.worker_pool')
 
   build_updated_fields = frozenset.union(source_updated_fields, updated_fields)
+  messages = client.MESSAGES_MODULE
   return (
       messages.BuildConfig(
           entryPoint=args.entry_point,
@@ -930,6 +920,7 @@ def _GetBuildConfig(
 
 
 def _GetActiveKmsKey(args, existing_function):
+  # type: (argparse.Namespace) -> str | None
   """Retrives KMS key applicable to the deployment request.
 
   Args:
@@ -1231,21 +1222,21 @@ def _SetInvokerPermissions(args, function, is_new_function):
   )
 
 
-def _GetFunction(client, messages, function_ref):
+def _GetFunction(client, function_ref):
+  # type: (client_v2.FunctionsClient, resources.Resource) -> Function
   """Get function and return None if doesn't exist.
 
   Args:
-    client: apitools client, the GCFv2 API client
-    messages: messages module, the GCFv2 message stubs
-    function_ref: GCFv2 functions resource reference
+    client: the GCFv2 API client.
+    function_ref: the GCFv2 functions resource reference.
 
   Returns:
-    function: cloudfunctions_v2alpha_messages.Function, fetched GCFv2 function
+    function: cloudfunctions_v2_messages.Function, fetched GCFv2 function
   """
   try:
     # We got response for a GET request, so a function exists.
-    return client.projects_locations_functions.Get(
-        messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+    return client.client.projects_locations_functions.Get(
+        client.messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
             name=function_ref.RelativeName()
         )
     )
@@ -1255,27 +1246,25 @@ def _GetFunction(client, messages, function_ref):
     raise
 
 
-def _CreateAndWait(client, messages, function_ref, function):
+def _CreateAndWait(gcf_client, function_ref, function):
+  # type: (client_v2.FunctionsClient, resources.Resource, Function) -> None
   """Create a function.
 
   This does not include setting the invoker permissions.
 
   Args:
-    client: The GCFv2 API client.
-    messages: The GCFv2 message stubs.
+    gcf_client: The GCFv2 API client.
     function_ref: The GCFv2 functions resource reference.
     function: The function to create.
 
   Returns:
     None
   """
-  function_parent = 'projects/{}/locations/{}'.format(
-      api_util.GetProject(), function_ref.locationsId
-  )
-
+  client = gcf_client.client
+  messages = gcf_client.messages
   create_request = (
       messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
-          parent=function_parent,
+          parent=function_ref.Parent().RelativeName(),
           functionId=function_ref.Name(),
           function=function,
       )
@@ -1288,16 +1277,14 @@ def _CreateAndWait(client, messages, function_ref, function):
   )
 
 
-def _UpdateAndWait(
-    client, messages, function_ref, function, updated_fields_set
-):
+def _UpdateAndWait(gcf_client, function_ref, function, updated_fields_set):
+  # type: (client_v2.FunctionsClient, resources.Resource, Function, frozenset[str]) -> None # pylint: disable=line-too-long
   """Update a function.
 
   This does not include setting the invoker permissions.
 
   Args:
-    client: The GCFv2 API client.
-    messages: The GCFv2 message stubs.
+    gcf_client: The GCFv2 API client.
     function_ref: The GCFv2 functions resource reference.
     function: The function to update.
     updated_fields_set: A set of update mask fields.
@@ -1305,15 +1292,13 @@ def _UpdateAndWait(
   Returns:
     None
   """
+  client = gcf_client.client
+  messages = gcf_client.messages
   if updated_fields_set:
-    updated_fields = list(updated_fields_set)
-    updated_fields.sort()
-    update_mask = ','.join(updated_fields)
-
     update_request = (
         messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
             name=function_ref.RelativeName(),
-            updateMask=update_mask,
+            updateMask=','.join(sorted(updated_fields_set)),
             function=function,
         )
     )
@@ -1330,14 +1315,14 @@ def _UpdateAndWait(
 
 def Run(args, release_track):
   """Runs a function deployment with the given args."""
-  client = api_util.GetClientInstance(release_track=release_track)
-  messages = api_util.GetMessagesModule(release_track=release_track)
+  client = client_v2.FunctionsClient(release_track=release_track)
+  messages = client.messages
 
   function_ref = args.CONCEPTS.name.Parse()
 
   _ValidateV1OnlyFlags(args, release_track)
 
-  existing_function = _GetFunction(client, messages, function_ref)
+  existing_function = _GetFunction(client, function_ref)
 
   is_new_function = existing_function is None
   if is_new_function and not args.runtime:
@@ -1345,10 +1330,8 @@ def Run(args, release_track):
       raise calliope_exceptions.RequiredArgumentException(
           'runtime', 'Flag `--runtime` is required for new functions.'
       )
-    gcf_client = api_client_v2.FunctionsClient(release_track=release_track)
     runtimes = [
-        r.name
-        for r in gcf_client.ListRuntimes(function_ref.locationsId).runtimes
+        r.name for r in client.ListRuntimes(function_ref.locationsId).runtimes
     ]
     idx = console_io.PromptChoice(
         runtimes, message='Please select a runtime:\n'
@@ -1385,10 +1368,8 @@ def Run(args, release_track):
 
   build_config, build_updated_fields = _GetBuildConfig(
       args,
-      client,
-      messages,
-      function_ref.locationsId,
-      function_ref.Name(),
+      client.client,
+      function_ref,
       existing_function,
   )
 
@@ -1418,25 +1399,20 @@ def Run(args, release_track):
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
   api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
+  updated_fields = frozenset.union(
+      trigger_updated_fields,
+      build_updated_fields,
+      service_updated_fields,
+      labels_updated_fields,
+      cmek_updated_fields,
+      docker_repository_updated_fields,
+  )
   if is_new_function:
-    _CreateAndWait(client, messages, function_ref, function)
+    _CreateAndWait(client, function_ref, function)
   else:
-    _UpdateAndWait(
-        client,
-        messages,
-        function_ref,
-        function,
-        frozenset.union(
-            trigger_updated_fields,
-            build_updated_fields,
-            service_updated_fields,
-            labels_updated_fields,
-            cmek_updated_fields,
-            docker_repository_updated_fields,
-        ),
-    )
+    _UpdateAndWait(client, function_ref, function, updated_fields)
 
-  function = client.projects_locations_functions.Get(
+  function = client.client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()
       )

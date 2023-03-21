@@ -157,6 +157,19 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersCancelRequest(_messag
   name = _messages.StringField(2, required=True)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest(_messages.Message):
+  r"""A
+  CloudcommerceconsumerprocurementBillingAccountsOrdersGetAuditLogRequest
+  object.
+
+  Fields:
+    name: Required. The name of the auditLog to retrieve. Format:
+      `billingAccounts/{billing_account}/orders/{order}/auditLog`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest
   object.
@@ -582,6 +595,13 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest(_messages.Me
   parent = _messages.StringField(4, required=True)
 
 
+class GoogleCloudCommerceConsumerProcurementV1PlaceOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.PlaceOrder.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1Account(_messages.Message):
   r"""Represents an account that was established by the customer with a
   service provider. When consuming services on external service provider's
@@ -692,6 +712,53 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AddOnDetails(_messages.Messa
   """
 
   isAddOn = _messages.BooleanField(1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog(_messages.Message):
+  r"""Consumer Procurement Order Audit Log
+
+  Fields:
+    auditLogRecords: List of audit log records for an offer
+    name: The resource name of the order auditLog Format:
+      `billingAccounts/{billing_account}/orders/{order}/auditLog`
+  """
+
+  auditLogRecords = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord(_messages.Message):
+  r"""Definition of an Audit Log Record
+
+  Enums:
+    ActionTypeValueValuesEnum: The type of action
+
+  Fields:
+    actionTime: The time when the action takes place
+    actionType: The type of action
+    userEmail: The email of the user taking the action. This field can be
+      empty for users authenticated through 3P identity provider.
+    userName: The name of the user taking the action. For users authenticated
+      through 3P identity provider (BYOID), the field value format is
+      described in go/byoid-data-pattern:displaying-users.
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of action
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: Default value, do not use.
+      ORDER_PLACED: The action of accepting an offer.
+      ORDER_CANCELLED: Order Cancelation action.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    ORDER_PLACED = 1
+    ORDER_CANCELLED = 2
+
+  actionTime = _messages.StringField(1)
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 2)
+  userEmail = _messages.StringField(3)
+  userName = _messages.StringField(4)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderMetadata(_messages.Message):
@@ -1062,10 +1129,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementService(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message):
-  r"""FreeTrial represents the free trial created for a specific product and
+  r"""FreeTrial represents the free trial created for a specific offer and
   billing account with argentum. Free Trial resources are created by placing
-  orders for 3p non-VM products, or just enabling free trials for 1p products
-  and 3P VM products. Next Id: 6
+  orders for 3p non-VM offers, or just enabling free trials for 1p offers and
+  3p VM offers. Next Id: 7
 
   Fields:
     credit: Output only. Credit tracking the real time credit status.
@@ -1074,15 +1141,19 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message)
       free trial is created under the project's associated billing account for
       3p, or free trial is enabled for 1p product.
     productExternalName: External name for the product for which free trial
-      exist.
+      exist. TODO(b/259732458) Mark this field "output only" once the standard
+      offer migration completes.
     provider: Provider of the products for which free trial exist. Provider
       has the format of `providers/{provider_id}`.
+    service: The one platform service name associated with the free trial.
+      Format: 'services/{service_name}'.
   """
 
   credit = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrialCredit', 1)
   name = _messages.StringField(2)
   productExternalName = _messages.StringField(3)
   provider = _messages.StringField(4)
+  service = _messages.StringField(5)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrialCredit(_messages.Message):

@@ -1752,12 +1752,18 @@ class TpuProjectsLocationsQueuedResourcesDeleteRequest(_messages.Message):
   r"""A TpuProjectsLocationsQueuedResourcesDeleteRequest object.
 
   Fields:
+    force: If set to true, all running nodes belonging to this queued resource
+      will be deleted first and then the queued resource will be deleted.
+      Otherwise (i.e. force=false), the queued resource will only be deleted
+      if its nodes have already been deleted or the queued resource is in the
+      ACCEPTED, FAILED, or SUSPENDED state.
     name: Required. The resource name.
     requestId: Idempotent request UUID.
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class TpuProjectsLocationsQueuedResourcesGetRequest(_messages.Message):

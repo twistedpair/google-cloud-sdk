@@ -159,6 +159,13 @@ class ClientBase(object):
     if node_pool_ref:
       return node_pool_ref.Name()
 
+  def _node_pool_parent(self, args):
+    """Parses node pool from args and returns its parent name."""
+    node_pool_ref = self._node_pool_ref(args)
+    if node_pool_ref:
+      return node_pool_ref.Parent().RelativeName()
+    return None
+
   def _parse_node_taint(self, node_taint):
     """Validates and parses a node taint object.
 

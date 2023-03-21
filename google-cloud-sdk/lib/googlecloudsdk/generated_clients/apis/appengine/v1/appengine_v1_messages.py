@@ -740,24 +740,24 @@ class Application(_messages.Message):
     authDomain: Google Apps authentication domain that controls which users
       can access this application.Defaults to open access for any Google
       Account.
-    codeBucket: Google Cloud Storage bucket that can be used for storing files
-      associated with this application. This bucket is associated with the
-      application and can be used by the gcloud deployment
+    codeBucket: Output only. Google Cloud Storage bucket that can be used for
+      storing files associated with this application. This bucket is
+      associated with the application and can be used by the gcloud deployment
       commands.@OutputOnly
     databaseType: The type of the Cloud Firestore or Cloud Datastore database
       associated with this application.
-    defaultBucket: Google Cloud Storage bucket that can be used by this
-      application to store content.@OutputOnly
+    defaultBucket: Output only. Google Cloud Storage bucket that can be used
+      by this application to store content.@OutputOnly
     defaultCookieExpiration: Cookie expiration policy for this application.
-    defaultHostname: Hostname used to reach this application, as resolved by
-      App Engine.@OutputOnly
+    defaultHostname: Output only. Hostname used to reach this application, as
+      resolved by App Engine.@OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
       dependent. Up to 20 dispatch rules can be supported.
     featureSettings: The feature specific settings to be used in the
       application.
-    gcrDomain: The Google Container Registry domain used for storing managed
-      build docker images for this application.
+    gcrDomain: Output only. The Google Container Registry domain used for
+      storing managed build docker images for this application.
     iap: A IdentityAwareProxy attribute.
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
@@ -767,8 +767,8 @@ class Application(_messages.Message):
       is also where all of the application's end user content is
       stored.Defaults to us-central.View the list of supported locations
       (https://cloud.google.com/appengine/docs/locations).
-    name: Full path to the Application resource in the API. Example:
-      apps/myapp.@OutputOnly
+    name: Output only. Full path to the Application resource in the API.
+      Example: apps/myapp.@OutputOnly
     serviceAccount: The service account associated with the application. This
       is the app-level default identity. If no identity provided during create
       version, Admin API will fallback to this one.
@@ -1440,8 +1440,8 @@ class IdentityAwareProxy(_messages.Message):
       flow.For security reasons, this value cannot be retrieved via the API.
       Instead, the SHA-256 hash of the value is returned in the
       oauth2_client_secret_sha256 field.@InputOnly
-    oauth2ClientSecretSha256: Hex-encoded SHA-256 hash of the client
-      secret.@OutputOnly
+    oauth2ClientSecretSha256: Output only. Hex-encoded SHA-256 hash of the
+      client secret.@OutputOnly
   """
 
   enabled = _messages.BooleanField(1)

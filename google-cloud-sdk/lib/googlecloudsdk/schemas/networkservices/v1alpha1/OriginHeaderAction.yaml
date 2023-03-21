@@ -26,7 +26,7 @@ properties:
     items:
       type: string
   requestHeadersToAdd:
-    description: A header to add. You can add a maximum of five request headers.
+    description: A header to add. You can add a maximum of 25 request headers.
     type: array
     items:
       $ref: OriginHeaderActionAddHeader.yaml

@@ -244,6 +244,33 @@ class DatacatalogV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Reconcile(self, request, global_params=None):
+      r"""`ReconcileTags` creates or updates a list of tags on the entry. If the ReconcileTagsRequest.force_delete_missing parameter is set, the operation deletes tags not included in the input tag list. `ReconcileTags` returns a long-running operation resource that can be queried with Operations.GetOperation to return ReconcileTagsMetadata and a ReconcileTagsResponse message.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reconcile')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reconcile.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}/tags:reconcile',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.tags.reconcile',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/tags:reconcile',
+        request_field='googleCloudDatacatalogV1ReconcileTagsRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsEntriesService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups_entries resource."""
 
@@ -1014,7 +1041,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (DatacatalogProjectsLocationsOperationsListRequest) input message

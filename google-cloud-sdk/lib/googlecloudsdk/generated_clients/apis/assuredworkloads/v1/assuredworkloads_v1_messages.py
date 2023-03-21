@@ -575,6 +575,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       When present it must be between 4 to 30 characters. Allowed characters
       are: lowercase and uppercase letters, numbers, hyphen, and spaces.
       Example: My Workload
+    ekmProvisioningResponse: Optional. Represents the Ekm Provisioning State
+      of the given workload.
     enableSovereignControls: Optional. Indicates the sovereignty status of the
       given workload. Currently meant to be used by Europe/Canada customers.
     etag: Optional. ETag of the workload, it is calculated on the basis of the
@@ -708,17 +710,18 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
   compliantButDisallowedServices = _messages.StringField(4, repeated=True)
   createTime = _messages.StringField(5)
   displayName = _messages.StringField(6)
-  enableSovereignControls = _messages.BooleanField(7)
-  etag = _messages.StringField(8)
-  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 9)
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  partner = _messages.EnumField('PartnerValueValuesEnum', 13)
-  provisionedResourcesParent = _messages.StringField(14)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 15, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 16, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 17)
+  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse', 7)
+  enableSovereignControls = _messages.BooleanField(8)
+  etag = _messages.StringField(9)
+  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 10)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  partner = _messages.EnumField('PartnerValueValuesEnum', 14)
+  provisionedResourcesParent = _messages.StringField(15)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 16, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 17, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 18)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadComplianceStatus(_messages.Message):
@@ -733,6 +736,63 @@ class GoogleCloudAssuredworkloadsV1WorkloadComplianceStatus(_messages.Message):
 
   acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   activeViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse(_messages.Message):
+  r"""External key management systems(EKM) Provisioning response
+
+  Enums:
+    EkmProvisioningErrorDomainValueValuesEnum: Indicates Ekm provisioning
+      error if any.
+    EkmProvisioningStateValueValuesEnum: Indicates Ekm enrollment Provisioning
+      of a given workload.
+
+  Fields:
+    ekmProvisioningErrorDomain: Indicates Ekm provisioning error if any.
+    ekmProvisioningErrorMessage: Detailed error message if Ekm provisioning
+      fails
+    ekmProvisioningState: Indicates Ekm enrollment Provisioning of a given
+      workload.
+  """
+
+  class EkmProvisioningErrorDomainValueValuesEnum(_messages.Enum):
+    r"""Indicates Ekm provisioning error if any.
+
+    Values:
+      EKM_PROVISIONING_ERROR_DOMAIN_UNSPECIFIED: No error domain
+      UNSPECIFIED_ERROR: Error but domain is unspecified.
+      GOOGLE_SERVER_ERROR: Internal logic breaks within provisioning code.
+      EXTERNAL_USER_ERROR: Error occurred with the customer not granting
+        permission/creating resource.
+      EXTERNAL_PARTNER_ERROR: Error occurred within the partner's provisioning
+        cluster.
+      TIMEOUT_ERROR: Resource wasn't provisioned in the required 7 day time
+        period
+    """
+    EKM_PROVISIONING_ERROR_DOMAIN_UNSPECIFIED = 0
+    UNSPECIFIED_ERROR = 1
+    GOOGLE_SERVER_ERROR = 2
+    EXTERNAL_USER_ERROR = 3
+    EXTERNAL_PARTNER_ERROR = 4
+    TIMEOUT_ERROR = 5
+
+  class EkmProvisioningStateValueValuesEnum(_messages.Enum):
+    r"""Indicates Ekm enrollment Provisioning of a given workload.
+
+    Values:
+      EKM_PROVISIONING_STATE_UNSPECIFIED: Default State for Ekm Provisioning
+      EKM_PROVISIONING_STATE_PENDING: Pending State for Ekm Provisioning
+      EKM_PROVISIONING_STATE_FAILED: Failed State for Ekm Provisioning
+      EKM_PROVISIONING_STATE_COMPLETED: Completed State for Ekm Provisioning
+    """
+    EKM_PROVISIONING_STATE_UNSPECIFIED = 0
+    EKM_PROVISIONING_STATE_PENDING = 1
+    EKM_PROVISIONING_STATE_FAILED = 2
+    EKM_PROVISIONING_STATE_COMPLETED = 3
+
+  ekmProvisioningErrorDomain = _messages.EnumField('EkmProvisioningErrorDomainValueValuesEnum', 1)
+  ekmProvisioningErrorMessage = _messages.StringField(2)
+  ekmProvisioningState = _messages.EnumField('EkmProvisioningStateValueValuesEnum', 3)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadKMSSettings(_messages.Message):

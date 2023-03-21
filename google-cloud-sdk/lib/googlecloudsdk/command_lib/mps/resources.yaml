@@ -1,0 +1,33 @@
+project:
+  name: project
+  collection: marketplacesolutions.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: Project ID.
+    property: core/project
+  disable_auto_completers: false
+
+region:
+  name: region
+  collection: marketplacesolutions.projects.locations
+  attributes:
+  - *project
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: Region of the resource.
+  disable_auto_completers: false
+
+converge_instance:
+  name: converge_instance
+  collection: marketplacesolutions.projects.locations.convergeInstances
+  attributes:
+  - *project
+  - *region
+  - &converge_instance
+    parameter_name: convergeInstancesId
+    attribute_name: converge_instance
+    help: Marketplace Solutions Converge instance.
+  disable_auto_completers: false

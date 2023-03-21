@@ -524,6 +524,10 @@ class GcsOutputConfig(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class InlineOutputConfig(_messages.Message):
+  r"""Output configurations for inline response."""
+
+
 class LanguageMetadata(_messages.Message):
   r"""The metadata about locales available in a given region. Currently this
   is just the models that are available for each locale
@@ -933,6 +937,7 @@ class OperationMetadata(_messages.Message):
       Operation.
     undeleteRecognizerRequest: The UndeleteRecognizerRequest that spawned the
       Operation.
+    updateConfigRequest: The UpdateConfigRequest that spawned the Operation.
     updateCustomClassRequest: The UpdateCustomClassRequest that spawned the
       Operation.
     updatePhraseSetRequest: The UpdatePhraseSetRequest that spawned the
@@ -959,10 +964,11 @@ class OperationMetadata(_messages.Message):
   undeleteCustomClassRequest = _messages.MessageField('UndeleteCustomClassRequest', 15)
   undeletePhraseSetRequest = _messages.MessageField('UndeletePhraseSetRequest', 16)
   undeleteRecognizerRequest = _messages.MessageField('UndeleteRecognizerRequest', 17)
-  updateCustomClassRequest = _messages.MessageField('UpdateCustomClassRequest', 18)
-  updatePhraseSetRequest = _messages.MessageField('UpdatePhraseSetRequest', 19)
-  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 20)
-  updateTime = _messages.StringField(21)
+  updateConfigRequest = _messages.MessageField('UpdateConfigRequest', 18)
+  updateCustomClassRequest = _messages.MessageField('UpdateCustomClassRequest', 19)
+  updatePhraseSetRequest = _messages.MessageField('UpdatePhraseSetRequest', 20)
+  updateRecognizerRequest = _messages.MessageField('UpdateRecognizerRequest', 21)
+  updateTime = _messages.StringField(22)
 
 
 class Phrase(_messages.Message):
@@ -1197,9 +1203,14 @@ class RecognitionOutputConfig(_messages.Message):
   Fields:
     gcsOutputConfig: The Cloud Storage URI prefix with which recognition
       results will be written.
+    inlineResponseConfig: The transcript will be provided under the
+      BatchRecognizeResponse message of the Operation when completed. NOTE:
+      This is on an allowlist only basis, and is only allowed when calling
+      BatchRecognize with just one audio file.
   """
 
   gcsOutputConfig = _messages.MessageField('GcsOutputConfig', 1)
+  inlineResponseConfig = _messages.MessageField('InlineOutputConfig', 2)
 
 
 class RecognitionResponseMetadata(_messages.Message):
@@ -1327,7 +1338,8 @@ class Recognizer(_messages.Message):
       medical provider-for example, a doctor dictating notes about a patient's
       blood test results. For supported features please see [medical models
       documentation](https://cloud.google.com/speech-to-text/docs/medical-
-      models).
+      models). - `usm` The next generation of Speech-to-Text models from
+      Google.
     name: Output only. The resource name of the Recognizer. Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
     reconciling: Output only. Whether or not this Recognizer is in the process
@@ -2070,6 +2082,20 @@ class UndeleteRecognizerRequest(_messages.Message):
   etag = _messages.StringField(1)
   name = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
+
+
+class UpdateConfigRequest(_messages.Message):
+  r"""Request message for the UpdateConfig method.
+
+  Fields:
+    config: Required. The config to update. The config's `name` field is used
+      to identify the config to be updated. The expected format is
+      `projects/{project}/locations/{location}/config`.
+    updateMask: The list of fields to be updated.
+  """
+
+  config = _messages.MessageField('Config', 1)
+  updateMask = _messages.StringField(2)
 
 
 class UpdateCustomClassRequest(_messages.Message):

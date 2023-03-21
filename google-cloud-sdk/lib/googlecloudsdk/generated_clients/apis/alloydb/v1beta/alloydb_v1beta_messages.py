@@ -620,6 +620,128 @@ class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   restoreClusterRequest = _messages.MessageField('RestoreClusterRequest', 2)
 
 
+class AlloydbProjectsLocationsClustersUsersCreateRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    user: A User resource to be passed as the request body.
+    userId: Required. ID of the requesting object.
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  user = _messages.MessageField('User', 3)
+  userId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class AlloydbProjectsLocationsClustersUsersDeleteRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the User.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class AlloydbProjectsLocationsClustersUsersGetRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersGetRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the User.name field.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlloydbProjectsLocationsClustersUsersListRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListUsersRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. Allow missing fields in the update mask.
+    name: Output only. Name of the resource in the form of
+      projects/{project}/locations/{location}/cluster/{cluster}/users/{user}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the User resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    user: A User resource to be passed as the request body.
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+  user = _messages.MessageField('User', 5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsGetRequest object.
 
@@ -1026,8 +1148,6 @@ class Cluster(_messages.Message):
       "projects/{project_number}/global/networks/{network_id}". This is
       required to create a cluster. It can be updated, but it cannot be
       removed.
-    pitrConfig: Optional. Point-in-time recovery configuration for this
-      cluster. By default, PITR is enabled and logs are retained for 14 days.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
     reconciling: Output only. Reconciling
@@ -1179,14 +1299,13 @@ class Cluster(_messages.Message):
   migrationSource = _messages.MessageField('MigrationSource', 16)
   name = _messages.StringField(17)
   network = _messages.StringField(18)
-  pitrConfig = _messages.MessageField('PitrConfig', 19)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
-  reconciling = _messages.BooleanField(21)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
-  sslConfig = _messages.MessageField('SslConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 21)
+  sslConfig = _messages.MessageField('SslConfig', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1868,6 +1987,21 @@ class ListSupportedDatabaseFlagsResponse(_messages.Message):
   supportedDatabaseFlags = _messages.MessageField('SupportedDatabaseFlag', 2, repeated=True)
 
 
+class ListUsersResponse(_messages.Message):
+  r"""Message for response to listing Users
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+    users: The list of User
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  users = _messages.MessageField('User', 3, repeated=True)
+
+
 class MachineConfig(_messages.Message):
   r"""MachineConfig describes the configuration of a machine.
 
@@ -2064,37 +2198,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class PitrConfig(_messages.Message):
-  r"""Deprecated, use ContinuousBackupConfig instead.
-
-  Fields:
-    enabled: Whether PITR is enabled.
-    enabledTime: Output only. When PITR was most recently enabled. Set to null
-      if PITR is not enabled.
-    logRetentionWindow: The number of days the log records will be retained.
-      This is also the PITR recovery window as logs are needed for recovery.
-      If not set, it defaults to 14 days.
-  """
-
-  enabled = _messages.BooleanField(1)
-  enabledTime = _messages.StringField(2)
-  logRetentionWindow = _messages.StringField(3)
-
-
-class PitrSource(_messages.Message):
-  r"""Deprecated, use ContinuousBackupSource instead.
-
-  Fields:
-    cluster: Required. The source cluster from which to restore. This cluster
-      must have PITR enabled for this operation to succeed. For the required
-      format, see the comment on the Cluster.name field.
-    pointInTime: Required. The point in time to restore to.
-  """
-
-  cluster = _messages.StringField(1)
-  pointInTime = _messages.StringField(2)
-
-
 class PrimaryConfig(_messages.Message):
   r"""Configuration for the primary cluster. It has the list of clusters that
   are replicating from this cluster. This should be set if and only if the
@@ -2212,8 +2315,6 @@ class RestoreClusterRequest(_messages.Message):
     clusterId: Required. ID of the requesting object.
     continuousBackupSource: ContinuousBackup source. Continuous backup needs
       to be enabled in the source cluster for this operation to succeed.
-    pitrSource: Point in time recovery source. PITR needs to be enabled in the
-      source cluster for this operation to succeed.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2234,9 +2335,8 @@ class RestoreClusterRequest(_messages.Message):
   cluster = _messages.MessageField('Cluster', 2)
   clusterId = _messages.StringField(3)
   continuousBackupSource = _messages.MessageField('ContinuousBackupSource', 4)
-  pitrSource = _messages.MessageField('PitrSource', 5)
-  requestId = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class SecondaryConfig(_messages.Message):
@@ -2507,6 +2607,56 @@ class TimeBasedRetention(_messages.Message):
   """
 
   retentionPeriod = _messages.StringField(1)
+
+
+class User(_messages.Message):
+  r"""Message describing User object.
+
+  Enums:
+    AuthMethodValueValuesEnum: Optional. Authentication method for the user.
+    UserTypeValueValuesEnum: Optional. Type of this user.
+
+  Fields:
+    authMethod: Optional. Authentication method for the user.
+    databaseRoles: Optional. List of database roles this user has. The
+      database role strings are subject to the PostgreSQL naming conventions.
+    name: Output only. Name of the resource in the form of
+      projects/{project}/locations/{location}/cluster/{cluster}/users/{user}.
+    password: Input only. Password for the user.
+    userType: Optional. Type of this user.
+  """
+
+  class AuthMethodValueValuesEnum(_messages.Enum):
+    r"""Optional. Authentication method for the user.
+
+    Values:
+      AUTHENTICATION_METHOD_UNSPECIFIED: Unspecified authentication method
+      BUILT_IN: The default, credentials-based authentication method.
+      IAM_BASED: IAM-Based authentication method.
+    """
+    AUTHENTICATION_METHOD_UNSPECIFIED = 0
+    BUILT_IN = 1
+    IAM_BASED = 2
+
+  class UserTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of this user.
+
+    Values:
+      USER_TYPE_UNSPECIFIED: Unspecified user type.
+      ALLOYDB_BUILT_IN: The default user type that authenticates via password-
+        based authentication.
+      ALLOYDB_IAM_USER: Database user that can authenticate via IAM-Based
+        authentication.
+    """
+    USER_TYPE_UNSPECIFIED = 0
+    ALLOYDB_BUILT_IN = 1
+    ALLOYDB_IAM_USER = 2
+
+  authMethod = _messages.EnumField('AuthMethodValueValuesEnum', 1)
+  databaseRoles = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  password = _messages.StringField(4)
+  userType = _messages.EnumField('UserTypeValueValuesEnum', 5)
 
 
 class UserPassword(_messages.Message):

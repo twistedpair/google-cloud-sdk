@@ -2763,13 +2763,14 @@ class ExecutionConfig(_messages.Message):
 
   Fields:
     idleTtl: Optional. The duration to keep the session alive while it's
-      idling. Passing this threshold will cause the session to be terminated.
-      Minimum value is 10 minutes; maximum value is 14 days (see JSON
-      representation of Duration (https://developers.google.com/protocol-
-      buffers/docs/proto3#json)). Defaults to 4 hours if not set. If both ttl
-      and idle_ttl are specified, the conditions are treated as and OR: the
-      workload will be terminated when it has been idle for idle_ttl or when
-      the ttl has passed, whichever comes first.
+      idling. Exceeding this threshold causes the session to terminate. This
+      field cannot be set on a batch workload. Minimum value is 10 minutes;
+      maximum value is 14 days (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
+      Defaults to 4 hours if not set. If both ttl and idle_ttl are specified,
+      the conditions are treated as OR conditions: the workload will be
+      terminated when it has been idle for idle_ttl or when ttl has been
+      exceed, whichever occurs first.
     kmsKey: Optional. The Cloud KMS key to use for encryption.
     networkTags: Optional. Tags used for network traffic control.
     networkUri: Optional. Network URI to connect workload to.
@@ -2785,14 +2786,17 @@ class ExecutionConfig(_messages.Message):
       Cloud Storage bucket.
     subnetworkUri: Optional. Subnetwork URI to connect workload to.
     ttl: Optional. The duration after which the workload will be terminated.
-      When the workload passes this ttl, it will be unconditionally killed
-      without waiting for ongoing work to finish. Minimum value is 10 minutes;
-      maximum value is 14 days (see JSON representation of Duration
-      (https://developers.google.com/protocol-buffers/docs/proto3#json)). If
-      both ttl and idle_ttl are specified, the conditions are treated as and
-      OR: the workload will be terminated when it has been idle for idle_ttl
-      or when the ttl has passed, whichever comes first. If ttl is not
-      specified for a session, it defaults to 24h.
+      When the workload exceeds this duration, it will be unconditionally
+      terminated without waiting for ongoing work to finish. If ttl is not
+      specified for a batch workload, the workload will be allowed to run
+      until it exits naturally (or runs forever without exiting). If ttl is
+      not specified for an interactive session, it defaults to 24h. Minimum
+      value is 10 minutes; maximum value is 14 days (see JSON representation
+      of Duration (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)). If both ttl and idle_ttl are specified (for
+      an interactive session), the conditions are treated as OR conditions:
+      the workload will be terminated when it has been idle for idle_ttl or
+      when ttl has been exceeded, whichever occurs first.
   """
 
   class PerformanceTierValueValuesEnum(_messages.Enum):

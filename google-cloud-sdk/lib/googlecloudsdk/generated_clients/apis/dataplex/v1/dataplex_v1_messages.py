@@ -3024,7 +3024,8 @@ class GoogleCloudDataplexV1DataAttributeBinding(_messages.Message):
       Binding, of the form: projects/{project_number}/locations/{location}/dat
       aAttributeBindings/{data_attribute_binding_id}
     paths: Optional. The list of paths for items within the associated
-      resource (eg. columns within a table) along with attribute bindings.
+      resource (eg. columns and partitions within a table) along with
+      attribute bindings.
     resource: Optional. Immutable. The resource name of the resource that is
       associated to attributes. Presently, only entity resource is supported
       in the form: projects/{project}/locations/{location}/lakes/{lake}/zones/
@@ -3076,15 +3077,16 @@ class GoogleCloudDataplexV1DataAttributeBinding(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataAttributeBindingPath(_messages.Message):
-  r"""Represents a subresource of a given resource, and associated bindings
-  with it.
+  r"""Represents a subresource of the given resource, and associated bindings
+  with it. Currently supported subresources are column and partition schema
+  fields within a table.
 
   Fields:
     attributes: Optional. List of attributes to be associated with the path of
       the resource, provided in the form: projects/{project}/locations/{locati
       on}/dataTaxonomies/{dataTaxonomy}/attributes/{data_attribute_id}
     name: Required. The name identifier of the path. Nested columns should be
-      of the form: 'country.state.city'.
+      of the form: 'address.city'.
   """
 
   attributes = _messages.StringField(1, repeated=True)
@@ -3861,9 +3863,15 @@ class GoogleCloudDataplexV1DataSource(_messages.Message):
       (e.g. BigQuery table) for DataScan, of the form: projects/{project_numbe
       r}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{ent
       ity_id}.
+    resource: Immutable. The service-qualified full resource name of the cloud
+      resource for a DataScan job to scan against. The field could be:
+      BigQuery table of type "TABLE" for DataProfileScan/DataQualityScan
+      Format: //bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_I
+      D/tables/TABLE_ID
   """
 
   entity = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1DataTaxonomy(_messages.Message):

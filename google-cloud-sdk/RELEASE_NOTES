@@ -5,6 +5,97 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 423.0.0 (2023-03-21)
+
+### Google Cloud CLI
+
+* Added `gcloud auth enterprise-certificate-config` to create
+  enterprise-certificate configurations.
+* Disabled mTLS during installation.
+* Fixed crash that occurred when parsing certain repeated dictionary-type flags
+  if duplicate keys were provided or if invalid choices for another flag were
+  specified afterwards.
+* Improved post-processing times during `gcloud components update` and `gcloud
+  components install` on Windows.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.12 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.12>.
+* Fixed a DevAppServer issue where in some scenarios, the class `io.opencensus.trace.propagation.TextFormat` could not be found.
+* Added `--tunnel-through-iap` flag to `gcloud app instances ssh`. Using this
+flag lets you use an Identity-Aware Proxy (IAP) tunnel when attempting to SSH
+into an App Engine flexible environment instance without an external IP address.
+* Updated the Go SDK to version 1.9.73.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/go/release-notes>.
+* Added `--tunnel-through-iap` flag to `gcloud app instances scp`. Using this
+flag lets you use an Identity-Aware Proxy (IAP) tunnel when attempting to SCP
+to/from an App Engine flexible environment instance without an external IP
+address.
+
+### Artifact Registry
+
+* Updated `gcloud artifacts docker images describe` and `gcloud artifacts docker images list` to return occurrences when an occurrence filter is used, even if the user does not explicitly say to show occurrences.
+
+* Added `--immutable-tags` flag to `gcloud artifacts repositories create` and `gcloud artifacts repositories update`.
+
+### Bare Metal Solution
+
+* Promoted `gcloud bms ssh-keys list` to GA.
+* Promoted `gcloud bms ssh-keys add` to GA.
+* Promoted `gcloud bms ssh-keys remove` to GA.
+
+### Cloud Build
+
+* Added `--repository` flag to `gcloud builds triggers create manual`, `gcloud builds triggers create webhook` and `gcloud builds triggers create pubsub`.
+
+### Cloud Dataproc
+
+*   Added `--ttl` flag to `gcloud dataproc batches submit` commands in GA.
+    This sets a workload TTL when creating batches.
+
+### Cloud Firestore Emulator
+
+* Released Cloud Firestore emulator v1.16.1
+  * Fixed: support read_time in ListCollectionIds
+
+### Cloud Healthcare
+
+* Added `gcloud healthcare fhir-stores metrics` which allows users to retrieve
+  metrics associated with a FHIR store.
+
+### Cloud Key Management Service
+
+*   Added `--key-management-mode` and `--crypto-space-path` to
+    `gcloud kms ekm-connections` that is used when creating coordinated
+    external keys.
+*   Added `gcloud kms ekm-config` commands which enables setting configuration
+    values for EKM users.
+
+### Compute Engine
+
+* Promoted `--aws-*` flags of `gcloud compute images import` to GA.
+* Promoted `gcloud compute sole-tenancy node-groups simulate-maintenance-event` to GA.
+
+### Database Migration
+
+* Added `--availability-type` flag to `gcloud database-migration connection-profiles create`
+  to allow configuring the availability type on the destination Cloud SQL instance.
+* Added `--secondary-zone` flag to `gcloud database-migration connection-profiles create`
+  to allow configuring the secondary zone of the destination Cloud SQL instance when
+  regional availability type is used.
+
+### Kubernetes Engine
+
+* Added `--enable-fleet` flag to `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` in alpha, beta track.
+* Added `--fleet-project` flag to `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` in alpha, beta track.
+* Added `--clear-fleet-project` flag to `gcloud container clusters update` in alpha, beta track.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 422.0.0 (2023-03-14)
 
 ### Breaking Changes

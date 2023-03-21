@@ -646,6 +646,10 @@
         "manualLbConfig": {
           "description": "Manually configured load balancers.",
           "$ref": "BareMetalManualLbConfig"
+        },
+        "bgpLbConfig": {
+          "description": "Configuration for BGP typed load balancers. When set network_config.advanced_networking is automatically set to true.",
+          "$ref": "BareMetalBgpLbConfig"
         }
       }
     },
@@ -739,6 +743,59 @@
         "enabled": {
           "description": "Whether manual load balancing is enabled.",
           "type": "boolean"
+        }
+      }
+    },
+    "BareMetalBgpLbConfig": {
+      "id": "BareMetalBgpLbConfig",
+      "description": "BareMetalBgpLbConfig represents configuration parameters for a Border Gateway Protocol (BGP) load balancer.",
+      "type": "object",
+      "properties": {
+        "asn": {
+          "description": "Required. BGP autonomous system number (ASN) of the cluster. This field can be updated after cluster creation.",
+          "type": "string",
+          "format": "int64"
+        },
+        "bgpPeerConfigs": {
+          "description": "Required. The list of BGP peers that the cluster will connect to. At least one peer must be configured for each control plane node. Control plane nodes will connect to these peers to advertise the control plane VIP. The Services load balancer also uses these peers by default. This field can be updated after cluster creation.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalBgpPeerConfig"
+          }
+        },
+        "addressPools": {
+          "description": "Required. AddressPools is a list of non-overlapping IP pools used by load balancer typed services. All addresses must be routable to load balancer nodes. IngressVIP must be included in the pools.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalLoadBalancerAddressPool"
+          }
+        },
+        "loadBalancerNodePoolConfig": {
+          "description": "Specifies the node pool running data plane load balancing. L2 connectivity is required among nodes in this pool. If missing, the control plane node pool is used for data plane load balancing.",
+          "$ref": "BareMetalLoadBalancerNodePoolConfig"
+        }
+      }
+    },
+    "BareMetalBgpPeerConfig": {
+      "id": "BareMetalBgpPeerConfig",
+      "description": "BareMetalBgpPeerConfig represents configuration parameters for a Border Gateway Protocol (BGP) peer.",
+      "type": "object",
+      "properties": {
+        "asn": {
+          "description": "Required. BGP autonomous system number (ASN) for the network that contains the external peer device.",
+          "type": "string",
+          "format": "int64"
+        },
+        "ipAddress": {
+          "description": "Required. The IP address of the external peer device.",
+          "type": "string"
+        },
+        "controlPlaneNodes": {
+          "description": "The IP address of the control plane node that connects to the external peer. If you don't specify any control plane nodes, all control plane nodes can connect to the external peer. If you specify one or more IP addresses, only the nodes specified participate in peering sessions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1919,6 +1976,21 @@
           "description": "Output only. ResourceStatus representing the detailed node pool status.",
           "readOnly": true,
           "$ref": "ResourceStatus"
+        }
+      }
+    },
+    "EnrollBareMetalNodePoolRequest": {
+      "id": "EnrollBareMetalNodePoolRequest",
+      "description": "Message for enrolling an existing bare metal node pool to the GKE on-prem API.",
+      "type": "object",
+      "properties": {
+        "bareMetalNodePoolId": {
+          "description": "User provided OnePlatform identifier that is used as part of the resource name. This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format.",
+          "type": "string"
+        },
+        "validateOnly": {
+          "description": "If set, only validate the request, but do not actually enroll the node pool.",
+          "type": "boolean"
         }
       }
     },
@@ -3144,6 +3216,632 @@
         }
       }
     },
+    "ListBareMetalStandaloneClustersResponse": {
+      "id": "ListBareMetalStandaloneClustersResponse",
+      "description": "Response message for listing bare metal standalone clusters.",
+      "type": "object",
+      "properties": {
+        "bareMetalStandaloneClusters": {
+          "description": "The list of bare metal standalone cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalStandaloneCluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return. If the token is not empty this means that more results are available and should be retrieved by repeating the request with the provided page token.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BareMetalStandaloneCluster": {
+      "id": "BareMetalStandaloneCluster",
+      "description": "Resource that represents a bare metal standalone cluster.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. The bare metal standalone cluster resource name.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A human readable description of this bare metal standalone cluster.",
+          "type": "string"
+        },
+        "bareMetalVersion": {
+          "description": "Required. The Anthos clusters on bare metal version for your standalone cluster.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. The unique identifier of the bare metal standalone cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of the bare metal standalone cluster.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "The PROVISIONING state indicates the cluster is being created.",
+            "The RUNNING state indicates the cluster has been created and is fully usable.",
+            "The RECONCILING state indicates that the cluster is being updated. It remains available, but potentially with degraded performance.",
+            "The STOPPING state indicates the cluster is being deleted.",
+            "The ERROR state indicates the cluster is in a broken unrecoverable state.",
+            "The DEGRADED state indicates the cluster requires user action to restore full functionality."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "RUNNING",
+            "RECONCILING",
+            "STOPPING",
+            "ERROR",
+            "DEGRADED"
+          ]
+        },
+        "endpoint": {
+          "description": "Output only. The IP address of the bare metal standalone cluster's API server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "reconciling": {
+          "description": "Output only. If set, there are currently changes in flight to the bare metal standalone cluster.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. The time when the bare metal standalone cluster was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the bare metal standalone cluster was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. The time when the bare metal standalone cluster was deleted. If the resource is not deleted, this must be empty",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "localName": {
+          "description": "Output only. The object name of the bare metal standalone cluster custom resource. This field is used to support conflicting names when enrolling existing clusters to the API. When used as a part of cluster enrollment, this field will differ from the name in the resource name. For new clusters, this field will match the user provided cluster name and be visible in the last component of the resource name. It is not modifiable. When the local name and cluster name differ, the local name is used in the admin cluster controller logs. You use the cluster name when accessing the cluster using bmctl and kubectl.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Output only. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "annotations": {
+          "description": "Annotations on the bare metal standalone cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "networkConfig": {
+          "description": "Required. Network configuration.",
+          "$ref": "BareMetalStandaloneNetworkConfig"
+        },
+        "controlPlane": {
+          "description": "Required. Control plane configuration.",
+          "$ref": "BareMetalStandaloneControlPlaneConfig"
+        },
+        "loadBalancer": {
+          "description": "Required. Load balancer configuration.",
+          "$ref": "BareMetalStandaloneLoadBalancerConfig"
+        },
+        "storage": {
+          "description": "Required. Storage configuration.",
+          "$ref": "BareMetalStandaloneStorageConfig"
+        },
+        "proxy": {
+          "description": "Proxy configuration.",
+          "$ref": "BareMetalStandaloneProxyConfig"
+        },
+        "clusterOperations": {
+          "description": "Cluster operations configuration.",
+          "$ref": "BareMetalStandaloneClusterOperationsConfig"
+        },
+        "maintenanceConfig": {
+          "description": "Maintenance configuration.",
+          "$ref": "BareMetalStandaloneMaintenanceConfig"
+        },
+        "nodeConfig": {
+          "description": "Workload node configuration.",
+          "$ref": "BareMetalStandaloneWorkloadNodeConfig"
+        },
+        "fleet": {
+          "description": "Output only. Fleet configuration for the cluster.",
+          "readOnly": true,
+          "$ref": "Fleet"
+        },
+        "status": {
+          "description": "Output only. Detailed cluster status.",
+          "readOnly": true,
+          "$ref": "ResourceStatus"
+        },
+        "validationCheck": {
+          "description": "Output only. The result of the preflight check.",
+          "readOnly": true,
+          "$ref": "ValidationCheck"
+        },
+        "securityConfig": {
+          "description": "Security related setting configuration.",
+          "$ref": "BareMetalStandaloneSecurityConfig"
+        },
+        "maintenanceStatus": {
+          "description": "Output only. Status of on-going maintenance tasks.",
+          "readOnly": true,
+          "$ref": "BareMetalStandaloneMaintenanceStatus"
+        },
+        "nodeAccessConfig": {
+          "description": "Node access related configurations.",
+          "$ref": "BareMetalStandaloneNodeAccessConfig"
+        },
+        "osEnvironmentConfig": {
+          "description": "OS environment related configurations.",
+          "$ref": "BareMetalStandaloneOsEnvironmentConfig"
+        },
+        "profile": {
+          "description": "Profile specifies the installation profile for the Anthos Bare Metal cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default is the default installation profile.",
+            "Edge profile is tailored for edge deployment."
+          ],
+          "enum": [
+            "DEFAULT",
+            "EDGE"
+          ]
+        }
+      }
+    },
+    "BareMetalStandaloneNetworkConfig": {
+      "id": "BareMetalStandaloneNetworkConfig",
+      "description": "Specifies the cluster network configuration.",
+      "type": "object",
+      "properties": {
+        "islandModeCidr": {
+          "description": "Configuration for island mode CIDR. In an island-mode network, nodes have unique IP addresses, but pods don't have unique addresses across clusters. This doesn't cause problems because pods in one cluster never directly communicate with pods in another cluster. Instead, there are gateways that mediate between a pod in one cluster and a pod in another cluster.",
+          "$ref": "BareMetalStandaloneIslandModeCidrConfig"
+        },
+        "advancedNetworking": {
+          "description": "Enables the use of advanced Anthos networking features, such as Bundled Load Balancing with BGP or the egress NAT gateway. Setting configuration for advanced networking features will automatically set this flag.",
+          "type": "boolean"
+        },
+        "multipleNetworkInterfacesConfig": {
+          "description": "Configuration for multiple network interfaces.",
+          "$ref": "BareMetalStandloneMultipleNetworkInterfacesConfig"
+        },
+        "srIovConfig": {
+          "description": "Configuration for SR-IOV.",
+          "$ref": "BareMetalStandaloneSrIovConfig"
+        }
+      }
+    },
+    "BareMetalStandaloneIslandModeCidrConfig": {
+      "id": "BareMetalStandaloneIslandModeCidrConfig",
+      "description": "Specifies the cluster CIDR configuration while running in island mode.",
+      "type": "object",
+      "properties": {
+        "serviceAddressCidrBlocks": {
+          "description": "Required. All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "podAddressCidrBlocks": {
+          "description": "Required. All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BareMetalStandloneMultipleNetworkInterfacesConfig": {
+      "id": "BareMetalStandloneMultipleNetworkInterfacesConfig",
+      "description": "Specifies the multiple networking interfaces cluster configuration.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable multiple network interfaces for your pods. When set network_config.advanced_networking is automatically set to true.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BareMetalStandaloneSrIovConfig": {
+      "id": "BareMetalStandaloneSrIovConfig",
+      "description": "Specifies the SR-IOV networking operator config.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to install the SR-IOV operator.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BareMetalStandaloneControlPlaneConfig": {
+      "id": "BareMetalStandaloneControlPlaneConfig",
+      "description": "Specifies the control plane configuration.",
+      "type": "object",
+      "properties": {
+        "controlPlaneNodePoolConfig": {
+          "description": "Required. Configures the node pool running the control plane.",
+          "$ref": "BareMetalStandaloneControlPlaneNodePoolConfig"
+        },
+        "apiServerArgs": {
+          "description": "Customizes the default API server args. Only a subset of customized flags are supported. For the exact format, refer to the [API server documentation](https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kube-apiserver\/).",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalStandaloneApiServerArgument"
+          }
+        }
+      }
+    },
+    "BareMetalStandaloneControlPlaneNodePoolConfig": {
+      "id": "BareMetalStandaloneControlPlaneNodePoolConfig",
+      "description": "Specifies the control plane node pool configuration.",
+      "type": "object",
+      "properties": {
+        "nodePoolConfig": {
+          "description": "Required. The generic configuration for a node pool running the control plane.",
+          "$ref": "BareMetalNodePoolConfig"
+        }
+      }
+    },
+    "BareMetalStandaloneApiServerArgument": {
+      "id": "BareMetalStandaloneApiServerArgument",
+      "description": "Represents an arg name->value pair. Only a subset of customized flags are supported. For the exact format, refer to the [API server documentation](https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kube-apiserver\/).",
+      "type": "object",
+      "properties": {
+        "argument": {
+          "description": "Required. The argument name as it appears on the API Server command line, make sure to remove the leading dashes.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Required. The value of the arg as it will be passed to the API Server command line.",
+          "type": "string"
+        }
+      }
+    },
+    "BareMetalStandaloneLoadBalancerConfig": {
+      "id": "BareMetalStandaloneLoadBalancerConfig",
+      "description": "Specifies the load balancer configuration.",
+      "type": "object",
+      "properties": {
+        "vipConfig": {
+          "description": "The VIPs used by the load balancer.",
+          "$ref": "BareMetalStandaloneVipConfig"
+        },
+        "portConfig": {
+          "description": "Configures the ports that the load balancer will listen on.",
+          "$ref": "BareMetalStandalonePortConfig"
+        },
+        "metalLbConfig": {
+          "description": "Configuration for MetalLB load balancers.",
+          "$ref": "BareMetalStandaloneMetalLbConfig"
+        },
+        "manualLbConfig": {
+          "description": "Manually configured load balancers.",
+          "$ref": "BareMetalStandaloneManualLbConfig"
+        }
+      }
+    },
+    "BareMetalStandaloneVipConfig": {
+      "id": "BareMetalStandaloneVipConfig",
+      "description": "Specifies the VIP config for the bare metal load balancer.",
+      "type": "object",
+      "properties": {
+        "controlPlaneVip": {
+          "description": "The VIP which you previously set aside for the Kubernetes API of this bare metal standalone cluster.",
+          "type": "string"
+        },
+        "ingressVip": {
+          "description": "The VIP which you previously set aside for ingress traffic into this bare metal standalone cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "BareMetalStandalonePortConfig": {
+      "id": "BareMetalStandalonePortConfig",
+      "description": "Specifies load balancer ports for the bare metal standalone cluster.",
+      "type": "object",
+      "properties": {
+        "controlPlaneLoadBalancerPort": {
+          "description": "The port that control plane hosted load balancers will listen on.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "BareMetalStandaloneMetalLbConfig": {
+      "id": "BareMetalStandaloneMetalLbConfig",
+      "description": "Represents configuration parameters for a MetalLB load balancer.",
+      "type": "object",
+      "properties": {
+        "addressPools": {
+          "description": "Required. AddressPools is a list of non-overlapping IP pools used by load balancer typed services. All addresses must be routable to load balancer nodes. IngressVIP must be included in the pools.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalStandaloneLoadBalancerAddressPool"
+          }
+        },
+        "loadBalancerNodePoolConfig": {
+          "description": "Specifies the node pool running the load balancer. L2 connectivity is required among nodes in this pool. If missing, the control plane node pool is used as the load balancer pool.",
+          "$ref": "BareMetalStandaloneLoadBalancerNodePoolConfig"
+        }
+      }
+    },
+    "BareMetalStandaloneLoadBalancerAddressPool": {
+      "id": "BareMetalStandaloneLoadBalancerAddressPool",
+      "description": "Represents an IP pool used by the load balancer.",
+      "type": "object",
+      "properties": {
+        "pool": {
+          "description": "Required. The name of the address pool.",
+          "type": "string"
+        },
+        "addresses": {
+          "description": "Required. The addresses that are part of this pool. Each address must be either in the CIDR form (1.2.3.0\/24) or range form (1.2.3.1-1.2.3.5).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoidBuggyIps": {
+          "description": "If true, avoid using IPs ending in .0 or .255. This avoids buggy consumer devices mistakenly dropping IPv4 traffic for those special IP addresses.",
+          "type": "boolean"
+        },
+        "manualAssign": {
+          "description": "If true, prevent IP addresses from being automatically assigned.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BareMetalStandaloneLoadBalancerNodePoolConfig": {
+      "id": "BareMetalStandaloneLoadBalancerNodePoolConfig",
+      "description": "Specifies the load balancer's node pool configuration.",
+      "type": "object",
+      "properties": {
+        "nodePoolConfig": {
+          "description": "The generic configuration for a node pool running a load balancer.",
+          "$ref": "BareMetalNodePoolConfig"
+        }
+      }
+    },
+    "BareMetalStandaloneManualLbConfig": {
+      "id": "BareMetalStandaloneManualLbConfig",
+      "description": "Represents configuration parameters for a manual load balancer.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether manual load balancing is enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BareMetalStandaloneStorageConfig": {
+      "id": "BareMetalStandaloneStorageConfig",
+      "description": "BareMetalStandaloneStorageConfig specifies the cluster storage configuration.",
+      "type": "object",
+      "properties": {
+        "lvpShareConfig": {
+          "description": "Required. Specifies the config for local PersistentVolumes backed by subdirectories in a shared filesystem. These subdirectores are automatically created during cluster creation.",
+          "$ref": "BareMetalLvpShareConfig"
+        },
+        "lvpNodeMountsConfig": {
+          "description": "Required. Specifies the config for local PersistentVolumes backed by mounted node disks. These disks need to be formatted and mounted by the user, which can be done before or after cluster creation.",
+          "$ref": "BareMetalLvpConfig"
+        }
+      }
+    },
+    "BareMetalStandaloneProxyConfig": {
+      "id": "BareMetalStandaloneProxyConfig",
+      "description": "Specifies the cluster proxy configuration.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Required. Specifies the address of your proxy server. Examples: `http:\/\/domain` Do not provide credentials in the format `http:\/\/(username:password@)domain` these will be rejected by the server.",
+          "type": "string"
+        },
+        "noProxy": {
+          "description": "A list of IPs, hostnames, and domains that should skip the proxy. Examples: [\"127.0.0.1\", \"example.com\", \".corp\", \"localhost\"].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BareMetalStandaloneClusterOperationsConfig": {
+      "id": "BareMetalStandaloneClusterOperationsConfig",
+      "description": "Specifies the bare metal standalone cluster's observability infrastructure.",
+      "type": "object",
+      "properties": {
+        "enableApplicationLogs": {
+          "description": "Whether collection of application logs\/metrics should be enabled (in addition to system logs\/metrics).",
+          "type": "boolean"
+        }
+      }
+    },
+    "BareMetalStandaloneMaintenanceConfig": {
+      "id": "BareMetalStandaloneMaintenanceConfig",
+      "description": "Specifies configurations to put bare metal nodes in and out of maintenance.",
+      "type": "object",
+      "properties": {
+        "maintenanceAddressCidrBlocks": {
+          "description": "Required. All IPv4 address from these ranges will be placed into maintenance mode. Nodes in maintenance mode will be cordoned and drained. When both of these are true, the \"baremetal.cluster.gke.io\/maintenance\" annotation will be set on the node resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BareMetalStandaloneWorkloadNodeConfig": {
+      "id": "BareMetalStandaloneWorkloadNodeConfig",
+      "description": "Specifies the workload node configurations.",
+      "type": "object",
+      "properties": {
+        "maxPodsPerNode": {
+          "description": "The maximum number of pods a node can run. The size of the CIDR range assigned to the node will be derived from this parameter.",
+          "type": "string",
+          "format": "int64"
+        },
+        "containerRuntime": {
+          "description": "Specifies which container runtime will be used.",
+          "type": "string",
+          "enumDescriptions": [
+            "No container runtime selected.",
+            "Containerd runtime."
+          ],
+          "enum": [
+            "CONTAINER_RUNTIME_UNSPECIFIED",
+            "CONTAINERD"
+          ]
+        }
+      }
+    },
+    "BareMetalStandaloneSecurityConfig": {
+      "id": "BareMetalStandaloneSecurityConfig",
+      "description": "Specifies the security related settings for the bare metal standalone cluster.",
+      "type": "object",
+      "properties": {
+        "authorization": {
+          "description": "Configures user access to the standalone cluster.",
+          "$ref": "Authorization"
+        }
+      }
+    },
+    "BareMetalStandaloneMaintenanceStatus": {
+      "id": "BareMetalStandaloneMaintenanceStatus",
+      "description": "Represents the maintenance status of the bare metal standalone cluster.",
+      "type": "object",
+      "properties": {
+        "machineDrainStatus": {
+          "description": "The maintenance status of node machines.",
+          "$ref": "BareMetalStandaloneMachineDrainStatus"
+        }
+      }
+    },
+    "BareMetalStandaloneMachineDrainStatus": {
+      "id": "BareMetalStandaloneMachineDrainStatus",
+      "description": "Represents the status of node machines that are undergoing drain operations.",
+      "type": "object",
+      "properties": {
+        "drainingMachines": {
+          "description": "The list of draning machines.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalStandaloneDrainingMachine"
+          }
+        },
+        "drainedMachines": {
+          "description": "The list of drained machines.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalStandaloneDrainedMachine"
+          }
+        }
+      }
+    },
+    "BareMetalStandaloneDrainingMachine": {
+      "id": "BareMetalStandaloneDrainingMachine",
+      "description": "Represents a machine that is currently draining.",
+      "type": "object",
+      "properties": {
+        "nodeIp": {
+          "description": "Draining machine IP address.",
+          "type": "string"
+        },
+        "podCount": {
+          "description": "The count of pods yet to drain.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "BareMetalStandaloneDrainedMachine": {
+      "id": "BareMetalStandaloneDrainedMachine",
+      "description": "Represents a machine that is currently drained.",
+      "type": "object",
+      "properties": {
+        "nodeIp": {
+          "description": "Drained machine IP address.",
+          "type": "string"
+        }
+      }
+    },
+    "BareMetalStandaloneNodeAccessConfig": {
+      "id": "BareMetalStandaloneNodeAccessConfig",
+      "description": "Specifies the node access related settings for the bare metal standalone cluster.",
+      "type": "object",
+      "properties": {
+        "loginUser": {
+          "description": "LoginUser is the user name used to access node machines. It defaults to \"root\" if not set.",
+          "type": "string"
+        }
+      }
+    },
+    "BareMetalStandaloneOsEnvironmentConfig": {
+      "id": "BareMetalStandaloneOsEnvironmentConfig",
+      "description": "Specifies operating system operation settings for cluster provisioning.",
+      "type": "object",
+      "properties": {
+        "packageRepoExcluded": {
+          "description": "Whether the package repo should be added when initializing bare metal machines.",
+          "type": "boolean"
+        }
+      }
+    },
+    "EnrollBareMetalStandaloneClusterRequest": {
+      "id": "EnrollBareMetalStandaloneClusterRequest",
+      "description": "Message for enrolling an existing bare metal standalone cluster to the GKE on-prem API.",
+      "type": "object",
+      "properties": {
+        "bareMetalStandaloneClusterId": {
+          "description": "User provided OnePlatform identifier that is used as part of the resource name. This must be unique among all GKE on-prem clusters within a project and location and will return a 409 if the cluster already exists. This value must be up to 40 characters and follow RFC-1123 (https:\/\/tools.ietf.org\/html\/rfc1123) format.",
+          "type": "string"
+        },
+        "localName": {
+          "description": "The object name of the bare metal OnPremAdminCluster custom resource on the associated standalone cluster. This field is used to support conflicting resource names when enrolling existing clusters to the API. When not provided, this field will resolve to the bare_metal_standalone_cluster_id. Otherwise, it must match the object name of the bare metal OnPremAdminCluster custom resource. It is not modifiable outside \/ beyond the enrollment operation.",
+          "type": "string"
+        },
+        "membership": {
+          "description": "Required. This is the full resource name of this bare metal standalone cluster's fleet membership.",
+          "type": "string"
+        }
+      }
+    },
+    "QueryBareMetalStandaloneVersionConfigResponse": {
+      "id": "QueryBareMetalStandaloneVersionConfigResponse",
+      "description": "Response message for querying bare metal standalone cluster version config.",
+      "type": "object",
+      "properties": {
+        "versions": {
+          "description": "List of available versions to install or to upgrade to.",
+          "type": "array",
+          "items": {
+            "$ref": "BareMetalVersionInfo"
+          }
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -3483,7 +4181,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "gkeonprem.projects.locations.operations.get",
@@ -3741,6 +4439,21 @@
                       "description": "A resource filtering expression following https:\/\/google.aip.dev\/160. When non-empty, only resource's whose attributes field matches the filter are returned.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "view": {
+                      "description": "View for bare metal Clusters. When `BASIC` is specified, only the cluster resource name and admin cluster membership is returned. The default\/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the same as `FULL', which returns the complete cluster configuration details.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "If the value is not set, the default `FULL` view is used.",
+                        "Includes basic information of a cluster resource including cluster resource name and admin cluster membership.",
+                        "Includes the complete configuration for Bare Metal Cluster resource. This is the default value for ListBareMetalClustersRequest method."
+                      ],
+                      "enum": [
+                        "CLUSTER_VIEW_UNSPECIFIED",
+                        "BASIC",
+                        "FULL"
+                      ]
                     }
                   },
                   "parameterOrder": [
@@ -4014,7 +4727,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.operations.get",
@@ -4128,6 +4841,34 @@
                       ],
                       "description": "Deletes a single bare metal node pool."
                     },
+                    "enroll": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.enroll",
+                      "path": "v1/{+parent}/bareMetalNodePools:enroll",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools:enroll",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource where this node pool will be created. projects\/{project}\/locations\/{location}\/bareMetalClusters\/{cluster}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "EnrollBareMetalNodePoolRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Enrolls an existing Bare Metal Node Pool to the GKE on-prem API within a given project and location. Through enrollment, an existing node pool will become GKE on-prem API managed. The corresponding GCP resources will be created."
+                    },
                     "get": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.get",
                       "path": "v1/{+name}",
@@ -4193,6 +4934,46 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Lists bare metal Node Pools in a given project, location and bare metal cluster."
+                    },
+                    "unenroll": {
+                      "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.unenroll",
+                      "path": "v1/{+name}:unenroll",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalClusters/{bareMetalClustersId}/bareMetalNodePools/{bareMetalNodePoolsId}:unenroll",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the node pool to unenroll. Format: projects\/{project}\/locations\/{location}\/bareMetalClusters\/{cluster}\/bareMetalNodePools\/{nodepool}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalClusters\/[^\/]+\/bareMetalNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "The current etag of the Bare Metal Node Pool. If an etag is provided and does not match the current etag of node pool, deletion will be blocked and an ABORTED error will be returned.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "allowMissing": {
+                          "description": "If set to true, and the Bare Metal Node Pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "validateOnly": {
+                          "description": "If set, only validate the request, but do not actually unenroll the node pool.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Unenrolls a Bare Metal Node Pool from GKE OnPrem API."
                     },
                     "patch": {
                       "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.patch",
@@ -4369,7 +5150,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "gkeonprem.projects.locations.bareMetalClusters.bareMetalNodePools.operations.get",
@@ -4851,7 +5632,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.vmwareClusters.operations.get",
@@ -5274,7 +6055,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                         },
                         "get": {
                           "id": "gkeonprem.projects.locations.vmwareClusters.vmwareNodePools.operations.get",
@@ -5618,7 +6399,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.vmwareAdminClusters.operations.get",
@@ -5880,11 +6661,6 @@
                       "required": true,
                       "type": "string"
                     },
-                    "createConfig.bootstrapClusterMembership": {
-                      "description": "The bootstrap cluster membership. This is the full resource name of the bootstrap cluster's fleet membership. Format: \"projects\/{project}\/locations\/{location}\/memberships\/{membership}\"",
-                      "location": "query",
-                      "type": "string"
-                    },
                     "upgradeConfig.clusterName": {
                       "description": "The admin cluster resource name. This is the full resource name of the admin cluster resource. Format: \"projects\/{project}\/locations\/{location}\/bareMetalAdminClusters\/{bare_metal_admin_cluster}\"",
                       "location": "query",
@@ -6033,7 +6809,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                     },
                     "get": {
                       "id": "gkeonprem.projects.locations.bareMetalAdminClusters.operations.get",
@@ -6061,6 +6837,223 @@
                       "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                     }
                   }
+                }
+              }
+            },
+            "bareMetalStandaloneClusters": {
+              "methods": {
+                "list": {
+                  "id": "gkeonprem.projects.locations.bareMetalStandaloneClusters.list",
+                  "path": "v1/{+parent}/bareMetalStandaloneClusters",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the project and location where the clusters are listed in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, at most 50 clusters will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "showDeleted": {
+                      "description": "If true, shows deleted bare metal standalone clusters.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBareMetalStandaloneClustersResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists bare metal standalone clusters in a given project and location."
+                },
+                "get": {
+                  "id": "gkeonprem.projects.locations.bareMetalStandaloneClusters.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters/{bareMetalStandaloneClustersId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the bare metal standalone cluster to get. Format: \"projects\/{project}\/locations\/{location}\/bareMetalStandaloneClusters\/{bare_metal_standalone_cluster}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalStandaloneClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "BareMetalStandaloneCluster"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single bare metal standalone cluster."
+                },
+                "enroll": {
+                  "id": "gkeonprem.projects.locations.bareMetalStandaloneClusters.enroll",
+                  "path": "v1/{+parent}/bareMetalStandaloneClusters:enroll",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters:enroll",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the project and location where the cluster is enrolled in. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "EnrollBareMetalStandaloneClusterRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Enrolls an existing bare metal standalone cluster to the GKE on-prem API within a given project and location. Through enrollment, an existing standalone cluster will become GKE on-prem API managed. The corresponding GCP resources will be created and all future modifications to the cluster will be expected to be performed through the API."
+                },
+                "unenroll": {
+                  "id": "gkeonprem.projects.locations.bareMetalStandaloneClusters.unenroll",
+                  "path": "v1/{+name}:unenroll",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters/{bareMetalStandaloneClustersId}:unenroll",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the bare metal standalone cluster to be unenrolled. Format: \"projects\/{project}\/locations\/{location}\/bareMetalStandaloneClusters\/{cluster}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalStandaloneClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The current etag of the bare metal standalone cluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the bare metal standalone cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate the request without actually doing any updates.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "force": {
+                      "description": "This is required if the cluster has any associated node pools. When set, any child node pools will also be unenrolled.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Unenrolls an existing bare metal standalone cluster from the GKE on-prem API within a given project and location. Unenrollment removes the Cloud reference to the cluster without modifying the underlying OnPrem Resources. Clusters will continue to run; however, they will no longer be accessible through the GKE on-prem API or its clients."
+                },
+                "patch": {
+                  "id": "gkeonprem.projects.locations.bareMetalStandaloneClusters.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters/{bareMetalStandaloneClustersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Immutable. The bare metal standalone cluster resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bareMetalStandaloneClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the BareMetalStandaloneCluster resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all populated fields in the BareMetalStandaloneCluster message will be updated. Empty fields will be ignored unless a field mask is used.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the bare metal standalone cluster is not found, the request will create a new bare metal standalone cluster with the provided configuration. The user must have both create and update permission to call Update with allow_missing set to true.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Validate the request without actually doing any updates.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "BareMetalStandaloneCluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single bare metal standalone cluster."
+                },
+                "queryVersionConfig": {
+                  "id": "gkeonprem.projects.locations.bareMetalStandaloneClusters.queryVersionConfig",
+                  "path": "v1/{+parent}/bareMetalStandaloneClusters:queryVersionConfig",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bareMetalStandaloneClusters:queryVersionConfig",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the project and location to query for version config. Format: \"projects\/{project}\/locations\/{location}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "upgradeConfig.clusterName": {
+                      "description": "The standalone cluster resource name. This is the full resource name of the standalone cluster resource. Format: \"projects\/{project}\/locations\/{location}\/bareMetalStandaloneClusters\/{bare_metal_standalone_cluster}\"",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "QueryBareMetalStandaloneVersionConfigResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Queries the bare metal standalone cluster version config."
                 }
               }
             }

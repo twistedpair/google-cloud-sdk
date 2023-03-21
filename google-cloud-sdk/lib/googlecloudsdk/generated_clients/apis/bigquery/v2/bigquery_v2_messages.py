@@ -1973,6 +1973,8 @@ class JobConfigurationQuery(_messages.Message):
       Must be specified with time-based partitioning, data in the table will
       be first partitioned and subsequently clustered.
     connectionProperties: Connection properties.
+    continuous: [Optional] Specifies whether the query should be executed as a
+      continuous query. The default value is false.
     createDisposition: [Optional] Specifies whether the job is allowed to
       create new tables. The following values are supported: CREATE_IF_NEEDED:
       If the table does not exist, BigQuery creates the table. CREATE_NEVER:
@@ -2090,27 +2092,28 @@ class JobConfigurationQuery(_messages.Message):
   allowLargeResults = _messages.BooleanField(1, default=False)
   clustering = _messages.MessageField('Clustering', 2)
   connectionProperties = _messages.MessageField('ConnectionProperty', 3, repeated=True)
-  createDisposition = _messages.StringField(4)
-  createSession = _messages.BooleanField(5)
-  defaultDataset = _messages.MessageField('DatasetReference', 6)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 7)
-  destinationTable = _messages.MessageField('TableReference', 8)
-  flattenResults = _messages.BooleanField(9, default=True)
-  maximumBillingTier = _messages.IntegerField(10, variant=_messages.Variant.INT32, default=1)
-  maximumBytesBilled = _messages.IntegerField(11)
-  parameterMode = _messages.StringField(12)
-  preserveNulls = _messages.BooleanField(13)
-  priority = _messages.StringField(14)
-  query = _messages.StringField(15)
-  queryParameters = _messages.MessageField('QueryParameter', 16, repeated=True)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 17)
-  schemaUpdateOptions = _messages.StringField(18, repeated=True)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 19)
-  timePartitioning = _messages.MessageField('TimePartitioning', 20)
-  useLegacySql = _messages.BooleanField(21, default=True)
-  useQueryCache = _messages.BooleanField(22, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 23, repeated=True)
-  writeDisposition = _messages.StringField(24)
+  continuous = _messages.BooleanField(4)
+  createDisposition = _messages.StringField(5)
+  createSession = _messages.BooleanField(6)
+  defaultDataset = _messages.MessageField('DatasetReference', 7)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
+  destinationTable = _messages.MessageField('TableReference', 9)
+  flattenResults = _messages.BooleanField(10, default=True)
+  maximumBillingTier = _messages.IntegerField(11, variant=_messages.Variant.INT32, default=1)
+  maximumBytesBilled = _messages.IntegerField(12)
+  parameterMode = _messages.StringField(13)
+  preserveNulls = _messages.BooleanField(14)
+  priority = _messages.StringField(15)
+  query = _messages.StringField(16)
+  queryParameters = _messages.MessageField('QueryParameter', 17, repeated=True)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 18)
+  schemaUpdateOptions = _messages.StringField(19, repeated=True)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 20)
+  timePartitioning = _messages.MessageField('TimePartitioning', 21)
+  useLegacySql = _messages.BooleanField(22, default=True)
+  useQueryCache = _messages.BooleanField(23, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 24, repeated=True)
+  writeDisposition = _messages.StringField(25)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -2802,6 +2805,8 @@ class QueryRequest(_messages.Message):
 
   Fields:
     connectionProperties: Connection properties.
+    continuous: [Optional] Specifies whether the query should be executed as a
+      continuous query. The default value is false.
     createSession: If true, creates a new session, where session id will be a
       server generated random id. If false, runs query with an existing
       session_id passed in ConnectionProperty, otherwise runs query in non-
@@ -2910,22 +2915,23 @@ class QueryRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   connectionProperties = _messages.MessageField('ConnectionProperty', 1, repeated=True)
-  createSession = _messages.BooleanField(2)
-  defaultDataset = _messages.MessageField('DatasetReference', 3)
-  dryRun = _messages.BooleanField(4)
-  kind = _messages.StringField(5, default='bigquery#queryRequest')
-  labels = _messages.MessageField('LabelsValue', 6)
-  location = _messages.StringField(7)
-  maxResults = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
-  maximumBytesBilled = _messages.IntegerField(9)
-  parameterMode = _messages.StringField(10)
-  preserveNulls = _messages.BooleanField(11)
-  query = _messages.StringField(12)
-  queryParameters = _messages.MessageField('QueryParameter', 13, repeated=True)
-  requestId = _messages.StringField(14)
-  timeoutMs = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(16, default=True)
-  useQueryCache = _messages.BooleanField(17, default=True)
+  continuous = _messages.BooleanField(2)
+  createSession = _messages.BooleanField(3)
+  defaultDataset = _messages.MessageField('DatasetReference', 4)
+  dryRun = _messages.BooleanField(5)
+  kind = _messages.StringField(6, default='bigquery#queryRequest')
+  labels = _messages.MessageField('LabelsValue', 7)
+  location = _messages.StringField(8)
+  maxResults = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  maximumBytesBilled = _messages.IntegerField(10)
+  parameterMode = _messages.StringField(11)
+  preserveNulls = _messages.BooleanField(12)
+  query = _messages.StringField(13)
+  queryParameters = _messages.MessageField('QueryParameter', 14, repeated=True)
+  requestId = _messages.StringField(15)
+  timeoutMs = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(17, default=True)
+  useQueryCache = _messages.BooleanField(18, default=True)
 
 
 class QueryResponse(_messages.Message):

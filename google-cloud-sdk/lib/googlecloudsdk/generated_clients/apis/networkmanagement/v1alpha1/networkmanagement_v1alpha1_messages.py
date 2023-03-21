@@ -1004,6 +1004,10 @@ class Endpoint(_messages.Message):
   r"""Source or destination of the Connectivity Test.
 
   Enums:
+    ForwardingRuleTargetValueValuesEnum: Output only. Specifies the type of
+      the target of the forwarding rule.
+    LoadBalancerTypeValueValuesEnum: Output only. Type of the load balancer
+      the forwarding rule points to.
     NetworkTypeValueValuesEnum: Type of the network where the endpoint is
       located. Applicable only to source endpoint, as destination network type
       can be inferred from the source.
@@ -1018,6 +1022,12 @@ class Endpoint(_messages.Message):
       get)
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
+    forwardingRule: Forwarding rule URI. Forwarding rules are frontends for
+      load balancers, PSC endpoints and Protocol Forwarding. Format:
+      projects/{project}/global/forwardingRules/{id} or
+      projects/{project}/regions/{region}/forwardingRules/{id}
+    forwardingRuleTarget: Output only. Specifies the type of the target of the
+      forwarding rule.
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
       master](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture).
@@ -1026,6 +1036,10 @@ class Endpoint(_messages.Message):
       internal IP. An IPv6 address is only allowed when the test's destination
       is a [global load balancer VIP](https://cloud.google.com/load-
       balancing/docs/load-balancing-overview).
+    loadBalancerId: Output only. ID of the load balancer the forwarding rule
+      points to. Empty for forwarding rules not related to load balancers.
+    loadBalancerType: Output only. Type of the load balancer the forwarding
+      rule points to.
     network: A Compute Engine network URI.
     networkType: Type of the network where the endpoint is located. Applicable
       only to source endpoint, as destination network type can be inferred
@@ -1040,6 +1054,54 @@ class Endpoint(_messages.Message):
       from the service project. In this case, the network that the IP address
       resides in is defined in the host project.
   """
+
+  class ForwardingRuleTargetValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies the type of the target of the forwarding rule.
+
+    Values:
+      FORWARDING_RULE_TARGET_UNSPECIFIED: Forwarding rule target is unknown.
+      INSTANCE: Compute Engine instance for protocol forwarding.
+      LOAD_BALANCER: Load Balancer. The specific type can be found from
+        load_balancer_type.
+      VPN_GATEWAY: Classic Cloud VPN Gateway.
+      PSC: Forwarding Rule is a Private Service Connect endpoint.
+    """
+    FORWARDING_RULE_TARGET_UNSPECIFIED = 0
+    INSTANCE = 1
+    LOAD_BALANCER = 2
+    VPN_GATEWAY = 3
+    PSC = 4
+
+  class LoadBalancerTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the load balancer the forwarding rule points to.
+
+    Values:
+      LOAD_BALANCER_TYPE_UNSPECIFIED: Forwarding rule points to a different
+        target than a load balancer or a load balancer type is unknown.
+      HTTPS_ADVANCED_LOAD_BALANCER: Global external HTTP(S) load balancer.
+      HTTPS_LOAD_BALANCER: Global external HTTP(S) load balancer (classic)
+      REGIONAL_HTTPS_LOAD_BALANCER: Regional external HTTP(S) load balancer.
+      INTERNAL_HTTPS_LOAD_BALANCER: Internal HTTP(S) load balancer.
+      SSL_PROXY_LOAD_BALANCER: External SSL proxy load balancer.
+      TCP_PROXY_LOAD_BALANCER: External TCP proxy load balancer.
+      INTERNAL_TCP_PROXY_LOAD_BALANCER: Internal regional TCP proxy load
+        balancer.
+      NETWORK_LOAD_BALANCER: External TCP/UDP Network load balancer.
+      LEGACY_NETWORK_LOAD_BALANCER: Target-pool based external TCP/UDP Network
+        load balancer.
+      TCP_UDP_INTERNAL_LOAD_BALANCER: Internal TCP/UDP load balancer.
+    """
+    LOAD_BALANCER_TYPE_UNSPECIFIED = 0
+    HTTPS_ADVANCED_LOAD_BALANCER = 1
+    HTTPS_LOAD_BALANCER = 2
+    REGIONAL_HTTPS_LOAD_BALANCER = 3
+    INTERNAL_HTTPS_LOAD_BALANCER = 4
+    SSL_PROXY_LOAD_BALANCER = 5
+    TCP_PROXY_LOAD_BALANCER = 6
+    INTERNAL_TCP_PROXY_LOAD_BALANCER = 7
+    NETWORK_LOAD_BALANCER = 8
+    LEGACY_NETWORK_LOAD_BALANCER = 9
+    TCP_UDP_INTERNAL_LOAD_BALANCER = 10
 
   class NetworkTypeValueValuesEnum(_messages.Enum):
     r"""Type of the network where the endpoint is located. Applicable only to
@@ -1063,13 +1125,17 @@ class Endpoint(_messages.Message):
   cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 2)
   cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 3)
   cloudSqlInstance = _messages.StringField(4)
-  gkeMasterCluster = _messages.StringField(5)
-  instance = _messages.StringField(6)
-  ipAddress = _messages.StringField(7)
-  network = _messages.StringField(8)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 9)
-  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(11)
+  forwardingRule = _messages.StringField(5)
+  forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 6)
+  gkeMasterCluster = _messages.StringField(7)
+  instance = _messages.StringField(8)
+  ipAddress = _messages.StringField(9)
+  loadBalancerId = _messages.StringField(10)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 11)
+  network = _messages.StringField(12)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(15)
 
 
 class EndpointInfo(_messages.Message):

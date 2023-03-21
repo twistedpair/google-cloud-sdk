@@ -806,6 +806,20 @@ class CloudresourcemanagerTagKeysGetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
 
 
+class CloudresourcemanagerTagKeysGetNamespacedRequest(_messages.Message):
+  r"""A CloudresourcemanagerTagKeysGetNamespacedRequest object.
+
+  Fields:
+    name: Required. A namespaced tag key name is now only supported in the
+      format `{orgID}/{tagKeyShort}`, such as `42/foo` for a key with short
+      name "foo" under the organization with ID 42 or `r2-d2/bar` for a key
+      with short name "bar" under the project `r2-d2`. Other formats will be
+      supported when we add non-org parented tags.
+  """
+
+  name = _messages.StringField(1)
+
+
 class CloudresourcemanagerTagKeysGetRequest(_messages.Message):
   r"""A CloudresourcemanagerTagKeysGetRequest object.
 
@@ -932,6 +946,21 @@ class CloudresourcemanagerTagValuesGetIamPolicyRequest(_messages.Message):
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class CloudresourcemanagerTagValuesGetNamespacedRequest(_messages.Message):
+  r"""A CloudresourcemanagerTagValuesGetNamespacedRequest object.
+
+  Fields:
+    name: Required. A namespaced tag value name in the following format:
+      `{parentId}/{tagKeyShort}/{tagValueShort}` Examples: - `42/foo/abc` for
+      a value with short name "abc" under the key with short name "foo" under
+      the organization with ID 42 - `r2-d2/bar/xyz` for a value with short
+      name "xyz" under the key with short name "bar" under the project with ID
+      "r2-d2"
+  """
+
+  name = _messages.StringField(1)
 
 
 class CloudresourcemanagerTagValuesGetRequest(_messages.Message):

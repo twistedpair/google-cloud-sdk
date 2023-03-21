@@ -48,6 +48,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
+from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.run import messages_util
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import resource_name_conversion
@@ -1617,25 +1618,37 @@ class ServerlessOperations(object):
     return job.Job(returned_job, messages)
 
   def RunJob(
-      self, job_ref, wait=False, tracker=None, asyn=False, release_track=None
+      self,
+      job_ref,
+      args,
+      tracker=None,
+      release_track=None,
+      from_execute_surface=False,
   ):
     """Run a Cloud Run Job, creating an Execution.
 
     Args:
       job_ref: Resource, the job to run
-      wait: boolean, True to wait until the job is complete
+      args: Command line arguments, to propagate wait, async_, overrides values
       tracker: StagedProgressTracker, to report on the progress of running
-      asyn: bool, if True, return without waiting for anything.
       release_track: ReleaseTrack, the release track of a command calling this
+      from_execute_surface: bool, if True, this operation is called from `jobs
+        execute` surface. Execution overrides are only applied when True.
 
     Returns:
       An Execution Resource in its state when RunJob returns.
     """
     messages = self.messages_module
+    run_job_request = messages.RunJobRequest()
+    if (
+        from_execute_surface
+        and release_track.prefix == 'alpha'
+        and flags.HasExecutionOverrides(args)
+    ):
+      run_job_request.overrides = self._GetExecutionOverrides(args)
     run_request = messages.RunNamespacesJobsRunRequest(
-        name=job_ref.RelativeName()
+        name=job_ref.RelativeName(), runJobRequest=run_job_request
     )
-
     with metrics.RecordDuration(metric_names.RUN_JOB):
       try:
         execution_message = self._client.namespaces_jobs.Run(run_request)
@@ -1647,7 +1660,7 @@ class ServerlessOperations(object):
               'completes before creating a new one.'
           )
         raise e
-    if asyn:
+    if args.async_:
       return execution.Execution(execution_message, messages)
 
     execution_ref = self._registry.Parse(
@@ -1657,7 +1670,9 @@ class ServerlessOperations(object):
     )
     getter = functools.partial(self.GetExecution, execution_ref)
     terminal_condition = (
-        execution.COMPLETED_CONDITION if wait else execution.STARTED_CONDITION
+        execution.COMPLETED_CONDITION
+        if args.wait
+        else execution.STARTED_CONDITION
     )
     ex = self.GetExecution(execution_ref)
     for msg in run_condition.GetNonTerminalMessages(
@@ -1671,7 +1686,7 @@ class ServerlessOperations(object):
         dependencies=stages.ExecutionDependencies(),
     )
     try:
-      self.WaitForCondition(poller, None if wait else 0)
+      self.WaitForCondition(poller, None if args.wait else 0)
     except serverless_exceptions.ExecutionFailedError:
       raise serverless_exceptions.ExecutionFailedError(
           'The execution failed.'
@@ -1909,3 +1924,29 @@ class ServerlessOperations(object):
     )
     operation = waiter.PollUntilDone(poller, build_op_ref)
     return encoding.MessageToPyValue(operation.response)
+
+  def _GetExecutionOverrides(self, args):
+    container_overrides = self._GetContainerOverrides(args)
+    return self.messages_module.Overrides(
+        containerOverrides=container_overrides,
+        taskCount=args.tasks,
+        timeoutSeconds=args.task_timeout,
+    )
+
+  def _GetContainerOverrides(self, args):
+    container_overrides = []
+    if flags.HasContainerOverrides(args):
+      env_vars = self._GetEnvVarList(args.update_env_vars)
+      container_overrides.append(
+          self.messages_module.ContainerOverride(
+              args=args.args or [], env=env_vars
+          )
+      )
+    return container_overrides
+
+  def _GetEnvVarList(self, env_vars):
+    env_var_list = []
+    if env_vars is not None:
+      for name, value in env_vars.items():
+        env_var_list.append(self.messages_module.EnvVar(name=name, value=value))
+    return env_var_list

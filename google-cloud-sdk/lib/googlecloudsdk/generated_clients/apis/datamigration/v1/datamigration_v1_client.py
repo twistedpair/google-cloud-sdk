@@ -817,6 +817,33 @@ class DatamigrationV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DemoteDestination(self, request, global_params=None):
+      r"""Demotes the destination database to become a read replica of the source. This applicable for the following migrations: 1. MySQL to Cloud SQL (for MySQL) 2. PostgreSQL to Cloud SQL (for PostgreSQL) 3. PostgreSQL to AlloyDB.
+
+      Args:
+        request: (DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DemoteDestination')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DemoteDestination.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:demoteDestination',
+        http_method='POST',
+        method_id='datamigration.projects.locations.migrationJobs.demoteDestination',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:demoteDestination',
+        request_field='demoteDestinationRequest',
+        request_type_name='DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def GenerateSshScript(self, request, global_params=None):
       r"""Generate a SSH configuration script to configure the reverse SSH connectivity.
 
@@ -1260,7 +1287,7 @@ class DatamigrationV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (DatamigrationProjectsLocationsOperationsListRequest) input message

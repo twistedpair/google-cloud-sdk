@@ -761,10 +761,10 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
             operations_pb2.Operation]:
         r"""Return a callable for the create link method over gRPC.
 
-        Asynchronously creates linked dataset in BigQuery
-        which makes it possible to use BugQuery to read the logs
-        stored in the bucket. A bucket may currently only
-        contain one link.
+        Asynchronously creates a linked dataset in BigQuery
+        which makes it possible to use BigQuery to read the logs
+        stored in the log bucket. A log bucket may currently
+        only contain one link.
 
         Returns:
             Callable[[~.CreateLinkRequest],

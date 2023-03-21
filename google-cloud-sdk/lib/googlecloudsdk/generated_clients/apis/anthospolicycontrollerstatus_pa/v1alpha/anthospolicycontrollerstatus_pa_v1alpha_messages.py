@@ -776,10 +776,12 @@ class MembershipRef(_messages.Message):
   Fields:
     id: The id of the membership, for identity purposes.
     name: The name of the membership, for display purposes.
+    projectId: The project id of the membership, for checking IAM permissions.
   """
 
   id = _messages.StringField(1)
   name = _messages.StringField(2)
+  projectId = _messages.StringField(3)
 
 
 class MembershipRuntimeStatus(_messages.Message):

@@ -78,4 +78,7 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
   if hasattr(network_args, 'internal_ipv6_range'):
     network.internalIpv6Range = network_args.internal_ipv6_range
 
+  if hasattr(network_args, 'rdma'):
+    network.rdma = network_args.rdma
+
   return network

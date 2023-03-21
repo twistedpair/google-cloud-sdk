@@ -553,7 +553,7 @@ class StreamConfig(_messages.Message):
 
 
 class StreamContent(_messages.Message):
-  r"""Message describing StreamContent object
+  r"""Message describing StreamContent object Next ID: 10
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -607,7 +607,7 @@ class StreamContent(_messages.Message):
 
 
 class StreamInstance(_messages.Message):
-  r"""Message describing StreamInstance object Next ID: 13
+  r"""Message describing StreamInstance object Next ID: 14
 
   Messages:
     LabelsValue: Labels as key value pairs

@@ -36,7 +36,7 @@ properties:
   allowHeaders:
     description: |-
       The content for the `Access-Control-Allow-Headers` response header. You
-      can specify up to five headers to include in the `Access-Control-Allow-
+      can specify up to 25 headers to include in the `Access-Control-Allow-
       Headers` header.
     type: array
     items:
@@ -65,7 +65,7 @@ properties:
   exposeHeaders:
     description: |-
       The content for the Access-Control-Expose-Headers response
-      header. You can specify up to five headers to expose in the
+      header. You can specify up to 25 headers to expose in the
       `Access-Control-Expose-Headers` header.
     type: array
     items:

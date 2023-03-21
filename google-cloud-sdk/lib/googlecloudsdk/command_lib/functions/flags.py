@@ -971,3 +971,46 @@ def AddConcurrencyFlag(parser, track):
             ' provided.'
         ),
     )
+
+
+def AddUpgradeFlags(parser):
+  """Adds upgrade related function flags."""
+  upgrade_group = parser.add_group(mutex=True)
+  upgrade_group.add_argument(
+      '--setup-config',
+      action='store_true',
+      help=(
+          'Sets up the function upgrade config by creating a 2nd gen copy of'
+          " the function's code and configuration. This is the default action."
+      ),
+  )
+  upgrade_group.add_argument(
+      '--redirect-traffic',
+      action='store_true',
+      help='Redirects production traffic to the 2nd gen copy of the function.',
+  )
+  upgrade_group.add_argument(
+      '--rollback-traffic',
+      action='store_true',
+      help=(
+          'Rolls back production traffic to the original 1st gen copy of the'
+          ' function. The 2nd gen copy will still be available for testing.'
+      ),
+  )
+  upgrade_group.add_argument(
+      '--commit',
+      action='store_true',
+      help=(
+          'Finishes the upgrade process and permanently deletes the original'
+          ' 1st gen copy of the function.'
+      ),
+  )
+  upgrade_group.add_argument(
+      '--abort',
+      action='store_true',
+      help=(
+          'Undoes all steps of the upgrade process done so far. All traffic'
+          ' will point to the original 1st gen function copy and the 2nd gen'
+          ' function copy will be deleted.'
+      ),
+  )

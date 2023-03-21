@@ -673,19 +673,16 @@ class ApigeeOrganizationsAppgroupsAppsKeysUpdateAppGroupAppKeyRequest(_messages.
   object.
 
   Fields:
-    action: Approve or revoke the consumer key by setting this value to
-      `approve` or `revoke` respectively. The `Content-Type` header, if set,
-      must be set to `application/octet-stream`, with empty body.
-    googleCloudApigeeV1AppGroupAppKey: A GoogleCloudApigeeV1AppGroupAppKey
-      resource to be passed as the request body.
+    googleCloudApigeeV1UpdateAppGroupAppKeyRequest: A
+      GoogleCloudApigeeV1UpdateAppGroupAppKeyRequest resource to be passed as
+      the request body.
     name: Required. Name of the AppGroup app key. Use the following structure
       in your request:
       `organizations/{org}/appgroups/{app_group_name}/apps/{app}/keys/{key}`
   """
 
-  action = _messages.StringField(1)
-  googleCloudApigeeV1AppGroupAppKey = _messages.MessageField('GoogleCloudApigeeV1AppGroupAppKey', 2)
-  name = _messages.StringField(3, required=True)
+  googleCloudApigeeV1UpdateAppGroupAppKeyRequest = _messages.MessageField('GoogleCloudApigeeV1UpdateAppGroupAppKeyRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsAppgroupsAppsListRequest(_messages.Message):
@@ -4766,8 +4763,8 @@ class GoogleApiHttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
-class GoogleCloudApigeeV1APIProductStatus(_messages.Message):
-  r"""APIProductStatus has the API product and its administrative state
+class GoogleCloudApigeeV1APIProductAssociation(_messages.Message):
+  r"""APIProductAssociation has the API product and its administrative state
   association.
 
   Fields:
@@ -5514,6 +5511,8 @@ class GoogleCloudApigeeV1AppGroupApp(_messages.Message):
 
   Fields:
     apiProducts: List of API products associated with the appgroup app.
+    appGroup: Immutable. Name of the parent AppGroup whose resource name
+      format is of syntax (organizations/*/appgroups/*).
     appId: Immutable. ID of the appgroup app.
     attributes: List of attributes for the appgroup app.
     callbackUrl: Callback URL used by OAuth 2.0 authorization servers to
@@ -5529,7 +5528,8 @@ class GoogleCloudApigeeV1AppGroupApp(_messages.Message):
       can't be updated after it is set.
     lastModifiedAt: Output only. Time the appgroup app was modified in
       milliseconds since epoch.
-    name: Immutable. Name of the appgroup app.
+    name: Immutable. Name of the appgroup app whose resource name format is of
+      syntax (organizations/*/appgroups/*/apps/*).
     scopes: Scopes to apply to the appgroup app. The specified scopes must
       already exist for the API product that you associate with the appgroup
       app.
@@ -5537,16 +5537,17 @@ class GoogleCloudApigeeV1AppGroupApp(_messages.Message):
   """
 
   apiProducts = _messages.StringField(1, repeated=True)
-  appId = _messages.StringField(2)
-  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 3, repeated=True)
-  callbackUrl = _messages.StringField(4)
-  createdAt = _messages.IntegerField(5)
-  credentials = _messages.MessageField('GoogleCloudApigeeV1Credential', 6, repeated=True)
-  keyExpiresIn = _messages.IntegerField(7)
-  lastModifiedAt = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  scopes = _messages.StringField(10, repeated=True)
-  status = _messages.StringField(11)
+  appGroup = _messages.StringField(2)
+  appId = _messages.StringField(3)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 4, repeated=True)
+  callbackUrl = _messages.StringField(5)
+  createdAt = _messages.IntegerField(6)
+  credentials = _messages.MessageField('GoogleCloudApigeeV1Credential', 7, repeated=True)
+  keyExpiresIn = _messages.IntegerField(8)
+  lastModifiedAt = _messages.IntegerField(9)
+  name = _messages.StringField(10)
+  scopes = _messages.StringField(11, repeated=True)
+  status = _messages.StringField(12)
 
 
 class GoogleCloudApigeeV1AppGroupAppKey(_messages.Message):
@@ -5574,7 +5575,7 @@ class GoogleCloudApigeeV1AppGroupAppKey(_messages.Message):
       `revoked`.
   """
 
-  apiProducts = _messages.MessageField('GoogleCloudApigeeV1APIProductStatus', 1, repeated=True)
+  apiProducts = _messages.MessageField('GoogleCloudApigeeV1APIProductAssociation', 1, repeated=True)
   attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
   consumerKey = _messages.StringField(3)
   consumerSecret = _messages.StringField(4)
@@ -11241,6 +11242,25 @@ class GoogleCloudApigeeV1TraceSamplingConfig(_messages.Message):
 
 class GoogleCloudApigeeV1UndeleteOrganizationRequest(_messages.Message):
   r"""Request for UndeleteOrganization."""
+
+
+class GoogleCloudApigeeV1UpdateAppGroupAppKeyRequest(_messages.Message):
+  r"""Request for UpdateAppGroupAppKey
+
+  Fields:
+    action: Approve or revoke the consumer key by setting this value to
+      `approve` or `revoke` respectively. The `Content-Type` header, if set,
+      must be set to `application/octet-stream`, with empty body.
+    apiProducts: The list of API products that will be associated with the
+      credential. Note that Api products will get overwritten with this list,
+      and will not get appended.
+    appGroupAppKey: The new AppGroupKey to be amended. Note that the status
+      can be updated only via action.
+  """
+
+  action = _messages.StringField(1)
+  apiProducts = _messages.StringField(2, repeated=True)
+  appGroupAppKey = _messages.MessageField('GoogleCloudApigeeV1AppGroupAppKey', 3)
 
 
 class GoogleCloudApigeeV1UpdateError(_messages.Message):

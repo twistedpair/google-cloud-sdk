@@ -100,6 +100,10 @@ class BatchTranslateDocumentRequest(_messages.Message):
       attribution. If not provided, the default is `Machine Translated by
       Google`. Customized attribution should follow rules in
       https://cloud.google.com/translate/attribution#attribution_and_logos
+    enableShadowRemovalNativePdf: Optional. If true, use the text removal
+      server to remove the shadow text on background image for native pdf
+      translation. Shadow removal feature can only be enabled when
+      is_translate_native_pdf_only: false && pdf_native_only: false
     formatConversions: Optional.
     glossaries: Optional. Glossaries to be applied. It's keyed by target
       language code.
@@ -208,13 +212,14 @@ class BatchTranslateDocumentRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   customizedAttribution = _messages.StringField(1)
-  formatConversions = _messages.MessageField('FormatConversionsValue', 2)
-  glossaries = _messages.MessageField('GlossariesValue', 3)
-  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 4, repeated=True)
-  models = _messages.MessageField('ModelsValue', 5)
-  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 6)
-  sourceLanguageCode = _messages.StringField(7)
-  targetLanguageCodes = _messages.StringField(8, repeated=True)
+  enableShadowRemovalNativePdf = _messages.BooleanField(2)
+  formatConversions = _messages.MessageField('FormatConversionsValue', 3)
+  glossaries = _messages.MessageField('GlossariesValue', 4)
+  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 5, repeated=True)
+  models = _messages.MessageField('ModelsValue', 6)
+  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 7)
+  sourceLanguageCode = _messages.StringField(8)
+  targetLanguageCodes = _messages.StringField(9, repeated=True)
 
 
 class BatchTranslateTextRequest(_messages.Message):
@@ -1426,6 +1431,8 @@ class TranslateDocumentRequest(_messages.Message):
       output format. If not provided the translated file will only be returned
       through a byte-stream and its output mime type will be the same as the
       input file's mime type.
+    enableRotationCorrection: Optional. If true, enable auto rotation
+      correction in DVS.
     enableShadowRemovalNativePdf: Optional. If true, use the text removal
       server to remove the shadow text on background image for native pdf
       translation. Shadow removal feature can only be enabled when
@@ -1494,13 +1501,14 @@ class TranslateDocumentRequest(_messages.Message):
   customizedAttribution = _messages.StringField(1)
   documentInputConfig = _messages.MessageField('DocumentInputConfig', 2)
   documentOutputConfig = _messages.MessageField('DocumentOutputConfig', 3)
-  enableShadowRemovalNativePdf = _messages.BooleanField(4)
-  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 5)
-  isTranslateNativePdfOnly = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  model = _messages.StringField(8)
-  sourceLanguageCode = _messages.StringField(9)
-  targetLanguageCode = _messages.StringField(10)
+  enableRotationCorrection = _messages.BooleanField(4)
+  enableShadowRemovalNativePdf = _messages.BooleanField(5)
+  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 6)
+  isTranslateNativePdfOnly = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  model = _messages.StringField(9)
+  sourceLanguageCode = _messages.StringField(10)
+  targetLanguageCode = _messages.StringField(11)
 
 
 class TranslateDocumentResponse(_messages.Message):

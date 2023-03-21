@@ -376,10 +376,6 @@
           "readOnly": true,
           "$ref": "EncryptionInfo"
         },
-        "pitrConfig": {
-          "description": "Optional. Point-in-time recovery configuration for this cluster. By default, PITR is enabled and logs are retained for 14 days.",
-          "$ref": "PitrConfig"
-        },
         "continuousBackupConfig": {
           "description": "Optional. Continuous backup configuration for this cluster.",
           "$ref": "ContinuousBackupConfig"
@@ -672,28 +668,6 @@
         }
       }
     },
-    "PitrConfig": {
-      "id": "PitrConfig",
-      "description": "Deprecated, use ContinuousBackupConfig instead.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Whether PITR is enabled.",
-          "type": "boolean"
-        },
-        "logRetentionWindow": {
-          "description": "The number of days the log records will be retained. This is also the PITR recovery window as logs are needed for recovery. If not set, it defaults to 14 days.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "enabledTime": {
-          "description": "Output only. When PITR was most recently enabled. Set to null if PITR is not enabled.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "ContinuousBackupConfig": {
       "id": "ContinuousBackupConfig",
       "description": "ContinuousBackupConfig describes the continuous backups recovery configurations of a cluster.",
@@ -814,10 +788,6 @@
           "description": "Backup source.",
           "$ref": "BackupSource"
         },
-        "pitrSource": {
-          "description": "Point in time recovery source. PITR needs to be enabled in the source cluster for this operation to succeed.",
-          "$ref": "PitrSource"
-        },
         "continuousBackupSource": {
           "description": "ContinuousBackup source. Continuous backup needs to be enabled in the source cluster for this operation to succeed.",
           "$ref": "ContinuousBackupSource"
@@ -837,22 +807,6 @@
         "validateOnly": {
           "description": "Optional. If set, performs request validation (e.g. permission checks and any other type of validation), but do not actually execute the import request.",
           "type": "boolean"
-        }
-      }
-    },
-    "PitrSource": {
-      "id": "PitrSource",
-      "description": "Deprecated, use ContinuousBackupSource instead.",
-      "type": "object",
-      "properties": {
-        "cluster": {
-          "description": "Required. The source cluster from which to restore. This cluster must have PITR enabled for this operation to succeed. For the required format, see the comment on the Cluster.name field.",
-          "type": "string"
-        },
-        "pointInTime": {
-          "description": "Required. The point in time to restore to.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -1497,6 +1451,82 @@
         }
       }
     },
+    "ListUsersResponse": {
+      "id": "ListUsersResponse",
+      "description": "Message for response to listing Users",
+      "type": "object",
+      "properties": {
+        "users": {
+          "description": "The list of User",
+          "type": "array",
+          "items": {
+            "$ref": "User"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "User": {
+      "id": "User",
+      "description": "Message describing User object.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Name of the resource in the form of projects\/{project}\/locations\/{location}\/cluster\/{cluster}\/users\/{user}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "password": {
+          "description": "Input only. Password for the user.",
+          "type": "string"
+        },
+        "authMethod": {
+          "description": "Optional. Authentication method for the user.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified authentication method",
+            "The default, credentials-based authentication method.",
+            "IAM-Based authentication method."
+          ],
+          "enum": [
+            "AUTHENTICATION_METHOD_UNSPECIFIED",
+            "BUILT_IN",
+            "IAM_BASED"
+          ]
+        },
+        "databaseRoles": {
+          "description": "Optional. List of database roles this user has. The database role strings are subject to the PostgreSQL naming conventions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userType": {
+          "description": "Optional. Type of this user.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified user type.",
+            "The default user type that authenticates via password-based authentication.",
+            "Database user that can authenticate via IAM-Based authentication."
+          ],
+          "enum": [
+            "USER_TYPE_UNSPECIFIED",
+            "ALLOYDB_BUILT_IN",
+            "ALLOYDB_IAM_USER"
+          ]
+        }
+      }
+    },
     "GoogleCloudLocationListLocationsResponse": {
       "id": "GoogleCloudLocationListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1709,7 +1739,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "alloydb.projects.locations.operations.get",
@@ -2476,6 +2506,208 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Get instance metadata used for a connection."
+                    }
+                  }
+                },
+                "users": {
+                  "methods": {
+                    "list": {
+                      "id": "alloydb.projects.locations.clusters.users.list",
+                      "path": "v1beta/{+parent}/users",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListUsersRequest",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. A token identifying a page of results the server should return.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Filtering results",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Hint for how to order the results",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListUsersResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists Users in a given project and location."
+                    },
+                    "get": {
+                      "id": "alloydb.projects.locations.clusters.users.get",
+                      "path": "v1beta/{+name}",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the User.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "User"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single User."
+                    },
+                    "create": {
+                      "id": "alloydb.projects.locations.clusters.users.create",
+                      "path": "v1beta/{+parent}/users",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Value for parent.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "userId": {
+                          "description": "Required. ID of the requesting object.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "User"
+                      },
+                      "response": {
+                        "$ref": "User"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new User in a given project, location, and cluster."
+                    },
+                    "patch": {
+                      "id": "alloydb.projects.locations.clusters.users.patch",
+                      "path": "v1beta/{+name}",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. Name of the resource in the form of projects\/{project}\/locations\/{location}\/cluster\/{cluster}\/users\/{user}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the User resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "allowMissing": {
+                          "description": "Optional. Allow missing fields in the update mask.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "User"
+                      },
+                      "response": {
+                        "$ref": "User"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single User."
+                    },
+                    "delete": {
+                      "id": "alloydb.projects.locations.clusters.users.delete",
+                      "path": "v1beta/{+name}",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the User.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single User."
                     }
                   }
                 }

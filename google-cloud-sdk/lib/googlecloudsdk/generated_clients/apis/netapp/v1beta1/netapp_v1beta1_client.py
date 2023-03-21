@@ -43,6 +43,7 @@ class NetappV1beta1(base_api.BaseApiClient):
     self.projects_locations_kmsConfigs = self.ProjectsLocationsKmsConfigsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_storagePools = self.ProjectsLocationsStoragePoolsService(self)
+    self.projects_locations_volumes_replications = self.ProjectsLocationsVolumesReplicationsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -278,7 +279,7 @@ class NetappV1beta1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1beta1/{+name}:encrypt',
-        request_field='',
+        request_field='encryptVolumesRequest',
         request_type_name='NetappProjectsLocationsKmsConfigsEncryptRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -386,7 +387,7 @@ class NetappV1beta1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1beta1/{+name}:verify',
-        request_field='',
+        request_field='verifyKmsConfigRequest',
         request_type_name='NetappProjectsLocationsKmsConfigsVerifyRequest',
         response_type_name='VerifyKmsConfigResponse',
         supports_download=False,
@@ -484,7 +485,7 @@ class NetappV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
         request: (NetappProjectsLocationsOperationsListRequest) input message
@@ -651,6 +652,232 @@ class NetappV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='storagePool',
         request_type_name='NetappProjectsLocationsStoragePoolsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVolumesReplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes_replications resource."""
+
+    _NAME = 'projects_locations_volumes_replications'
+
+    def __init__(self, client):
+      super(NetappV1beta1.ProjectsLocationsVolumesReplicationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new replication for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['replicationId'],
+        relative_path='v1beta1/{+parent}/replications',
+        request_field='replication',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}',
+        http_method='DELETE',
+        method_id='netapp.projects.locations.volumes.replications.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Describe a replication for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Replication) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.replications.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsGetRequest',
+        response_type_name='Replication',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns descriptions of all replications for a volume.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListReplicationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications',
+        http_method='GET',
+        method_id='netapp.projects.locations.volumes.replications.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/replications',
+        request_field='',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsListRequest',
+        response_type_name='ListReplicationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a specific replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}',
+        http_method='PATCH',
+        method_id='netapp.projects.locations.volumes.replications.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='replication',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resume Cross Region Replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:resume',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.resume',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:resume',
+        request_field='resumeReplicationRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsResumeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ReverseDirection(self, request, global_params=None):
+      r"""ReverseReplicationDirection reverses direction of replication. Source becomes destination and destination becomes source.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReverseDirection')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReverseDirection.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:reverseDirection',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.reverseDirection',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:reverseDirection',
+        request_field='reverseReplicationDirectionRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stop Cross Region Replication.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesReplicationsStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/replications/{replicationsId}:stop',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.replications.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:stop',
+        request_field='stopReplicationRequest',
+        request_type_name='NetappProjectsLocationsVolumesReplicationsStopRequest',
         response_type_name='Operation',
         supports_download=False,
     )

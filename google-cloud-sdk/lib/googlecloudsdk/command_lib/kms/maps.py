@@ -105,3 +105,10 @@ ALGORITHMS_FOR_IMPORT = ALL_ALGORITHMS - {'external-symmetric-encryption'}
 CRYPTO_KEY_VERSION_STATE_ENUM = MESSAGES.CryptoKeyVersion.StateValueValuesEnum
 CRYPTO_KEY_VERSION_STATE_MAPPER = arg_utils.ChoiceEnumMapper(
     'crypto_key_version_state_enum', CRYPTO_KEY_VERSION_STATE_ENUM)
+
+KEY_MANAGEMENT_MODE_ENUM = (
+    MESSAGES.EkmConnection.KeyManagementModeValueValuesEnum
+)
+KEY_MANAGEMENT_MODE_MAPPER = arg_utils.ChoiceEnumMapper(
+    'key_management_mode', KEY_MANAGEMENT_MODE_ENUM
+)

@@ -370,6 +370,21 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest(_messages.M
   updateMask = _messages.StringField(3)
 
 
+class DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesTagsReconcileRequest
+  object.
+
+  Fields:
+    googleCloudDatacatalogV1ReconcileTagsRequest: A
+      GoogleCloudDatacatalogV1ReconcileTagsRequest resource to be passed as
+      the request body.
+    parent: Required. Name of Entry to be tagged.
+  """
+
+  googleCloudDatacatalogV1ReconcileTagsRequest = _messages.MessageField('GoogleCloudDatacatalogV1ReconcileTagsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest(_messages.Message):
   r"""A
   DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest
@@ -1628,6 +1643,7 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
+      CLOUD_SPANNER: Cloud Spanner
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
     """
@@ -1636,8 +1652,9 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
-    CLOUD_SQL = 5
-    LOOKER = 6
+    CLOUD_SPANNER = 5
+    CLOUD_SQL = 6
+    LOOKER = 7
 
   dataCatalogEntry = _messages.StringField(1)
   fullyQualifiedName = _messages.StringField(2)
@@ -1830,6 +1847,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
+      CLOUD_SPANNER: Cloud Spanner
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
     """
@@ -1838,8 +1856,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
-    CLOUD_SQL = 5
-    LOOKER = 6
+    CLOUD_SPANNER = 5
+    CLOUD_SQL = 6
+    LOOKER = 7
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for entries with types listed in the
@@ -2474,6 +2493,100 @@ class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
   parentPolicyTag = _messages.StringField(5)
 
 
+class GoogleCloudDatacatalogV1ReconcileTagsMetadata(_messages.Message):
+  r"""Long-running operation metadata message returned by the ReconcileTags.
+
+  Enums:
+    StateValueValuesEnum: State of the reconciliation operation.
+
+  Messages:
+    ErrorsValue: Maps the name of each tagged column (or empty string for a
+      sole entry) to tagging operation status.
+
+  Fields:
+    errors: Maps the name of each tagged column (or empty string for a sole
+      entry) to tagging operation status.
+    state: State of the reconciliation operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the reconciliation operation.
+
+    Values:
+      RECONCILIATION_STATE_UNSPECIFIED: Default value. This value is unused.
+      RECONCILIATION_QUEUED: The reconciliation has been queued and awaits for
+        execution.
+      RECONCILIATION_IN_PROGRESS: The reconciliation is in progress.
+      RECONCILIATION_DONE: The reconciliation has been finished.
+    """
+    RECONCILIATION_STATE_UNSPECIFIED = 0
+    RECONCILIATION_QUEUED = 1
+    RECONCILIATION_IN_PROGRESS = 2
+    RECONCILIATION_DONE = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ErrorsValue(_messages.Message):
+    r"""Maps the name of each tagged column (or empty string for a sole entry)
+    to tagging operation status.
+
+    Messages:
+      AdditionalProperty: An additional property for a ErrorsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ErrorsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ErrorsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Status attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Status', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  errors = _messages.MessageField('ErrorsValue', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudDatacatalogV1ReconcileTagsRequest(_messages.Message):
+  r"""Request message for ReconcileTags.
+
+  Fields:
+    forceDeleteMissing: If set to `true`, deletes entry tags related to a tag
+      template not listed in the tags source from an entry. If set to `false`,
+      unlisted tags are retained.
+    tagTemplate: Required. The name of the tag template, which is used for
+      reconciliation.
+    tags: A list of tags to apply to an entry. A tag can specify a tag
+      template, which must be the template specified in the
+      `ReconcileTagsRequest`. The sole entry and each of its columns must be
+      mentioned at most once.
+  """
+
+  forceDeleteMissing = _messages.BooleanField(1)
+  tagTemplate = _messages.StringField(2)
+  tags = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 3, repeated=True)
+
+
+class GoogleCloudDatacatalogV1ReconcileTagsResponse(_messages.Message):
+  r"""Long-running operation response message returned by ReconcileTags.
+
+  Fields:
+    createdTagsCount: Number of tags created in the request.
+    deletedTagsCount: Number of tags deleted in the request.
+    updatedTagsCount: Number of tags updated in the request.
+  """
+
+  createdTagsCount = _messages.IntegerField(1)
+  deletedTagsCount = _messages.IntegerField(2)
+  updatedTagsCount = _messages.IntegerField(3)
+
+
 class GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest(_messages.Message):
   r"""Request message for RenameTagTemplateFieldEnumValue.
 
@@ -2738,6 +2851,7 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
+      CLOUD_SPANNER: Cloud Spanner
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
     """
@@ -2746,8 +2860,9 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
-    CLOUD_SQL = 5
-    LOOKER = 6
+    CLOUD_SPANNER = 5
+    CLOUD_SQL = 6
+    LOOKER = 7
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
     r"""Type of the search result. You can use this field to determine which

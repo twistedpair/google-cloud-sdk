@@ -763,6 +763,10 @@
         "gpuSharingConfig": {
           "description": "The configuration for GPU sharing options.",
           "$ref": "GPUSharingConfig"
+        },
+        "gpuDriverInstallationConfig": {
+          "description": "The configuration for auto installation of GPU driver.",
+          "$ref": "GPUDriverInstallationConfig"
         }
       }
     },
@@ -788,6 +792,29 @@
             "GPU_SHARING_STRATEGY_UNSPECIFIED",
             "TIME_SHARING",
             "MPS"
+          ]
+        }
+      }
+    },
+    "GPUDriverInstallationConfig": {
+      "id": "GPUDriverInstallationConfig",
+      "description": "GPUDriverInstallationConfig specifies the version of GPU driver to be auto installed.",
+      "type": "object",
+      "properties": {
+        "gpuDriverVersion": {
+          "description": "Mode for how the GPU driver is installed.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value is to not install any GPU driver.",
+            "Disable GPU driver auto installation and needs manual installation",
+            "\"Default\" GPU driver in COS and Ubuntu.",
+            "\"Latest\" GPU driver in COS."
+          ],
+          "enum": [
+            "GPU_DRIVER_VERSION_UNSPECIFIED",
+            "INSTALLATION_DISABLED",
+            "DEFAULT",
+            "LATEST"
           ]
         }
       }
@@ -1731,7 +1758,7 @@
           "type": "string"
         },
         "podCidrOverprovisionConfig": {
-          "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
+          "description": "[PRIVATE FIELD] Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
           "$ref": "PodCIDROverprovisionConfig"
         },
         "additionalNodeNetworkConfigs": {
@@ -1783,7 +1810,7 @@
     },
     "PodCIDROverprovisionConfig": {
       "id": "PodCIDROverprovisionConfig",
-      "description": "Config for pod CIDR size overprovisioning.",
+      "description": "[PRIVATE FIELD] Config for pod CIDR size overprovisioning.",
       "type": "object",
       "properties": {
         "disable": {
@@ -2249,7 +2276,7 @@
           "type": "string"
         },
         "podCidrOverprovisionConfig": {
-          "description": "Pod CIDR size overprovisioning config for the cluster. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is rounded off to next power of 2 and we then double that to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
+          "description": "[PRIVATE FIELD] Pod CIDR size overprovisioning config for the cluster. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is rounded off to next power of 2 and we then double that to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
           "$ref": "PodCIDROverprovisionConfig"
         },
         "subnetIpv6CidrBlock": {
@@ -4505,6 +4532,13 @@
         "windowsNodeConfig": {
           "description": "Parameters that can be configured on Windows nodes.",
           "$ref": "WindowsNodeConfig"
+        },
+        "accelerators": {
+          "description": "A list of hardware accelerators to be attached to each node. See https:\/\/cloud.google.com\/compute\/docs\/gpus for more information about support for GPUs.",
+          "type": "array",
+          "items": {
+            "$ref": "AcceleratorConfig"
+          }
         }
       }
     },

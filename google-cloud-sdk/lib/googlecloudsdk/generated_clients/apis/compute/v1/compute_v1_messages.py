@@ -577,27 +577,31 @@ class AccessConfig(_messages.Message):
       networkTier. If an AccessConfig with a valid external IP address is
       specified, it must match that of the networkTier associated with the
       Address resource owning that IP.
-    TypeValueValuesEnum: The type of configuration. The default and only
-      option is ONE_TO_ONE_NAT.
+    TypeValueValuesEnum: The type of configuration. In accessConfigs (IPv4),
+      the default and only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the
+      default and only option is DIRECT_IPV6.
 
   Fields:
-    externalIpv6: The first IPv6 address of the external IPv6 range associated
-      with this instance, prefix length is stored in externalIpv6PrefixLength
-      in ipv6AccessConfig. To use a static external IP address, it must be
-      unused and in the same region as the instance's zone. If not specified,
-      Google Cloud will automatically assign an external IPv6 address from the
-      instance's subnetwork.
-    externalIpv6PrefixLength: The prefix length of the external IPv6 range.
+    externalIpv6: Applies to ipv6AccessConfigs only. The first IPv6 address of
+      the external IPv6 range associated with this instance, prefix length is
+      stored in externalIpv6PrefixLength in ipv6AccessConfig. To use a static
+      external IP address, it must be unused and in the same region as the
+      instance's zone. If not specified, Google Cloud will automatically
+      assign an external IPv6 address from the instance's subnetwork.
+    externalIpv6PrefixLength: Applies to ipv6AccessConfigs only. The prefix
+      length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
-    name: The name of this access configuration. The default and recommended
-      name is External NAT, but you can use any arbitrary string, such as My
-      external IP or Network Access.
-    natIP: An external IP address associated with this instance. Specify an
-      unused static external IP address available to the project or leave this
-      field undefined to use an IP from a shared ephemeral IP address pool. If
-      you specify a static external IP address, it must live in the same
-      region as the zone of the instance.
+    name: The name of this access configuration. In accessConfigs (IPv4), the
+      default and recommended name is External NAT, but you can use any
+      arbitrary string, such as My external IP or Network Access. In
+      ipv6AccessConfigs, the recommend name is External IPv6.
+    natIP: Applies to accessConfigs (IPv4) only. An external IP address
+      associated with this instance. Specify an unused static external IP
+      address available to the project or leave this field undefined to use an
+      IP from a shared ephemeral IP address pool. If you specify a static
+      external IP address, it must live in the same region as the zone of the
+      instance.
     networkTier: This signifies the networking tier used for configuring this
       access configuration and can only take the following values: PREMIUM,
       STANDARD. If an AccessConfig is specified without a valid external IP
@@ -614,8 +618,9 @@ class AccessConfig(_messages.Message):
       created to map the external IP address of the instance to a DNS domain
       name. This field is not used in ipv6AccessConfig. A default PTR record
       will be created if the VM has external IPv6 range associated.
-    type: The type of configuration. The default and only option is
-      ONE_TO_ONE_NAT.
+    type: The type of configuration. In accessConfigs (IPv4), the default and
+      only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and
+      only option is DIRECT_IPV6.
   """
 
   class NetworkTierValueValuesEnum(_messages.Enum):
@@ -641,8 +646,9 @@ class AccessConfig(_messages.Message):
     STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of configuration. The default and only option is
-    ONE_TO_ONE_NAT.
+    r"""The type of configuration. In accessConfigs (IPv4), the default and
+    only option is ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and only
+    option is DIRECT_IPV6.
 
     Values:
       DIRECT_IPV6: <no description>
@@ -659,7 +665,7 @@ class AccessConfig(_messages.Message):
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 6)
   publicPtrDomainName = _messages.StringField(7)
   setPublicPtr = _messages.BooleanField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9, default='ONE_TO_ONE_NAT')
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class Address(_messages.Message):
@@ -16947,6 +16953,36 @@ class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeNodeGroupsSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A ComputeNodeGroupsSimulateMaintenanceEventRequest object.
+
+  Fields:
+    nodeGroup: Name of the NodeGroup resource whose nodes will go under
+      maintenance simulation.
+    nodeGroupsSimulateMaintenanceEventRequest: A
+      NodeGroupsSimulateMaintenanceEventRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsSimulateMaintenanceEventRequest = _messages.MessageField('NodeGroupsSimulateMaintenanceEventRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeNodeGroupsTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeNodeGroupsTestIamPermissionsRequest object.
 
@@ -32100,21 +32136,50 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   Exactly one field must be specified.
 
   Fields:
+    destAddressGroups: Address groups which should be matched against the
+      traffic destination. Maximum number of destination address groups is 10.
+    destFqdns: Fully Qualified Domain Name (FQDN) which should be matched
+      against traffic destination. Maximum number of destination fqdn allowed
+      is 100.
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
+    destRegionCodes: Region codes whose IP addresses will be used to match for
+      destination of traffic. Should be specified as 2 letter country code
+      defined as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of
+      dest region codes allowed is 5000.
+    destThreatIntelligences: Names of Network Threat Intelligence lists. The
+      IPs in these lists will be matched against traffic destination.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
+    srcAddressGroups: Address groups which should be matched against the
+      traffic source. Maximum number of source address groups is 10.
+    srcFqdns: Fully Qualified Domain Name (FQDN) which should be matched
+      against traffic source. Maximum number of source fqdn allowed is 100.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
+    srcRegionCodes: Region codes whose IP addresses will be used to match for
+      source of traffic. Should be specified as 2 letter country code defined
+      as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of source
+      region codes allowed is 5000.
     srcSecureTags: List of secure tag values, which should be matched at the
       source of the traffic. For INGRESS rule, if all the srcSecureTag are
       INEFFECTIVE, and there is no srcIpRange, this rule will be ignored.
       Maximum number of source tag values allowed is 256.
+    srcThreatIntelligences: Names of Network Threat Intelligence lists. The
+      IPs in these lists will be matched against traffic source.
   """
 
-  destIpRanges = _messages.StringField(1, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 2, repeated=True)
-  srcIpRanges = _messages.StringField(3, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 4, repeated=True)
+  destAddressGroups = _messages.StringField(1, repeated=True)
+  destFqdns = _messages.StringField(2, repeated=True)
+  destIpRanges = _messages.StringField(3, repeated=True)
+  destRegionCodes = _messages.StringField(4, repeated=True)
+  destThreatIntelligences = _messages.StringField(5, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 6, repeated=True)
+  srcAddressGroups = _messages.StringField(7, repeated=True)
+  srcFqdns = _messages.StringField(8, repeated=True)
+  srcIpRanges = _messages.StringField(9, repeated=True)
+  srcRegionCodes = _messages.StringField(10, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
+  srcThreatIntelligences = _messages.StringField(12, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -33405,6 +33470,7 @@ class GuestOsFeature(_messages.Message):
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
+      SEV_LIVE_MIGRATABLE: <no description>
       SEV_SNP_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
@@ -33415,10 +33481,11 @@ class GuestOsFeature(_messages.Message):
     MULTI_IP_SUBNET = 2
     SECURE_BOOT = 3
     SEV_CAPABLE = 4
-    SEV_SNP_CAPABLE = 5
-    UEFI_COMPATIBLE = 6
-    VIRTIO_SCSI_MULTIQUEUE = 7
-    WINDOWS = 8
+    SEV_LIVE_MIGRATABLE = 5
+    SEV_SNP_CAPABLE = 6
+    UEFI_COMPATIBLE = 7
+    VIRTIO_SCSI_MULTIQUEUE = 8
+    WINDOWS = 9
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -34828,10 +34895,10 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
     checks configured.
 
     Values:
-      DRAINING: <no description>
-      HEALTHY: <no description>
-      UNHEALTHY: <no description>
-      UNKNOWN: <no description>
+      DRAINING: Endpoint is being drained.
+      HEALTHY: Endpoint is healthy.
+      UNHEALTHY: Endpoint is unhealthy.
+      UNKNOWN: Health status of the endpoint is unknown.
     """
     DRAINING = 0
     HEALTHY = 1
@@ -40572,8 +40639,8 @@ class Int64RangeMatch(_messages.Message):
 
 class Interconnect(_messages.Message):
   r"""Represents an Interconnect resource. An Interconnect resource is a
-  dedicated connection between the GCP network and your on-premises network.
-  For more information, read the Dedicated Interconnect Overview.
+  dedicated connection between the Google Cloud network and your on-premises
+  network. For more information, read the Dedicated Interconnect Overview.
 
   Enums:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
@@ -44400,7 +44467,7 @@ class Network(_messages.Message):
     firewallPolicy: [Output Only] URL of the firewall policy the network is
       associated with.
     gatewayIPv4: [Output Only] The gateway address for default routing out of
-      the network, selected by GCP.
+      the network, selected by Google Cloud.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     internalIpv6Range: When enabling ula internal ipv6, caller optionally can
@@ -46515,10 +46582,11 @@ class NetworkInterface(_messages.Message):
       IPV4_IPV6.
     NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
       This may be gVNIC or VirtioNet.
-    StackTypeValueValuesEnum: The stack type for this network interface to
-      identify whether the IPv6 feature is enabled or not. If not specified,
-      IPV4_ONLY will be used. This field can be both set at instance creation
-      and update network interface operations.
+    StackTypeValueValuesEnum: The stack type for this network interface. To
+      assign only IPv4 addresses, use IPV4_ONLY. To assign both IPv4 and IPv6
+      addresses, use IPV4_IPV6. If not specified, IPV4_ONLY is used. This
+      field can be both set at instance creation and update network interface
+      operations.
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
@@ -46575,10 +46643,10 @@ class NetworkInterface(_messages.Message):
     queueCount: The networking queue count that's specified by users for the
       network interface. Both Rx and Tx queues will be set to this number.
       It'll be empty if not specified by the users.
-    stackType: The stack type for this network interface to identify whether
-      the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
-      used. This field can be both set at instance creation and update network
-      interface operations.
+    stackType: The stack type for this network interface. To assign only IPv4
+      addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use
+      IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both
+      set at instance creation and update network interface operations.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not specify this field. If the
       network is in auto subnet mode, specifying the subnetwork is optional.
@@ -46615,10 +46683,10 @@ class NetworkInterface(_messages.Message):
     VIRTIO_NET = 2
 
   class StackTypeValueValuesEnum(_messages.Enum):
-    r"""The stack type for this network interface to identify whether the IPv6
-    feature is enabled or not. If not specified, IPV4_ONLY will be used. This
-    field can be both set at instance creation and update network interface
-    operations.
+    r"""The stack type for this network interface. To assign only IPv4
+    addresses, use IPV4_ONLY. To assign both IPv4 and IPv6 addresses, use
+    IPV4_IPV6. If not specified, IPV4_ONLY is used. This field can be both set
+    at instance creation and update network interface operations.
 
     Values:
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
@@ -47969,6 +48037,16 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
   """
 
   nodeTemplate = _messages.StringField(1)
+
+
+class NodeGroupsSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A NodeGroupsSimulateMaintenanceEventRequest object.
+
+  Fields:
+    nodes: Names of the nodes to go under maintenance simulation.
+  """
+
+  nodes = _messages.StringField(1, repeated=True)
 
 
 class NodeTemplate(_messages.Message):
@@ -59679,7 +59757,7 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource. A service attachment represents
   a service that a producer has exposed. It encapsulates the load balancer
   which fronts the service runs and a list of NAT IP ranges that the producers
-  uses to represent the consumers connecting to the service. next tag = 20
+  uses to represent the consumers connecting to the service.
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

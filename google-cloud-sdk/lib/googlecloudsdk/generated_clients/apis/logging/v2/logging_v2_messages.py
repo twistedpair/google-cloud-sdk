@@ -55,37 +55,36 @@ class BigQueryOptions(_messages.Message):
 class Breakdown(_messages.Message):
   r"""Columns within the output of the previous step to use to break down the
   measures. We will generate one output measure for each value in the cross
-  product of measure_columns plus the top N values in each of the breakdown
-  columns. The value of N is currently TBD but will be small, less than 10.In
-  other words, if there is one measure columns "foo" containing values "foo1"
-  and "foo2", and there are two breakdown columns "bar" and "baz" containing
-  the values "bar1", "bar2", "baz1", and "baz2", we will end up with eight
-  output measures with all combinations of the above values: (foo1, bar1,
-  baz1), (foo1, bar1, baz2), (foo1, bar2, baz1), ...
+  product of measure_columns plus the top limit values in each of the
+  breakdown columns.In other words, if there is one measure column "foo" and
+  two breakdown columns "bar" with values ("bar1","bar2") and "baz" with
+  values ("baz1", "baz2"), we will end up with four output measures with
+  names: foo_bar1_baz1, foo_bar1_baz2, foo_bar2_baz1, foo_bar2_baz2 Each of
+  these measures will contain a subset of the values in "foo".
 
   Enums:
-    SortOrderValueValuesEnum: The sort order. If limit is not zero, this may
-      not be set to SORT_ORDER_NONE.
+    SortOrderValueValuesEnum: Optional. The sort order. If limit is not zero,
+      this may not be set to SORT_ORDER_NONE.
 
   Fields:
     column: Required. The name of the column containing the breakdown values.
-    limit: Values to choose how many breakdowns to create for each measure. If
-      limit is zero, all possible breakdowns will be generated. If not, limit
-      determines how many breakdowns, and sort_aggregation determines the
-      function we will use to sort the breakdowns.For example, if limit is 3,
-      we will generate at most three breakdowns per measure. If
+    limit: Optional. Values to choose how many breakdowns to create for each
+      measure. If limit is zero, all possible breakdowns will be generated. If
+      not, limit determines how many breakdowns, and sort_aggregation
+      determines the function we will use to sort the breakdowns.For example,
+      if limit is 3, we will generate at most three breakdowns per measure. If
       sort_aggregation is "average" and sort_order is DESCENDING, those three
       will be chosen as the ones where the average of all the points in the
       breakdown set is the greatest.
     sortAggregation: The aggregation to apply to the measure values when
       choosing which breakdowns to generate. If sort_order is SORT_ORDER_NONE,
       this is not used.
-    sortOrder: The sort order. If limit is not zero, this may not be set to
-      SORT_ORDER_NONE.
+    sortOrder: Optional. The sort order. If limit is not zero, this may not be
+      set to SORT_ORDER_NONE.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
-    r"""The sort order. If limit is not zero, this may not be set to
+    r"""Optional. The sort order. If limit is not zero, this may not be set to
     SORT_ORDER_NONE.
 
     Values:
@@ -186,16 +185,14 @@ class ChartingAggregation(_messages.Message):
   Fields:
     parameters: Parameters to be applied to the aggregation. Aggregations that
       support or require parameters are listed above.
-    type: The type of aggregation to apply. Legal values for this string are:
-      "none" - No aggregation is applied, all values are returned. Not legal
-      in all cases, see the comment on the specific field. "percentile" -
-      Generates an APPROX_QUANTILES. Requires one integer or double parameter.
-      Applies only to numeric values. "average" - Generates AVG(). Applies
-      only to numeric values. "count" - Generates COUNT(). "count-distinct" -
-      Generates COUNT(DISTINCT). "count-distinct-approx" - Generates
-      APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only to
-      numeric values. "min" - Generates MIN(). Applies only to numeric values.
-      "sum" - Generates SUM(). Applies only to numeric values.
+    type: Required. The type of aggregation to apply. Legal values for this
+      string are: "percentile" - Generates an APPROX_QUANTILES. Requires one
+      integer or double parameter. Applies only to numeric values. "average" -
+      Generates AVG(). Applies only to numeric values. "count" - Generates
+      COUNT(). "count-distinct" - Generates COUNT(DISTINCT). "count-distinct-
+      approx" - Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX().
+      Applies only to numeric values. "min" - Generates MIN(). Applies only to
+      numeric values. "sum" - Generates SUM(). Applies only to numeric values.
   """
 
   parameters = _messages.MessageField('Parameter', 1, repeated=True)
@@ -415,26 +412,26 @@ class Dimension(_messages.Message):
   containing the cross-product of the defined dimensions.
 
   Enums:
-    SortOrderValueValuesEnum: The sort order. If limit is not zero, this may
-      not be set to SORT_ORDER_NONE.
+    SortOrderValueValuesEnum: Optional. The sort order. If limit is not zero,
+      this may not be set to SORT_ORDER_NONE.
 
   Fields:
     column: Required. The column name within the output of the previous step
       to use.
-    integerBinSize: Used for an integer column.
-    limit: If this value is nonzero, the number of bins to generate. If zero,
-      all possible bins will be generated.
-    sortColumn: The column name to sort on. This may be set to this dimension
-      column or any measure column. If the field is empty, it will sort on the
-      dimension column. If sort_order is SORT_ORDER_NONE, this value is not
-      used.
-    sortOrder: The sort order. If limit is not zero, this may not be set to
-      SORT_ORDER_NONE.
-    timeBinSize: Used for a Timestamp column.
+    integerBinSize: Optional. Used for an integer column.
+    limit: Optional. If this value is nonzero, the number of bins to generate.
+      If zero, all possible bins will be generated.
+    sortColumn: Optional. The column name to sort on. This may be set to this
+      dimension column or any measure column. If the field is empty, it will
+      sort on the dimension column. If sort_order is SORT_ORDER_NONE, this
+      value is not used.
+    sortOrder: Optional. The sort order. If limit is not zero, this may not be
+      set to SORT_ORDER_NONE.
+    timeBinSize: Optional. Used for a Timestamp column.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
-    r"""The sort order. If limit is not zero, this may not be set to
+    r"""Optional. The sort order. If limit is not zero, this may not be set to
     SORT_ORDER_NONE.
 
     Values:
@@ -5949,9 +5946,9 @@ class Measure(_messages.Message):
   on chart type.
 
   Fields:
-    aggregation: The aggregation to apply to the input column. May not be set
-      to "none" unless binning is disabled and this column is not set as the
-      sort column in the dimension.
+    aggregation: The aggregation to apply to the input column. Required if
+      binning is enabled on the dimension. If binning is not enabled, this
+      value is ignored.
     column: Required. The column name within the output of the previous step
       to use. May be the same column as the dimension.
   """
@@ -6638,8 +6635,8 @@ class Parameter(_messages.Message):
   r"""A parameter value to be applied to an aggregation.
 
   Fields:
-    doubleValue: A floating-point parameter value.
-    intValue: An integer parameter value.
+    doubleValue: Optional. A floating-point parameter value.
+    intValue: Optional. An integer parameter value.
   """
 
   doubleValue = _messages.FloatField(1)
@@ -6652,8 +6649,8 @@ class QueryDataRequest(_messages.Message):
   endpoints.
 
   Fields:
-    disableQueryCaching: If set to true, turns off all query caching on both
-      the Log Analytics and BigQuery sides.
+    disableQueryCaching: Optional. If set to true, turns off all query caching
+      on both the Log Analytics and BigQuery sides.
     querySteps: The query steps to execute. Each query step will correspond to
       a handle in the result proto.
     resourceNames: Required. Names of one or more log views to run a SQL
@@ -6665,14 +6662,11 @@ class QueryDataRequest(_messages.Message):
       KET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATION_ID]/buck
       ets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
       resource such as 'logging.views.access' on log view resources.
-    timeRestriction: The time range in which to execute the query. May be
-      absent; if so, no time restriction will be applied.
   """
 
   disableQueryCaching = _messages.BooleanField(1)
   querySteps = _messages.MessageField('QueryStep', 2, repeated=True)
   resourceNames = _messages.StringField(3, repeated=True)
-  timeRestriction = _messages.MessageField('Interval', 4)
 
 
 class QueryDataResponse(_messages.Message):
@@ -6680,11 +6674,15 @@ class QueryDataResponse(_messages.Message):
 
   Fields:
     queryStepHandle: Handles to each of the query steps described in the
-      request. These may be passed to ReadQueryDataResults or used in a
+      request. These may be passed to ReadQueryResults or used in a
       HandleQueryStep in a subsequent call to QueryData.
+    restrictionConflicts: Conflicts between the query and the restrictions
+      that were requested. Any restrictions present here were ignored when
+      executing the query.
   """
 
   queryStepHandle = _messages.StringField(1, repeated=True)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 2, repeated=True)
 
 
 class QueryLogEntriesRequest(_messages.Message):
@@ -6707,6 +6705,7 @@ class QueryLogEntriesRequest(_messages.Message):
       components have special characters, that component needs to be escaped
       separately like the following example:SELECT count(*) FROM
       company.com:abc.us.my-bucket._AllLogs;
+    queryRestriction: Optional. Restrictions being requested.
     resourceNames: Required. Names of one or more log views to run a SQL
       query. Currently, only a single view is supported. Multiple view
       selection may be supported in the future.Examples: projects/[PROJECT_ID]
@@ -6728,9 +6727,77 @@ class QueryLogEntriesRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   query = _messages.StringField(4)
-  resourceNames = _messages.StringField(5, repeated=True)
-  resultReference = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  queryRestriction = _messages.MessageField('QueryRestriction', 5)
+  resourceNames = _messages.StringField(6, repeated=True)
+  resultReference = _messages.StringField(7)
+  validateOnly = _messages.BooleanField(8)
+
+
+class QueryRestriction(_messages.Message):
+  r"""Specifies query restrictions to apply. This allows UI to provide common
+  filter needs (e.g. timestamps) without having the user to write them in SQL.
+
+  Fields:
+    timerange: Optional. This restriction is the TIME_RANGE restriction type
+      in the QueryRestrictionConflict.
+  """
+
+  timerange = _messages.MessageField('Interval', 1)
+
+
+class QueryRestrictionConflict(_messages.Message):
+  r"""A conflict within a query that prevents applying restrictions. For
+  instance, if the query contains a timestamp, this conflicts with timestamp
+  restrictions e.g. time picker settings.
+
+  Enums:
+    ConfidenceValueValuesEnum: How confident the detector is that the
+      restriction would cause a conflict.
+    TypeValueValuesEnum: Specifies what conflict is present. Currently, this
+      only supports timerange.
+
+  Fields:
+    column: One-based column number where the conflict was detected within the
+      query.
+    confidence: How confident the detector is that the restriction would cause
+      a conflict.
+    line: One-based line number where the conflict was detected within the
+      query.
+    type: Specifies what conflict is present. Currently, this only supports
+      timerange.
+  """
+
+  class ConfidenceValueValuesEnum(_messages.Enum):
+    r"""How confident the detector is that the restriction would cause a
+    conflict.
+
+    Values:
+      CONFIDENCE_UNSPECIFIED: Invalid.
+      CERTAIN: If set, the query would be adversely affected by applying the
+        restriction.
+      UNCERTAIN: If set, the Query used a column being restricted, but might
+        not be adversely affected.
+    """
+    CONFIDENCE_UNSPECIFIED = 0
+    CERTAIN = 1
+    UNCERTAIN = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Specifies what conflict is present. Currently, this only supports
+    timerange.
+
+    Values:
+      RESTRICTION_TYPE_UNSPECIFIED: Invalid.
+      TIME_RANGE: This type means that the query conflicts with the time range
+        restriction, e.g. query used the timestamp column to filter.
+    """
+    RESTRICTION_TYPE_UNSPECIFIED = 0
+    TIME_RANGE = 1
+
+  column = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  confidence = _messages.EnumField('ConfidenceValueValuesEnum', 2)
+  line = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class QueryResults(_messages.Message):
@@ -6746,6 +6813,9 @@ class QueryResults(_messages.Message):
       totalRows are present, this will always be true. If this is false,
       totalRows will not be available. The client needs to poll on
       QueryLogEntries specifying the result_reference and wait for results.
+    restrictionConflicts: Conflicts between the query and the restrictions
+      that were requested. Any restrictions present here were ignored when
+      executing the query.
     resultReference: An opaque string that can be used as a reference to this
       query result. This result reference can be used in the QueryLogEntries
       query to fetch this result up to 24 hours in the future.
@@ -6791,11 +6861,12 @@ class QueryResults(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   queryComplete = _messages.BooleanField(2)
-  resultReference = _messages.StringField(3)
-  rows = _messages.MessageField('RowsValueListEntry', 4, repeated=True)
-  schema = _messages.MessageField('TableSchema', 5)
-  totalBytesProcessed = _messages.IntegerField(6)
-  totalRows = _messages.IntegerField(7)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 3, repeated=True)
+  resultReference = _messages.StringField(4)
+  rows = _messages.MessageField('RowsValueListEntry', 5, repeated=True)
+  schema = _messages.MessageField('TableSchema', 6)
+  totalBytesProcessed = _messages.IntegerField(7)
+  totalRows = _messages.IntegerField(8)
 
 
 class QueryStep(_messages.Message):
@@ -7107,6 +7178,8 @@ class SqlQueryStep(_messages.Message):
   r"""A query step defined in raw SQL.
 
   Fields:
+    queryRestriction: Optional. Restrictions being requested, e.g. timerange
+      restrictions.
     sqlQuery: Required. A query string, following the BigQuery SQL query
       syntax. The FROM clause should specify a fully qualified log view
       corresponding to the log view in the resource_names in dot separated
@@ -7117,7 +7190,8 @@ class SqlQueryStep(_messages.Message):
       company.com:abc.us.my-bucket._AllLogs;
   """
 
-  sqlQuery = _messages.StringField(1)
+  queryRestriction = _messages.MessageField('QueryRestriction', 1)
+  sqlQuery = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -57,14 +57,29 @@ class RoutersClient(object):
           projectsId=router_ref.projectsId,
           locationsId=router_ref.locationsId,
           zonesId=router_ref.zonesId)
-      if args.ip_mask_length is not None and args.ip_address is not None:
-        new_interface.linkedInterconnectAttachment = attachment_ref.RelativeName(
-        )
-        new_interface.ipv4Cidr = '{0}/{1}'.format(args.ip_address,
-                                                  args.ip_mask_length)
-      else:
+
+      if args.ip_mask_length is None or args.ip_address is None:
         raise parser_errors.ArgumentException(
-            '--ip-address and --ip-mask-length must be set')
+            '--ip-address and --ip-mask-length must be set'
+        )
+
+      try:
+        ip_address = ipaddress.ip_address(args.ip_address)
+      except ValueError as err:
+        raise parser_errors.ArgumentException(str(err))
+
+      if args.ip_mask_length > ip_address.max_prefixlen:
+        raise parser_errors.ArgumentException(
+            '--ip-mask-length should be less than %s' % ip_address.max_prefixlen
+        )
+
+      cidr = '{0}/{1}'.format(args.ip_address, args.ip_mask_length)
+      if ip_address.version == 4:  # Is an ipv4 cidr
+        new_interface.ipv4Cidr = cidr
+      else:
+        new_interface.ipv6Cidr = cidr
+
+      new_interface.linkedInterconnectAttachment = attachment_ref.RelativeName()
 
     if args.subnetwork is not None:
       subnet_ref = self._resource_parser.Create(
@@ -111,11 +126,20 @@ class RoutersClient(object):
     """Mutate the router to add a BGP peer."""
 
     replacement = encoding.CopyProtoMessage(existing)
-    new_bgp_peer = self._messages.BgpPeer(
-        name=args.peer_name,
-        interface=args.interface,
-        peerAsn=args.peer_asn,
-        peerIpv4Cidr=args.peer_ipv4_range)
+    bgp_peer_args = {
+        'name': args.peer_name,
+        'interface': args.interface,
+        'peerAsn': args.peer_asn,
+    }
+
+    if args.peer_ipv4_range is not None:
+      bgp_peer_args['peerIpv4Cidr'] = args.peer_ipv4_range
+
+    # Only present in ALPHA release
+    if 'peer_ipv6_range' in args and args.peer_ipv6_range is not None:
+      bgp_peer_args['peerIpv6Cidr'] = args.peer_ipv6_range
+
+    new_bgp_peer = self._messages.BgpPeer(**bgp_peer_args)
     replacement.bgpPeer.append(new_bgp_peer)
     return replacement
 

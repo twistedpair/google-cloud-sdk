@@ -1360,6 +1360,33 @@ class CloudkmsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetEkmConfig(self, request, global_params=None):
+      r"""Returns the EkmConfig singleton resource for a given project and location.
+
+      Args:
+        request: (CloudkmsProjectsLocationsGetEkmConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EkmConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetEkmConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEkmConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConfig',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.getEkmConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsGetEkmConfigRequest',
+        response_type_name='EkmConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -1384,6 +1411,33 @@ class CloudkmsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudkmsProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateEkmConfig(self, request, global_params=None):
+      r"""Updates the EkmConfig singleton resource for a given project and location.
+
+      Args:
+        request: (CloudkmsProjectsLocationsUpdateEkmConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EkmConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateEkmConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateEkmConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConfig',
+        http_method='PATCH',
+        method_id='cloudkms.projects.locations.updateEkmConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='ekmConfig',
+        request_type_name='CloudkmsProjectsLocationsUpdateEkmConfigRequest',
+        response_type_name='EkmConfig',
         supports_download=False,
     )
 

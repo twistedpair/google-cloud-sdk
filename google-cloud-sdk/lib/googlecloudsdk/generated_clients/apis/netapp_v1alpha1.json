@@ -368,6 +368,18 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "network": {
+          "description": "Required. VPC Network name. Format: projects\/{project}\/global\/networks\/{network}",
+          "type": "string"
+        },
+        "activeDirectory": {
+          "description": "Specifies the Active Directory to be used for creating a SMB volume.",
+          "type": "string"
+        },
+        "kmsConfig": {
+          "description": "Specifies the KMS config to be used for volume encryption.",
+          "type": "string"
         }
       }
     },
@@ -455,7 +467,8 @@
           "type": "string"
         },
         "network": {
-          "description": "Required. VPC Network name",
+          "description": "Output only. VPC Network name. Format: projects\/{project}\/global\/networks\/{network}",
+          "readOnly": true,
           "type": "string"
         },
         "serviceLevel": {
@@ -597,7 +610,8 @@
           "type": "boolean"
         },
         "activeDirectory": {
-          "description": "Optional. Specifies the AD to be used for creating a SMB volume. ActiveDirectory name of the volume",
+          "description": "Output only. Specifies the ActiveDirectory name of a SMB volume.",
+          "readOnly": true,
           "type": "string"
         },
         "restoreParameters": {
@@ -605,7 +619,8 @@
           "$ref": "RestoreParameters"
         },
         "kmsConfig": {
-          "description": "Optional. Specifies the KMS config to be used for volume encryption.",
+          "description": "Output only. Specifies the KMS config to be used for volume encryption.",
+          "readOnly": true,
           "type": "string"
         },
         "encryptionType": {
@@ -1273,7 +1288,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "netapp.projects.locations.operations.get",

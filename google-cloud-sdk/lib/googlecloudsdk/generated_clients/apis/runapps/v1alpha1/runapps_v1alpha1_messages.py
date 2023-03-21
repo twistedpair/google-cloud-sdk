@@ -620,6 +620,30 @@ class Empty(_messages.Message):
 
 
 
+class FirebaseHostingConfig(_messages.Message):
+  r"""Message for defining firebase hosting resource.
+
+  Fields:
+    config: Hosting site configuration.
+    resources: Reference to the target resources to add to the hosting site
+      configuration. The resource binding's "binding-config" has no used
+      fields currently.
+  """
+
+  config = _messages.MessageField('HostingSiteConfig', 1)
+  resources = _messages.MessageField('ServiceResourceBindingConfig', 2, repeated=True)
+
+
+class HostingSiteConfig(_messages.Message):
+  r"""Message for defining the firebase hosting site configuration.
+
+  Fields:
+    site_id: Firebase hosting site-ID.
+  """
+
+  site_id = _messages.StringField(1)
+
+
 class JobComponent(_messages.Message):
   r"""Message to encapsulate component actuated by a job. JobComponent does
   not represent a GCP API resource.
@@ -1077,9 +1101,10 @@ class ResourceComponentStatus(_messages.Message):
 
 
 class ResourceConfig(_messages.Message):
-  r"""Message for the Resource configuration. Next tag: 8
+  r"""Message for the Resource configuration. Next tag: 9
 
   Fields:
+    firebase_hosting: Firebase hosting configuration.
     latestDeployment: Output only. The deployment name for the most recent
       deployment that has been triggered for a given resource. If a resource
       was never deployed then this field will be empty.
@@ -1088,10 +1113,11 @@ class ResourceConfig(_messages.Message):
     service: Cloud Run service configuration.
   """
 
-  latestDeployment = _messages.StringField(1)
-  redis = _messages.MessageField('RedisConfig', 2)
-  router = _messages.MessageField('RouterConfig', 3)
-  service = _messages.MessageField('CloudRunServiceConfig', 4)
+  firebase_hosting = _messages.MessageField('FirebaseHostingConfig', 1)
+  latestDeployment = _messages.StringField(2)
+  redis = _messages.MessageField('RedisConfig', 3)
+  router = _messages.MessageField('RouterConfig', 4)
+  service = _messages.MessageField('CloudRunServiceConfig', 5)
 
 
 class ResourceDeploymentStatus(_messages.Message):
@@ -1729,7 +1755,11 @@ class TypedName(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
+    HostingSiteConfig, 'site_id', 'site-id')
+encoding.AddCustomJsonFieldMapping(
     RedisInstanceConfig, 'memory_size_gb', 'memory-size-gb')
+encoding.AddCustomJsonFieldMapping(
+    ResourceConfig, 'firebase_hosting', 'firebase-hosting')
 encoding.AddCustomJsonFieldMapping(
     RouterConfig, 'default_route', 'default-route')
 encoding.AddCustomJsonFieldMapping(

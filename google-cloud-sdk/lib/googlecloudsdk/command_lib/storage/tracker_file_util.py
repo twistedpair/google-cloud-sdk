@@ -31,14 +31,15 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import hashing
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 
 
 # The maximum length of a file name can vary wildly between operating
 # systems, so always ensure that tracker files are less than 100 characters.
-_MAX_TRACKER_FILE_NAME_LENGTH = 100
+_MAX_FILE_NAME_LENGTH = 100
 _TRAILING_FILE_NAME_CHARACTERS_FOR_DISPLAY = 16
-_RE_DELIMITER_PATTERN = r'[/\\]'
+RE_DELIMITER_PATTERN = r'[/\\]'
 
 
 class TrackerFileType(enum.Enum):
@@ -93,7 +94,25 @@ def _create_tracker_directory_if_needed():
   return tracker_directory
 
 
-def _get_hashed_file_name(file_name):
+def _windows_sanitize_file_name(file_name):
+  """Converts colons and characters that make Windows upset."""
+  if (
+      properties.VALUES.storage.convert_incompatible_windows_path_characters.GetBool()
+  ):
+    return platforms.MakePathWindowsCompatible(file_name)
+  return file_name
+
+
+def raise_exceeds_max_length_error(file_name):
+  if len(file_name) > _MAX_FILE_NAME_LENGTH:
+    raise errors.Error(
+        'File name is over max character limit of {}: {}'.format(
+            _MAX_FILE_NAME_LENGTH, file_name
+        )
+    )
+
+
+def get_hashed_file_name(file_name):
   """Applies a hash function (SHA1) to shorten the passed file name.
 
   The spec for the hashed file name is as follows:
@@ -101,7 +120,7 @@ def _get_hashed_file_name(file_name):
   'hash' is a SHA1 hash on the original file name, and 'trailing' is
   the last chars of the original file name. Max file name lengths
   vary by operating system, so the goal of this function is to ensure
-  the hashed version takes fewer than _MAX_TRACKER_FILE_NAME_LENGTH characters.
+  the hashed version takes fewer than _MAX_FILE_NAME_LENGTH  characters.
 
   Args:
     file_name (str): File name to be hashed. May be unicode or bytes.
@@ -110,13 +129,20 @@ def _get_hashed_file_name(file_name):
     String of shorter, hashed file_name.
   """
   name_hash_object = hashlib.sha1(file_name.encode('utf-8'))
-  return 'TRACKER_{}.{}'.format(
-      name_hash_object.hexdigest(),
-      file_name[-1 * _TRAILING_FILE_NAME_CHARACTERS_FOR_DISPLAY:])
+  return _windows_sanitize_file_name(
+      '{}.{}'.format(
+          name_hash_object.hexdigest(),
+          file_name[-1 * _TRAILING_FILE_NAME_CHARACTERS_FOR_DISPLAY :],
+      )
+  )
 
 
-def _get_hashed_path(tracker_file_name, tracker_file_type,
-                     resumable_tracker_directory, component_number):
+def _get_hashed_tracker_file_path(
+    tracker_file_name,
+    tracker_file_type,
+    resumable_tracker_directory,
+    component_number,
+):
   """Hashes and returns a tracker file path.
 
   Args:
@@ -133,19 +159,22 @@ def _get_hashed_path(tracker_file_name, tracker_file_type,
   Raises:
     Error: Hashed file path is too long.
   """
-  hashed_tracker_file_name = _get_hashed_file_name(tracker_file_name)
-  tracker_file_name_with_type = '{}_{}'.format(tracker_file_type.value.lower(),
-                                               hashed_tracker_file_name)
-  if component_number is not None:
-    tracker_file_name_with_type += '_{}'.format(component_number)
+  hashed_tracker_file_name = get_hashed_file_name(tracker_file_name)
+  tracker_file_name_with_type = '{}_TRACKER_{}'.format(
+      tracker_file_type.value.lower(), hashed_tracker_file_name
+  )
+  if component_number is None:
+    final_tracker_file_name = tracker_file_name_with_type
+  else:
+    final_tracker_file_name = tracker_file_name_with_type + '_{}'.format(
+        component_number
+    )
 
-  if len(tracker_file_name_with_type) > _MAX_TRACKER_FILE_NAME_LENGTH:
-    raise errors.Error(
-        'Tracker file name hash is over max character limit of {}: {}'.format(
-            _MAX_TRACKER_FILE_NAME_LENGTH, tracker_file_name_with_type))
+  raise_exceeds_max_length_error(final_tracker_file_name)
 
-  tracker_file_path = (
-      resumable_tracker_directory + os.sep + tracker_file_name_with_type)
+  tracker_file_path = os.path.join(
+      resumable_tracker_directory, final_tracker_file_name
+  )
   return tracker_file_path
 
 
@@ -206,11 +235,16 @@ def get_tracker_file_path(destination_url,
         destination_url.bucket_name, destination_url.object_name,
         destination_url.scheme.value)
 
-  result_tracker_file_name = re.sub(_RE_DELIMITER_PATTERN, '_',
-                                    raw_result_tracker_file_name)
+  result_tracker_file_name = re.sub(
+      RE_DELIMITER_PATTERN, '_', raw_result_tracker_file_name
+  )
   resumable_tracker_directory = _create_tracker_directory_if_needed()
-  return _get_hashed_path(result_tracker_file_name, tracker_file_type,
-                          resumable_tracker_directory, component_number)
+  return _get_hashed_tracker_file_path(
+      result_tracker_file_name,
+      tracker_file_type,
+      resumable_tracker_directory,
+      component_number,
+  )
 
 
 def _get_sliced_download_tracker_file_paths(destination_url):

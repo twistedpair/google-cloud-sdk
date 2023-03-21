@@ -1197,6 +1197,32 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetNamespaced(self, request, global_params=None):
+      r"""Retrieves a TagKey by its namespaced name. This method will return `PERMISSION_DENIED` if the key does not exist or the user does not have permission to view it.
+
+      Args:
+        request: (CloudresourcemanagerTagKeysGetNamespacedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TagKey) The response message.
+      """
+      config = self.GetMethodConfig('GetNamespaced')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNamespaced.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='cloudresourcemanager.tagKeys.getNamespaced',
+        ordered_params=[],
+        path_params=[],
+        query_params=['name'],
+        relative_path='v3/tagKeys/namespaced',
+        request_field='',
+        request_type_name='CloudresourcemanagerTagKeysGetNamespacedRequest',
+        response_type_name='TagKey',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all TagKeys for a parent resource.
 
@@ -1509,6 +1535,32 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         request_field='getIamPolicyRequest',
         request_type_name='CloudresourcemanagerTagValuesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetNamespaced(self, request, global_params=None):
+      r"""Retrieves a TagValue by its namespaced name. This method will return `PERMISSION_DENIED` if the value does not exist or the user does not have permission to view it.
+
+      Args:
+        request: (CloudresourcemanagerTagValuesGetNamespacedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TagValue) The response message.
+      """
+      config = self.GetMethodConfig('GetNamespaced')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNamespaced.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='cloudresourcemanager.tagValues.getNamespaced',
+        ordered_params=[],
+        path_params=[],
+        query_params=['name'],
+        relative_path='v3/tagValues/namespaced',
+        request_field='',
+        request_type_name='CloudresourcemanagerTagValuesGetNamespacedRequest',
+        response_type_name='TagValue',
         supports_download=False,
     )
 

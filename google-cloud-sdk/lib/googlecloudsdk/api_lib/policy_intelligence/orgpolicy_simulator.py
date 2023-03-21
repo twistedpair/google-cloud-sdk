@@ -66,10 +66,10 @@ class OrgPolicySimulatorApi(object):
 
   def WaitForOperation(self, operation, message):
     """Wait for the operation to complete."""
-    # Use "GetOperation" from policysimulator v1
-    v1_client = apis.GetClientInstance(_API_NAME, 'v1')
+    # Use "GetOperation" from policysimulator (version: `self.api_version`)
+    v1_client = apis.GetClientInstance(_API_NAME, self.api_version)
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('policysimulator', 'v1')
+    registry.RegisterApiByName('policysimulator', self.api_version)
     # TODO(b/263303705): Remove the legacy operation name support
     if self._IsLegacyOperationName(operation.name):
       operation_ref = registry.Parse(

@@ -1448,19 +1448,19 @@
           ]
         },
         "notBeforeTime": {
-          "description": "Output only. Earliest timestamp when this key is valid. Attempts to use this key before this time will fail. Only present if the key data represents a x509 certificate.",
+          "description": "Output only. Earliest timestamp when this key is valid. Attempts to use this key before this time will fail. Only present if the key data represents a X.509 certificate.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "notAfterTime": {
-          "description": "Output only. Latest timestamp when this key is valid. Attempts to use this key after this time will fail. Only present if the key data represents a x509 certificate.",
+          "description": "Output only. Latest timestamp when this key is valid. Attempts to use this key after this time will fail. Only present if the key data represents a X.509 certificate.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "key": {
-          "description": "Output only. The key data. The format of the key is represented by the `format` field.",
+          "description": "Output only. The key data. The format of the key is represented by the format field.",
           "readOnly": true,
           "type": "string"
         },
@@ -2869,7 +2869,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists all non-deleted WorkloadIdentityPoolProviderKeys in a project. If `show_deleted` is set to `true`, then deleted pools are also listed."
+                          "description": "Lists all non-deleted WorkloadIdentityPoolProviderKeys in a project. If show_deleted is set to `true`, then deleted pools are also listed."
                         },
                         "get": {
                           "id": "iam.projects.locations.workloadIdentityPools.providers.keys.get",

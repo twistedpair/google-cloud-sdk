@@ -1463,14 +1463,37 @@ class ImportContext(_messages.Message):
   class BakImportOptionsValue(_messages.Message):
     r"""Import parameters specific to SQL Server .BAK files
 
+    Enums:
+      BakTypeValueValuesEnum: Type of the bak content, FULL or DIFF.
+
     Messages:
       EncryptionOptionsValue: A EncryptionOptionsValue object.
 
     Fields:
+      bakType: Type of the bak content, FULL or DIFF.
       encryptionOptions: A EncryptionOptionsValue attribute.
+      noRecovery: Whether or not the backup importing will restore database
+        with NORECOVERY option Applies only to Cloud SQL for SQL Server.
+      recoveryOnly: Whether or not the backup importing request will just
+        bring database online without downloading Bak content only one of
+        "no_recovery" and "recovery_only" can be true otherwise error will
+        return. Applies only to Cloud SQL for SQL Server.
       striped: Whether or not the backup set being restored is striped.
         Applies only to Cloud SQL for SQL Server.
     """
+
+    class BakTypeValueValuesEnum(_messages.Enum):
+      r"""Type of the bak content, FULL or DIFF.
+
+      Values:
+        BAK_TYPE_UNSPECIFIED: default type to meet enum requirement, will be
+          set to FULL if not set
+        FULL: Full backup.
+        DIFF: Differential backup.
+      """
+      BAK_TYPE_UNSPECIFIED = 0
+      FULL = 1
+      DIFF = 2
 
     class EncryptionOptionsValue(_messages.Message):
       r"""A EncryptionOptionsValue object.
@@ -1489,8 +1512,11 @@ class ImportContext(_messages.Message):
       pvkPassword = _messages.StringField(2)
       pvkPath = _messages.StringField(3)
 
-    encryptionOptions = _messages.MessageField('EncryptionOptionsValue', 1)
-    striped = _messages.BooleanField(2)
+    bakType = _messages.EnumField('BakTypeValueValuesEnum', 1)
+    encryptionOptions = _messages.MessageField('EncryptionOptionsValue', 2)
+    noRecovery = _messages.BooleanField(3)
+    recoveryOnly = _messages.BooleanField(4)
+    striped = _messages.BooleanField(5)
 
   class CsvImportOptionsValue(_messages.Message):
     r"""Options for importing data as CSV.
@@ -1663,11 +1689,20 @@ class InstancesRestoreBackupRequest(_messages.Message):
   r"""Database instance restore backup request.
 
   Fields:
+    backup: The name of the backup to restore from in following format:
+      projects/{project-id}/locations/{location}/backups/{backup-uid} Only one
+      of restore_backup_context or backup can be passed to the input.
     restoreBackupContext: Parameters required to perform the restore backup
       operation.
+    restoreInstanceSettings: Restore instance settings overrides the instance
+      settings stored as part of the backup. Instance's major database version
+      cannot be changed and the disk size can only be increased. This feature
+      is only available for restores to new instances using the backup name.
   """
 
-  restoreBackupContext = _messages.MessageField('RestoreBackupContext', 1)
+  backup = _messages.StringField(1)
+  restoreBackupContext = _messages.MessageField('RestoreBackupContext', 2)
+  restoreInstanceSettings = _messages.MessageField('DatabaseInstance', 3)
 
 
 class InstancesRotateServerCaRequest(_messages.Message):

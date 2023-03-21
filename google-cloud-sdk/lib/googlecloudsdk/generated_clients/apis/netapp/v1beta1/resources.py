@@ -96,6 +96,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_VOLUMES_REPLICATIONS = (
+      'projects.locations.volumes.replications',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/volumes/'
+              '{volumesId}/replications/{replicationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_VOLUMES_SNAPSHOTS = (
       'projects.locations.volumes.snapshots',
       '{+name}',

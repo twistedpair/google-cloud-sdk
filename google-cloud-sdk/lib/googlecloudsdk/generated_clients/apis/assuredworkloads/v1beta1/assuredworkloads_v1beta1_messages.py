@@ -546,6 +546,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       When present it must be between 4 to 30 characters. Allowed characters
       are: lowercase and uppercase letters, numbers, hyphen, and spaces.
       Example: My Workload
+    ekmProvisioningResponse: Optional. Represents the Ekm Provisioning State
+      of the given workload.
     enableSovereignControls: Optional. Indicates the sovereignty status of the
       given workload. Currently meant to be used by Europe/Canada customers.
     etag: Optional. ETag of the workload, it is calculated on the basis of the
@@ -686,20 +688,21 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   compliantButDisallowedServices = _messages.StringField(5, repeated=True)
   createTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  enableSovereignControls = _messages.BooleanField(8)
-  etag = _messages.StringField(9)
-  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 10)
-  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 11)
-  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 12)
-  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 13)
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  partner = _messages.EnumField('PartnerValueValuesEnum', 17)
-  provisionedResourcesParent = _messages.StringField(18)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 19, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 20, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 21)
+  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 8)
+  enableSovereignControls = _messages.BooleanField(9)
+  etag = _messages.StringField(10)
+  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 11)
+  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 12)
+  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 13)
+  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 14)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  name = _messages.StringField(17)
+  partner = _messages.EnumField('PartnerValueValuesEnum', 18)
+  provisionedResourcesParent = _messages.StringField(19)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 20, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 21, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 22)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
@@ -725,6 +728,63 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus(_messages.Messa
 
   acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   activeViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse(_messages.Message):
+  r"""External key management systems(EKM) Provisioning response
+
+  Enums:
+    EkmProvisioningErrorDomainValueValuesEnum: Indicates Ekm provisioning
+      error if any.
+    EkmProvisioningStateValueValuesEnum: Indicates Ekm enrollment Provisioning
+      of a given workload.
+
+  Fields:
+    ekmProvisioningErrorDomain: Indicates Ekm provisioning error if any.
+    ekmProvisioningErrorMessage: Detailed error message if Ekm provisioning
+      fails
+    ekmProvisioningState: Indicates Ekm enrollment Provisioning of a given
+      workload.
+  """
+
+  class EkmProvisioningErrorDomainValueValuesEnum(_messages.Enum):
+    r"""Indicates Ekm provisioning error if any.
+
+    Values:
+      EKM_PROVISIONING_ERROR_DOMAIN_UNSPECIFIED: No error domain
+      UNSPECIFIED_ERROR: Error but domain is unspecified.
+      GOOGLE_SERVER_ERROR: Internal logic breaks within provisioning code.
+      EXTERNAL_USER_ERROR: Error occurred with the customer not granting
+        permission/creating resource.
+      EXTERNAL_PARTNER_ERROR: Error occurred within the partner's provisioning
+        cluster.
+      TIMEOUT_ERROR: Resource wasn't provisioned in the required 7 day time
+        period
+    """
+    EKM_PROVISIONING_ERROR_DOMAIN_UNSPECIFIED = 0
+    UNSPECIFIED_ERROR = 1
+    GOOGLE_SERVER_ERROR = 2
+    EXTERNAL_USER_ERROR = 3
+    EXTERNAL_PARTNER_ERROR = 4
+    TIMEOUT_ERROR = 5
+
+  class EkmProvisioningStateValueValuesEnum(_messages.Enum):
+    r"""Indicates Ekm enrollment Provisioning of a given workload.
+
+    Values:
+      EKM_PROVISIONING_STATE_UNSPECIFIED: Default State for Ekm Provisioning
+      EKM_PROVISIONING_STATE_PENDING: Pending State for Ekm Provisioning
+      EKM_PROVISIONING_STATE_FAILED: Failed State for Ekm Provisioning
+      EKM_PROVISIONING_STATE_COMPLETED: Completed State for Ekm Provisioning
+    """
+    EKM_PROVISIONING_STATE_UNSPECIFIED = 0
+    EKM_PROVISIONING_STATE_PENDING = 1
+    EKM_PROVISIONING_STATE_FAILED = 2
+    EKM_PROVISIONING_STATE_COMPLETED = 3
+
+  ekmProvisioningErrorDomain = _messages.EnumField('EkmProvisioningErrorDomainValueValuesEnum', 1)
+  ekmProvisioningErrorMessage = _messages.StringField(2)
+  ekmProvisioningState = _messages.EnumField('EkmProvisioningStateValueValuesEnum', 3)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings(_messages.Message):

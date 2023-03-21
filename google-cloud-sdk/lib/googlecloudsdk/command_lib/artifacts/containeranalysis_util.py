@@ -331,7 +331,9 @@ def GetContainerAnalysisMetadata(docker_version, args):
   if occ_filter is None:
     return metadata
   occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
-  include_build = args.show_build_details or args.show_all_metadata
+  include_build = (
+      args.show_build_details or args.show_all_metadata or args.metadata_filter
+  )
   for occ in occurrences:
     metadata.AddOccurrence(occ, include_build)
 
@@ -508,7 +510,8 @@ def _CreateFilterFromImagesDescribeArgs(images, args):
 
     # args include none of the occurrence types, there's no need to call the
     # containeranalysis API.
-    if not filter_kinds:
+    # The exception to this is where there is a user provided filter.
+    if not filter_kinds and not args.metadata_filter:
       return None
 
   occ_filter.WithKinds(filter_kinds)

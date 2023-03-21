@@ -1559,9 +1559,8 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
     iamInstanceProfile: Required. The name or ARN of the AWS IAM role assigned
       to nodes in the pool.
     imageType: Optional. The OS image type to use on node pool instances. Can
-      have a value of `ubuntu`, or `windows` if the cluster enables the
-      Windows node pool preview feature. When unspecified, it defaults to
-      `ubuntu`.
+      be unspecified, or have a value of `ubuntu`. When unspecified, it
+      defaults to `ubuntu`.
     instancePlacement: Optional. Placement related info for this node. When
       unspecified, the VPC's default tenancy will be used.
     instanceType: Optional. The EC2 instance type when creating on-Demand
@@ -2415,9 +2414,8 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
   Fields:
     configEncryption: Optional. Configuration related to vm config encryption.
     imageType: Optional. The OS image type to use on node pool instances. Can
-      have a value of `ubuntu`, or `windows` if the cluster enables the
-      Windows node pool preview feature. When unspecified, it defaults to
-      `ubuntu`.
+      be unspecified, or have a value of `ubuntu`. When unspecified, it
+      defaults to `ubuntu`.
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.

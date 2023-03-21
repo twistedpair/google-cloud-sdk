@@ -236,6 +236,10 @@
           "description": "Optional. Reference to a result from a previous query. If the results have expired the query will return a NOT_FOUND error.",
           "type": "string"
         },
+        "queryRestriction": {
+          "description": "Optional. Restrictions being requested.",
+          "$ref": "QueryRestriction"
+        },
         "pageToken": {
           "description": "Optional. Page token returned by a previous call to QueryLogEntries to paginate through the response rows.",
           "type": "string"
@@ -252,6 +256,34 @@
         "disableQueryCaching": {
           "description": "Optional. If set to true, turns off all query caching on both the Log Analytics and BigQuery sides.",
           "type": "boolean"
+        }
+      }
+    },
+    "QueryRestriction": {
+      "id": "QueryRestriction",
+      "description": "Specifies query restrictions to apply. This allows UI to provide common filter needs (e.g. timestamps) without having the user to write them in SQL.",
+      "type": "object",
+      "properties": {
+        "timerange": {
+          "description": "Optional. This restriction is the TIME_RANGE restriction type in the QueryRestrictionConflict.",
+          "$ref": "Interval"
+        }
+      }
+    },
+    "Interval": {
+      "id": "Interval",
+      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive).The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Optional. Inclusive start of the interval.If specified, a Timestamp matching this interval will have to be the same or after the start.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Optional. Exclusive end of the interval.If specified, a Timestamp matching this interval will have to be before the end.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -296,6 +328,13 @@
           "description": "The total number of bytes processed for this query. If this query was a validate_only query, this is the number of bytes that would be processed if the query were run.",
           "type": "string",
           "format": "int64"
+        },
+        "restrictionConflicts": {
+          "description": "Conflicts between the query and the restrictions that were requested. Any restrictions present here were ignored when executing the query.",
+          "type": "array",
+          "items": {
+            "$ref": "QueryRestrictionConflict"
+          }
         }
       }
     },
@@ -343,6 +382,49 @@
         }
       }
     },
+    "QueryRestrictionConflict": {
+      "id": "QueryRestrictionConflict",
+      "description": "A conflict within a query that prevents applying restrictions. For instance, if the query contains a timestamp, this conflicts with timestamp restrictions e.g. time picker settings.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Specifies what conflict is present. Currently, this only supports timerange.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid.",
+            "This type means that the query conflicts with the time range restriction, e.g. query used the timestamp column to filter."
+          ],
+          "enum": [
+            "RESTRICTION_TYPE_UNSPECIFIED",
+            "TIME_RANGE"
+          ]
+        },
+        "line": {
+          "description": "One-based line number where the conflict was detected within the query.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "column": {
+          "description": "One-based column number where the conflict was detected within the query.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "confidence": {
+          "description": "How confident the detector is that the restriction would cause a conflict.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid.",
+            "If set, the query would be adversely affected by applying the restriction.",
+            "If set, the Query used a column being restricted, but might not be adversely affected."
+          ],
+          "enum": [
+            "CONFIDENCE_UNSPECIFIED",
+            "CERTAIN",
+            "UNCERTAIN"
+          ]
+        }
+      }
+    },
     "QueryDataRequest": {
       "id": "QueryDataRequest",
       "description": "The parameters to QueryData. See go\/oa:query-api-design for the design of this endpoint and the related ValidateQuery and ReadQueryResults endpoints.",
@@ -355,10 +437,6 @@
             "type": "string"
           }
         },
-        "timeRestriction": {
-          "description": "The time range in which to execute the query. May be absent; if so, no time restriction will be applied.",
-          "$ref": "Interval"
-        },
         "querySteps": {
           "description": "The query steps to execute. Each query step will correspond to a handle in the result proto.",
           "type": "array",
@@ -367,25 +445,8 @@
           }
         },
         "disableQueryCaching": {
-          "description": "If set to true, turns off all query caching on both the Log Analytics and BigQuery sides.",
+          "description": "Optional. If set to true, turns off all query caching on both the Log Analytics and BigQuery sides.",
           "type": "boolean"
-        }
-      }
-    },
-    "Interval": {
-      "id": "Interval",
-      "description": "Represents a time interval, encoded as a Timestamp start (inclusive) and a Timestamp end (exclusive).The start must be less than or equal to the end. When the start equals the end, the interval is empty (matches no time). When both start and end are unspecified, the interval matches any time.",
-      "type": "object",
-      "properties": {
-        "startTime": {
-          "description": "Optional. Inclusive start of the interval.If specified, a Timestamp matching this interval will have to be the same or after the start.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Optional. Exclusive end of the interval.If specified, a Timestamp matching this interval will have to be before the end.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -416,6 +477,10 @@
         "sqlQuery": {
           "description": "Required. A query string, following the BigQuery SQL query syntax. The FROM clause should specify a fully qualified log view corresponding to the log view in the resource_names in dot separated format like PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT count(*) FROM my_project.us.my_bucket._AllLogs;If any of the dot separated components have special characters, that component needs to be escaped separately like the following example:SELECT count(*) FROM company.com:abc.us.my-bucket._AllLogs;",
           "type": "string"
+        },
+        "queryRestriction": {
+          "description": "Optional. Restrictions being requested, e.g. timerange restrictions.",
+          "$ref": "QueryRestriction"
         }
       }
     },
@@ -468,26 +533,26 @@
           "type": "string"
         },
         "timeBinSize": {
-          "description": "Used for a Timestamp column.",
+          "description": "Optional. Used for a Timestamp column.",
           "type": "string",
           "format": "google-duration"
         },
         "integerBinSize": {
-          "description": "Used for an integer column.",
+          "description": "Optional. Used for an integer column.",
           "type": "string",
           "format": "int64"
         },
         "limit": {
-          "description": "If this value is nonzero, the number of bins to generate. If zero, all possible bins will be generated.",
+          "description": "Optional. If this value is nonzero, the number of bins to generate. If zero, all possible bins will be generated.",
           "type": "integer",
           "format": "int32"
         },
         "sortColumn": {
-          "description": "The column name to sort on. This may be set to this dimension column or any measure column. If the field is empty, it will sort on the dimension column. If sort_order is SORT_ORDER_NONE, this value is not used.",
+          "description": "Optional. The column name to sort on. This may be set to this dimension column or any measure column. If the field is empty, it will sort on the dimension column. If sort_order is SORT_ORDER_NONE, this value is not used.",
           "type": "string"
         },
         "sortOrder": {
-          "description": "The sort order. If limit is not zero, this may not be set to SORT_ORDER_NONE.",
+          "description": "Optional. The sort order. If limit is not zero, this may not be set to SORT_ORDER_NONE.",
           "type": "string",
           "enumDescriptions": [
             "Invalid value, do not use.",
@@ -514,7 +579,7 @@
           "type": "string"
         },
         "aggregation": {
-          "description": "The aggregation to apply to the input column. May not be set to \"none\" unless binning is disabled and this column is not set as the sort column in the dimension.",
+          "description": "The aggregation to apply to the input column. Required if binning is enabled on the dimension. If binning is not enabled, this value is ignored.",
           "$ref": "ChartingAggregation"
         }
       }
@@ -525,7 +590,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The type of aggregation to apply. Legal values for this string are: \"none\" - No aggregation is applied, all values are returned. Not legal in all cases, see the comment on the specific field. \"percentile\" - Generates an APPROX_QUANTILES. Requires one integer or double parameter. Applies only to numeric values. \"average\" - Generates AVG(). Applies only to numeric values. \"count\" - Generates COUNT(). \"count-distinct\" - Generates COUNT(DISTINCT). \"count-distinct-approx\" - Generates APPROX_COUNT_DISTINCT(). \"max\" - Generates MAX(). Applies only to numeric values. \"min\" - Generates MIN(). Applies only to numeric values. \"sum\" - Generates SUM(). Applies only to numeric values.",
+          "description": "Required. The type of aggregation to apply. Legal values for this string are: \"percentile\" - Generates an APPROX_QUANTILES. Requires one integer or double parameter. Applies only to numeric values. \"average\" - Generates AVG(). Applies only to numeric values. \"count\" - Generates COUNT(). \"count-distinct\" - Generates COUNT(DISTINCT). \"count-distinct-approx\" - Generates APPROX_COUNT_DISTINCT(). \"max\" - Generates MAX(). Applies only to numeric values. \"min\" - Generates MIN(). Applies only to numeric values. \"sum\" - Generates SUM(). Applies only to numeric values.",
           "type": "string"
         },
         "parameters": {
@@ -543,12 +608,12 @@
       "type": "object",
       "properties": {
         "intValue": {
-          "description": "An integer parameter value.",
+          "description": "Optional. An integer parameter value.",
           "type": "string",
           "format": "int64"
         },
         "doubleValue": {
-          "description": "A floating-point parameter value.",
+          "description": "Optional. A floating-point parameter value.",
           "type": "number",
           "format": "double"
         }
@@ -556,7 +621,7 @@
     },
     "Breakdown": {
       "id": "Breakdown",
-      "description": "Columns within the output of the previous step to use to break down the measures. We will generate one output measure for each value in the cross product of measure_columns plus the top N values in each of the breakdown columns. The value of N is currently TBD but will be small, less than 10.In other words, if there is one measure columns \"foo\" containing values \"foo1\" and \"foo2\", and there are two breakdown columns \"bar\" and \"baz\" containing the values \"bar1\", \"bar2\", \"baz1\", and \"baz2\", we will end up with eight output measures with all combinations of the above values: (foo1, bar1, baz1), (foo1, bar1, baz2), (foo1, bar2, baz1), ...",
+      "description": "Columns within the output of the previous step to use to break down the measures. We will generate one output measure for each value in the cross product of measure_columns plus the top limit values in each of the breakdown columns.In other words, if there is one measure column \"foo\" and two breakdown columns \"bar\" with values (\"bar1\",\"bar2\") and \"baz\" with values (\"baz1\", \"baz2\"), we will end up with four output measures with names: foo_bar1_baz1, foo_bar1_baz2, foo_bar2_baz1, foo_bar2_baz2 Each of these measures will contain a subset of the values in \"foo\".",
       "type": "object",
       "properties": {
         "column": {
@@ -564,7 +629,7 @@
           "type": "string"
         },
         "limit": {
-          "description": "Values to choose how many breakdowns to create for each measure. If limit is zero, all possible breakdowns will be generated. If not, limit determines how many breakdowns, and sort_aggregation determines the function we will use to sort the breakdowns.For example, if limit is 3, we will generate at most three breakdowns per measure. If sort_aggregation is \"average\" and sort_order is DESCENDING, those three will be chosen as the ones where the average of all the points in the breakdown set is the greatest.",
+          "description": "Optional. Values to choose how many breakdowns to create for each measure. If limit is zero, all possible breakdowns will be generated. If not, limit determines how many breakdowns, and sort_aggregation determines the function we will use to sort the breakdowns.For example, if limit is 3, we will generate at most three breakdowns per measure. If sort_aggregation is \"average\" and sort_order is DESCENDING, those three will be chosen as the ones where the average of all the points in the breakdown set is the greatest.",
           "type": "integer",
           "format": "int32"
         },
@@ -573,7 +638,7 @@
           "$ref": "ChartingAggregation"
         },
         "sortOrder": {
-          "description": "The sort order. If limit is not zero, this may not be set to SORT_ORDER_NONE.",
+          "description": "Optional. The sort order. If limit is not zero, this may not be set to SORT_ORDER_NONE.",
           "type": "string",
           "enumDescriptions": [
             "Invalid value, do not use.",
@@ -610,10 +675,17 @@
       "type": "object",
       "properties": {
         "queryStepHandle": {
-          "description": "Handles to each of the query steps described in the request. These may be passed to ReadQueryDataResults or used in a HandleQueryStep in a subsequent call to QueryData.",
+          "description": "Handles to each of the query steps described in the request. These may be passed to ReadQueryResults or used in a HandleQueryStep in a subsequent call to QueryData.",
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "restrictionConflicts": {
+          "description": "Conflicts between the query and the restrictions that were requested. Any restrictions present here were ignored when executing the query.",
+          "type": "array",
+          "items": {
+            "$ref": "QueryRestrictionConflict"
           }
         }
       }
@@ -4062,7 +4134,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED."
                 },
                 "get": {
                   "id": "logging.projects.locations.operations.get",
@@ -4669,7 +4741,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
+                      "description": "Asynchronously creates a linked dataset in BigQuery which makes it possible to use BigQuery to read the logs stored in the log bucket. A log bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.projects.locations.buckets.links.delete",
@@ -5644,7 +5716,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED."
                 },
                 "get": {
                   "id": "logging.organizations.locations.operations.get",
@@ -6251,7 +6323,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
+                      "description": "Asynchronously creates a linked dataset in BigQuery which makes it possible to use BigQuery to read the logs stored in the log bucket. A log bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.organizations.locations.buckets.links.delete",
@@ -7033,7 +7105,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED."
                 },
                 "get": {
                   "id": "logging.folders.locations.operations.get",
@@ -7640,7 +7712,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
+                      "description": "Asynchronously creates a linked dataset in BigQuery which makes it possible to use BigQuery to read the logs stored in the log bucket. A log bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.folders.locations.buckets.links.delete",
@@ -8387,7 +8459,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED."
                 },
                 "get": {
                   "id": "logging.billingAccounts.locations.operations.get",
@@ -8994,7 +9066,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
+                      "description": "Asynchronously creates a linked dataset in BigQuery which makes it possible to use BigQuery to read the logs stored in the log bucket. A log bucket may currently only contain one link."
                     },
                     "delete": {
                       "id": "logging.billingAccounts.locations.buckets.links.delete",
@@ -9293,7 +9365,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED."
             },
             "get": {
               "id": "logging.locations.operations.get",
@@ -9848,7 +9920,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Asynchronously creates linked dataset in BigQuery which makes it possible to use BugQuery to read the logs stored in the bucket. A bucket may currently only contain one link."
+                  "description": "Asynchronously creates a linked dataset in BigQuery which makes it possible to use BigQuery to read the logs stored in the log bucket. A log bucket may currently only contain one link."
                 },
                 "delete": {
                   "id": "logging.locations.buckets.links.delete",

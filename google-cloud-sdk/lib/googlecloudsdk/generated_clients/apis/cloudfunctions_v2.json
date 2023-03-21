@@ -451,6 +451,11 @@
         "buildpackStack": {
           "description": "Specifies a Google provided Buildpack Stack -- pair of base images (for building and runtime) that include a curated set of pre-installed packages.",
           "type": "string"
+        },
+        "url": {
+          "description": "Output only. The deployed url for the function.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -927,6 +932,18 @@
             "ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR",
             "COMMIT_FUNCTION_UPGRADE_ERROR"
           ]
+        },
+        "serviceConfig": {
+          "description": "Describes the Cloud Run service which has been setup to prepare for 2nd gen upgrade.",
+          "$ref": "ServiceConfig"
+        },
+        "eventTrigger": {
+          "description": "Describes the Event trigger which has been setup to prepare for 2nd gen upgrade.",
+          "$ref": "EventTrigger"
+        },
+        "buildConfig": {
+          "description": "Describes the Build step of the function that builds a container to prepare for 2nd gen upgrade.",
+          "$ref": "BuildConfig"
         }
       }
     },
@@ -953,6 +970,41 @@
             "type": "string"
           }
         }
+      }
+    },
+    "SetupFunctionUpgradeConfigRequest": {
+      "id": "SetupFunctionUpgradeConfigRequest",
+      "description": "Request for the `SetupFunctionUpgradeConfig` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AbortFunctionUpgradeRequest": {
+      "id": "AbortFunctionUpgradeRequest",
+      "description": "Request for the `AbortFunctionUpgrade` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RedirectFunctionUpgradeTrafficRequest": {
+      "id": "RedirectFunctionUpgradeTrafficRequest",
+      "description": "Request for the `RedirectFunctionUpgradeTraffic` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RollbackFunctionUpgradeTrafficRequest": {
+      "id": "RollbackFunctionUpgradeTrafficRequest",
+      "description": "Request for the `RollbackFunctionUpgradeTraffic` method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CommitFunctionUpgradeRequest": {
+      "id": "CommitFunctionUpgradeRequest",
+      "description": "Request for the `CommitFunctionUpgrade` method.",
+      "type": "object",
+      "properties": {
       }
     },
     "GenerateUploadUrlRequest": {
@@ -1681,7 +1733,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "cloudfunctions.projects.locations.operations.get",
@@ -1936,6 +1988,146 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates existing function."
+                },
+                "setupFunctionUpgradeConfig": {
+                  "id": "cloudfunctions.projects.locations.functions.setupFunctionUpgradeConfig",
+                  "path": "v2/{+name}:setupFunctionUpgradeConfig",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:setupFunctionUpgradeConfig",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function which should have configuration copied for upgrade.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SetupFunctionUpgradeConfigRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a 2nd Gen copy of the function configuration based on the 1st Gen function with the given name. This is the first step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Only 2nd Gen configuration is setup as part of this request and traffic continues to be served by 1st Gen."
+                },
+                "abortFunctionUpgrade": {
+                  "id": "cloudfunctions.projects.locations.functions.abortFunctionUpgrade",
+                  "path": "v2/{+name}:abortFunctionUpgrade",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:abortFunctionUpgrade",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which upgrade should be aborted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AbortFunctionUpgradeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Aborts generation upgrade process for a function with the given name from the specified project. Deletes all 2nd Gen copy related configuration and resources which were created during the upgrade process."
+                },
+                "redirectFunctionUpgradeTraffic": {
+                  "id": "cloudfunctions.projects.locations.functions.redirectFunctionUpgradeTraffic",
+                  "path": "v2/{+name}:redirectFunctionUpgradeTraffic",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:redirectFunctionUpgradeTraffic",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which traffic target should be changed to 2nd Gen from 1st Gen.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RedirectFunctionUpgradeTrafficRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Changes the traffic target of a function from the original 1st Gen function to the 2nd Gen copy. This is the second step of the multi step process to upgrade 1st Gen functions to 2nd Gen. After this operation, all new traffic will be served by 2nd Gen copy."
+                },
+                "rollbackFunctionUpgradeTraffic": {
+                  "id": "cloudfunctions.projects.locations.functions.rollbackFunctionUpgradeTraffic",
+                  "path": "v2/{+name}:rollbackFunctionUpgradeTraffic",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:rollbackFunctionUpgradeTraffic",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which traffic target should be changed back to 1st Gen from 2nd Gen.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RollbackFunctionUpgradeTrafficRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Reverts the traffic target of a function from the 2nd Gen copy to the original 1st Gen function. After this operation, all new traffic would be served by the 1st Gen."
+                },
+                "commitFunctionUpgrade": {
+                  "id": "cloudfunctions.projects.locations.functions.commitFunctionUpgrade",
+                  "path": "v2/{+name}:commitFunctionUpgrade",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/functions/{functionsId}:commitFunctionUpgrade",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the function for which upgrade should be finalized.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/functions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CommitFunctionUpgradeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Finalizes the upgrade after which function upgrade can not be rolled back. This is the last step of the multi step process to upgrade 1st Gen functions to 2nd Gen. Deletes all original 1st Gen related configuration and resources."
                 },
                 "delete": {
                   "id": "cloudfunctions.projects.locations.functions.delete",

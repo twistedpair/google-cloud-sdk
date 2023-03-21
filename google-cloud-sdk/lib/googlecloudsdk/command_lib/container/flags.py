@@ -4841,7 +4841,7 @@ def AddManagedConfigFlag(parser, hidden=True):
       hidden=hidden)
 
 
-def AddFleetProjectFlag(parser, is_update=False, hidden=True):
+def AddFleetProjectFlag(parser, is_update=False):
   """Adds fleet related flags to the parser."""
   enable_text = """
 Sets fleet host project for the cluster. If specified, the current cluster will be registered as a fleet membership under the fleet host project.
@@ -4867,22 +4867,19 @@ $ {command} --clear-fleet-project
       '--fleet-project',
       help=enable_text,
       metavar='PROJECT_ID_OR_NUMBER',
-      type=str,
-      hidden=hidden)
+      type=str)
 
   parser.add_argument(
       '--enable-fleet',
       default=None,
       help=auto_enable_text,
-      action='store_true',
-      hidden=hidden)
+      action='store_true')
 
   if is_update:
     parser.add_argument(
         '--clear-fleet-project',
         help=unset_text,
         default=None,
-        hidden=hidden,
         action='store_true')
 
 
@@ -4986,6 +4983,31 @@ Multi-networking is disabled by default.
       default=None,
       help=help_text,
       hidden=hidden)
+
+
+def AddClusterNetworkPerformanceConfigFlags(parser, hidden=True):
+  """Adds config flags for advanced networking bandwidth tiers."""
+
+  network_perf_config_help = """\
+      Configures network performance settings for the cluster.
+      Node pools can override with their own settings
+
+      *total-egress-bandwidth-tier*::: Total egress bandwidth is the available
+      outbound bandwidth from a VM, regardless of whether the traffic
+      is going to internal IP or external IP destinations.
+      The following tier values are allowed: [{tier_values}]
+
+      """.format(tier_values=','.join(['DEFAULT', 'TIER_1']))
+
+  spec = {'total-egress-bandwidth-tier': str}
+
+  parser.add_argument(
+      '--network-performance-configs',
+      type=arg_parsers.ArgDict(spec=spec),
+      action='append',
+      metavar='PROPERTY1=VALUE1',
+      hidden=hidden,
+      help=network_perf_config_help)
 
 
 def AddAdditionalNodeNetworkFlag(parser, hidden=True):

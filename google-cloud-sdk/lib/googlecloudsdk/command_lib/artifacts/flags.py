@@ -242,6 +242,16 @@ def GetDeleteTagsFlag():
       required=False)
 
 
+def GetGCRDomainArg():
+  return base.Argument(
+      'DOMAIN',
+      help=(
+          'A Container Registry domain. Valid values are: [gcr.io, asia.gcr.io,'
+          ' eu.gcr.io, us.gcr.io]'
+      ),
+  )
+
+
 def GetJsonKeyFlag(tool):
   """Gets Json Key Flag text based on specified tool."""
   if tool == 'pypi' or tool == 'python':

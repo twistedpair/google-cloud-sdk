@@ -308,4 +308,4 @@ class Workstations:
     ):
       pass
     else:
-      log.error('Received error from workstation: {0}'.format(error))
+      log.error('Error connecting to workstation: {0}'.format(error))

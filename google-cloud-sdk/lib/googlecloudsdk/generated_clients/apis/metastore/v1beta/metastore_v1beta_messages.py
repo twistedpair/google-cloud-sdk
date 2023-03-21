@@ -34,6 +34,64 @@ class AlterMetadataResourceLocationResponse(_messages.Message):
   r"""Response message for DataprocMetastore.AlterMetadataResourceLocation."""
 
 
+class AlterTablePropertiesRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.AlterTableProperties.
+
+  Messages:
+    PropertiesValue: A map that describes the desired values to mutate. If
+      update_mask is empty, the properties will not update. Otherwise, the
+      properties only alters the value whose associated paths exist in the
+      update mask
+
+  Fields:
+    properties: A map that describes the desired values to mutate. If
+      update_mask is empty, the properties will not update. Otherwise, the
+      properties only alters the value whose associated paths exist in the
+      update mask
+    tableName: Required. The name of the table containing the properties
+      you're altering in the following
+      format.databases/{database_id}/tables/{table_id}
+    updateMask: A field mask that specifies the metadata table properties that
+      are overwritten by the update. Fields specified in the update_mask are
+      relative to the resource (not to the full request). A field is
+      overwritten if it is in the mask.For example, given the target
+      properties: properties { a: 1 b: 2 } And an update properties:
+      properties { a: 2 b: 3 c: 4 } then if the field mask is:paths:
+      "properties.b", "properties.c"then the result will be: properties { a: 1
+      b: 3 c: 4 }
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""A map that describes the desired values to mutate. If update_mask is
+    empty, the properties will not update. Otherwise, the properties only
+    alters the value whose associated paths exist in the update mask
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  properties = _messages.MessageField('PropertiesValue', 1)
+  tableName = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -175,12 +233,14 @@ class BackendMetastore(_messages.Message):
 
     Values:
       METASTORE_TYPE_UNSPECIFIED: The metastore type is not set.
+      DATAPLEX: The backend metastore is Dataplex.
       BIGQUERY: The backend metastore is BigQuery.
       DATAPROC_METASTORE: The backend metastore is Dataproc Metastore.
     """
     METASTORE_TYPE_UNSPECIFIED = 0
-    BIGQUERY = 1
-    DATAPROC_METASTORE = 2
+    DATAPLEX = 1
+    BIGQUERY = 2
+    DATAPROC_METASTORE = 3
 
   metastoreType = _messages.EnumField('MetastoreTypeValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -1434,6 +1494,22 @@ class MetastoreProjectsLocationsServicesAlterLocationRequest(_messages.Message):
   """
 
   alterMetadataResourceLocationRequest = _messages.MessageField('AlterMetadataResourceLocationRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesAlterTablePropertiesRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesAlterTablePropertiesRequest object.
+
+  Fields:
+    alterTablePropertiesRequest: A AlterTablePropertiesRequest resource to be
+      passed as the request body.
+    service: Required. The relative resource name of the Dataproc Metastore
+      service that's being used to mutate metadata table properties, in the
+      following format:projects/{project_id}/locations/{location_id}/services/
+      {service_id}.
+  """
+
+  alterTablePropertiesRequest = _messages.MessageField('AlterTablePropertiesRequest', 1)
   service = _messages.StringField(2, required=True)
 
 

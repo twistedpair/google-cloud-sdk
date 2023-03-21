@@ -367,7 +367,7 @@ class MetastoreV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.
 
       Args:
         request: (MetastoreProjectsLocationsOperationsListRequest) input message
@@ -925,6 +925,33 @@ class MetastoreV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+service}:alterLocation',
         request_field='alterMetadataResourceLocationRequest',
         request_type_name='MetastoreProjectsLocationsServicesAlterLocationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AlterTableProperties(self, request, global_params=None):
+      r"""Alter metadata table properties.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesAlterTablePropertiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AlterTableProperties')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AlterTableProperties.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:alterTableProperties',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.alterTableProperties',
+        ordered_params=['service'],
+        path_params=['service'],
+        query_params=[],
+        relative_path='v1beta/{+service}:alterTableProperties',
+        request_field='alterTablePropertiesRequest',
+        request_type_name='MetastoreProjectsLocationsServicesAlterTablePropertiesRequest',
         response_type_name='Operation',
         supports_download=False,
     )

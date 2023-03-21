@@ -2024,10 +2024,10 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation_async.AsyncOperation:
-        r"""Asynchronously creates linked dataset in BigQuery
-        which makes it possible to use BugQuery to read the logs
-        stored in the bucket. A bucket may currently only
-        contain one link.
+        r"""Asynchronously creates a linked dataset in BigQuery
+        which makes it possible to use BigQuery to read the logs
+        stored in the log bucket. A log bucket may currently
+        only contain one link.
 
         .. code-block:: python
 

@@ -737,6 +737,7 @@ class Function(_messages.Message):
     stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
     upgradeInfo: Output only. UpgradeInfo for this Cloud Function
+    url: Output only. The deployed url for the function.
   """
 
   class EnvironmentValueValuesEnum(_messages.Enum):
@@ -808,6 +809,7 @@ class Function(_messages.Message):
   stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 11, repeated=True)
   updateTime = _messages.StringField(12)
   upgradeInfo = _messages.MessageField('UpgradeInfo', 13)
+  url = _messages.StringField(14)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -2256,6 +2258,12 @@ class UpgradeInfo(_messages.Message):
     UpgradeStateValueValuesEnum: UpgradeState of the function
 
   Fields:
+    buildConfig: Describes the Build step of the function that builds a
+      container to prepare for 2nd gen upgrade.
+    eventTrigger: Describes the Event trigger which has been setup to prepare
+      for 2nd gen upgrade.
+    serviceConfig: Describes the Cloud Run service which has been setup to
+      prepare for 2nd gen upgrade.
     upgradeState: UpgradeState of the function
   """
 
@@ -2297,7 +2305,10 @@ class UpgradeInfo(_messages.Message):
     ROLLBACK_FUNCTION_UPGRADE_TRAFFIC_ERROR = 8
     COMMIT_FUNCTION_UPGRADE_ERROR = 9
 
-  upgradeState = _messages.EnumField('UpgradeStateValueValuesEnum', 1)
+  buildConfig = _messages.MessageField('BuildConfig', 1)
+  eventTrigger = _messages.MessageField('EventTrigger', 2)
+  serviceConfig = _messages.MessageField('ServiceConfig', 3)
+  upgradeState = _messages.EnumField('UpgradeStateValueValuesEnum', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

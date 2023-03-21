@@ -76,6 +76,60 @@ class Artifact(_messages.Message):
   names = _messages.StringField(3, repeated=True)
 
 
+class Assessment(_messages.Message):
+  r"""Assessment provides all information that is related to a single
+  vulnerability for this product.
+
+  Enums:
+    StateValueValuesEnum: Provides the state of this Vulnerability assessment.
+
+  Fields:
+    cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
+      tracking number for the vulnerability.
+    impacts: Contains information about the impact of this vulnerability, this
+      will change with time.
+    justification: Justification provides the justification when the state of
+      the assessment if NOT_AFFECTED.
+    longDescription: A detailed description of this Vex.
+    relatedUris: Holds a list of references associated with this vulnerability
+      item and assessment. These uris have additional information about the
+      vulnerability and the assessment itself. E.g. Link to a document which
+      details how this assessment concluded the state of this vulnerability.
+    remediations: Specifies details on how to handle (and presumably, fix) a
+      vulnerability.
+    shortDescription: A one sentence description of this Vex.
+    state: Provides the state of this Vulnerability assessment.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Provides the state of this Vulnerability assessment.
+
+    Values:
+      STATE_UNSPECIFIED: No state is specified.
+      AFFECTED: This product is known to be affected by this vulnerability.
+      NOT_AFFECTED: This product is known to be not affected by this
+        vulnerability.
+      FIXED: This product contains a fix for this vulnerability.
+      UNDER_INVESTIGATION: It is not known yet whether these versions are or
+        are not affected by the vulnerability. However, it is still under
+        investigation.
+    """
+    STATE_UNSPECIFIED = 0
+    AFFECTED = 1
+    NOT_AFFECTED = 2
+    FIXED = 3
+    UNDER_INVESTIGATION = 4
+
+  cve = _messages.StringField(1)
+  impacts = _messages.StringField(2, repeated=True)
+  justification = _messages.MessageField('Justification', 3)
+  longDescription = _messages.StringField(4)
+  relatedUris = _messages.MessageField('RelatedUrl', 5, repeated=True)
+  remediations = _messages.MessageField('Remediation', 6, repeated=True)
+  shortDescription = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
 class AttestationNote(_messages.Message):
   r"""Note kind that represents a logical attestation "role" or "authority".
   For example, an organization might have one `Authority` for "QA" and one for
@@ -1417,6 +1471,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
   r"""Optional arguments to enable specific features of builds.
 
   Enums:
+    DefaultLogsBucketBehaviorValueValuesEnum: Optional. Option to specify how
+      default logs buckets are setup.
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
       behavior to Google Cloud Storage.
     LoggingValueValuesEnum: Option to specify the logging mode, which
@@ -1431,6 +1487,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       configuration file.
 
   Fields:
+    defaultLogsBucketBehavior: Optional. Option to specify how default logs
+      buckets are setup.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
       this is *NOT* "disk free"; some of the space will be used by the
       operating system and build utilities. Also note that this is the minimum
@@ -1475,6 +1533,18 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
       configuration.
     workerPool: This field deprecated; please use `pool.name` instead.
   """
+
+  class DefaultLogsBucketBehaviorValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify how default logs buckets are setup.
+
+    Values:
+      DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED: Unspecified.
+      REGIONAL_USER_OWNED_BUCKET: Bucket is located in user-owned project in
+        the same region as the build. The builder service account must have
+        access to create and write to GCS buckets in the build project.
+    """
+    DEFAULT_LOGS_BUCKET_BEHAVIOR_UNSPECIFIED = 0
+    REGIONAL_USER_OWNED_BUCKET = 1
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
     r"""Option to define build log streaming behavior to Google Cloud Storage.
@@ -1564,19 +1634,20 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message)
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  diskSizeGb = _messages.IntegerField(1)
-  dynamicSubstitutions = _messages.BooleanField(2)
-  env = _messages.StringField(3, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 5)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
-  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 7)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
-  secretEnv = _messages.StringField(9, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
-  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 12, repeated=True)
-  workerPool = _messages.StringField(13)
+  defaultLogsBucketBehavior = _messages.EnumField('DefaultLogsBucketBehaviorValueValuesEnum', 1)
+  diskSizeGb = _messages.IntegerField(2)
+  dynamicSubstitutions = _messages.BooleanField(3)
+  env = _messages.StringField(4, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 5)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 6)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 7)
+  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 8)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 9)
+  secretEnv = _messages.StringField(10, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 11, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 12)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 13, repeated=True)
+  workerPool = _messages.StringField(14)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption(_messages.Message):
@@ -2727,6 +2798,7 @@ class DiscoveryNote(_messages.Message):
       UPGRADE: This represents an available package upgrade.
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
+      VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -2739,6 +2811,7 @@ class DiscoveryNote(_messages.Message):
     UPGRADE = 8
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
+    VULNERABILITY_ASSESSMENT = 11
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -3398,6 +3471,52 @@ class InTotoStatement(_messages.Message):
   subject = _messages.MessageField('Subject', 6, repeated=True)
 
 
+class Justification(_messages.Message):
+  r"""Justification provides the justification when the state of the
+  assessment if NOT_AFFECTED.
+
+  Enums:
+    JustificationTypeValueValuesEnum: The justification type for this
+      vulnerability.
+
+  Fields:
+    details: Additional details on why this justification was chosen.
+    justificationType: The justification type for this vulnerability.
+  """
+
+  class JustificationTypeValueValuesEnum(_messages.Enum):
+    r"""The justification type for this vulnerability.
+
+    Values:
+      JUSTIFICATION_TYPE_UNSPECIFIED: JUSTIFICATION_TYPE_UNSPECIFIED.
+      COMPONENT_NOT_PRESENT: The vulnerable component is not present in the
+        product.
+      VULNERABLE_CODE_NOT_PRESENT: The vulnerable code is not present.
+        Typically this case occurs when source code is configured or built in
+        a way that excludes the vulnerable code.
+      VULNERABLE_CODE_NOT_IN_EXECUTE_PATH: The vulnerable code can not be
+        executed. Typically this case occurs when the product includes the
+        vulnerable code but does not call or use the vulnerable code.
+      VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY: The vulnerable code
+        cannot be controlled by an attacker to exploit the vulnerability.
+      INLINE_MITIGATIONS_ALREADY_EXIST: The product includes built-in
+        protections or features that prevent exploitation of the
+        vulnerability. These built-in protections cannot be subverted by the
+        attacker and cannot be configured or disabled by the user. These
+        mitigations completely prevent exploitation based on known attack
+        vectors.
+    """
+    JUSTIFICATION_TYPE_UNSPECIFIED = 0
+    COMPONENT_NOT_PRESENT = 1
+    VULNERABLE_CODE_NOT_PRESENT = 2
+    VULNERABLE_CODE_NOT_IN_EXECUTE_PATH = 3
+    VULNERABLE_CODE_CANNOT_BE_CONTROLLED_BY_ADVERSARY = 4
+    INLINE_MITIGATIONS_ALREADY_EXIST = 5
+
+  details = _messages.StringField(1)
+  justificationType = _messages.EnumField('JustificationTypeValueValuesEnum', 2)
+
+
 class Jwt(_messages.Message):
   r"""A Jwt object.
 
@@ -3620,6 +3739,7 @@ class Note(_messages.Message):
       can be used as a filter in list requests.
     upgrade: A note describing available package upgrades.
     vulnerability: A note describing a package vulnerability.
+    vulnerabilityAssessment: A note describing a vulnerability assessment.
   """
 
   class KindValueValuesEnum(_messages.Enum):
@@ -3641,6 +3761,7 @@ class Note(_messages.Message):
       UPGRADE: This represents an available package upgrade.
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
+      VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -3653,6 +3774,7 @@ class Note(_messages.Message):
     UPGRADE = 8
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
+    VULNERABILITY_ASSESSMENT = 11
 
   attestation = _messages.MessageField('AttestationNote', 1)
   build = _messages.MessageField('BuildNote', 2)
@@ -3673,6 +3795,7 @@ class Note(_messages.Message):
   updateTime = _messages.StringField(17)
   upgrade = _messages.MessageField('UpgradeNote', 18)
   vulnerability = _messages.MessageField('VulnerabilityNote', 19)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 20)
 
 
 class Occurrence(_messages.Message):
@@ -3731,6 +3854,7 @@ class Occurrence(_messages.Message):
       UPGRADE: This represents an available package upgrade.
       COMPLIANCE: This represents a Compliance Note
       DSSE_ATTESTATION: This represents a DSSE attestation Note
+      VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -3743,6 +3867,7 @@ class Occurrence(_messages.Message):
     UPGRADE = 8
     COMPLIANCE = 9
     DSSE_ATTESTATION = 10
+    VULNERABILITY_ASSESSMENT = 11
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)
@@ -4006,6 +4131,24 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class Product(_messages.Message):
+  r"""Product contains information about a product and how to uniquely
+  identify it.
+
+  Fields:
+    genericUri: Contains a URI which is vendor-specific. Example: The artifact
+      repository URL of an image.
+    id: Token that identifies a product so that it can be referred to from
+      other parts in the document. There is no predefined format as long as it
+      uniquely identifies a group in the context of the current document.
+    name: Name of the product.
+  """
+
+  genericUri = _messages.StringField(1)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class ProjectRepoId(_messages.Message):
   r"""Selects a repo using a Google Cloud Platform project ID (e.g., winged-
   cargo-31) and a repo name within that project.
@@ -4017,6 +4160,24 @@ class ProjectRepoId(_messages.Message):
 
   projectId = _messages.StringField(1)
   repoName = _messages.StringField(2)
+
+
+class Publisher(_messages.Message):
+  r"""Publisher contains information about the publisher of this Note.
+
+  Fields:
+    issuingAuthority: Provides information about the authority of the issuing
+      party to release the document, in particular, the party's constituency
+      and responsibilities or other obligations.
+    name: Name of the publisher. Examples: 'Google', 'Google Cloud Platform'.
+    publisherNamespace: The context or namespace. Contains a URL which is
+      under control of the issuing party and can be used as a globally unique
+      identifier for that issuing party. Example: https://csaf.io
+  """
+
+  issuingAuthority = _messages.StringField(1)
+  name = _messages.StringField(2)
+  publisherNamespace = _messages.StringField(3)
 
 
 class Recipe(_messages.Message):
@@ -4123,6 +4284,44 @@ class RelatedUrl(_messages.Message):
 
   label = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class Remediation(_messages.Message):
+  r"""Specifies details on how to handle (and presumably, fix) a
+  vulnerability.
+
+  Enums:
+    RemediationTypeValueValuesEnum: The type of remediation that can be
+      applied.
+
+  Fields:
+    details: Contains a comprehensive human-readable discussion of the
+      remediation.
+    remediationType: The type of remediation that can be applied.
+    remediationUri: Contains the URL where to obtain the remediation.
+  """
+
+  class RemediationTypeValueValuesEnum(_messages.Enum):
+    r"""The type of remediation that can be applied.
+
+    Values:
+      REMEDIATION_TYPE_UNSPECIFIED: No remediation type specified.
+      MITIGATION: A MITIGATION is available.
+      NO_FIX_PLANNED: No fix is planned.
+      NONE_AVAILABLE: Not available.
+      VENDOR_FIX: A vendor fix is available.
+      WORKAROUND: A workaround is available.
+    """
+    REMEDIATION_TYPE_UNSPECIFIED = 0
+    MITIGATION = 1
+    NO_FIX_PLANNED = 2
+    NONE_AVAILABLE = 3
+    VENDOR_FIX = 4
+    WORKAROUND = 5
+
+  details = _messages.StringField(1)
+  remediationType = _messages.EnumField('RemediationTypeValueValuesEnum', 2)
+  remediationUri = _messages.MessageField('RelatedUrl', 3)
 
 
 class RepoId(_messages.Message):
@@ -4842,6 +5041,58 @@ class Version(_messages.Message):
   revision = _messages.StringField(6)
 
 
+class VexAssessment(_messages.Message):
+  r"""VexAssessment provides all publisher provided Vex information that is
+  related to this vulnerability.
+
+  Enums:
+    StateValueValuesEnum: Provides the state of this Vulnerability assessment.
+
+  Fields:
+    cve: Holds the MITRE standard Common Vulnerabilities and Exposures (CVE)
+      tracking number for the vulnerability.
+    impacts: Contains information about the impact of this vulnerability, this
+      will change with time.
+    justification: Justification provides the justification when the state of
+      the assessment if NOT_AFFECTED.
+    noteName: The VulnerabilityAssessment note from which this VexAssessment
+      was generated. This will be of the form:
+      `projects/[PROJECT_ID]/notes/[NOTE_ID]`.
+    relatedUris: Holds a list of references associated with this vulnerability
+      item and assessment.
+    remediations: Specifies details on how to handle (and presumably, fix) a
+      vulnerability.
+    state: Provides the state of this Vulnerability assessment.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Provides the state of this Vulnerability assessment.
+
+    Values:
+      STATE_UNSPECIFIED: No state is specified.
+      AFFECTED: This product is known to be affected by this vulnerability.
+      NOT_AFFECTED: This product is known to be not affected by this
+        vulnerability.
+      FIXED: This product contains a fix for this vulnerability.
+      UNDER_INVESTIGATION: It is not known yet whether these versions are or
+        are not affected by the vulnerability. However, it is still under
+        investigation.
+    """
+    STATE_UNSPECIFIED = 0
+    AFFECTED = 1
+    NOT_AFFECTED = 2
+    FIXED = 3
+    UNDER_INVESTIGATION = 4
+
+  cve = _messages.StringField(1)
+  impacts = _messages.StringField(2, repeated=True)
+  justification = _messages.MessageField('Justification', 3)
+  noteName = _messages.StringField(4)
+  relatedUris = _messages.MessageField('RelatedUrl', 5, repeated=True)
+  remediations = _messages.MessageField('Remediation', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
 class Volume(_messages.Message):
   r"""Volume describes a Docker container volume which is mounted into build
   steps in order to persist files across build step execution. Next ID: 3
@@ -4857,6 +5108,30 @@ class Volume(_messages.Message):
 
   name = _messages.StringField(1)
   path = _messages.StringField(2)
+
+
+class VulnerabilityAssessmentNote(_messages.Message):
+  r"""A single VulnerabilityAssessmentNote represents one particular product's
+  vulnerability assessment for one CVE.
+
+  Fields:
+    assessment: Represents a vulnerability assessment for the product.
+    languageCode: Identifies the language used by this document, corresponding
+      to IETF BCP 47 / RFC 5646.
+    longDescription: A detailed description of this Vex.
+    product: The product affected by this vex.
+    publisher: Publisher details of this Note.
+    shortDescription: A one sentence description of this Vex.
+    title: The title of the note. E.g. `Vex-Debian-11.4`
+  """
+
+  assessment = _messages.MessageField('Assessment', 1)
+  languageCode = _messages.StringField(2)
+  longDescription = _messages.StringField(3)
+  product = _messages.MessageField('Product', 4)
+  publisher = _messages.MessageField('Publisher', 5)
+  shortDescription = _messages.StringField(6)
+  title = _messages.StringField(7)
 
 
 class VulnerabilityNote(_messages.Message):
@@ -4975,6 +5250,7 @@ class VulnerabilityOccurrence(_messages.Message):
       vulnerability.
     type: The type of package; whether native or non native (e.g., ruby gems,
       node.js packages, etc.).
+    vexAssessment: A VexAssessment attribute.
   """
 
   class CvssVersionValueValuesEnum(_messages.Enum):
@@ -5046,6 +5322,7 @@ class VulnerabilityOccurrence(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 10)
   shortDescription = _messages.StringField(11)
   type = _messages.StringField(12)
+  vexAssessment = _messages.MessageField('VexAssessment', 13)
 
 
 class VulnerabilityOccurrencesSummary(_messages.Message):

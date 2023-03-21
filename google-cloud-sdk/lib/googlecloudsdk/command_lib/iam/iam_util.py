@@ -41,6 +41,9 @@ import six
 # generation from proto. See b/124063772.
 kms_message = core_apis.GetMessagesModule('cloudkms', 'v1')
 encoding.AddCustomJsonFieldMapping(
+    kms_message.CloudkmsProjectsLocationsEkmConfigGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
     kms_message.CloudkmsProjectsLocationsEkmConnectionsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(

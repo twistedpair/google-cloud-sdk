@@ -506,16 +506,27 @@ class EncryptionConfig(_messages.Message):
   kmsKeyName = _messages.StringField(1)
 
 
-class ExportInstanceRequest(_messages.Message):
-  r"""Requestion options for exporting data of an Instance
+class ExportEncryptionConfig(_messages.Message):
+  r"""Configuration for Encryption - e.g. CMEK
 
   Fields:
-    uri: Required. The path to the folder in Google Cloud Storage where the
-      export will be stored. The URI is in the form
-      `gs://bucketName/folderName`.
+    kmsKeyName: Name of the CMEK key in KMS.
   """
 
-  uri = _messages.StringField(1)
+  kmsKeyName = _messages.StringField(1)
+
+
+class ExportInstanceRequest(_messages.Message):
+  r"""Requestion options for exporting data of an Instance.
+
+  Fields:
+    encryptionConfig: Encryption configuration (CMEK).
+    gcsUri: The path to the folder in Google Cloud Storage where the export
+      will be stored. The URI is in the form `gs://bucketName/folderName`.
+  """
+
+  encryptionConfig = _messages.MessageField('ExportEncryptionConfig', 1)
+  gcsUri = _messages.StringField(2)
 
 
 class Expr(_messages.Message):
@@ -572,11 +583,11 @@ class ImportInstanceRequest(_messages.Message):
   r"""Requestion options for importing looker data to an Instance
 
   Fields:
-    uri: Required. Path to the import folder in Google Cloud Storage, in the
-      form `gs://bucketName/folderName`.
+    gcsUri: Path to the import folder in Google Cloud Storage, in the form
+      `gs://bucketName/folderName`.
   """
 
-  uri = _messages.StringField(1)
+  gcsUri = _messages.StringField(1)
 
 
 class Instance(_messages.Message):
@@ -655,6 +666,8 @@ class Instance(_messages.Message):
       DELETING: Instance delete is in progress.
       DELETED: Instance has been deleted.
       PURGING: Instance is being purged. (This is different from DELETING).
+      EXPORTING: Instance is being exported.
+      IMPORTING: Instance is importing data.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -665,6 +678,8 @@ class Instance(_messages.Message):
     DELETING = 6
     DELETED = 7
     PURGING = 8
+    EXPORTING = 9
+    IMPORTING = 10
 
   adminSettings = _messages.MessageField('AdminSettings', 1)
   consumerNetwork = _messages.StringField(2)

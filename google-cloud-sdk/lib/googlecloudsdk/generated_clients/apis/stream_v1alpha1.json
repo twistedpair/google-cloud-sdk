@@ -231,7 +231,7 @@
     },
     "StreamContent": {
       "id": "StreamContent",
-      "description": "Message describing StreamContent object",
+      "description": "Message describing StreamContent object Next ID: 10",
       "type": "object",
       "properties": {
         "name": {
@@ -262,6 +262,10 @@
           "description": "Output only. Current state of the content.",
           "readOnly": true,
           "$ref": "LifecycleState"
+        },
+        "apiVersion": {
+          "description": "The API version to create this Stream Content",
+          "type": "string"
         },
         "createTime": {
           "description": "Output only. [Output only] Create time stamp",
@@ -387,7 +391,7 @@
     },
     "StreamInstance": {
       "id": "StreamInstance",
-      "description": "Message describing StreamInstance object Next ID: 13",
+      "description": "Message describing StreamInstance object Next ID: 14",
       "type": "object",
       "properties": {
         "name": {
@@ -410,6 +414,10 @@
         "apiKey": {
           "description": "Output only. The API key that an Stream client must use when requesting a streaming session.",
           "readOnly": true,
+          "type": "string"
+        },
+        "apiVersion": {
+          "description": "The API version used to create this Stream Instance",
           "type": "string"
         },
         "realmConfigs": {
@@ -1602,7 +1610,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "stream.projects.locations.operations.get",

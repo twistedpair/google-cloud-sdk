@@ -80,7 +80,7 @@ class Backup(_messages.Message):
     Values:
       DATABASE_DIALECT_UNSPECIFIED: Default value. This value will create a
         database with the GOOGLE_STANDARD_SQL dialect.
-      GOOGLE_STANDARD_SQL: Google standard SQL.
+      GOOGLE_STANDARD_SQL: GoogleSQL supported SQL.
       POSTGRESQL: PostgreSQL supported SQL.
     """
     DATABASE_DIALECT_UNSPECIFIED = 0
@@ -520,7 +520,7 @@ class CreateDatabaseRequest(_messages.Message):
     Values:
       DATABASE_DIALECT_UNSPECIFIED: Default value. This value will create a
         database with the GOOGLE_STANDARD_SQL dialect.
-      GOOGLE_STANDARD_SQL: Google standard SQL.
+      GOOGLE_STANDARD_SQL: GoogleSQL supported SQL.
       POSTGRESQL: PostgreSQL supported SQL.
     """
     DATABASE_DIALECT_UNSPECIFIED = 0
@@ -670,7 +670,7 @@ class Database(_messages.Message):
     Values:
       DATABASE_DIALECT_UNSPECIFIED: Default value. This value will create a
         database with the GOOGLE_STANDARD_SQL dialect.
-      GOOGLE_STANDARD_SQL: Google standard SQL.
+      GOOGLE_STANDARD_SQL: GoogleSQL supported SQL.
       POSTGRESQL: PostgreSQL supported SQL.
     """
     DATABASE_DIALECT_UNSPECIFIED = 0
@@ -5568,7 +5568,7 @@ class UpdateDatabaseDdlMetadata(_messages.Message):
     statements: For an update this list contains all the statements. For an
       individual statement, this list contains only that statement.
     throttled: Output only. When true, indicates that the operation is
-      throttled e.g due to resource constraints. When resources become
+      throttled e.g. due to resource constraints. When resources become
       available the operation will resume and this field will be false again.
   """
 

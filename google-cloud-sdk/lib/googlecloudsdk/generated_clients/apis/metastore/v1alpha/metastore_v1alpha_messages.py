@@ -233,12 +233,14 @@ class BackendMetastore(_messages.Message):
 
     Values:
       METASTORE_TYPE_UNSPECIFIED: The metastore type is not set.
+      DATAPLEX: The backend metastore is Dataplex.
       BIGQUERY: The backend metastore is BigQuery.
       DATAPROC_METASTORE: The backend metastore is Dataproc Metastore.
     """
     METASTORE_TYPE_UNSPECIFIED = 0
-    BIGQUERY = 1
-    DATAPROC_METASTORE = 2
+    DATAPLEX = 1
+    BIGQUERY = 2
+    DATAPROC_METASTORE = 3
 
   metastoreType = _messages.EnumField('MetastoreTypeValueValuesEnum', 1)
   name = _messages.StringField(2)

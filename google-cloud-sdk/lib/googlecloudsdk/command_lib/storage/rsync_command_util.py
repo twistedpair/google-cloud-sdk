@@ -19,12 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import enum
+import os
+import re
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import tracker_file_util
+from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks import patch_file_posix_task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
@@ -32,8 +38,93 @@ from googlecloudsdk.command_lib.storage.tasks.objects import patch_object_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 
 import six
+
+
+_NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
+
+
+def get_container_or_container_create_location_resource(path):
+  """Returns container or UnknownResource if found nothing. Errors otherwise."""
+  path_with_wildcard_trailing_delimiter = (
+      storage_url.storage_url_from_string(path).join('').object_name
+  )
+  resource_iterator = wildcard_iterator.get_wildcard_iterator(
+      path_with_wildcard_trailing_delimiter,
+      fields_scope=cloud_api.FieldsScope.SHORT,
+  )
+  plurality_checkable_resource_iterator = (
+      plurality_checkable_iterator.PluralityCheckableIterator(resource_iterator)
+  )
+
+  if plurality_checkable_resource_iterator.is_empty():
+    if wildcard_iterator.contains_wildcard(path):
+      raise errors.InvalidUrlError(
+          'Wildcard pattern matched nothing. '
+          + _NO_MATCHES_MESSAGE.format(path)
+      )
+    return resource_reference.UnknownResource(
+        storage_url.storage_url_from_string(path)
+    )
+
+  if plurality_checkable_resource_iterator.is_plural():
+    raise errors.InvalidUrlError(
+        '{} matched more than one URL: {}'.format(
+            path, list(plurality_checkable_resource_iterator)
+        )
+    )
+
+  resource = list(plurality_checkable_resource_iterator)[0]
+  if resource.is_container():
+    return resource
+  raise errors.InvalidUrlError(
+      '{} matched non-container URL: {}'.format(path, resource)
+  )
+
+
+def get_existing_container_resource(path):
+  """Gets existing container resource at path and errors otherwise."""
+  resource = get_container_or_container_create_location_resource(path)
+  if isinstance(resource, resource_reference.UnknownResource):
+    raise errors.InvalidUrlError(_NO_MATCHES_MESSAGE.format(path))
+  return resource
+
+
+def get_hashed_list_file_path(list_file_name, chunk_number=None):
+  """Hashes and returns a list file path.
+
+  Args:
+    list_file_name (str): The list file name prior to it being hashed.
+    chunk_number (int|None): The number of the chunk fetched if file represents
+      chunk of total list.
+
+  Returns:
+    str: Final (hashed) list file path.
+
+  Raises:
+    Error: Hashed file path is too long.
+  """
+  delimiterless_file_name = re.sub(
+      tracker_file_util.RE_DELIMITER_PATTERN, '_', list_file_name
+  )
+  hashed_file_name = tracker_file_util.get_hashed_file_name(
+      delimiterless_file_name
+  )
+
+  if chunk_number is None:
+    hashed_file_name_with_type = 'FULL_{}'.format(hashed_file_name)
+  else:
+    hashed_file_name_with_type = 'CHUNK_{}_{}'.format(
+        hashed_file_name, chunk_number
+    )
+
+  tracker_file_util.raise_exceeds_max_length_error(hashed_file_name_with_type)
+  return os.path.join(
+      properties.VALUES.storage.rsync_files_directory.Get(),
+      hashed_file_name_with_type,
+  )
 
 
 def get_csv_line_from_resource(resource):
@@ -79,11 +170,14 @@ def parse_csv_line_to_resource(line):
   """Parses a line from files listing of rsync source and destination.
 
   Args:
-    line (str): CSV line. See `get_csv_line_from_resource` docstring.
+    line (str|None): CSV line. See `get_csv_line_from_resource` docstring.
 
   Returns:
-    FileObjectResource or ObjectResource containing data needed for rsync.
+    FileObjectResource|ObjectResource|None: Resource containing data needed for
+      rsync if data line given.
   """
+  if not line:
+    return None
   (
       url_string,
       size_string,
@@ -100,25 +194,27 @@ def parse_csv_line_to_resource(line):
     return resource_reference.FileObjectResource(url_object)
   cloud_object = resource_reference.ObjectResource(
       url_object,
-      size=int(size_string),
-      crc32c_hash=crc32c_string,
-      md5_hash=md5_string,
+      size=int(size_string) if size_string else None,
+      crc32c_hash=crc32c_string if crc32c_string else None,
+      md5_hash=md5_string if md5_string else None,
       custom_fields={},
   )
   posix_util.update_custom_metadata_dict_with_posix_attributes(
       cloud_object.custom_fields,
       posix_util.PosixAttributes(
-          atime=int(atime_string),
-          mtime=int(mtime_string),
-          uid=int(uid_string),
-          gid=int(gid_string),
-          mode=posix_util.PosixMode.from_base_eight_str(mode_base_eight_string),
+          atime=int(atime_string) if atime_string else None,
+          mtime=int(mtime_string) if mtime_string else None,
+          uid=int(uid_string) if uid_string else None,
+          gid=int(gid_string) if gid_string else None,
+          mode=posix_util.PosixMode.from_base_eight_str(mode_base_eight_string)
+          if mode_base_eight_string
+          else None,
       ),
   )
   return cloud_object
 
 
-def compute_hashes_and_return_match(source_resource, destination_resource):
+def _compute_hashes_and_return_match(source_resource, destination_resource):
   """Does minimal computation to compare checksums of resources."""
   if source_resource.size != destination_resource.size:
     # Prioritizing this above other checks is an artifact from gsutil.
@@ -217,7 +313,7 @@ def compute_hashes_and_return_match(source_resource, destination_resource):
   return cloud_hash == local_hash
 
 
-def compare_metadata_and_return_copy_needed(
+def _compare_metadata_and_return_copy_needed(
     source_resource,
     destination_resource,
     source_mtime,
@@ -244,7 +340,7 @@ def compare_metadata_and_return_copy_needed(
     )
 
   # Most expensive operation, computing hashes, saved as last resort.
-  return not compute_hashes_and_return_match(
+  return not _compute_hashes_and_return_match(
       source_resource, destination_resource
   )
 
@@ -257,7 +353,7 @@ class _IterateResource(enum.Enum):
   BOTH = 'both'
 
 
-def compare_equal_urls_to_get_task_and_iteration_instruction(
+def _compare_equal_urls_to_get_task_and_iteration_instruction(
     user_request_args,
     source_object,
     destination_object,
@@ -279,10 +375,10 @@ def compare_equal_urls_to_get_task_and_iteration_instruction(
       and source_posix.mtime < destination_posix.mtime
   ):
     # This is technically a metadata comparison, but it would complicate
-    # `compare_metadata_and_return_copy_needed`.
+    # `_compare_metadata_and_return_copy_needed`.
     return (None, _IterateResource.SOURCE)
 
-  if compare_metadata_and_return_copy_needed(
+  if _compare_metadata_and_return_copy_needed(
       source_object,
       destination_object,
       source_posix.mtime,
@@ -339,9 +435,34 @@ def compare_equal_urls_to_get_task_and_iteration_instruction(
   return (None, _IterateResource.BOTH)
 
 
-def get_task_and_iteration_instruction(
+def _get_comparison_url(object_resource, container_resource):
+  """Gets URL to compare to decide if resources are the same."""
+  container_url = container_resource.storage_url
+  container_url_string_with_trailing_delimiter = container_url.join(
+      ''
+  ).versionless_url_string
+  object_url_string = object_resource.storage_url.versionless_url_string
+  if not object_url_string.startswith(
+      container_url_string_with_trailing_delimiter
+  ):
+    raise errors.Error(
+        'Received container {} that does not contain object {}.'.format(
+            container_resource, object_resource
+        )
+    )
+  containerless_object_url_string = object_url_string[
+      len(container_url_string_with_trailing_delimiter) :
+  ]
+  # Standardizes Windows URLs.
+  return containerless_object_url_string.replace(
+      container_url.delimiter, storage_url.CLOUD_URL_DELIMITER
+  )
+
+
+def _get_task_and_iteration_instruction(
     user_request_args,
     source_object,
+    source_container,
     destination_object,
     destination_container,
     compare_only_hashes=False,
@@ -354,12 +475,15 @@ def get_task_and_iteration_instruction(
     user_request_args (UserRequestArgs): User flags.
     source_object (FileObjectResource|ObjectResource|None): Source resource for
       comparison. `None` indicates no sources left to copy.
+    source_container (FileDirectoryResource|PrefixResource|BucketResource):
+      Stripped from beginning of source_object to get comparison URL.
     destination_object (FileObjectResource|ObjectResource|None): Destination
       resource for comparison. `None` indicates all remaining source resources
       are new.
     destination_container (FileDirectoryResource|PrefixResource|BucketResource):
       If a copy task is generated for a source item with no equivalent existing
-      destination item, it will copy to this general container.
+      destination item, it will copy to this general container. Also used to get
+      comparison URL.
     compare_only_hashes (bool): Skip modification time comparison.
     delete_unmatched_destination_objects (bool): Clear objects at the
       destination that are not present at the source.
@@ -411,8 +535,10 @@ def get_task_and_iteration_instruction(
         _IterateResource.SOURCE,
     )
 
-  source_url = source_object.storage_url.versionless_url_string
-  destination_url = destination_object.storage_url.versionless_url_string
+  source_url = _get_comparison_url(source_object, source_container)
+  destination_url = _get_comparison_url(
+      destination_object, destination_container
+  )
   if source_url < destination_url:
     return (
         copy_task_factory.get_copy_task(
@@ -434,7 +560,7 @@ def get_task_and_iteration_instruction(
       )
     return (None, _IterateResource.DESTINATION)
 
-  return compare_equal_urls_to_get_task_and_iteration_instruction(
+  return _compare_equal_urls_to_get_task_and_iteration_instruction(
       user_request_args,
       source_object,
       destination_object,
@@ -443,3 +569,48 @@ def get_task_and_iteration_instruction(
           skip_if_destination_has_later_modification_time
       ),
   )
+
+
+def get_operation_iterator(
+    user_request_args,
+    source_list_file,
+    source_container,
+    destination_list_file,
+    destination_container,
+    compare_only_hashes=False,
+    delete_unmatched_destination_objects=False,
+    skip_if_destination_has_later_modification_time=False,
+):
+  """Returns task with next rsync operation (patch, delete, copy, etc)."""
+  with files.FileReader(source_list_file) as source_reader, files.FileReader(
+      destination_list_file
+  ) as destination_reader:
+    source_object = parse_csv_line_to_resource(next(source_reader, None))
+    destination_object = parse_csv_line_to_resource(
+        next(destination_reader, None)
+    )
+
+    while source_object or destination_object:
+      task, iteration_instruction = _get_task_and_iteration_instruction(
+          user_request_args,
+          source_object,
+          source_container,
+          destination_object,
+          destination_container,
+          compare_only_hashes,
+          delete_unmatched_destination_objects,
+          skip_if_destination_has_later_modification_time,
+      )
+      yield task
+      if iteration_instruction in (
+          _IterateResource.SOURCE,
+          _IterateResource.BOTH,
+      ):
+        source_object = parse_csv_line_to_resource(next(source_reader, None))
+      if iteration_instruction in (
+          _IterateResource.DESTINATION,
+          _IterateResource.BOTH,
+      ):
+        destination_object = parse_csv_line_to_resource(
+            next(destination_reader, None)
+        )

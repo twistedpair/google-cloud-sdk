@@ -943,13 +943,13 @@ class MetastoreV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AlterTableProperties.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:AlterTableProperties',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:alterTableProperties',
         http_method='POST',
         method_id='metastore.projects.locations.services.alterTableProperties',
         ordered_params=['service'],
         path_params=['service'],
         query_params=[],
-        relative_path='v1alpha/{+service}:AlterTableProperties',
+        relative_path='v1alpha/{+service}:alterTableProperties',
         request_field='alterTablePropertiesRequest',
         request_type_name='MetastoreProjectsLocationsServicesAlterTablePropertiesRequest',
         response_type_name='Operation',

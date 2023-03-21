@@ -1287,8 +1287,8 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
     requestId: Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
-      only include these fields from Cluster: * `displayName` *
-      `totalMemorySizeGb` * `redisConfig` * `replica_count`
+      only include these fields from Cluster: * `display_name` * `size_gb` *
+      `replica_count`
   """
 
   cluster = _messages.MessageField('Cluster', 1)

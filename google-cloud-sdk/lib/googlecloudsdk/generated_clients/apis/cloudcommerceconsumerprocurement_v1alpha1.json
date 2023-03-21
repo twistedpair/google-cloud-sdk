@@ -747,6 +747,58 @@
         }
       }
     },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog",
+      "description": "Consumer Procurement Order Audit Log",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the order auditLog Format: `billingAccounts\/{billing_account}\/orders\/{order}\/auditLog`",
+          "type": "string"
+        },
+        "auditLogRecords": {
+          "description": "List of audit log records for an offer",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord"
+          }
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord",
+      "description": "Definition of an Audit Log Record",
+      "type": "object",
+      "properties": {
+        "actionType": {
+          "description": "The type of action",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, do not use.",
+            "The action of accepting an offer.",
+            "Order Cancelation action."
+          ],
+          "enum": [
+            "ACTION_TYPE_UNSPECIFIED",
+            "ORDER_PLACED",
+            "ORDER_CANCELLED"
+          ]
+        },
+        "userName": {
+          "description": "The name of the user taking the action. For users authenticated through 3P identity provider (BYOID), the field value format is described in go\/byoid-data-pattern:displaying-users.",
+          "type": "string"
+        },
+        "userEmail": {
+          "description": "The email of the user taking the action. This field can be empty for users authenticated through 3P identity provider.",
+          "type": "string"
+        },
+        "actionTime": {
+          "description": "The time when the action takes place",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse",
       "description": "Response message for ConsumerProcurementService.ListMigratableOrders.",
@@ -1174,7 +1226,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial",
-      "description": "FreeTrial represents the free trial created for a specific product and billing account with argentum. Free Trial resources are created by placing orders for 3p non-VM products, or just enabling free trials for 1p products and 3P VM products. Next Id: 6",
+      "description": "FreeTrial represents the free trial created for a specific offer and billing account with argentum. Free Trial resources are created by placing orders for 3p non-VM offers, or just enabling free trials for 1p offers and 3p VM offers. Next Id: 7",
       "type": "object",
       "properties": {
         "name": {
@@ -1187,7 +1239,11 @@
           "type": "string"
         },
         "productExternalName": {
-          "description": "External name for the product for which free trial exist.",
+          "description": "External name for the product for which free trial exist. TODO(b\/259732458) Mark this field \"output only\" once the standard offer migration completes.",
+          "type": "string"
+        },
+        "service": {
+          "description": "The one platform service name associated with the free trial. Format: 'services\/{service_name}'.",
           "type": "string"
         },
         "credit": {
@@ -1574,6 +1630,13 @@
           "description": "Pagination token for large results.",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1PlaceOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1PlaceOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.PlaceOrder.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderMetadata": {
@@ -2062,6 +2125,31 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Lists Order resources that the user has access to, within the scope of the parent resource."
+            },
+            "getAuditLog": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.getAuditLog",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/auditLog",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the auditLog to retrieve. Format: `billingAccounts\/{billing_account}\/orders\/{order}\/auditLog`",
+                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/auditLog$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1AuditLog"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Returns the requested AuditLog resource."
             },
             "listMigratable": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.listMigratable",

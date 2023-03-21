@@ -353,6 +353,10 @@
             "LOCAL_CONTROLS_BY_S3NS",
             "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
           ]
+        },
+        "ekmProvisioningResponse": {
+          "description": "Optional. Represents the Ekm Provisioning State of the given workload.",
+          "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse"
         }
       }
     },
@@ -536,6 +540,53 @@
           "description": "Count of active Violations which are acknowledged in the Workload.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse": {
+      "id": "GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse",
+      "description": "External key management systems(EKM) Provisioning response",
+      "type": "object",
+      "properties": {
+        "ekmProvisioningState": {
+          "description": "Indicates Ekm enrollment Provisioning of a given workload.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default State for Ekm Provisioning",
+            "Pending State for Ekm Provisioning",
+            "Failed State for Ekm Provisioning",
+            "Completed State for Ekm Provisioning"
+          ],
+          "enum": [
+            "EKM_PROVISIONING_STATE_UNSPECIFIED",
+            "EKM_PROVISIONING_STATE_PENDING",
+            "EKM_PROVISIONING_STATE_FAILED",
+            "EKM_PROVISIONING_STATE_COMPLETED"
+          ]
+        },
+        "ekmProvisioningErrorDomain": {
+          "description": "Indicates Ekm provisioning error if any.",
+          "type": "string",
+          "enumDescriptions": [
+            "No error domain",
+            "Error but domain is unspecified.",
+            "Internal logic breaks within provisioning code.",
+            "Error occurred with the customer not granting permission\/creating resource.",
+            "Error occurred within the partner\u2019s provisioning cluster.",
+            "Resource wasn't provisioned in the required 7 day time period"
+          ],
+          "enum": [
+            "EKM_PROVISIONING_ERROR_DOMAIN_UNSPECIFIED",
+            "UNSPECIFIED_ERROR",
+            "GOOGLE_SERVER_ERROR",
+            "EXTERNAL_USER_ERROR",
+            "EXTERNAL_PARTNER_ERROR",
+            "TIMEOUT_ERROR"
+          ]
+        },
+        "ekmProvisioningErrorMessage": {
+          "description": "Detailed error message if Ekm provisioning fails",
+          "type": "string"
         }
       }
     },
@@ -894,7 +945,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`."
                 },
                 "get": {
                   "id": "assuredworkloads.organizations.locations.operations.get",

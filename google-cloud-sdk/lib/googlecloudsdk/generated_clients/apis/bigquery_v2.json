@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20230301",
+ "revision": "20230313",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1517,6 +1517,10 @@
       "$ref": "ConnectionProperty"
      }
     },
+    "continuous": {
+     "type": "boolean",
+     "description": "[Optional] Specifies whether the query should be executed as a continuous query. The default value is false."
+    },
     "createDisposition": {
      "type": "string",
      "description": "[Optional] Specifies whether the job is allowed to create new tables. The following values are supported: CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the table. CREATE_NEVER: The table must already exist. If it does not, a 'notFound' error is returned in the job result. The default value is CREATE_IF_NEEDED. Creation, truncation and append actions occur as one atomic update upon job completion."
@@ -2408,6 +2412,10 @@
      "items": {
       "$ref": "ConnectionProperty"
      }
+    },
+    "continuous": {
+     "type": "boolean",
+     "description": "[Optional] Specifies whether the query should be executed as a continuous query. The default value is false."
     },
     "createSession": {
      "type": "boolean",
