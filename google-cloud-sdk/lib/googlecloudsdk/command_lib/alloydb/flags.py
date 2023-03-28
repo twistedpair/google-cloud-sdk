@@ -282,6 +282,73 @@ def AddCPUCount(parser, required=True):
           'machines).'))
 
 
+def AddDBRoles(parser):
+  """Adds a --db-roles flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--db-roles',
+      type=arg_parsers.ArgList(),
+      metavar='ROLE',
+      help=(
+          'Comma separated list of database roles this new user will be granted'
+          ' upon creation.'
+      ),
+  )
+
+
+def AddUserType(parser):
+  """Adds a --type flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--type',
+      type=str,
+      choices={
+          'BUILT_IN': (
+              'This database user can authenticate via password-based'
+              ' authentication'
+          ),
+          'IAM_BASED': (
+              'This database user can authenticate via IAM-based authentication'
+          ),
+          # 'ALLOYDB_IAM_GROUP': Not implemented until IAM auth phase 2.,
+      },
+      default='BUILT_IN',
+      help='Type corresponds to the user type.',
+  )
+
+
+def AddSuperuser(parser):
+  """Adds a --superuser flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--superuser',
+      type=bool,
+      default=False,
+      help=(
+          'If true, new user will have AlloyDB superuser privileges. Default'
+          ' value is false.'
+      ),
+  )
+
+
+def AddUsername(parser):
+  """Adds a positional username argument to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument('username', type=str, help='AlloyDB username')
+
+
 def AddPassword(parser):
   """Adds a --password flag to parser.
 
@@ -292,8 +359,21 @@ def AddPassword(parser):
       '--password',
       required=True,
       type=str,
-      help=('Initial postgres user password to set up during cluster creation.')
-      )
+      help='Initial postgres user password to set up during cluster creation.',
+  )
+
+
+def AddUserPassword(parser):
+  """Adds a --password flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--password',
+      type=str,
+      help='Password for this new database user.',
+  )
 
 
 def _GetDayOfWeekArgList(alloydb_messages):

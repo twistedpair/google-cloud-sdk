@@ -1897,28 +1897,12 @@ class BareMetalStandaloneVipConfig(_messages.Message):
 class BareMetalStandaloneWorkloadNodeConfig(_messages.Message):
   r"""Specifies the workload node configurations.
 
-  Enums:
-    ContainerRuntimeValueValuesEnum: Specifies which container runtime will be
-      used.
-
   Fields:
-    containerRuntime: Specifies which container runtime will be used.
     maxPodsPerNode: The maximum number of pods a node can run. The size of the
       CIDR range assigned to the node will be derived from this parameter.
   """
 
-  class ContainerRuntimeValueValuesEnum(_messages.Enum):
-    r"""Specifies which container runtime will be used.
-
-    Values:
-      CONTAINER_RUNTIME_UNSPECIFIED: No container runtime selected.
-      CONTAINERD: Containerd runtime.
-    """
-    CONTAINER_RUNTIME_UNSPECIFIED = 0
-    CONTAINERD = 1
-
-  containerRuntime = _messages.EnumField('ContainerRuntimeValueValuesEnum', 1)
-  maxPodsPerNode = _messages.IntegerField(2)
+  maxPodsPerNode = _messages.IntegerField(1)
 
 
 class BareMetalStandloneMultipleNetworkInterfacesConfig(_messages.Message):
@@ -1954,8 +1938,9 @@ class BareMetalVersionInfo(_messages.Message):
 
   Fields:
     hasDependencies: If set, the cluster dependencies (e.g. the admin cluster,
-      other user clusters managed by the same admin cluster) must be upgraded
-      before this version can be installed or upgraded to.
+      other user clusters managed by the same admin cluster, version skew
+      policy, etc) must be upgraded before this version can be installed or
+      upgraded to.
     version: Version number e.g. 1.13.1.
   """
 
@@ -2244,10 +2229,10 @@ class EnrollVmwareNodePoolRequest(_messages.Message):
   r"""Message for enrolling a VMware node pool.
 
   Fields:
-    vmwareNodepoolId: The target node pool id to be enrolled.
+    vmwareNodePoolId: The target node pool id to be enrolled.
   """
 
-  vmwareNodepoolId = _messages.StringField(1)
+  vmwareNodePoolId = _messages.StringField(1)
 
 
 class Expr(_messages.Message):

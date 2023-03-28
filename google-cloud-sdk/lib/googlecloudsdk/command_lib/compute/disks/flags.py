@@ -208,7 +208,7 @@ def AddBulkCreateArgs(parser):
       '--source-consistency-group-policy',
       help='''
       URL of the source consistency group resource policy. The resource policy
-      is always in the region of the source disks.
+      is always the same region as the source disks.
       ''',
       # This argument is required because consistent cloning is only supported
       # feature under the BulkCreate now. May become optional in the future.

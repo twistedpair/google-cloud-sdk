@@ -482,7 +482,7 @@ class Exponential(_messages.Message):
   proportional to the value of the lower bound. Each bucket represents a
   constant relative uncertainty on a specific value in the bucket.There are
   num_finite_buckets + 2 (= N) buckets. Bucket i has the following
-  boundaries:Upper bound (0 <= i < N-1): scale * (growth_factor ^ i). Lower
+  boundaries:Upper bound (0 <= i < N-1): scale * (growth_factor ^ i).Lower
   bound (1 <= i < N): scale * (growth_factor ^ (i - 1)).
 
   Fields:
@@ -654,7 +654,7 @@ class Linear(_messages.Message):
   (except overflow and underflow). Each bucket represents a constant absolute
   uncertainty on the specific value in the bucket.There are num_finite_buckets
   + 2 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
-  < N-1): offset + (width * i). Lower bound (1 <= i < N): offset + (width * (i
+  < N-1): offset + (width * i).Lower bound (1 <= i < N): offset + (width * (i
   - 1)).
 
   Fields:
@@ -2389,18 +2389,19 @@ class LoggingBillingAccountsLocationsBucketsViewsLogsListRequest(_messages.Messa
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2529,18 +2530,19 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3251,18 +3253,19 @@ class LoggingFoldersLocationsBucketsViewsLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3391,18 +3394,19 @@ class LoggingFoldersLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4064,18 +4068,19 @@ class LoggingLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4539,18 +4544,19 @@ class LoggingOrganizationsLocationsBucketsViewsLogsListRequest(_messages.Message
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4679,18 +4685,19 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5358,18 +5365,19 @@ class LoggingProjectsLocationsBucketsViewsLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5498,18 +5506,19 @@ class LoggingProjectsLogsListRequest(_messages.Message):
       from the preceding call to this method. pageToken must be the value of
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
-    parent: Required. The resource name that owns the logs:
+    parent: Required. The resource name to list logs for:
       projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
       billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
-    resourceNames: Optional. The resource name that owns the logs: projects/[P
-      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
-      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
-      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
-      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
-      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+    resourceNames: Optional. List of resource names to list logs for: projects
+      /[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID
+      ] organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKE
+      T_ID]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locat
+      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
       queries, it could also be: projects/[PROJECT_ID]
       organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
-      folders/[FOLDER_ID]
+      folders/[FOLDER_ID]The resource name in the parent field is added to
+      this list.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6673,7 +6682,7 @@ class QueryDataResponse(_messages.Message):
   r"""The response data from QueryData.
 
   Fields:
-    queryStepHandle: Handles to each of the query steps described in the
+    queryStepHandles: Handles to each of the query steps described in the
       request. These may be passed to ReadQueryResults or used in a
       HandleQueryStep in a subsequent call to QueryData.
     restrictionConflicts: Conflicts between the query and the restrictions
@@ -6681,7 +6690,7 @@ class QueryDataResponse(_messages.Message):
       executing the query.
   """
 
-  queryStepHandle = _messages.StringField(1, repeated=True)
+  queryStepHandles = _messages.StringField(1, repeated=True)
   restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 2, repeated=True)
 
 

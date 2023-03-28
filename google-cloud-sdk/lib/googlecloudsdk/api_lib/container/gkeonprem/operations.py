@@ -111,6 +111,9 @@ def log_operation(resource_ref, action, past_tense, is_async=False):
           'node pool of a user cluster in Anthos on bare metal'
       ),
       'bareMetalAdminClusters': 'admin cluster in Anthos on bare metal',
+      'bareMetalStandaloneClusters': (
+          'standalone cluster in Anthos on bare metal'
+      ),
   }
   resource_name = resource_type_to_name.get(resource_type, 'unknown resource')
   self_link = resource_ref.SelfLink()

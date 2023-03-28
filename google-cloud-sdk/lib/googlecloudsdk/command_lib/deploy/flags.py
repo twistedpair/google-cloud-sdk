@@ -357,8 +357,7 @@ def AddStartingPhaseId(parser):
   parser.add_argument(
       '--starting-phase-id',
       help=help_text,
-      # TODO(b/252836203) Set hidden to false once surface spec is not hidden.
-      hidden=True,
+      hidden=False,
       # By default, None is used.
       default=None,
       required=False,
@@ -432,8 +431,7 @@ def AddInitialRolloutPhaseIDFlag():
   return base.Argument(
       '--initial-rollout-phase-id',
       help=help_text,
-      # TODO(b/252836203) Set hidden to false once surface spec is not hidden.
-      hidden=True,
+      hidden=False,
       # By default, None is used.
       default=None,
       required=False,

@@ -1296,7 +1296,8 @@ def AddAddressArgs(parser,
                    instance_create=False,
                    containers=False,
                    support_network_queue_count=False,
-                   support_network_attachments=False):
+                   support_network_attachments=False,
+                   support_vlan_nic=False):
   """Adds address arguments for instances and instance-templates.
 
   Args:
@@ -1312,6 +1313,7 @@ def AddAddressArgs(parser,
       supported or not.
     support_network_attachments: indicates whether network attachments are
       supported.
+    support_vlan_nic: indicates whether VLAN network interfaces are supported.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1340,7 +1342,7 @@ def AddAddressArgs(parser,
       'external-ipv6-address': str,
       'external-ipv6-prefix-length': int,
       'internal-ipv6-address': str,
-      'internal-ipv6-prefix-length': int,
+      'internal-ipv6-prefix-length': int
   }
 
   multiple_network_interface_cards_spec['network-tier'] = _ValidateNetworkTier
@@ -1472,6 +1474,10 @@ def AddAddressArgs(parser,
       interface should connect to. Mutually exclusive with *--network* and
       *--subnet* flags.
       """)
+
+  if support_vlan_nic:
+    multiple_network_interface_cards_spec['vlan'] = int
+    # TODO(b/274638343): Add help text before release.
 
   if instance_create:
     network_interfaces = parser.add_group(mutex=True)

@@ -47,7 +47,7 @@ def GetClusterResourceSpec():
 
 
 def AddClusterResourceArg(parser, verb, positional=True):
-  """Adds a resource argument for an edge-cloud container cluster.
+  """Adds a resource argument for an Edge Container cluster.
 
   Args:
     parser: The argparse parser to add the resource arg to.
@@ -58,7 +58,7 @@ def AddClusterResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetClusterResourceSpec(),
-      'edge-cloud container cluster {}.'.format(verb),
+      'Edge Container cluster {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -74,7 +74,6 @@ def ProcessSystemAddonsConfig(args, req):
   msgs = util.GetMessagesModule(release_track)
 
   data = args.system_addons_config
-
   try:
     system_addons_config = messages_util.DictToMessageWithErrorCheck(
         data[GDCE_SYS_ADDONS_CONFIG], msgs.SystemAddonsConfig)
@@ -85,21 +84,13 @@ def ProcessSystemAddonsConfig(args, req):
   req.cluster.systemAddonsConfig = system_addons_config
 
 
-def SetSystemAddonsConfig(ref, args, request):
+def SetSystemAddonsConfig(args, request):
   """Sets the cluster.system_addons_config if specified.
 
   Args:
-    ref: reference to the membership object.
     args: command line arguments.
     request: API request to be issued
-
-  Returns:
-    modified request
   """
-
-  del ref  # unused argument
 
   if args.IsKnownAndSpecified('system_addons_config'):
     ProcessSystemAddonsConfig(args, request)
-
-  return request

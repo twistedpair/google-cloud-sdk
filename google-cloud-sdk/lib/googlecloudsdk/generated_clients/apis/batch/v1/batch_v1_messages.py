@@ -277,29 +277,6 @@ class BatchProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class BatchProjectsLocationsOperationsCancelRequest(_messages.Message):
-  r"""A BatchProjectsLocationsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class BatchProjectsLocationsOperationsDeleteRequest(_messages.Message):
-  r"""A BatchProjectsLocationsOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BatchProjectsLocationsOperationsGetRequest(_messages.Message):
   r"""A BatchProjectsLocationsOperationsGetRequest object.
 
@@ -324,10 +301,6 @@ class BatchProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
 
 
 class ComputeResource(_messages.Message):
@@ -418,15 +391,6 @@ class Disk(_messages.Message):
   sizeGb = _messages.IntegerField(3)
   snapshot = _messages.StringField(4)
   type = _messages.StringField(5)
-
-
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
 
 
 class Environment(_messages.Message):

@@ -76,10 +76,7 @@ def GetVolumeAttributeConfig(positional=True):
   else:
     ## For when we need a volume attribute in Snapshot resource spec, we want
     ## to assign fallthrough flags
-    fallthroughs = [
-        deps.ArgFallthrough('--snapshot-volume'),
-        deps.ArgFallthrough('--volume')
-    ]
+    fallthroughs = [deps.ArgFallthrough('--volume')]
   help_text = ('The instance of the {resource}' if positional else (
       'The volume of the {resource}'))
   return concepts.ResourceParameterAttributeConfig(
@@ -176,7 +173,7 @@ def GetSnapshotResourceSpec(revert_op=False, positional=True):
   volume_attribute_config = GetVolumeAttributeConfig(positional=False)
   if revert_op:
     # if revert op, we don't want volume attribute to have any fallthroughs
-    # (--snapshot-volume, or --volume arg) since volume is positional in revert.
+    # (--volume arg) since volume is positional in revert.
     volume_attribute_config.fallthroughs = []
   if not positional:
     location_attribute_config.fallthroughs = [
@@ -245,9 +242,7 @@ def GetSnapshotPresentationSpec(group_help):
       GetSnapshotResourceSpec(),
       group_help,
       required=True,
-      flag_name_overrides={
-          'volume': '--snapshot-volume',
-      })
+      flag_name_overrides={'volume': ''})
 
 
 def GetActiveDirectoryPresentationSpec(group_help):

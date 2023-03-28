@@ -31,7 +31,10 @@ class NoFieldsSpecified(exceptions.Error):
 
 def CheckFieldsSpecifiedGA(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for GA track."""
-  return CheckFieldsSpecifiedCommon(args, patch_request, [])
+  additional_update_args = [
+      'maintenance_version',
+  ]
+  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
 
 def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):

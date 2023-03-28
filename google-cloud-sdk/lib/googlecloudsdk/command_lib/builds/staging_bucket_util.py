@@ -34,3 +34,23 @@ def GetDefaultStagingBucket():
                   .replace('google', 'elgoog'))
 
   return safe_project + '_cloudbuild'
+
+
+def GetDefaultRegionalStagingBucket(region):
+  """Returns the default regional bucket name.
+
+  Args:
+    region: Cloud Build region.
+
+  Returns:
+    GCS bucket name.
+  """
+  safe_project = (
+      properties.VALUES.core.project.Get(required=True)
+      .replace(':', '_')
+      .replace('.', '_')
+      # The string 'google' is not allowed in bucket names.
+      .replace('google', 'elgoog')
+  )
+
+  return safe_project + '_' + region + '_cloudbuild'

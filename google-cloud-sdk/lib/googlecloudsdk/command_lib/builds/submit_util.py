@@ -197,7 +197,7 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
         timeout=timeout_str,
         substitutions=cloudbuild_util.EncodeSubstitutions(
             substitutions, messages))
-  elif arg_config is not None:
+  else:
     if no_cache:
       raise c_exceptions.ConflictingArgumentsException('--config', '--no-cache')
     if not arg_config:
@@ -205,10 +205,6 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
           '--config', 'Config file path must not be empty.')
     build_config = config.LoadCloudbuildConfigFromPath(
         arg_config, messages, params=substitutions)
-  else:
-    raise c_exceptions.OneOfArgumentsRequiredException(
-        ['--tag', '--config', '--pack'],
-        'Requires either a docker tag, a config file, or pack argument.')
 
   # If timeout was set by flag, overwrite the config file.
   if timeout_str:
@@ -217,20 +213,36 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
   return build_config
 
 
-def _SetSource(build_config,
-               messages,
-               is_specified_source,
-               no_source,
-               source,
-               gcs_source_staging_dir,
-               ignore_file,
-               hide_logs=False):
+def SetSource(
+    build_config,
+    messages,
+    is_specified_source,
+    no_source,
+    source,
+    gcs_source_staging_dir,
+    ignore_file,
+    hide_logs=False,
+    build_region=cloudbuild_util.DEFAULT_REGION,
+    arg_bucket_behavior=None,
+):
   """Set the source for the build config."""
   default_gcs_source = False
   default_bucket_name = None
+  default_bucket_location = cloudbuild_util.DEFAULT_REGION
   if gcs_source_staging_dir is None:
     default_gcs_source = True
-    default_bucket_name = staging_bucket_util.GetDefaultStagingBucket()
+    if (
+        build_region != cloudbuild_util.DEFAULT_REGION
+        and arg_bucket_behavior is not None
+        and flags.GetDefaultBuckestBehavior(arg_bucket_behavior)
+        == messages.BuildOptions.DefaultLogsBucketBehaviorValueValuesEnum.REGIONAL_USER_OWNED_BUCKET
+    ):
+      default_bucket_location = build_region
+      default_bucket_name = staging_bucket_util.GetDefaultRegionalStagingBucket(
+          build_region
+      )
+    else:
+      default_bucket_name = staging_bucket_util.GetDefaultStagingBucket()
     gcs_source_staging_dir = 'gs://{}/source'.format(default_bucket_name)
   gcs_client = storage_api.StorageClient()
 
@@ -254,8 +266,17 @@ def _SetSource(build_config,
         gcs_source_staging_dir, collection='storage.objects')
 
     try:
-      gcs_client.CreateBucketIfNotExists(
-          gcs_source_staging_dir.bucket, check_ownership=default_gcs_source)
+      if default_bucket_location == cloudbuild_util.DEFAULT_REGION:
+        gcs_client.CreateBucketIfNotExists(
+            gcs_source_staging_dir.bucket,
+            check_ownership=default_gcs_source,
+        )
+      else:
+        gcs_client.CreateBucketIfNotExists(
+            gcs_source_staging_dir.bucket,
+            location=default_bucket_location,
+            check_ownership=default_gcs_source,
+        )
     except api_exceptions.HttpForbiddenError:
       raise BucketForbiddenError(
           'The user is forbidden from accessing the bucket [{}]. Please check '
@@ -429,83 +450,125 @@ def _SetWorkerPoolConfig(build_config, messages, arg_disk_size, arg_memory,
   return build_config
 
 
-def CreateBuildConfig(tag,
-                      no_cache,
-                      messages,
-                      substitutions,
-                      arg_config,
-                      is_specified_source,
-                      no_source,
-                      source,
-                      gcs_source_staging_dir,
-                      ignore_file,
-                      arg_gcs_log_dir,
-                      arg_machine_type,
-                      arg_disk_size,
-                      arg_worker_pool,
-                      buildpack,
-                      hide_logs=False):
-  """Returns a build config."""
+def _SetDefaultLogsBucketBehavior(
+    build_config, messages, arg_bucket_behavior=None
+):
+  """Sets the behavior of the default logs bucket on Build options.
 
-  timeout_str = _GetBuildTimeout()
-  build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
-                                arg_config, no_source, source, timeout_str,
-                                buildpack)
-  build_config = _SetSource(
-      build_config,
-      messages,
-      is_specified_source,
-      no_source,
-      source,
-      gcs_source_staging_dir,
-      ignore_file,
-      hide_logs=hide_logs)
-  build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
-  build_config = _SetMachineType(build_config, messages, arg_machine_type)
-  build_config = _SetDiskSize(build_config, messages, arg_disk_size)
-  build_config = _SetWorkerPool(build_config, messages, arg_worker_pool)
+  Args:
+    build_config: apitools.base.protorpclite.messages.Message, The Build message
+      to analyze.
+    messages: API messages class. The CloudBuild API messages.
+    arg_bucket_behavior: The default buckets behavior flag.
+
+  Returns:
+    build_config: apitools.base.protorpclite.messages.Message, The Build message
+      to analyze.
+  """
+  if arg_bucket_behavior is not None:
+    bucket_behavior = flags.GetDefaultBuckestBehavior(arg_bucket_behavior)
+    if not build_config.options:
+      build_config.options = messages.BuildOptions()
+    build_config.options.defaultLogsBucketBehavior = bucket_behavior
 
   return build_config
 
 
-def CreateBuildConfigAlpha(tag,
-                           no_cache,
-                           messages,
-                           substitutions,
-                           arg_config,
-                           is_specified_source,
-                           no_source,
-                           source,
-                           gcs_source_staging_dir,
-                           ignore_file,
-                           arg_gcs_log_dir,
-                           arg_machine_type,
-                           arg_disk_size,
-                           arg_memory,
-                           arg_vcpu_count,
-                           arg_worker_pool,
-                           buildpack,
-                           hide_logs=False):
+def CreateBuildConfig(
+    tag,
+    no_cache,
+    messages,
+    substitutions,
+    arg_config,
+    is_specified_source,
+    no_source,
+    source,
+    gcs_source_staging_dir,
+    ignore_file,
+    arg_gcs_log_dir,
+    arg_machine_type,
+    arg_disk_size,
+    arg_worker_pool,
+    buildpack,
+    hide_logs=False,
+    arg_bucket_behavior=None,
+    skip_set_source=False,
+):
+  """Returns a build config."""
+
+  timeout_str = _GetBuildTimeout()
+  build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
+                                arg_config, no_source, source, timeout_str,
+                                buildpack)
+  if not skip_set_source:
+    build_config = SetSource(
+        build_config,
+        messages,
+        is_specified_source,
+        no_source,
+        source,
+        gcs_source_staging_dir,
+        ignore_file,
+        hide_logs=hide_logs,
+    )
+  build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
+  build_config = _SetMachineType(build_config, messages, arg_machine_type)
+  build_config = _SetDiskSize(build_config, messages, arg_disk_size)
+  build_config = _SetWorkerPool(build_config, messages, arg_worker_pool)
+  build_config = _SetDefaultLogsBucketBehavior(
+      build_config, messages, arg_bucket_behavior
+  )
+
+  return build_config
+
+
+def CreateBuildConfigAlpha(
+    tag,
+    no_cache,
+    messages,
+    substitutions,
+    arg_config,
+    is_specified_source,
+    no_source,
+    source,
+    gcs_source_staging_dir,
+    ignore_file,
+    arg_gcs_log_dir,
+    arg_machine_type,
+    arg_disk_size,
+    arg_memory,
+    arg_vcpu_count,
+    arg_worker_pool,
+    buildpack,
+    hide_logs=False,
+    arg_bucket_behavior=None,
+    skip_set_source=False,
+):
   """Returns a build config."""
   timeout_str = _GetBuildTimeout()
 
   build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
                                 arg_config, no_source, source, timeout_str,
                                 buildpack)
-  build_config = _SetSource(
-      build_config,
-      messages,
-      is_specified_source,
-      no_source,
-      source,
-      gcs_source_staging_dir,
-      ignore_file,
-      hide_logs=hide_logs)
+  if not skip_set_source:
+    build_config = SetSource(
+        build_config,
+        messages,
+        is_specified_source,
+        no_source,
+        source,
+        gcs_source_staging_dir,
+        ignore_file,
+        hide_logs=hide_logs,
+    )
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetWorkerPool(build_config, messages, arg_worker_pool)
   build_config = _SetWorkerPoolConfig(build_config, messages, arg_disk_size,
                                       arg_memory, arg_vcpu_count)
+  build_config = _SetDefaultLogsBucketBehavior(
+      build_config, messages, arg_bucket_behavior
+  )
 
   if cloudbuild_util.WorkerPoolConfigIsSpecified(
       build_config) and not cloudbuild_util.WorkerPoolIsSpecified(build_config):

@@ -303,7 +303,7 @@ class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
 
   Fields:
     conditions: Current conditions of the feature.
-    state: Upgrade state.
+    state: Scope-level upgrade state.
   """
 
   conditions = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureCondition', 1, repeated=True)
@@ -421,7 +421,8 @@ class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
 
 
 class ClusterUpgradeScopeSpec(_messages.Message):
-  r"""**ClusterUpgrade**: The configuration for the ClusterUpgrade feature.
+  r"""**ClusterUpgrade**: The configuration for the scope-level ClusterUpgrade
+  feature.
 
   Fields:
     gkeUpgradeOverrides: Allow users to override some properties of each GKE
@@ -429,7 +430,7 @@ class ClusterUpgradeScopeSpec(_messages.Message):
     postConditions: Required. Post conditions to evaluate to mark an upgrade
       COMPLETE. Required.
     upstreamScopes: This scope consumes upgrades that have COMPLETE status
-      code in the upstream scopes. See ScopeGKEUpgradeState.Code for code
+      code in the upstream scopes. See UpgradeStatus.Code for code
       definitions. The scope name should be in the form:
       `projects/{p}/locations/global/scopes/{s}` Where {p} is the project, {s}
       is a valid Scope in this project. {p} WILL match the Feature's project.
@@ -443,7 +444,8 @@ class ClusterUpgradeScopeSpec(_messages.Message):
 
 
 class ClusterUpgradeScopeState(_messages.Message):
-  r"""**ClusterUpgrade**: The state for the ClusterUpgrade feature.
+  r"""**ClusterUpgrade**: The state for the scope-level ClusterUpgrade
+  feature.
 
   Messages:
     IgnoredValue: A list of memberships ignored by the feature. For example,
@@ -2356,11 +2358,17 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
   object.
 
   Fields:
+    cpuRequest: Optional. To customize the CPU requested for the Connect Agent
+      resource.
     imagePullSecretContent: Optional. The image pull secret content for the
       registry, if not public.
     isUpgrade: Optional. If true, generate the resources for upgrade only.
       Some resources generated only for installation (e.g. secrets) will be
       excluded.
+    memLimit: Optional. To customize the memory limit for the Connect Agent
+      resource.
+    memRequest: Optional. To customize the memory requested for the Connect
+      Agent resource.
     name: Required. The Membership resource name the Agent will associate
       with, in the format `projects/*/locations/*/memberships/*`.
     namespace: Optional. Namespace for GKE Connect agent resources. Defaults
@@ -2378,13 +2386,16 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
       current version.
   """
 
-  imagePullSecretContent = _messages.BytesField(1)
-  isUpgrade = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  namespace = _messages.StringField(4)
-  proxy = _messages.BytesField(5)
-  registry = _messages.StringField(6)
-  version = _messages.StringField(7)
+  cpuRequest = _messages.StringField(1)
+  imagePullSecretContent = _messages.BytesField(2)
+  isUpgrade = _messages.BooleanField(3)
+  memLimit = _messages.StringField(4)
+  memRequest = _messages.StringField(5)
+  name = _messages.StringField(6, required=True)
+  namespace = _messages.StringField(7)
+  proxy = _messages.BytesField(8)
+  registry = _messages.StringField(9)
+  version = _messages.StringField(10)
 
 
 class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):

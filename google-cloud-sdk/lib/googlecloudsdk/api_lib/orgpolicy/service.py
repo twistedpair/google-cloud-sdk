@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
 ORG_POLICY_API_NAME = 'orgpolicy'
-VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v2alpha1', base.ReleaseTrack.GA: 'v2'}
+VERSION_MAP = {base.ReleaseTrack.GA: 'v2'}
 
 
 def GetApiVersion(release_track):
@@ -63,8 +63,6 @@ class OrgPolicyApi(object):
   def __new__(cls, release_track):
     if release_track == base.ReleaseTrack.GA:
       return super(OrgPolicyApi, cls).__new__(OrgPolicyApiGA)
-    elif release_track == base.ReleaseTrack.ALPHA:
-      return super(OrgPolicyApi, cls).__new__(OrgPolicyApiAlpha)
 
   def __init__(self, release_track):
     api_version = GetApiVersion(release_track)
@@ -289,65 +287,4 @@ class OrgPolicyApiGA(OrgPolicyApi):
                                             allowed_values=(),
                                             denied_values=()):
     return self.messages.GoogleCloudOrgpolicyV2PolicySpecPolicyRuleStringValues(
-        allowedValues=allowed_values, deniedValues=denied_values)
-
-
-class OrgPolicyApiAlpha(OrgPolicyApi):
-  """Base class for all Org Policy Alpha API."""
-
-  def GetPolicy(self, name):
-    request = self.messages.OrgpolicyPoliciesGetRequest(name=name)
-    return self.client.policies.Get(request)
-
-  def GetEffectivePolicy(self, name):
-    request = self.messages.OrgpolicyPoliciesGetEffectivePolicyRequest(
-        name=name)
-    return self.client.policies.GetEffectivePolicy(request)
-
-  def DeletePolicy(self, name):
-    request = self.messages.OrgpolicyPoliciesDeleteRequest(name=name)
-    return self.client.policies.Delete(request)
-
-  def ListPolicies(self, parent):
-    request = self.messages.OrgpolicyPoliciesListRequest(parent=parent)
-    return self.client.policies.List(request)
-
-  def ListConstraints(self, parent):
-    request = self.messages.OrgpolicyConstraintsListRequest(parent=parent)
-    return self.client.constraints.List(request)
-
-  def CreatePolicy(self, policy):
-    request = self.messages.OrgpolicyPoliciesCreateRequest(
-        parent=utils.GetResourceFromPolicyName(policy.name),
-        googleCloudOrgpolicyV2alpha1Policy=policy,
-        constraint=utils.GetConstraintFromPolicyName(policy.name))
-    return self.client.policies.Create(request)
-
-  def UpdatePolicy(self, policy, update_mask=None):
-    request = self.messages.OrgpolicyPoliciesPatchRequest(
-        name=policy.name, googleCloudOrgpolicyV2alpha1Policy=policy)
-    return self.client.policies.Patch(request)
-
-  def BuildPolicy(self, name):
-    spec = self.messages.GoogleCloudOrgpolicyV2alpha1PolicySpec()
-    return self.messages.GoogleCloudOrgpolicyV2alpha1Policy(
-        name=name, spec=spec)
-
-  def BuildPolicySpecPolicyRule(self,
-                                condition=None,
-                                allow_all=None,
-                                deny_all=None,
-                                enforce=None,
-                                values=None):
-    return self.messages.GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(
-        condition=condition,
-        allowAll=allow_all,
-        denyAll=deny_all,
-        enforce=enforce,
-        values=values)
-
-  def BuildPolicySpecPolicyRuleStringValues(self,
-                                            allowed_values=(),
-                                            denied_values=()):
-    return self.messages.GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues(
         allowedValues=allowed_values, deniedValues=denied_values)

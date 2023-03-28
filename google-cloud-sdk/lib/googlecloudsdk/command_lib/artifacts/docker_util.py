@@ -84,6 +84,12 @@ A valid container image can be referenced by tag or digest, has the format of
   LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
 """
 
+
+GCR_DOCKER_REPO_REGEX = r"^(?P<repo>(us\.|eu\.|asia\.)?gcr.io)\/(?P<project>[^\/\.]+)\/(?P<image>.*)"
+
+# For domain scoped repos, the project is two segments long instead of one
+GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX = r"^(?P<repo>(us\.|eu\.|asia\.)?gcr.io)\/(?P<project>[^\/]+\.[^\/]+\/[^\/]+)\/(?P<image>.*)"
+
 DOCKER_REPO_REGEX = (
     r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)"
 )
@@ -589,6 +595,62 @@ def WaitForOperation(operation, message):
   waiter.WaitFor(poller, op_resource, message)
 
 
+class GcrDockerVersion:
+  """Class for sending a gcr.io docker url to container analysis.
+
+  Attributes:
+    project:
+    docker_string:
+  """
+
+  @property
+  def project(self):
+    return self._project
+
+  def __init__(self, project, docker_string):
+    self._project = project
+    self._docker_string = docker_string
+
+  def GetDockerString(self):
+    return self._docker_string
+
+
+def ConvertGCRImageString(image_string):
+  """Converts GCR image string to AR format. Leaves non-GCR strings as-is."""
+  location_map = {
+      "us.gcr.io": "us",
+      "gcr.io": "us",
+      "eu.gcr.io": "europe",
+      "asia.gcr.io": "asia",
+  }
+
+  matches = re.match(GCR_DOCKER_REPO_REGEX, image_string)
+  if matches:
+    return (
+        "{}-docker.pkg.dev/{}/{}/{}".format(
+            location_map[matches.group("repo")],
+            matches.group("project"),
+            matches.group("repo"),
+            matches.group("image"),
+        ),
+        matches.group("project"),
+        True,
+    )
+  matches = re.match(GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, image_string)
+  if matches:
+    return (
+        "{}-docker.pkg.dev/{}/{}/{}".format(
+            location_map[matches.group("repo")],
+            matches.group("project"),
+            matches.group("repo"),
+            matches.group("image"),
+        ),
+        matches.group("project"),
+        True,
+    )
+  return image_string, None, False
+
+
 def DescribeDockerImage(args):
   """Retrieves information about a docker image based on the fully-qualified name.
 
@@ -598,27 +660,75 @@ def DescribeDockerImage(args):
   Returns:
     A dictionary of information about the given docker image.
   """
+  ar_image_name, gcr_project, in_gcr_format = ConvertGCRImageString(args.IMAGE)
+  if in_gcr_format:
+    messages = ar_requests.GetMessages()
+    settings = ar_requests.GetProjectSettings(gcr_project)
+    if (
+        settings.legacyRedirectionState
+        != messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED
+    ):
+      raise ar_exceptions.InvalidInputValueError(
+          "This command only supports Artifact Registry. You can enable"
+          " redirection to use gcr.io repositories in Artifact Registry."
+      )
   image, version_or_tag = _ParseDockerImage(
-      args.IMAGE, _INVALID_IMAGE_ERROR, strict=False)
+      ar_image_name, _INVALID_IMAGE_ERROR, strict=False
+  )
   _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
   docker_version = _ValidateAndGetDockerVersion(version_or_tag)
 
-  build_metadata = ca_util.GetBuildOnlyMetadata(docker_version)
+  scanning_allowed = True
+  # This is the version to send to scanning API. For pkg.dev versions, it is the
+  # same, but for gcr.io versions, use the gcr.io url.
+  scanning_docker_version = docker_version
+  if "gcr.io" in image.docker_repo.repo:
+    if not in_gcr_format:
+      messages = ar_requests.GetMessages()
+      settings = ar_requests.GetProjectSettings(image.docker_repo.project)
+      if (
+          settings.legacyRedirectionState
+          != messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED
+      ):
+        log.warning(
+            "gcr.io domain repos in Artifact Registry are not scanned unless "
+            "they are redirected"
+        )
+        scanning_allowed = False
+      else:
+        log.info(
+            "Note: The container scanning API uses the gcr.io url for"
+            " gcr.io domain repos"
+        )
+
+    scanning_docker_version = GcrDockerVersion(
+        image.docker_repo.project,
+        docker_version.GetDockerString().replace(
+            image.docker_repo.GetDockerString(),
+            "{}/{}".format(
+                image.docker_repo.repo,  # AR repo name is the gcr_host
+                image.docker_repo.project,
+            ),
+        ),
+    )
   result = {}
   result["image_summary"] = {
-      "digest":
-          docker_version.digest,
-      "fully_qualified_digest":
-          docker_version.GetDockerString(),
-      "registry":
-          "{}-docker.pkg.dev".format(docker_version.image.docker_repo.location),
-      "repository":
-          docker_version.image.docker_repo.repo,
-      "slsa_build_level": build_metadata.SLSABuildLevel(),
+      "digest": docker_version.digest,
+      "fully_qualified_digest": docker_version.GetDockerString(),
+      "registry": "{}-docker.pkg.dev".format(
+          docker_version.image.docker_repo.location
+      ),
+      "repository": docker_version.image.docker_repo.repo,
   }
-
-  metadata = ca_util.GetContainerAnalysisMetadata(docker_version, args)
-  result.update(metadata.ArtifactsDescribeView())
+  if scanning_allowed:
+    build_metadata = ca_util.GetBuildOnlyMetadata(scanning_docker_version)
+    result["image_summary"][
+        "slsa_build_level"
+    ] = build_metadata.SLSABuildLevel()
+    metadata = ca_util.GetContainerAnalysisMetadata(
+        scanning_docker_version, args
+    )
+    result.update(metadata.ArtifactsDescribeView())
   return result
 
 

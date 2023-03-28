@@ -17,41 +17,34 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.edge_cloud.container import util
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.core import properties
 
 
-def SetAdminUsers(ref, args, request):
+def SetAdminUsers(messages, args, request):
   """Sets the cluster.authorization.admin_users to the user if unspecified.
 
   Args:
-    ref: reference to the membership object.
+    messages: message module of edgecontainer cluster.
     args: command line arguments.
     request: API request to be issued
-
-  Returns:
-    modified request
   """
 
-  del ref  # unused argument
-
-  # If the argument is set, don't change it.
+  request.cluster.authorization = messages.Authorization()
+  request.cluster.authorization.adminUsers = messages.ClusterUser()
   if flags.FlagIsExplicitlySet(args, 'admin_users'):
-    return request
+    request.cluster.authorization.adminUsers.username = args.admin_users
+    return
 
   if properties.VALUES.auth.credential_file_override.Get() is not None:
     raise gcloud_exceptions.RequiredArgumentException(
-        '--admin-users',
-        'Required if auth/credential_file_override is defined.')
+        '--admin-users', 'Required if auth/credential_file_override is defined.'
+    )
 
-  release_track = args.calliope_command.ReleaseTrack()
-  msgs = util.GetMessagesModule(release_track)
-  service_account_override = properties.VALUES.auth.impersonate_service_account.Get(
+  service_account_override = (
+      properties.VALUES.auth.impersonate_service_account.Get()
   )
-  request.cluster.authorization = msgs.Authorization()
-  request.cluster.authorization.adminUsers = msgs.ClusterUser()
   if service_account_override is not None:
     request.cluster.authorization.adminUsers.username = service_account_override
   else:
@@ -59,7 +52,9 @@ def SetAdminUsers(ref, args, request):
     if default_account is None:
       raise gcloud_exceptions.RequiredArgumentException(
           '--admin-users',
-          'Required if no account is active and --impersonate-service-account is undefined.'
+          (
+              'Required if no account is active and'
+              ' --impersonate-service-account is undefined.'
+          ),
       )
     request.cluster.authorization.adminUsers.username = default_account
-  return request

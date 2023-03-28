@@ -448,7 +448,8 @@ https://cloud.google.com/compute/docs/disks/customer-managed-encryption"""
 def AddAcceleratorArgs(parser,
                        enable_gpu_partition=False,
                        enable_gpu_sharing=False,
-                       enable_gpu_deprecated_fields=False):
+                       enable_gpu_deprecated_fields=False,
+                       hidden=False):
   """Adds Accelerator-related args."""
 
   spec = {
@@ -468,6 +469,7 @@ def AddAcceleratorArgs(parser,
 
   parser.add_argument(
       '--accelerator',
+      hidden=hidden,
       type=arg_parsers.ArgDict(
           spec=spec, required_keys=['type'], max_length=len(spec)),
       metavar='type=TYPE,[count=COUNT,gpu-partition-size=GPU_PARTITION_SIZE,gpu-sharing-strategy=GPU_SHARING_STRATEGY,max-shared-clients-per-gpu=MAX_SHARED_CLIENTS_PER_GPU]',
@@ -4342,6 +4344,24 @@ network security, scalability and visibility features.
       '--enable-dataplane-v2',
       action='store_true',
       help=help_text,
+      hidden=hidden)
+
+
+def AddDataplaneV2MetricsFlag(parser, hidden=True):
+  """Adds --enable-dataplane-v2-metrics and --disable-dataplane-v2-metrics boolean flags to parser."""
+
+  group = parser.add_group(mutex=True, hidden=hidden)
+  group.add_argument(
+      '--enable-dataplane-v2-metrics',
+      action='store_const',
+      const=True,
+      help="""Exposes advanced datapath flow metrics on node port.""",
+      hidden=hidden)
+  group.add_argument(
+      '--disable-dataplane-v2-metrics',
+      action='store_const',
+      const=True,
+      help="""Stops exposing advanced datapath flow metrics on node port.""",
       hidden=hidden)
 
 

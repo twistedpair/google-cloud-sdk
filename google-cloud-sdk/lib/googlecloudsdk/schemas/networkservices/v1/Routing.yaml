@@ -33,7 +33,7 @@ properties:
       A list of HostRule rules to match against. `RouteRule` rules support
       advanced routing behavior, and can match on paths, headers and query
       parameters, as well as status codes and HTTP methods. You can specify up
-      to five host rules.
+      to 10 host rules.
     type: array
     items:
       $ref: HostRule.yaml

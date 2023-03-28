@@ -61,6 +61,7 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
       options. This field is only used when enabling CMEK support.
     controlPlaneVersion: Output only. The control plane release version
@@ -70,6 +71,8 @@ class Cluster(_messages.Message):
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
     endpoint: Output only. The IP address of the Kubernetes API server.
+    externalLoadBalancerIpv4AddressPools: Optional. Address pools for cluster
+      data plane external load balancing.
     fleet: Optional. Fleet configuration.
     labels: Labels associated with this resource.
     maintenancePolicy: Optional. Cluster-wide maintenance policy
@@ -108,18 +111,20 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 3)
-  controlPlaneVersion = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  defaultMaxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(7)
-  fleet = _messages.MessageField('Fleet', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
-  name = _messages.StringField(11)
-  networking = _messages.MessageField('ClusterNetworking', 12)
-  nodeVersion = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  controlPlane = _messages.MessageField('ControlPlane', 3)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 4)
+  controlPlaneVersion = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(8)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
+  fleet = _messages.MessageField('Fleet', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 12)
+  name = _messages.StringField(13)
+  networking = _messages.MessageField('ClusterNetworking', 14)
+  nodeVersion = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class ClusterNetworking(_messages.Message):
@@ -146,6 +151,18 @@ class ClusterUser(_messages.Message):
   """
 
   username = _messages.StringField(1)
+
+
+class ControlPlane(_messages.Message):
+  r"""Configuration of the cluster control plane.
+
+  Fields:
+    local: Local control plane configuration.
+    remote: Remote control plane configuration.
+  """
+
+  local = _messages.MessageField('Local', 1)
+  remote = _messages.MessageField('Remote', 2)
 
 
 class ControlPlaneEncryption(_messages.Message):
@@ -700,6 +717,44 @@ class ListVpnConnectionsResponse(_messages.Message):
   vpnConnections = _messages.MessageField('VpnConnection', 3, repeated=True)
 
 
+class Local(_messages.Message):
+  r"""Configuration specific to clusters with a control plane hosted locally.
+
+  Enums:
+    SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
+      applications are deployed.
+
+  Fields:
+    machineFilter: Only machines matching this filter will be allowed to host
+      control plane nodes. The filtering language accepts strings like
+      "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
+    nodeCount: The number of nodes to serve as replicas of the Control Plane.
+    nodeLocation: Name of the Google Distributed Cloud Edge zones where this
+      node pool will be created. For example: `us-central1-edge-customer-a`.
+    sharedDeploymentPolicy: Policy configuration about how user applications
+      are deployed.
+  """
+
+  class SharedDeploymentPolicyValueValuesEnum(_messages.Enum):
+    r"""Policy configuration about how user applications are deployed.
+
+    Values:
+      SHARED_DEPLOYMENT_POLICY_UNSPECIFIED: Unspecified.
+      ALLOWED: User applications can be deployed both on control plane and
+        worker nodes.
+      DISALLOWED: User applications can not be deployed on control plane nodes
+        and can only be deployed on worker nodes.
+    """
+    SHARED_DEPLOYMENT_POLICY_UNSPECIFIED = 0
+    ALLOWED = 1
+    DISALLOWED = 2
+
+  machineFilter = _messages.StringField(1)
+  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(3)
+  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 4)
+
+
 class LocalDiskEncryption(_messages.Message):
   r"""Configuration for CMEK support for edge machine local disk encryption.
 
@@ -1173,6 +1228,12 @@ class RecurringTimeWindow(_messages.Message):
 
   recurrence = _messages.StringField(1)
   window = _messages.MessageField('TimeWindow', 2)
+
+
+class Remote(_messages.Message):
+  r"""Configuration specific to clusters with a control plane hosted remotely.
+  """
+
 
 
 class StandardQueryParameters(_messages.Message):

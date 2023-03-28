@@ -2162,9 +2162,12 @@ class NetworkConfig(_messages.Message):
   Fields:
     consumers: Immutable. The consumer-side network configuration for the
       Dataproc Metastore instance.
+    customRoutesEnabled: Enables custom routes to be imported and exported for
+      the Dataproc Metastore service's peered VPC network.
   """
 
   consumers = _messages.MessageField('Consumer', 1, repeated=True)
+  customRoutesEnabled = _messages.BooleanField(2)
 
 
 class Operation(_messages.Message):

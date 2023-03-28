@@ -892,3 +892,36 @@ class ClustersClient(_BareMetalClusterClient):
         )
     )
     return self._service.Create(req)
+
+  def UpdateFromFile(self, args, bare_metal_cluster):
+    # explicitly list supported mutable fields
+    # etag is excluded from the mutable fields, because it is derived.
+    top_level_mutable_fields = [
+        'description',
+        'bare_metal_version',
+        'annotations',
+        'network_config',
+        'control_plane',
+        'load_balancer',
+        'storage',
+        'proxy',
+        'cluster_operations',
+        'maintenance_config',
+        'node_config',
+        'security_config',
+        'node_access_config',
+        'os_environment_config',
+    ]
+    kwargs = {
+        'name': self._user_cluster_name(args),
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
+        'updateMask': ','.join(top_level_mutable_fields),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
+        'bareMetalCluster': bare_metal_cluster,
+    }
+    req = (
+        self._messages.GkeonpremProjectsLocationsBareMetalClustersPatchRequest(
+            **kwargs
+        )
+    )
+    return self._service.Patch(req)

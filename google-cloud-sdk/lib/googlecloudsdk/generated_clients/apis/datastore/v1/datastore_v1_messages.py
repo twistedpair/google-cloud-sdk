@@ -16,18 +16,18 @@ package = 'datastore'
 
 
 class Aggregation(_messages.Message):
-  r"""Defines a aggregation that produces a single result.
+  r"""Defines an aggregation that produces a single result.
 
   Fields:
     alias: Optional. Optional name of the property to store the result of the
       aggregation. If not provided, Datastore will pick a default name
       following the format `property_`. For example: ``` AGGREGATE
       COUNT_UP_TO(1) AS count_up_to_1, COUNT_UP_TO(2), COUNT_UP_TO(3) AS
-      count_up_to_3, COUNT_UP_TO(4) OVER ( ... ); ``` becomes: ``` AGGREGATE
+      count_up_to_3, COUNT(*) OVER ( ... ); ``` becomes: ``` AGGREGATE
       COUNT_UP_TO(1) AS count_up_to_1, COUNT_UP_TO(2) AS property_1,
-      COUNT_UP_TO(3) AS count_up_to_3, COUNT_UP_TO(4) AS property_2 OVER ( ...
-      ); ``` Requires: * Must be unique across all aggregation aliases. *
-      Conform to entity property name limitations.
+      COUNT_UP_TO(3) AS count_up_to_3, COUNT(*) AS property_2 OVER ( ... );
+      ``` Requires: * Must be unique across all aggregation aliases. * Conform
+      to entity property name limitations.
     count: Count aggregator.
   """
 
@@ -309,7 +309,7 @@ class Count(_messages.Message):
   Fields:
     upTo: Optional. Optional constraint on the maximum number of entities to
       count. This provides a way to set an upper bound on the number of
-      entities to scan, limiting latency and cost. Unspecified is interpreted
+      entities to scan, limiting latency, and cost. Unspecified is interpreted
       as no bound. If a zero value is provided, a count result of zero should
       always be expected. High-Level Example: ``` AGGREGATE COUNT_UP_TO(1000)
       OVER ( SELECT * FROM k ); ``` Requires: * Must be non-negative when

@@ -736,6 +736,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord(_messages.Mes
   Fields:
     actionTime: The time when the action takes place
     actionType: The type of action
+    offerId: The offer id corresponding to the log record.
     userEmail: The email of the user taking the action. This field can be
       empty for users authenticated through 3P identity provider.
     userName: The name of the user taking the action. For users authenticated
@@ -757,8 +758,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AuditLogRecord(_messages.Mes
 
   actionTime = _messages.StringField(1)
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 2)
-  userEmail = _messages.StringField(3)
-  userName = _messages.StringField(4)
+  offerId = _messages.StringField(3)
+  userEmail = _messages.StringField(4)
+  userName = _messages.StringField(5)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderMetadata(_messages.Message):

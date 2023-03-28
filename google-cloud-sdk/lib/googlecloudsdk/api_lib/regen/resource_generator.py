@@ -136,7 +136,7 @@ class DiscoveryDoc(object):
     # Normalize base url so it includes api_version.
     url = self.base_url + path
     url_api_name, url_api_vesion, path = (
-        resource_util.SplitDefaultEndpointUrl(url))
+        resource_util.SplitEndpointUrl(url))
     if (self.api_name.lower() not in MISMATCHED_VERSION_ALLOWLIST and
         url_api_vesion != api_version):
       raise UnsupportedDiscoveryDoc(
@@ -144,7 +144,7 @@ class DiscoveryDoc(object):
           'with version {4}'.format(
               collection_name, self.api_name, api_version, url, url_api_vesion))
     if flat_path:
-      _, _, flat_path = resource_util.SplitDefaultEndpointUrl(
+      _, _, flat_path = resource_util.SplitEndpointUrl(
           self.base_url + flat_path)
     # Use url_api_name instead as it is assumed to be source of truth.
     # Also note that api_version not always equal to url_api_version,
@@ -234,7 +234,7 @@ class DiscoveryDoc(object):
 
   def MakeResourceCollection(self, collection_name, path, enable_uri_parsing,
                              api_version):
-    _, url_api_version, _ = resource_util.SplitDefaultEndpointUrl(self.base_url)
+    _, url_api_version, _ = resource_util.SplitEndpointUrl(self.base_url)
     if url_api_version:
       base_url = self.base_url
     else:

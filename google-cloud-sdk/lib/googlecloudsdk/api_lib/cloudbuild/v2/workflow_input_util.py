@@ -152,6 +152,4 @@ def _WorkspaceBindingTransform(workspace_binding):
       workspace_binding["volumeClaim"]["storage"] = storage
 
   else:
-    # Empty Workspace.
-    workspace_binding["emptyDir"] = {}
     return

@@ -855,7 +855,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   internal_ipv6_prefix_length=None,
                                   network_attachment=None,
                                   external_ipv6_address=None,
-                                  external_ipv6_prefix_length=None):
+                                  external_ipv6_prefix_length=None,
+                                  vlan=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -1009,6 +1010,9 @@ def CreateNetworkInterfaceMessage(resources,
   if internal_ipv6_prefix_length is not None:
     network_interface.internalIpv6PrefixLength = internal_ipv6_prefix_length
 
+  if vlan is not None:
+    network_interface.vlan = vlan
+
   return network_interface
 
 
@@ -1086,6 +1090,7 @@ def CreateNetworkInterfaceMessages(
               external_ipv6_prefix_length=interface.get(
                   'external-ipv6-prefix-length', None
               ),
+              vlan=interface.get('vlan', None),
           )
       )
   elif network_interface_json is not None:

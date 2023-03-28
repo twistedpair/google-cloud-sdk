@@ -28,9 +28,6 @@ def SetFleetProjectPath(ref, args, request):
     ref: reference to the projectsId object.
     args: command line arguments.
     request: API request to be issued
-
-  Returns:
-    modified request
   """
   release_track = args.calliope_command.ReleaseTrack()
   msgs = util.GetMessagesModule(release_track)
@@ -40,4 +37,3 @@ def SetFleetProjectPath(ref, args, request):
   else:
     request.cluster.fleet = msgs.Fleet()
     request.cluster.fleet.project = 'projects/' + ref.projectsId
-  return request

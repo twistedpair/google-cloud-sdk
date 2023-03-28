@@ -2648,10 +2648,14 @@ class Membership(_messages.Message):
   `Group`, referred to as a "member".
 
   Enums:
+    DeliverySettingValueValuesEnum: Output only. Delivery setting associated
+      with the membership.
     TypeValueValuesEnum: Output only. The type of the membership.
 
   Fields:
     createTime: Output only. The time when the `Membership` was created.
+    deliverySetting: Output only. Delivery setting associated with the
+      membership.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Membership`. Shall be of the form
@@ -2663,6 +2667,24 @@ class Membership(_messages.Message):
     type: Output only. The type of the membership.
     updateTime: Output only. The time when the `Membership` was last updated.
   """
+
+  class DeliverySettingValueValuesEnum(_messages.Enum):
+    r"""Output only. Delivery setting associated with the membership.
+
+    Values:
+      DELIVERY_SETTING_UNSPECIFIED: Default. Should not be used.
+      ALL_MAIL: Represents each mail should be delivered
+      DIGEST: Represents 1 email for every 25 messages.
+      DAILY: Represents daily summary of messages.
+      NONE: Represents no delivery.
+      DISABLED: Represents disabled state.
+    """
+    DELIVERY_SETTING_UNSPECIFIED = 0
+    ALL_MAIL = 1
+    DIGEST = 2
+    DAILY = 3
+    NONE = 4
+    DISABLED = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. The type of the membership.
@@ -2683,11 +2705,12 @@ class Membership(_messages.Message):
     OTHER = 5
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  preferredMemberKey = _messages.MessageField('EntityKey', 3)
-  roles = _messages.MessageField('MembershipRole', 4, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  deliverySetting = _messages.EnumField('DeliverySettingValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  preferredMemberKey = _messages.MessageField('EntityKey', 4)
+  roles = _messages.MessageField('MembershipRole', 5, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class MembershipAdjacencyList(_messages.Message):

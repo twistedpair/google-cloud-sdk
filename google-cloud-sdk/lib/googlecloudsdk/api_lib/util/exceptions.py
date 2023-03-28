@@ -373,7 +373,7 @@ class HttpErrorPayload(FormattableErrorPayload):
       return
 
     try:
-      name, version, resource_path = resource_util.SplitDefaultEndpointUrl(
+      name, version, resource_path = resource_util.SplitEndpointUrl(
           self.url)
     except resource_util.InvalidEndpointException:
       return

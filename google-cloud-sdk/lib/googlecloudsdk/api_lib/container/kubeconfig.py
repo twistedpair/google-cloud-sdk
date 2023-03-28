@@ -253,6 +253,7 @@ def User(name,
     # Setup authprovider
     # if certain 'auth_provider_' fields are "present" OR
     # if use_exec_auth is set to False
+    # pylint: disable=line-too-long
     if auth_provider_cmd_path or auth_provider_cmd_args or auth_provider_expiry_key or auth_provider_token_key or not use_exec_auth:
       # auth-provider is being deprecated in favor of "exec" in k8s 1.25.
       user['auth-provider'] = _AuthProvider(

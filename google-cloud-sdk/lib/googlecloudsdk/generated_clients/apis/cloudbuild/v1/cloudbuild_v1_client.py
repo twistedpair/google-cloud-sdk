@@ -312,7 +312,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.oauth.getRegistration',
         ordered_params=[],
         path_params=[],
-        query_params=['authUser', 'githubEnterpriseConfig', 'hostUrl', 'namespace'],
+        query_params=['authUser', 'csesidx', 'githubEnterpriseConfig', 'hostUrl', 'namespace'],
         relative_path='v1/oauth/registration',
         request_field='',
         request_type_name='CloudbuildOauthGetRegistrationRequest',

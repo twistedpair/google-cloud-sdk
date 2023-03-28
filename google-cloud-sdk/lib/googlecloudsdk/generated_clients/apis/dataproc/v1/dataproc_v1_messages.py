@@ -3004,6 +3004,18 @@ class GceClusterConfig(_messages.Message):
   zoneUri = _messages.StringField(13)
 
 
+class GdceClusterConfig(_messages.Message):
+  r"""The target GDCE cluster config.
+
+  Fields:
+    gdcEdgeMembershipTarget: Optional. A target GDCE cluster to deploy to. It
+      must be in the same project and region as the Dataproc cluster'. Format:
+      'projects/{project}/locations/{location}/clusters/{cluster_id}'
+  """
+
+  gdcEdgeMembershipTarget = _messages.StringField(1)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for GetIamPolicy method.
 
@@ -4136,6 +4148,8 @@ class KubernetesClusterConfig(_messages.Message):
   r"""The configuration for running the Dataproc cluster on Kubernetes.
 
   Fields:
+    gdceClusterConfig: Required. The configuration for running the Dataproc
+      cluster on GDCE.
     gkeClusterConfig: Required. The configuration for running the Dataproc
       cluster on GKE.
     kubernetesNamespace: Optional. A namespace within the Kubernetes cluster
@@ -4147,9 +4161,10 @@ class KubernetesClusterConfig(_messages.Message):
       Dataproc cluster running on Kubernetes.
   """
 
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 1)
-  kubernetesNamespace = _messages.StringField(2)
-  kubernetesSoftwareConfig = _messages.MessageField('KubernetesSoftwareConfig', 3)
+  gdceClusterConfig = _messages.MessageField('GdceClusterConfig', 1)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 2)
+  kubernetesNamespace = _messages.StringField(3)
+  kubernetesSoftwareConfig = _messages.MessageField('KubernetesSoftwareConfig', 4)
 
 
 class KubernetesSoftwareConfig(_messages.Message):

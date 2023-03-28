@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 import base64
 import os
+import subprocess
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -87,16 +88,33 @@ def GenerateAuthProviderCmdArgs(track, cluster_id, project_id, location):
   Returns:
     The command arguments for kubeconfig's authorization provider.
   """
-  template = ('{prefix}edge-cloud container clusters print-access-token '
-              '{cluster_id} --project={project_id} --location={location}')
+  template = (
+      '{prefix}edge-cloud container clusters print-access-token '
+      '{cluster_id} --project={project_id} --location={location}'
+  )
   return template.format(
       prefix='' if track.prefix is None else track.prefix + ' ',
       cluster_id=cluster_id,
       project_id=project_id,
-      location=location)
+      location=location,
+  )
 
 
-def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
+def GenerateExecAuthCmdArgs(cluster_id, project_id, location):
+  # type: (str, str, str) -> Sequence[str]
+  """Returns exec auth provider command args."""
+  return [
+      '--use_edge_cloud',
+      '--project',
+      project_id,
+      '--location',
+      location,
+      '--cluster',
+      cluster_id,
+  ]
+
+
+def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, exec_args):
   """Generates a kubeconfig entry for a Edge Container cluster.
 
   Args:
@@ -104,6 +122,7 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
     context: str, context for the kubeconfig entry.
     cmd_path: str, authentication provider command path.
     cmd_args: str, authentication provider command arguments.
+    exec_args: str, exec auth command arguments.
 
   Raises:
       Error: don't have the permission to open kubeconfig file
@@ -116,7 +135,8 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
       'auth_provider_cmd_path': cmd_path,
       'auth_provider_cmd_args': cmd_args,
       'auth_provider_expiry_key': '{.expireTime}',
-      'auth_provider_token_key': '{.accessToken}'
+      'auth_provider_token_key': '{.accessToken}',
+      'exec_auth_args': exec_args
   }
   user = User(context, **user_kwargs)
   kubeconfig.users[context] = user
@@ -297,7 +317,8 @@ def User(name,
          cert_path=None,
          cert_data=None,
          key_path=None,
-         key_data=None):
+         key_data=None,
+         exec_auth_args=None):
   """Generates and returns a user kubeconfig object.
 
   Args:
@@ -311,6 +332,7 @@ def User(name,
     cert_data: str, base64 encoded client certificate data.
     key_path: str, path to client key file.
     key_data: str, base64 encoded client key data.
+    exec_auth_args: list, exec auth provider command arguments.
 
   Returns:
     dict, valid kubeconfig user entry.
@@ -323,27 +345,25 @@ def User(name,
           (cert_data and key_data)):
     raise Error('either auth_provider or cert & key must be provided')
   user = {}
-  # Setup ExecAuth if USE_GKE_GCLOUD_AUTH_PLUGIN is True
-  use_exec_auth = False
-  use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(
-      os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN')
-  if use_gke_gcloud_auth_plugin == 'True':
-    use_exec_auth = True
-
-  if auth_provider:
+  if _UseExecAuth():
+    user['exec'] = _ExecAuthPlugin(exec_auth_args)
+  elif auth_provider:
     # Setup authprovider
-    # if certain 'auth_provider_' fields are "present" OR
-    # if use_exec_auth is set to False
-    if auth_provider_cmd_path or auth_provider_cmd_args or auth_provider_expiry_key or auth_provider_token_key or not use_exec_auth:
+    # if certain 'auth_provider_' fields are "present"
+    if (
+        auth_provider_cmd_path
+        or auth_provider_cmd_args
+        or auth_provider_expiry_key
+        or auth_provider_token_key
+    ):
       # auth-provider is being deprecated in favor of "exec" in k8s 1.25.
       user['auth-provider'] = _AuthProvider(
           name=auth_provider,
           cmd_path=auth_provider_cmd_path,
           cmd_args=auth_provider_cmd_args,
           expiry_key=auth_provider_expiry_key,
-          token_key=auth_provider_token_key)
-    else:
-      user['exec'] = _ExecAuthPlugin()
+          token_key=auth_provider_token_key,
+      )
 
   if cert_path and cert_data:
     raise Error('cannot specify both cert_path and cert_data')
@@ -362,13 +382,27 @@ def User(name,
   return {'name': name, 'user': user}
 
 
-SDK_BIN_PATH_NOT_FOUND = """\
-Path to sdk installation not found. Please check your installation or use the
-`--auth-provider-cmd-path` flag to provide the path to gcloud manually."""
+SDK_BIN_PATH_NOT_FOUND = (
+    'Path to sdk installation not found. Please check your installation or use '
+    'the `--auth-provider-cmd-path` flag to provide the path to gcloud '
+    'manually.')
+
+GKE_GCLOUD_AUTH_INSTALL_HINT = (
+    'Install gke-gcloud-auth-plugin for use with kubectl by following '
+    'https://cloud.google.com/blog/products/containers-kubernetes/'
+    'kubectl-auth-changes-in-gke ')
+
+GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND = (
+    'ACTION REQUIRED: gke-gcloud-auth-plugin, which is needed for continued '
+    'use of kubectl, was not found or is not executable. ' +
+    GKE_GCLOUD_AUTH_INSTALL_HINT)
 
 
-def _ExecAuthPlugin():
+def _ExecAuthPlugin(exec_auth_args):
   """Generate and return an exec auth plugin config.
+
+  Args:
+    exec_auth_args: list, exec auth provider command arguments.
 
   Constructs an exec auth plugin config entry readable by kubectl.
   This tells kubectl to call out to gke-gcloud-auth-plugin and
@@ -384,24 +418,16 @@ def _ExecAuthPlugin():
   Returns:
     dict, valid exec auth plugin config entry.
   """
-  bin_name = 'gke-gcloud-auth-plugin'
-  if platforms.OperatingSystem.IsWindows():
-    bin_name = 'gke-gcloud-auth-plugin.exe'
-  command = bin_name
+  command = _GetGkeGcloudPluginCommandAndPrintWarning()
 
-  sdk_bin_path = config.Paths().sdk_bin_path
-  if sdk_bin_path is not None:
-    command = os.path.join(sdk_bin_path, bin_name)
   exec_cfg = {
       'command': command,
+      'args': exec_auth_args,
       'apiVersion': 'client.authentication.k8s.io/v1beta1',
-      'installHint': 'Install gke-gcloud-auth-plugin by running: '
-                     'gcloud components install gke-gcloud-auth-plugin',
+      'installHint': GKE_GCLOUD_AUTH_INSTALL_HINT,
       'provideClusterInfo': True,
   }
 
-  if properties.VALUES.container.use_app_default_credentials.GetBool():
-    exec_cfg['args'] = ['--use_application_default_credentials']
   return exec_cfg
 
 
@@ -466,6 +492,109 @@ def _AuthProvider(name='gcp',
     }
     provider['config'] = cfg
   return provider
+
+
+def _UseExecAuth():
+  """Returns a bool noting if ExecAuth should be enabled."""
+  env_flag = 'USE_GKE_GCLOUD_AUTH_PLUGIN'
+  use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(os.environ, env_flag)
+
+  # Allow env flag to override behavior
+  if use_gke_gcloud_auth_plugin is not None:
+    if use_gke_gcloud_auth_plugin.lower() == 'true':
+      return True
+    if use_gke_gcloud_auth_plugin.lower() == 'false':
+      return False
+    else:
+      log.warning(
+          'Ignoring unsupported env value found for {}={}'.format(
+              env_flag, use_gke_gcloud_auth_plugin.lower()
+          )
+      )
+
+  # Enable ExecAuth for all Googlers
+  return _IsGoogler()
+
+
+def _IsGoogler():
+  """Returns a bool noting if User is a Googler."""
+  email = properties.VALUES.core.account.Get()
+  return (email is not None and email.lower().endswith('@google.com'))
+
+
+def _GetGkeGcloudPluginCommandAndPrintWarning():
+  """Gets Gke Gcloud Plugin Command to be used.
+
+  Returns Gke Gcloud Plugin Command to be used. Also,
+  prints warning if plugin is not present or doesn't work correctly.
+
+  Returns:
+    string, Gke Gcloud Plugin Command to be used.
+  """
+  bin_name = 'gke-gcloud-auth-plugin'
+  if platforms.OperatingSystem.IsWindows():
+    bin_name = 'gke-gcloud-auth-plugin.exe'
+  command = bin_name
+
+  # Check if command is in PATH and executable. Else, print critical(RED)
+  # warning as kubectl will break if command is not executable.
+  try:
+    subprocess.run([command, '--version'],
+                   timeout=5,
+                   check=False,
+                   stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
+    _ValidateGkeGcloudPluginVersion(command)
+  except Exception:  # pylint: disable=broad-except
+    # Provide SDK Full path if command is not in PATH. This helps work
+    # around scenarios where cloud-sdk install location is not in PATH
+    # as sdk was installed using other distributions methods Eg: brew
+    try:
+      # config.Paths().sdk_bin_path throws an exception in some test envs,
+      # but is commonly defined in prod environments
+      sdk_bin_path = config.Paths().sdk_bin_path
+      if sdk_bin_path is None:
+        log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+      else:
+        sdk_path_bin_name = os.path.join(sdk_bin_path, command)
+        subprocess.run([sdk_path_bin_name, '--version'],
+                       timeout=5,
+                       check=False,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+        command = sdk_path_bin_name  # update command if sdk_path_bin_name works
+    except Exception:  # pylint: disable=broad-except
+      log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+
+  return command
+
+GKE_GCLOUD_AUTH_PLUGIN_NOT_UP_TO_DATE = (
+    'ACTION REQUIRED: gke-gcloud-auth-plugin, which is needed for continued '
+    'use of kubectl needs to be updated. ' + GKE_GCLOUD_AUTH_INSTALL_HINT)
+
+
+def _ValidateGkeGcloudPluginVersion(command):
+  # type: (str)
+  """Validate Gke Gcloud Plugin Command to be used.
+
+  GDCE will depend on the newest available version, so warn customers if they
+  have an older version installed.
+
+  Args:
+    command: Gke Gcloud Plugin Command to be used.
+  """
+  result = subprocess.run(
+      [command, '--help'],
+      timeout=5,
+      check=False,
+      capture_output=True,
+      text=True,
+  )
+
+  if ('--project string' not in result.stderr) and (
+      '--project string' not in result.stdout
+  ):
+    log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_UP_TO_DATE)
 
 
 def Context(name, cluster, user):

@@ -63,6 +63,7 @@ def get_wildcard_iterator(
     exclude_patterns=None,
     fetch_encrypted_object_hashes=False,
     fields_scope=cloud_api.FieldsScope.NO_ACL,
+    files_only=False,
     get_bucket_metadata=False,
     ignore_symlinks=False,
 ):
@@ -81,8 +82,10 @@ def get_wildcard_iterator(
       encrypted cloud objects in order to fetch their hash values.
     fields_scope (cloud_api.FieldsScope): Determines amount of metadata returned
       by API.
+    files_only (bool): Don't return container or stream types for cloud and
+      local files. Still returns symlinks.
     get_bucket_metadata (bool): If true, perform a bucket GET request when
-      fetching bucket resources
+      fetching bucket resources.
     ignore_symlinks (bool): Skip over symlinks instead of following them.
 
   Returns:
@@ -97,12 +100,14 @@ def get_wildcard_iterator(
         exclude_patterns=exclude_patterns,
         fetch_encrypted_object_hashes=fetch_encrypted_object_hashes,
         fields_scope=fields_scope,
+        files_only=files_only,
         get_bucket_metadata=get_bucket_metadata,
     )
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(
         url,
         exclude_patterns=exclude_patterns,
+        files_only=files_only,
         ignore_symlinks=ignore_symlinks,
     )
   else:
@@ -137,10 +142,12 @@ class WildcardIterator(six.with_metaclass(abc.ABCMeta)):
       self,
       url,
       exclude_patterns=None,
+      files_only=False,
   ):
     """Initializes class. See get_wildcard_iterator for Args docstring."""
     self._url = _compress_url_wildcards(url)
     self._exclude_patterns = exclude_patterns
+    self._files_only = files_only
 
   def __repr__(self):
     """Returns string representation of WildcardIterator."""
@@ -154,6 +161,7 @@ class FileWildcardIterator(WildcardIterator):
       self,
       url,
       exclude_patterns=None,
+      files_only=False,
       ignore_symlinks=False,
   ):
     """Initialize FileWildcardIterator instance.
@@ -161,11 +169,13 @@ class FileWildcardIterator(WildcardIterator):
     Args:
       url (FileUrl): A FileUrl instance representing a file path.
       exclude_patterns (Patterns|None): See get_wildcard_iterator.
+      files_only (bool): Return files and symlinks, not folders and streams.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
     """
     super(FileWildcardIterator, self).__init__(
         url,
         exclude_patterns,
+        files_only=files_only,
     )
     self._ignore_symlinks = ignore_symlinks
 
@@ -174,6 +184,8 @@ class FileWildcardIterator(WildcardIterator):
   def __iter__(self):
     # Files named '-' will not be copied, as that string makes is_stdio true.
     if self._url.is_stdio:
+      if self._files_only:
+        return
       yield resource_reference.FileObjectResource(self._url)
 
     recursion_needed = '**' in self._path
@@ -184,7 +196,11 @@ class FileWildcardIterator(WildcardIterator):
     else:
       hidden_file_iterator = []
     for path in itertools.chain(normal_file_iterator, hidden_file_iterator):
-      if self._exclude_patterns and self._exclude_patterns.match(path):
+      if (
+          self._exclude_patterns
+          and self._exclude_patterns.match(path)
+          or (self._files_only and not os.path.isfile(path))
+      ):
         continue
 
       # Follow symlinks unless pointing to directory or exclude flag is present.
@@ -219,6 +235,7 @@ class CloudWildcardIterator(WildcardIterator):
       exclude_patterns=None,
       fetch_encrypted_object_hashes=False,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
+      files_only=False,
       get_bucket_metadata=False,
   ):
     """Instantiates an iterator that matches the wildcard URL.
@@ -235,11 +252,14 @@ class CloudWildcardIterator(WildcardIterator):
         encrypted objects in order to fetch their hash values.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
+      files_only (bool): Only return cloud objects (not prefixes or buckets).
       get_bucket_metadata (bool): If true, perform a bucket GET request when
         fetching bucket resources. Otherwise, bucket URLs without wildcards may
         be returned without verifying the buckets exist.
     """
-    super(CloudWildcardIterator, self).__init__(url, exclude_patterns)
+    super(CloudWildcardIterator, self).__init__(
+        url, exclude_patterns=exclude_patterns, files_only=files_only
+    )
     self._client = api_factory.get_api(self._url.scheme)
 
     self._all_versions = all_versions
@@ -249,6 +269,8 @@ class CloudWildcardIterator(WildcardIterator):
     self._get_bucket_metadata = get_bucket_metadata
 
   def __iter__(self):
+    if self._files_only and (self._url.is_provider() or self._url.is_bucket()):
+      return
     if self._url.is_provider():
       for bucket_resource in self._client.list_buckets(self._fields_scope):
         yield bucket_resource
@@ -259,8 +281,17 @@ class CloudWildcardIterator(WildcardIterator):
         else:  # URL is an object or prefix.
           for obj_resource in self._fetch_objects(
               bucket_or_unknown_resource.storage_url.bucket_name):
-            if self._exclude_patterns and self._exclude_patterns.match(
-                obj_resource.storage_url.versionless_url_string
+            if (
+                self._exclude_patterns
+                and self._exclude_patterns.match(
+                    obj_resource.storage_url.versionless_url_string
+                )
+                or (
+                    self._files_only
+                    and not isinstance(
+                        obj_resource, resource_reference.ObjectResource
+                    )
+                )
             ):
               continue
             yield obj_resource

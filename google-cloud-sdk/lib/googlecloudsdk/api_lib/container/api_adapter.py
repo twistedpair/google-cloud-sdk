@@ -586,6 +586,8 @@ class CreateClusterOptions(object):
       linux_sysctls=None,
       disable_default_snat=None,
       dataplane_v2=None,
+      enable_dataplane_v2_metrics=None,
+      disable_dataplane_v2_metrics=None,
       shielded_secure_boot=None,
       shielded_integrity_monitoring=None,
       system_config_from_file=None,
@@ -768,6 +770,8 @@ class CreateClusterOptions(object):
     self.linux_sysctls = linux_sysctls
     self.disable_default_snat = disable_default_snat
     self.dataplane_v2 = dataplane_v2
+    self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
+    self.disable_dataplane_v2_metrics = disable_dataplane_v2_metrics
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
     self.system_config_from_file = system_config_from_file
@@ -943,6 +947,8 @@ class UpdateClusterOptions(object):
       disable_managed_prometheus=None,
       maintenance_interval=None,
       dataplane_v2=None,
+      enable_dataplane_v2_metrics=None,
+      disable_dataplane_v2_metrics=None,
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
@@ -1060,6 +1066,8 @@ class UpdateClusterOptions(object):
     self.disable_managed_prometheus = disable_managed_prometheus
     self.maintenance_interval = maintenance_interval
     self.dataplane_v2 = dataplane_v2
+    self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
+    self.disable_dataplane_v2_metrics = disable_dataplane_v2_metrics
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
     self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
@@ -1287,12 +1295,14 @@ class UpdateNodePoolOptions(object):
                enable_confidential_nodes=None,
                enable_fast_socket=None,
                logging_variant=None,
+               accelerators=None,
                windows_os_version=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
+    self.accelerators = accelerators
     self.total_max_nodes = total_max_nodes
     self.total_min_nodes = total_min_nodes
     self.location_policy = location_policy
@@ -1352,7 +1362,8 @@ class UpdateNodePoolOptions(object):
             self.enable_confidential_nodes is not None or
             self.enable_fast_socket is not None or
             self.logging_variant is not None or
-            self.windows_os_version is not None)
+            self.windows_os_version is not None or
+            self.accelerators is not None)
 
 
 class APIAdapter(object):
@@ -2828,7 +2839,11 @@ class APIAdapter(object):
         update.desiredMonitoringService = options.monitoring_service
       if options.logging_service:
         update.desiredLoggingService = options.logging_service
-    elif options.logging or options.monitoring or options.enable_managed_prometheus or options.disable_managed_prometheus:
+    elif (options.logging or options.monitoring or
+          options.enable_managed_prometheus or
+          options.disable_managed_prometheus or
+          options.enable_dataplane_v2_metrics or
+          options.disable_dataplane_v2_metrics):
       logging = _GetLoggingConfig(options, self.messages)
       monitoring = _GetMonitoringConfig(options, self.messages)
       update = self.messages.ClusterUpdate()
@@ -3848,6 +3863,8 @@ class APIAdapter(object):
             node_pool_ref.clusterId,
             node_pool_ref.nodePoolId,
         ))
+
+    self.ParseAcceleratorOptions(options, update_request)
 
     if options.workload_metadata is not None or options.workload_metadata_from_node is not None:
       self._AddWorkloadMetadataToNodeConfig(update_request, options,
@@ -5919,6 +5936,7 @@ def _GetMonitoringConfig(options, messages):
 
   comp = None
   prom = None
+  adv_obs = None
   config = messages.MonitoringConfig()
 
   if options.monitoring is not None:
@@ -6002,8 +6020,19 @@ def _GetMonitoringConfig(options, messages):
       if hasattr(config, 'managedPrometheusConfig'):
         config.managedPrometheusConfig = prom
 
-  if comp is None and prom is None:
+  if options.enable_dataplane_v2_metrics:
+    adv_obs = messages.AdvancedDatapathObservabilityConfig(
+        enableMetrics=True)
+
+  if options.disable_dataplane_v2_metrics:
+    adv_obs = messages.AdvancedDatapathObservabilityConfig(
+        enableMetrics=False)
+
+  if comp is None and prom is None and adv_obs is None:
     return None
+
+  if hasattr(config, 'advancedDatapathObservabilityConfig'):
+    config.advancedDatapathObservabilityConfig = adv_obs
 
   return config
 

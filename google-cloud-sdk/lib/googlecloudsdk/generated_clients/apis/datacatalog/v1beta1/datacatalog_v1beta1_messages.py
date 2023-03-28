@@ -1198,6 +1198,45 @@ class GoogleCloudDatacatalogV1BusinessContext(_messages.Message):
   entryOverview = _messages.MessageField('GoogleCloudDatacatalogV1EntryOverview', 2)
 
 
+class GoogleCloudDatacatalogV1CloudBigtableInstanceSpec(_messages.Message):
+  r"""Specification that applies to Instance entries that are part of
+  `CLOUD_BIGTABLE` system. (user_specified_type)
+
+  Fields:
+    cloudBigtableClusterSpecs: The list of clusters for the Instance.
+  """
+
+  cloudBigtableClusterSpecs = _messages.MessageField('GoogleCloudDatacatalogV1CloudBigtableInstanceSpecCloudBigtableClusterSpec', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1CloudBigtableInstanceSpecCloudBigtableClusterSpec(_messages.Message):
+  r"""Spec that applies to clusters of an Instance of Cloud Bigtable.
+
+  Fields:
+    displayName: Name of the cluster.
+    linkedResource: A link back to the parent resource, in this case Instance.
+    location: Location of the cluster, typically a Cloud zone.
+    type: Type of the resource. For a cluster this would be "CLUSTER".
+  """
+
+  displayName = _messages.StringField(1)
+  linkedResource = _messages.StringField(2)
+  location = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
+class GoogleCloudDatacatalogV1CloudBigtableSystemSpec(_messages.Message):
+  r"""Specification that applies to all entries that are part of
+  `CLOUD_BIGTABLE` system (user_specified_type)
+
+  Fields:
+    instanceDisplayName: Display name of the Instance. This is user specified
+      and different from the resource name.
+  """
+
+  instanceDisplayName = _messages.StringField(1)
+
+
 class GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec(_messages.Message):
   r"""Specification for the BigQuery connection to a Cloud SQL instance.
 
@@ -1303,14 +1342,14 @@ class GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec(_messages.Message):
       DIMENSION_GROUP: Dimension group - parent for Dimension.
       FILTER: Filter.
       MEASURE: Measure.
-      PAREMETER: Parameter.
+      PARAMETER: Parameter.
     """
     LOOKER_COLUMN_TYPE_UNSPECIFIED = 0
     DIMENSION = 1
     DIMENSION_GROUP = 2
     FILTER = 3
     MEASURE = 4
-    PAREMETER = 5
+    PARAMETER = 5
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -1484,6 +1523,7 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
       CLOUD_SPANNER: Cloud Spanner
+      CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
     """
@@ -1493,8 +1533,9 @@ class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
     CLOUD_SPANNER = 5
-    CLOUD_SQL = 6
-    LOOKER = 7
+    CLOUD_BIGTABLE = 6
+    CLOUD_SQL = 7
+    LOOKER = 8
 
   dataCatalogEntry = _messages.StringField(1)
   fullyQualifiedName = _messages.StringField(2)
@@ -1590,6 +1631,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       table. Valid only for entries with the `TABLE` type.
     businessContext: Business Context of the entry. Not supported for BigQuery
       datasets
+    cloudBigtableSystemSpec: Specification that applies to Cloud Bigtable
+      system. Only settable when `integrated_system` is equal to
+      `CLOUD_BIGTABLE`
     dataSource: Output only. Physical location of the entry.
     dataSourceConnectionSpec: Specification that applies to a data source
       connection. Valid only for entries with the `DATA_SOURCE_CONNECTION`
@@ -1645,6 +1689,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       procedure. Valid only for entries with the `ROUTINE` type.
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
+    serviceSpec: Specification that applies to a Service resource.
     sourceSystemTimestamps: Timestamps from the underlying resource, not from
       the Data Catalog entry. Output only when the entry has a system listed
       in the `IntegratedSystem` enum. For entries with
@@ -1685,6 +1730,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       DATAPROC_METASTORE: Dataproc Metastore.
       DATAPLEX: Dataplex.
       CLOUD_SPANNER: Cloud Spanner
+      CLOUD_BIGTABLE: Cloud Bigtable
       CLOUD_SQL: Cloud Sql
       LOOKER: Looker
     """
@@ -1694,8 +1740,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     DATAPROC_METASTORE = 3
     DATAPLEX = 4
     CLOUD_SPANNER = 5
-    CLOUD_SQL = 6
-    LOOKER = 7
+    CLOUD_BIGTABLE = 6
+    CLOUD_SQL = 7
+    LOOKER = 8
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for entries with types listed in the
@@ -1776,28 +1823,30 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
   businessContext = _messages.MessageField('GoogleCloudDatacatalogV1BusinessContext', 3)
-  dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 4)
-  dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 5)
-  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 6)
-  description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 9)
-  fullyQualifiedName = _messages.StringField(10)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 11)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  linkedResource = _messages.StringField(14)
-  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 15)
-  name = _messages.StringField(16)
-  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 17)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 18)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 19)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 20)
-  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 21)
-  type = _messages.EnumField('TypeValueValuesEnum', 22)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 23)
-  userSpecifiedSystem = _messages.StringField(24)
-  userSpecifiedType = _messages.StringField(25)
+  cloudBigtableSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1CloudBigtableSystemSpec', 4)
+  dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 5)
+  dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 6)
+  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 10)
+  fullyQualifiedName = _messages.StringField(11)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 12)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  linkedResource = _messages.StringField(15)
+  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 16)
+  name = _messages.StringField(17)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 18)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 19)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 20)
+  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 21)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 22)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 25)
+  userSpecifiedSystem = _messages.StringField(26)
+  userSpecifiedType = _messages.StringField(27)
 
 
 class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
@@ -2178,6 +2227,18 @@ class GoogleCloudDatacatalogV1Schema(_messages.Message):
   """
 
   columns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1ServiceSpec(_messages.Message):
+  r"""Specification that applies to a Service resource. Valid only for entries
+  with the `SERVICE` type.
+
+  Fields:
+    cloudBigtableInstanceSpec: Specification that applies to Instance entries
+      of `CLOUD_BIGTABLE` system.
+  """
+
+  cloudBigtableInstanceSpec = _messages.MessageField('GoogleCloudDatacatalogV1CloudBigtableInstanceSpec', 1)
 
 
 class GoogleCloudDatacatalogV1SqlDatabaseSystemSpec(_messages.Message):

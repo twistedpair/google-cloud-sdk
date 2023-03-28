@@ -29,9 +29,11 @@ def MakeNetworkEndpointGroupsArg(support_regional_scope=False):
       zonal_collection='compute.networkEndpointGroups',
       global_collection='compute.globalNetworkEndpointGroups',
       regional_collection='compute.regionNetworkEndpointGroups'
-      if support_regional_scope else None,
+      if support_regional_scope
+      else None,
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+  )
 
 
 def _JoinWithOr(strings):
@@ -54,8 +56,8 @@ def _AddNetworkEndpointGroupType(parser, support_neg_type):
         hidden=True,
         choices=['load-balancing'],
         default='load-balancing',
-        help_str='The type of network endpoint group to create.').AddToParser(
-            parser)
+        help_str='The type of network endpoint group to create.',
+    ).AddToParser(parser)
 
 
 def _AddNetworkEndpointType(
@@ -154,7 +156,8 @@ def _AddNetworkEndpointType(
       hidden=False,
       choices=endpoint_type_choices,
       default='gce-vm-ip-port',
-      help_str=help_text).AddToParser(parser)
+      help_str=help_text,
+  ).AddToParser(parser)
 
 
 def _AddNetwork(
@@ -218,8 +221,9 @@ def _AddSubnet(parser, support_l4ilb_neg, support_l7psc_neg):
   parser.add_argument('--subnet', help=help_text)
 
 
-def _AddDefaultPort(parser, support_hybrid_neg, support_regional_scope,
-                    support_l7psc_neg):
+def _AddDefaultPort(
+    parser, support_hybrid_neg, support_regional_scope, support_l7psc_neg
+):
   """Adds default port argument for creating network endpoint groups."""
   help_text = """\
     The default port to use if the port number is not specified in the network
@@ -231,8 +235,11 @@ def _AddDefaultPort(parser, support_hybrid_neg, support_regional_scope,
     and `internet-fqdn-port`. If the default port is not specified,
     the well-known port for your backend protocol is used (80 for HTTP,
     443 for HTTPS).
-  """.format('`gce-vm-ip-port` or `non-gcp-private-ip-port`'
-             if support_hybrid_neg else '`gce-vm-ip-port`')
+  """.format(
+      '`gce-vm-ip-port` or `non-gcp-private-ip-port`'
+      if support_hybrid_neg
+      else '`gce-vm-ip-port`'
+  )
 
   if support_regional_scope:
     help_text += """\
@@ -269,7 +276,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
       Serverless NEG.
   """
   cloud_run_group.add_argument(
-      '--cloud-run-service', help=cloud_run_service_help)
+      '--cloud-run-service', help=cloud_run_service_help
+  )
   cloud_run_tag_help = """\
       Cloud Run tag represents the "named revision" to provide additional
       fine-grained traffic routing configuration.
@@ -281,7 +289,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
       multiple network endpoint groups and backend services.
   """
   cloud_run_group.add_argument(
-      '--cloud-run-url-mask', help=cloud_run_url_mask_help)
+      '--cloud-run-url-mask', help=cloud_run_url_mask_help
+  )
 
   app_engine_group_help = """\
       Configuration for an App Engine network endpoint group. Both App Engine
@@ -294,41 +303,48 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
   app_engine_group.add_argument(
       '--app-engine-app',
       action=arg_parsers.StoreTrueFalseAction,
-      help='If set, the default routing is used.')
+      help='If set, the default routing is used.',
+  )
   app_engine_group.add_argument(
       '--app-engine-service',
-      help='Optional serving service to add to the Serverless NEG.')
+      help='Optional serving service to add to the Serverless NEG.',
+  )
   app_engine_group.add_argument(
       '--app-engine-version',
-      help='Optional serving version to add to the Serverless NEG.')
+      help='Optional serving version to add to the Serverless NEG.',
+  )
   app_engine_url_mask_help = """\
       A template to parse service and version fields from a request URL. URL
       mask allows for routing to multiple App Engine services without having
       to create multiple network endpoint groups and backend services.
   """
   app_engine_group.add_argument(
-      '--app-engine-url-mask', help=app_engine_url_mask_help)
+      '--app-engine-url-mask', help=app_engine_url_mask_help
+  )
 
   cloud_function_group_help = """\
       Configuration for a Cloud Function network endpoint group. Cloud Function
       name must be provided explicitly or in the URL mask.
   """
   cloud_function_group = serverless_group.add_group(
-      help=cloud_function_group_help)
+      help=cloud_function_group_help
+  )
   cloud_function_name_help = """\
       Cloud Function name to add to the Serverless NEG. The function must be in
       the same project and the same region as the Serverless network endpoint
       groups (NEG).
   """
   cloud_function_group.add_argument(
-      '--cloud-function-name', help=cloud_function_name_help)
+      '--cloud-function-name', help=cloud_function_name_help
+  )
   cloud_function_url_mask_help = """\
       A template to parse function field from a request URL. URL mask allows
       for routing to multiple Cloud Functions without having to create multiple
       network endpoint groups and backend services.
   """
   cloud_function_group.add_argument(
-      '--cloud-function-url-mask', help=cloud_function_url_mask_help)
+      '--cloud-function-url-mask', help=cloud_function_url_mask_help
+  )
 
   if support_serverless_deployment:
     serverless_deployment_group_help = """\
@@ -345,7 +361,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
         serverless-deployment-version.
     """
     serverless_deployment_group = serverless_group.add_group(
-        help=serverless_deployment_group_help)
+        help=serverless_deployment_group_help
+    )
     serverless_deployment_platform_help = """\
         The platform of the NEG backend target(s). Possible values:
 
@@ -356,7 +373,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
     """
     serverless_deployment_group.add_argument(
         '--serverless-deployment-platform',
-        help=serverless_deployment_platform_help)
+        help=serverless_deployment_platform_help,
+    )
     serverless_deployment_resource_help = """\
         The user-defined name of the workload/instance. This value must be
         provided explicitly or using the --serverless-deployment-url-mask
@@ -370,7 +388,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
     """
     serverless_deployment_group.add_argument(
         '--serverless-deployment-resource',
-        help=serverless_deployment_resource_help)
+        help=serverless_deployment_resource_help,
+    )
     serverless_deployment_version_help = """\
         The optional resource version. The version identified by this value is
         platform-specific and is as follows:
@@ -382,7 +401,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
     """
     serverless_deployment_group.add_argument(
         '--serverless-deployment-version',
-        help=serverless_deployment_version_help)
+        help=serverless_deployment_version_help,
+    )
     serverless_deployment_url_mask_help = """\
         A template to parse platform-specific fields from a request URL. URL
         mask allows for routing to multiple resources on the same serverless
@@ -397,7 +417,8 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
     """
     serverless_deployment_group.add_argument(
         '--serverless-deployment-url-mask',
-        help=serverless_deployment_url_mask_help)
+        help=serverless_deployment_url_mask_help,
+    )
 
 
 def _AddL7pscRoutingInfo(parser):
@@ -438,8 +459,9 @@ def AddCreateNegArgsToParser(
       support_regional_internet_neg,
   )
   _AddSubnet(parser, support_l4ilb_neg, support_l7psc_neg)
-  _AddDefaultPort(parser, support_hybrid_neg,
-                  support_regional_scope, support_l7psc_neg)
+  _AddDefaultPort(
+      parser, support_hybrid_neg, support_regional_scope, support_l7psc_neg
+  )
   if support_regional_scope:
     _AddServerlessRoutingInfo(parser, support_serverless_deployment)
   if support_regional_scope and support_l7psc_neg:
@@ -548,7 +570,8 @@ def _AddAddEndpoint(
       '--add-endpoint',
       action='append',
       type=arg_parsers.ArgDict(spec=endpoint_spec),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def _AddRemoveEndpoint(
@@ -627,7 +650,8 @@ def _AddRemoveEndpoint(
       '--remove-endpoint',
       action='append',
       type=arg_parsers.ArgDict(spec=endpoint_spec),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddUpdateNegArgsToParser(
@@ -639,8 +663,11 @@ def AddUpdateNegArgsToParser(
   endpoint_group = parser.add_group(
       mutex=True,
       required=True,
-      help='These flags can be specified multiple times to add/remove '
-      'multiple endpoints.')
+      help=(
+          'These flags can be specified multiple times to add/remove '
+          'multiple endpoints.'
+      ),
+  )
 
   endpoint_spec = {'instance': str, 'ip': str, 'port': int}
   endpoint_spec['fqdn'] = str

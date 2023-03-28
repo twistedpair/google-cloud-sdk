@@ -790,7 +790,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogsRequest, dict]):
                 The request object. The parameters to ListLogs.
             parent (:class:`str`):
-                Required. The resource name that owns the logs:
+                Required. The resource name to list logs for:
 
                 -  ``projects/[PROJECT_ID]``
                 -  ``organizations/[ORGANIZATION_ID]``

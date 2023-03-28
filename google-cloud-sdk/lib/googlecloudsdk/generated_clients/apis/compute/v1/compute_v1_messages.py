@@ -38200,6 +38200,8 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+      Queued instances do not have URL and can be deleted only by name. One
+      cannot specify both URLs and names in a single request.
     skipInstancesOnValidationError: Specifies whether the request should
       proceed despite the inclusion of instances that are not members of the
       group or that are already in the process of being deleted or abandoned.
@@ -40993,8 +40995,7 @@ class InterconnectAttachment(_messages.Message):
       from the IP address specified for this VLAN attachment. If this field is
       not specified when creating the VLAN attachment, then later on when
       creating an HA VPN gateway on this VLAN attachment, the HA VPN gateway's
-      IP address is allocated from the regional external IP address pool. Not
-      currently available publicly.
+      IP address is allocated from the regional external IP address pool.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
     mtu: Maximum Transmission Unit (MTU), in bytes, of packets passing through

@@ -34,6 +34,7 @@ class BgpPeer(_messages.Message):
   Fields:
     interface: Name of the RouterInterface the BGP peer is associated with.
     interfaceIpv4Cidr: IP range of the interface within Google.
+    interfaceIpv6Cidr: IPv6 range of the interface within Google.
     name: Name of this BGP peer. Unique within the Zones resource.
     peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
       use a different value.
@@ -43,10 +44,11 @@ class BgpPeer(_messages.Message):
 
   interface = _messages.StringField(1)
   interfaceIpv4Cidr = _messages.StringField(2)
-  name = _messages.StringField(3)
-  peerAsn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  peerIpv4Cidr = _messages.StringField(5)
-  peerIpv6Cidr = _messages.StringField(6)
+  interfaceIpv6Cidr = _messages.StringField(3)
+  name = _messages.StringField(4)
+  peerAsn = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  peerIpv4Cidr = _messages.StringField(6)
+  peerIpv6Cidr = _messages.StringField(7)
 
 
 class BgpPeerStatus(_messages.Message):

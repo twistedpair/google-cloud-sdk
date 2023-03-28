@@ -31,7 +31,8 @@ def AddSnapshotVolumeArg(parser):
       '--volume',
       flags.GetVolumeResourceSpec(positional=False),
       'The Volume to take a Snapshot of.',
-      flag_name_overrides={'location': ''}).AddToParser(parser)
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)
 
 
 ## Helper functions to combine Snapshots args / flags for gcloud commands #

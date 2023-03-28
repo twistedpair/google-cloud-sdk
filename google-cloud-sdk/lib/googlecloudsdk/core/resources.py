@@ -1013,7 +1013,7 @@ class Registry(object):
       raise InvalidResourceException(url, reason='unknown API host')
 
     api_name, api_version, resource_path = (
-        resource_util.SplitDefaultEndpointUrl(url))
+        resource_util.SplitEndpointUrl(url))
 
     try:
       # pylint:disable=protected-access
@@ -1238,7 +1238,7 @@ def GetApiBaseUrl(api_name, api_version):
       # also replaces the version, otherwise it only overrides the domain.
       # pylint:disable=protected-access
       client_class = apis_internal._GetClientClass(api_name, api_version)
-      _, url_version, _ = resource_util.SplitDefaultEndpointUrl(
+      _, url_version, _ = resource_util.SplitEndpointUrl(
           client_class.BASE_URL)
       if url_version is None:
         base_url += api_version + '/'

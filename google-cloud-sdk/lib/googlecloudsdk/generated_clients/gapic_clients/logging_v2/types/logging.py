@@ -396,25 +396,14 @@ class ListLogsRequest(proto.Message):
 
     Attributes:
         parent (str):
-            Required. The resource name that owns the logs:
+            Required. The resource name to list logs for:
 
             -  ``projects/[PROJECT_ID]``
             -  ``organizations/[ORGANIZATION_ID]``
             -  ``billingAccounts/[BILLING_ACCOUNT_ID]``
             -  ``folders/[FOLDER_ID]``
-        page_size (int):
-            Optional. The maximum number of results to return from this
-            request. Non-positive values are ignored. The presence of
-            ``nextPageToken`` in the response indicates that more
-            results might be available.
-        page_token (str):
-            Optional. If present, then retrieve the next batch of
-            results from the preceding call to this method.
-            ``pageToken`` must be the value of ``nextPageToken`` from
-            the previous response. The values of other method parameters
-            should be identical to those in the previous call.
         resource_names (Sequence[str]):
-            Optional. The resource name that owns the logs:
+            Optional. List of resource names to list logs for:
 
             -  ``projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
             -  ``organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]``
@@ -427,11 +416,29 @@ class ListLogsRequest(proto.Message):
             -  ``organizations/[ORGANIZATION_ID]``
             -  ``billingAccounts/[BILLING_ACCOUNT_ID]``
             -  ``folders/[FOLDER_ID]``
+
+            The resource name in the ``parent`` field is added to this
+            list.
+        page_size (int):
+            Optional. The maximum number of results to return from this
+            request. Non-positive values are ignored. The presence of
+            ``nextPageToken`` in the response indicates that more
+            results might be available.
+        page_token (str):
+            Optional. If present, then retrieve the next batch of
+            results from the preceding call to this method.
+            ``pageToken`` must be the value of ``nextPageToken`` from
+            the previous response. The values of other method parameters
+            should be identical to those in the previous call.
     """
 
     parent = proto.Field(
         proto.STRING,
         number=1,
+    )
+    resource_names = proto.RepeatedField(
+        proto.STRING,
+        number=8,
     )
     page_size = proto.Field(
         proto.INT32,
@@ -440,10 +447,6 @@ class ListLogsRequest(proto.Message):
     page_token = proto.Field(
         proto.STRING,
         number=3,
-    )
-    resource_names = proto.RepeatedField(
-        proto.STRING,
-        number=8,
     )
 
 

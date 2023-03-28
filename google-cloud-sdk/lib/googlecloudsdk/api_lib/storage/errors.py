@@ -94,7 +94,7 @@ class GcsNotFoundError(GcsApiError, NotFoundError):
         'gs://{instance_name} not found: {status_code}.')
     # Parsing 'instance_name' here because it is not parsed correctly
     # by gcloud's exceptions.py module. See b/225168232.
-    _, _, resource_path = resource.SplitDefaultEndpointUrl(error.url)
+    _, _, resource_path = resource.SplitEndpointUrl(error.url)
     # For an object, resource_path will be of the form b/bucket/o/object
     match_object_resource_path = OBJECT_RESOURCE_PATH_PATTERN.search(
         resource_path)

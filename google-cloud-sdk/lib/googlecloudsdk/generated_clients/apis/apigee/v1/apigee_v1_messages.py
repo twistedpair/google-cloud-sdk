@@ -7096,21 +7096,21 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
 
     Values:
       ENVIRONMENT_TYPE_UNSPECIFIED: Environment type not specified.
-      DEVELOPER: Developer environment has limited capacity and capabilities
-        and are usually used when you are getting started with Apigee or while
+      BASE: Base environment has limited capacity and capabilities and are
+        usually used when you are getting started with Apigee or while
         experimenting. Refer to Apigee's public documentation for more
         details.
-      PRO: This is the default type and it supports API management features
-        and higher capacity than Developer environment. Refer to Apigee's
+      INTERMEDIATE: This is the default type and it supports API management
+        features and higher capacity than Base environment. Refer to Apigee's
         public documentation for more details.
-      ADVANCED: Advanced environment supports even higher capacity than Pro
-        and advanced capabilites. Refer to Apigee's public documentation for
-        more details.
+      FLEX: Flex environment supports advanced capabilites and even higher
+        capacity than Intermediate environment. Refer to Apigee's public
+        documentation for more details.
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
-    DEVELOPER = 1
-    PRO = 2
-    ADVANCED = 3
+    BASE = 1
+    INTERMEDIATE = 2
+    FLEX = 3
 
   apiProxyType = _messages.EnumField('ApiProxyTypeValueValuesEnum', 1)
   createdAt = _messages.IntegerField(2)

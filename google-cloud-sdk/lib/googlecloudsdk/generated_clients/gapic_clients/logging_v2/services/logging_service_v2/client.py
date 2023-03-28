@@ -951,7 +951,7 @@ class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
             request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListLogsRequest, dict]):
                 The request object. The parameters to ListLogs.
             parent (str):
-                Required. The resource name that owns the logs:
+                Required. The resource name to list logs for:
 
                 -  ``projects/[PROJECT_ID]``
                 -  ``organizations/[ORGANIZATION_ID]``

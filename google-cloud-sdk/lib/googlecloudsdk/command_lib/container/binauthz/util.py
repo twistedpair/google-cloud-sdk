@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -122,20 +122,17 @@ def MakeSignaturePayload(container_image_url):
   return '{}\n'.format(payload).encode('utf-8')
 
 
-def NormalizeArtifactUrl(artifact_url):
-  """Normalizes given URL by ensuring the scheme is https."""
-  url_without_scheme = _ReplaceImageUrlScheme(artifact_url, scheme='')
-  try:
-    # The validation logic in `docker_name` silently produces incorrect results
-    # if the passed URL has a scheme.
-    docker_name.Digest(url_without_scheme)
-  except docker_name.BadNameException as e:
-    raise BadImageUrlError(e)
-  return _ReplaceImageUrlScheme(artifact_url, scheme='https')
-
-
 def RemoveArtifactUrlScheme(artifact_url):
-  """Normalizes given URL by ensuring the scheme is https."""
+  """Ensures the given URL has no scheme (e.g.
+
+  replaces "https://gcr.io/foo/bar" with "gcr.io/foo/bar" and leaves
+  "gcr.io/foo/bar" unchanged).
+
+  Args:
+    artifact_url: A URL string.
+  Returns:
+    The URL with the scheme removed.
+  """
   url_without_scheme = _ReplaceImageUrlScheme(artifact_url, scheme='')
   try:
     # The validation logic in `docker_name` silently produces incorrect results

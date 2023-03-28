@@ -302,9 +302,7 @@ def _AddUpdatePolicyMaxSurgeFlag(group):
       help=(
           'Maximum additional number of VMs that can be created during the '
           'update process. This can be a fixed number (e.g. 5) or a percentage '
-          'of size to the managed instance group (e.g. 10%). Defaults to 0 if '
-          'the managed instance group has stateful configuration, or to the '
-          'number of zones in which it operates otherwise.'))
+          'of size to the managed instance group (e.g. 10%).'))
 
 
 def _AddUpdatePolicyMinReadyFlag(group):
@@ -349,9 +347,7 @@ def _AddUpdatePolicyReplacementMethodFlag(group):
                       'The VM IDs and creation timestamps might change.',
       },
       help=('Type of replacement method. Specifies what action will be taken '
-            'to update VMs. Defaults to ``recreate`` if the managed '
-            'instance group has stateful configuration, or to ``substitute`` '
-            'otherwise.'))
+            'to update VMs.'))
 
 
 def AddMigInstanceRedistributionTypeFlag(parser):

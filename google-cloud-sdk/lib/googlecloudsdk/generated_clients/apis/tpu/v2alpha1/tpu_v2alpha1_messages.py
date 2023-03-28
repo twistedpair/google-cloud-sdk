@@ -1210,10 +1210,12 @@ class SchedulingConfig(_messages.Message):
   Fields:
     preemptible: Defines whether the node is preemptible.
     reserved: Whether the node is created under a reservation.
+    spot: Defines whether the node is Spot VM.
   """
 
   preemptible = _messages.BooleanField(1)
   reserved = _messages.BooleanField(2)
+  spot = _messages.BooleanField(3)
 
 
 class ServiceAccount(_messages.Message):

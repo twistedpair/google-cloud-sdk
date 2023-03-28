@@ -1267,7 +1267,7 @@ class Instance(_messages.Message):
     kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
     maxCapacityGb: Output only. The max capacity of the instance.
-    maxShareCount: Output only. The max number of shares allowed.
+    maxShareCount: The max number of shares allowed.
     multiShareEnabled: Indicates whether this instance uses a multi-share
       configuration with which it can have more than one file-share or none at
       all. File-shares are added, updated and removed through the separate

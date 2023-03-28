@@ -1217,6 +1217,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.gkeonprem = self._Add('gkeonprem', hidden=True)
     self.healthcare = self._Add('healthcare', command='gcloud healthcare')
     self.iam = self._Add('iam', command='gcloud iam')
+    self.iamcredentials = self._Add('iamcredentials', command='gcloud iam')
     self.iap = self._Add('iap', command='gcloud iap')
     self.ids = self._Add('ids', command='gcloud ids')
     self.krmapihosting = self._Add('krmapihosting',
@@ -1270,6 +1271,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.redis = self._Add('redis', command='gcloud redis')
     self.run = self._Add('run', command='gcloud run')
     self.runapps = self._Add('runapps', hidden=True)
+    self.sasportal = self._Add('sasportal', hidden=True)
     self.scc = self._Add('securitycenter', command='gcloud scc')
     self.servicemanagement = self._Add(
         'servicemanagement', command='gcloud endpoints')

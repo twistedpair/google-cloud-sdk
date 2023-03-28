@@ -1286,6 +1286,11 @@ class GcpUserAccessBinding(_messages.Message):
       access. Only one access level is supported, not multiple. This repeated
       field must have exactly one element. Example:
       "accessPolicies/9522/accessLevels/device_trusted"
+    dryRunAccessLevels: Optional. Dry run access level that will be evaluated
+      but will not be enforced. The access denial based on dry run policy will
+      be logged. Only one access level is supported, not multiple. This list
+      must have exactly one element. Example:
+      "accessPolicies/9522/accessLevels/device_trusted"
     groupKey: Required. Immutable. Google Group id whose members are subject
       to this binding's restrictions. See "id" in the [G Suite Directory API's
       Groups resource] (https://developers.google.com/admin-
@@ -1302,8 +1307,9 @@ class GcpUserAccessBinding(_messages.Message):
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  groupKey = _messages.StringField(2)
-  name = _messages.StringField(3)
+  dryRunAccessLevels = _messages.StringField(2, repeated=True)
+  groupKey = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class GcpUserAccessBindingOperationMetadata(_messages.Message):

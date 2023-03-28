@@ -106,10 +106,16 @@ def AddGcsLogDirFlag(parser, hidden=False):
   parser.add_argument(
       '--gcs-log-dir',
       hidden=hidden,
-      help='A directory in Google Cloud Storage to hold build logs. If this '
-      'field is not set, '
-      '```gs://[PROJECT_NUMBER].cloudbuild-logs.googleusercontent.com/``` '
-      'will be created and used.')
+      help=(
+          'A directory in Google Cloud Storage to hold build logs. If this'
+          ' field is not set,'
+          ' ```gs://[PROJECT_NUMBER].cloudbuild-logs.googleusercontent.com/```'
+          ' will be created and used or'
+          ' ```gs://[PROJECT_NUMBER]-[builds/region]-cloudbuild-logs``` is used'
+          ' when you set `--default-buckets-behavior` to'
+          ' `REGIONAL_USER_OWNED_BUCKET`.'
+      ),
+  )
 
 
 def AddGcsSourceStagingDirFlag(parser, hidden=False):
@@ -117,10 +123,16 @@ def AddGcsSourceStagingDirFlag(parser, hidden=False):
   parser.add_argument(
       '--gcs-source-staging-dir',
       hidden=hidden,
-      help='A directory in Google Cloud Storage to copy the source used for '
-      'staging the build. If the specified bucket does not exist, Cloud '
-      'Build will create one. If you don\'t set this field, '
-      '```gs://[PROJECT_ID]_cloudbuild/source``` is used.')
+      help=(
+          'A directory in Google Cloud Storage to copy the source used for'
+          ' staging the build. If the specified bucket does not exist, Cloud'
+          " Build will create one. If you don't set this field,"
+          ' ```gs://[PROJECT_ID]_cloudbuild/source``` is used or'
+          ' ```gs://[PROJECT_ID]_[builds/region]_cloudbuild/source``` is used'
+          ' when you set `--default-buckets-behavior` to'
+          ' `REGIONAL_USER_OWNED_BUCKET` and `builds/region` is not `global`.'
+      ),
+  )
 
 
 def AddIgnoreFileFlag(parser, hidden=False):
@@ -273,3 +285,46 @@ def AddConfigFlagsAlpha(worker_pools):
 def GetMachineType(machine_type_flag):
   """Return a machine type."""
   return _machine_type_flag_map.GetEnumForChoice(machine_type_flag)
+
+
+def AddDefaultBucketsBehaviorFlag(parser):
+  """Adds a default buckets behavior flag.
+
+  Args:
+    parser: The argparse parser to add the arg to.
+  """
+  GetDefaultBucketsBehaviorFlagMapper().choice_arg.AddToParser(parser)
+
+
+def GetDefaultBucketsBehaviorFlagMapper(hidden=False):
+  """Gets a mapper for default buckets behavior flag enum value.
+
+  Args:
+    hidden: If true, retain help but do not display it.
+
+  Returns:
+    A mapper for default buckets behavior flag enum value.
+  """
+  return arg_utils.ChoiceEnumMapper(
+      '--default-buckets-behavior',
+      (
+          cloudbuild_util.GetMessagesModule()
+      ).BuildOptions.DefaultLogsBucketBehaviorValueValuesEnum,
+      include_filter=lambda s: six.text_type(s) != 'UNSPECIFIED',
+      help_str='How default buckets are setup.',
+      hidden=hidden,
+  )
+
+
+def GetDefaultBuckestBehavior(buckets_behavior_flag):
+  """Returns default buckets behavior option.
+
+  Args:
+    buckets_behavior_flag: The string value of default buckets behavior flag.
+
+  Returns:
+    The enum of default buckets behavior flag.
+  """
+  return GetDefaultBucketsBehaviorFlagMapper().GetEnumForChoice(
+      buckets_behavior_flag
+  )

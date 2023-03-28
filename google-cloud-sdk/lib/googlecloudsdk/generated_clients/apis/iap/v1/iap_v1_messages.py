@@ -621,9 +621,11 @@ class IapUpdateIapSettingsRequest(_messages.Message):
     iapSettings: A IapSettings resource to be passed as the request body.
     name: Required. The resource name of the IAP protected resource.
     updateMask: The field mask specifying which IAP settings should be
-      updated. If omitted, the all of the settings are updated. See
+      updated. If omitted, then all of the settings are updated. See
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+      buffers/docs/reference/google.protobuf#fieldmask. Note: All IAP reauth
+      settings must always be set together, using the field mask:
+      `iapSettings.accessSettings.reauthSettings`.
   """
 
   iapSettings = _messages.MessageField('IapSettings', 1)

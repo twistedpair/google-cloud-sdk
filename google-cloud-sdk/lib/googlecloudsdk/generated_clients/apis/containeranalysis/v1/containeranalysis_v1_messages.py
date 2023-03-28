@@ -2602,6 +2602,21 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsResourcesGeneratePackagesSummaryRequest
+  object.
+
+  Fields:
+    generatePackagesSummaryRequest: A GeneratePackagesSummaryRequest resource
+      to be passed as the request body.
+    name: Required. The name of the resource to get a packages summary for in
+      the form of `projects/[PROJECT_ID]/resources/[RESOURCE_URL]`.
+  """
+
+  generatePackagesSummaryRequest = _messages.MessageField('GeneratePackagesSummaryRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DSSEAttestationNote(_messages.Message):
   r"""A DSSEAttestationNote object.
 
@@ -3067,6 +3082,14 @@ class FixableTotalByDigest(_messages.Message):
   resourceUri = _messages.StringField(2)
   severity = _messages.EnumField('SeverityValueValuesEnum', 3)
   totalCount = _messages.IntegerField(4)
+
+
+class GeneratePackagesSummaryRequest(_messages.Message):
+  r"""GeneratePackagesSummaryRequest is the request body for the
+  GeneratePackagesSummary API method. It just takes a single name argument,
+  referring to the resource.
+  """
+
 
 
 class GerritSourceContext(_messages.Message):
@@ -3572,6 +3595,21 @@ class License(_messages.Message):
   expression = _messages.StringField(2)
 
 
+class LicensesSummary(_messages.Message):
+  r"""Per license count
+
+  Fields:
+    count: The number of fixable vulnerabilities associated with this
+      resource.
+    license: The license of the package. Note that the format of this value is
+      not guaranteed. It may be nil, an empty string, a boolean value (A | B),
+      a differently formed boolean value (A OR B), etc...
+  """
+
+  count = _messages.IntegerField(1)
+  license = _messages.StringField(2)
+
+
 class ListNoteOccurrencesResponse(_messages.Message):
   r"""Response for listing occurrences for a note.
 
@@ -4053,6 +4091,20 @@ class PackageOccurrence(_messages.Message):
   name = _messages.StringField(5)
   packageType = _messages.StringField(6)
   version = _messages.MessageField('Version', 7)
+
+
+class PackagesSummaryResponse(_messages.Message):
+  r"""A summary of the packages found within the given resource.
+
+  Fields:
+    licensesSummary: A listing by license name of each of the licenses and
+      their counts.
+    resourceUrl: The unique URL of the image or the container for which this
+      summary applies.
+  """
+
+  licensesSummary = _messages.MessageField('LicensesSummary', 1, repeated=True)
+  resourceUrl = _messages.StringField(2)
 
 
 class Policy(_messages.Message):

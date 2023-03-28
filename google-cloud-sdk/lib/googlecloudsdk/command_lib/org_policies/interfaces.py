@@ -99,10 +99,7 @@ class OrgPolicyGetAndUpdateCommand(
           raise exceptions.OperationNotSupportedError(
               'Cannot be used to modify a conditional policy. Use set-policy instead.'
           )
-    if self.ReleaseTrack() is base.ReleaseTrack.ALPHA:
-      return self._UpdateOrDeletePolicyAlpha(policy, args)
-    else:
-      return self._UpdateOrDeletePolicy(policy, args)
+    return self._UpdateOrDeletePolicy(policy, args)
 
   @abc.abstractmethod
   def UpdatePolicy(self, policy, args):
@@ -158,36 +155,6 @@ class OrgPolicyGetAndUpdateCommand(
     create_response = self.org_policy_api.CreatePolicy(new_policy)
     log.CreatedResource(name, 'policy')
     return create_response
-
-  def _UpdateOrDeletePolicyAlpha(self, policy, args):
-    """Update or delete the policy on the service as needed.
-
-    Args:
-      policy: messages.GoogleCloudOrgpolicy{api_version}Policy, The policy
-        object to be updated.
-      args: argparse.Namespace, An object that contains the values for the
-        arguments specified in the Args method.
-
-    Returns:
-      If the policy is deleted, then messages.GoogleProtobufEmpty. If the policy
-      is updated, then the updated policy.
-    """
-    policy_copy = copy.deepcopy(policy)
-    policy_copy.spec.reset = None
-    updated_policy = self.UpdatePolicy(policy_copy, args)
-    if updated_policy == policy:
-      return policy
-
-    policy_name = utils.GetPolicyNameFromArgs(args)
-
-    if not updated_policy.spec.rules and not updated_policy.spec.inheritFromParent and not updated_policy.spec.reset:
-      delete_response = self.org_policy_api.DeletePolicy(policy_name)
-      log.DeletedResource(policy_name, 'policy')
-      return delete_response
-
-    update_response = self.org_policy_api.UpdatePolicy(updated_policy)
-    log.UpdatedResource(policy_name, 'policy')
-    return update_response
 
   def _UpdateOrDeletePolicy(self, policy, args):
     """Update or delete the policy on the service as needed.

@@ -318,7 +318,7 @@ def AddEventFiltersPathPatternArg(parser,
 
 
 def AddEventDataContentTypeArg(
-    parser, release_track, required=False, hidden=True
+    parser, release_track, required=False, hidden=False
 ):
   """Adds an argument for the trigger's event data content type."""
   if release_track == base.ReleaseTrack.GA:
@@ -327,10 +327,14 @@ def AddEventDataContentTypeArg(
         hidden=hidden,
         required=required,
         help=(
-            'The data content type that the payload of the CloudEvent event is '
-            'encoded in. Only "application/json" and "application/protobuf" are'
-            'supported data content types. If not specified, it is assumed that'
-            ' the event payload is encoded in JSON.'
+            'Depending on the event provider, you can specify the encoding of'
+            ' the event data payload that will be delivered to your'
+            " destination, to either be encoded in ``application/json'' or"
+            " ``application/protobuf''. The default encoding is"
+            " ``application/json''."
+            ' Note that for custom sources or third-party providers, or for'
+            ' direct events from Cloud Pub/Sub, this formatting option is not'
+            ' supported.'
         ),
     )
 

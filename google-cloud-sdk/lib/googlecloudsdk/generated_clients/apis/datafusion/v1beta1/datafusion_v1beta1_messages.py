@@ -45,11 +45,15 @@ class Accelerator(_messages.Message):
       CCAI_INSIGHTS: Contact Center AI Insights This accelerator is used to
         enable import and export pipelines custom built to streamline CCAI
         Insights processing.
+      CLOUDSEARCH: Cloud search accelerator for CDF. This accelerator is to
+        enable Cloud search specific CDF plugins developed by Cloudsearch
+        team.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     CDC = 1
     HEALTHCARE = 2
     CCAI_INSIGHTS = 3
+    CLOUDSEARCH = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of the accelerator.

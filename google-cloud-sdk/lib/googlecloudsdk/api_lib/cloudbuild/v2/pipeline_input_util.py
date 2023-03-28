@@ -104,15 +104,12 @@ def _MetadataTransform(data):
   metadata = data.pop("metadata")
   if not metadata:
     raise cloudbuild_exceptions.InvalidYamlError("Metadata is missing in yaml.")
-  annotations, labels = metadata.get("annotations",
-                                     {}), metadata.get("labels", {})
+  annotations = metadata.get("annotations", {})
   if _WORKER_POOL_ANNOTATION not in annotations:
     raise cloudbuild_exceptions.InvalidYamlError(
         "Workerpool needs to be specified in metadata.annotations.")
   spec["workerPool"] = annotations[_WORKER_POOL_ANNOTATION]
   spec["annotations"] = annotations
-  if labels:
-    spec["labels"] = labels
   return metadata
 
 

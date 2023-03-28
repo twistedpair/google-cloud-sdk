@@ -140,20 +140,17 @@ class Empty(_messages.Message):
 
 
 class FrequencyOptions(_messages.Message):
-  r"""************************************************************************
-  * * * * ReportConfig Resource * * *
-  *************************************************************************
-  Options to setup frequency of report generation.
+  r"""ReportConfig Resource: Options to setup frequency of report generation.
 
   Enums:
     FrequencyValueValuesEnum: Frequency of report generation.
 
   Fields:
-    endDate: The date on which report generation should stop (Inclusive). //
-      UTC Timezone.
+    endDate: The date on which report generation should stop (Inclusive). UTC
+      time zone.
     frequency: Frequency of report generation.
-    startDate: The date from which report generation should start. // UTC
-      Timezone.
+    startDate: The date from which report generation should start. UTC time
+      zone.
   """
 
   class FrequencyValueValuesEnum(_messages.Enum):
@@ -469,6 +466,10 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class ParquetOptions(_messages.Message):
+  r"""Options to configure Parquet formatted reports."""
+
+
 class ReportConfig(_messages.Message):
   r"""Message describing ReportConfig object. ReportConfig is the
   configuration to generate reports. Next ID: 12
@@ -486,6 +487,7 @@ class ReportConfig(_messages.Message):
     name: name of resource. It will be of form
       projects//locations//reportConfigs/.
     objectMetadataReportOptions: Report for exporting object metadata.
+    parquetOptions: Options for Parquet formatted reports.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -520,12 +522,13 @@ class ReportConfig(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   objectMetadataReportOptions = _messages.MessageField('ObjectMetadataReportOptions', 7)
-  updateTime = _messages.StringField(8)
+  parquetOptions = _messages.MessageField('ParquetOptions', 8)
+  updateTime = _messages.StringField(9)
 
 
 class ReportDetail(_messages.Message):
   r"""Message describing ReportDetail object. ReportDetail represents metadata
-  of generated reports for a ReportConfig. Next ID: 8
+  of generated reports for a ReportConfig. Next ID: 10
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -537,6 +540,15 @@ class ReportDetail(_messages.Message):
     reportMetrics: Metrics of the report.
     reportNames: Generated report's full path with name. It will be of the
       form destination_bucket//.
+    reportPathPrefix: Prefix of the object name of each report's shard. This
+      will have full prefix except the "extension" and "shard_id". For
+      example, if the `destination_path` is "{{report-config-
+      id}}/dt={{datetime}}", the shard object name would be "gs://my-insights/
+      1A34-F2E456-12B456-1C3D/dt=2022-05-20T06:35/1A34-F2E456-12B456-
+      1C3D_2022-05-20T06:35_5.csv" and the value of `report_path_prefix` field
+      would be "gs://my-insights/1A34-F2E456-12B456-1C3D/dt=2022-05-
+      20T06:35/1A34-F2E456-12B456-1C3D_2022-05-20T06:35_".
+    shardsCount: Total shards generated for the report.
     snapshotTime: The snapshot time. All the report data is referenced at this
       point of time.
     status: Status of the ReportDetail.
@@ -572,9 +584,33 @@ class ReportDetail(_messages.Message):
   name = _messages.StringField(2)
   reportMetrics = _messages.MessageField('Metrics', 3)
   reportNames = _messages.StringField(4, repeated=True)
-  snapshotTime = _messages.StringField(5)
-  status = _messages.MessageField('Status', 6)
-  targetDatetime = _messages.MessageField('DateTime', 7)
+  reportPathPrefix = _messages.StringField(5)
+  shardsCount = _messages.IntegerField(6)
+  snapshotTime = _messages.StringField(7)
+  status = _messages.MessageField('Status', 8)
+  targetDatetime = _messages.MessageField('DateTime', 9)
+
+
+class ReportStatsView(_messages.Message):
+  r"""Message to encapsulate the various statistics related to the generated
+  Report Next ID: 6
+
+  Fields:
+    bytesWritten: Actual size in bytes for the report written, as reported by
+      the underlying storage system
+    projectNumber: Project Number
+    recordsProcessed: Actual records processed as reported by the underlying
+      storage system
+    reportConfigId: ID of the parent ReportConfig for the corresponding
+      ReportDetail
+    reportDetailId: ID of the ReportDetail for which the stats are generated
+  """
+
+  bytesWritten = _messages.IntegerField(1)
+  projectNumber = _messages.IntegerField(2)
+  recordsProcessed = _messages.IntegerField(3)
+  reportConfigId = _messages.StringField(4)
+  reportDetailId = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -781,7 +817,7 @@ class StorageinsightsProjectsLocationsReportConfigsCreateRequest(_messages.Messa
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -806,7 +842,7 @@ class StorageinsightsProjectsLocationsReportConfigsDeleteRequest(_messages.Messa
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -860,7 +896,7 @@ class StorageinsightsProjectsLocationsReportConfigsPatchRequest(_messages.Messag
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.

@@ -78,17 +78,22 @@ def add_predefined_acl_flag(parser):
       '-a',
       '--predefined-acl',
       '--canned-acl',
-      help='Applies predefined, or "canned," ACLs to a resource. See'
-      ' docs for a list of predefined ACL constants: https://cloud.google.com'
-      '/storage/docs/access-control/lists#predefined-acl')
+      help=(
+          'Applies predefined, or "canned," ACLs to a resource. See'
+          ' docs for a list of predefined ACL constants:'
+          ' https://cloud.google.com'
+          '/storage/docs/access-control/lists#predefined-acl'
+      ),
+  )
 
 
-def add_preserve_acl_flag(parser):
+def add_preserve_acl_flag(parser, hidden=False):
   """Adds preserve ACL flag."""
   parser.add_argument(
       '--preserve-acl',
       '-p',
       action=arg_parsers.StoreTrueFalseAction,
+      hidden=hidden,
       help=(
           'Preserves ACLs when copying in the cloud. This option is Google'
           ' Cloud Storage-only, and you need OWNER access to all copied'

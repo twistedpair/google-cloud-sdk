@@ -38,6 +38,23 @@ _MAINTENANCE_POLICY_MAPPINGS = {
     'MIGRATE_WITHIN_NODE_GROUP': 'migrate-within-node-group',
 }
 
+_MAINTENANCE_INTERVAL_CHOICES = {
+    'as-needed': (
+        ' VMs are eligible to receive infrastructure and hypervisor updates as'
+        ' they become available.'
+    ),
+    'recurrent': (
+        'VMs receive infrastructure and hypervisor updates on a periodic basis,'
+        ' minimizing the number of maintenance operations (live migrations or'
+        ' terminations) on an individual VM.'
+    ),
+}
+
+_MAINTENANCE_INTERVAL_MAPPINGS = {
+    'AS_NEEDED': 'as-needed',
+    'RECURRENT': 'recurrent',
+}
+
 
 def MakeNodeGroupArg():
   return compute_flags.ResourceArgument(
@@ -153,6 +170,14 @@ def GetMaintenancePolicyEnumMapper(messages):
   )
 
 
+def GetMaintenanceIntervalEnumMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--maintenance-interval',
+      messages.NodeGroup.MaintenanceIntervalValueValuesEnum,
+      custom_mappings=_MAINTENANCE_INTERVAL_MAPPINGS,
+  )
+
+
 def AddAutoscalingPolicyArgToParser(parser, required_mode=False):
   """Add autoscaling configuration  arguments to parser."""
 
@@ -180,3 +205,13 @@ The maximum size of the node group. Must be smaller or equal to 100 and larger
 than or equal to `--min-nodes`. Must be specified if `--autoscaler-mode` is not
 ``off''.
 """)
+
+
+def AddMaintenanceIntervalArgToParser(parser):
+  """Add flag for adding maintenance interval to node group."""
+  parser.add_argument(
+      '--maintenance-interval',
+      choices=_MAINTENANCE_INTERVAL_CHOICES,
+      type=lambda policy: policy.lower(),
+      help='Specifies the frequency of planned maintenance events.',
+  )

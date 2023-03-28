@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
@@ -36,3 +38,18 @@ def GetMessagesModule(release_track=base.ReleaseTrack.GA):
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance('edgecontainer', api_version)
+
+
+class OperationPoller(waiter.CloudOperationPoller):
+  """An implementation of a operation poller."""
+
+  def GetResult(self, operation):
+    """Overrides.
+
+    Args:
+      operation: api_name_messages.Operation.
+
+    Returns:
+      result of result_service.Get request.
+    """
+    return operation

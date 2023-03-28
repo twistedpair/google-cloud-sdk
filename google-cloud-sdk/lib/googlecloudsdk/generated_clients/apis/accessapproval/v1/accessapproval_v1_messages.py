@@ -650,12 +650,12 @@ class EnrolledService(_messages.Message):
       Engine * Artifact Registry * BigQuery * Certificate Authority Service *
       Cloud Bigtable * Cloud Key Management Service * Compute Engine * Cloud
       Composer * Cloud Dataflow * Cloud Dataproc * Cloud DLP * Cloud EKM *
-      Cloud HSM * Cloud Identity and Access Management * Cloud Logging * Cloud
-      NAT * Cloud Pub/Sub * Cloud Spanner * Cloud SQL * Cloud Storage * Google
-      Kubernetes Engine * Organization Policy Serivice * Persistent Disk *
-      Resource Manager * Secret Manager * Speaker ID Note: These values are
-      supported as input for legacy purposes, but will not be returned from
-      the API. * all * ga-only * appengine.googleapis.com *
+      Cloud Firestore * Cloud HSM * Cloud Identity and Access Management *
+      Cloud Logging * Cloud NAT * Cloud Pub/Sub * Cloud Spanner * Cloud SQL *
+      Cloud Storage * Google Kubernetes Engine * Organization Policy Serivice
+      * Persistent Disk * Resource Manager * Secret Manager * Speaker ID Note:
+      These values are supported as input for legacy purposes, but will not be
+      returned from the API. * all * ga-only * appengine.googleapis.com *
       artifactregistry.googleapis.com * bigquery.googleapis.com *
       bigtable.googleapis.com * container.googleapis.com *
       cloudkms.googleapis.com * cloudresourcemanager.googleapis.com *

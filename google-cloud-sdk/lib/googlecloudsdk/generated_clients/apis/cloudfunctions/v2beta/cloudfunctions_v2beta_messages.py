@@ -737,7 +737,6 @@ class Function(_messages.Message):
     stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
     upgradeInfo: Output only. UpgradeInfo for this Cloud Function
-    url: Output only. The deployed url for the function.
   """
 
   class EnvironmentValueValuesEnum(_messages.Enum):
@@ -809,7 +808,6 @@ class Function(_messages.Message):
   stateMessages = _messages.MessageField('GoogleCloudFunctionsV2betaStateMessage', 11, repeated=True)
   updateTime = _messages.StringField(12)
   upgradeInfo = _messages.MessageField('UpgradeInfo', 13)
-  url = _messages.StringField(14)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):

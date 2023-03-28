@@ -130,3 +130,21 @@ internal_ips:
   help_text: |
     Indicates that the IP addresses for the node should be internal. The default is that external IP
     addresses will be associated with the TPU workers.
+
+reservation_host_project:
+  arg_name: reservation-host-project
+  help_text: |
+    The project hosting the reservation that the TPU should use. Only one reservation host entity
+    may be specified.
+
+reservation_host_folder:
+  arg_name: reservation-host-folder
+  help_text: |
+    The folder hosting the reservation that the TPU should use. Only one reservation host entity
+    may be specified.
+
+reservation_host_organization:
+  arg_name: reservation-host-organization
+  help_text: |
+    The organization hosting the reservation that the TPU should use. Only one reservation host
+    entity may be specified.

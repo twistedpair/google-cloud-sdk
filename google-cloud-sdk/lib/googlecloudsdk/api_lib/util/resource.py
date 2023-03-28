@@ -151,8 +151,8 @@ class InvalidEndpointException(exceptions.Error):
         "URL does not start with 'http://' or 'https://' [{0}]".format(url))
 
 
-def SplitDefaultEndpointUrl(url):
-  """Returns api_name, api_version, resource_path tuple for a default api url.
+def SplitEndpointUrl(url):
+  """Returns api_name, api_version, resource_path tuple for an API URL.
 
   Supports the following formats:
   # Google API production/staging endpoints.

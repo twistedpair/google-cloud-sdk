@@ -76,6 +76,11 @@ _INFO = {
         api='gkedataplanev2.googleapis.com',
         cmd_group='dataplane-v2-encryption',
     ),
+    'fleetobservability': Info(
+        display_name='Fleet Observability',
+        api='gkehub.googleapis.com',
+        cmd_group='fleetobservability',
+    ),
     'identityservice': Info(
         display_name='Identity Service',
         api='anthosidentityservice.googleapis.com',

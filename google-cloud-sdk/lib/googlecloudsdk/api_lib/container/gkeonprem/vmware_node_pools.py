@@ -96,7 +96,7 @@ class NodePoolsClient(client.ClientBase):
     """Enrolls an Anthos on VMware node pool API resource."""
     enroll_vmware_node_pool_request = (
         self._messages.EnrollVmwareNodePoolRequest(
-            vmwareNodepoolId=self._node_pool_id(args),
+            vmwareNodePoolId=self._node_pool_id(args),
         )
     )
     req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsEnrollRequest(

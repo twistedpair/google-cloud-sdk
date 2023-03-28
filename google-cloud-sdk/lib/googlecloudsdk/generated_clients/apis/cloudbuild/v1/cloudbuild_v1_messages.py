@@ -1266,6 +1266,9 @@ class CloudbuildOauthGetRegistrationRequest(_messages.Message):
     authUser: For users who are logged in using multiple accounts, specify the
       auth user parameter so that the registration url redirects back to the
       cloud console using the proper account.
+    csesidx: Optional. For users who use byoid, specify the csesidx parameter
+      so that the registration url redirects back to the cloud console using
+      the proper account.
     githubEnterpriseConfig: Optional. The full resource name of the github
       enterprise resource if applicable.
     hostUrl: Required. The host url that the oauth credentials are associated
@@ -1286,9 +1289,10 @@ class CloudbuildOauthGetRegistrationRequest(_messages.Message):
     GITHUB_ENTERPRISE = 1
 
   authUser = _messages.StringField(1)
-  githubEnterpriseConfig = _messages.StringField(2)
-  hostUrl = _messages.StringField(3)
-  namespace = _messages.EnumField('NamespaceValueValuesEnum', 4)
+  csesidx = _messages.StringField(2)
+  githubEnterpriseConfig = _messages.StringField(3)
+  hostUrl = _messages.StringField(4)
+  namespace = _messages.EnumField('NamespaceValueValuesEnum', 5)
 
 
 class CloudbuildOauthProcessOAuthCallbackRequest(_messages.Message):

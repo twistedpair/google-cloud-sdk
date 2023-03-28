@@ -1577,6 +1577,10 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
     securityGroupIds: Optional. The IDs of additional security groups to add
       to nodes in this pool. The manager will automatically create security
       groups with minimum rules needed for a functioning cluster.
+    spotConfig: Optional. Configuration for provisioning EC2 Spot instances
+      When specified, the node pool will provision Spot instances from the set
+      of spot_config.instance_types. This field is mutually exclusive with
+      `instance_type`.
     sshConfig: Optional. The SSH configuration.
     tags: Optional. Key/value metadata to assign to each underlying AWS
       resource. Specify at most 50 pairs containing alphanumerics, spaces, and
@@ -1648,9 +1652,10 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
   proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 8)
   rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 9)
   securityGroupIds = _messages.StringField(10, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 11)
-  tags = _messages.MessageField('TagsValue', 12)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 13, repeated=True)
+  spotConfig = _messages.MessageField('GoogleCloudGkemulticloudV1SpotConfig', 11)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 12)
+  tags = _messages.MessageField('TagsValue', 13)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 14, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
@@ -3073,6 +3078,17 @@ class GoogleCloudGkemulticloudV1ReplicaPlacement(_messages.Message):
 
   azureAvailabilityZone = _messages.StringField(1)
   subnetId = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1SpotConfig(_messages.Message):
+  r"""SpotConfig has configuration info for Spot node.
+
+  Fields:
+    instanceTypes: Required. A list of instance types for creating spot node
+      pool.
+  """
+
+  instanceTypes = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1WorkloadIdentityConfig(_messages.Message):

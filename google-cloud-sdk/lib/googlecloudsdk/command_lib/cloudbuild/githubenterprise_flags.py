@@ -18,9 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.builds import flags as build_flags
+
 
 def AddGitHubEnterpriseConfigArgs(parser, update=False):
-  """Set up all the argparse flags for creating or updating a GHE config.
+  """Sets up all the argparse flags for creating or updating a GHE config.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
@@ -124,7 +126,7 @@ If this is not set, Cloud Build will read the latest version.
 
 
 def AddGitHubEnterpriseConfigCreateArgs(parser):
-  """Set up all the argparse flags for creating a GitHub Enterprise Config.
+  """Sets up all the argparse flags for creating a GitHub Enterprise Config.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
@@ -132,11 +134,29 @@ def AddGitHubEnterpriseConfigCreateArgs(parser):
   Returns:
     The parser argument with GitHub Enterprise Config flags added in.
   """
+  # Making region and name required together as name is only needed for creating
+  # regional GHE configs.
+  region = parser.add_argument_group()
+  region.add_argument(
+      '--name',
+      required=True,
+      help='The name of the GitHub Enterprise config.',
+  )
+  region.add_argument(
+      '--region',
+      required=True,
+      help=("""\
+The region of the Cloud Build Service to use.\nMust be set to a supported region
+name (e.g. `us-central1`).\nIf unset, `builds/region`, which is the default
+region to use when working with Cloud Build resources, is used. If builds/region
+is unset, region is set to `global`.
+"""),
+  )
   return AddGitHubEnterpriseConfigArgs(parser, update=False)
 
 
 def AddGitHubEnterpriseConfigUpdateArgs(parser):
-  """Set up all the argparse flags for updating a GitHub Enterprise Config.
+  """Sets up all the argparse flags for updating a GitHub Enterprise Config.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
@@ -144,4 +164,5 @@ def AddGitHubEnterpriseConfigUpdateArgs(parser):
   Returns:
     The parser argument with GitHub Enterprise Config flags added in.
   """
+  build_flags.AddRegionFlag(parser)
   return AddGitHubEnterpriseConfigArgs(parser, update=True)

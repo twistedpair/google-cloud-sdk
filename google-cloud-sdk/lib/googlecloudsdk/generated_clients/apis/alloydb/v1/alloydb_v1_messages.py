@@ -1268,9 +1268,11 @@ class Instance(_messages.Message):
   It's the main unit of computing resources in AlloyDB.
 
   Enums:
-    AvailabilityTypeValueValuesEnum: Availability type of an Instance.
-      Defaults to REGIONAL for both primary and read instances. Note that
-      primary and read instances can have different availability types.
+    AvailabilityTypeValueValuesEnum: Availability type of an Instance. If
+      empty, defaults to REGIONAL for primary instances. For read pools,
+      availability_type is always UNSPECIFIED. Instances in the read pools are
+      evenly distributed across available zones within the region (i.e. read
+      pools with more than one node will have a node in at least two zones).
     InstanceTypeValueValuesEnum: Required. The type of the instance. Specified
       at creation time.
     StateValueValuesEnum: Output only. The current serving state of the
@@ -1296,9 +1298,11 @@ class Instance(_messages.Message):
   Fields:
     annotations: Annotations to allow client tools to store small amount of
       arbitrary data. This is distinct from labels. https://google.aip.dev/128
-    availabilityType: Availability type of an Instance. Defaults to REGIONAL
-      for both primary and read instances. Note that primary and read
-      instances can have different availability types.
+    availabilityType: Availability type of an Instance. If empty, defaults to
+      REGIONAL for primary instances. For read pools, availability_type is
+      always UNSPECIFIED. Instances in the read pools are evenly distributed
+      across available zones within the region (i.e. read pools with more than
+      one node will have a node in at least two zones).
     createTime: Output only. Create time stamp
     databaseFlags: Database flags. Set at instance level. * They are copied
       from primary instance on read instance creation. * Read instances can
@@ -1355,9 +1359,11 @@ class Instance(_messages.Message):
   """
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
-    r"""Availability type of an Instance. Defaults to REGIONAL for both
-    primary and read instances. Note that primary and read instances can have
-    different availability types.
+    r"""Availability type of an Instance. If empty, defaults to REGIONAL for
+    primary instances. For read pools, availability_type is always
+    UNSPECIFIED. Instances in the read pools are evenly distributed across
+    available zones within the region (i.e. read pools with more than one node
+    will have a node in at least two zones).
 
     Values:
       AVAILABILITY_TYPE_UNSPECIFIED: This is an unknown Availability type.

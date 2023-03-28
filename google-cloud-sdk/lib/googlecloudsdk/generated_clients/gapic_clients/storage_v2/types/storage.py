@@ -3017,9 +3017,9 @@ class ObjectChecksums(proto.Message):
         crc32c (int):
             CRC32C digest of the object data. Computed by
             the Cloud Storage service for all written
-            objects. If set in an WriteObjectRequest,
-            service will validate that the stored object
-            matches this checksum.
+            objects. If set in a WriteObjectRequest, service
+            will validate that the stored object matches
+            this checksum.
 
             This field is a member of `oneof`_ ``_crc32c``.
         md5_hash (bytes):

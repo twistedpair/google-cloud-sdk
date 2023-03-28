@@ -229,3 +229,36 @@ class ClientBase(object):
       taint_effect = taint_effect_mapping[taint_effect]
 
     return {'key': taint_key, 'value': taint_value, 'effect': taint_effect}
+
+  def _standalone_cluster_ref(self, args):
+    """Parses standalone cluster resource argument and returns its reference."""
+    if getattr(args.CONCEPTS, 'standalone_cluster', None):
+      return args.CONCEPTS.standalone_cluster.Parse()
+    return None
+
+  def _standalone_cluster_parent(self, args):
+    """Parses standalone cluster from args and returns its parent name."""
+    standalone_cluster_ref = self._standalone_cluster_ref(args)
+    if standalone_cluster_ref:
+      return standalone_cluster_ref.Parent().RelativeName()
+    return None
+
+  def _standalone_cluster_id(self, args):
+    """Parses standalone cluster from the given args and returns its ID."""
+    standalone_cluster_ref = self._standalone_cluster_ref(args)
+    if standalone_cluster_ref:
+      return standalone_cluster_ref.Name()
+    return None
+
+  def _standalone_cluster_membership_ref(self, args):
+    """Parses standalone cluster resource argument and returns its reference."""
+    if getattr(args.CONCEPTS, 'membership', None):
+      return args.CONCEPTS.membership.Parse()
+    return None
+
+  def _standalone_cluster_membership_name(self, args):
+    """Parses standalone cluster from args and returns its name."""
+    standalone_cluster_ref = self._standalone_cluster_membership_ref(args)
+    if standalone_cluster_ref:
+      return standalone_cluster_ref.RelativeName()
+    return None

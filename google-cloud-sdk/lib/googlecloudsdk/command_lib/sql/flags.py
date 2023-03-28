@@ -296,17 +296,18 @@ def AddRetainedBackupsCount(parser):
       help=help_text)
 
 
-# Currently, MAX_TRANSACTION_LOG_RETENTION_DAYS=7, and
+# Currently, MAX_TRANSACTION_LOG_RETENTION_DAYS=35, and
 # MIN_TRANSACTION_LOG_RETENTION_DAYS=1.
 def AddRetainedTransactionLogDays(parser):
   help_text = (
-      'How many days of transaction logs to keep. The valid range is between '
-      '1 and 7. The default value is 7 if not specified. Only valid when '
-      'point in time recovery is enabled. Keeping more days of transaction '
-      'logs requires bigger storage size')
+      'How many days of transaction logs to keep. The valid range is between 1 '
+      'and 35. The default value is 7. The 35 days log retention feature is '
+      'only enabled for specific customer. Only use this option when point-in-'
+      'time recovery is enabled. Storage size for transaction logs increases '
+      'when the number of days for log retention increases.')
   parser.add_argument(
       '--retained-transaction-log-days',
-      type=arg_parsers.BoundedInt(1, 7, unlimited=False),
+      type=arg_parsers.BoundedInt(1, 35, unlimited=False),
       help=help_text)
 
 

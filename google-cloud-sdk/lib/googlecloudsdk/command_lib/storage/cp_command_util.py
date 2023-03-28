@@ -129,7 +129,37 @@ time because Windows doesn't have a notion of POSIX UID, GID, and mode.
 """
 
 
-def add_cp_flags(parser):
+def add_gzip_in_flight_flags(parser):
+  """Adds flags for gzip parsing in flight."""
+  parser.add_argument(
+      '-J',
+      '--gzip-in-flight-all',
+      action='store_true',
+      help=_GZIP_IN_FLIGHT_ALL_HELP_TEXT,
+  )
+  parser.add_argument(
+      '-j',
+      '--gzip-in-flight',
+      metavar='FILE_EXTENSIONS',
+      type=arg_parsers.ArgList(),
+      help=_GZIP_IN_FLIGHT_EXTENSIONS_HELP_TEXT,
+  )
+
+
+def add_ignore_symlinks_flag(parser, default=False):
+  """Adds flag for skipping copying symlinks."""
+  parser.add_argument(
+      '--ignore-symlinks',
+      action='store_true',
+      default=default,
+      help=(
+          'Ignore file symlinks instead of copying what they point to.'
+          ' Symlinks pointing to directories will always be ignored.'
+      ),
+  )
+
+
+def add_cp_and_mv_flags(parser):
   """Adds flags to cp, mv, or other cp-based commands."""
   parser.add_argument('source', nargs='*', help='The source path(s) to copy.')
   parser.add_argument('destination', help='The destination path.')
@@ -152,19 +182,19 @@ def add_cp_flags(parser):
       ' to change a composite object into a non-composite object.'
       ' Note: Daisy chain mode is automatically used when copying between'
       ' providers.')
-  parser.add_argument(
-      '--ignore-symlinks',
-      action='store_true',
-      help='Ignore file symlinks instead of copying what they point to.'
-      ' Symlinks pointing to directories will always be ignored.')
+  add_ignore_symlinks_flag(parser)
   parser.add_argument('-L', '--manifest-path', help=_MANIFEST_HELP_TEXT)
   parser.add_argument(
       '-n',
       '--no-clobber',
       action='store_true',
-      help='Do not overwrite existing files or objects at the destination.'
-      ' Skipped items will be printed. This option performs an additional GET'
-      ' request for cloud objects before attempting an upload.')
+      help=(
+          'Do not overwrite existing files or objects at the destination.'
+          ' Skipped items will be printed. This option may perform an'
+          ' additional GET request for cloud objects before attempting an'
+          ' upload.'
+      ),
+  )
   parser.add_argument(
       '-P',
       '--preserve-posix',
@@ -197,17 +227,7 @@ def add_cp_flags(parser):
       ' used. This option is not valid for copying to non-cloud destinations.')
 
   gzip_flags_group = parser.add_group(mutex=True)
-  gzip_flags_group.add_argument(
-      '-J',
-      '--gzip-in-flight-all',
-      action='store_true',
-      help=_GZIP_IN_FLIGHT_ALL_HELP_TEXT)
-  gzip_flags_group.add_argument(
-      '-j',
-      '--gzip-in-flight',
-      metavar='FILE_EXTENSIONS',
-      type=arg_parsers.ArgList(),
-      help=_GZIP_IN_FLIGHT_EXTENSIONS_HELP_TEXT)
+  add_gzip_in_flight_flags(gzip_flags_group)
   gzip_flags_group.add_argument(
       '-Z',
       '--gzip-local-all',
@@ -228,6 +248,26 @@ def add_cp_flags(parser):
   flags.add_precondition_flags(parser)
   flags.add_object_metadata_flags(parser)
   flags.add_encryption_flags(parser)
+
+
+def add_recursion_flag(parser):
+  """Adds flag for copying with recursion.
+
+  Not used by mv.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+  """
+  parser.add_argument(
+      '-R',
+      '-r',
+      '--recursive',
+      action='store_true',
+      help=(
+          'Recursively copy the contents of any directories that match the'
+          ' source path expression.'
+      ),
+  )
 
 
 def _validate_args(args, raw_destination_url):

@@ -66,6 +66,8 @@ def GetUpdateManager(group_args):
   compile_python = True
   if hasattr(group_args, 'compile_python'):
     compile_python = group_args.compile_python
+  if hasattr(group_args, 'no_compile_python'):
+    compile_python = group_args.no_compile_python
   return update_manager.UpdateManager(
       sdk_root=root, url=url, platform_filter=platform,
       skip_compile_python=(not compile_python))

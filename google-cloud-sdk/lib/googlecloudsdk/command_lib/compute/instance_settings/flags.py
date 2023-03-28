@@ -27,3 +27,27 @@ def AddDescribeInstanceSettingsFlags(parser):
       completer=compute_completers.ZonesCompleter,
       required=True,
   )
+
+
+def AddServiceAccountFlags(parser):
+  parser.add_argument(
+      'SERVICE_ACCOUNT_EMAIL', help='Email for service account'
+  )
+  parser.add_argument(
+      '--zone',
+      help='Zone for instance settings\n\n',
+      completer=compute_completers.ZonesCompleter,
+      required=True,
+  )
+
+
+def AddUpdateInstanceSettingsFlags(parser):
+  parser.add_argument(
+      '--service-account', help='Email for service account'
+  )
+  parser.add_argument(
+      '--zone',
+      help='Zone for instance settings\n\n',
+      completer=compute_completers.ZonesCompleter,
+      required=True,
+  )

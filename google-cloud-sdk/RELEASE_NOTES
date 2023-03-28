@@ -5,6 +5,127 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 424.0.0 (2023-03-28)
+
+### Breaking Changes
+
+*   **(Artifact Registry)** Fixed issue where the default table format was used when `--show-occurrences` flag was passed in, even though that format prevented occurrences from being displayed. Changed to use the default format when the flag is used. Use the same command without `--show-occurrences` to get the old behavior.
+
+
+### Artifact Registry
+
+* Allow using `gcloud beta artifacts images describe` with Artifact Registry
+repos that use gcr.io domain.
+* Promoted `artifacts settings describe` `artifacts settings enable-upgrade-redirection`, and `artifacts settings disable-upgrade-redirection` commands to GA.
+
+### BigQuery
+
+* Fixed issue storing `--api` flag in the `.bigqueryrc` file.
+* Added the option for three-year capacity commitment plans.
+* Updated wcwidth to version `0.2.6`.
+
+### Certificate Manager
+
+* Promoted `gcloud certificate-manager issuance-configs` to GA.
+
+### Cloud Build
+
+* Added `--default-buckets-behavior` flag to `gcloud builds submit`.
+
+### Cloud Deploy
+
+* Added `gcloud deploy rollouts advance` to alpha and beta.
+* Added `gcloud deploy rollouts cancel` to alpha and beta.
+* Added `gcloud deploy rollouts ignore-job` to alpha and beta.
+* Added `gcloud deploy job-runs terminate` to alpha and beta.
+* Added `starting-phase-id` flag to `gcloud deploy targets redeploy`.
+* Added `starting-phase-id` flag to `gcloud deploy targets rollback`.
+* Added `starting-phase-id` flag to `gcloud deploy releases promote`.
+* Added `initial-rollout-phase-id` flag to `gcloud deploy releases create`.
+
+### Cloud Memorystore
+
+*   Added `--maintenance-version` flag to `gcloud redis instances update`
+    to allow updating a maintenance version when updating an instance.
+
+### Cloud Run
+
+* Promoted `gcloud run jobs` command group and its sub-commands to GA,
+  except for the following commands:
+  * `gcloud beta run jobs deploy`
+  * `gcloud beta run jobs logs`
+  * `gcloud beta run jobs executions logs`
+* Promoted `--encryption-key-shutdown-hours` and `--clear-encryption-key-shutdown-hours` flags of `gcloud run deploy`
+  and `gcloud run services update` to GA for `--platform=managed`.
+
+### Cloud SQL
+
+*   Added `gcloud sql instances reencrypt`, which re-encrypts a Cloud SQL CMEK instance with the current primary key version in alpha.
+
+### Cloud TPU
+
+* Update `gcloud compute tpus tpu-vm create` to allow configuration of TPUs
+with chip topology using `--type` and `--topology` flags.
+
+### Compute Engine
+
+* Promoted `disk-consistency-group` argument of
+  `gcloud compute resource-policies create` to beta.
+* Promoted `--primary-disk`, `--primary-disk-project`, `--primary-disk-region`,
+  and `--primary-disk-zone` of `gcloud compute disks create` to beta.
+* Promoted `gcloud compute disks start-async-replication` to beta.
+* Promoted `gcloud compute disks stop-async-replication` to beta.
+* Promoted `gcloud compute disks stop-group-async-replication` to beta.
+* Promoted `gcloud compute disks bulk create` to beta.
+* Fixed documentation for `--update-policy-max-surge` and `--update-policy-replacement-method` flags.
+* Promoted `--queue-count` flag in `--network-interface` of `gcloud compute instance-templates create` to GA.
+* Promoted `--queue-count` flag in `--network-interface` of `gcloud compute instances bulk create` to GA.
+
+### Database Migration
+
+* Added `demote-destination` request to `gcloud database-migration migration-jobs`
+  to allow demoting the destination of a migration job.
+
+### Dataproc Metastore
+
+* Promoted the `custom-routes-enabled` boolean value to the `network-config-from-file` flag of `gcloud metastore services create` to v1alpha and v1beta.
+* Fixed issue where commands including an `--instance-size` flag would fail if the user specified an enum value of `EXTRA_SMALL` or `EXTRA_LARGE`.
+
+### Eventarc
+
+* Added `--event-data-content-type` flag to `gcloud eventarc triggers create` and `gcloud eventarc triggers update` to label the type of payload in MIME format that is expected from the CloudEvent data field.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.27 to v1.0.0-beta.29. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.29> and previous release notes for more details.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.24.11 to 1.24.12.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.12)
+  * kubectl.1.25 (1.25.8)
+  * kubectl.1.26 (1.26.3)
+
+### Network Security
+
+* Promoted `gcloud network-security url-lists` to beta.
+* Promoted `gcloud network-security gateway-security-policies` to beta.
+* Promoted `gcloud network-security gateway-security-policy-rules` to beta.
+
+### Recaptcha
+
+* Added `--support-non-google-app-store-distribution` to `recaptcha keys create`
+that enables support for non-Google Play Store distributed applications for the
+key.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 423.0.0 (2023-03-21)
 
 ### Google Cloud CLI

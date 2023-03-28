@@ -1841,7 +1841,7 @@ class ExportMessagesRequest(_messages.Message):
       the `start_time` defined below. Only messages whose `send_time` lies in
       the range `start_time` (inclusive) to `end_time` (exclusive) are
       exported.
-    gcsDestination: Export to a Cloud Storage destination.
+    gcsDestination: Exports to a Cloud Storage destination.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
       rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-
       0C6126475344DA9D/wg/conf/HL7MSH.htm) to process. If not specified, the
@@ -5428,7 +5428,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesCreateRequest(_messa
   Fields:
     createMessageRequest: A CreateMessageRequest resource to be passed as the
       request body.
-    parent: The name of the dataset this message belongs to.
+    parent: The name of the HL7v2 store this message belongs to.
   """
 
   createMessageRequest = _messages.MessageField('CreateMessageRequest', 1)

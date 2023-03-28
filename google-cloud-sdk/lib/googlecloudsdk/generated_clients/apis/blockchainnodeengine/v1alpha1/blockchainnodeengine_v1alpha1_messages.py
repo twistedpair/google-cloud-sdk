@@ -326,17 +326,14 @@ class EndpointInfo(_messages.Message):
   Blockchain Node.
 
   Fields:
-    beaconApiEndpoint: Output only. The assigned URL for the node Beacon API
-      endpoint.
     jsonRpcApiEndpoint: Output only. The assigned URL for the node JSON RPC
       API endpoint.
     websocketsApiEndpoint: Output only. The assigned URL for the node
       websockets API endpoint.
   """
 
-  beaconApiEndpoint = _messages.StringField(1)
-  jsonRpcApiEndpoint = _messages.StringField(2)
-  websocketsApiEndpoint = _messages.StringField(3)
+  jsonRpcApiEndpoint = _messages.StringField(1)
+  websocketsApiEndpoint = _messages.StringField(2)
 
 
 class EthereumDetails(_messages.Message):
@@ -350,10 +347,12 @@ class EthereumDetails(_messages.Message):
     NodeTypeValueValuesEnum: Immutable. The type of Ethereum node.
 
   Fields:
+    additionalEndpoints: Output only. Ethereum specific endpoint information.
     apiEnableAdmin: Immutable. Enables access to the admin HTTP endpoints
     apiEnableDebug: Immutable. Enables access to the debug HTTP endpoints
     consensusClient: Immutable. The consensus client
     executionClient: Immutable. The execution client
+    gethDetails: Details for the Geth execution client.
     network: Immutable. The Ethereum environment being accessed.
     nodeType: Immutable. The type of Ethereum node.
   """
@@ -420,12 +419,61 @@ class EthereumDetails(_messages.Message):
     FULL = 2
     ARCHIVE = 3
 
-  apiEnableAdmin = _messages.BooleanField(1)
-  apiEnableDebug = _messages.BooleanField(2)
-  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 3)
-  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 4)
-  network = _messages.EnumField('NetworkValueValuesEnum', 5)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 6)
+  additionalEndpoints = _messages.MessageField('EthereumEndpoints', 1)
+  apiEnableAdmin = _messages.BooleanField(2)
+  apiEnableDebug = _messages.BooleanField(3)
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 4)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 5)
+  gethDetails = _messages.MessageField('GethDetails', 6)
+  network = _messages.EnumField('NetworkValueValuesEnum', 7)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 8)
+
+
+class EthereumEndpoints(_messages.Message):
+  r"""Contains endpoint information specific to Ethereum Nodes.
+
+  Fields:
+    beaconApiEndpoint: Output only. The assigned URL for the node Beacon API
+      endpoint.
+  """
+
+  beaconApiEndpoint = _messages.StringField(1)
+
+
+class GethDetails(_messages.Message):
+  r"""Options for the Geth execution client. See
+  https://geth.ethereum.org/docs/fundamentals/command-line-options for more
+  details.
+
+  Enums:
+    GarbageCollectionModeValueValuesEnum: Immutable. Blockchain garbage
+      collection mode.
+
+  Fields:
+    garbageCollectionMode: Immutable. Blockchain garbage collection mode.
+  """
+
+  class GarbageCollectionModeValueValuesEnum(_messages.Enum):
+    r"""Immutable. Blockchain garbage collection mode.
+
+    Values:
+      GARBAGE_COLLECTION_MODE_UNSPECIFIED: The garbage collection has not been
+        specified.
+      FULL: Configures Geth's garbage collection so that older data not needed
+        for a full node is deleted. This is the default mode when creating a
+        full node.
+      ARCHIVE: Configures Geth's garbage collection so that old data is never
+        deleted. This is the default mode when creating an archive node. This
+        value can also be chosen when creating a full node in order to create
+        a partial/recent archive node. See
+        https://geth.ethereum.org/docs/fundamentals/sync-modes for more
+        details.
+    """
+    GARBAGE_COLLECTION_MODE_UNSPECIFIED = 0
+    FULL = 1
+    ARCHIVE = 2
+
+  garbageCollectionMode = _messages.EnumField('GarbageCollectionModeValueValuesEnum', 1)
 
 
 class GoogleProtobufEmpty(_messages.Message):

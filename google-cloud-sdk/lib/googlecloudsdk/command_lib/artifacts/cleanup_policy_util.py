@@ -49,21 +49,47 @@ def ParseCleanupPolicy(path):
         'Could not read JSON file {}: {}'.format(path, e))
   policies = dict()
   for policy in file_policies:
-    for key in ['name', 'action', 'condition']:
-      if key not in policy:
-        raise ar_exceptions.InvalidInputValueError(
-            'Key "{}" not found in policy.'.format(key))
-    if 'type' not in policy['action']:
+    name = policy.get('name')
+    if name is None:
       raise ar_exceptions.InvalidInputValueError(
-          'Key "type" not found in policy action.')
-    condition = dict()
-    if 'versionAge' in policy['condition']:
-      seconds = times.ParseDuration(policy['condition']['versionAge'])
-      condition['versionAge'] = six.text_type(seconds.total_seconds) + 's'
-    policies[policy['name']] = {
-        'id': policy['name'],
+          'Key "name" not found in policy.'
+      )
+    action = policy.get('action')
+    if action is None:
+      raise ar_exceptions.InvalidInputValueError(
+          'Key "action" not found in policy "{}".'.format(name)
+      )
+    try:
+      action = action.get('type', '')
+    except AttributeError as error:
+      six.raise_from(
+          ar_exceptions.InvalidInputValueError(
+              'Invalid action "{}" in policy "{}".'.format(action, name)
+          ),
+          error,
+      )
+    condition = policy.get('condition')
+    if condition is not None:
+      for duration_key in ['versionAge', 'olderThan', 'newerThan']:
+        if duration_key in condition:
+          seconds = times.ParseDuration(condition[duration_key])
+          condition[duration_key] = six.text_type(seconds.total_seconds) + 's'
+    most_recent_versions = policy.get('mostRecentVersions')
+    if 'condition' not in policy and 'mostRecentVersions' not in policy:
+      raise ar_exceptions.InvalidInputValueError(
+          'Key "condition" or "mostRecentVersions" not found in policy "{}".'
+          .format('name')
+      )
+    if 'condition' in policy and 'mostRecentVersions' in policy:
+      raise ar_exceptions.InvalidInputValueError(
+          'Only one of "condition" or "mostRecentVersions" '
+          'allowed in policy "{}".'.format(name)
+      )
+    policies[name] = {
+        'id': name,
+        'action': action,
         'condition': condition,
-        'action': policy['action']['type'],
+        'mostRecentVersions': most_recent_versions,
     }
   return policies
 

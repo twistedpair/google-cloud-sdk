@@ -503,7 +503,7 @@ class GkehubV1beta(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.memberships.generateConnectManifest',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['imagePullSecretContent', 'isUpgrade', 'namespace', 'proxy', 'registry', 'version'],
+        query_params=['cpuRequest', 'imagePullSecretContent', 'isUpgrade', 'memLimit', 'memRequest', 'namespace', 'proxy', 'registry', 'version'],
         relative_path='v1beta/{+name}:generateConnectManifest',
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest',

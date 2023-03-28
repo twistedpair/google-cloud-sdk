@@ -30,6 +30,8 @@ DEFAULT_LIST_FORMAT = """\
       name,
       vpnInterfaces[0].ipAddress:label=INTERFACE0,
       vpnInterfaces[1].ipAddress:label=INTERFACE1,
+      vpnInterfaces[0].ipv6Address:label=INTERFACE0_IPV6,
+      vpnInterfaces[1].ipv6Address:label=INTERFACE1_IPV6,
       network.basename(),
       region.basename()
     )"""
