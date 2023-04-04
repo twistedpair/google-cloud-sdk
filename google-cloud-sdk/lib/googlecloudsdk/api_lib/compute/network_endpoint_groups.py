@@ -333,6 +333,8 @@ class NetworkEndpointGroupsClient(object):
         message_endpoint.instance = arg_endpoint.get('instance')
       if 'ip' in arg_endpoint:
         message_endpoint.ipAddress = arg_endpoint.get('ip')
+      if 'ipv6' in arg_endpoint:
+        message_endpoint.ipv6Address = arg_endpoint.get('ipv6')
       if 'port' in arg_endpoint:
         message_endpoint.port = arg_endpoint.get('port')
       if 'fqdn' in arg_endpoint:

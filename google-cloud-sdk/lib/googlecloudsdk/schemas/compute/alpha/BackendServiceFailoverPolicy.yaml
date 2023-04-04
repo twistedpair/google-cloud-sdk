@@ -38,7 +38,8 @@ properties:
       configurable failover: [Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview). The default is false.
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview). The default is false.
     type: boolean
   failoverRatio:
     description: |-
@@ -49,5 +50,6 @@ properties:
       load balancers that have configurable failover: [Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview).
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview).
     type: number

@@ -270,12 +270,38 @@ class AlloydbProjectsLocationsClustersGenerateClientCertificateRequest(_messages
 class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersGetRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. The view of the cluster to return. Returns
+      all default fields if not set.
+
   Fields:
     name: Required. The name of the resource. For the required format, see the
       comment on the Cluster.name field.
+    view: Optional. The view of the cluster to return. Returns all default
+      fields if not set.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view of the cluster to return. Returns all default
+    fields if not set.
+
+    Values:
+      CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified,
+        equivalent to BASIC.
+      CLUSTER_VIEW_BASIC: BASIC server responses include all the relevant
+        cluster details, excluding
+        Cluster.ContinuousBackupInfo.EarliestRestorableTime and other view-
+        specific fields. The default value.
+      CLUSTER_VIEW_CONTINUOUS_BACKUP: CONTINUOUS_BACKUP response returns all
+        the fields from BASIC plus the earliest restorable time if continuous
+        backups are enabled. May increase latency.
+    """
+    CLUSTER_VIEW_UNSPECIFIED = 0
+    CLUSTER_VIEW_BASIC = 1
+    CLUSTER_VIEW_CONTINUOUS_BACKUP = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
@@ -1155,6 +1181,7 @@ class Cluster(_messages.Message):
       "projects/{project_number}/global/networks/{network_id}". This is
       required to create a cluster. It can be updated, but it cannot be
       removed.
+    networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
     reconciling: Output only. Reconciling
@@ -1306,13 +1333,14 @@ class Cluster(_messages.Message):
   migrationSource = _messages.MessageField('MigrationSource', 16)
   name = _messages.StringField(17)
   network = _messages.StringField(18)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 21)
-  sslConfig = _messages.MessageField('SslConfig', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  networkConfig = _messages.MessageField('NetworkConfig', 19)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
+  sslConfig = _messages.MessageField('SslConfig', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1364,6 +1392,8 @@ class ContinuousBackupInfo(_messages.Message):
     ScheduleValueListEntryValuesEnum:
 
   Fields:
+    earliestRestorableTime: Output only. The earliest restorable time that can
+      be restored to. Output only field.
     enabledTime: Output only. When ContinuousBackup was most recently enabled.
       Set to null if ContinuousBackup is not enabled.
     encryptionInfo: Output only. The encryption information for the WALs and
@@ -1394,9 +1424,10 @@ class ContinuousBackupInfo(_messages.Message):
     SATURDAY = 6
     SUNDAY = 7
 
-  enabledTime = _messages.StringField(1)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 2)
-  schedule = _messages.EnumField('ScheduleValueListEntryValuesEnum', 3, repeated=True)
+  earliestRestorableTime = _messages.StringField(1)
+  enabledTime = _messages.StringField(2)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 3)
+  schedule = _messages.EnumField('ScheduleValueListEntryValuesEnum', 4, repeated=True)
 
 
 class ContinuousBackupSource(_messages.Message):
@@ -2053,6 +2084,30 @@ class MigrationSource(_messages.Message):
   hostPort = _messages.StringField(1)
   referenceId = _messages.StringField(2)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 3)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Metadata related to network configuration.
+
+  Fields:
+    allocatedIpRange: Optional. The name of the allocated IP range for the
+      private IP AlloyDB cluster. For example: "google-managed-services-
+      default". If set, the instance IPs for this cluster will be created in
+      the allocated range. The range name must comply with RFC 1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Field name is intended to
+      be consistent with CloudSQL.
+    network: Required. The resource link for the VPC network in which cluster
+      resources are created and from which they are accessible via Private IP.
+      The network must belong to the same project as the cluster. It is
+      specified in the form:
+      "projects/{project_number}/global/networks/{network_id}". This is
+      required to create a cluster. It can be updated, but it cannot be
+      removed.
+  """
+
+  allocatedIpRange = _messages.StringField(1)
+  network = _messages.StringField(2)
 
 
 class Node(_messages.Message):

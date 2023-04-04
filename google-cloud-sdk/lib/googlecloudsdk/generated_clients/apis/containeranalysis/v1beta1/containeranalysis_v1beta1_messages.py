@@ -2813,6 +2813,7 @@ class Discovery(_messages.Message):
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -2828,6 +2829,7 @@ class Discovery(_messages.Message):
     SPDX_FILE = 11
     SPDX_RELATIONSHIP = 12
     VULNERABILITY_ASSESSMENT = 13
+    SBOM_REFERENCE = 14
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -3972,6 +3974,7 @@ class Note(_messages.Message):
     relatedNoteNames: Other notes related to this note.
     relatedUrl: URLs associated with this note.
     sbom: A note describing a software bill of materials.
+    sbomReference: A note describing an SBOM reference.
     shortDescription: A one sentence description of this note.
     spdxFile: A note describing an SPDX File.
     spdxPackage: A note describing an SPDX Package.
@@ -4004,6 +4007,7 @@ class Note(_messages.Message):
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -4019,6 +4023,7 @@ class Note(_messages.Message):
     SPDX_FILE = 11
     SPDX_RELATIONSHIP = 12
     VULNERABILITY_ASSESSMENT = 13
+    SBOM_REFERENCE = 14
 
   attestationAuthority = _messages.MessageField('Authority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -4035,13 +4040,14 @@ class Note(_messages.Message):
   relatedNoteNames = _messages.StringField(13, repeated=True)
   relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
   sbom = _messages.MessageField('DocumentNote', 15)
-  shortDescription = _messages.StringField(16)
-  spdxFile = _messages.MessageField('FileNote', 17)
-  spdxPackage = _messages.MessageField('PackageInfoNote', 18)
-  spdxRelationship = _messages.MessageField('RelationshipNote', 19)
-  updateTime = _messages.StringField(20)
-  vulnerability = _messages.MessageField('Vulnerability', 21)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 22)
+  sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
+  shortDescription = _messages.StringField(17)
+  spdxFile = _messages.MessageField('FileNote', 18)
+  spdxPackage = _messages.MessageField('PackageInfoNote', 19)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 20)
+  updateTime = _messages.StringField(21)
+  vulnerability = _messages.MessageField('Vulnerability', 22)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 23)
 
 
 class Occurrence(_messages.Message):
@@ -4076,6 +4082,7 @@ class Occurrence(_messages.Message):
     resource: Required. Immutable. The resource for which the occurrence
       applies.
     sbom: Describes a specific software bill of materials document.
+    sbomReference: Describes a specific SBOM reference occurrences.
     spdxFile: Describes a specific SPDX File.
     spdxPackage: Describes a specific SPDX Package.
     spdxRelationship: Describes a specific SPDX Relationship.
@@ -4105,6 +4112,7 @@ class Occurrence(_messages.Message):
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents an SBOM Reference.
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -4120,6 +4128,7 @@ class Occurrence(_messages.Message):
     SPDX_FILE = 11
     SPDX_RELATIONSHIP = 12
     VULNERABILITY_ASSESSMENT = 13
+    SBOM_REFERENCE = 14
 
   attestation = _messages.MessageField('Details', 1)
   build = _messages.MessageField('GrafeasV1beta1BuildDetails', 2)
@@ -4136,11 +4145,12 @@ class Occurrence(_messages.Message):
   remediation = _messages.StringField(13)
   resource = _messages.MessageField('Resource', 14)
   sbom = _messages.MessageField('DocumentOccurrence', 15)
-  spdxFile = _messages.MessageField('FileOccurrence', 16)
-  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 17)
-  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 18)
-  updateTime = _messages.StringField(19)
-  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 20)
+  sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 16)
+  spdxFile = _messages.MessageField('FileOccurrence', 17)
+  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 18)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 19)
+  updateTime = _messages.StringField(20)
+  vulnerability = _messages.MessageField('GrafeasV1beta1VulnerabilityDetails', 21)
 
 
 class Package(_messages.Message):
@@ -4907,6 +4917,101 @@ class Resource(_messages.Message):
   uri = _messages.StringField(3)
 
 
+class SBOMReferenceNote(_messages.Message):
+  r"""The note representing an SBOM reference.
+
+  Fields:
+    format: The format that SBOM takes. E.g. may be spdx, cyclonedx, etc...
+    version: The version of the format that the SBOM takes. E.g. if the format
+      is spdx, the version may be 2.3.
+  """
+
+  format = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class SBOMReferenceOccurrence(_messages.Message):
+  r"""The occurrence representing an SBOM reference as applied to a specific
+  resource. The occurrence follows the DSSE specification. See
+  https://github.com/secure-systems-lab/dsse/blob/master/envelope.md for more
+  details.
+
+  Fields:
+    payload: The actual payload that contains the SBOM reference data.
+    payloadType: The kind of payload that SbomReferenceIntotoPayload takes.
+      Since it's in the intoto format, this value is expected to be
+      'application/vnd.in-toto+json'.
+    signatures: The signatures over the payload.
+  """
+
+  payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
+  payloadType = _messages.StringField(2)
+  signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SbomReferenceIntotoPayload(_messages.Message):
+  r"""The actual payload that contains the SBOM Reference data. The payload
+  follows the intoto statement specification. See https://github.com/in-
+  toto/attestation/blob/main/spec/v1.0/statement.md for more details.
+
+  Fields:
+    _type: Identifier for the schema of the Statement.
+    predicate: Additional parameters of the Predicate. Includes the actual
+      data about the SBOM.
+    predicateType: URI identifying the type of the Predicate.
+    subject: Set of software artifacts that the attestation applies to. Each
+      element represents a single software artifact.
+  """
+
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SbomReferenceIntotoPredicate', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
+
+
+class SbomReferenceIntotoPredicate(_messages.Message):
+  r"""A predicate which describes the SBOM being referenced.
+
+  Messages:
+    DigestValue: A map of algorithm to digest of the contents of the SBOM.
+
+  Fields:
+    digest: A map of algorithm to digest of the contents of the SBOM.
+    location: The location of the SBOM.
+    mimeType: The mime type of the SBOM.
+    referrerId: The person or system referring this predicate to the consumer.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A map of algorithm to digest of the contents of the SBOM.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  location = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+  referrerId = _messages.StringField(4)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -5211,6 +5316,53 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Subject(_messages.Message):
+  r"""Set of software artifacts that the attestation applies to. Each element
+  represents a single software artifact.
+
+  Messages:
+    DigestValue: `"": ""` Algorithms can be e.g. sha256, sha512 See
+      https://github.com/in-
+      toto/attestation/blob/main/spec/field_types.md#DigestSet
+
+  Fields:
+    digest: `"": ""` Algorithms can be e.g. sha256, sha512 See
+      https://github.com/in-
+      toto/attestation/blob/main/spec/field_types.md#DigestSet
+    name: Identifier to distinguish this artifact from others within the
+      subject.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""`"": ""` Algorithms can be e.g. sha256, sha512 See
+    https://github.com/in-
+    toto/attestation/blob/main/spec/field_types.md#DigestSet
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  name = _messages.StringField(2)
 
 
 class TestIamPermissionsRequest(_messages.Message):

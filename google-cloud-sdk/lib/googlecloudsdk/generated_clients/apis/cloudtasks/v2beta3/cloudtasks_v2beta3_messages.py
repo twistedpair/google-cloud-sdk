@@ -376,7 +376,7 @@ class Binding(_messages.Message):
 
 
 class BufferTaskRequest(_messages.Message):
-  r"""LINT.IfChange Request message for BufferTask.
+  r"""Request message for BufferTask.
 
   Fields:
     body: Optional. Body of the HTTP request. The body can take any generic
@@ -1213,6 +1213,17 @@ class HttpTarget(_messages.Message):
       overrides HttpRequest for the task. Note that if the value is set to
       HttpMethod the HttpRequest of the task will be ignored at execution
       time.
+    oauthToken: If specified, an [OAuth
+      token](https://developers.google.com/identity/protocols/OAuth2) will be
+      generated and attached as the `Authorization` header in the HTTP
+      request. This type of authorization should generally only be used when
+      calling Google APIs hosted on *.googleapis.com.
+    oidcToken: If specified, an
+      [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
+      token will be generated and attached as an `Authorization` header in the
+      HTTP request. This type of authorization can be used for many scenarios,
+      including calling Cloud Run, or endpoints where you intend to validate
+      the token yourself.
     uriOverride: URI override. When specified, overrides the execution URI for
       all the tasks in the queue.
   """
@@ -1243,7 +1254,9 @@ class HttpTarget(_messages.Message):
 
   headerOverrides = _messages.MessageField('HeaderOverride', 1, repeated=True)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
-  uriOverride = _messages.MessageField('UriOverride', 3)
+  oauthToken = _messages.MessageField('OAuthToken', 3)
+  oidcToken = _messages.MessageField('OidcToken', 4)
+  uriOverride = _messages.MessageField('UriOverride', 5)
 
 
 class ListLocationsResponse(_messages.Message):

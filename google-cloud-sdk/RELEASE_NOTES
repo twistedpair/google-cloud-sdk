@@ -5,6 +5,81 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 425.0.0 (2023-04-04)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Migrate single request `gcloud compute` commands from the compute batch
+*   **(Compute Engine)** endpoint to region-specific endpoints.
+
+
+### App Engine
+
+* Removed `InvalidInstanceIpModeError` exception from `gcloud.app.instances.ssh`
+because SSH is now supported for all Instance Ip Modes.
+
+### Artifact Registry
+
+* Added `gcloud beta artifacts docker upgrade print-iam-policy`.
+
+### Certificate Manager
+
+* Promoted `gcloud certificate-manager trust-configs delete` to beta.
+* Promoted `gcloud certificate-manager trust-configs describe` to beta.
+* Promoted `gcloud certificate-manager trust-configs export` to beta.
+* Promoted `gcloud certificate-manager trust-configs import` to beta.
+* Promoted `gcloud certificate-manager trust-configs list` to beta.
+
+### Cloud Access Context Manager
+
+* Added `--dry-run-level` flag to `gcloud access-context-manager cloud-bindings`
+  to test cloud-binding before enforcing them.
+
+### Cloud Build
+
+* Update wait timeout for `gcloud builds worker-pools create` and `gcloud builds worker-pools delete` commands to 1h.
+
+### Cloud Functions
+
+*   Updated `gcloud functions add-iam-policy-binding`, `gcloud functions call`,
+    `gcloud functions delete`, `gcloud functions get-iam-policy`, `gcloud
+    functions remove-iam-policy-binding`, and `gcloud functions set-iam-policy`
+    to no longer require the flag `--gen2` when operating on a 2nd gen function.
+    This aligns with the existing behavior of `gcloud functions describe`. You
+    can disable this behavior and only work with 1st gen functions by either
+    adding `--no-gen2` to a command or by setting the `functions/gen2` config
+    property to `off`.
+
+### Cloud IAM
+
+* Added `gcloud iam workload-identity-pools providers keys` commands to manage workload identity pool provider keys.
+
+### Cloud Workstations
+
+* Adding support for the customer managed encryption key and encryption key service account flags in the `beta workstations config create` command.
+
+### Compute Engine
+
+* Enable "Uniform Bucket Level Access" by default for the temporary Cloud Storage buckets created in `gcloud compute images import` and `gcloud compute images export`.
+* Promoted `--source-ip-ranges` flag of `gcloud compute forwarding-rules [create|update]` to GA.
+
+### Database Migration
+
+* Added `--allocated-ip-range` flag to `gcloud database-migration connection-profiles create cloudsql`
+  to allow selecting an allocated IP range for VPC peering.
+* Added `--alloydb-cluster` flag to `gcloud database-migration connection-profiles create`
+  to allow creating a connection profile with an existing AlloyDB cluster.
+* Added `--alloydb-cluster` flag to `gcloud database-migration connection-profiles update`
+  to allow configuring a connection profile with an existing AlloyDB cluster.
+
+### Network Security
+
+* Promoted `gcloud network-security tls-inspection-policies` to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 424.0.0 (2023-03-28)
 
 ### Breaking Changes

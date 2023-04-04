@@ -210,13 +210,16 @@ class ConnectionProfilesClient(object):
     """
 
     ssl_config = self._GetSslConfig(args)
+    alloydb_cluster = args.alloydb_cluster if self._api_version == 'v1' else ''
     connection_profile_obj = self.messages.PostgreSqlConnectionProfile(
         host=args.host,
         port=args.port,
         username=args.username,
         password=args.password,
         ssl=ssl_config,
-        cloudSqlId=args.GetValue(self._InstanceArgName()))
+        cloudSqlId=args.GetValue(self._InstanceArgName()),
+        alloydbClusterId=alloydb_cluster,
+    )
 
     private_service_connect_connectivity_ref = (
         args.CONCEPTS.psc_service_attachment.Parse()
@@ -253,6 +256,9 @@ class ConnectionProfilesClient(object):
       connection_profile.postgresql.cloudSqlId = args.GetValue(
           self._InstanceArgName())
       update_fields.append('postgresql.instance')
+    if self._api_version == 'v1' and args.IsSpecified('alloydb_cluster'):
+      connection_profile.postgresql.alloydbClusterId = args.alloydb_cluster
+      update_fields.append('postgresql.alloydb_cluster')
     self._UpdatePostgreSqlSslConfig(connection_profile, args, update_fields)
 
   def _GetProvider(self, cp_type, provider):
@@ -276,12 +282,15 @@ class ConnectionProfilesClient(object):
     ]
 
   def _GetIpConfig(self, args):
-    return self.messages.SqlIpConfig(
+    ip_config = self.messages.SqlIpConfig(
         enableIpv4=args.enable_ip_v4,
         privateNetwork=args.private_network,
         requireSsl=args.require_ssl,
         authorizedNetworks=self._GetAuthorizedNetworks(args.authorized_networks)
     )
+    if self._api_version == 'v1':
+      ip_config.allocatedIpRange = args.allocated_ip_range
+    return ip_config
 
   def _GetDataDiskType(self, cp_type, data_disk_type):
     if data_disk_type is None:

@@ -41,6 +41,35 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_JOBS = (
+      'projects.locations.jobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_JOBS_TASKGROUPS = (
+      'projects.locations.jobs.taskGroups',
+      'projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/'
+      'taskGroups/{taskGroupsId}',
+      {},
+      ['projectsId', 'locationsId', 'jobsId', 'taskGroupsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_JOBS_TASKGROUPS_TASKS = (
+      'projects.locations.jobs.taskGroups.tasks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/'
+              'taskGroups/{taskGroupsId}/tasks/{tasksId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

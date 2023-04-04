@@ -102,8 +102,8 @@ def _WarnForDestructiveSizeUpdate(instance_ref, instance):
   messages = util.GetMessagesForResource(instance_ref)
   message = 'Change to instance size requested. '
   if instance.tier == messages.Instance.TierValueValuesEnum.BASIC:
-    message += ('Scaling a Basic Tier instance will result in a full cache '
-                'flush, and the instance will be unavailable during the '
+    message += ('Scaling a Basic Tier instance may result in data loss, '
+                'and the instance will briefly be unavailable during the '
                 'operation. ')
   elif instance.tier == messages.Instance.TierValueValuesEnum.STANDARD_HA:
     message += ('Scaling a Standard Tier instance may result in the loss of '

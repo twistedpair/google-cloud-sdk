@@ -301,6 +301,18 @@ def HasSubsettingSubsetSizeArgs(args):
   return args.IsSpecified('subsetting_subset_size')
 
 
+def HasIpAddressSelectionPolicyArgs(args):
+  """Returns true if request requires an IP address selection policy.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    True if request requires an IP address selection policy.
+  """
+  return args.IsSpecified('ip_address_selection_policy')
+
+
 def HasCacheKeyPolicyArgsForUpdate(args):
   """Returns true if update request requires a CacheKeyPolicy message.
 
@@ -365,6 +377,22 @@ def ApplySubsettingArgs(client, args, backend_service, use_subset_size):
       subsetting_args['subsetSize'] = args.subsetting_subset_size
   if subsetting_args:
     backend_service.subsetting = client.messages.Subsetting(**subsetting_args)
+
+
+def ApplyIpAddressSelectionPolicyArgs(client, args, backend_service):
+  """Applies the IP address selection policy argument to the backend service.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+  if HasIpAddressSelectionPolicyArgs(args):
+    backend_service.ipAddressSelectionPolicy = (
+        client.messages.BackendService.IpAddressSelectionPolicyValueValuesEnum(
+            args.ip_address_selection_policy
+        )
+    )
 
 
 def GetNegativeCachingPolicy(client, args, backend_service):
@@ -500,8 +528,8 @@ def ApplyCdnPolicyArgs(client,
     cdn_policy.requestCoalescing = args.request_coalescing
 
   if args.cache_mode:
-    cdn_policy.cacheMode = client.messages.BackendServiceCdnPolicy.\
-      CacheModeValueValuesEnum(args.cache_mode)
+    cdn_policy.cacheMode = (client.messages.BackendServiceCdnPolicy
+                            .CacheModeValueValuesEnum(args.cache_mode))
   if args.client_ttl is not None:
     cdn_policy.clientTtl = args.client_ttl
   if args.default_ttl is not None:
@@ -511,20 +539,21 @@ def ApplyCdnPolicyArgs(client,
 
   if is_update:
     # Takes care of resetting fields that are invalid for given cache modes.
-    should_clean_client_ttl = args.cache_mode == 'USE_ORIGIN_HEADERS' and \
-                              args.client_ttl is None
+    should_clean_client_ttl = (args.cache_mode == 'USE_ORIGIN_HEADERS'
+                               and args.client_ttl is None)
     if args.no_client_ttl or should_clean_client_ttl:
       cleared_fields.append('cdnPolicy.clientTtl')
       cdn_policy.clientTtl = None
 
-    should_clean_default_ttl = args.cache_mode == 'USE_ORIGIN_HEADERS' and \
-                               args.default_ttl is None
+    should_clean_default_ttl = (args.cache_mode == 'USE_ORIGIN_HEADERS'
+                                and args.default_ttl is None)
     if args.no_default_ttl or should_clean_default_ttl:
       cleared_fields.append('cdnPolicy.defaultTtl')
       cdn_policy.defaultTtl = None
 
-    should_clean_max_ttl = (args.cache_mode == 'USE_ORIGIN_HEADERS' or \
-               args.cache_mode == 'FORCE_CACHE_ALL') and args.max_ttl is None
+    should_clean_max_ttl = ((args.cache_mode == 'USE_ORIGIN_HEADERS'
+                             or args.cache_mode == 'FORCE_CACHE_ALL')
+                            and args.max_ttl is None)
     if args.no_max_ttl or should_clean_max_ttl:
       cleared_fields.append('cdnPolicy.maxTtl')
       cdn_policy.maxTtl = None
@@ -536,7 +565,7 @@ def ApplyCdnPolicyArgs(client,
   if negative_caching_policy is not None:
     cdn_policy.negativeCachingPolicy = negative_caching_policy
   if args.negative_caching_policy and not cdn_policy.negativeCaching:
-    # TODO (b/209813007): Replace implicit config change with warning that
+    # TODO(b/209813007): Replace implicit config change with warning that
     # negative caching is disabled and a prompt to enable it with
     # --negative-caching
     log.warning(
@@ -546,8 +575,8 @@ def ApplyCdnPolicyArgs(client,
     cdn_policy.negativeCaching = True
 
   if is_update:
-    if args.no_negative_caching_policies or \
-        (args.negative_caching is not None and not args.negative_caching):
+    if (args.no_negative_caching_policies or
+        (args.negative_caching is not None and not args.negative_caching)):
       cleared_fields.append('cdnPolicy.negativeCachingPolicy')
       cdn_policy.negativeCachingPolicy = []
 

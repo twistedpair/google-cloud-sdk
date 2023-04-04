@@ -27,7 +27,7 @@ import multiprocessing
 import sys
 import threading
 
-from googlecloudsdk.api_lib.storage import patch_gcs_messages
+from googlecloudsdk.api_lib.storage.gcs_json import patch_apitools_messages
 from googlecloudsdk.command_lib import crash_handling
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
@@ -45,7 +45,7 @@ from six.moves import queue
 
 
 # TODO(b/171296237): Remove this when fixes are submitted in apitools.
-patch_gcs_messages.patch()
+patch_apitools_messages.patch()
 
 
 if sys.version_info.major == 2:

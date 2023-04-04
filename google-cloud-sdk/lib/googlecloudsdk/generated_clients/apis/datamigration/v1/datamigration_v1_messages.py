@@ -37,6 +37,11 @@ class AlloyDbSettings(_messages.Message):
       containing a list of 'key', 'value' pairs.
 
   Fields:
+    encryptionConfig: Optional. The encryption config can be specified to
+      encrypt the data disks and other persistent data resources of a cluster
+      with a customer-managed encryption key (CMEK). When this field is not
+      specified, the cluster will then use default encryption scheme to
+      protect the user data.
     initialUser: Required. Input only. Initial user to setup during cluster
       creation. Required.
     labels: Labels for the AlloyDB cluster created by DMS. An object
@@ -75,10 +80,11 @@ class AlloyDbSettings(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  initialUser = _messages.MessageField('UserPassword', 1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  primaryInstanceSettings = _messages.MessageField('PrimaryInstanceSettings', 3)
-  vpcNetwork = _messages.StringField(4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 1)
+  initialUser = _messages.MessageField('UserPassword', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  primaryInstanceSettings = _messages.MessageField('PrimaryInstanceSettings', 4)
+  vpcNetwork = _messages.StringField(5)
 
 
 class ApplyConversionWorkspaceRequest(_messages.Message):
@@ -2139,6 +2145,19 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""EncryptionConfig describes the encryption config of a cluster that is
+  encrypted with a CMEK (customer-managed encryption key).
+
+  Fields:
+    kmsKeyName: The fully-qualified resource name of the KMS key. Each Cloud
+      KMS key is regionalized and has the following format: projects/[PROJECT]
+      /locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
 class EntityMapping(_messages.Message):
   r"""Details of the mappings of a database entity.
 
@@ -3655,6 +3674,10 @@ class SqlIpConfig(_messages.Message):
   r"""IP Management configuration.
 
   Fields:
+    allocatedIpRange: Optional. The name of the allocated IP range for the
+      private IP Cloud SQL instance. This name refers to an already allocated
+      IP range. If set, the instance IP will be created in the allocated
+      range.
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. See
       https://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation, also known as
@@ -3668,10 +3691,11 @@ class SqlIpConfig(_messages.Message):
     requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 
-  authorizedNetworks = _messages.MessageField('SqlAclEntry', 1, repeated=True)
-  enableIpv4 = _messages.BooleanField(2)
-  privateNetwork = _messages.StringField(3)
-  requireSsl = _messages.BooleanField(4)
+  allocatedIpRange = _messages.StringField(1)
+  authorizedNetworks = _messages.MessageField('SqlAclEntry', 2, repeated=True)
+  enableIpv4 = _messages.BooleanField(3)
+  privateNetwork = _messages.StringField(4)
+  requireSsl = _messages.BooleanField(5)
 
 
 class SshScript(_messages.Message):

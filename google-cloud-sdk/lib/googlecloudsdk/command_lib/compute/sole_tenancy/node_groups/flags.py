@@ -153,13 +153,35 @@ def AddListingShareSettingsArgToParser(parser):
       help='If provided, shows details for the share setting')
 
 
-def AddNodesArgToParser(parser):
+def AddSimulateMaintenanceEventNodesArgToParser(parser):
   """Add --nodes flag."""
   parser.add_argument(
       '--nodes',
       metavar='NODE',
       type=arg_parsers.ArgList(),
       help='The names of the nodes to simulate maintenance event.')
+
+
+def AddPerformMaintenanceNodesArgToParser(parser):
+  """Add --nodes flag."""
+  parser.add_argument(
+      '--nodes',
+      required=True,
+      metavar='NODE',
+      type=arg_parsers.ArgList(min_length=1),
+      help='The names of the nodes to perform maintenance on.')
+
+
+def AddPerformMaintenanceStartTimeArgToParser(parser):
+  """Add --start-time flag."""
+  parser.add_argument(
+      '--start-time',
+      metavar='START_TIME',
+      type=arg_parsers.Datetime.Parse,
+      help=(
+          'The requested time for the maintenance window to start. The'
+          ' timestamp must be an RFC3339 valid string.'
+      ))
 
 
 def GetMaintenancePolicyEnumMapper(messages):

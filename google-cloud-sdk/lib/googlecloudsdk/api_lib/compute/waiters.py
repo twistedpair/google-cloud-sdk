@@ -359,15 +359,37 @@ class OperationData(object):
         pass
 
 
-def WaitForOperations(operations_data,
-                      http,
-                      batch_url,
-                      warnings,
-                      errors,
-                      progress_tracker=None,
-                      timeout=None,
-                      log_result=True,
-                      enable_single_request=False):
+def _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
+  """Determine whether a service is involved in compute.instances CUJ."""
+  service_methods = {
+      'ZoneOperationsService': ['Wait'],
+      'ProjectsService': ['Get'],
+      'ZonesService': ['List', 'Get'],
+  }
+
+  service_name = service.__class__.__name__
+
+  if service_name == 'InstancesService':
+    return True
+
+  if (
+      service_name in service_methods
+      and method in service_methods[service_name]
+  ):
+    return True
+  return False
+
+
+def WaitForOperations(
+    operations_data,
+    http,
+    batch_url,
+    warnings,
+    errors,
+    progress_tracker=None,
+    timeout=None,
+    log_result=True,
+):
   """Blocks until the given operations are done or until a timeout is reached.
 
   Args:
@@ -382,8 +404,6 @@ def WaitForOperations(operations_data,
       operations to reach the DONE state.
     log_result: Whether the Operation Waiter should print the result in past
       tense of each request.
-    enable_single_request: if requests is single, send single request instead
-      of batch request
 
   Yields:
     The resources pointed to by the operations' targetLink fields if
@@ -486,10 +506,15 @@ def WaitForOperations(operations_data,
     requests = resource_requests + operation_requests
     if not requests:
       break
-
-    if not properties.VALUES.compute.force_batch_request.GetBool(
-    ) and enable_single_request and len(requests) == 1:
+    enable_single_request = False
+    if (
+        not properties.VALUES.compute.force_batch_request.GetBool()
+        and len(requests) == 1
+    ):
       service, method, request_body = requests[0]
+      if not _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
+        enable_single_request = True
+    if enable_single_request:
       responses, request_errors = single_request_helper.MakeSingleRequest(
           service=service, method=method, request_body=request_body)
     else:

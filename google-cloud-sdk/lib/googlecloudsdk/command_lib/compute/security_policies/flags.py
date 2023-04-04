@@ -64,6 +64,16 @@ def SecurityPolicyArgument(required=True, plural=False):
       global_collection='compute.securityPolicies')
 
 
+def SecurityPolicyRegionalArgument(required=True, plural=False):
+  return compute_flags.ResourceArgument(
+      resource_name='security policy',
+      completer=SecurityPoliciesCompleter,
+      plural=plural,
+      custom_plural='security policies',
+      required=required,
+      regional_collection='compute.regionSecurityPolicies')
+
+
 def SecurityPolicyMultiScopeArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='security policy',

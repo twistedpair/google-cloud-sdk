@@ -673,6 +673,13 @@ class StorageGrpcTransport(StorageTransport):
         r"""Return a callable for the cancel resumable write method over gRPC.
 
         Cancels an in-progress resumable upload.
+        Any attempts to write to the resumable upload after
+        cancelling the upload will fail.
+
+        The behavior for currently in progress write operations
+        is not guaranteed - they could either complete before
+        the cancellation or fail if the cancellation completes
+        first.
 
         Returns:
             Callable[[~.CancelResumableWriteRequest],

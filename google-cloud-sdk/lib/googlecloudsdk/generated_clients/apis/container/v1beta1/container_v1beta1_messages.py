@@ -363,6 +363,22 @@ class AvailableVersion(_messages.Message):
   version = _messages.StringField(2)
 
 
+class BestEffortProvisioning(_messages.Message):
+  r"""Best effort provisioning.
+
+  Fields:
+    enabled: When this is enabled, cluster/node pool creations will ignore
+      non-fatal errors like stockout to best provision as many nodes as
+      possible right now and eventually bring up all target number of nodes
+    minProvisionNodes: Minimum number of nodes to be provisioned to be
+      considered as succeeded, and the rest of nodes will be provisioned
+      gradually and eventually when stockout issue has been resolved.
+  """
+
+  enabled = _messages.BooleanField(1)
+  minProvisionNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class BigQueryDestination(_messages.Message):
   r"""Parameters for using BigQuery as the destination of resource usage
   export.
@@ -776,6 +792,8 @@ class Cluster(_messages.Message):
       related Google Compute Engine resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
       Resource usage export is disabled when this config unspecified.
+    runtimeVulnerabilityInsightConfig: Enable/Disable RVI features for the
+      cluster.
     securityPostureConfig: Enable/Disable Security Posture API features for
       the cluster.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -935,22 +953,23 @@ class Cluster(_messages.Message):
   releaseChannel = _messages.MessageField('ReleaseChannel', 66)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 67)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 68)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 69)
-  selfLink = _messages.StringField(70)
-  servicesIpv4Cidr = _messages.StringField(71)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 72)
-  status = _messages.EnumField('StatusValueValuesEnum', 73)
-  statusMessage = _messages.StringField(74)
-  subnetwork = _messages.StringField(75)
-  tpuConfig = _messages.MessageField('TpuConfig', 76)
-  tpuIpv4CidrBlock = _messages.StringField(77)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 78)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 79)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 80)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 81)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 82)
-  workloadMonitoringEnabledEap = _messages.BooleanField(83)
-  zone = _messages.StringField(84)
+  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 69)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 70)
+  selfLink = _messages.StringField(71)
+  servicesIpv4Cidr = _messages.StringField(72)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 73)
+  status = _messages.EnumField('StatusValueValuesEnum', 74)
+  statusMessage = _messages.StringField(75)
+  subnetwork = _messages.StringField(76)
+  tpuConfig = _messages.MessageField('TpuConfig', 77)
+  tpuIpv4CidrBlock = _messages.StringField(78)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 79)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 80)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 81)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 82)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 83)
+  workloadMonitoringEnabledEap = _messages.BooleanField(84)
+  zone = _messages.StringField(85)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1204,6 +1223,8 @@ class ClusterUpdate(_messages.Message):
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredRuntimeVulnerabilityInsightConfig: Enable/Disable RVI features for
+      the cluster.
     desiredSecurityPostureConfig: Enable/Disable Security Posture API features
       for the cluster.
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
@@ -1343,21 +1364,22 @@ class ClusterUpdate(_messages.Message):
   desiredProtectConfig = _messages.MessageField('ProtectConfig', 53)
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 54)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 55)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 56)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 57)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 58)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 59)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 60)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 61)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 62)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 63)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 64)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 65)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 66)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 67)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 68)
-  etag = _messages.StringField(69)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 70)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 56)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 57)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 58)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 59)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 60)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 61)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 62)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 63)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 64)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 65)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 66)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 67)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 68)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 69)
+  etag = _messages.StringField(70)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 71)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -3698,6 +3720,38 @@ class NetworkTags(_messages.Message):
   tags = _messages.StringField(1, repeated=True)
 
 
+class NodeAffinity(_messages.Message):
+  r"""Specifies the NodeAffinity key, values, and affinity operator according
+  to [shared sole tenant node group
+  affinities](https://cloud.google.com/compute/docs/nodes/sole-tenant-
+  nodes#node_affinity_and_anti-affinity).
+
+  Enums:
+    OperatorValueValuesEnum: Operator for NodeAffinity.
+
+  Fields:
+    key: Key for NodeAffinity.
+    operator: Operator for NodeAffinity.
+    values: Values for NodeAffinity.
+  """
+
+  class OperatorValueValuesEnum(_messages.Enum):
+    r"""Operator for NodeAffinity.
+
+    Values:
+      OPERATOR_UNSPECIFIED: Invalid or unspecified affinity operator.
+      IN: Affinity operator.
+      NOT_IN: Anti-affinity operator.
+    """
+    OPERATOR_UNSPECIFIED = 0
+    IN = 1
+    NOT_IN = 2
+
+  key = _messages.StringField(1)
+  operator = _messages.EnumField('OperatorValueValuesEnum', 2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class NodeConfig(_messages.Message):
   r"""Parameters that describe the nodes in a cluster. GKE Autopilot clusters
   do not recognize parameters in `NodeConfig`. Use
@@ -3837,6 +3891,8 @@ class NodeConfig(_messages.Message):
       otherwise, if no Service Account is specified, the "default" service
       account is used.
     shieldedInstanceConfig: Shielded Instance options.
+    soleTenantConfig: Parameters for node pools to be backed by shared sole
+      tenant node groups.
     spot: Spot flag for enabling Spot VM, which is a rebrand of the existing
       preemptible flag.
     stableFleetConfig: Stable fleet configs
@@ -3975,12 +4031,13 @@ class NodeConfig(_messages.Message):
   sandboxConfig = _messages.MessageField('SandboxConfig', 28)
   serviceAccount = _messages.StringField(29)
   shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 30)
-  spot = _messages.BooleanField(31)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 32)
-  tags = _messages.StringField(33, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 34, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 35)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 36)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 31)
+  spot = _messages.BooleanField(32)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 33)
+  tags = _messages.StringField(34, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 35, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 36)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 37)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -4195,6 +4252,7 @@ class NodePool(_messages.Message):
   Fields:
     autoscaling: Autoscaler configuration for this NodePool. Autoscaler is
       enabled only if a valid configuration is present.
+    bestEffortProvisioning: Enable best effort provisioning for nodes
     conditions: Which conditions caused the current node pool state.
     config: The node configuration of the pool.
     etag: This checksum is computed by the server based on the value of node
@@ -4272,25 +4330,26 @@ class NodePool(_messages.Message):
     ERROR = 6
 
   autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
-  conditions = _messages.MessageField('StatusCondition', 2, repeated=True)
-  config = _messages.MessageField('NodeConfig', 3)
-  etag = _messages.StringField(4)
-  initialNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(6, repeated=True)
-  locations = _messages.StringField(7, repeated=True)
-  management = _messages.MessageField('NodeManagement', 8)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 9)
-  name = _messages.StringField(10)
-  networkConfig = _messages.MessageField('NodeNetworkConfig', 11)
-  placementPolicy = _messages.MessageField('PlacementPolicy', 12)
-  podIpv4CidrSize = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 14)
-  selfLink = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  updateInfo = _messages.MessageField('UpdateInfo', 18)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 19)
-  version = _messages.StringField(20)
+  bestEffortProvisioning = _messages.MessageField('BestEffortProvisioning', 2)
+  conditions = _messages.MessageField('StatusCondition', 3, repeated=True)
+  config = _messages.MessageField('NodeConfig', 4)
+  etag = _messages.StringField(5)
+  initialNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(7, repeated=True)
+  locations = _messages.StringField(8, repeated=True)
+  management = _messages.MessageField('NodeManagement', 9)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
+  name = _messages.StringField(11)
+  networkConfig = _messages.MessageField('NodeNetworkConfig', 12)
+  placementPolicy = _messages.MessageField('PlacementPolicy', 13)
+  podIpv4CidrSize = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 15)
+  selfLink = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  updateInfo = _messages.MessageField('UpdateInfo', 19)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 20)
+  version = _messages.StringField(21)
 
 
 class NodePoolAutoConfig(_messages.Message):
@@ -5028,6 +5087,34 @@ class RollingSettings(_messages.Message):
   maxUnavailablePercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class RuntimeVulnerabilityInsightConfig(_messages.Message):
+  r"""RuntimeVulnerabilityInsightConfig defines the flags needed to
+  enable/disable RVI features for the cluster.
+
+  Enums:
+    ModeValueValuesEnum: Sets which mode to use for Runtime Vulnerability
+      Insight features.
+
+  Fields:
+    mode: Sets which mode to use for Runtime Vulnerability Insight features.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for Runtime Vulnerability Insight features.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables RuntimeVulnerabilityInsight on the cluster.
+      PREMIUM_VULNERABILITY_SCAN: Applies premium vulnerability insights on
+        the cluster.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    PREMIUM_VULNERABILITY_SCAN = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+
+
 class SandboxConfig(_messages.Message):
   r"""SandboxConfig contains configurations of the sandbox to use for the
   node.
@@ -5640,6 +5727,18 @@ class ShieldedNodes(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class SoleTenantConfig(_messages.Message):
+  r"""SoleTenantConfig contains the NodeAffinities to specify what shared sole
+  tenant node groups should back the node pool.
+
+  Fields:
+    nodeAffinities: NodeAffinities used to match to a shared sole tenant node
+      group.
+  """
+
+  nodeAffinities = _messages.MessageField('NodeAffinity', 1, repeated=True)
 
 
 class StableFleetConfig(_messages.Message):

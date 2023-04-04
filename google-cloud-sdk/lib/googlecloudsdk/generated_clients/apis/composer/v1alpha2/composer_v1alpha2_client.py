@@ -531,6 +531,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchDatabaseProperties(self, request, global_params=None):
+      r"""Fetches database properties.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchDatabasePropertiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchDatabaseProperties')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchDatabaseProperties.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:fetchDatabaseProperties',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.fetchDatabaseProperties',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1alpha2/{+environment}:fetchDatabaseProperties',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest',
+        response_type_name='FetchDatabasePropertiesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get an existing environment.
 

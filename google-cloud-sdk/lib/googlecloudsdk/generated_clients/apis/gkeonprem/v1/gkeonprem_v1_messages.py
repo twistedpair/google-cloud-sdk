@@ -766,8 +766,8 @@ class BareMetalIslandModeCidrConfig(_messages.Message):
       RFC1918 IPv4 address from these ranges. This field cannot be changed
       after creation.
     serviceAddressCidrBlocks: Required. All services in the cluster are
-      assigned an RFC1918 IPv4 address from these ranges. This field cannot be
-      changed after creation.
+      assigned an RFC1918 IPv4 address from these ranges. This field is
+      mutable after creation starting with version 1.15.
   """
 
   podAddressCidrBlocks = _messages.StringField(1, repeated=True)
@@ -1400,6 +1400,53 @@ class BareMetalStandaloneApiServerArgument(_messages.Message):
   value = _messages.StringField(2)
 
 
+class BareMetalStandaloneBgpLbConfig(_messages.Message):
+  r"""BareMetalStandaloneBgpLbConfig represents configuration parameters for a
+  Border Gateway Protocol (BGP) load balancer.
+
+  Fields:
+    addressPools: Required. AddressPools is a list of non-overlapping IP pools
+      used by load balancer typed services. All addresses must be routable to
+      load balancer nodes. IngressVIP must be included in the pools.
+    asn: Required. BGP autonomous system number (ASN) of the cluster. This
+      field can be updated after cluster creation.
+    bgpPeerConfigs: Required. The list of BGP peers that the cluster will
+      connect to. At least one peer must be configured for each control plane
+      node. Control plane nodes will connect to these peers to advertise the
+      control plane VIP. The Services load balancer also uses these peers by
+      default. This field can be updated after cluster creation.
+    loadBalancerNodePoolConfig: Specifies the node pool running data plane
+      load balancing. L2 connectivity is required among nodes in this pool. If
+      missing, the control plane node pool is used for data plane load
+      balancing.
+  """
+
+  addressPools = _messages.MessageField('BareMetalStandaloneLoadBalancerAddressPool', 1, repeated=True)
+  asn = _messages.IntegerField(2)
+  bgpPeerConfigs = _messages.MessageField('BareMetalStandaloneBgpPeerConfig', 3, repeated=True)
+  loadBalancerNodePoolConfig = _messages.MessageField('BareMetalStandaloneLoadBalancerNodePoolConfig', 4)
+
+
+class BareMetalStandaloneBgpPeerConfig(_messages.Message):
+  r"""BareMetalStandaloneBgpPeerConfig represents configuration parameters for
+  a Border Gateway Protocol (BGP) peer.
+
+  Fields:
+    asn: Required. BGP autonomous system number (ASN) for the network that
+      contains the external peer device.
+    controlPlaneNodes: The IP address of the control plane node that connects
+      to the external peer. If you don't specify any control plane nodes, all
+      control plane nodes can connect to the external peer. If you specify one
+      or more IP addresses, only the nodes specified participate in peering
+      sessions.
+    ipAddress: Required. The IP address of the external peer device.
+  """
+
+  asn = _messages.IntegerField(1)
+  controlPlaneNodes = _messages.StringField(2, repeated=True)
+  ipAddress = _messages.StringField(3)
+
+
 class BareMetalStandaloneCluster(_messages.Message):
   r"""Resource that represents a bare metal standalone cluster.
 
@@ -1679,16 +1726,18 @@ class BareMetalStandaloneLoadBalancerConfig(_messages.Message):
   r"""Specifies the load balancer configuration.
 
   Fields:
+    bgpLbConfig: Configuration for BGP typed load balancers.
     manualLbConfig: Manually configured load balancers.
     metalLbConfig: Configuration for MetalLB load balancers.
     portConfig: Configures the ports that the load balancer will listen on.
     vipConfig: The VIPs used by the load balancer.
   """
 
-  manualLbConfig = _messages.MessageField('BareMetalStandaloneManualLbConfig', 1)
-  metalLbConfig = _messages.MessageField('BareMetalStandaloneMetalLbConfig', 2)
-  portConfig = _messages.MessageField('BareMetalStandalonePortConfig', 3)
-  vipConfig = _messages.MessageField('BareMetalStandaloneVipConfig', 4)
+  bgpLbConfig = _messages.MessageField('BareMetalStandaloneBgpLbConfig', 1)
+  manualLbConfig = _messages.MessageField('BareMetalStandaloneManualLbConfig', 2)
+  metalLbConfig = _messages.MessageField('BareMetalStandaloneMetalLbConfig', 3)
+  portConfig = _messages.MessageField('BareMetalStandalonePortConfig', 4)
+  vipConfig = _messages.MessageField('BareMetalStandaloneVipConfig', 5)
 
 
 class BareMetalStandaloneLoadBalancerNodePoolConfig(_messages.Message):
@@ -5231,6 +5280,7 @@ class VmwareCluster(_messages.Message):
     deleteTime: Output only. The time at which VMware user cluster was
       deleted.
     description: A human readable description of this VMware user cluster.
+    enableControlPlaneV2: Enable control plane V2. Default to false.
     endpoint: Output only. The DNS name of VMware user cluster's API server.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
@@ -5340,24 +5390,25 @@ class VmwareCluster(_messages.Message):
   dataplaneV2 = _messages.MessageField('VmwareDataplaneV2Config', 9)
   deleteTime = _messages.StringField(10)
   description = _messages.StringField(11)
-  endpoint = _messages.StringField(12)
-  etag = _messages.StringField(13)
-  fleet = _messages.MessageField('Fleet', 14)
-  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 15)
-  localName = _messages.StringField(16)
-  name = _messages.StringField(17)
-  networkConfig = _messages.MessageField('VmwareNetworkConfig', 18)
-  onPremVersion = _messages.StringField(19)
-  reconciling = _messages.BooleanField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  status = _messages.MessageField('ResourceStatus', 22)
-  storage = _messages.MessageField('VmwareStorageConfig', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
-  validationCheck = _messages.MessageField('ValidationCheck', 26)
-  vcenter = _messages.MessageField('VmwareVCenterConfig', 27)
-  vmTrackingEnabled = _messages.BooleanField(28)
-  workloadIdentity = _messages.MessageField('VmwareWorkloadIdentityConfig', 29)
+  enableControlPlaneV2 = _messages.BooleanField(12)
+  endpoint = _messages.StringField(13)
+  etag = _messages.StringField(14)
+  fleet = _messages.MessageField('Fleet', 15)
+  loadBalancer = _messages.MessageField('VmwareLoadBalancerConfig', 16)
+  localName = _messages.StringField(17)
+  name = _messages.StringField(18)
+  networkConfig = _messages.MessageField('VmwareNetworkConfig', 19)
+  onPremVersion = _messages.StringField(20)
+  reconciling = _messages.BooleanField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  status = _messages.MessageField('ResourceStatus', 23)
+  storage = _messages.MessageField('VmwareStorageConfig', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  validationCheck = _messages.MessageField('ValidationCheck', 27)
+  vcenter = _messages.MessageField('VmwareVCenterConfig', 28)
+  vmTrackingEnabled = _messages.BooleanField(29)
+  workloadIdentity = _messages.MessageField('VmwareWorkloadIdentityConfig', 30)
 
 
 class VmwareControlPlaneNodeConfig(_messages.Message):
@@ -5684,8 +5735,8 @@ class VmwareNodePool(_messages.Message):
       control.
     name: Immutable. The resource name of this node pool.
     nodePoolAutoscaling: Node Pool autoscaling config for the Nodepool.
-    onPremVersion: Output only. Anthos version for the node pool. Defaults to
-      the user cluster version.
+    onPremVersion: Anthos version for the node pool. Defaults to the user
+      cluster version.
     reconciling: Output only. If set, there are currently changes in flight to
       the node pool.
     state: Output only. The current state of the node pool.

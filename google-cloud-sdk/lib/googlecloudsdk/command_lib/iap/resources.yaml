@@ -1,5 +1,5 @@
 project:
-  name: name
+  name: project
   collection: iap.projects
   attributes:
   - parameter_name: projectsId
@@ -7,7 +7,7 @@ project:
     help: The project ID.
 
 brand:
-  name: name
+  name: brand
   collection: iap.projects.brands
   attributes:
   - &brand
@@ -16,7 +16,7 @@ brand:
     help: The name of the OAuth brand.
 
 client:
-  name: name
+  name: proxy client
   collection: iap.projects.brands.identityAwareProxyClients
   attributes:
   - *brand

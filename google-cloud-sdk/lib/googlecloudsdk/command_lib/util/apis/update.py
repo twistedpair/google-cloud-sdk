@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.util.apis import arg_utils
-from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
 from googlecloudsdk.core import exceptions
 
 
@@ -50,6 +50,8 @@ def GetMaskString(args, spec, mask_path, is_dotted=True):
 
   field_list = []
   for param in _GetSpecParams(spec.arguments.params):
+    if isinstance(param, yaml_arg_schema.YAMLConceptArgument):
+      continue
     is_arg_specified = (
         '--' + param.arg_name in specified_args_list or
         '--no-' + param.arg_name in specified_args_list or
@@ -75,7 +77,7 @@ def _GetSpecParams(params):
     All the Argument objects in the command spec.
   """
   for param in params:
-    if isinstance(param, yaml_command_schema.ArgumentGroup):
+    if isinstance(param, yaml_arg_schema.ArgumentGroup):
       for p in _GetSpecParams(param.arguments):
         yield p
     else:

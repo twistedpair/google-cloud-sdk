@@ -414,6 +414,10 @@ class Workflow(_messages.Message):
   r"""Workflow program to be executed by Workflows.
 
   Enums:
+    CallLogLevelValueValuesEnum: Optional. Describes the level of platform
+      logging to apply to calls and call responses during executions of this
+      workflow. If both the workflow and the execution specify a logging
+      level, the execution level takes precedence.
     StateValueValuesEnum: Output only. State of the workflow deployment.
 
   Messages:
@@ -424,6 +428,10 @@ class Workflow(_messages.Message):
       are allowed.
 
   Fields:
+    callLogLevel: Optional. Describes the level of platform logging to apply
+      to calls and call responses during executions of this workflow. If both
+      the workflow and the execution specify a logging level, the execution
+      level takes precedence.
     createTime: Output only. The timestamp for when the workflow was created.
     cryptoKeyName: Optional. The resource name of a KMS crypto key used to
       encrypt or decrypt the data associated with the workflow. Format: projec
@@ -466,6 +474,25 @@ class Workflow(_messages.Message):
       updated.
   """
 
+  class CallLogLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Describes the level of platform logging to apply to calls
+    and call responses during executions of this workflow. If both the
+    workflow and the execution specify a logging level, the execution level
+    takes precedence.
+
+    Values:
+      CALL_LOG_LEVEL_UNSPECIFIED: No call logging level specified.
+      LOG_ALL_CALLS: Log all call steps within workflows, all call returns,
+        and all exceptions raised.
+      LOG_ERRORS_ONLY: Log only exceptions that are raised from call steps
+        within workflows.
+      LOG_NONE: Explicitly log nothing.
+    """
+    CALL_LOG_LEVEL_UNSPECIFIED = 0
+    LOG_ALL_CALLS = 1
+    LOG_ERRORS_ONLY = 2
+    LOG_NONE = 3
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the workflow deployment.
 
@@ -505,18 +532,19 @@ class Workflow(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  cryptoKeyName = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  revisionCreateTime = _messages.StringField(6)
-  revisionId = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  sourceContents = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateError = _messages.MessageField('StateError', 11)
-  updateTime = _messages.StringField(12)
+  callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  cryptoKeyName = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  revisionCreateTime = _messages.StringField(7)
+  revisionId = _messages.StringField(8)
+  serviceAccount = _messages.StringField(9)
+  sourceContents = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateError = _messages.MessageField('StateError', 12)
+  updateTime = _messages.StringField(13)
 
 
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):

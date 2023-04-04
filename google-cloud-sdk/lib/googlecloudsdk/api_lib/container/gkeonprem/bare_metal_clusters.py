@@ -65,13 +65,44 @@ class _BareMetalClusterClient(client.ClientBase):
 
     return None
 
+  def _sr_iov_config(self, args):
+    kwargs = {
+        'enabled': self.sr_iov_config_enabled(args),
+    }
+
+    if self.IsSet(kwargs):
+      return self._messages.BareMetalSrIovConfig(**kwargs)
+
+    return None
+
+  def sr_iov_config_enabled(self, args):
+    if 'enable_sr_iov_config' in args.GetSpecifiedArgsDict():
+      return True
+    elif 'disable_sr_iov_config' in args.GetSpecifiedArgsDict():
+      return False
+    else:
+      return None
+
+  def _multiple_network_interfaces_config(self, args):
+    kwargs = {
+        'enabled': self.GetFlag(args, 'enable_multi_nic_config'),
+    }
+    if self.IsSet(kwargs):
+      return self._messages.BareMetalMultipleNetworkInterfacesConfig(**kwargs)
+    return None
+
   def _network_config(self, args):
     """Constructs proto message BareMetalNetworkConfig."""
     kwargs = {
         'islandModeCidr': self._island_mode_cidr_config(args),
+        'advancedNetworking': self.GetFlag(args, 'enable_advanced_networking'),
+        'multipleNetworkInterfacesConfig': (
+            self._multiple_network_interfaces_config(args)
+        ),
+        'srIovConfig': self._sr_iov_config(args),
     }
 
-    if any(kwargs.values()):
+    if self.IsSet(kwargs):
       return self._messages.BareMetalNetworkConfig(**kwargs)
 
     return None
@@ -863,11 +894,11 @@ class ClustersClient(_BareMetalClusterClient):
     """Updates an Anthos cluster on bare metal."""
     kwargs = {
         'name': self._user_cluster_name(args),
-        'allowMissing': getattr(args, 'allow_missing', None),
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
         'updateMask': update_mask.get_update_mask(
             args, update_mask.BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS
         ),
-        'validateOnly': getattr(args, 'validate_only', False),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalCluster': self._bare_metal_user_cluster(args),
     }
     req = (

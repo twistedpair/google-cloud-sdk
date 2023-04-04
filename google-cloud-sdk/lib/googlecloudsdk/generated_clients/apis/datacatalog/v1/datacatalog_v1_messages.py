@@ -582,21 +582,6 @@ class DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest(_messages
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class DatacatalogProjectsLocationsExportMetadataRequest(_messages.Message):
-  r"""A DatacatalogProjectsLocationsExportMetadataRequest object.
-
-  Fields:
-    googleCloudDatacatalogV1ExportMetadataRequest: A
-      GoogleCloudDatacatalogV1ExportMetadataRequest resource to be passed as
-      the request body.
-    parent: Required. Name of the project and location to export the tags and
-      entries from.
-  """
-
-  googleCloudDatacatalogV1ExportMetadataRequest = _messages.MessageField('GoogleCloudDatacatalogV1ExportMetadataRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class DatacatalogProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsOperationsCancelRequest object.
 
@@ -2049,24 +2034,6 @@ class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
   """
 
   overview = _messages.StringField(1)
-
-
-class GoogleCloudDatacatalogV1ExportMetadataRequest(_messages.Message):
-  r"""Request message for ExportMetadata.
-
-  Fields:
-    bucket: Required. A Cloud Storage bucket to store the exported metadata.
-    notifyTopic: Required. Name of the Pub/Sub topic for which operation
-      status updates will be published to. You must either have permission to
-      publish to the topic provided.
-    object: Optional. Name of the Cloud Storage object for which metadata will
-      be written to. If no name is provided, then a name will be auto-
-      generated.
-  """
-
-  bucket = _messages.StringField(1)
-  notifyTopic = _messages.StringField(2)
-  object = _messages.StringField(3)
 
 
 class GoogleCloudDatacatalogV1ExportTaxonomiesResponse(_messages.Message):

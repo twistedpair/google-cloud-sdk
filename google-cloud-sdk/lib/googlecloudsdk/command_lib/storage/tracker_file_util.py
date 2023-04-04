@@ -97,7 +97,8 @@ def _create_tracker_directory_if_needed():
 def _windows_sanitize_file_name(file_name):
   """Converts colons and characters that make Windows upset."""
   if (
-      properties.VALUES.storage.convert_incompatible_windows_path_characters.GetBool()
+      platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS
+      and properties.VALUES.storage.convert_incompatible_windows_path_characters.GetBool()
   ):
     return platforms.MakePathWindowsCompatible(file_name)
   return file_name

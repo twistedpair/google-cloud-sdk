@@ -180,12 +180,14 @@ class CDNPolicy(_messages.Message):
       `negative_caching_policy`. The following limitations apply: - Omitting
       the policy and leaving `negative_caching` enabled uses the default TTLs
       for each status code, defined in `negative_caching`. - TTLs must be >=
-      `0` (where `0` is "always revalidate") and <= `86400s` (1 day) Only the
-      following status codes can be set: - HTTP redirection (3xx) - Client
-      error (4xx) - Server error (5xx) When you specify an explicit
-      `negative_caching_policy`, ensure that you also specify a cache TTL for
-      all response codes that you wish to cache. The CDNPolicy doesn't apply
-      any default negative caching when a policy exists.
+      `0` (where `0` is "always revalidate") and <= `86400s` (1 day) You can
+      set only the following status codes: - HTTP redirection (`300`, `301`,
+      `302`, `307`, or `308`) - Client error (`400`, `403`, `404`, `405`,
+      `410`, or `451`) - Server error (`500`, `501`, `502`, `503`, or `504`)
+      When you specify an explicit `negative_caching_policy`, ensure that you
+      also specify a cache TTL for all response codes that you wish to cache.
+      The CDNPolicy doesn't apply any default negative caching when a policy
+      exists.
 
   Fields:
     addSignatures: Optional. Enables signature generation or propagation on
@@ -242,12 +244,14 @@ class CDNPolicy(_messages.Message):
       `negative_caching_policy`. The following limitations apply: - Omitting
       the policy and leaving `negative_caching` enabled uses the default TTLs
       for each status code, defined in `negative_caching`. - TTLs must be >=
-      `0` (where `0` is "always revalidate") and <= `86400s` (1 day) Only the
-      following status codes can be set: - HTTP redirection (3xx) - Client
-      error (4xx) - Server error (5xx) When you specify an explicit
-      `negative_caching_policy`, ensure that you also specify a cache TTL for
-      all response codes that you wish to cache. The CDNPolicy doesn't apply
-      any default negative caching when a policy exists.
+      `0` (where `0` is "always revalidate") and <= `86400s` (1 day) You can
+      set only the following status codes: - HTTP redirection (`300`, `301`,
+      `302`, `307`, or `308`) - Client error (`400`, `403`, `404`, `405`,
+      `410`, or `451`) - Server error (`500`, `501`, `502`, `503`, or `504`)
+      When you specify an explicit `negative_caching_policy`, ensure that you
+      also specify a cache TTL for all response codes that you wish to cache.
+      The CDNPolicy doesn't apply any default negative caching when a policy
+      exists.
     signedRequestKeyset: Optional. The EdgeCacheKeyset containing the set of
       public keys used to validate signed requests at the edge. The following
       are both valid paths to an `EdgeCacheKeyset` resource: *
@@ -347,12 +351,13 @@ class CDNPolicy(_messages.Message):
     The following limitations apply: - Omitting the policy and leaving
     `negative_caching` enabled uses the default TTLs for each status code,
     defined in `negative_caching`. - TTLs must be >= `0` (where `0` is "always
-    revalidate") and <= `86400s` (1 day) Only the following status codes can
-    be set: - HTTP redirection (3xx) - Client error (4xx) - Server error (5xx)
-    When you specify an explicit `negative_caching_policy`, ensure that you
-    also specify a cache TTL for all response codes that you wish to cache.
-    The CDNPolicy doesn't apply any default negative caching when a policy
-    exists.
+    revalidate") and <= `86400s` (1 day) You can set only the following status
+    codes: - HTTP redirection (`300`, `301`, `302`, `307`, or `308`) - Client
+    error (`400`, `403`, `404`, `405`, `410`, or `451`) - Server error (`500`,
+    `501`, `502`, `503`, or `504`) When you specify an explicit
+    `negative_caching_policy`, ensure that you also specify a cache TTL for
+    all response codes that you wish to cache. The CDNPolicy doesn't apply any
+    default negative caching when a policy exists.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -5827,7 +5832,7 @@ class PathMatcher(_messages.Message):
       `RouteRule` rules support advanced routing behavior, and can match on
       paths, headers and query parameters, as well as status codes and HTTP
       methods. You must specify at least one rule, and can specify a maximum
-      of 64 rules. `RouteRule` rules must not have duplicate priority values.
+      of 200 rules. `RouteRule` rules must not have duplicate priority values.
   """
 
   description = _messages.StringField(1)

@@ -35,25 +35,34 @@ properties:
     description: |-
       Number of errors before a host is ejected from the connection pool. When
       the backend host is accessed over HTTP, a 5xx return code qualifies as an
-      error. Defaults to 5.
+      error. Defaults to 5. Not supported when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     type: integer
   consecutiveGatewayFailure:
     description: |-
       The number of consecutive gateway failures (502, 503, 504 status or
       connection errors that are mapped to one of those status codes) before a
-      consecutive gateway failure ejection occurs. Defaults to 3.
+      consecutive gateway failure ejection occurs. Defaults to 3. Not supported
+      when the backend service is referenced by a URL map that is bound to
+      target gRPC proxy that has validateForProxyless field set to true.
     type: integer
   enforcingConsecutiveErrors:
     description: |-
       The percentage chance that a host will be actually ejected when an outlier
       status is detected through consecutive 5xx. This setting can be used to
-      disable ejection or to ramp it up slowly. Defaults to 0.
+      disable ejection or to ramp it up slowly. Defaults to 0. Not supported
+      when the backend service is referenced by a URL map that is bound to
+      target gRPC proxy that has validateForProxyless field set to true.
     type: integer
   enforcingConsecutiveGatewayFailure:
     description: |-
       The percentage chance that a host will be actually ejected when an outlier
       status is detected through consecutive gateway failures. This setting can
-      be used to disable ejection or to ramp it up slowly. Defaults to 100.
+      be used to disable ejection or to ramp it up slowly. Defaults to 100. Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     type: integer
   enforcingSuccessRate:
     description: |-

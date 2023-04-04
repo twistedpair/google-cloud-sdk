@@ -120,14 +120,7 @@ def _HandleMessageList(response, service, method, errors):
   return items, response.nextPageToken
 
 
-def _ListCore(
-    requests,
-    http,
-    batch_url,
-    errors,
-    response_handler,
-    enable_single_request=False,
-):
+def _ListCore(requests, http, batch_url, errors, response_handler):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
@@ -140,30 +133,19 @@ def _ListCore(
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
     response_handler: The function to extract information responses.
-    enable_single_request: if requests is single, send single request instead of
-      batch request
 
   Yields:
     Resources encapsulated in format chosen by response_handler as they are
       received from the server.
   """
-  if requests:
+  enable_single_request = False
+  if not _ForceBatchRequest() and len(requests) == 1:
     service, method, _ = requests[0]
-    # TODO(b/241230388): testing single request feature on disks.list and
-    # disk.aggregatedList APIs will remove this line after single request
-    # feature fully rollout
-    if type(service) is type(service.client.disks) and method in (
-        'List',
-        'AggregatedList',
-    ):
+    if not _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
       enable_single_request = True
 
   while requests:
-    if (
-        not _ForceBatchRequest()
-        and enable_single_request
-        and len(requests) == 1
-    ):
+    if enable_single_request:
       service, method, request_body = requests[0]
       responses, request_errors = single_request_helper.MakeSingleRequest(
           service, method, request_body
@@ -196,7 +178,7 @@ def _ListCore(
     requests = new_requests
 
 
-def _List(requests, http, batch_url, errors, enable_single_request=False):
+def _List(requests, http, batch_url, errors):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
@@ -208,21 +190,12 @@ def _List(requests, http, batch_url, errors, enable_single_request=False):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
-    enable_single_request: if requests is single, send single request instead of
-      batch request
 
   Returns:
     Resources encapsulated as protocol buffers as they are received
       from the server.
   """
-  return _ListCore(
-      requests,
-      http,
-      batch_url,
-      errors,
-      _HandleMessageList,
-      enable_single_request,
-  )
+  return _ListCore(requests, http, batch_url, errors, _HandleMessageList)
 
 
 def _IsEmptyOperation(operation, service):
@@ -251,11 +224,11 @@ def _ForceBatchRequest():
   return properties.VALUES.compute.force_batch_request.GetBool()
 
 
-def ListJson(requests, http, batch_url, errors, enable_single_request=False):
+def ListJson(requests, http, batch_url, errors):
   """Makes a series of list and/or aggregatedList batch requests.
 
   This function does all of:
-  - Sends batch of List/AggragatedList requests
+  - Sends batch of List/AggregatedList requests
   - Extracts items from responses
   - Handles pagination
 
@@ -270,8 +243,6 @@ def ListJson(requests, http, batch_url, errors, enable_single_request=False):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error, it
       is added to this list.
-    enable_single_request: if requests is single, send single request instead of
-      batch request
 
   Yields:
     Resources in dicts as they are received from the server.
@@ -279,30 +250,45 @@ def ListJson(requests, http, batch_url, errors, enable_single_request=False):
   # This is compute-specific helper. It is assumed at this point that all
   # requests are being sent to the same client (for example Compute).
   with requests[0][0].client.JsonResponseModel():
-    for item in _ListCore(
-        requests,
-        http,
-        batch_url,
-        errors,
-        _HandleJsonList,
-        enable_single_request=enable_single_request,
-    ):
+    for item in _ListCore(requests, http, batch_url, errors, _HandleJsonList):
       yield item
 
 
-def MakeRequests(requests,
-                 http,
-                 batch_url,
-                 errors,
-                 project_override=None,
-                 progress_tracker=None,
-                 no_followup=False,
-                 always_return_operation=False,
-                 followup_overrides=None,
-                 log_result=True,
-                 log_warnings=True,
-                 timeout=None,
-                 enable_single_request=False):
+def _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
+  """Determine whether a service is involved in compute.instances CUJ."""
+  service_methods = {
+      'ZoneOperationsService': ['Wait'],
+      'ProjectsService': ['Get'],
+      'ZonesService': ['List', 'Get'],
+  }
+
+  service_name = service.__class__.__name__
+
+  if service_name == 'InstancesService':
+    return True
+
+  if (
+      service_name in service_methods
+      and method in service_methods[service_name]
+  ):
+    return True
+  return False
+
+
+def MakeRequests(
+    requests,
+    http,
+    batch_url,
+    errors,
+    project_override=None,
+    progress_tracker=None,
+    no_followup=False,
+    always_return_operation=False,
+    followup_overrides=None,
+    log_result=True,
+    log_warnings=True,
+    timeout=None,
+):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -312,10 +298,10 @@ def MakeRequests(requests,
   operation reaches the DONE state and fetches the corresponding
   object and yields that object (nothing is yielded for deletions).
 
-  Currently, a heterogenous set of synchronous calls can be made
+  Currently, a heterogeneous set of synchronous calls can be made
   (e.g., get request to fetch a disk and instance), however, the
   asynchronous requests must be homogenous (e.g., they must all be the
-  same verb on the same collection). In the future, heterogenous
+  same verb on the same collection). In the future, heterogeneous
   asynchronous requests will be supported. For now, it is up to the
   client to ensure that the asynchronous requests are
   homogenous. Synchronous and asynchronous requests can be mixed.
@@ -341,10 +327,8 @@ def MakeRequests(requests,
     log_result: Whether the Operation Waiter should print the result in past
       tense of each request.
     log_warnings: Whether warnings for completed operation should be printed.
-    timeout: The maximum amount of time, in seconds, to wait for the
-      operations to reach the DONE state.
-    enable_single_request: if requests is single, send single request instead
-      of batch request
+    timeout: The maximum amount of time, in seconds, to wait for the operations
+      to reach the DONE state.
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -352,21 +336,24 @@ def MakeRequests(requests,
   """
   if _RequestsAreListRequests(requests):
     for item in _List(
-        requests=requests,
-        http=http,
-        batch_url=batch_url,
-        errors=errors,
-        enable_single_request=enable_single_request,
+        requests=requests, http=http, batch_url=batch_url, errors=errors
     ):
       yield item
     return
 
   # send single request only if the requests size one and if enable_single_
   # request is set to true
-  if not _ForceBatchRequest() and enable_single_request and len(requests) == 1:
+  enable_single_request = False
+  if not _ForceBatchRequest() and len(requests) == 1:
+    service, method, request_body = requests[0]
+    if not _CheckIfServiceMethodsInvolvedInInstancesCUJ(service, method):
+      enable_single_request = True
+
+  if enable_single_request:
     service, method, request_body = requests[0]
     responses, new_errors = single_request_helper.MakeSingleRequest(
-        service=service, method=method, request_body=request_body)
+        service=service, method=method, request_body=request_body
+    )
   else:
     responses, new_errors = batch_helper.MakeRequests(
         requests=requests, http=http, batch_url=batch_url)
@@ -436,7 +423,7 @@ def MakeRequests(requests,
         errors=errors,
         log_result=log_result,
         timeout=timeout,
-        enable_single_request=enable_single_request):
+    ):
       yield response
 
     if warnings and log_warnings:

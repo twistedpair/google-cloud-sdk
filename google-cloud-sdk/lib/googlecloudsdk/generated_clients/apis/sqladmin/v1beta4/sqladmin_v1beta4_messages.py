@@ -1137,15 +1137,38 @@ class ExportContext(_messages.Message):
   class BakExportOptionsValue(_messages.Message):
     r"""Options for exporting BAK files (SQL Server-only)
 
+    Enums:
+      BakTypeValueValuesEnum: Type of this bak file will be export, FULL or
+        DIFF, SQL Server only
+
     Fields:
+      bakType: Type of this bak file will be export, FULL or DIFF, SQL Server
+        only
+      copyOnly: Whether or not the export will be exeucted with COPY_ONLY, SQL
+        Server only
       stripeCount: Option for specifying how many stripes to use for the
         export. If blank, and the value of the striped field is true, the
         number of stripes is automatically chosen.
       striped: Whether or not the export should be striped.
     """
 
-    stripeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-    striped = _messages.BooleanField(2)
+    class BakTypeValueValuesEnum(_messages.Enum):
+      r"""Type of this bak file will be export, FULL or DIFF, SQL Server only
+
+      Values:
+        BAK_TYPE_UNSPECIFIED: default type to meet enum requirement, will be
+          set to FULL if not set
+        FULL: Full backup.
+        DIFF: Differential backup.
+      """
+      BAK_TYPE_UNSPECIFIED = 0
+      FULL = 1
+      DIFF = 2
+
+    bakType = _messages.EnumField('BakTypeValueValuesEnum', 1)
+    copyOnly = _messages.BooleanField(2)
+    stripeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+    striped = _messages.BooleanField(4)
 
   class CsvExportOptionsValue(_messages.Message):
     r"""Options for exporting data as CSV. `MySQL` and `PostgreSQL` instances

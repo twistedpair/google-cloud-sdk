@@ -1964,33 +1964,6 @@ class DatacatalogV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def ExportMetadata(self, request, global_params=None):
-      r"""Exports all tags and their respective entries under a given project and location to an existing Cloud Storage bucket. You must have permission to publish in Pub/Sub to a given topic. See ExportMetadataRequest.
-
-      Args:
-        request: (DatacatalogProjectsLocationsExportMetadataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('ExportMetadata')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ExportMetadata.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}:exportMetadata',
-        http_method='POST',
-        method_id='datacatalog.projects.locations.exportMetadata',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1/{+parent}:exportMetadata',
-        request_field='googleCloudDatacatalogV1ExportMetadataRequest',
-        request_type_name='DatacatalogProjectsLocationsExportMetadataRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 

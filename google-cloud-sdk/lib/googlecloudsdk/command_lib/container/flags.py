@@ -37,6 +37,16 @@ _DATAPATH_PROVIDER = {
     'advanced': 'Selects advanced datapath for the cluster.',
 }
 
+_DPV2_OBS_MODE = {
+    'DISABLED': 'Disables Advanced Datapath Observability.',
+    'INTERNAL_CLUSTER_SERVICE': ('Makes Advanced Datapath Observability '
+                                 'available from within the cluster network.'),
+    'INTERNAL_VPC_LB': ('Makes Advanced Datapath Observability available from '
+                        'the VPC network.'),
+    'EXTERNAL_LB': ('Makes Advanced Datapath Observability available to '
+                    'the external network.'),
+}
+
 _DNS_PROVIDER = {
     'clouddns': 'Selects Cloud DNS as the DNS provider for the cluster.',
     'default': 'Selects the default DNS provider (kube-dns) for the cluster.',
@@ -3326,6 +3336,24 @@ def AddSecurityPostureFlag(parser):
   )
 
 
+def AddEnableKubeletReadonlyPortFlag(parser):
+  """Adds Kubernetes Read Only Port's enablement flag to the parser."""
+  parser.add_argument(
+      '--enble-insecure-kubelet-readonly-port',
+      default=None,
+      action='store_true',
+      hidden=True,
+      help=textwrap.dedent(
+          """\
+      Enables the insecure Kubernetes Read Only Port API's features.
+
+      To disable in an existing cluster, explicitly set flag to
+      `--no-enble-insecure-kubelet-readonly-port`.
+      """
+      ),
+  )
+
+
 def AddGkeOidcFlag(parser):
   parser.add_argument(
       '--enable-gke-oidc',
@@ -4362,6 +4390,23 @@ def AddDataplaneV2MetricsFlag(parser, hidden=True):
       action='store_const',
       const=True,
       help="""Stops exposing advanced datapath flow metrics on node port.""",
+      hidden=hidden)
+
+
+def AddDataplaneV2ObservabilityModeFlag(parser, hidden=True):
+  """Adds --dataplane-v2-observability-mode enum flag."""
+  help_text = """
+Select Advanced Datapath Observability mode for the cluster. Defaults to `disabled`.
+
+$ {command} --dataplane-v2-observability-mode=DISABLED
+$ {command} --dataplane-v2-observability-mode=INTERNAL_CLUSTER_SERVICE
+$ {command} --dataplane-v2-observability-mode=INTERNAL_VPC_LB
+$ {command} --dataplane-v2-observability-mode=EXTERNAL_LB
+"""
+  parser.add_argument(
+      '--dataplane-v2-observability-mode',
+      choices=_DPV2_OBS_MODE,
+      help=help_text,
       hidden=hidden)
 
 

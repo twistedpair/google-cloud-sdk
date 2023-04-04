@@ -2023,8 +2023,14 @@ class FeatureState(_messages.Message):
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
   feature.
+
+  Fields:
+    loggingConfig: Specified if fleet logging feature is enabled for the
+      entire fleet. If UNSPECIFIED, fleet logging feature is disabled for the
+      entire fleet.
   """
 
+  loggingConfig = _messages.MessageField('FleetObservabilityLoggingConfig', 1)
 
 
 class FleetObservabilityFeatureState(_messages.Message):
@@ -2032,6 +2038,20 @@ class FleetObservabilityFeatureState(_messages.Message):
   Feature state.
   """
 
+
+
+class FleetObservabilityLoggingConfig(_messages.Message):
+  r"""LoggingConfig defines the configuration for different types of logs.
+
+  Fields:
+    defaultConfig: Specified if applying the default routing config to logs
+      not specified in other configs.
+    fleetScopeLogsConfig: Specified if applying the routing config to all logs
+      for all fleet scopes.
+  """
+
+  defaultConfig = _messages.MessageField('FleetObservabilityRoutingConfig', 1)
+  fleetScopeLogsConfig = _messages.MessageField('FleetObservabilityRoutingConfig', 2)
 
 
 class FleetObservabilityMembershipSpec(_messages.Message):
@@ -2046,6 +2066,31 @@ class FleetObservabilityMembershipState(_messages.Message):
   specific Feature state.
   """
 
+
+
+class FleetObservabilityRoutingConfig(_messages.Message):
+  r"""RoutingConfig configures the behaviour of fleet logging feature.
+
+  Enums:
+    ModeValueValuesEnum: mode configures the logs routing mode.
+
+  Fields:
+    mode: mode configures the logs routing mode.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""mode configures the logs routing mode.
+
+    Values:
+      MODE_UNSPECIFIED: If UNSPECIFIED, fleet logging feature is disabled.
+      COPY: logs will be copied to the destination project.
+      MOVE: logs will be moved to the destination project.
+    """
+    MODE_UNSPECIFIED = 0
+    COPY = 1
+    MOVE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class GenerateConnectManifestResponse(_messages.Message):

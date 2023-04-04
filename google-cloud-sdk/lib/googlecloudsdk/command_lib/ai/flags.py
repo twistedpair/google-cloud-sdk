@@ -423,7 +423,13 @@ def GetRequestResponseLoggingTableArg():
       '--request-response-logging-table',
       required=False,
       default=None,
-      help="""BigQuery table uri for prediction request & response logging.""")
+      help="""\
+BigQuery table uri for prediction request & response logging.
+
+You can provide table uri that does not exist, it will be created for you.
+
+Value should be provided in format: bq://``PROJECT_ID''/``DATASET''/``TABLE''
+""")
 
 
 def GetRequestResponseLoggingRateArg():

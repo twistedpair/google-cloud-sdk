@@ -27,7 +27,7 @@ ENFORCEMENT_ACTION_LABEL_MAP = {
     'ENFORCEMENT_ACTION_UNSPECIFIED': 'UNSPECIFIED',
     'ENFORCEMENT_ACTION_DENY': 'DENY',
     'ENFORCEMENT_ACTION_DRYRUN': 'DRYRUN',
-    'ENFORCEMENT_ACTION_WARN': 'WARN'
+    'ENFORCEMENT_ACTION_WARN': 'WARN',
 }
 
 INSTALL_SPEC_LABEL_MAP = {
@@ -75,11 +75,13 @@ def validate_args(args):
   """
   if args.monitoring is not None and args.no_monitoring:
     raise exceptions.Error(
-        'Both monitoring and no-monitoring cannot be used in the same command')
+        'Both monitoring and no-monitoring cannot be used in the same command'
+    )
   if args.exemptable_namespaces is not None and args.no_exemptable_namespaces:
     raise exceptions.Error(
-        'Both exemptable-namespaces and no-exemptable-namespaces ' +
-        'cannot be used in the same command')
+        'Both exemptable-namespaces and no-exemptable-namespaces '
+        + 'cannot be used in the same command'
+    )
 
 
 def convert_membership_from_project_id_to_number(membership_path):
@@ -94,13 +96,19 @@ def convert_membership_from_project_id_to_number(membership_path):
       projects/{project_number}/locations/{location}/memberships/{membership_id}
   """
   splits = membership_path.split('/')
-  if len(splits) != 6 or splits[0] != 'projects' or splits[
-      2] != 'locations' or splits[4] != 'memberships':
+  if (
+      len(splits) != 6
+      or splits[0] != 'projects'
+      or splits[2] != 'locations'
+      or splits[4] != 'memberships'
+  ):
     raise exceptions.Error(
-        '{} is not a valid membership path'.format(membership_path))
+        '{} is not a valid membership path'.format(membership_path)
+    )
   project_number = util.GetProjectNumber(splits[1])
   return 'projects/{}/locations/{}/memberships/{}'.format(
-      project_number, splits[3], splits[5])
+      project_number, splits[3], splits[5]
+  )
 
 
 def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
@@ -115,30 +123,84 @@ def merge_args_with_poco_hub_config(args, poco_hub_config, messages):
   """
   if args.audit_interval_seconds:
     poco_hub_config.auditIntervalSeconds = args.audit_interval_seconds
+
   if args.exemptable_namespaces:
     exemptable_namespaces = args.exemptable_namespaces.split(',')
     poco_hub_config.exemptableNamespaces = exemptable_namespaces
   elif args.no_exemptable_namespaces:
     poco_hub_config.exemptableNamespaces = []
+
   if args.log_denies_enabled is not None:
     poco_hub_config.logDeniesEnabled = args.log_denies_enabled
+
   if hasattr(args, 'mutation_enabled') and args.mutation_enabled is not None:
     poco_hub_config.mutationEnabled = args.mutation_enabled
+
   if args.referential_rules_enabled is not None:
     poco_hub_config.referentialRulesEnabled = args.referential_rules_enabled
+
+  # Default the library to on if it is unspecified, otherwise interpret the arg.
+  # NOTE: AFAICT the args library prevents the flag from ever being None.
+  # Leaving the none-check in place since the other boolean flags have them.
+  install_library = True
   if args.template_library_installed is not None:
-    poco_hub_config.templateLibraryConfig = messages.PolicyControllerTemplateLibraryConfig(
-        included=args.template_library_installed)
+    install_library = args.template_library_installed
+  set_template_library_config(install_library, poco_hub_config, messages)
+
   if args.monitoring is not None:
     poco_hub_config.monitoring = build_poco_monitoring_config(
-        args.monitoring.split(','), messages)
+        args.monitoring.split(','), messages
+    )
+
   if args.no_monitoring:
     poco_hub_config.monitoring = build_poco_monitoring_config([], messages)
+
+  # pylint: disable=line-too-long
+  # TODO(b/275747711): Get rid of the pylint exemption and format all of this
+  # automagically.
   if hasattr(args, 'suspend') and args.suspend is not None:
     if args.suspend:
-      poco_hub_config.installSpec = messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
+      poco_hub_config.installSpec = (
+          messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_SUSPENDED
+      )
     else:
-      poco_hub_config.installSpec = messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
+      poco_hub_config.installSpec = (
+          messages.PolicyControllerHubConfig.InstallSpecValueValuesEnum.INSTALL_SPEC_ENABLED
+      )
+
+
+def set_template_library_config(enabled, poco_hub_config, messages):
+  """Sets the given Policy Controller Hub Config object's TemplateLibraryConfig.
+
+  During b/275380338, the TemplateLibraryConfig lives in two locations and has
+  two fields representing the desired installation.  This method wraps this
+  complexity.
+
+  Args:
+    enabled: boolean installation of the template library
+    poco_hub_config: current config object read from GKE Hub API
+    messages: GKE Hub proto messages
+  """
+  # Map True/False to ALL/NOT_INSTALLED
+  # pylint: disable=line-too-long
+  # TODO(b/275747711): Get rid of the pylint exemption and format all of this
+  # automagically.
+  install = (
+      messages.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.ALL
+      if enabled
+      else messages.PolicyControllerTemplateLibraryConfig.InstallationValueValuesEnum.NOT_INSTALLED
+  )
+
+  # Set both the new `installation` and the old `included`
+  library_config = messages.PolicyControllerTemplateLibraryConfig(
+      included=enabled, installation=install
+  )
+
+  # Insert the TemplateLibraryConfig in both new and old locations (for now)
+  if poco_hub_config.policyContent is None:
+    poco_hub_config.policyContent = messages.PolicyControllerPolicyContentSpec()
+  poco_hub_config.policyContent.templateLibrary = library_config
+  poco_hub_config.templateLibraryConfig = library_config
 
 
 def build_poco_monitoring_config(backends_list, messages):
@@ -156,14 +218,19 @@ def build_poco_monitoring_config(backends_list, messages):
   backends = []
   for backend in backends_list:
     if backend == 'prometheus':
-      backends.append(messages.PolicyControllerMonitoringConfig
-                      .BackendsValueListEntryValuesEnum.PROMETHEUS)
+      backends.append(
+          messages.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.PROMETHEUS
+      )
     elif backend == 'cloudmonitoring':
-      backends.append(messages.PolicyControllerMonitoringConfig
-                      .BackendsValueListEntryValuesEnum.CLOUD_MONITORING)
+      backends.append(
+          messages.PolicyControllerMonitoringConfig.BackendsValueListEntryValuesEnum.CLOUD_MONITORING
+      )
     else:
-      raise exceptions.Error('policycontroller.monitoring.backend ' + backend +
-                             ' is not recognized')
+      raise exceptions.Error(
+          'policycontroller.monitoring.backend '
+          + backend
+          + ' is not recognized'
+      )
   return messages.PolicyControllerMonitoringConfig(backends=backends)
 
 
@@ -185,8 +252,8 @@ class BooleanOptionalAction(argparse.Action):
       required=False,
       help=None,  # pylint: disable=redefined-builtin
       metavar=None,
-      const=None):
-
+      const=None,
+  ):
     _option_strings = []  # pylint: disable=invalid-name
     for option_string in option_strings:
       _option_strings.append(option_string)
@@ -208,7 +275,8 @@ class BooleanOptionalAction(argparse.Action):
         required=required,
         help=help,
         metavar=metavar,
-        const=const)
+        const=const,
+    )
 
   def __call__(self, parser, namespace, values, option_string=None):
     if option_string in self.option_strings:

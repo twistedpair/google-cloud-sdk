@@ -2352,6 +2352,16 @@ class GooglePrivacyDlpV2Action(_messages.Message):
   saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 7)
 
 
+class GooglePrivacyDlpV2ActionDetails(_messages.Message):
+  r"""The results of an Action.
+
+  Fields:
+    deidentifyDetails: Outcome of a de-identification action.
+  """
+
+  deidentifyDetails = _messages.MessageField('GooglePrivacyDlpV2DeidentifyDataSourceDetails', 1)
+
+
 class GooglePrivacyDlpV2ActivateJobTriggerRequest(_messages.Message):
   r"""Request message for ActivateJobTrigger."""
 
@@ -3805,6 +3815,33 @@ class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
   overview = _messages.MessageField('GooglePrivacyDlpV2TransformationOverview', 2)
 
 
+class GooglePrivacyDlpV2DeidentifyDataSourceDetails(_messages.Message):
+  r"""The results of a Deidentify action from an Inspect job.
+
+  Fields:
+    deidentifyStats: Stats about de-identification.
+    requestedOptions: De-identification config used for the request.
+  """
+
+  deidentifyStats = _messages.MessageField('GooglePrivacyDlpV2DeidentifyDataSourceStats', 1)
+  requestedOptions = _messages.MessageField('GooglePrivacyDlpV2RequestedDeidentifyOptions', 2)
+
+
+class GooglePrivacyDlpV2DeidentifyDataSourceStats(_messages.Message):
+  r"""Summary of what was modified during a transformation.
+
+  Fields:
+    transformationCount: Number of successfully applied transformations.
+    transformationErrorCount: Number of errors encountered while trying to
+      apply transformations.
+    transformedBytes: Total size in bytes that were transformed in some way.
+  """
+
+  transformationCount = _messages.IntegerField(1)
+  transformationErrorCount = _messages.IntegerField(2)
+  transformedBytes = _messages.IntegerField(3)
+
+
 class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
   r"""DeidentifyTemplates contains instructions on how to de-identify content.
   See https://cloud.google.com/dlp/docs/concepts-templates to learn more.
@@ -3964,6 +4001,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     TypeValueValuesEnum: The type of job.
 
   Fields:
+    actionDetails: Events that should occur after the job has completed.
     createTime: Time when the job was created.
     endTime: Time when the job finished.
     errors: A stream of errors encountered running the job.
@@ -4014,16 +4052,17 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     INSPECT_JOB = 1
     RISK_ANALYSIS_JOB = 2
 
-  createTime = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  errors = _messages.MessageField('GooglePrivacyDlpV2Error', 3, repeated=True)
-  inspectDetails = _messages.MessageField('GooglePrivacyDlpV2InspectDataSourceDetails', 4)
-  jobTriggerName = _messages.StringField(5)
-  name = _messages.StringField(6)
-  riskDetails = _messages.MessageField('GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails', 7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  actionDetails = _messages.MessageField('GooglePrivacyDlpV2ActionDetails', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  errors = _messages.MessageField('GooglePrivacyDlpV2Error', 4, repeated=True)
+  inspectDetails = _messages.MessageField('GooglePrivacyDlpV2InspectDataSourceDetails', 5)
+  jobTriggerName = _messages.StringField(6)
+  name = _messages.StringField(7)
+  riskDetails = _messages.MessageField('GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails', 8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
 
 
 class GooglePrivacyDlpV2DocumentLocation(_messages.Message):
@@ -6488,6 +6527,26 @@ class GooglePrivacyDlpV2ReplaceValueConfig(_messages.Message):
 
 class GooglePrivacyDlpV2ReplaceWithInfoTypeConfig(_messages.Message):
   r"""Replace each matching finding with the name of the info_type."""
+
+
+class GooglePrivacyDlpV2RequestedDeidentifyOptions(_messages.Message):
+  r"""De-id options.
+
+  Fields:
+    snapshotDeidentifyTemplate: Snapshot of the state of the
+      DeidentifyTemplate from the Deidentify action at the time this job was
+      run.
+    snapshotImageRedactTemplate: Snapshot of the state of the image redact
+      DeidentifyTemplate from the Deidentify action at the time this job was
+      run.
+    snapshotStructuredDeidentifyTemplate: Snapshot of the state of the
+      structured DeidentifyTemplate from the Deidentify action at the time
+      this job was run.
+  """
+
+  snapshotDeidentifyTemplate = _messages.MessageField('GooglePrivacyDlpV2DeidentifyTemplate', 1)
+  snapshotImageRedactTemplate = _messages.MessageField('GooglePrivacyDlpV2DeidentifyTemplate', 2)
+  snapshotStructuredDeidentifyTemplate = _messages.MessageField('GooglePrivacyDlpV2DeidentifyTemplate', 3)
 
 
 class GooglePrivacyDlpV2RequestedOptions(_messages.Message):

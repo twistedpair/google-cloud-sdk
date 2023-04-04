@@ -433,11 +433,15 @@ class EthereumEndpoints(_messages.Message):
   r"""Contains endpoint information specific to Ethereum Nodes.
 
   Fields:
-    beaconApiEndpoint: Output only. The assigned URL for the node Beacon API
+    beaconApiEndpoint: Output only. The assigned URL for the node's Beacon API
       endpoint.
+    beaconPrometheusMetricsApiEndpoint: Output only. The assigned URL for the
+      node's Beacon Prometheus Metrics endpoint. See https://lighthouse-
+      book.sigmaprime.io/advanced_metrics.html for more details.
   """
 
   beaconApiEndpoint = _messages.StringField(1)
+  beaconPrometheusMetricsApiEndpoint = _messages.StringField(2)
 
 
 class GethDetails(_messages.Message):

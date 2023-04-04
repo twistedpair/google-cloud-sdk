@@ -55,6 +55,27 @@ class ClientBase(object):
     else:
       return default
 
+  def IsSet(self, kwargs):
+    """Returns True if any of the kwargs is set to not None value.
+
+    The added condition handles the case when user specified boolean False
+    for the given args, and it should return True, which does not work with
+    normal Python identity comparison.
+
+    Args:
+      kwargs: dict, a mapping from proto field to its respective constructor
+        function.
+
+    Returns:
+      True if there exists a field that contains a user specified argument.
+    """
+    for value in kwargs.values():
+      if isinstance(value, bool):
+        return True
+      elif value:
+        return True
+    return False
+
   def Describe(self, resource_ref):
     """Gets a gkeonprem API resource."""
     req = self._service.GetRequestType('Get')(name=resource_ref.RelativeName())
@@ -234,6 +255,13 @@ class ClientBase(object):
     """Parses standalone cluster resource argument and returns its reference."""
     if getattr(args.CONCEPTS, 'standalone_cluster', None):
       return args.CONCEPTS.standalone_cluster.Parse()
+    return None
+
+  def _standalone_cluster_name(self, args):
+    """Parses standalone cluster from args and returns its name."""
+    standalone_cluster_ref = self._standalone_cluster_ref(args)
+    if standalone_cluster_ref:
+      return standalone_cluster_ref.RelativeName()
     return None
 
   def _standalone_cluster_parent(self, args):

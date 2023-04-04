@@ -1277,6 +1277,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_me
 
   class OverallAccessStateValueValuesEnum(_messages.Enum):
     r"""Indicates whether the member has the specified permission for the
+
     specified resource, based on evaluating all types of the applicable IAM
     policies.
 
@@ -1284,16 +1285,18 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_me
       OVERALL_ACCESS_STATE_UNSPECIFIED: Reserved for future use.
       CAN_ACCESS: The principal has the access.
       CANNOT_ACCESS: The principal does not have the access.
-      UNKNOWN: The principal might have the access but it is unknown. The
-        reason for unknown can be: 1. The sender lacks access to information
-        needed to get a certain access state. 2. The sender did not provide
-        required condition context which is required to get a certain access
-        state.
+      UNKNOWN_INFO: The principal might have the access but it is unknown for
+        the reason that the sender lacks access to information needed to get a
+        certain access state.
+      UNKNOWN_CONDITIONAL: The principal might have the access but it is
+        unknown for the reason that the sender did not provide the required
+        condition context which is required to get a certain access state.
     """
     OVERALL_ACCESS_STATE_UNSPECIFIED = 0
     CAN_ACCESS = 1
     CANNOT_ACCESS = 2
-    UNKNOWN = 3
+    UNKNOWN_INFO = 3
+    UNKNOWN_CONDITIONAL = 4
 
   accessTuple = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAccessTuple', 1)
   allowPolicyExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaAllowPolicyExplanation', 2)

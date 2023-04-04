@@ -575,9 +575,9 @@ def AddSourceIpRanges(parser):
       type=SourceIpRangesParser,
       default=None,
       help="""\
-      List of comma-separated IP addresses or IP ranges. If not empty, this
-      Forwarding Rule will only forward the traffic when the source IP address
-      falls into one of the IP ranges set here.
+      List of comma-separated IP addresses or IP ranges. If set, this forwarding
+      rule only forwards traffic when the packet's source IP address matches one
+      of the IP ranges set here.
       """)
 
 

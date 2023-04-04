@@ -2215,6 +2215,13 @@ class StorageClient(metaclass=StorageClientMeta):
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> storage.CancelResumableWriteResponse:
         r"""Cancels an in-progress resumable upload.
+        Any attempts to write to the resumable upload after
+        cancelling the upload will fail.
+
+        The behavior for currently in progress write operations
+        is not guaranteed - they could either complete before
+        the cancellation or fail if the cancellation completes
+        first.
 
         .. code-block:: python
 

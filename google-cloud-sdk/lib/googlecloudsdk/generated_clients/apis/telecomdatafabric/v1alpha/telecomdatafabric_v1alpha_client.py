@@ -44,6 +44,7 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
     self.projects_locations_dataApiServers = self.ProjectsLocationsDataApiServersService(self)
     self.projects_locations_dataAssetManagers = self.ProjectsLocationsDataAssetManagersService(self)
     self.projects_locations_dataAssets = self.ProjectsLocationsDataAssetsService(self)
+    self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_iaasMetricsCollectors = self.ProjectsLocationsIaasMetricsCollectorsService(self)
     self.projects_locations_metricsCorrelations = self.ProjectsLocationsMetricsCorrelationsService(self)
     self.projects_locations_metricsIngestionPipelines = self.ProjectsLocationsMetricsIngestionPipelinesService(self)
@@ -775,6 +776,151 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='dataAsset',
         request_type_name='TelecomdatafabricProjectsLocationsDataAssetsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDeploymentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_deployments resource."""
+
+    _NAME = 'projects_locations_deployments'
+
+    def __init__(self, client):
+      super(TelecomdatafabricV1alpha.ProjectsLocationsDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Deployment in a given project and location.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/deployments',
+        http_method='POST',
+        method_id='telecomdatafabric.projects.locations.deployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['deploymentId', 'requestId'],
+        relative_path='v1alpha/{+parent}/deployments',
+        request_field='deployment',
+        request_type_name='TelecomdatafabricProjectsLocationsDeploymentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Deployment.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}',
+        http_method='DELETE',
+        method_id='telecomdatafabric.projects.locations.deployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsDeploymentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Deployment.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.deployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsDeploymentsGetRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Deployments in a given project and location.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/deployments',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.deployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/deployments',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsDeploymentsListRequest',
+        response_type_name='ListDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Deployment.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}',
+        http_method='PATCH',
+        method_id='telecomdatafabric.projects.locations.deployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='deployment',
+        request_type_name='TelecomdatafabricProjectsLocationsDeploymentsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

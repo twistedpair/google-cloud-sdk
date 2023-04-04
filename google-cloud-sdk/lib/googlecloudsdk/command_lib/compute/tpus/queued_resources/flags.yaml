@@ -148,3 +148,34 @@ reservation_host_organization:
   help_text: |
     The organization hosting the reservation that the TPU should use. Only one reservation host
     entity may be specified.
+
+force:
+  api_field: force
+  type: bool
+  action: store_true
+  help_text: |
+    If set to true, any nodes in this queued resource will also be deleted.
+    Otherwise, the request will only work if the queued resource has no nodes.
+
+network:
+  arg_name: network
+  help_text: |
+    Network that this TPU will be a part of.
+  default: 'default'
+
+subnetwork:
+  arg_name: subnetwork
+  help_text: |
+    Subnetwork that this TPU will be a part of.
+
+service_account:
+  arg_name: service-account
+  help_text: |
+    Email address of the service account. If empty, default Google Compute Engine service
+    account will be used.
+
+service_account_scopes:
+  arg_name: scopes
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  help_text: |
+    List of comma-separated scopes to be made available for the service account.

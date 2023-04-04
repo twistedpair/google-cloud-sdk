@@ -18,16 +18,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.storage import errors
-from googlecloudsdk.api_lib.storage import gcs_api
+from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import properties
 
 
 # Backend has a limit of 500.
 PAGE_SIZE = 500
+_CSV_PARQUET_ERROR_MESSGE = 'CSV options cannot be set with parquet.'
 
 
 def _get_unescaped_ascii(string):
@@ -41,10 +44,19 @@ def _get_parent_string(project, location):
 
 
 def _get_parent_string_from_bucket(bucket):
-  gcs_client = gcs_api.GcsApi()
+  gcs_client = gcs_json_client.JsonClient()
   bucket_resource = gcs_client.get_bucket(bucket)
-  return _get_parent_string(bucket_resource.metadata.projectNumber,
-                            bucket_resource.metadata.location.lower())
+  return _get_parent_string(
+      bucket_resource.metadata.projectNumber,
+      bucket_resource.metadata.location.lower(),
+  )
+
+
+# Tuple to hold the CsvOptions or ParquetOptions. Only one of the fields should
+# be set.
+ReportFormatOptions = collections.namedtuple(
+    'ReportFormatOptions', ('csv', 'parquet')
+)
 
 
 class InsightsApi:
@@ -55,12 +67,27 @@ class InsightsApi:
     self.client = core_apis.GetClientInstance('storageinsights', 'v1')
     self.messages = core_apis.GetMessagesModule('storageinsights', 'v1')
 
-  def _get_csv_message(self, csv_separator, csv_delimiter, csv_header):
-    unescaped_separator = _get_unescaped_ascii(csv_separator)
-    return self.messages.CSVOptions(
-        delimiter=csv_delimiter,
-        headerRequired=csv_header,
-        recordSeparator=unescaped_separator)
+  def _get_report_format_options(
+      self, csv_separator, csv_delimiter, csv_header, parquet
+  ):
+    """Returns ReportFormatOptions instance."""
+    if parquet:
+      parquet_options = self.messages.ParquetOptions()
+      if csv_header or csv_delimiter or csv_separator:
+        raise errors.GcsApiError('CSV options cannot be set with parquet.')
+      csv_options = None
+    else:
+      parquet_options = None
+      unescaped_separator = _get_unescaped_ascii(csv_separator)
+      csv_options = self.messages.CSVOptions(
+          delimiter=csv_delimiter,
+          headerRequired=csv_header,
+          recordSeparator=unescaped_separator,
+      )
+    return ReportFormatOptions(
+        csv=csv_options,
+        parquet=parquet_options,
+    )
 
   def create(self,
              source_bucket,
@@ -72,6 +99,7 @@ class InsightsApi:
              csv_separator=None,
              csv_delimiter=None,
              csv_header=None,
+             parquet=None,
              display_name=None):
     """Creates a report config.
 
@@ -90,6 +118,7 @@ class InsightsApi:
       csv_delimiter (str): The delimiter that separates the fields in the CSV
         file.
       csv_header (bool): If True, include the headers in the CSV file.
+      parquet (bool): If True, set the parquet options.
       display_name (str): Display name for the report config.
 
     Returns:
@@ -111,9 +140,12 @@ class InsightsApi:
         storageFilters=self.messages.CloudStorageFilters(
             bucket=source_bucket))
 
+    report_format_options = self._get_report_format_options(
+        csv_separator, csv_delimiter, csv_header, parquet)
+
     report_config = self.messages.ReportConfig(
-        csvOptions=self._get_csv_message(
-            csv_separator, csv_delimiter, csv_header),
+        csvOptions=report_format_options.csv,
+        parquetOptions=report_format_options.parquet,
         displayName=display_name,
         frequencyOptions=frequency_options,
         objectMetadataReportOptions=object_metadata_report_options)
@@ -231,9 +263,12 @@ class InsightsApi:
     if metadata_fields:
       update_mask.append('objectMetadataReportOptions.metadataFields')
     if destination_url is not None:
-      storage_destination_message = self.messages.CloudStorageDestinationOptions(
-          bucket=destination_url.bucket_name,
-          destinationPath=destination_url.object_name)
+      storage_destination_message = (
+          self.messages.CloudStorageDestinationOptions(
+              bucket=destination_url.bucket_name,
+              destinationPath=destination_url.object_name,
+          )
+      )
       update_mask.append(
           'objectMetadataReportOptions.storageDestinationOptions.bucket')
       update_mask.append(
@@ -245,19 +280,22 @@ class InsightsApi:
         metadataFields=metadata_fields,
         storageDestinationOptions=storage_destination_message), update_mask)
 
-  def _get_csv_options_and_update_mask(self, csv_separator, csv_delimiter,
-                                       csv_header):
-    """Returns a tuple of messages.CSVOptions and update_mask list."""
+  def _get_report_format_options_and_update_mask(
+      self, csv_separator, csv_delimiter, csv_header, parquet):
+    """Returns a tuple of ReportFormatOptions and update_mask list."""
+    report_format_options = self._get_report_format_options(
+        csv_separator, csv_delimiter, csv_header, parquet)
     update_mask = []
-    if csv_delimiter is not None:
-      update_mask.append('csvOptions.delimiter')
-    if csv_header is not None:
-      update_mask.append('csvOptions.headerRequired')
-    if csv_separator is not None:
-      update_mask.append('csvOptions.recordSeparator')
-    return (
-        self._get_csv_message(csv_separator, csv_delimiter, csv_header),
-        update_mask)
+    if report_format_options.parquet is not None:
+      update_mask.append('parquetOptions')
+    else:
+      if csv_delimiter is not None:
+        update_mask.append('csvOptions.delimiter')
+      if csv_header is not None:
+        update_mask.append('csvOptions.headerRequired')
+      if csv_separator is not None:
+        update_mask.append('csvOptions.recordSeparator')
+    return (report_format_options, update_mask)
 
   def update(self,
              report_config_name,
@@ -269,6 +307,7 @@ class InsightsApi:
              csv_separator=None,
              csv_delimiter=None,
              csv_header=None,
+             parquet=None,
              display_name=None):
     """Updates a report config.
 
@@ -286,6 +325,7 @@ class InsightsApi:
       csv_delimiter (str): The delimiter that separates the fields in the CSV
         file.
       csv_header (bool): If True, include the headers in the CSV file.
+      parquet (bool): If True, set the parquet options.
       display_name (str): Display name for the report config.
 
     Returns:
@@ -297,11 +337,14 @@ class InsightsApi:
     object_metadata_report_options, metadata_update_mask = (
         self._get_metadata_options_and_update_mask(
             metadata_fields, destination_url))
-    csv_options, csv_update_mask = self._get_csv_options_and_update_mask(
-        csv_separator, csv_delimiter, csv_header)
+
+    report_format_options, report_format_mask = (
+        self._get_report_format_options_and_update_mask(
+            csv_separator, csv_delimiter, csv_header, parquet))
 
     # Only the fields present in the mask will be updated.
-    update_mask = frequency_update_mask + metadata_update_mask + csv_update_mask
+    update_mask = (
+        frequency_update_mask + metadata_update_mask + report_format_mask)
 
     if display_name is not None:
       update_mask.append('displayName')
@@ -311,14 +354,18 @@ class InsightsApi:
           'Nothing to update for report config: {}'.format(report_config_name))
 
     report_config = self.messages.ReportConfig(
-        csvOptions=csv_options,
+        csvOptions=report_format_options.csv,
+        parquetOptions=report_format_options.parquet,
         displayName=display_name,
         frequencyOptions=frequency_options,
         objectMetadataReportOptions=object_metadata_report_options)
-    request = self.messages.StorageinsightsProjectsLocationsReportConfigsPatchRequest(
-        name=report_config_name,
-        reportConfig=report_config,
-        updateMask=','.join(update_mask))
+    request = (
+        self.messages.StorageinsightsProjectsLocationsReportConfigsPatchRequest(
+            name=report_config_name,
+            reportConfig=report_config,
+            updateMask=','.join(update_mask),
+        )
+    )
     return self.client.projects_locations_reportConfigs.Patch(request)
 
   def list_report_details(self, report_config_name, page_size=None):

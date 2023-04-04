@@ -10249,7 +10249,7 @@ class GoogleCloudApigeeV1SecurityAction(_messages.Message):
     deny: Deny a request through if it matches this SecurityAction.
     description: Optional. An optional user provided description of the
       SecurityAction.
-    expireTime: The exiration for this SecurityAction.
+    expireTime: The expiration for this SecurityAction.
     flag: Flag a request through if it matches this SecurityAction.
     name: Immutable. This field is ignored during creation as per AIP-133.
       Please set the `security_action_id` field in the

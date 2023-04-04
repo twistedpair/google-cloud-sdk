@@ -544,7 +544,9 @@ class ClientLibrarySettings(_messages.Message):
     restNumericEnums: When using transport=rest, the client request will
       encode enums as numbers rather than strings.
     rubySettings: Settings for Ruby client libraries.
-    version: Version of the API to apply these settings to.
+    version: Version of the API to apply these settings to. This is the full
+      protobuf package for the API, ending in the version element. Examples:
+      "google.cloud.speech.v1" and "google.spanner.admin.database.v1".
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -2168,10 +2170,11 @@ class MethodSettings(_messages.Message):
     longRunning: Describes settings to use for long-running operations when
       generating API methods for RPCs. Complements RPCs that use the
       annotations in google/longrunning/operations.proto. Example of a YAML
-      configuration:: publishing: method_behavior: - selector: CreateAdDomain
-      long_running: initial_poll_delay: seconds: 60 # 1 minute
-      poll_delay_multiplier: 1.5 max_poll_delay: seconds: 360 # 6 minutes
-      total_poll_timeout: seconds: 54000 # 90 minutes
+      configuration:: publishing: method_settings: - selector:
+      google.cloud.speech.v2.Speech.BatchRecognize long_running:
+      initial_poll_delay: seconds: 60 # 1 minute poll_delay_multiplier: 1.5
+      max_poll_delay: seconds: 360 # 6 minutes total_poll_timeout: seconds:
+      54000 # 90 minutes
     selector: The fully qualified name of the method, for which the options
       below apply. This is used to find the method to apply the options.
   """
@@ -2523,7 +2526,7 @@ class Mixin(_messages.Message):
   mixin construct implies that all methods in `AccessControl` are also
   declared with same name and request/response types in `Storage`. A
   documentation generator or annotation processor will see the effective
-  `Storage.GetAcl` method after inheriting documentation and annotations as
+  `Storage.GetAcl` method after inherting documentation and annotations as
   follows: service Storage { // Get the underlying ACL object. rpc
   GetAcl(GetAclRequest) returns (Acl) { option (google.api.http).get =
   "/v2/{resource=**}:getAcl"; } ... } Note how the version in the path pattern

@@ -25,7 +25,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-def _YieldFromLocations(locations, project, limit, messages, client):
+def _YieldFromLocations(
+    locations, project, limit, messages, client, filter_exp
+):
   """Yield the functions from the given locations.
 
   Args:
@@ -34,6 +36,7 @@ def _YieldFromLocations(locations, project, limit, messages, client):
     limit: int, List messages limit.
     messages: module, Generated messages module.
     client: base_api.BaseApiClient, cloud functions client library.
+    filter_exp: Filter expression in list functions request.
 
   Yields:
     protorpc.message.Message, The resources listed by the service.
@@ -59,7 +62,7 @@ def _YieldFromLocations(locations, project, limit, messages, client):
     for function in list_pager.YieldFromList(
         service=client.projects_locations_functions,
         request=messages.CloudfunctionsProjectsLocationsFunctionsListRequest(
-            parent=location_ref.RelativeName(), filter='environment="GEN_2"'
+            parent=location_ref.RelativeName(), filter=filter_exp
         ),
         limit=limit,
         field='functions',
@@ -69,11 +72,13 @@ def _YieldFromLocations(locations, project, limit, messages, client):
       yield function
 
 
-def Run(args, release_track):
+def Run(args, release_track, filter_exp=None):
   """List Google Cloud Functions."""
   client = api_util.GetClientInstance(release_track=release_track)
   messages = api_util.GetMessagesModule(release_track=release_track)
   project = properties.VALUES.core.project.GetOrFail()
   limit = args.limit
 
-  return _YieldFromLocations(args.regions, project, limit, messages, client)
+  return _YieldFromLocations(
+      args.regions, project, limit, messages, client, filter_exp
+  )

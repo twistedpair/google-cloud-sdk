@@ -72,12 +72,15 @@ class BatchRecognizeFileResult(_messages.Message):
   Fields:
     error: Error if one was encountered.
     metadata: A RecognitionResponseMetadata attribute.
+    transcript: The transcript for the audio file. This is populated only when
+      InlineOutputConfig is set in the RecognitionOutputConfig.
     uri: The Cloud Storage URI to which recognition results were written.
   """
 
   error = _messages.MessageField('Status', 1)
   metadata = _messages.MessageField('RecognitionResponseMetadata', 2)
-  uri = _messages.StringField(3)
+  transcript = _messages.MessageField('BatchRecognizeResults', 3)
+  uri = _messages.StringField(4)
 
 
 class BatchRecognizeMetadata(_messages.Message):
@@ -191,6 +194,21 @@ class BatchRecognizeResponse(_messages.Message):
 
   results = _messages.MessageField('ResultsValue', 1)
   totalBilledDuration = _messages.StringField(2)
+
+
+class BatchRecognizeResults(_messages.Message):
+  r"""Output type for Cloud Storage of BatchRecognize transcripts. Though this
+  proto isn't returned in this API anywhere, the Cloud Storage transcripts
+  will be this proto serialized and should be parsed as such.
+
+  Fields:
+    metadata: Metadata about the recognition.
+    results: Sequential list of transcription results corresponding to
+      sequential portions of audio.
+  """
+
+  metadata = _messages.MessageField('RecognitionResponseMetadata', 1)
+  results = _messages.MessageField('SpeechRecognitionResult', 2, repeated=True)
 
 
 class BatchRecognizeTranscriptionMetadata(_messages.Message):
@@ -1201,12 +1219,12 @@ class RecognitionOutputConfig(_messages.Message):
   r"""Configuration options for the output(s) of recognition.
 
   Fields:
-    gcsOutputConfig: The Cloud Storage URI prefix with which recognition
-      results will be written.
-    inlineResponseConfig: The transcript will be provided under the
-      BatchRecognizeResponse message of the Operation when completed. NOTE:
-      This is on an allowlist only basis, and is only allowed when calling
-      BatchRecognize with just one audio file.
+    gcsOutputConfig: If this message is populated, recognition results are
+      written to the provided Google Cloud Storage URI.
+    inlineResponseConfig: If this message is populated, recognition results
+      are provided in the BatchRecognizeResponse message of the Operation when
+      completed. This is only supported when calling BatchRecognize with just
+      one audio file.
   """
 
   gcsOutputConfig = _messages.MessageField('GcsOutputConfig', 1)

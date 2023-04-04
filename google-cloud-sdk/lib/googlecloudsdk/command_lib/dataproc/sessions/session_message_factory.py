@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.dataproc.sessions import (
+    jupyter_config_factory as jcf)
 from googlecloudsdk.command_lib.dataproc.shared_messages import (
     environment_config_factory as ecf)
 from googlecloudsdk.command_lib.dataproc.shared_messages import (
@@ -37,7 +39,8 @@ class SessionMessageFactory(object):
   INVALID_ENGINE_TYPE_ERR_MSG = 'Invalid engine type: {}.'
 
   def __init__(self, dataproc, runtime_config_factory_override=None,
-               environment_config_factory_override=None):
+               environment_config_factory_override=None,
+               jupyter_config_factory_override=None):
     """Builder class for Session message.
 
     Session message factory. Only the flags added in AddArguments are handled.
@@ -50,6 +53,8 @@ class SessionMessageFactory(object):
       RuntimeConfigFactory instance.
       environment_config_factory_override: Override the default
       EnvironmentConfigFactory instance.
+      jupyter_config_factory_override: Override the default
+      JupyterConfigFactory instance.
     """
     self.dataproc = dataproc
 
@@ -57,15 +62,17 @@ class SessionMessageFactory(object):
     self._session2key = {self.dataproc.messages.JupyterConfig: 'jupyterSession'}
     self._engine2key = {self.dataproc.messages.SparkConfig: 'spark'}
 
-    self.runtime_config_factory = runtime_config_factory_override
-    if not self.runtime_config_factory:
-      self.runtime_config_factory = rcf.RuntimeConfigFactory(
-          self.dataproc, use_config_property=True)
+    self.runtime_config_factory = (
+        runtime_config_factory_override or
+        rcf.RuntimeConfigFactory(self.dataproc, use_config_property=True))
 
-    self.environment_config_factory = environment_config_factory_override
-    if not self.environment_config_factory:
-      self.environment_config_factory = (
-          ecf.EnvironmentConfigFactory(self.dataproc))
+    self.environment_config_factory = (
+        environment_config_factory_override or
+        ecf.EnvironmentConfigFactory(self.dataproc))
+
+    self.jupyter_config_factory = (
+        jupyter_config_factory_override or
+        jcf.JupyterConfigFactory(self.dataproc))
 
   def GetMessage(self, args):
     """Creates a Session message from given args.
@@ -84,7 +91,7 @@ class SessionMessageFactory(object):
       AttributeError: When session is invalid.
     """
     kwargs = {}
-    session_config = self.dataproc.messages.JupyterConfig()
+    session_config = self.jupyter_config_factory.GetMessage(args)
     engine_config = self.dataproc.messages.SparkConfig()
     kwargs[self._session2key[type(session_config)]] = session_config
     kwargs[self._engine2key[type(engine_config)]] = engine_config
@@ -103,6 +110,9 @@ class SessionMessageFactory(object):
 
     kwargs['name'] = args.CONCEPTS.session.Parse().RelativeName()
 
+    if args.user:
+      kwargs['user'] = args.user
+
     if not kwargs:
       return None
 
@@ -118,6 +128,13 @@ def AddArguments(parser):
   Args:
     parser: A argument parser.
   """
+  parser.add_argument(
+      '--user',
+      help="""The email address of the user who owns the session. The session
+          will be authenticated as this user if credentials injection is
+          enabled.""",
+  )
+
   labels_util.AddCreateLabelsFlags(parser)
   _AddDependency(parser)
 
@@ -125,3 +142,4 @@ def AddArguments(parser):
 def _AddDependency(parser):
   rcf.AddArguments(parser, use_config_property=True)
   ecf.AddArguments(parser)
+  jcf.AddArguments(parser)

@@ -96,6 +96,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DEPLOYMENTS = (
+      'projects.locations.deployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/deployments/'
+              '{deploymentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_IAASMETRICSCOLLECTORS = (
       'projects.locations.iaasMetricsCollectors',
       '{+name}',

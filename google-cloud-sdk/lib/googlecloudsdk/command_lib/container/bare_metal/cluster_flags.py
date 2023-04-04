@@ -366,12 +366,73 @@ def AddNetworkConfig(parser, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   required = not is_update
-  network_config_mutex_group = parser.add_group(
+  bare_metal_network_config_group = parser.add_group(
+      help='Anthos on bare metal cluster network configurations.',
+  )
+
+  if not is_update:
+    bare_metal_network_config_group.add_argument(
+        '--enable-advanced-networking',
+        action='store_true',
+        help=(
+            'Enables the use of advanced Anthos networking features, such as'
+            ' Bundled Load Balancing with BGP or the egress NAT gateway.'
+        ),
+    )
+
+  _AddEnableMultiNICConfig(bare_metal_network_config_group, is_update)
+  _AddEnableSrIovConfig(bare_metal_network_config_group, is_update)
+
+  cluster_cidr_config_mutex_group = bare_metal_network_config_group.add_group(
       mutex=True,
       required=required,
       help='Populate one of the network configs.',
   )
-  _AddIslandModeCIDRConfig(network_config_mutex_group, is_update)
+  _AddIslandModeCIDRConfig(cluster_cidr_config_mutex_group, is_update)
+
+
+def _AddEnableMultiNICConfig(bare_metal_network_config_group, is_update=False):
+  if is_update:
+    return None
+
+  multi_nic_config_group = bare_metal_network_config_group.add_group(
+      help='Multiple networking interfaces cluster configurations.'
+  )
+  multi_nic_config_group.add_argument(
+      '--enable-multi-nic-config',
+      action='store_true',
+      help='If set, enable multiple network interfaces for your pods.',
+  )
+
+
+def _AddEnableSrIovConfig(bare_metal_network_config_group, is_update=False):
+  """Adds a flag to specify the enablement of SR-IOV Config.
+
+  Args:
+    bare_metal_network_config_group: The parent group to add the flags to.
+    is_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  sr_iov_config_group = bare_metal_network_config_group.add_group(
+      help='SR-IOV networking operator configurations.'
+  )
+  if is_update:
+    sr_iov_config_mutex_group = sr_iov_config_group.add_group(mutex=True)
+    surface = sr_iov_config_mutex_group
+  else:
+    surface = sr_iov_config_group
+
+  surface.add_argument(
+      '--enable-sr-iov-config',
+      action='store_true',
+      help='If set, install the SR-IOV operator.',
+  )
+  if is_update:
+    surface.add_argument(
+        '--disable-sr-iov-config',
+        action='store_true',
+        help="If set, the SR-IOV operator won't be installed.",
+    )
 
 
 def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):

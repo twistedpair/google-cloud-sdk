@@ -43,6 +43,15 @@ def CreateNodeSpec(ref, args, request):
   node_spec.node.runtimeVersion = args.runtime_version
 
   node_spec.node.networkConfig = tpu_messages.NetworkConfig()
+  node_spec.node.serviceAccount = tpu_messages.ServiceAccount()
+  if args.network:
+    node_spec.node.networkConfig.network = args.network
+  if args.subnetwork:
+    node_spec.node.networkConfig.subnetwork = args.subnetwork
+  if args.service_account:
+    node_spec.node.serviceAccount.email = args.service_account
+  if args.scopes:
+    node_spec.node.serviceAccount.scope = args.scopes
   node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
   if args.node_id:

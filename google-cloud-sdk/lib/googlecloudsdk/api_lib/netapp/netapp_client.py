@@ -40,6 +40,8 @@ class NetAppClient(object):
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     if release_track == base.ReleaseTrack.ALPHA:
       self._adapter = AlphaNetappAdapter()
+    elif release_track == base.ReleaseTrack.BETA:
+      self._adapter = BetaNetappAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           VERSION_MAP[release_track]))
@@ -137,3 +139,13 @@ class AlphaNetappAdapter(object):
     self.release_track = base.ReleaseTrack.ALPHA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
+
+
+class BetaNetappAdapter(object):
+  """Adapter for the Beta Cloud NetApp Files API."""
+
+  def __init__(self):
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = GetClientInstance(release_track=self.release_track)
+    self.messages = GetMessagesModule(release_track=self.release_track)
+

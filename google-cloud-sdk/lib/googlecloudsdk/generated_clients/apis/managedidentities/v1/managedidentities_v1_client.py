@@ -456,6 +456,33 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DomainJoinMachine(self, request, global_params=None):
+      r"""DomainJoinMachine API joins a Compute Engine VM to the domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainJoinMachineResponse) The response message.
+      """
+      config = self.GetMethodConfig('DomainJoinMachine')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DomainJoinMachine.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/domains/{domainsId}:domainJoinMachine',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.domainJoinMachine',
+        ordered_params=['domain'],
+        path_params=['domain'],
+        query_params=[],
+        relative_path='v1/{+domain}:domainJoinMachine',
+        request_field='domainJoinMachineRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest',
+        response_type_name='DomainJoinMachineResponse',
+        supports_download=False,
+    )
+
     def ExtendSchema(self, request, global_params=None):
       r"""Extend Schema for Domain.
 

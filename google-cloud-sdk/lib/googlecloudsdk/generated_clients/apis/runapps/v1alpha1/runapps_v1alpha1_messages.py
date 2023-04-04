@@ -634,6 +634,18 @@ class FirebaseHostingConfig(_messages.Message):
   resources = _messages.MessageField('ServiceResourceBindingConfig', 2, repeated=True)
 
 
+class FirebaseHostingStatus(_messages.Message):
+  r"""Detailed status for Firebase Hosting resource.
+
+  Fields:
+    domains: List of domains associated with the firebase hosting site.
+    hostingConfig: Hosting configuration created by Serverless Stacks.
+  """
+
+  domains = _messages.StringField(1, repeated=True)
+  hostingConfig = _messages.StringField(2, repeated=True)
+
+
 class HostingSiteConfig(_messages.Message):
   r"""Message for defining the firebase hosting site configuration.
 
@@ -1207,6 +1219,7 @@ class ResourceStatus(_messages.Message):
       domain will link to the GCLB page.
     diverged: Indicates that a child component of this resource has been
       altered and may not match the expected state.
+    firebaseHostingDetails: Details for Firebase Hosting resource.
     reason: The reason why this resource is in the current state.
     resourceComponentStatuses: Repeated field with status per component
       created for this resource.
@@ -1244,12 +1257,13 @@ class ResourceStatus(_messages.Message):
   bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
   consoleLink = _messages.StringField(2)
   diverged = _messages.BooleanField(3)
-  reason = _messages.StringField(4)
-  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 5, repeated=True)
-  resourceName = _messages.StringField(6)
-  routerDetails = _messages.MessageField('RouterStatus', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  type = _messages.StringField(9)
+  firebaseHostingDetails = _messages.MessageField('FirebaseHostingStatus', 4)
+  reason = _messages.StringField(5)
+  resourceComponentStatuses = _messages.MessageField('ResourceComponentStatus', 6, repeated=True)
+  resourceName = _messages.StringField(7)
+  routerDetails = _messages.MessageField('RouterStatus', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.StringField(10)
 
 
 class Route(_messages.Message):

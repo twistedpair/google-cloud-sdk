@@ -252,7 +252,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
 
   Args:
     field: The apitools field object.
-    attributes: yaml_command_schema.Argument, The attributes to use to
+    attributes: yaml_arg_schema.Argument, The attributes to use to
       generate the arg.
     fix_bools: True to generate boolean flags as switches that take a value or
       False to just generate them as regular string flags.
@@ -433,7 +433,8 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
   # case, we re-parse the resource as its parent collection (to fill in the
   # API parameters, and we insert the name of the resource itself into the
   # correct position in the body of the request method.
-  if (request_id_field and method.resource_argument_collection.detailed_params
+  if (request_id_field and method and
+      method.resource_argument_collection.detailed_params
       != method.request_collection.detailed_params):
     # Sets the name of the resource in the message object body.
     SetFieldInMessage(message, request_id_field, ref.Name())
@@ -442,7 +443,8 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
         parent_collection=method.request_collection.full_name)
 
   ref_name = ref.RelativeName() if use_relative_name else ref.Name()
-  for p in method.params:
+  params = method.params if method else []
+  for p in params:
     value = message_resource_map.pop(p, None) or getattr(ref, p, ref_name)
     SetFieldInMessage(message, p, value)
   for message_field_name, ref_param in message_resource_map.items():

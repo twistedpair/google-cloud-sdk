@@ -14,14 +14,16 @@
 # limitations under the License.
 """Returns correct API client instance for user command."""
 
+# TODO(b/275749579): Rename this module.
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 import threading
 
-from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.api_lib.storage import s3_api
+from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import properties
 
@@ -46,8 +48,9 @@ def _get_api_class(provider):
     ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   if provider == storage_url.ProviderPrefix.GCS:
-    return gcs_api.GcsApi
+    return gcs_json_client.JsonClient
   elif provider == storage_url.ProviderPrefix.S3:
+    # TODO(b/275749579): Change this after the refactor is done.
     return s3_api.S3Api
   else:
     raise ValueError(_INVALID_PROVIDER_PREFIX_MESSAGE)

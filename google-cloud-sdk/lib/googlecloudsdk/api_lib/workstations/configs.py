@@ -133,6 +133,14 @@ class Configs:
     config.container.workingDir = args.container_working_dir
     config.container.runAsUser = args.container_run_as_user
 
+    # Encryption key
+    encryption_key = self.messages.CustomerEncryptionKey()
+    if args.kms_key:
+      encryption_key.kmsKey = args.kms_key
+    if args.kms_key_service_account:
+      encryption_key.kmsKeyServiceAccount = args.kms_key_service_account
+    config.encryptionKey = encryption_key
+
     create_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRequest(
         parent=parent, workstationConfigId=config_id, workstationConfig=config)
     op_ref = self._service.Create(create_req)

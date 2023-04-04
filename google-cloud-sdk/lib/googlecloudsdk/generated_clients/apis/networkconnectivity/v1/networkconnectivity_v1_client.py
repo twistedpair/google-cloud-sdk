@@ -49,6 +49,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     self.projects_locations_serviceClasses = self.ProjectsLocationsServiceClassesService(self)
     self.projects_locations_serviceConnectionMaps = self.ProjectsLocationsServiceConnectionMapsService(self)
     self.projects_locations_serviceConnectionPolicies = self.ProjectsLocationsServiceConnectionPoliciesService(self)
+    self.projects_locations_serviceConnectionTokens = self.ProjectsLocationsServiceConnectionTokensService(self)
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -916,6 +917,87 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new ServiceClass in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceClassesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceClasses',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.serviceClasses.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceClassId'],
+        relative_path='v1/{+parent}/serviceClasses',
+        request_field='serviceClass',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceClassesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ServiceClass.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceClassesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceClasses/{serviceClassesId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.serviceClasses.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceClassesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ServiceClass.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceClassesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceClass) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceClasses/{serviceClassesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceClasses.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceClassesGetRequest',
+        response_type_name='ServiceClass',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -940,6 +1022,60 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsServiceClassesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ServiceClasses in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceClassesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceClassesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceClasses',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceClasses.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/serviceClasses',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceClassesListRequest',
+        response_type_name='ListServiceClassesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single ServiceClass.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceClassesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceClasses/{serviceClassesId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.serviceClasses.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='serviceClass',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceClassesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1007,6 +1143,87 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new ServiceConnectionMap in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionMapsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionMaps',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.serviceConnectionMaps.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceConnectionMapId'],
+        relative_path='v1/{+parent}/serviceConnectionMaps',
+        request_field='serviceConnectionMap',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionMapsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ServiceConnectionMap.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionMapsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionMaps/{serviceConnectionMapsId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.serviceConnectionMaps.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionMapsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ServiceConnectionMap.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionMapsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceConnectionMap) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionMaps/{serviceConnectionMapsId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceConnectionMaps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionMapsGetRequest',
+        response_type_name='ServiceConnectionMap',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1031,6 +1248,60 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionMapsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ServiceConnectionMaps in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionMapsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceConnectionMapsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionMaps',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceConnectionMaps.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/serviceConnectionMaps',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionMapsListRequest',
+        response_type_name='ListServiceConnectionMapsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single ServiceConnectionMap.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionMapsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionMaps/{serviceConnectionMapsId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.serviceConnectionMaps.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='serviceConnectionMap',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionMapsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1098,6 +1369,87 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new ServiceConnectionPolicy in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.serviceConnectionPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceConnectionPolicyId'],
+        relative_path='v1/{+parent}/serviceConnectionPolicies',
+        request_field='serviceConnectionPolicy',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ServiceConnectionPolicy.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.serviceConnectionPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ServiceConnectionPolicy.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceConnectionPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceConnectionPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetRequest',
+        response_type_name='ServiceConnectionPolicy',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1122,6 +1474,60 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ServiceConnectionPolicies in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceConnectionPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceConnectionPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/serviceConnectionPolicies',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesListRequest',
+        response_type_name='ListServiceConnectionPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single ServiceConnectionPolicy.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionPolicies/{serviceConnectionPoliciesId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.serviceConnectionPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='serviceConnectionPolicy',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1176,6 +1582,124 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionPoliciesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServiceConnectionTokensService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceConnectionTokens resource."""
+
+    _NAME = 'projects_locations_serviceConnectionTokens'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1.ProjectsLocationsServiceConnectionTokensService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new ServiceConnectionToken in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionTokensCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionTokens',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.serviceConnectionTokens.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceConnectionTokenId'],
+        relative_path='v1/{+parent}/serviceConnectionTokens',
+        request_field='serviceConnectionToken',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionTokensCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ServiceConnectionToken.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionTokensDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionTokens/{serviceConnectionTokensId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.serviceConnectionTokens.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionTokensDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ServiceConnectionToken.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionTokensGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceConnectionToken) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionTokens/{serviceConnectionTokensId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceConnectionTokens.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionTokensGetRequest',
+        response_type_name='ServiceConnectionToken',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ServiceConnectionTokens in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsServiceConnectionTokensListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceConnectionTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/serviceConnectionTokens',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.serviceConnectionTokens.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/serviceConnectionTokens',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsServiceConnectionTokensListRequest',
+        response_type_name='ListServiceConnectionTokensResponse',
         supports_download=False,
     )
 

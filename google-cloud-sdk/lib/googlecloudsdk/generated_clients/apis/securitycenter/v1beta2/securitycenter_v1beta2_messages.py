@@ -118,29 +118,32 @@ class AssociatedFinding(_messages.Message):
 
 
 class CloudDlpDataProfile(_messages.Message):
-  r"""Contains details about the data profile that produced the finding.
+  r"""The [data profile](https://cloud.google.com/dlp/docs/data-profiles)
+  associated with the finding.
 
   Fields:
-    dataProfile: Name of the data profile. Example
-      projects/123/locations/europe/tableProfiles/8383929
+    dataProfile: Name of the data profile, for example,
+      `projects/123/locations/europe/tableProfiles/8383929`.
   """
 
   dataProfile = _messages.StringField(1)
 
 
 class CloudDlpInspection(_messages.Message):
-  r"""Contains details about the Cloud DLP job that produced the infotype
-  finding.
+  r"""Details about the Cloud Data Loss Prevention (Cloud DLP) [inspection
+  job](https://cloud.google.com/dlp/docs/concepts-job-triggers) that produced
+  the finding.
 
   Fields:
     fullScan: Whether Cloud DLP scanned the complete resource or a sampled
       subset.
-    infoType: The kind of information found, (e.g. email_address,
-      street_address, etc.)
+    infoType: The [type of
+      information](https://cloud.google.com/dlp/docs/infotypes-reference)
+      found, for example, `EMAIL_ADDRESS` or `STREET_ADDRESS`.
     infoTypeCount: The number of times Cloud DLP found this infoType within
       this job and resource.
-    inspectJob: Name of the inspect job Example
-      projects/123/locations/europe/dlpJobs/i-8383929
+    inspectJob: Name of the inspection job, for example,
+      `projects/123/locations/europe/dlpJobs/i-8383929`.
   """
 
   fullScan = _messages.BooleanField(1)
@@ -831,6 +834,42 @@ class Exfiltration(_messages.Message):
   targets = _messages.MessageField('ExfilResource', 2, repeated=True)
 
 
+class Expr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class File(_messages.Message):
   r"""File information about the related binary/library used by an executable,
   or the script used by a script interpreter
@@ -946,6 +985,9 @@ class Finding(_messages.Message):
     kubernetes: Kubernetes resources associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
+    moduleName: Unique identifier of the module which generated the finding.
+      Example: folders/598186756061/securityHealthAnalyticsSettings/customModu
+      les/56799441161885
     mute: Indicates the mute state of a finding (either muted, unmuted or
       undefined). Unlike other attributes of a finding, a finding provider
       shouldn't set the value of mute.
@@ -1197,20 +1239,21 @@ class Finding(_messages.Message):
   kernelRootkit = _messages.MessageField('KernelRootkit', 21)
   kubernetes = _messages.MessageField('Kubernetes', 22)
   mitreAttack = _messages.MessageField('MitreAttack', 23)
-  mute = _messages.EnumField('MuteValueValuesEnum', 24)
-  muteInitiator = _messages.StringField(25)
-  muteUpdateTime = _messages.StringField(26)
-  name = _messages.StringField(27)
-  nextSteps = _messages.StringField(28)
-  parent = _messages.StringField(29)
-  parentDisplayName = _messages.StringField(30)
-  processes = _messages.MessageField('Process', 31, repeated=True)
-  resourceName = _messages.StringField(32)
-  securityMarks = _messages.MessageField('SecurityMarks', 33)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 34)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 35)
-  state = _messages.EnumField('StateValueValuesEnum', 36)
-  vulnerability = _messages.MessageField('Vulnerability', 37)
+  moduleName = _messages.StringField(24)
+  mute = _messages.EnumField('MuteValueValuesEnum', 25)
+  muteInitiator = _messages.StringField(26)
+  muteUpdateTime = _messages.StringField(27)
+  name = _messages.StringField(28)
+  nextSteps = _messages.StringField(29)
+  parent = _messages.StringField(30)
+  parentDisplayName = _messages.StringField(31)
+  processes = _messages.MessageField('Process', 32, repeated=True)
+  resourceName = _messages.StringField(33)
+  securityMarks = _messages.MessageField('SecurityMarks', 34)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 35)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 36)
+  state = _messages.EnumField('StateValueValuesEnum', 37)
+  vulnerability = _messages.MessageField('Vulnerability', 38)
 
 
 class Folder(_messages.Message):
@@ -1306,6 +1349,102 @@ class GoogleCloudSecuritycenterV1Binding(_messages.Message):
 
 class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
+
+
+class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
+  r""" Resource capturing CEL config for the custom module.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the generated finding.
+
+  Fields:
+    customOutput: Custom output properties.
+    description: The description providing context for the generated finding.
+    predicate: Evaluation expression for the resource which will produce a
+      finding.
+    recommendation: The recommendation steps to fix the generated finding.
+    resourceSelector: Selection criteria for the resource type.
+    severity: The severity of the generated finding.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the generated finding.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 1)
+  description = _messages.StringField(2)
+  predicate = _messages.MessageField('Expr', 3)
+  recommendation = _messages.StringField(4)
+  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 5)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+
+
+class GoogleCloudSecuritycenterV1CustomOutputSpec(_messages.Message):
+  r"""Resource capturing custom output property.
+
+  Fields:
+    properties: List of custom output properties with name, CEL expression.
+  """
+
+  properties = _messages.MessageField('GoogleCloudSecuritycenterV1Property', 1, repeated=True)
+
+
+class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_messages.Message):
+  r"""An EffectiveSecurityHealthAnalyticsCustomModule is the representation of
+  SecurityHealthAnalyticsCustomModule at a given level taking hierarchy into
+  account and resolving various fields accordingly. e.g. if the module is
+  enabled at the ancestor level, effective modules at all descendant levels
+  will have enablement_state set to enabled. Similarly, if module.inherited is
+  set, then effective module's config will contain the ancestor's config
+  details. EffectiveSecurityHealthAnalyticsCustomModule is read-only.
+
+  Enums:
+    EnablementStateValueValuesEnum: Output only. The effective state of
+      enablement for the module at the given level of the hierarchy.
+
+  Fields:
+    customConfig: Output only. Config for the effective module. The user
+      specified custom configuration for the module.
+    displayName: Output only. The human readable name to be displayed for the
+      module.
+    enablementState: Output only. The effective state of enablement for the
+      module at the given level of the hierarchy.
+    name: Output only. The resource name of the custom module. Its format is "
+      organizations/{organization}/securityHealthAnalyticsSettings/effectiveCu
+      stomModules/{customModule}", or "folders/{folder}/securityHealthAnalytic
+      sSettings/effectiveCustomModules/{customModule}", or "projects/{project}
+      /securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+  """
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The effective state of enablement for the module at the
+    given level of the hierarchy.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
+      ENABLED: The module is enabled at the given level.
+      DISABLED: The module is disabled at the given level.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
+  displayName = _messages.StringField(2)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudSecuritycenterV1ExposedResource(_messages.Message):
@@ -1449,6 +1588,19 @@ class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
   resource = _messages.MessageField('GoogleCloudSecuritycenterV1Resource', 3)
 
 
+class GoogleCloudSecuritycenterV1Property(_messages.Message):
+  r"""Resource for an individual output property.
+
+  Fields:
+    name: Name of the property for the custom output.
+    valueExpression: CEL Expression for the custom output. The expression can
+      output any standard CEL value types.
+  """
+
+  name = _messages.StringField(1)
+  valueExpression = _messages.MessageField('Expr', 2)
+
+
 class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
@@ -1474,6 +1626,16 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   project = _messages.StringField(6)
   projectDisplayName = _messages.StringField(7)
   type = _messages.StringField(8)
+
+
+class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
+  r"""Resource for selecting resource type.
+
+  Fields:
+    resourceTypes: Resource type for detector to operate on.
+  """
+
+  resourceTypes = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
@@ -1602,6 +1764,64 @@ class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
 
   duration = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.Message):
+  r""" A custom module is a user authored module that is run by SHA on behalf
+  of the user to produce findings. Custom modules can be created anywhere in
+  the CRM hierarchy, and are inherited by all descendants. A resident custom
+  module is a custom module that was created at the CRM scope it is viewed in.
+  An inherited custom module is a custom module that has inherited its
+  configuration and enablement state from an ancestor resident module
+  somewhere up the CRM hierarchy.
+
+  Enums:
+    EnablementStateValueValuesEnum: The enablement state of the custom module.
+
+  Fields:
+    ancestorModule: Output only. If empty, indicates that the current module
+      is a resident module of the current CRM scope. Otherwise, it will
+      contain the name of the CRM ancestor module that this module inherited
+      its enablement state from.
+    customConfig: The user specified custom configuration for the module.
+    displayName: The human readable display name of the custom module. Must be
+      less than 64 characters.
+    enablementState: The enablement state of the custom module.
+    lastEditor: Output only. The editor that last updated the custom module.
+    name: Immutable. The resource name of the custom module. Its format is "or
+      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
+      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
+      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
+      ticsSettings/customModules/{customModule}" The id {customModule} is
+      server-generated and is not user settable. It will be a numeric id
+      containing 1-20 digits.
+    updateTime: Output only. The time at which the custom module was last
+      updated.
+  """
+
+  class EnablementStateValueValuesEnum(_messages.Enum):
+    r"""The enablement state of the custom module.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
+      ENABLED: The module is enabled at the given CRM resource.
+      DISABLED: The module is disabled at the given CRM resource.
+      INHERITED: State is inherited from an ancestor module. The module will
+        either be effectively ENABLED or DISABLED based on its closest non-
+        inherited ancestor module in the CRM hierarchy.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+    INHERITED = 3
+
+  ancestorModule = _messages.StringField(1)
+  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
+  displayName = _messages.StringField(3)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
+  lastEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):

@@ -22,7 +22,7 @@ location:
       The location of the beyondcorp service.
 
 appconnection:
-  name: appconnection
+  name: app connection
   collection: beyondcorp.projects.locations.appConnections
   request_id_field: appConnectionId
   disable_auto_completers: false
@@ -50,7 +50,7 @@ connection:
       The connection_id for the Connection Resource of the Beyondcorp service.
 
 appconnector:
-  name: appconnector
+  name: app connector
   collection: beyondcorp.projects.locations.appConnectors
   request_id_field: appConnectorId
   disable_auto_completers: false
@@ -93,7 +93,7 @@ operation:
 
 
 appgateway:
-  name: appgateway
+  name: app gateway
   collection: beyondcorp.projects.locations.appGateways
   request_id_field: appGatewayId
   disable_auto_completers: false

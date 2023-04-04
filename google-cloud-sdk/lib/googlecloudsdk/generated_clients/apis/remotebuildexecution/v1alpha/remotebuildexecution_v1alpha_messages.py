@@ -431,6 +431,8 @@ class BuildBazelRemoteExecutionV2ExecuteOperationMetadata(_messages.Message):
 
   Fields:
     actionDigest: The digest of the Action being executed.
+    partialExecutionMetadata: The client can read this field to view details
+      about the ongoing execution.
     stage: The current stage of execution.
     stderrStreamName: If set, the client can use this resource name with
       ByteStream.Read to stream the standard error from the endpoint hosting
@@ -457,9 +459,10 @@ class BuildBazelRemoteExecutionV2ExecuteOperationMetadata(_messages.Message):
     COMPLETED = 4
 
   actionDigest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 1)
-  stage = _messages.EnumField('StageValueValuesEnum', 2)
-  stderrStreamName = _messages.StringField(3)
-  stdoutStreamName = _messages.StringField(4)
+  partialExecutionMetadata = _messages.MessageField('BuildBazelRemoteExecutionV2ExecutedActionMetadata', 2)
+  stage = _messages.EnumField('StageValueValuesEnum', 3)
+  stderrStreamName = _messages.StringField(4)
+  stdoutStreamName = _messages.StringField(5)
 
 
 class BuildBazelRemoteExecutionV2ExecuteResponse(_messages.Message):

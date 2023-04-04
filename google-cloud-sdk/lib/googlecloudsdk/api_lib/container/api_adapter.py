@@ -228,6 +228,10 @@ DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG = """\
 Invalid provider '{provider}' for argument --datapath-provider. Valid providers are legacy, advanced.
 """
 
+DPV2_OBS_ERROR_MSG = """\
+Invalid '{mode}' for argument --dataplane-v2-observability-mode. Valid modes are DISABLED, INTERNAL_CLUSTER_SERVICE, INTERNAL_VPC_LB, EXTERNAL_LB.
+"""
+
 SANDBOX_TYPE_NOT_PROVIDED = """\
 Must specify sandbox type.
 """
@@ -588,6 +592,7 @@ class CreateClusterOptions(object):
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
       disable_dataplane_v2_metrics=None,
+      dataplane_v2_observability_mode=None,
       shielded_secure_boot=None,
       shielded_integrity_monitoring=None,
       system_config_from_file=None,
@@ -660,6 +665,7 @@ class CreateClusterOptions(object):
       enable_security_posture=None,
       enable_nested_virtualization=None,
       network_performance_config=None,
+      enble_insecure_kubelet_readonly_port=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -772,6 +778,7 @@ class CreateClusterOptions(object):
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
     self.disable_dataplane_v2_metrics = disable_dataplane_v2_metrics
+    self.dataplane_v2_observability_mode = dataplane_v2_observability_mode
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
     self.system_config_from_file = system_config_from_file
@@ -844,6 +851,8 @@ class CreateClusterOptions(object):
     self.enable_multi_networking = enable_multi_networking
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
+    # pylint: disable=line-too-long
+    self.enble_insecure_kubelet_readonly_port = enble_insecure_kubelet_readonly_port
 
 
 class UpdateClusterOptions(object):
@@ -949,6 +958,7 @@ class UpdateClusterOptions(object):
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
       disable_dataplane_v2_metrics=None,
+      dataplane_v2_observability_mode=None,
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
       enable_workload_vulnerability_scanning=None,
@@ -968,6 +978,7 @@ class UpdateClusterOptions(object):
       clear_fleet_project=None,
       enable_security_posture=None,
       network_performance_config=None,
+      enble_insecure_kubelet_readonly_port=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1068,6 +1079,7 @@ class UpdateClusterOptions(object):
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
     self.disable_dataplane_v2_metrics = disable_dataplane_v2_metrics
+    self.dataplane_v2_observability_mode = dataplane_v2_observability_mode
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
     self.enable_workload_vulnerability_scanning = enable_workload_vulnerability_scanning
@@ -1087,6 +1099,8 @@ class UpdateClusterOptions(object):
     self.clear_fleet_project = clear_fleet_project
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
+    # pylint: disable=line-too-long
+    self.enble_insecure_kubelet_readonly_port = enble_insecure_kubelet_readonly_port
 
 
 class SetMasterAuthOptions(object):
@@ -2843,7 +2857,8 @@ class APIAdapter(object):
           options.enable_managed_prometheus or
           options.disable_managed_prometheus or
           options.enable_dataplane_v2_metrics or
-          options.disable_dataplane_v2_metrics):
+          options.disable_dataplane_v2_metrics or
+          options.dataplane_v2_observability_mode):
       logging = _GetLoggingConfig(options, self.messages)
       monitoring = _GetMonitoringConfig(options, self.messages)
       update = self.messages.ClusterUpdate()
@@ -3166,6 +3181,14 @@ class APIAdapter(object):
       perf = self._GetClusterNetworkPerformanceConfig(options)
       update = self.messages.ClusterUpdate(
           desiredNetworkPerformanceConfig=perf)
+
+    if options.enble_insecure_kubelet_readonly_port is not None:
+      node_kubelet_config = self.messages.NodeKubeletConfig()
+      # pylint: disable=line-too-long
+      node_kubelet_config.insecureKubeletReadonlyPortEnabled = options.enble_insecure_kubelet_readonly_port
+      # pylint: disable=line-too-long
+      update = self.messages.ClusterUpdate(desiredAutopilotInsecureKubeletReadonlyPortEnabled=options.enble_insecure_kubelet_readonly_port)
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -6027,6 +6050,31 @@ def _GetMonitoringConfig(options, messages):
   if options.disable_dataplane_v2_metrics:
     adv_obs = messages.AdvancedDatapathObservabilityConfig(
         enableMetrics=False)
+
+  if options.dataplane_v2_observability_mode:
+    relay_mode = None
+    opts_name = options.dataplane_v2_observability_mode.upper()
+    if opts_name == 'DISABLED':
+      relay_mode = (messages.AdvancedDatapathObservabilityConfig
+                    .RelayModeValueValuesEnum.DISABLED)
+    elif opts_name == 'INTERNAL_CLUSTER_SERVICE':
+      relay_mode = (messages.AdvancedDatapathObservabilityConfig
+                    .RelayModeValueValuesEnum.INTERNAL_CLUSTER_SERVICE)
+    elif opts_name == 'INTERNAL_VPC_LB':
+      relay_mode = (messages.AdvancedDatapathObservabilityConfig
+                    .RelayModeValueValuesEnum.INTERNAL_VPC_LB)
+    elif opts_name == 'EXTERNAL_LB':
+      relay_mode = (messages.AdvancedDatapathObservabilityConfig
+                    .RelayModeValueValuesEnum.EXTERNAL_LB)
+    else:
+      raise util.Error(DPV2_OBS_ERROR_MSG.format(
+          mode=options.dataplane_v2_observability_mode))
+    if adv_obs:
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(
+          enableMetrics=adv_obs.enableMetrics, relayMode=relay_mode)
+    else:
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(
+          relayMode=relay_mode)
 
   if comp is None and prom is None and adv_obs is None:
     return None

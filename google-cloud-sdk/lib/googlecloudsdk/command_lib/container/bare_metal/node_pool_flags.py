@@ -362,3 +362,19 @@ def AddIgnoreErrors(parser):
       ),
       action='store_true',
   )
+
+
+def AddValidationOnly(parser):
+  """Adds a flag to only validate the request without performing the operation.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--validate-only',
+      action='store_true',
+      help=(
+          'If set, only validate the request, but do not actually perform the'
+          ' operation.'
+      ),
+  )

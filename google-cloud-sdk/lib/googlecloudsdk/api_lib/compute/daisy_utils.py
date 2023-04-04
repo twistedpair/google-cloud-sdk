@@ -35,6 +35,7 @@ from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as http_exc
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -554,24 +555,27 @@ def _GetSafeBucketName(bucket_name, add_random_suffix=False):
   return bucket_name + suffix
 
 
-def CreateDaisyBucketInProject(bucket_location, storage_client):
+def CreateDaisyBucketInProject(
+    bucket_location, storage_client, enable_uniform_level_access=None):
   """Creates Daisy bucket in current project.
 
   Args:
     bucket_location: str, specified bucket location.
     storage_client: storage client
+    enable_uniform_level_access: bool, to enable uniform bucket level access.
 
   Returns:
     str, Daisy bucket.
 
   Raises:
-    DaisyBucketCreationException: if unable to create Daisy Bucket in current
-      project.
+    DaisyBucketCreationException: if unable to create Daisy Bucket.
   """
   bucket_name = GetDaisyBucketName(bucket_location)
   try:
     storage_client.CreateBucketIfNotExists(
-        bucket_name, location=bucket_location)
+        bucket_name,
+        location=bucket_location,
+        enable_uniform_level_access=enable_uniform_level_access)
   except storage_api.BucketInWrongProjectError:
     # A bucket already exists under the same name but in a different project.
     # Concatenate a random 8 character suffix to the bucket name and try a
@@ -582,7 +586,13 @@ def CreateDaisyBucketInProject(bucket_location, storage_client):
                                                   add_random_suffix=True)
       try:
         storage_client.CreateBucketIfNotExists(
-            randomized_bucket_name, location=bucket_location)
+            randomized_bucket_name,
+            location=bucket_location,
+            enable_uniform_level_access=enable_uniform_level_access)
+      except apitools_exceptions.HttpError as err:
+        raise DaisyBucketCreationException(
+            'Unable to create a temporary bucket [{bucket_name}]: {e}'.format(
+                bucket_name=bucket_name, e=http_exc.HttpException(err)))
       except storage_api.BucketInWrongProjectError:
         pass
       else:
@@ -596,6 +606,11 @@ def CreateDaisyBucketInProject(bucket_location, storage_client):
           'Unable to create a temporary bucket `{0}` needed for the operation '
           'to proceed as it exists in another project.'
           .format(bucket_name))
+
+  except apitools_exceptions.HttpError as err:
+    raise DaisyBucketCreationException(
+        'Unable to create a temporary bucket [{bucket_name}]: {e}'.format(
+            bucket_name=bucket_name, e=http_exc.HttpException(err)))
   return bucket_name
 
 

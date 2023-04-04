@@ -77,22 +77,20 @@ class ClientAdapter(object):
   def messages(self):
     return self._client.MESSAGES_MODULE
 
-  def MakeRequests(self,
-                   requests,
-                   errors_to_collect=None,
-                   project_override=None,
-                   progress_tracker=None,
-                   no_followup=False,
-                   always_return_operation=False,
-                   followup_overrides=None,
-                   log_warnings=True,
-                   log_result=True,
-                   timeout=None,
-                   enable_single_request=False):
-    """By default, sends given request in batch mode.
-
-    If enable_single_request flag is set to true, then the client_adapter.py
-    will send single request if the requests size is one.
+  def MakeRequests(
+      self,
+      requests,
+      errors_to_collect=None,
+      project_override=None,
+      progress_tracker=None,
+      no_followup=False,
+      always_return_operation=False,
+      followup_overrides=None,
+      log_warnings=True,
+      log_result=True,
+      timeout=None,
+  ):
+    """Sends given request.
 
     Args:
       requests: A list of requests to make. Each element must be a 3-element
@@ -115,8 +113,6 @@ class ClientAdapter(object):
         tense of each request.
       timeout: The maximum amount of time, in seconds, to wait for the
         operations to reach the DONE state.
-      enable_single_request: if requests is single, send single request instead
-        of batch request
 
     Returns:
       A response for each request. For deletion requests, no corresponding
@@ -138,7 +134,8 @@ class ClientAdapter(object):
             log_warnings=log_warnings,
             log_result=log_result,
             timeout=timeout,
-            enable_single_request=enable_single_request))
+        )
+    )
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
           errors, error_message='Could not fetch resource:')

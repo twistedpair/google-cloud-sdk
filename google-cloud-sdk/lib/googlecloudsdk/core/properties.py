@@ -2024,8 +2024,6 @@ class _SectionCore(_Section):
         'Each occurrence of a runtime pattern raises an exception. '
         'The pattern names are source specific. Consult the source for '
         'details.')
-    self.api_host = self._Add(
-        'api_host', hidden=True, default='https://www.googleapis.com')
     self.verbosity = self._Add(
         'verbosity',
         help_text='Default logging verbosity for `gcloud` commands.  This is '
@@ -2262,6 +2260,10 @@ class _SectionCore(_Section):
         'with core/project.',
         internal=True,
         hidden=True)
+
+    self.universe_domain = self._Add(
+        'universe_domain', hidden=True, default='googleapis.com')
+
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains', hidden=True)
 
@@ -2552,10 +2554,12 @@ class _SectionFunctions(_Section):
         'gen2',
         default=False,
         help_text=(
-            'Default environment to use when working with Cloud Functions '
-            'resources. When neither `--gen2` nor `--no-gen2` is provided, the '
-            'decision of whether to use Generation 2 falls back to this value.'
-        ))
+            'Default environment to use when working with Cloud Functions'
+            ' resources. When neither `--gen2` nor `--no-gen2` is provided, the'
+            ' decision of whether to use Generation 2 falls back to this value'
+            ' if set.'
+        ),
+    )
     self.v2 = self._AddBool(
         'v2',
         default=False,
@@ -3226,6 +3230,7 @@ class _SectionStorage(_Section):
   DEFAULT_DOWNLOAD_CHUNK_SIZE = '256Ki'
   DEFAULT_UPLOAD_CHUNK_SIZE = '100Mi'
   DEFAULT_RESUMABLE_THRESHOLD = '8Mi'
+  DEFAULT_RSYNC_LIST_CHUNK_SIZE = 32000
 
   def __init__(self):
     super(_SectionStorage, self).__init__('storage')
@@ -3411,6 +3416,16 @@ class _SectionStorage(_Section):
             'rsync_files',
         ),
         help_text='Directory path to intermediary files created by rsync.',
+    )
+
+    self.rsync_list_chunk_size = self._Add(
+        'rsync_list_chunk_size',
+        default=self.DEFAULT_RSYNC_LIST_CHUNK_SIZE,
+        help_text=(
+            'Number of files processed at a time by the rsync command when'
+            ' it builds and compares the list of files at the source'
+            ' and destination.'
+        ),
     )
 
     self.s3_endpoint_url = self._Add(
@@ -4256,6 +4271,11 @@ def _GetIntProperty(prop, properties_file, required):
     raise InvalidValueError(
         'The property [{prop}] must have an integer value: [{value}]'.format(
             prop=prop, value=property_value.value))
+
+
+def IsDefaultUniverse():
+  universe_domain_property = VALUES.core.universe_domain
+  return universe_domain_property.Get() == universe_domain_property.default
 
 
 def GetMetricsEnvironment():

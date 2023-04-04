@@ -1143,17 +1143,6 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
-  r"""A PolicysimulatorFoldersLocationsOrgPolicyViolationsPreviewsOperationsGe
-  tRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class PolicysimulatorFoldersLocationsReplaysCreateRequest(_messages.Message):
   r"""A PolicysimulatorFoldersLocationsReplaysCreateRequest object.
 
@@ -1259,17 +1248,6 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
-  r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperat
-  ionsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class PolicysimulatorOrganizationsLocationsReplaysCreateRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsReplaysCreateRequest object.
 
@@ -1349,17 +1327,6 @@ class PolicysimulatorOrganizationsLocationsReplaysResultsListRequest(_messages.M
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsGetRequest(_messages.Message):
-  r"""A PolicysimulatorProjectsLocationsOrgPolicyViolationsPreviewsOperationsG
-  etRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class PolicysimulatorProjectsLocationsReplaysCreateRequest(_messages.Message):

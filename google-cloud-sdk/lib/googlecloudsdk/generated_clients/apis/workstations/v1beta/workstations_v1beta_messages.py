@@ -261,17 +261,17 @@ class GceInstance(_messages.Message):
   r"""A runtime using a Compute Engine instance.
 
   Fields:
-    bootDiskSizeGb: Size of the boot disk in GB.
+    bootDiskSizeGb: Size of the boot disk in GB. Defaults to 50.
     confidentialInstanceConfig: A set of Compute Engine Confidential VM
       instance options.
     disablePublicIpAddresses: Whether instances have no public IP address.
     machineType: The name of a Compute Engine machine type.
     poolSize: Number of instances to pool for faster workstation starup.
     serviceAccount: Email address of the service account that will be used on
-      VM instances used to support this config. This service account must have
-      permission to pull the specified container image. If not set, VMs will
-      run without a service account, in which case the image must be publicly
-      accessible.
+      VM instances used to support this config. If not set, VMs will run with
+      a Google-managed service account. This service account must have
+      permission to pull the specified container image, otherwise the image
+      must be publicly accessible.
     shieldedInstanceConfig: A set of Compute Engine Shielded instance options.
     tags: Network tags to add to the Compute Engine machines backing the
       Workstations.
@@ -296,13 +296,14 @@ class GceRegionalPersistentDisk(_messages.Message):
       workstation is deleted. Defaults to DELETE.
 
   Fields:
-    diskType: Type of the disk to use.
+    diskType: Type of the disk to use. Defaults to pd-standard.
     fsType: Type of file system that the disk should be formatted with. The
       workstation image must support this file system type. Must be empty if
-      source_snapshot is set.
+      source_snapshot is set. Defaults to ext4.
     reclaimPolicy: What should happen to the disk after the workstation is
       deleted. Defaults to DELETE.
     sizeGb: Size of the disk in GB. Must be empty if source_snapshot is set.
+      Defaults to 200.
     sourceSnapshot: Name of the snapshot to use as the source for the disk. If
       set, size_gb and fs_type must be empty.
   """

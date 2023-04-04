@@ -376,20 +376,30 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
     require_create_flags (bool): True if create flags should be required.
   """
-  parser.add_argument(
+  report_format_settings = parser.add_group(
+      mutex=True,
+      help='Report format configuration. Any combination of '
+      'CSV flags is valid as long as the Parquet flag is not present.')
+  report_format_settings.add_argument(
+      '--parquet',
+      action='store_true',
+      help='Generate reports in parquet format.')
+  csv_format_settings = report_format_settings.add_group(
+      help='Flags for setting CSV format options.')
+  csv_format_settings.add_argument(
       '--csv-separator',
       choices=[r'\n', r'\r\n'],
       type=str,
       metavar='SEPARATOR',
       help='Sets the character used to separate the records in the inventory '
             'report CSV file. For example, ``\\n``')
-  parser.add_argument(
+  csv_format_settings.add_argument(
       '--csv-delimiter',
       type=str,
       metavar='DELIMITER',
       help='Sets the delimiter that separates the fields in the inventory '
             'report CSV file. For example, ``,``')
-  parser.add_argument(
+  csv_format_settings.add_argument(
       '--csv-header',
       action=arg_parsers.StoreTrueFalseAction,
       help='Indicates whether or not headers are included in the inventory '

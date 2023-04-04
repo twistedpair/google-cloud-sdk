@@ -377,29 +377,32 @@ class BulkMuteFindingsRequest(_messages.Message):
 
 
 class CloudDlpDataProfile(_messages.Message):
-  r"""Contains details about the data profile that produced the finding.
+  r"""The [data profile](https://cloud.google.com/dlp/docs/data-profiles)
+  associated with the finding.
 
   Fields:
-    dataProfile: Name of the data profile. Example
-      projects/123/locations/europe/tableProfiles/8383929
+    dataProfile: Name of the data profile, for example,
+      `projects/123/locations/europe/tableProfiles/8383929`.
   """
 
   dataProfile = _messages.StringField(1)
 
 
 class CloudDlpInspection(_messages.Message):
-  r"""Contains details about the Cloud DLP job that produced the infotype
-  finding.
+  r"""Details about the Cloud Data Loss Prevention (Cloud DLP) [inspection
+  job](https://cloud.google.com/dlp/docs/concepts-job-triggers) that produced
+  the finding.
 
   Fields:
     fullScan: Whether Cloud DLP scanned the complete resource or a sampled
       subset.
-    infoType: The kind of information found, (e.g. email_address,
-      street_address, etc.)
+    infoType: The [type of
+      information](https://cloud.google.com/dlp/docs/infotypes-reference)
+      found, for example, `EMAIL_ADDRESS` or `STREET_ADDRESS`.
     infoTypeCount: The number of times Cloud DLP found this infoType within
       this job and resource.
-    inspectJob: Name of the inspect job Example
-      projects/123/locations/europe/dlpJobs/i-8383929
+    inspectJob: Name of the inspection job, for example,
+      `projects/123/locations/europe/dlpJobs/i-8383929`.
   """
 
   fullScan = _messages.BooleanField(1)
@@ -1195,6 +1198,9 @@ class Finding(_messages.Message):
     kubernetes: Kubernetes resources associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
+    moduleName: Unique identifier of the module which generated the finding.
+      Example: folders/598186756061/securityHealthAnalyticsSettings/customModu
+      les/56799441161885
     mute: Indicates the mute state of a finding (either muted, unmuted or
       undefined). Unlike other attributes of a finding, a finding provider
       shouldn't set the value of mute.
@@ -1450,21 +1456,22 @@ class Finding(_messages.Message):
   kernelRootkit = _messages.MessageField('KernelRootkit', 21)
   kubernetes = _messages.MessageField('Kubernetes', 22)
   mitreAttack = _messages.MessageField('MitreAttack', 23)
-  mute = _messages.EnumField('MuteValueValuesEnum', 24)
-  muteAnnotation = _messages.StringField(25)
-  muteInitiator = _messages.StringField(26)
-  muteUpdateTime = _messages.StringField(27)
-  name = _messages.StringField(28)
-  nextSteps = _messages.StringField(29)
-  parent = _messages.StringField(30)
-  parentDisplayName = _messages.StringField(31)
-  processes = _messages.MessageField('Process', 32, repeated=True)
-  resourceName = _messages.StringField(33)
-  securityMarks = _messages.MessageField('SecurityMarks', 34)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 35)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 36)
-  state = _messages.EnumField('StateValueValuesEnum', 37)
-  vulnerability = _messages.MessageField('Vulnerability', 38)
+  moduleName = _messages.StringField(24)
+  mute = _messages.EnumField('MuteValueValuesEnum', 25)
+  muteAnnotation = _messages.StringField(26)
+  muteInitiator = _messages.StringField(27)
+  muteUpdateTime = _messages.StringField(28)
+  name = _messages.StringField(29)
+  nextSteps = _messages.StringField(30)
+  parent = _messages.StringField(31)
+  parentDisplayName = _messages.StringField(32)
+  processes = _messages.MessageField('Process', 33, repeated=True)
+  resourceName = _messages.StringField(34)
+  securityMarks = _messages.MessageField('SecurityMarks', 35)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 36)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 37)
+  state = _messages.EnumField('StateValueValuesEnum', 38)
+  vulnerability = _messages.MessageField('Vulnerability', 39)
 
 
 class Folder(_messages.Message):
@@ -1660,7 +1667,6 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
   Fields:
     customConfig: Output only. Config for the effective module. The user
       specified custom configuration for the module.
-    description: Output only. The description for the module.
     displayName: Output only. The human readable name to be displayed for the
       module.
     enablementState: Output only. The effective state of enablement for the
@@ -1686,10 +1692,9 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
     DISABLED = 2
 
   customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
-  name = _messages.StringField(5)
+  displayName = _messages.StringField(2)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudSecuritycenterV1ExposedResource(_messages.Message):
@@ -2029,8 +2034,6 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
       contain the name of the CRM ancestor module that this module inherited
       its enablement state from.
     customConfig: The user specified custom configuration for the module.
-    description:  The description of the custom module. Must be less than 1024
-      characters.
     displayName: The human readable display name of the custom module. Must be
       less than 64 characters.
     enablementState: The enablement state of the custom module.
@@ -2064,12 +2067,11 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
 
   ancestorModule = _messages.StringField(1)
   customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 5)
-  lastEditor = _messages.StringField(6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  displayName = _messages.StringField(3)
+  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
+  lastEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):

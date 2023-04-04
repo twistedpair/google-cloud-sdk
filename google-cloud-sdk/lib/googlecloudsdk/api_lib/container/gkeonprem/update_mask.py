@@ -91,6 +91,8 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'island_mode_service_address_cidr_blocks': (
         'network_config.island_mode_cidr.service_address_cidr_blocks'
     ),
+    'enable_sr_iov_config': 'network_config.sr_iov_config.enabled',
+    'disable_sr_iov_config': 'network_config.sr_iov_config.enabled',
 }
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
@@ -143,6 +145,31 @@ BARE_METAL_ADMIN_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'island_mode_service_address_cidr_blocks': (
         'network_config.island_mode_cidr.service_address_cidr_blocks'
     ),
+}
+
+BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
+    'control_plane_node_configs_from_file': 'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
+    'control_plane_node_configs': 'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
+    'control_plane_node_labels': (
+        'control_plane.control_plane_node_pool_config.node_pool_config.labels'
+    ),
+    'control_plane_node_taints': (
+        'control_plane.control_plane_node_pool_config.node_pool_config.taints'
+    ),
+    'api_server_args': 'control_plane.api_server_args',
+    'description': 'description',
+    'version': 'bare_metal_version',
+    'enable_application_logs': 'cluster_operations.enable_application_logs',
+    'maintenance_address_cidr_blocks': (
+        'maintenance_config.maintenance_address_cidr_blocks'
+    ),
+    'admin_users': 'security_config.authorization.admin_users',
+    'login_user': 'node_access_config.login_user',
+    'island_mode_service_address_cidr_blocks': (
+        'network_config.island_mode_cidr.service_address_cidr_blocks'
+    ),
+    'enable_sr_iov_config': 'network_config.sr_iov_config.enabled',
+    'disable_sr_iov_config': 'network_config.sr_iov_config.enabled'
 }
 
 

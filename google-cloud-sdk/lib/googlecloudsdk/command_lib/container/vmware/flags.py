@@ -1695,11 +1695,6 @@ $ gcloud {command}
           }
       ),
   )
-  vmware_control_plane_v2_config_group.add_argument(
-      '--enable-control-plane-v2',
-      action='store_true',
-      help='If set, enables control plane v2.',
-  )
 
 
 def AddNodePoolIgnoreErrors(parser):
@@ -1716,3 +1711,18 @@ def AddNodePoolIgnoreErrors(parser):
       ),
       action='store_true',
   )
+
+
+def AddEnableControlPlaneV2(parser):
+  """Adds a flag for enabling_control_plane_v2 field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--enable-control-plane-v2',
+      help='If set, enables control plane v2.',
+      action='store_true',
+      hidden=True,
+  )
+

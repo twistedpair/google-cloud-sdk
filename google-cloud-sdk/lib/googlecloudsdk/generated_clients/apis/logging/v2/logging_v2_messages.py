@@ -6748,7 +6748,8 @@ class QueryRestriction(_messages.Message):
 
   Fields:
     timerange: Optional. This restriction is the TIME_RANGE restriction type
-      in the QueryRestrictionConflict.
+      in the QueryRestrictionConflict. Range is [start_time, end_time).
+      Granularity: down to milliseconds (not nanoseconds)
   """
 
   timerange = _messages.MessageField('Interval', 1)

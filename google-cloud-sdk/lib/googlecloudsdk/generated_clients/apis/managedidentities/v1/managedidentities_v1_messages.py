@@ -372,6 +372,36 @@ class Domain(_messages.Message):
   updateTime = _messages.StringField(13)
 
 
+class DomainJoinMachineRequest(_messages.Message):
+  r"""DomainJoinMachineRequest is the request message for DomainJoinMachine
+  method
+
+  Fields:
+    force: Optional. force if True, forces domain join even if the computer
+      account already exists.
+    ouName: Optional. OU name where the VM needs to be domain joined
+    vmIdToken: Required. Full instance id token of compute engine VM to verify
+      instance identity. More about this:
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity#request_signature
+  """
+
+  force = _messages.BooleanField(1)
+  ouName = _messages.StringField(2)
+  vmIdToken = _messages.StringField(3)
+
+
+class DomainJoinMachineResponse(_messages.Message):
+  r"""DomainJoinMachineResponse is the response message for DomainJoinMachine
+  method
+
+  Fields:
+    domainJoinBlob: Offline domain join blob as the response
+  """
+
+  domainJoinBlob = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1611,6 +1641,22 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
 
   detachTrustRequest = _messages.MessageField('DetachTrustRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsDomainJoinMachineRequest
+  object.
+
+  Fields:
+    domain: Required. The domain resource name using the form:
+      projects/{project_id}/locations/global/domains/{domain_name}
+    domainJoinMachineRequest: A DomainJoinMachineRequest resource to be passed
+      as the request body.
+  """
+
+  domain = _messages.StringField(1, required=True)
+  domainJoinMachineRequest = _messages.MessageField('DomainJoinMachineRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsExtendSchemaRequest(_messages.Message):

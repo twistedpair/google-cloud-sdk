@@ -71,6 +71,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SESSIONTEMPLATES = (
+      'projects.locations.sessionTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'sessionTemplates/{sessionTemplatesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SESSIONS = (
       'projects.locations.sessions',
       '{+name}',

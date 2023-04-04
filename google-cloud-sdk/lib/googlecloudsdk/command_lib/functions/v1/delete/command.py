@@ -30,12 +30,16 @@ def Run(args):
   client = util.GetApiClientInstance()
   messages = client.MESSAGES_MODULE
   function_ref = args.CONCEPTS.name.Parse()
-  function__url = function_ref.RelativeName()
-  prompt_message = 'Resource [{0}] will be deleted.'.format(function__url)
+  function_url = function_ref.RelativeName()
+  prompt_message = '1st gen function [{0}] will be deleted.'.format(
+      function_url
+  )
   if not console_io.PromptContinue(message=prompt_message):
     raise exceptions.FunctionsError('Deletion aborted by user.')
   op = client.projects_locations_functions.Delete(
       messages.CloudfunctionsProjectsLocationsFunctionsDeleteRequest(
-          name=function__url))
+          name=function_url
+      )
+  )
   operations.Wait(op, messages, client)
-  log.DeletedResource(function__url)
+  log.DeletedResource(function_url)

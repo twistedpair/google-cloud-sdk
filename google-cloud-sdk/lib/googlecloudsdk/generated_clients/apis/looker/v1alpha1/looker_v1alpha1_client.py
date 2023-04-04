@@ -300,7 +300,7 @@ class LookerV1alpha1(base_api.BaseApiClient):
         method_id='looker.projects.locations.instances.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['force'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='LookerProjectsLocationsInstancesDeleteRequest',

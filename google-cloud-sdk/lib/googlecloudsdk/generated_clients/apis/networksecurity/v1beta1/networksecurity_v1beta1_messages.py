@@ -266,7 +266,19 @@ class ClientTlsPolicy(_messages.Message):
       empty, client does not validate the server certificate.
     sni: Optional. Server Name Indication string to present to the server
       during TLS handshake. E.g: "secure.example.com".
+    targets: Optional. Define a list of targets this policy should serve. A
+      target can only be a BackendService and it should be the fully qualified
+      name of the BackendService, e.g.:
+      projects/xxx/backendServices/locations/global/xxx NOTE: ClientTlsPolicy
+      and the referenced BackendServices must be present in the same project.
     updateTime: Output only. The timestamp when the resource was updated.
+    workloadContextSelectors: Optional. Selects the workload where the policy
+      should be applied to its targets. A policy without a
+      WorkloadContextSelector should always be applied to its targets when
+      there is no conflict. If there are multiple WorkloadContextSelectors
+      then the policy will be applied to all targets if ANY of the
+      WorkloadContextSelectors match. Therefore these selectors can be
+      combined in an OR fashion.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -300,7 +312,9 @@ class ClientTlsPolicy(_messages.Message):
   name = _messages.StringField(5)
   serverValidationCa = _messages.MessageField('ValidationCA', 6, repeated=True)
   sni = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  targets = _messages.StringField(8, repeated=True)
+  updateTime = _messages.StringField(9)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 10, repeated=True)
 
 
 class CloneAddressGroupItemsRequest(_messages.Message):
@@ -699,11 +713,17 @@ class GoogleCloudNetworksecurityV1beta1GrpcEndpoint(_messages.Message):
   r"""Specification of the GRPC Endpoint.
 
   Fields:
+    sdsResource: Optional. sds_resource is used to set the name of the SDS
+      configuration. When used in the context of GSM, the following rules
+      apply If the resource name is "default" and "ROOTCA" then it implies
+      ISTIO_MUTUAL tlsMode. If the resource name begins with "file-cert"
+      and/or "file-root", it implies custom MUTUAL tlsMode
     targetUri: Required. The target URI of the gRPC endpoint. Only UDS path is
       supported, and should start with "unix:".
   """
 
-  targetUri = _messages.StringField(1)
+  sdsResource = _messages.StringField(1)
+  targetUri = _messages.StringField(2)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -1509,6 +1529,21 @@ class ListServerTlsPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
+
+
+class ListTlsInspectionPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListTlsInspectionPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+    tlsInspectionPolicies: List of TlsInspectionPolicies resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
 
 
 class ListUrlListsResponse(_messages.Message):
@@ -3417,6 +3452,99 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest
   resource = _messages.StringField(2, required=True)
 
 
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the TlsInspectionPolicy. Must be
+      in the format `projects/{project}/locations/{location}`.
+    tlsInspectionPolicy: A TlsInspectionPolicy resource to be passed as the
+      request body.
+    tlsInspectionPolicyId: Required. Short name of the TlsInspectionPolicy
+      resource to be created. This value should be 1-63 characters long,
+      containing only letters, numbers, hyphens, and underscores, and should
+      not start with a number. E.g. "tls_inspection_policy1".
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  tlsInspectionPolicyId = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesDeleteRequest
+  object.
+
+  Fields:
+    force: If set to true, any rules for this TlsInspectionPolicy will also be
+      deleted. (Otherwise, the request will only work if the
+      TlsInspectionPolicy has no rules.)
+    name: Required. A name of the TlsInspectionPolicy to delete. Must be in
+      the format `projects/{project}/locations/{location}/tlsInspectionPolicie
+      s/{tls_inspection_policy}`.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the TlsInspectionPolicy to get. Must be in the
+      format `projects/{project}/locations/{location}/tlsInspectionPolicies/{t
+      ls_inspection_policy}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of TlsInspectionPolicies to return per call.
+    pageToken: The value returned by the last
+      'ListTlsInspectionPoliciesResponse' Indicates that this is a
+      continuation of a prior 'ListTlsInspectionPolicies' call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the
+      TlsInspectionPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}
+      tls_inspection_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    tlsInspectionPolicy: A TlsInspectionPolicy resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TlsInspectionPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
 class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
 
@@ -4191,6 +4319,50 @@ class ThreatPreventionProfile(_messages.Message):
   threatOverrides = _messages.MessageField('ThreatOverride', 2, repeated=True)
 
 
+class TlsInspectionPolicy(_messages.Message):
+  r"""The TlsInspectionPolicy resource contains references to CA pools in
+  Certificate Authority Service and associated metadata.
+
+  Fields:
+    caPool: Required. A CA pool resource used to issue interception
+      certificates. The CA pool string has a relative resource path following
+      the form "projects/{project}/locations/{location}/caPools/{ca_pool}".
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    excludePublicCaSet: Optional. If FALSE (the default), use our default set
+      of public CAs in addition to any CAs specified in trust_config. These
+      public CAs are currently based on the Mozilla Root Program and are
+      subject to change over time. If TRUE, do not accept our default set of
+      public CAs. Only CAs specified in trust_config will be accepted. This
+      defaults to FALSE (use public CAs in addition to trust_config) for
+      backwards compatibility, but trusting public root CAs is *not
+      recommended* unless the traffic in question is outbound to public web
+      servers. When possible, prefer setting this to "false" and explicitly
+      specifying trusted CAs and certificates in a TrustConfig. Note that
+      Secure Web Proxy does not yet honor this field.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}
+      tls_inspection_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    trustConfig: Optional. A TrustConfig resource used when making a
+      connection to the TLS server. This is a relative resource path following
+      the form
+      "projects/{project}/locations/{location}/trustConfigs/{trust_config}".
+      This is necessary to intercept TLS connections to servers with
+      certificates signed by a private CA or self-signed certificates. Note
+      that Secure Web Proxy does not yet honor this field.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  caPool = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  excludePublicCaSet = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  trustConfig = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
 class UrlList(_messages.Message):
   r"""UrlList proto helps users to set reusable, independently manageable
   lists of hosts, host patterns, URLs, URL patterns.
@@ -4226,6 +4398,33 @@ class ValidationCA(_messages.Message):
 
   certificateProviderInstance = _messages.MessageField('CertificateProviderInstance', 1)
   grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1beta1GrpcEndpoint', 2)
+
+
+class WorkloadContextSelector(_messages.Message):
+  r"""Determines which workloads a policy is applicable for
+
+  Fields:
+    metadataSelectors: Required. A map of metadata label values used to select
+      workloads. If multiple MetadataSelectors are provided, all
+      MetadataSelectors must match in order for the policy to be applied to
+      this workload. Therefore these selectors must be combined in an AND
+      fashion.
+  """
+
+  metadataSelectors = _messages.MessageField('WorkloadContextSelectorMetadataSelector', 1, repeated=True)
+
+
+class WorkloadContextSelectorMetadataSelector(_messages.Message):
+  r"""This message type exists as opposed to using a map to support additional
+  fields in the future such as priority.
+
+  Fields:
+    key: Required. The metadata field being selected on
+    value: Required. The value for this metadata field to be compared with
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

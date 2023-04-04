@@ -93,6 +93,7 @@ NC_CPU_MANAGER_POLICY = 'cpuManagerPolicy'
 NC_CPU_CFS_QUOTA = 'cpuCFSQuota'
 NC_CPU_CFS_QUOTA_PERIOD = 'cpuCFSQuotaPeriod'
 NC_POD_PIDS_LIMIT = 'podPidsLimit'
+NC_INSECURE_KUBELET_READONLY_PORT_ENABLED = 'insecureKubeletReadonlyPortEnabled'
 NC_LINUX_CONFIG = 'linuxConfig'
 NC_SYSCTL = 'sysctl'
 NC_CGROUP_MODE = 'cgroupMode'
@@ -548,13 +549,18 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
   # Parse kubelet config options.
   kubelet_config_opts = opts.get(NC_KUBELET_CONFIG)
   if kubelet_config_opts:
+    readonly_port_enabled = kubelet_config_opts.get(
+        NC_INSECURE_KUBELET_READONLY_PORT_ENABLED)
+    config_fields = {
+        NC_CPU_MANAGER_POLICY: str,
+        NC_CPU_CFS_QUOTA: bool,
+        NC_CPU_CFS_QUOTA_PERIOD: str,
+        NC_POD_PIDS_LIMIT: int,
+    }
+    if readonly_port_enabled:
+      config_fields[NC_INSECURE_KUBELET_READONLY_PORT_ENABLED] = bool
     _CheckNodeConfigFields(
-        NC_KUBELET_CONFIG, kubelet_config_opts, {
-            NC_CPU_MANAGER_POLICY: str,
-            NC_CPU_CFS_QUOTA: bool,
-            NC_CPU_CFS_QUOTA_PERIOD: str,
-            NC_POD_PIDS_LIMIT: int,
-        })
+        NC_KUBELET_CONFIG, kubelet_config_opts, config_fields)
     node_config.kubeletConfig = messages.NodeKubeletConfig()
     node_config.kubeletConfig.cpuManagerPolicy = kubelet_config_opts.get(
         NC_CPU_MANAGER_POLICY)
@@ -564,6 +570,9 @@ def LoadSystemConfigFromYAML(node_config, content, messages):
         NC_CPU_CFS_QUOTA_PERIOD)
     node_config.kubeletConfig.podPidsLimit = kubelet_config_opts.get(
         NC_POD_PIDS_LIMIT)
+    if readonly_port_enabled:
+      node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
+          readonly_port_enabled)
 
   # Parse Linux config options.
   linux_config_opts = opts.get(NC_LINUX_CONFIG)

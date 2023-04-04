@@ -72,9 +72,31 @@ class SecurityPolicy(object):
             self._messages.ComputeSecurityPoliciesInsertRequest(
                 project=self.ref.project, securityPolicy=security_policy))
 
-  def _MakePatchRequestTuple(self, security_policy):
+  def _MakePatchRequestTuple(self, security_policy, update_mask=None):
+    """Generates a SecurityPolicies Patch request.
+
+    Args:
+      security_policy: The updated security policy
+      update_mask: Field mask for clearing fields
+
+    Returns:
+      A tuple containing the resource collection, verb, and request.
+    """
+
     region = getattr(self.ref, 'region', None)
     if region is not None:
+      if update_mask:
+        return (
+            self._client.regionSecurityPolicies,
+            'Patch',
+            self._messages.ComputeRegionSecurityPoliciesPatchRequest(
+                project=self.ref.project,
+                region=region,
+                securityPolicy=self.ref.Name(),
+                securityPolicyResource=security_policy,
+                updateMask=update_mask,
+            ),
+        )
       return (self._client.regionSecurityPolicies, 'Patch',
               self._messages.ComputeRegionSecurityPoliciesPatchRequest(
                   project=self.ref.project,
@@ -96,8 +118,7 @@ class SecurityPolicy(object):
   def Describe(self, only_generate_request=False):
     requests = [self._MakeDescribeRequestTuple()]
     if not only_generate_request:
-      return self._compute_client.MakeRequests(requests,
-                                               enable_single_request=True)
+      return self._compute_client.MakeRequests(requests)
     return requests
 
   def Create(self, security_policy=None, only_generate_request=False):
@@ -106,8 +127,10 @@ class SecurityPolicy(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Patch(self, security_policy=None, only_generate_request=False):
-    requests = [self._MakePatchRequestTuple(security_policy)]
+  def Patch(
+      self, security_policy=None, field_mask=None, only_generate_request=False
+  ):
+    requests = [self._MakePatchRequestTuple(security_policy, field_mask)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
@@ -176,14 +199,24 @@ class SecurityPolicyRule(object):
                 priority=self._ConvertPriorityToInt(self.ref.Name()),
                 securityPolicy=self.ref.securityPolicy))
 
-  def _MakeCreateRequestTuple(self, src_ip_ranges, expression, action,
-                              description, preview, redirect_options,
-                              rate_limit_options, request_headers_to_add):
+  def _MakeCreateRequestTuple(
+      self,
+      src_ip_ranges,
+      expression,
+      network_matcher,
+      action,
+      description,
+      preview,
+      redirect_options,
+      rate_limit_options,
+      request_headers_to_add,
+  ):
     """Generates a SecurityPolicies AddRule request.
 
     Args:
       src_ip_ranges: The list of IP ranges to match.
       expression: The CEVAL expression to match.
+      network_matcher: Net LB fields to match.
       action: The action to enforce on match.
       description: The description of the rule.
       preview: If true, the action will not be enforced.
@@ -206,12 +239,22 @@ class SecurityPolicyRule(object):
       matcher = self._messages.SecurityPolicyRuleMatcher(
           expr=self._messages.Expr(expression=expression))
 
-    security_policy_rule = self._messages.SecurityPolicyRule(
-        priority=self._ConvertPriorityToInt(self.ref.Name()),
-        description=description,
-        action=self._ConvertAction(action),
-        match=matcher,
-        preview=preview)
+    if network_matcher:
+      security_policy_rule = self._messages.SecurityPolicyRule(
+          priority=self._ConvertPriorityToInt(self.ref.Name()),
+          description=description,
+          action=self._ConvertAction(action),
+          networkMatch=network_matcher,
+          preview=preview,
+      )
+    else:
+      security_policy_rule = self._messages.SecurityPolicyRule(
+          priority=self._ConvertPriorityToInt(self.ref.Name()),
+          description=description,
+          action=self._ConvertAction(action),
+          match=matcher,
+          preview=preview,
+      )
     if redirect_options is not None:
       security_policy_rule.redirectOptions = redirect_options
     if request_headers_to_add is not None:
@@ -234,15 +277,26 @@ class SecurityPolicyRule(object):
                 securityPolicyRule=security_policy_rule,
                 securityPolicy=self.ref.securityPolicy))
 
-  def _MakePatchRequestTuple(self, src_ip_ranges, expression, action,
-                             description, preview, redirect_options,
-                             rate_limit_options, request_headers_to_add,
-                             preconfig_waf_config):
+  def _MakePatchRequestTuple(
+      self,
+      src_ip_ranges,
+      expression,
+      network_matcher,
+      action,
+      description,
+      preview,
+      redirect_options,
+      rate_limit_options,
+      request_headers_to_add,
+      preconfig_waf_config,
+      update_mask,
+  ):
     """Generates a SecurityPolicies PatchRule request.
 
     Args:
       src_ip_ranges: The list of IP ranges to match.
       expression: The CEVAL expression to match.
+      network_matcher: Net LB fields to match.
       action: The action to enforce on match.
       description: The description of the rule.
       preview: If true, the action will not be enforced.
@@ -253,6 +307,7 @@ class SecurityPolicyRule(object):
         this rule.
       preconfig_waf_config: preconfigured WAF configuration to be applied for
         this rule.
+      update_mask: Field mask for clearing fields
 
     Returns:
       A tuple containing the resource collection, verb, and request.
@@ -268,12 +323,22 @@ class SecurityPolicyRule(object):
       matcher = self._messages.SecurityPolicyRuleMatcher(
           expr=self._messages.Expr(expression=expression))
 
-    security_policy_rule = self._messages.SecurityPolicyRule(
-        priority=self._ConvertPriorityToInt(self.ref.Name()),
-        description=description,
-        action=self._ConvertAction(action),
-        match=matcher,
-        preview=preview)
+    if network_matcher:
+      security_policy_rule = self._messages.SecurityPolicyRule(
+          priority=self._ConvertPriorityToInt(self.ref.Name()),
+          description=description,
+          action=self._ConvertAction(action),
+          networkMatch=network_matcher,
+          preview=preview,
+      )
+    else:
+      security_policy_rule = self._messages.SecurityPolicyRule(
+          priority=self._ConvertPriorityToInt(self.ref.Name()),
+          description=description,
+          action=self._ConvertAction(action),
+          match=matcher,
+          preview=preview,
+      )
     if redirect_options is not None:
       security_policy_rule.redirectOptions = redirect_options
     if request_headers_to_add is not None:
@@ -286,6 +351,19 @@ class SecurityPolicyRule(object):
       security_policy_rule.preconfiguredWafConfig = preconfig_waf_config
 
     if getattr(self.ref, 'region', None) is not None:
+      if update_mask:
+        return (
+            self._client.regionSecurityPolicies,
+            'PatchRule',
+            self._messages.ComputeRegionSecurityPoliciesPatchRuleRequest(
+                project=self.ref.project,
+                priority=self._ConvertPriorityToInt(self.ref.Name()),
+                securityPolicyRule=security_policy_rule,
+                region=self.ref.region,
+                securityPolicy=self.ref.securityPolicy,
+                updateMask=update_mask,
+            ),
+        )
       return (self._client.regionSecurityPolicies, 'PatchRule',
               self._messages.ComputeRegionSecurityPoliciesPatchRuleRequest(
                   project=self.ref.project,
@@ -331,43 +409,67 @@ class SecurityPolicyRule(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Create(self,
-             src_ip_ranges=None,
-             expression=None,
-             action=None,
-             description=None,
-             preview=False,
-             redirect_options=None,
-             rate_limit_options=None,
-             request_headers_to_add=None,
-             only_generate_request=False):
+  def Create(
+      self,
+      src_ip_ranges=None,
+      expression=None,
+      network_matcher=None,
+      action=None,
+      description=None,
+      preview=False,
+      redirect_options=None,
+      rate_limit_options=None,
+      request_headers_to_add=None,
+      only_generate_request=False,
+  ):
     """Make and optionally send a request to Create a security policy rule."""
     requests = [
-        self._MakeCreateRequestTuple(src_ip_ranges, expression, action,
-                                     description, preview, redirect_options,
-                                     rate_limit_options, request_headers_to_add)
+        self._MakeCreateRequestTuple(
+            src_ip_ranges,
+            expression,
+            network_matcher,
+            action,
+            description,
+            preview,
+            redirect_options,
+            rate_limit_options,
+            request_headers_to_add,
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Patch(self,
-            src_ip_ranges=None,
-            expression=None,
-            action=None,
-            description=None,
-            preview=None,
-            redirect_options=None,
-            rate_limit_options=None,
-            request_headers_to_add=None,
-            preconfig_waf_config=None,
-            only_generate_request=False):
+  def Patch(
+      self,
+      src_ip_ranges=None,
+      expression=None,
+      network_matcher=None,
+      action=None,
+      description=None,
+      preview=None,
+      redirect_options=None,
+      rate_limit_options=None,
+      request_headers_to_add=None,
+      preconfig_waf_config=None,
+      update_mask=None,
+      only_generate_request=False,
+  ):
     """Make and optionally send a request to Patch a security policy rule."""
     requests = [
-        self._MakePatchRequestTuple(src_ip_ranges, expression, action,
-                                    description, preview, redirect_options,
-                                    rate_limit_options, request_headers_to_add,
-                                    preconfig_waf_config)
+        self._MakePatchRequestTuple(
+            src_ip_ranges,
+            expression,
+            network_matcher,
+            action,
+            description,
+            preview,
+            redirect_options,
+            rate_limit_options,
+            request_headers_to_add,
+            preconfig_waf_config,
+            update_mask,
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)

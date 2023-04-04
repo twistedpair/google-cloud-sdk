@@ -2371,6 +2371,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents a reference to an SBOM.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -2388,6 +2389,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     SPDX_RELATIONSHIP = 13
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
+    SBOM_REFERENCE = 16
 
   filter = _messages.StringField(1)
   kind = _messages.EnumField('KindValueValuesEnum', 2)
@@ -2939,6 +2941,7 @@ class Discovery(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents a reference to an SBOM.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -2956,6 +2959,7 @@ class Discovery(_messages.Message):
     SPDX_RELATIONSHIP = 13
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
+    SBOM_REFERENCE = 16
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -4173,6 +4177,7 @@ class Note(_messages.Message):
     package: A note describing a package hosted by various package managers.
     relatedUrl: URLs associated with this note
     sbom: A note describing a software bill of materials.
+    sbomReference: A note describing a reference to an SBOM.
     shortDescription: A one sentence description of this `Note`.
     spdxFile: A note describing an SPDX File.
     spdxPackage: A note describing an SPDX Package.
@@ -4210,6 +4215,7 @@ class Note(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents a reference to an SBOM.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -4227,6 +4233,7 @@ class Note(_messages.Message):
     SPDX_RELATIONSHIP = 13
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
+    SBOM_REFERENCE = 16
 
   attestationAuthority = _messages.MessageField('AttestationAuthority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -4243,14 +4250,15 @@ class Note(_messages.Message):
   package = _messages.MessageField('Package', 13)
   relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
   sbom = _messages.MessageField('DocumentNote', 15)
-  shortDescription = _messages.StringField(16)
-  spdxFile = _messages.MessageField('FileNote', 17)
-  spdxPackage = _messages.MessageField('PackageInfoNote', 18)
-  spdxRelationship = _messages.MessageField('RelationshipNote', 19)
-  updateTime = _messages.StringField(20)
-  upgrade = _messages.MessageField('UpgradeNote', 21)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 22)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 23)
+  sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
+  shortDescription = _messages.StringField(17)
+  spdxFile = _messages.MessageField('FileNote', 18)
+  spdxPackage = _messages.MessageField('PackageInfoNote', 19)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 20)
+  updateTime = _messages.StringField(21)
+  upgrade = _messages.MessageField('UpgradeNote', 22)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 23)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 24)
 
 
 class Occurrence(_messages.Message):
@@ -4291,6 +4299,7 @@ class Occurrence(_messages.Message):
       https://gcr.io/project/image@sha256:foo This field can be used as a
       filter in list requests.
     sbom: Describes a specific software bill of materials document.
+    sbomReference: This represents an SBOM reference occurrence
     spdxFile: Describes a specific SPDX File.
     spdxPackage: Describes a specific SPDX Package.
     spdxRelationship: Describes a specific relationship between SPDX elements.
@@ -4325,6 +4334,7 @@ class Occurrence(_messages.Message):
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
       DSSE_ATTESTATION: This represents a DSSE attestation Note
       VULNERABILITY_ASSESSMENT: This represents a Vulnerability Assessment.
+      SBOM_REFERENCE: This represents a reference to an SBOM.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -4342,6 +4352,7 @@ class Occurrence(_messages.Message):
     SPDX_RELATIONSHIP = 13
     DSSE_ATTESTATION = 14
     VULNERABILITY_ASSESSMENT = 15
+    SBOM_REFERENCE = 16
 
   attestation = _messages.MessageField('Attestation', 1)
   buildDetails = _messages.MessageField('BuildDetails', 2)
@@ -4360,12 +4371,13 @@ class Occurrence(_messages.Message):
   resource = _messages.MessageField('Resource', 15)
   resourceUrl = _messages.StringField(16)
   sbom = _messages.MessageField('DocumentOccurrence', 17)
-  spdxFile = _messages.MessageField('FileOccurrence', 18)
-  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 19)
-  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 20)
-  updateTime = _messages.StringField(21)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 22)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 23)
+  sbomReference = _messages.MessageField('SBOMReferenceOccurrence', 18)
+  spdxFile = _messages.MessageField('FileOccurrence', 19)
+  spdxPackage = _messages.MessageField('PackageInfoOccurrence', 20)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 21)
+  updateTime = _messages.StringField(22)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 23)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 24)
 
 
 class Operation(_messages.Message):
@@ -5324,6 +5336,101 @@ class Resource(_messages.Message):
   contentHash = _messages.MessageField('Hash', 1)
   name = _messages.StringField(2)
   uri = _messages.StringField(3)
+
+
+class SBOMReferenceNote(_messages.Message):
+  r"""The note representing an SBOM reference.
+
+  Fields:
+    format: The format that SBOM takes. E.g. may be spdx, cyclonedx, etc...
+    version: The version of the format that the SBOM takes. E.g. if the format
+      is spdx, the version may be 2.3.
+  """
+
+  format = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class SBOMReferenceOccurrence(_messages.Message):
+  r"""The occurrence representing an SBOM reference as applied to a specific
+  resource. The occurrence follows the DSSE specification. See
+  https://github.com/secure-systems-lab/dsse/blob/master/envelope.md for more
+  details.
+
+  Fields:
+    payload: The actual payload that contains the SBOM reference data.
+    payloadType: The kind of payload that SbomReferenceIntotoPayload takes.
+      Since it's in the intoto format, this value is expected to be
+      'application/vnd.in-toto+json'.
+    signatures: The signatures over the payload.
+  """
+
+  payload = _messages.MessageField('SbomReferenceIntotoPayload', 1)
+  payloadType = _messages.StringField(2)
+  signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class SbomReferenceIntotoPayload(_messages.Message):
+  r"""The actual payload that contains the SBOM Reference data. The payload
+  follows the intoto statement specification. See https://github.com/in-
+  toto/attestation/blob/main/spec/v1.0/statement.md for more details.
+
+  Fields:
+    _type: Identifier for the schema of the Statement.
+    predicate: Additional parameters of the Predicate. Includes the actual
+      data about the SBOM.
+    predicateType: URI identifying the type of the Predicate.
+    subject: Set of software artifacts that the attestation applies to. Each
+      element represents a single software artifact.
+  """
+
+  _type = _messages.StringField(1)
+  predicate = _messages.MessageField('SbomReferenceIntotoPredicate', 2)
+  predicateType = _messages.StringField(3)
+  subject = _messages.MessageField('Subject', 4, repeated=True)
+
+
+class SbomReferenceIntotoPredicate(_messages.Message):
+  r"""A predicate which describes the SBOM being referenced.
+
+  Messages:
+    DigestValue: A map of algorithm to digest of the contents of the SBOM.
+
+  Fields:
+    digest: A map of algorithm to digest of the contents of the SBOM.
+    location: The location of the SBOM.
+    mimeType: The mime type of the SBOM.
+    referrerId: The person or system referring this predicate to the consumer.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""A map of algorithm to digest of the contents of the SBOM.
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  location = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+  referrerId = _messages.StringField(4)
 
 
 class ScanConfig(_messages.Message):

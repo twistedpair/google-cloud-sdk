@@ -238,6 +238,12 @@ class KmsConfig(_messages.Message):
       UPDATING: KmsConfig State is Updating
       IN_USE: KmsConfig State is In Use.
       ERROR: KmsConfig State is Error
+      KEY_CHECK_PENDING: KmsConfig State is Pending to verify crypto key
+        access.
+      KEY_NOT_REACHABLE: KmsConfig State is Not accessbile by the SDE service
+        account to the crypto key.
+      DISABLING: KmsConfig State is Disabling.
+      DISABLED: KmsConfig State is Disabled.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -246,6 +252,10 @@ class KmsConfig(_messages.Message):
     UPDATING = 4
     IN_USE = 5
     ERROR = 6
+    KEY_CHECK_PENDING = 7
+    KEY_NOT_REACHABLE = 8
+    DISABLING = 9
+    DISABLED = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

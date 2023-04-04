@@ -23,18 +23,21 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 
 
-# TODO(b/239613419), when ready, introduce BETA and GA release tracks
-VERSION_MAP = {base.ReleaseTrack.ALPHA: "v1alpha1"}
+# TODO(b/239613419), when ready, introduce GA release tracks
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: "v1alpha1",
+    base.ReleaseTrack.BETA: "v1beta1",
+}
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track):
   """Import and return the appropriate NetApp messages module."""
   api_version = VERSION_MAP.get(release_track)
   return apis.GetMessagesModule(api_name="netapp", api_version=api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance(api_name="netapp", api_version=api_version)
 

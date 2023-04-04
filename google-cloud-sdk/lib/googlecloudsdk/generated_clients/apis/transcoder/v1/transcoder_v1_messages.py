@@ -605,6 +605,8 @@ class Job(_messages.Message):
   r"""Transcoding job resource.
 
   Enums:
+    ModeValueValuesEnum: The processing mode of the job. The default is
+      `PROCESSING_MODE_INTERACTIVE`.
     StateValueValuesEnum: Output only. The current state of the job.
 
   Messages:
@@ -627,6 +629,8 @@ class Job(_messages.Message):
       input-and-output-formats).
     labels: The labels associated with this job. You can use these to organize
       and group your jobs.
+    mode: The processing mode of the job. The default is
+      `PROCESSING_MODE_INTERACTIVE`.
     name: The resource name of the job. Format:
       `projects/{project_number}/locations/{location}/jobs/{job}`
     outputUri: Input only. Specify the `output_uri` to populate an empty
@@ -644,6 +648,22 @@ class Job(_messages.Message):
       effective after job completion. Job should be deleted automatically
       after the given TTL. Enter a value between 1 and 90. The default is 30.
   """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The processing mode of the job. The default is
+    `PROCESSING_MODE_INTERACTIVE`.
+
+    Values:
+      PROCESSING_MODE_UNSPECIFIED: The job processing mode is not specified.
+      PROCESSING_MODE_INTERACTIVE: The job processing mode is interactive
+        mode. Interactive job will either be ran or rejected if quota does not
+        allow for it.
+      PROCESSING_MODE_BATCH: The job processing mode is batch mode. Batch mode
+        allows queuing of jobs.
+    """
+    PROCESSING_MODE_UNSPECIFIED = 0
+    PROCESSING_MODE_INTERACTIVE = 1
+    PROCESSING_MODE_BATCH = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the job.
@@ -693,12 +713,13 @@ class Job(_messages.Message):
   error = _messages.MessageField('Status', 4)
   inputUri = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  outputUri = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  templateId = _messages.StringField(11)
-  ttlAfterCompletionDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  outputUri = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  templateId = _messages.StringField(12)
+  ttlAfterCompletionDays = _messages.IntegerField(13, variant=_messages.Variant.INT32)
 
 
 class JobConfig(_messages.Message):

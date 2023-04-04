@@ -958,7 +958,12 @@ class DataflowProjectsJobsAggregatedRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """
@@ -1002,7 +1007,12 @@ class DataflowProjectsJobsCreateRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """
@@ -1092,7 +1102,12 @@ class DataflowProjectsJobsGetRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """
@@ -1161,7 +1176,12 @@ class DataflowProjectsJobsListRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """
@@ -1527,7 +1547,12 @@ class DataflowProjectsLocationsJobsCreateRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """
@@ -1649,7 +1674,12 @@ class DataflowProjectsLocationsJobsGetRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """
@@ -1718,7 +1748,12 @@ class DataflowProjectsLocationsJobsListRequest(_messages.Message):
       JOB_VIEW_SUMMARY: Request summary information only: Project ID, Job ID,
         job name, job type, job status, start/end time, and Cloud SDK version
         details.
-      JOB_VIEW_ALL: Request all information available for this job.
+      JOB_VIEW_ALL: Request all information available for this job. When the
+        job is in `JOB_STATE_PENDING`, the job has been created but is not yet
+        running, and not all job information is available. For complete job
+        information, wait until the job in is `JOB_STATE_RUNNING`. For more
+        information, see [JobState](https://cloud.google.com/dataflow/docs/ref
+        erence/rest/v1b3/projects.jobs#jobstate).
       JOB_VIEW_DESCRIPTION: Request summary info and limited job description
         data for steps, labels and environment.
     """

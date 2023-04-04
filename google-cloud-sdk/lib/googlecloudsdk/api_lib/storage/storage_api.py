@@ -343,7 +343,12 @@ class StorageClient(object):
       raise BucketNotFoundError('Bucket [{}] does not exist.'.format(bucket))
 
   def CreateBucketIfNotExists(
-      self, bucket, project=None, location=None, check_ownership=True):
+      self,
+      bucket,
+      project=None,
+      location=None,
+      check_ownership=True,
+      enable_uniform_level_access=None):
     """Create a bucket if it does not already exist.
 
     If it already exists and is accessible by the current user, this method
@@ -358,7 +363,9 @@ class StorageClient(object):
           to the given project. DO NOT SET THIS TO FALSE if the bucket name can
           be guessed and claimed ahead of time by another user as it enables a
           name squatting exploit.
-
+      enable_uniform_level_access: bool, to enable uniform bucket level access.
+          If None, the iamConfiguration object will not be created in the bucket
+          creation request, which means that it will use the default values.
     Raises:
       api_exceptions.HttpError: If the bucket is not able to be created or is
         not accessible due to permissions.
@@ -380,14 +387,19 @@ class StorageClient(object):
       ))
     except api_exceptions.HttpNotFoundError:
       # Bucket doesn't exist, we'll try to create it.
+      storage_buckets_insert_request = (
+          self.messages.StorageBucketsInsertRequest(
+              project=project,
+              bucket=self.messages.Bucket(name=bucket,
+                                          location=location)))
+      if enable_uniform_level_access is not None:
+        storage_buckets_insert_request.bucket.iamConfiguration = (
+            self.messages.Bucket.IamConfigurationValue(
+                uniformBucketLevelAccess=(
+                    self.messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
+                        enabled=enable_uniform_level_access))))
       try:
-        self.client.buckets.Insert(
-            self.messages.StorageBucketsInsertRequest(
-                project=project,
-                bucket=self.messages.Bucket(
-                    name=bucket,
-                    location=location,
-                )))
+        self.client.buckets.Insert(storage_buckets_insert_request)
       except api_exceptions.HttpConflictError:
         # We lost a race with another process creating the bucket. At least we
         # know the bucket exists. But we must check again whether the

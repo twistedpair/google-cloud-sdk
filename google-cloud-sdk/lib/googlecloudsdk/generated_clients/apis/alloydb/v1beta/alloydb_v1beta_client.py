@@ -728,7 +728,7 @@ class AlloydbV1beta(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.clusters.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='AlloydbProjectsLocationsClustersGetRequest',

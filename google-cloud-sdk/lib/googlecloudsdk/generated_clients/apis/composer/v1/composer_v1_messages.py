@@ -512,6 +512,12 @@ class EnvironmentConfig(_messages.Message):
       versions composer-2.*.*-airflow-*.*.* and newer.
 
   Fields:
+    airflowByoidUri: Output only. The 'bring your own identity' variant of the
+      URI of the Apache Airflow Web UI hosted within this environment, to be
+      accessed with external identities using workforce identity federation
+      (see [Access environments with workforce identity
+      federation](/composer/docs/composer-2/access-environments-with-
+      workforce-identity-federation)).
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
       to/accessing/airflow-web-interface)).
@@ -584,22 +590,23 @@ class EnvironmentConfig(_messages.Message):
     ENVIRONMENT_SIZE_MEDIUM = 2
     ENVIRONMENT_SIZE_LARGE = 3
 
-  airflowUri = _messages.StringField(1)
-  dagGcsPrefix = _messages.StringField(2)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 3)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
-  gkeCluster = _messages.StringField(6)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
-  nodeConfig = _messages.MessageField('NodeConfig', 9)
-  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
-  recoveryConfig = _messages.MessageField('RecoveryConfig', 12)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 13)
-  webServerConfig = _messages.MessageField('WebServerConfig', 14)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 15)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 16)
+  airflowByoidUri = _messages.StringField(1)
+  airflowUri = _messages.StringField(2)
+  dagGcsPrefix = _messages.StringField(3)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
+  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 6)
+  gkeCluster = _messages.StringField(7)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
+  nodeConfig = _messages.MessageField('NodeConfig', 10)
+  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 12)
+  recoveryConfig = _messages.MessageField('RecoveryConfig', 13)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 14)
+  webServerConfig = _messages.MessageField('WebServerConfig', 15)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 16)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 17)
 
 
 class IPAllocationPolicy(_messages.Message):

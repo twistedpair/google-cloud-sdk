@@ -296,3 +296,28 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest(
         **kwargs)
     return self._service.Patch(req)
+
+  def Enroll(self, args):
+    """Enrolls an Anthos On-Prem Bare Metal API node pool resource."""
+    kwargs = {
+        'bareMetalNodePoolId': self._node_pool_id(args),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
+    }
+    enroll_request = self._messages.EnrollBareMetalNodePoolRequest(**kwargs)
+    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsEnrollRequest(
+        enrollBareMetalNodePoolRequest=enroll_request,
+        parent=self._node_pool_parent(args),
+    )
+    return self._service.Enroll(req)
+
+  def Unenroll(self, args):
+    """Unenrolls an Anthos On-Prem bare metal API node pool resource."""
+    kwargs = {
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
+        'name': self._node_pool_name(args),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
+    }
+    req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsUnenrollRequest(
+        **kwargs
+    )
+    return self._service.Unenroll(req)

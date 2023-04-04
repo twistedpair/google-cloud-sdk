@@ -229,6 +229,19 @@ class ComposerProjectsLocationsEnvironmentsExecuteAirflowCommandRequest(_message
   executeAirflowCommandRequest = _messages.MessageField('ExecuteAirflowCommandRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest
+  object.
+
+  Fields:
+    environment: Required. The resource name of the environment, in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  environment = _messages.StringField(1, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsGetRequest object.
 
@@ -759,8 +772,10 @@ class EnvironmentConfig(_messages.Message):
   Fields:
     airflowByoidUri: Output only. The 'bring your own identity' variant of the
       URI of the Apache Airflow Web UI hosted within this environment, to be
-      accessed with third-party identity credentials (see [Airflow web
-      interface](/composer/docs/how-to/accessing/airflow-web-interface)).
+      accessed with external identities using workforce identity federation
+      (see [Access environments with workforce identity
+      federation](/composer/docs/composer-2/access-environments-with-
+      workforce-identity-federation)).
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
       to/accessing/airflow-web-interface)).
@@ -915,6 +930,25 @@ class ExitInfo(_messages.Message):
 
   error = _messages.StringField(1)
   exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class FetchDatabasePropertiesResponse(_messages.Message):
+  r"""Response for FetchDatabasePropertiesRequest.
+
+  Fields:
+    isFailoverReplicaAvailable: The availability status of the failover
+      replica. A false status indicates that the failover replica is out of
+      sync. The primary instance can only fail over to the failover replica
+      when the status is true.
+    primaryGceZone: The Compute Engine zone that the instance is currently
+      serving from.
+    secondaryGceZone: The Compute Engine zone that the failover instance is
+      currently serving from for a regional Cloud SQL instance.
+  """
+
+  isFailoverReplicaAvailable = _messages.BooleanField(1)
+  primaryGceZone = _messages.StringField(2)
+  secondaryGceZone = _messages.StringField(3)
 
 
 class IPAllocationPolicy(_messages.Message):

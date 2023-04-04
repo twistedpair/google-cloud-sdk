@@ -218,6 +218,16 @@ def AddSecondaryZoneFlag(parser):
   parser.add_argument('--secondary-zone', help=help_text)
 
 
+def AddAllocatedIpRangeFlag(parser):
+  """Adds a --allocated-ip-range flag to the given parser."""
+  help_text = """\
+    The name of the allocated IP range for the private IP Cloud SQL instance.
+    This name refers to an already allocated IP range.
+    If set, the instance IP will be created in the allocated range.
+  """
+  parser.add_argument('--allocated-ip-range', help=help_text, hidden=True)
+
+
 def AddRootPassword(parser):
   """Add the root password field to the parser."""
   parser.add_argument(

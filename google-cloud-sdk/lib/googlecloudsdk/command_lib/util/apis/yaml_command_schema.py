@@ -22,49 +22,8 @@ from __future__ import unicode_literals
 from enum import Enum
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.util.apis import arg_utils
-from googlecloudsdk.command_lib.util.apis import resource_arg_schema
+from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
-
-NAME_FORMAT_KEY = '__name__'
-RESOURCE_ID_FORMAT_KEY = '__resource_id__'
-REL_NAME_FORMAT_KEY = '__relative_name__'
-RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
-
-
-def FormatResourceAttrStr(format_string, resource_ref, display_name=None,
-                          display_resource_type=None):
-  """Formats a string with all the attributes of the given resource ref.
-
-  Args:
-    format_string: str, The format string.
-    resource_ref: resources.Resource, The resource reference to extract
-      attributes from.
-    display_name: the display name for the resource.
-    display_resource_type:
-
-  Returns:
-    str, The formatted string.
-  """
-  if resource_ref:
-    d = resource_ref.AsDict()
-    d[NAME_FORMAT_KEY] = (
-        display_name or resource_ref.Name())
-    d[RESOURCE_ID_FORMAT_KEY] = resource_ref.Name()
-    d[REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
-  else:
-    d = {NAME_FORMAT_KEY: display_name}
-  d[RESOURCE_TYPE_FORMAT_KEY] = display_resource_type
-
-  try:
-    return format_string.format(**d)
-  except KeyError as err:
-    if err.args:
-      raise KeyError('Key [{}] does not exist. Must specify one of the '
-                     'following keys instead: {}'.format(
-                         err.args[0], ', '.join(d.keys())))
-    else:
-      raise err
 
 
 class CommandData(object):
@@ -79,6 +38,7 @@ class CommandData(object):
     self.help_text = data['help_text']
     self.request = None
     self.response = None
+    request_data = None
     if CommandType.HasRequestMethod(self.command_type):
       request_data = data.get('request')
       self.request = Request(self.command_type, request_data)
@@ -92,7 +52,7 @@ class CommandData(object):
           'Wait commands must include an async section.')
     self.async_ = Async(async_data) if async_data else None
     self.iam = IamData(iam_data) if iam_data else None
-    self.arguments = Arguments(data['arguments'])
+    self.arguments = yaml_arg_schema.Arguments(data['arguments'], request_data)
     self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
     self.update = UpdateData(update_data) if update_data else None
@@ -172,16 +132,12 @@ class Request(object):
       raise util.InvalidSchemaError(
           'request.method was not specified and there is no default for this '
           'command type.')
-    self.resource_method_params = data.get('resource_method_params', {})
-    self.parse_resource_into_request = data.get(
-        'parse_resource_into_request', True)
     self.static_fields = data.get('static_fields', {})
     self.modify_request_hooks = [
         util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
     self.create_request_hook = util.Hook.FromData(data, 'create_request_hook')
     self.modify_method_hook = util.Hook.FromData(data, 'modify_method_hook')
     self.issue_request_hook = util.Hook.FromData(data, 'issue_request_hook')
-    self.use_relative_name = data.get('use_relative_name', True)
 
 
 class Response(object):
@@ -257,259 +213,6 @@ class AsyncErrorField(object):
     self.field = data.get('field', 'error')
 
 
-class Arguments(object):
-  """Everything about cli arguments are registered in this section."""
-
-  def __init__(self, data):
-    self.resource = resource_arg_schema.YAMLConceptArgument.FromData(
-        data.get('resource'))
-    self.additional_arguments_hook = util.Hook.FromData(
-        data, 'additional_arguments_hook')
-    self.params = [
-        Argument.FromData(param_data) for param_data in data.get('params', [])]
-    self.labels = Labels(data.get('labels')) if data.get('labels') else None
-    self.exclude = data.get('exclude', [])
-
-
-class Labels(object):
-  """Everything about labels of GCP resources."""
-
-  def __init__(self, data):
-    self.api_field = data['api_field']
-
-
-class Argument(object):
-  """Encapsulates data used to generate arguments.
-
-  Most of the attributes of this object correspond directly to the schema and
-  have more complete docs there.
-
-  Attributes:
-    api_field: The name of the field in the request that this argument values
-      goes.
-    disable_unused_arg_check: Disables yaml_command_test check for unused
-      arguments in static analysis.
-    arg_name: The name of the argument that will be generated. Defaults to the
-      api_field if not set.
-    help_text: The help text for the generated argument.
-    metavar: The metavar for the generated argument. This will be generated
-      automatically if not provided.
-    completer: A completer for this argument.
-    is_positional: Whether to make the argument positional or a flag.
-    type: The type to use on the argparse argument.
-    choices: A static map of choice to value the user types.
-    default: The default for the argument.
-    fallback: A function to call and use as the default for the argument.
-    processor: A function to call to process the value of the argument before
-      inserting it into the request.
-    required: True to make this a required flag.
-    hidden: True to make the argument hidden.
-    action: An override for the argparse action to use for this argument.
-    repeated: False to accept only one value when the request field is actually
-      repeated.
-    generate: False to not generate this argument. This can be used to create
-      placeholder arg specs for defaults that don't actually need to be
-      generated.
-  """
-
-  @classmethod
-  def FromData(cls, data):
-    """Gets the arg definition from the spec data.
-
-    Args:
-      data: The spec data.
-
-    Returns:
-      Argument, the parsed argument.
-
-    Raises:
-      InvalidSchemaError: if the YAML command is malformed.
-    """
-    group = data.get('group')
-    if group:
-      return ArgumentGroup.FromData(group)
-
-    api_field = data.get('api_field')
-    disable_unused_arg_check = data.get('disable_unused_arg_check')
-    arg_name = data.get('arg_name', api_field)
-    if not arg_name:
-      raise util.InvalidSchemaError(
-          'An argument must have at least one of [api_field, arg_name].')
-    is_positional = data.get('is_positional')
-    flag_name = arg_name if is_positional else '--' + arg_name
-
-    if data.get('default') and data.get('fallback'):
-      raise util.InvalidSchemaError(
-          'An argument may have at most one of [default, fallback].')
-
-    try:
-      help_text = data['help_text']
-    except KeyError:
-      raise util.InvalidSchemaError('An argument must have help_text.')
-
-    choices = data.get('choices')
-
-    return cls(
-        api_field=api_field,
-        arg_name=arg_name,
-        help_text=help_text,
-        metavar=data.get('metavar'),
-        completer=util.Hook.FromData(data, 'completer'),
-        is_positional=is_positional,
-        type=util.ParseType(data.get('type')),
-        choices=[util.Choice(d) for d in choices] if choices else None,
-        default=data.get('default', arg_utils.UNSPECIFIED),
-        fallback=util.Hook.FromData(data, 'fallback'),
-        processor=util.Hook.FromData(data, 'processor'),
-        required=data.get('required', False),
-        hidden=data.get('hidden', False),
-        action=util.ParseAction(data.get('action'), flag_name),
-        repeated=data.get('repeated'),
-        disable_unused_arg_check=disable_unused_arg_check,
-    )
-
-  # pylint:disable=redefined-builtin, type param needs to match the schema.
-  def __init__(self,
-               api_field=None,
-               arg_name=None,
-               help_text=None,
-               metavar=None,
-               completer=None,
-               is_positional=None,
-               type=None,
-               choices=None,
-               default=arg_utils.UNSPECIFIED,
-               fallback=None,
-               processor=None,
-               required=False,
-               hidden=False,
-               action=None,
-               repeated=None,
-               generate=True,
-               disable_unused_arg_check=False):
-    self.api_field = api_field
-    self.disable_unused_arg_check = disable_unused_arg_check
-    self.arg_name = arg_name
-    self.help_text = help_text
-    self.metavar = metavar
-    self.completer = completer
-    self.is_positional = is_positional
-    self.type = type
-    self.choices = choices
-    self.default = default
-    self.fallback = fallback
-    self.processor = processor
-    self.required = required
-    self.hidden = hidden
-    self.action = action
-    self.repeated = repeated
-    self.generate = generate
-
-  def Generate(self, message=None):
-    """Generates and returns the base argument.
-
-    Args:
-      message: The API message, None for non-resource args.
-
-    Returns:
-      The base argument.
-    """
-    if message and self.api_field:
-      field = arg_utils.GetFieldFromMessage(message, self.api_field)
-    else:
-      field = None
-    return arg_utils.GenerateFlag(field, self)
-
-  def Parse(self, message, namespace):
-    """Sets the argument message value, if any, from the parsed args.
-
-    Args:
-      message: The API message, None for non-resource args.
-      namespace: The parsed command line argument namespace.
-    """
-    if self.api_field is None:
-      return
-    value = arg_utils.GetFromNamespace(
-        namespace, self.arg_name, fallback=self.fallback)
-    if value is None:
-      return
-    field = arg_utils.GetFieldFromMessage(message, self.api_field)
-    value = arg_utils.ConvertValue(
-        field, value, repeated=self.repeated, processor=self.processor,
-        choices=util.Choice.ToChoiceMap(self.choices))
-    arg_utils.SetFieldInMessage(message, self.api_field, value)
-
-
-class ArgumentGroup(object):
-  """Encapsulates data used to generate argument groups.
-
-  Most of the attributes of this object correspond directly to the schema and
-  have more complete docs there.
-
-  Attributes:
-    help_text: Optional help text for the group.
-    required: True to make the group required.
-    mutex: True to make the group mutually exclusive.
-    hidden: True to make the group hidden.
-    arguments: The list of arguments in the group.
-  """
-
-  @classmethod
-  def FromData(cls, data):
-    """Gets the arg group definition from the spec data.
-
-    Args:
-      data: The group spec data.
-
-    Returns:
-      ArgumentGroup, the parsed argument group.
-
-    Raises:
-      InvalidSchemaError: if the YAML command is malformed.
-    """
-    return cls(
-        help_text=data.get('help_text'),
-        required=data.get('required', False),
-        mutex=data.get('mutex', False),
-        hidden=data.get('hidden', False),
-        arguments=[Argument.FromData(item) for item in data.get('params')],
-    )
-
-  def __init__(self, help_text=None, required=False, mutex=False, hidden=False,
-               arguments=None):
-    self.help_text = help_text
-    self.required = required
-    self.mutex = mutex
-    self.hidden = hidden
-    self.arguments = arguments
-
-  def Generate(self, message):
-    """Generates and returns the base argument group.
-
-    Args:
-      message: The API message, None for non-resource args.
-
-    Returns:
-      The base argument group.
-    """
-    group = base.ArgumentGroup(
-        mutex=self.mutex, required=self.required, help=self.help_text,
-        hidden=self.hidden)
-    for arg in self.arguments:
-      group.AddArgument(arg.Generate(message))
-    return group
-
-  def Parse(self, message, namespace):
-    """Sets argument group message values, if any, from the parsed args.
-
-    Args:
-      message: The API message, None for non-resource args.
-      namespace: The parsed command line argument namespace.
-    """
-    for arg in self.arguments:
-      arg.Parse(message, namespace)
-
-
 class Input(object):
 
   def __init__(self, command_type, data):
@@ -518,7 +221,7 @@ class Input(object):
     if not self.confirmation_prompt and command_type is CommandType.DELETE:
       self.confirmation_prompt = (
           'You are about to delete {{{}}} [{{{}}}]'.format(
-              RESOURCE_TYPE_FORMAT_KEY, NAME_FORMAT_KEY))
+              util.RESOURCE_TYPE_FORMAT_KEY, util.NAME_FORMAT_KEY))
 
 
 class Output(object):

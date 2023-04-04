@@ -473,6 +473,7 @@ def _AddAddEndpoint(
     endpoint_spec,
     support_hybrid_neg,
     support_l4ilb_neg,
+    support_ipv6,
 ):
   """Adds add endpoint argument for updating network endpoint groups."""
   help_text = """\
@@ -489,19 +490,49 @@ def _AddAddEndpoint(
               is deleted, then any network endpoint group that has a reference
               to it is updated.
 
-              *ip* - Optional IP address of the network endpoint. the IP address
+              *ip* - Optional IP address of the network endpoint. The IP address
               must belong to a VM in compute engine (either the primary IP or
               as part of an aliased IP range). If the IP address is not
               specified, then the primary IP address for the VM instance in
               the network that the network endpoint group belongs to is
               used.
+              """
+
+  if support_ipv6:
+    help_text += """\
+
+              *ipv6* - Optional IPv6 address of the network endpoint. The IPv6
+              address must belong to a VM in compute engine (either the internal
+              or external IPv6 address).
+
+              At least one of the ip and ipv6 must be specified.
+                 """
+  help_text += """\
 
               *port* - Required endpoint port unless NEG default port is set.
 
           `internet-ip-port`
+               """
 
-              *ip* - Required IP address of the endpoint to attach. Must be
+  if support_ipv6:
+    help_text += """\
+
+              *ip* - Optional IPv4 address of the endpoint to attach. Must be
               publicly routable.
+
+              *ipv6* - Optional IPv6 address of the endpoint to attach. Must be
+              publicly routable.
+
+              At least one of the ip and ipv6 must be specified.
+            """
+  else:
+    help_text += """\
+
+              *ip* - Required IPv4 address of the endpoint to attach. Must be
+              publicly routable.
+            """
+
+  help_text += """\
 
               *port* - Optional port of the endpoint to attach. If unspecified,
               the NEG default port is set. If no default port is set, the
@@ -520,19 +551,42 @@ def _AddAddEndpoint(
               (80 for HTTP, 443 for HTTPS or HTTP2).
 
               Example: `--add-endpoint="fqdn=backend.example.com,port=443"`
-      """
+    """
   if support_hybrid_neg:
     help_text += """\
 
           `non-gcp-private-ip-port`
-
-              *ip* - Required IP address of the network endpoint to attach. The
-              IP address must belong to a VM not in Compute Engine and
-              must be routable using a Cloud Router over VPN or an Interconnect connection.
-
-              *port* - Required port of the network endpoint to attach unless the
-              NEG default port is set.
       """
+    if support_ipv6:
+      help_text += """\
+
+              *ip* - Optional IPv4 address of the network endpoint to attach.
+              The IP address must belong to a VM not in Compute Engine and must
+              be routable using a Cloud Router over VPN or an Interconnect
+              connection.
+
+              *ipv6* - Optional IPv6 address of the network endpoint to attach.
+              The IP address must belong to a VM not in Compute Engine and must
+              be routable using a Cloud Router over VPN or an Interconnect
+              connection.
+
+              At least one of the ip and ipv6 must be specified.
+      """
+    else:
+      help_text += """\
+
+              *ip* - Required IPv4 address of the network endpoint to attach.
+              The IP address must belong to a VM not in Compute Engine and must
+              be routable using a Cloud Router over VPN or an Interconnect
+              connection.
+      """
+
+    help_text += """\
+
+              *port* - Required port of the network endpoint to attach unless
+              the NEG default port is set.
+    """
+
   if support_l4ilb_neg:
     help_text += """\
 
@@ -579,6 +633,7 @@ def _AddRemoveEndpoint(
     endpoint_spec,
     support_hybrid_neg,
     support_l4ilb_neg,
+    support_ipv6,
 ):
   """Adds remove endpoint argument for updating network endpoint groups."""
   help_text = """\
@@ -591,14 +646,33 @@ def _AddRemoveEndpoint(
               detach. If the IP address is unset, all endpoints for the
               instance in the NEG are detached.
 
-              *ip* - Optional IP address of the network endpoint to detach.
+              *ip* - Optional IPv4 address of the network endpoint to detach.
               If specified port must be provided as well.
+  """
+  if support_ipv6:
+    help_text += """\
+
+            *ipv6* - Optional IPv6 address of the network endpoint to detach.
+            If specified port must be provided as well.
+    """
+  help_text += """\
 
               *port* - Optional port of the network endpoint to detach.
 
           `internet-ip-port`
 
-              *ip* - Required IP address of the network endpoint to detach.
+              *ip* - Required IPv4 address of the network endpoint to detach.
+  """
+
+  if support_ipv6:
+    help_text += """\
+
+              *ipv6* - Required IPv6 address of the network endpoint to detach.
+
+              At least one of the ip and ipv6 must be specified.
+    """
+
+  help_text += """\
 
               *port* - Optional port of the network endpoint to detach if the
               endpoint has a port specified.
@@ -610,17 +684,27 @@ def _AddRemoveEndpoint(
 
               *port* - Optional port of the network endpoint to detach if the
               endpoint has a port specified.
-      """
+  """
   if support_hybrid_neg:
     help_text += """\
 
           `non-gcp-private-ip-port`
 
-              *ip* - Required IP address of the network endpoint to detach.
+              *ip* - Required IPv4 address of the network endpoint to detach.
+    """
+
+    if support_ipv6:
+      help_text += """\
+
+              *ipv6* - Required IPv6 address of the network endpoint to detach.
+
+              At least one of the ip and ipv6 must be specified.
+      """
+    help_text += """\
 
               *port* - Required port of the network endpoint to detach unless
               NEG default port is set.
-      """
+    """
   if support_l4ilb_neg:
     help_text += """\
 
@@ -632,7 +716,7 @@ def _AddRemoveEndpoint(
 
               *ip* - Required IP address of the network endpoint to attach. The
               IP address must be the VM network interface's primary IP address.
-      """
+    """
   help_text += """\
 
           `gce-vm-ip`
@@ -644,7 +728,7 @@ def _AddRemoveEndpoint(
               *ip* - Optional IP address of the network endpoint to attach. The
               IP address must be the VM's network interface's primary IP
               address. If not specified, the primary NIC address is used.
-    """
+  """
 
   endpoint_group.add_argument(
       '--remove-endpoint',
@@ -658,6 +742,7 @@ def AddUpdateNegArgsToParser(
     parser,
     support_hybrid_neg=False,
     support_l4ilb_neg=False,
+    support_ipv6=False,
 ):
   """Adds flags for updating a network endpoint group to the parser."""
   endpoint_group = parser.add_group(
@@ -669,18 +754,21 @@ def AddUpdateNegArgsToParser(
       ),
   )
 
-  endpoint_spec = {'instance': str, 'ip': str, 'port': int}
-  endpoint_spec['fqdn'] = str
+  endpoint_spec = {'instance': str, 'ip': str, 'port': int, 'fqdn': str}
+  if support_ipv6:
+    endpoint_spec['ipv6'] = str
 
   _AddAddEndpoint(
       endpoint_group,
       endpoint_spec,
       support_hybrid_neg,
       support_l4ilb_neg,
+      support_ipv6,
   )
   _AddRemoveEndpoint(
       endpoint_group,
       endpoint_spec,
       support_hybrid_neg,
       support_l4ilb_neg,
+      support_ipv6,
   )

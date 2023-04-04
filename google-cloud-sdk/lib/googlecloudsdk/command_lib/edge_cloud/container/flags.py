@@ -196,13 +196,12 @@ def AddExternalLbIpv4AddressPools(parser):
       local control plane clusters. Existing pools cannot be updated
       after cluster creation; only adding new pools is allowed.
       Each address pool must be specified as one of the following
-      three types of values:
-        1. A single IPv4 IP address, for example, "10.0.0.1",
-        2. A IPv4 address range, for example, "10.0.0.1-10.0.0.10",
-        3. A IPv4 CIDR block, for example, "10.0.0.1/24"
+      two types of values:
+        1. A IPv4 address range, for example, "10.0.0.1-10.0.0.10". A range that contains a single IP (e.g. "10.0.0.1-10.0.0.1") is allowed.
+        2. A IPv4 CIDR block, for example, "10.0.0.1/24"
       Use comma when specifying multiple address pools, for example:
-        --external-lb-ipv4-address-pools 10.0.0.1,10.0.0.1-10.0.0.10,10.0.0.1/24
-      """
+        --external-lb-ipv4-address-pools 10.0.0.1-10.0.0.10,10.0.0.1/24
+      """,
   )
 
 

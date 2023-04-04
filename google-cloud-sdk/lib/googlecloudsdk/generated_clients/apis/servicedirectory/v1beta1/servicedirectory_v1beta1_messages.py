@@ -764,19 +764,6 @@ class ListRegistrationPoliciesResponse(_messages.Message):
   registrationPolicies = _messages.MessageField('RegistrationPolicy', 2, repeated=True)
 
 
-class ListServiceWorkloadsResponse(_messages.Message):
-  r"""The response message for RegistrationService.ListServiceWorkloads.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    serviceWorkloads: The list of service workloads.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  serviceWorkloads = _messages.MessageField('ServiceWorkload', 2, repeated=True)
-
-
 class ListServicesResponse(_messages.Message):
   r"""The response message for RegistrationService.ListServices.
 
@@ -1447,123 +1434,6 @@ class ServiceIdentity(_messages.Message):
   spiffeId = _messages.StringField(2)
 
 
-class ServiceWorkload(_messages.Message):
-  r"""An individual ServiceWorkload. A logical collection of workloads that
-  provide the same functionality, with a common set of core attributes, that
-  power services in Service Directory and to which policies can be applied.
-
-  Messages:
-    AnnotationsValue: Optional. Blackbox annotations on the service workload.
-
-  Fields:
-    annotations: Optional. Blackbox annotations on the service workload.
-    attributes: Optional. Attributes associated with this service workload. --
-      Attributes should stay visibility protected until we have user-visible
-      attributes to share with the user.
-    backendServices: Optional. List of backend services (as schemeless URIs)
-      used as grouping constructs for this ServiceWorkload. Populated for
-      service workloads that are auto-registered from Google Compute Engine.
-      For service workloads auto-registed from Google Kubernetes Engine, this
-      field is not populated. Example: [
-      //compute.googleapis.com/projects/123/zones/us-
-      east1-c/backend_services/bs1,
-      //compute.googleapis.com/projects/123/regions/us-
-      east1/backend_services/bs2]
-    components: Optional. List of workloads (as schemeless URIs) that are part
-      of this ServiceWorkload. Example for Google Compute Engine components: [
-      //compute.googleapis.com/projects/1234/zones/us-east1-c/instances/mig1,
-      //compute.googleapis.com/projects/1234/zones/us-east1-a/instances/mig2]
-      Example for Google Kubernetes Engine components: [
-      //container.googleapis.com/projects/servicedirectory-
-      sandman-10/zones/us-east1-b/clusters/cluster-name/namespaces/namespace-
-      name/apps/deployment/dep-name,
-      //container.googleapis.com/projects/servicedirectory-
-      sandman-10/zones/us-east1-b/clusters/cluster-name/namespaces/namespace-
-      name/apps/replicasets/rs-name ]
-    createTime: Output only. The timestamp when this service workload was
-      created in Service Directory.
-    displayName: Optional. Friendly name. User modifiable.
-    incomingServices: Output only. List of services that front this workload.
-      Multiple services are due to multiple endpoints configured either
-      because of different protocols or desire to separate traffic or
-      different APIs. This list could be empty if this is not a serving
-      workload. Example: /projects/123/locations/us-
-      east1/namespaces/ns/services/s1"
-    name: Immutable. The resource name for the service workload in the format
-      `projects/*/locations/*/namespaces/*/serviceWorkloads/*`.
-    uid: Output only. A globally unique identifier (in UUID4 format) for this
-      service workload.
-    updateTime: Output only. The timestamp when the service workload was last
-      updated in Service Directory.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. Blackbox annotations on the service workload.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  attributes = _messages.MessageField('ServiceWorkloadAttributes', 2)
-  backendServices = _messages.StringField(3, repeated=True)
-  components = _messages.StringField(4, repeated=True)
-  createTime = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  incomingServices = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-
-
-class ServiceWorkloadAttributes(_messages.Message):
-  r"""Attributes associated with service workload.
-
-  Enums:
-    ManagerTypeValueValuesEnum: Output only. The GCP resource/product
-      responsible for this service workload.
-
-  Fields:
-    managedRegistration: A boolean attribute.
-    managerType: Output only. The GCP resource/product responsible for this
-      service workload.
-  """
-
-  class ManagerTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The GCP resource/product responsible for this service
-    workload.
-
-    Values:
-      TYPE_UNSPECIFIED: Default. Should not be used.
-      GKE_HUB: Resource managed by GKE Hub.
-      BACKEND_SERVICE: Resource managed by Arcus, Backend Service
-    """
-    TYPE_UNSPECIFIED = 0
-    GKE_HUB = 1
-    BACKEND_SERVICE = 2
-
-  managedRegistration = _messages.BooleanField(1)
-  managerType = _messages.EnumField('ManagerTypeValueValuesEnum', 2)
-
-
 class ServicedirectoryProjectsLocationsGetRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsGetRequest object.
 
@@ -1725,52 +1595,6 @@ class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsGetIamPolicyReq
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
   resource = _messages.StringField(2, required=True)
-
-
-class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest(_messages.Message):
-  r"""A ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsListRequest
-  object.
-
-  Fields:
-    filter: Optional. The filter to list results by. General `filter` string
-      syntax: ` ()` * `` can be any field name on the ServiceWorkload proto.
-      For example: `name`, `create_time`, `annotations.`, or `components` * ``
-      can be `<`, `>`, `<=`, `>=`, `!=`, `=`, `:`. Of which `:` means `HAS`,
-      and is roughly the same as `=` * `` must be the same data type as field
-      * `` can be `AND`, `OR`, `NOT` Examples of valid filters: *
-      `annotations.owner` returns service workloads that have an annotation
-      with the key `owner`, this is the same as `annotations:owner` *
-      `components://compute.googleapis.com/projects/1234/zones/us-
-      east1-c/instances/mig1` returns service workloads that contain the
-      specified component * `name>projects/my-project/locations/us-
-      east1/namespaces/my-namespace/serviceWorkloads/service-workload-c`
-      returns workloads that have names that are alphabetically later than the
-      string, so "service-workload-e" is returned but "service-workload-a" is
-      not * `annotations.owner!=sd AND annotations.foo=bar` returns service
-      workloads that have `owner` in annotation key but value is not `sd` AND
-      have key/value `foo=bar` * `doesnotexist.foo=bar` returns an empty list.
-      Note that service workload doesn't have a field called "doesnotexist".
-      Since the filter does not match any service workloads, it returns no
-      results For more information about filtering, see [API
-      Filtering](https://aip.dev/160).
-    orderBy: Optional. The order to list results by. General `order_by` string
-      syntax: ` () (,)` * `` allows values: `name`, `display_name`,
-      `create_time`, `update_time` * `` ascending or descending order by ``.
-      If this is left blank, `asc` is used Note that an empty `order_by`
-      string results in default order, which is order by `name` in ascending
-      order.
-    pageSize: Optional. The maximum number of items to return.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The resource name of the namespace whose service
-      workloads you'd like to list.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServiceWorkloadsSetIamPolicyRequest(_messages.Message):

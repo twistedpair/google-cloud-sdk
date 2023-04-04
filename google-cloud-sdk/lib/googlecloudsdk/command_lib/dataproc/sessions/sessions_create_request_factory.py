@@ -72,8 +72,11 @@ class SessionsCreateRequestFactory(object):
 
     kwargs['session'] = self.session_message_factory.GetMessage(args)
 
-    return self.dataproc.messages.DataprocProjectsLocationsSessionsCreateRequest(
-        **kwargs)
+    return (
+        self.dataproc.messages.DataprocProjectsLocationsSessionsCreateRequest(
+            **kwargs
+        )
+    )
 
 
 def AddArguments(parser):
@@ -91,8 +94,8 @@ def AddArguments(parser):
   parser.add_argument(
       '--request-id',
       type=arg_parsers.CustomFunctionValidator(request_id_pattern.match, (
-          'Only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens '
-          '(-) are allowed. The length must not exceed 40 characters.')),
+          'Only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens'
+          ' (-) are allowed. The length must not exceed 40 characters.')),
       help=('A unique ID that identifies the request. If the service '
             'receives two session create requests with the same request_id, '
             'the second request is ignored and the operation that '
@@ -112,6 +115,16 @@ def AddArguments(parser):
           if it has no active Spark applications and no active Jupyter kernels.
           Run [gcloud topic datetimes](https://cloud.google.com/sdk/gcloud/reference/topic/datetimes)
           for information on duration formats.""")
+
+  # If enable-credentials-injection flag is used, we set authentication_type as
+  # CREDENTIALS_INJECTION, else, the default is SERVICE_ACCOUNT.
+  parser.add_argument(
+      '--enable-credentials-injection',
+      action='store_true',
+      help="""\
+        Enable injection of user credentials for authentication.
+        """,
+  )
 
   _AddDependency(parser)
 

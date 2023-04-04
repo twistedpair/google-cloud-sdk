@@ -208,6 +208,7 @@ class ClustersClient(client.ClientBase):
         'vmTrackingEnabled': self._vm_tracking_enabled(args),
         'autoRepairConfig': self._vmware_auto_repair_config(args),
         'authorization': self._authorization(args),
+        'enableControlPlaneV2': flags.Get(args, 'enable_control_plane_v2'),
     }
     if any(kwargs.values()):
       return self._messages.VmwareCluster(**kwargs)
@@ -556,7 +557,6 @@ class ClustersClient(client.ClientBase):
     """Constructs proto message VmwareControlPlaneV2Config."""
     kwargs = {
         'controlPlaneIpBlock': self._control_plane_ip_block(args),
-        'enableControlPlaneV2': flags.Get(args, 'enable_control_plane_v2'),
     }
     if any(kwargs.values()):
       return self._messages.VmwareControlPlaneV2Config(**kwargs)

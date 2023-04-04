@@ -108,6 +108,18 @@ def GetKmsConfigAttributeConfig():
       'kms_config', 'The instance of the {resource}')
 
 
+def GetKeyRingAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'key_ring', 'The instance of the {resource}.'
+  )
+
+
+def GetCryptoKeyAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'crypto_key', 'The instance of the {resource}.'
+  )
+
+
 ## Resource Specs ##
 
 
@@ -204,7 +216,19 @@ def GetKmsConfigResourceSpec():
       resource_name='kms_config',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
-      kmsConfigsId=GetKmsConfigAttributeConfig())
+      kmsConfigsId=GetKmsConfigAttributeConfig(),
+      api_version='v1beta1')
+
+
+def GetCryptoKeyResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys',
+      resource_name='crypto_key',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=GetLocationAttributeConfig(),
+      keyRingsId=GetKeyRingAttributeConfig(),
+      cryptoKeysId=GetCryptoKeyAttributeConfig()
+  )
 
 ## Presentation Specs ##
 

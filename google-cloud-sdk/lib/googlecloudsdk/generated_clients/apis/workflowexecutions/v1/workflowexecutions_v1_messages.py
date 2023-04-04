@@ -73,6 +73,9 @@ class Execution(_messages.Message):
       The value can only be present if the execution's state is `SUCCEEDED`.
     startTime: Output only. Marks the beginning of execution.
     state: Output only. Current state of the execution.
+    stateError: Output only. Error regarding the state of the Execution
+      resource. For example, this field will have error details if the
+      Execution data is unavailable due to revoked KMS key permissions.
     status: Output only. Status tracks the current steps and progress data of
       this execution.
     workflowRevisionId: Output only. Revision of the workflow this execution
@@ -88,10 +91,12 @@ class Execution(_messages.Message):
         and all exceptions raised.
       LOG_ERRORS_ONLY: Log only exceptions that are raised from call steps
         within workflows.
+      LOG_NONE: Explicitly log nothing.
     """
     CALL_LOG_LEVEL_UNSPECIFIED = 0
     LOG_ALL_CALLS = 1
     LOG_ERRORS_ONLY = 2
+    LOG_NONE = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the execution.
@@ -102,12 +107,14 @@ class Execution(_messages.Message):
       SUCCEEDED: The execution finished successfully.
       FAILED: The execution failed with an error.
       CANCELLED: The execution was stopped intentionally.
+      UNAVAILABLE: Execution data is unavailable. See the `state_error` field.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     SUCCEEDED = 2
     FAILED = 3
     CANCELLED = 4
+    UNAVAILABLE = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -148,8 +155,9 @@ class Execution(_messages.Message):
   result = _messages.StringField(8)
   startTime = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  status = _messages.MessageField('Status', 11)
-  workflowRevisionId = _messages.StringField(12)
+  stateError = _messages.MessageField('StateError', 11)
+  status = _messages.MessageField('Status', 12)
+  workflowRevisionId = _messages.StringField(13)
 
 
 class ListExecutionsResponse(_messages.Message):
@@ -341,6 +349,32 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class StateError(_messages.Message):
+  r"""Describes an error related to the current state of the Execution
+  resource.
+
+  Enums:
+    TypeValueValuesEnum: The type of this state error.
+
+  Fields:
+    details: Provides specifics about the error.
+    type: The type of this state error.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of this state error.
+
+    Values:
+      TYPE_UNSPECIFIED: No type specified.
+      KMS_ERROR: Caused by an issue with KMS.
+    """
+    TYPE_UNSPECIFIED = 0
+    KMS_ERROR = 1
+
+  details = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Status(_messages.Message):

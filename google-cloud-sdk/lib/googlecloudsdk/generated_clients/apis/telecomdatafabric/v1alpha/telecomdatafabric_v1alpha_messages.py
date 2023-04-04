@@ -81,38 +81,8 @@ class BatchIngestionPipeline(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
-class BigQueryAsset(_messages.Message):
-  r"""Message describing BigQuery data asset.
-
-  Fields:
-    datasetId: Dataset ID of the BigQuery Dataset.
-  """
-
-  datasetId = _messages.StringField(1)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
-
-
-class CsvOptions(_messages.Message):
-  r"""Describe CSV and similar semi-structured data formats.
-
-  Fields:
-    delimiter: Optional. The delimiter being used to separate values. This
-      defaults to ','.
-    disableTypeInference: Optional. Whether to disable the inference of data
-      type for CSV data. If true, all columns will be registered as strings.
-    encoding: Optional. The character encoding of the data. The default is
-      UTF-8.
-    headerRows: Optional. The number of rows to interpret as header rows that
-      should be skipped when reading data rows.
-  """
-
-  delimiter = _messages.StringField(1)
-  disableTypeInference = _messages.BooleanField(2)
-  encoding = _messages.StringField(3)
-  headerRows = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class DataAdapter(_messages.Message):
@@ -315,14 +285,34 @@ class DataAsset(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bigqueryAsset = _messages.MessageField('BigQueryAsset', 1)
+  bigqueryAsset = _messages.MessageField('DataAssetBigQueryAsset', 1)
   createTime = _messages.StringField(2)
-  gcsAsset = _messages.MessageField('GCSAsset', 3)
+  gcsAsset = _messages.MessageField('DataAssetGCSAsset', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  pubsubAsset = _messages.MessageField('PubSubAsset', 6)
+  pubsubAsset = _messages.MessageField('DataAssetPubSubAsset', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
   updateTime = _messages.StringField(8)
+
+
+class DataAssetBigQueryAsset(_messages.Message):
+  r"""Message describing BigQuery data asset.
+
+  Fields:
+    datasetId: Dataset ID of the BigQuery Dataset.
+  """
+
+  datasetId = _messages.StringField(1)
+
+
+class DataAssetGCSAsset(_messages.Message):
+  r"""Message describing Cloud Storage data asset.
+
+  Fields:
+    bucket: Name of the Cloud Storage Bucket.
+  """
+
+  bucket = _messages.StringField(1)
 
 
 class DataAssetManager(_messages.Message):
@@ -389,13 +379,155 @@ class DataAssetManager(_messages.Message):
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  lake = _messages.MessageField('Lake', 3)
+  lake = _messages.MessageField('DataAssetManagerLake', 3)
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
 
 
-class DiscoverySpec(_messages.Message):
+class DataAssetManagerLake(_messages.Message):
+  r"""Lake represents a Lake in Dataplex.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the lake.
+
+  Fields:
+    description: Optional. Description of the Lake.
+    displayName: Optional. Use friendly display name.
+    lake: Output only. The relative resource name of the Lake created in
+      Dataplex in
+      `projects/{project_number}/locations/{location_id}/lakes/{lake_id}`
+      format.
+    lakeId: Required. The unique lake_id. The lake will be created using
+      lake_id.
+    location: Required. The physical region where the lake would be located
+      e.g. us-cental1
+    metastore: Optional. Settings to manage Dataplex lake and Dataproc
+      Metastore service instance association.
+    project: Required. The project where the lake would be created.
+    state: Output only. Current state of the lake.
+    uid: Output only. Globally unique ID returned by Dataplex.
+    zones: Required. The Zones to create inside the lake in Dataplex.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the lake.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+      FAILED: Resource encountered an error.
+      MALFORMED: Resource is in inderministic state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+    FAILED = 5
+    MALFORMED = 6
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  lake = _messages.StringField(3)
+  lakeId = _messages.StringField(4)
+  location = _messages.StringField(5)
+  metastore = _messages.MessageField('DataAssetManagerLakeMetastore', 6)
+  project = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  zones = _messages.MessageField('DataAssetManagerLakeZone', 10, repeated=True)
+
+
+class DataAssetManagerLakeMetastore(_messages.Message):
+  r"""Settings to manage association of Dataproc Metastore with a lake in
+  Dataplex].
+
+  Fields:
+    service: Optional. A relative reference to the Dataproc Metastore
+      (https://cloud.google.com/dataproc-metastore/docs) service associated
+      with the lake:
+      `projects/{project_id}/locations/{location_id}/services/{service_id}`
+  """
+
+  service = _messages.StringField(1)
+
+
+class DataAssetManagerLakeZone(_messages.Message):
+  r"""Zone represents a Zone under a Lake, this will be used to create a Zone
+  in Dataplex.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the zone.
+    TypeValueValuesEnum: Required. The type of the zone.
+
+  Fields:
+    description: Optional. Description of the zone.
+    discoverySpec: Optional. Specification of the discovery feature applied to
+      data in this zone.
+    displayName: Optional. User friendly display name.
+    resourceSpec: Required. Specification of the resources that are referenced
+      by the assets within this zone.
+    state: Output only. Current state of the zone.
+    type: Required. The type of the zone.
+    uid: Output only. Globally unique ID returned by the Dataplex.
+    zone: Output only. The relative resource name of the zone created inside
+      lake in Dataplex in the form of `projects/{project_number}/locations/{lo
+      cation_id}/lakes/{lake_id}/zones/{zone_id}`.
+    zoneId: Required. The zone_id to use for creating the zone under the lake.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the zone.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+      FAILED: Resource encountered an error.
+      MALFORMED: Resource is in inderministic state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+    FAILED = 5
+    MALFORMED = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the zone.
+
+    Values:
+      TYPE_UNSPECIFIED: Zone type not specified.
+      RAW: A zone that contains data that needs further processing before it
+        is considered generally ready for consumption and analytics workloads.
+      CURATED: A zone that contains data that is considered to be ready for
+        broader consumption and analytics workloads. Curated structured data
+        stored in Cloud Storage must conform to certain file formats (parquet,
+        avro and orc) and organized in a hive-compatible directory layout.
+    """
+    TYPE_UNSPECIFIED = 0
+    RAW = 1
+    CURATED = 2
+
+  description = _messages.StringField(1)
+  discoverySpec = _messages.MessageField('DataAssetManagerLakeZoneDiscoverySpec', 2)
+  displayName = _messages.StringField(3)
+  resourceSpec = _messages.MessageField('DataAssetManagerLakeZoneResourceSpec', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  uid = _messages.StringField(7)
+  zone = _messages.StringField(8)
+  zoneId = _messages.StringField(9)
+
+
+class DataAssetManagerLakeZoneDiscoverySpec(_messages.Message):
   r"""Settings to manage the metadata discovery and publishing in a zone.
 
   Fields:
@@ -416,12 +548,404 @@ class DiscoverySpec(_messages.Message):
       running discovery periodically.
   """
 
-  csvOptions = _messages.MessageField('CsvOptions', 1)
+  csvOptions = _messages.MessageField('DataAssetManagerLakeZoneDiscoverySpecCsvOptions', 1)
   enabled = _messages.BooleanField(2)
   excludePatterns = _messages.StringField(3, repeated=True)
   includePatterns = _messages.StringField(4, repeated=True)
-  jsonOptions = _messages.MessageField('JsonOptions', 5)
+  jsonOptions = _messages.MessageField('DataAssetManagerLakeZoneDiscoverySpecJsonOptions', 5)
   schedule = _messages.StringField(6)
+
+
+class DataAssetManagerLakeZoneDiscoverySpecCsvOptions(_messages.Message):
+  r"""Describe CSV and similar semi-structured data formats.
+
+  Fields:
+    delimiter: Optional. The delimiter being used to separate values. This
+      defaults to ','.
+    disableTypeInference: Optional. Whether to disable the inference of data
+      type for CSV data. If true, all columns will be registered as strings.
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+    headerRows: Optional. The number of rows to interpret as header rows that
+      should be skipped when reading data rows.
+  """
+
+  delimiter = _messages.StringField(1)
+  disableTypeInference = _messages.BooleanField(2)
+  encoding = _messages.StringField(3)
+  headerRows = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class DataAssetManagerLakeZoneDiscoverySpecJsonOptions(_messages.Message):
+  r"""Describe JSON data format.
+
+  Fields:
+    disableTypeInference: Optional. Whether to disable the inference of data
+      type for Json data. If true, all columns will be registered as their
+      primitive types (strings, number or boolean).
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+  """
+
+  disableTypeInference = _messages.BooleanField(1)
+  encoding = _messages.StringField(2)
+
+
+class DataAssetManagerLakeZoneResourceSpec(_messages.Message):
+  r"""Settings for resources attached as assets within the zone.
+
+  Enums:
+    LocationTypeValueValuesEnum: Required. Immutable. The location type of the
+      resources that are allowed to be attached to the assets within this
+      zone.
+
+  Fields:
+    locationType: Required. Immutable. The location type of the resources that
+      are allowed to be attached to the assets within this zone.
+  """
+
+  class LocationTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The location type of the resources that are
+    allowed to be attached to the assets within this zone.
+
+    Values:
+      LOCATION_TYPE_UNSPECIFIED: Unspecified location type.
+      SINGLE_REGION: Resources that are associated with a single region.
+      MULTI_REGION: Resources that are associated with a multi-region
+        location.
+    """
+    LOCATION_TYPE_UNSPECIFIED = 0
+    SINGLE_REGION = 1
+    MULTI_REGION = 2
+
+  locationType = _messages.EnumField('LocationTypeValueValuesEnum', 1)
+
+
+class DataAssetPubSubAsset(_messages.Message):
+  r"""Message describing Pub/Sub data asset.
+
+  Fields:
+    topic: Pub/Sub topic of the data asset.
+  """
+
+  topic = _messages.StringField(1)
+
+
+class DeplomentProcess(_messages.Message):
+  r"""DeplomentProcess represents the process to be instantiated by template.
+
+  Messages:
+    ParametersValue: Process parameters.
+
+  Fields:
+    dataflowJob: DataflowJob represents the details about the dataflow job.
+    id: Process ID.
+    inputAssetIds: Input assets for process, used for recording dependency.
+    outputAssetIds: Output assets for process, used for recording dependency.
+    parameters: Process parameters.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Process parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  dataflowJob = _messages.MessageField('DeplomentProcessDataflowJob', 1)
+  id = _messages.StringField(2)
+  inputAssetIds = _messages.StringField(3, repeated=True)
+  outputAssetIds = _messages.StringField(4, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 5)
+
+
+class DeplomentProcessDataflowJob(_messages.Message):
+  r"""DataflowJob represents dataflow job and its configurations.
+
+  Enums:
+    TypeValueValuesEnum: Dataflow job type.
+
+  Fields:
+    schedule: schedule reprsents configuration to schedule dataflow job.
+    templateGcsPath: Cloud Storage bucket path where flex template is present.
+    type: Dataflow job type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Dataflow job type.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      CLASSIC: Classic dataflow job.
+      FLEX: Flex dataflow job.
+    """
+    TYPE_UNSPECIFIED = 0
+    CLASSIC = 1
+    FLEX = 2
+
+  schedule = _messages.StringField(1)
+  templateGcsPath = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class Deployment(_messages.Message):
+  r"""Message describing Deployment object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+    ParametersValue: Key/value pair that will be replaced in the template.
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    deploymentView: Output only. [Output only] Details about the deployment.
+    labels: Labels as key value pairs
+    lake: Dataplex Lake that the assets are attached to.
+    lakeInfo: Input only. LakeInfo supplied by the consumer. TDF would create
+      the Lake and Zones. Assets would be attached to the Zone based on the
+      asset type.
+    locationId: Location of project where template will be deployed, if not
+      supplied the default is resource's location.
+    name: name of resource
+    parameters: Key/value pair that will be replaced in the template.
+    projectId: Id of project where template will be deployed, if not supplied
+      the default is resource's project.
+    templateId: Id of the template to use for deployment. This resource will
+      be in the format "/projects/*/locations/*/template/"
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Key/value pair that will be replaced in the template.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deploymentView = _messages.MessageField('DeploymentView', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  lake = _messages.MessageField('DeploymentLake', 4)
+  lakeInfo = _messages.MessageField('DeploymentLakeInfo', 5)
+  locationId = _messages.StringField(6)
+  name = _messages.StringField(7)
+  parameters = _messages.MessageField('ParametersValue', 8)
+  projectId = _messages.StringField(9)
+  templateId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class DeploymentAsset(_messages.Message):
+  r"""DeploymentAsset represents the details about the different input/output
+  data assets.
+
+  Enums:
+    OwnershipValueValuesEnum: Ownership will represent whether asset is Google
+      owned or customer owned.
+    TypeValueValuesEnum: Asset type defines dataplex zone of this resource.
+
+  Fields:
+    bigqueryDataset: BigQueryDataset represents the details of bigquery
+      dataset asset.
+    bigqueryTable: BigQueryTable represents the details of bigquery table
+      asset.
+    gcsBucket: Cloud Storage bucket represents the details of Cloud Storage
+      bucket asset.
+    id: Asset ID.
+    ownership: Ownership will represent whether asset is Google owned or
+      customer owned.
+    pubsubSubscription: PubSubSubscription represents the details of pub/sub
+      subscriptions asset.
+    pubsubTopic: PubSubTopic represents the details of pub/sub topic asset.
+    type: Asset type defines dataplex zone of this resource.
+  """
+
+  class OwnershipValueValuesEnum(_messages.Enum):
+    r"""Ownership will represent whether asset is Google owned or customer
+    owned.
+
+    Values:
+      OWNERSHIP_UNSPECIFIED: Default value. This value is unused.
+      OWNED: Asset to be created in this deployment.
+      EXTERNAL: External asset to be used in this deployment.
+    """
+    OWNERSHIP_UNSPECIFIED = 0
+    OWNED = 1
+    EXTERNAL = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Asset type defines dataplex zone of this resource.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      LANDING: LANDING represents that the asset is a initial input to the
+        process.
+      INTERMEDIATE: INTERMEDIATE represents that the asset is an
+        intermediatory asset.
+      CURATED: CURATED represents that the asset will contain curated data in
+        some specific format.
+      TEMPORARY: TEMPORARY represents that the asset is a temporary asset.
+    """
+    TYPE_UNSPECIFIED = 0
+    LANDING = 1
+    INTERMEDIATE = 2
+    CURATED = 3
+    TEMPORARY = 4
+
+  bigqueryDataset = _messages.MessageField('DeploymentAssetBigQueryDataset', 1)
+  bigqueryTable = _messages.MessageField('DeploymentAssetBigQueryTable', 2)
+  gcsBucket = _messages.MessageField('DeploymentAssetGcsBucket', 3)
+  id = _messages.StringField(4)
+  ownership = _messages.EnumField('OwnershipValueValuesEnum', 5)
+  pubsubSubscription = _messages.MessageField('DeploymentAssetPubSubSubscription', 6)
+  pubsubTopic = _messages.MessageField('DeploymentAssetPubSubTopic', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+
+
+class DeploymentAssetBigQueryDataset(_messages.Message):
+  r"""BigQueryDataset represents bigquery dataset data asset.
+
+  Fields:
+    name: BigQuery dataset name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class DeploymentAssetBigQueryTable(_messages.Message):
+  r"""BigQueryTable represents bigquery table data asset.
+
+  Fields:
+    dataset: BigQuery dataset name.
+    name: BigQuery table name.
+    schema: Json string defining BigQuery table schema.
+  """
+
+  dataset = _messages.StringField(1)
+  name = _messages.StringField(2)
+  schema = _messages.StringField(3)
+
+
+class DeploymentAssetGcsBucket(_messages.Message):
+  r"""Cloud Storage Bucket represents Cloud Storage bucket data asset.
+
+  Fields:
+    name: Cloud Storage bucket name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class DeploymentAssetPubSubSubscription(_messages.Message):
+  r"""PubSubSubscription represents pub/sub topic and its subscription data
+  asset.
+
+  Fields:
+    name: Pub/Sub subscription name.
+    topic: Pub/Sub topic name.
+  """
+
+  name = _messages.StringField(1)
+  topic = _messages.StringField(2)
+
+
+class DeploymentAssetPubSubTopic(_messages.Message):
+  r"""Pub/Sub Topic represents pub/sub data asset.
+
+  Fields:
+    name: Pub/Sub topic name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class DeploymentLake(_messages.Message):
+  r"""Lake represents a lake in Dataplex.
+
+  Fields:
+    lakeId: LakeID for the Dataplex Lake.
+  """
+
+  lakeId = _messages.StringField(1)
+
+
+class DeploymentLakeInfo(_messages.Message):
+  r"""LakeInfo contains Dataplex Lake to be created.
+
+  Fields:
+    lake: Lake in the Dataplex.
+  """
+
+  lake = _messages.MessageField('DeploymentLake', 1)
+
+
+class DeploymentView(_messages.Message):
+  r"""DeploymentView represents all details about template deployment.
+
+  Fields:
+    assets: Assets in deployment.
+    processes: Processes in deployment.
+  """
+
+  assets = _messages.MessageField('DeploymentAsset', 1, repeated=True)
+  processes = _messages.MessageField('DeplomentProcess', 2, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -431,16 +955,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class GCSAsset(_messages.Message):
-  r"""Message describing Cloud Storage data asset.
-
-  Fields:
-    bucket: Name of the Cloud Storage Bucket.
-  """
-
-  bucket = _messages.StringField(1)
 
 
 class IaasMetricsCollector(_messages.Message):
@@ -509,78 +1023,6 @@ class IaasMetricsCollector(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   updateTime = _messages.StringField(5)
-
-
-class JsonOptions(_messages.Message):
-  r"""Describe JSON data format.
-
-  Fields:
-    disableTypeInference: Optional. Whether to disable the inference of data
-      type for Json data. If true, all columns will be registered as their
-      primitive types (strings, number or boolean).
-    encoding: Optional. The character encoding of the data. The default is
-      UTF-8.
-  """
-
-  disableTypeInference = _messages.BooleanField(1)
-  encoding = _messages.StringField(2)
-
-
-class Lake(_messages.Message):
-  r"""Lake represents a Lake in Dataplex.
-
-  Enums:
-    StateValueValuesEnum: Output only. Current state of the lake.
-
-  Fields:
-    description: Optional. Description of the Lake.
-    displayName: Optional. Use friendly display name.
-    lake: Output only. The relative resource name of the Lake created in
-      Dataplex in
-      `projects/{project_number}/locations/{location_id}/lakes/{lake_id}`
-      format.
-    lakeId: Required. The unique lake_id. The lake will be created using
-      lake_id.
-    location: Required. The physical region where the lake would be located
-      e.g. us-cental1
-    metastore: Optional. Settings to manage Dataplex lake and Dataproc
-      Metastore service instance association.
-    project: Required. The project where the lake would be created.
-    state: Output only. Current state of the lake.
-    uid: Output only. Globally unique ID returned by Dataplex.
-    zones: Required. The Zones to create inside the lake in Dataplex.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the lake.
-
-    Values:
-      STATE_UNSPECIFIED: State is not specified.
-      ACTIVE: Resource is active, i.e., ready to use.
-      CREATING: Resource is under creation.
-      DELETING: Resource is under deletion.
-      ACTION_REQUIRED: Resource is active but has unresolved actions.
-      FAILED: Resource encountered an error.
-      MALFORMED: Resource is in inderministic state.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    CREATING = 2
-    DELETING = 3
-    ACTION_REQUIRED = 4
-    FAILED = 5
-    MALFORMED = 6
-
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  lake = _messages.StringField(3)
-  lakeId = _messages.StringField(4)
-  location = _messages.StringField(5)
-  metastore = _messages.MessageField('Metastore', 6)
-  project = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  zones = _messages.MessageField('Zone', 10, repeated=True)
 
 
 class ListBatchIngestionPipelinesResponse(_messages.Message):
@@ -654,6 +1096,21 @@ class ListDataAssetsResponse(_messages.Message):
   """
 
   dataAssets = _messages.MessageField('DataAsset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListDeploymentsResponse(_messages.Message):
+  r"""Message for response to listing Deployments
+
+  Fields:
+    deployments: The list of Deployment
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  deployments = _messages.MessageField('Deployment', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -852,20 +1309,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class Metastore(_messages.Message):
-  r"""Settings to manage association of Dataproc Metastore with a lake in
-  Dataplex].
-
-  Fields:
-    service: Optional. A relative reference to the Dataproc Metastore
-      (https://cloud.google.com/dataproc-metastore/docs) service associated
-      with the lake:
-      `projects/{project_id}/locations/{location_id}/services/{service_id}`
-  """
-
-  service = _messages.StringField(1)
 
 
 class MetricsCorrelation(_messages.Message):
@@ -1273,46 +1716,6 @@ class PipelineScheduler(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   updateTime = _messages.StringField(5)
-
-
-class PubSubAsset(_messages.Message):
-  r"""Message describing Pub/Sub data asset.
-
-  Fields:
-    topic: Pub/Sub topic of the data asset.
-  """
-
-  topic = _messages.StringField(1)
-
-
-class ResourceSpec(_messages.Message):
-  r"""Settings for resources attached as assets within the zone.
-
-  Enums:
-    LocationTypeValueValuesEnum: Required. Immutable. The location type of the
-      resources that are allowed to be attached to the assets within this
-      zone.
-
-  Fields:
-    locationType: Required. Immutable. The location type of the resources that
-      are allowed to be attached to the assets within this zone.
-  """
-
-  class LocationTypeValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The location type of the resources that are
-    allowed to be attached to the assets within this zone.
-
-    Values:
-      LOCATION_TYPE_UNSPECIFIED: Unspecified location type.
-      SINGLE_REGION: Resources that are associated with a single region.
-      MULTI_REGION: Resources that are associated with a multi-region
-        location.
-    """
-    LOCATION_TYPE_UNSPECIFIED = 0
-    SINGLE_REGION = 1
-    MULTI_REGION = 2
-
-  locationType = _messages.EnumField('LocationTypeValueValuesEnum', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2049,6 +2452,115 @@ class TelecomdatafabricProjectsLocationsDataAssetsPatchRequest(_messages.Message
   """
 
   dataAsset = _messages.MessageField('DataAsset', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class TelecomdatafabricProjectsLocationsDeploymentsCreateRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsDeploymentsCreateRequest object.
+
+  Fields:
+    deployment: A Deployment resource to be passed as the request body.
+    deploymentId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and deployment_id from the
+      method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  deployment = _messages.MessageField('Deployment', 1)
+  deploymentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class TelecomdatafabricProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsDeploymentsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class TelecomdatafabricProjectsLocationsDeploymentsGetRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsDeploymentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelecomdatafabricProjectsLocationsDeploymentsListRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsDeploymentsListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListDeploymentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class TelecomdatafabricProjectsLocationsDeploymentsPatchRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsDeploymentsPatchRequest object.
+
+  Fields:
+    deployment: A Deployment resource to be passed as the request body.
+    name: name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Deployment resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  deployment = _messages.MessageField('Deployment', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -2829,77 +3341,6 @@ class TelecomdatafabricProjectsLocationsStreamIngestionPipelinesPatchRequest(_me
   requestId = _messages.StringField(2)
   streamIngestionPipeline = _messages.MessageField('StreamIngestionPipeline', 3)
   updateMask = _messages.StringField(4)
-
-
-class Zone(_messages.Message):
-  r"""Zone represents a Zone under a Lake, this will be used to create a Zone
-  in Dataplex.
-
-  Enums:
-    StateValueValuesEnum: Output only. Current state of the zone.
-    TypeValueValuesEnum: Required. The type of the zone.
-
-  Fields:
-    description: Optional. Description of the zone.
-    discoverySpec: Optional. Specification of the discovery feature applied to
-      data in this zone.
-    displayName: Optional. User friendly display name.
-    resourceSpec: Required. Specification of the resources that are referenced
-      by the assets within this zone.
-    state: Output only. Current state of the zone.
-    type: Required. The type of the zone.
-    uid: Output only. Globally unique ID returned by the Dataplex.
-    zone: Output only. The relative resource name of the zone created inside
-      lake in Dataplex in the form of `projects/{project_number}/locations/{lo
-      cation_id}/lakes/{lake_id}/zones/{zone_id}`.
-    zoneId: Required. The zone_id to use for creating the zone under the lake.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the zone.
-
-    Values:
-      STATE_UNSPECIFIED: State is not specified.
-      ACTIVE: Resource is active, i.e., ready to use.
-      CREATING: Resource is under creation.
-      DELETING: Resource is under deletion.
-      ACTION_REQUIRED: Resource is active but has unresolved actions.
-      FAILED: Resource encountered an error.
-      MALFORMED: Resource is in inderministic state.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    CREATING = 2
-    DELETING = 3
-    ACTION_REQUIRED = 4
-    FAILED = 5
-    MALFORMED = 6
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the zone.
-
-    Values:
-      TYPE_UNSPECIFIED: Zone type not specified.
-      RAW: A zone that contains data that needs further processing before it
-        is considered generally ready for consumption and analytics workloads.
-      CURATED: A zone that contains data that is considered to be ready for
-        broader consumption and analytics workloads. Curated structured data
-        stored in Cloud Storage must conform to certain file formats (parquet,
-        avro and orc) and organized in a hive-compatible directory layout.
-    """
-    TYPE_UNSPECIFIED = 0
-    RAW = 1
-    CURATED = 2
-
-  description = _messages.StringField(1)
-  discoverySpec = _messages.MessageField('DiscoverySpec', 2)
-  displayName = _messages.StringField(3)
-  resourceSpec = _messages.MessageField('ResourceSpec', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  uid = _messages.StringField(7)
-  zone = _messages.StringField(8)
-  zoneId = _messages.StringField(9)
 
 
 encoding.AddCustomJsonFieldMapping(

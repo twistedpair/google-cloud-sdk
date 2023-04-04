@@ -192,7 +192,85 @@ definitions:
   argument:
     oneOf:
     - $ref: "#/definitions/arg"
+    - $ref: "#/definitions/resource_arg"
     - $ref: "#/definitions/arg_group"
+
+  resource_arg:
+    description: Describes how to generate the resource arg and its flags
+    type: object
+    additionalProperties: false
+    required: [help_text, resource_spec]
+    properties:
+      # The help text for the overall resource arg group.
+      help_text: {type: string}
+      # Set to False to force the anchor resource argument to be a flag
+      # even though it would normally be a positional. This should normally
+      # not be required for well formed API methods.
+      is_positional: {type: boolean}
+      # Set to True if the resource spec is for the parent of the request
+      # collection instead of for the collection itself.  This allows for
+      # create commands that do not require a name for the new resource.
+      # Set the `resource_type` property on `request` to include the
+      # resource type in log messages.
+      is_parent_resource: {type: boolean}
+      # The name to use for the resource arg. If set this is the name that
+      # will be used for the resource arg in the command. If not set,
+      # command will use the name from the spec.
+      arg_name: {type: string}
+      # List of resource arg attributes to not generate flags for. These
+      # attributes will need to have fallthroughs in the resource arg spec
+      # in order to be populated.
+      removed_flags:
+        type: array
+        items: {type: string}
+      # a map of attribute names to a list of fallthroughs *specific to
+      # this command* that will be used if the attribute is not directly
+      # provided on the command line. Anything in this map takes precedence
+      # over what's specified in the resource spec by default.
+      command_level_fallthroughs:
+        type: object
+        patternProperties:
+          .*:
+            type: array
+            items: {$ref: "#/definitions/arg_fallthrough"}
+      # The resource arg specification itself. This corresponds to the
+      # ResourceSpec and ResourceParameterAttributeConfig objects and does
+      # not include anything that would go in a presentation spec. It is
+      # expected that this entire section be imported from a resources.yaml
+      # file in command_lib.
+      # (ex !REF googlecloudsdk.command_lib.pubsub.resources:topic)
+
+      resource_spec:
+        oneOf:
+        # A regular resource arg
+        - $ref: "#/definitions/resource_spec"
+        # A multitype resource arg
+        - $ref: "#/definitions/multitype_resource_spec"
+      # A mapping of method parameter to format string that can include resource reference params(s)
+      # (or '__relative_name__' to use the full resource name or '__resource_id__' for resource id)
+      # for references or APIs that use non-standard naming. For example, if a resource ref has a
+      # project, location, and instance attribute, but the request URI has the structure
+      # /projects/{project}/regions/{region}/instances/{instance}, you would use
+      # resource_method_params:
+      #   region: '{location}'
+      # To map the resource attribute to the correct method parameter.
+      resource_method_params:
+        type: object
+        patternProperties:
+          .*: {type: string}
+      # False if the resource reference should not be auto-parsed into the
+      # request message. NOTE: if you mark this False, you need to add a hook
+      # that handles the result of parsing the resource argument for the
+      # command. For example, if the resource is multi-type, you may want to
+      # define an modify_request_hook that modifies the request based on
+      # the parsed type of the resource.
+      parse_resource_into_request: {type: boolean}
+      # Use ref.RelativeName() if true, ref.Name() otherwise. Default True.
+      use_relative_name: {type: boolean}
+      # If true, will disable validating that the resource arg schema matches the
+      # request method schema. This is useful for API's that have multiple services
+      # (and multiple resource collections) that use the same actual resource objects.
+      override_resource_collection: {type: boolean}
 
   arg:
     required: [help_text]
@@ -330,7 +408,10 @@ definitions:
           # The group arguments.
           params:
             type: array
-            items: {$ref: "#/definitions/argument"}
+            items:
+              oneOf:
+              - $ref: "#/definitions/argument"
+              - $ref: "#/definitions/resource_arg"
             minItems: 1
 
 type: object
@@ -432,6 +513,7 @@ properties:
       # args namespace. The returned string will be the method used to create
       # and issue the request.
       modify_method_hook: {$ref: "#/definitions/python_hook"}
+      # TODO(b/272076207): Remove resource_method_params when surfaces are updated
       # A mapping of method parameter to format string that can include resource reference params(s)
       # (or '__relative_name__' to use the full resource name or '__resource_id__' for resource id)
       # for references or APIs that use non-standard naming. For example, if a resource ref has a
@@ -444,11 +526,12 @@ properties:
         type: object
         patternProperties:
           .*: {type: string}
+      # TODO(b/272076207): Remove parse_resource_into_request when surfaces are updated
       # False if the resource reference should not be auto-parsed into the
       # request message. NOTE: if you mark this False, you need to add a hook
       # that handles the result of parsing the resource argument for the
       # command. For example, if the resource is multi-type, you may want to
-      # define an issue_request_hook that issues different requests based on
+      # define an modify_request_hook that modifies the request based on
       # the parsed type of the resource.
       parse_resource_into_request: {type: boolean}
       # A mapping of request field names to static values to insert into the
@@ -486,6 +569,7 @@ properties:
       # the parsed args namespace. It should create a request, make the
       # API call, and return the response.
       issue_request_hook: {$ref: "#/definitions/python_hook"}
+      # TODO(b/272076207): Remove use_relative_name when surfaces are updated
       # Use ref.RelativeName() if true, ref.Name() otherwise. Default True.
       use_relative_name: {type: boolean}
 
@@ -616,6 +700,7 @@ properties:
       # request.modify_request_hooks to insert something into the request based
       # on these arguments.
       additional_arguments_hook: {$ref: "#/definitions/python_hook"}
+      # TODO(b/272076207): Remove resource when surfaces are updated
       # This section declares how to generate the arguments and flags that
       # correspond to the resource being operated on by this command.
       resource:

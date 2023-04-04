@@ -179,6 +179,91 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class ConsumerPscConfig(_messages.Message):
+  r"""Allow the producer to specify which consumers can connect to it.
+
+  Fields:
+    network: The consumer network where PSC connections are allowed to be
+      created in. Note, this network does not need be in the
+      ConsumerPscConfig.project in the case of SharedVPC.
+    project: The consumer project where PSC connections are allowed to be
+      created in.
+  """
+
+  network = _messages.StringField(1)
+  project = _messages.StringField(2)
+
+
+class ConsumerPscConnection(_messages.Message):
+  r"""PSC connection details on consumer side.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The error type indicates whether the error is
+      consumer facing, producer facing or system internal.
+    StateValueValuesEnum: The state of the PSC connection.
+
+  Fields:
+    error: The most recent error during operating this connection.
+    errorType: The error type indicates whether the error is consumer facing,
+      producer facing or system internal.
+    ip: The IP literal allocated on the consumer network for the PSC
+      forwarding rule that is created to connect to the producer service
+      attachment in this service connection map.
+    network: The consumer network whose PSC forwarding rule is connected to
+      the service attachments in this service connection map. Note that the
+      network could be on a different project (shared VPC).
+    project: The consumer project whose PSC forwarding rule is connected to
+      the service attachments in this service connection map.
+    pscConnectionId: The PSC connection id of the PSC forwarding rule
+      connected to the service attachments in this service connection map.
+    serviceAttachmentUri: The URI of a service attachment which is the target
+      of the PSC connection.
+    state: The state of the PSC connection.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""The error type indicates whether the error is consumer facing,
+    producer facing or system internal.
+
+    Values:
+      CONNECTION_ERROR_TYPE_UNSPECIFIED: An invalid error type as the default
+        case.
+      ERROR_INTERNAL: The error is due to Service Automation system internal.
+      ERROR_CONSUMER_SIDE: The error is due to the setup on consumer side.
+      ERROR_PRODUCER_SIDE: The error is due to the setup on producer side.
+    """
+    CONNECTION_ERROR_TYPE_UNSPECIFIED = 0
+    ERROR_INTERNAL = 1
+    ERROR_CONSUMER_SIDE = 2
+    ERROR_PRODUCER_SIDE = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the PSC connection.
+
+    Values:
+      STATE_UNSPECIFIED: An invalid state as the default case.
+      ACTIVE: The connection is fully established and ready to use.
+      FAILED: The connection is not functional since some resources on the
+        connection fail to be created.
+      CREATING: The connection is being created.
+      DELETING: The connection is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    FAILED = 2
+    CREATING = 3
+    DELETING = 4
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
+  ip = _messages.StringField(3)
+  network = _messages.StringField(4)
+  project = _messages.StringField(5)
+  pscConnectionId = _messages.StringField(6)
+  serviceAttachmentUri = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
 class DeactivateSpokeRequest(_messages.Message):
   r"""The request for HubService.DeactivateSpoke.
 
@@ -911,6 +996,70 @@ class ListRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   routes = _messages.MessageField('Route', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListServiceClassesResponse(_messages.Message):
+  r"""Response for ListServiceClasses.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    serviceClasses: ServiceClasses to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceClasses = _messages.MessageField('ServiceClass', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListServiceConnectionMapsResponse(_messages.Message):
+  r"""Response for ListServiceConnectionMaps.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    serviceConnectionMaps: ServiceConnectionMaps to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceConnectionMaps = _messages.MessageField('ServiceConnectionMap', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListServiceConnectionPoliciesResponse(_messages.Message):
+  r"""Response for ListServiceConnectionPolicies.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    serviceConnectionPolicies: ServiceConnectionPolicies to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceConnectionPolicies = _messages.MessageField('ServiceConnectionPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListServiceConnectionTokensResponse(_messages.Message):
+  r"""Response for ListServiceConnectionTokens.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    serviceConnectionTokens: ServiceConnectionTokens to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceConnectionTokens = _messages.MessageField('ServiceConnectionToken', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1661,6 +1810,59 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
   pageToken = _messages.StringField(4)
 
 
+class NetworkconnectivityProjectsLocationsServiceClassesCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceClassesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the ServiceClass.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceClass: A ServiceClass resource to be passed as the request body.
+    serviceClassId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/serviceClasses/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location. If
+      one is not provided, one will be generated.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceClass = _messages.MessageField('ServiceClass', 3)
+  serviceClassId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsServiceClassesDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceClassesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ServiceClass to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class NetworkconnectivityProjectsLocationsServiceClassesGetIamPolicyRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsServiceClassesGetIamPolicyRequest
   object.
@@ -1686,6 +1888,67 @@ class NetworkconnectivityProjectsLocationsServiceClassesGetIamPolicyRequest(_mes
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceClassesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceClassesGetRequest object.
+
+  Fields:
+    name: Required. Name of the ServiceClass to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceClassesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceClassesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceClassesPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceClassesPatchRequest object.
+
+  Fields:
+    name: Immutable. The name of a ServiceClass resource. Format:
+      projects/{project}/locations/{location}/serviceClasses/{service_class}
+      See: https://google.aip.dev/122#fields-representing-resource-names
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceClass: A ServiceClass resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceClass resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceClass = _messages.MessageField('ServiceClass', 3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsServiceClassesSetIamPolicyRequest(_messages.Message):
@@ -1723,6 +1986,60 @@ class NetworkconnectivityProjectsLocationsServiceClassesTestIamPermissionsReques
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkconnectivityProjectsLocationsServiceConnectionMapsCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionMapsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the ServiceConnectionMap.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceConnectionMap: A ServiceConnectionMap resource to be passed as the
+      request body.
+    serviceConnectionMapId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/serviceConnectionMaps/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location. If
+      one is not provided, one will be generated.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceConnectionMap = _messages.MessageField('ServiceConnectionMap', 3)
+  serviceConnectionMapId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionMapsDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionMapsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ServiceConnectionMap to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class NetworkconnectivityProjectsLocationsServiceConnectionMapsGetIamPolicyRequest(_messages.Message):
   r"""A
   NetworkconnectivityProjectsLocationsServiceConnectionMapsGetIamPolicyRequest
@@ -1749,6 +2066,71 @@ class NetworkconnectivityProjectsLocationsServiceConnectionMapsGetIamPolicyReque
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionMapsGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionMapsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ServiceConnectionMap to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionMapsListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionMapsListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionMapsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionMapsPatchRequest
+  object.
+
+  Fields:
+    name: Immutable. The name of a ServiceConnectionMap. Format: projects/{pro
+      ject}/locations/{location}/serviceConnectionMaps/{service_connection_map
+      } See: https://google.aip.dev/122#fields-representing-resource-names
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceConnectionMap: A ServiceConnectionMap resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceConnectionMap resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceConnectionMap = _messages.MessageField('ServiceConnectionMap', 3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsServiceConnectionMapsSetIamPolicyRequest(_messages.Message):
@@ -1786,6 +2168,62 @@ class NetworkconnectivityProjectsLocationsServiceConnectionMapsTestIamPermission
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesCreateRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionPoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the
+      ServiceConnectionPolicy.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceConnectionPolicy: A ServiceConnectionPolicy resource to be passed
+      as the request body.
+    serviceConnectionPolicyId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/serviceConnectionPolicies/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceConnectionPolicy = _messages.MessageField('ServiceConnectionPolicy', 3)
+  serviceConnectionPolicyId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesDeleteRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionPoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ServiceConnectionPolicy to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetIamPolicyRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetIamPol
   icyRequest object.
@@ -1811,6 +2249,75 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetIamPolicyR
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ServiceConnectionPolicy to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesListRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionPoliciesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesPatchRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionPoliciesPatchRequest
+  object.
+
+  Fields:
+    name: Immutable. The name of a ServiceConnectionPolicy. Format: projects/{
+      project}/locations/{location}/serviceConnectionPolicies/{service_connect
+      ion_policy} See: https://google.aip.dev/122#fields-representing-
+      resource-names
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceConnectionPolicy: A ServiceConnectionPolicy resource to be passed
+      as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceConnectionPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceConnectionPolicy = _messages.MessageField('ServiceConnectionPolicy', 3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesSetIamPolicyRequest(_messages.Message):
@@ -1845,6 +2352,94 @@ class NetworkconnectivityProjectsLocationsServiceConnectionPoliciesTestIamPermis
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionTokensCreateRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionTokensCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the
+      ServiceConnectionToken.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceConnectionToken: A ServiceConnectionToken resource to be passed as
+      the request body.
+    serviceConnectionTokenId: Optional. Resource ID (i.e. 'foo' in
+      '[...]/projects/p/locations/l/ServiceConnectionTokens/foo') See
+      https://google.aip.dev/122#resource-id-segments Unique per location. If
+      one is not provided, one will be generated.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceConnectionToken = _messages.MessageField('ServiceConnectionToken', 3)
+  serviceConnectionTokenId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionTokensDeleteRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsServiceConnectionTokensDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the ServiceConnectionToken to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionTokensGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionTokensGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ServiceConnectionToken to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsServiceConnectionTokensListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsServiceConnectionTokensListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class NetworkconnectivityProjectsLocationsSpokesAcceptRequest(_messages.Message):
@@ -2266,6 +2861,88 @@ class PolicyBasedRoute(_messages.Message):
   warnings = _messages.MessageField('Warnings', 14, repeated=True)
 
 
+class ProducerPscConfig(_messages.Message):
+  r"""The PSC configurations on producer side.
+
+  Fields:
+    serviceAttachmentUri: The URI of a service attachment included in this
+      connection map.
+  """
+
+  serviceAttachmentUri = _messages.StringField(1)
+
+
+class PscConfig(_messages.Message):
+  r"""Configuration used for Private Service Connect connections. Used when
+  Infrastructure is PSC.
+
+  Fields:
+    limit: Max number of PSC connections for this policy.
+    subnetworks: Subnetwork to use for IP address management.
+  """
+
+  limit = _messages.IntegerField(1)
+  subnetworks = _messages.StringField(2, repeated=True)
+
+
+class PscConnection(_messages.Message):
+  r"""Information about a specific Private Service Connect connection.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The error type indicates whether the error is
+      consumer facing, producer facing or system internal.
+    StateValueValuesEnum: State of the PSC Connection
+
+  Fields:
+    consumerAddress: The resource reference of the consumer address.
+    consumerForwardingRule: The resource reference of the PSC Forwarding Rule
+      within the consumer VPC.
+    error: The most recent error during operating this connection.
+    errorType: The error type indicates whether the error is consumer facing,
+      producer facing or system internal.
+    state: State of the PSC Connection
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""The error type indicates whether the error is consumer facing,
+    producer facing or system internal.
+
+    Values:
+      CONNECTION_ERROR_TYPE_UNSPECIFIED: An invalid error type as the default
+        case.
+      ERROR_INTERNAL: The error is due to Service Automation system internal.
+      ERROR_CONSUMER_SIDE: The error is due to the setup on consumer side.
+      ERROR_PRODUCER_SIDE: The error is due to the setup on producer side.
+    """
+    CONNECTION_ERROR_TYPE_UNSPECIFIED = 0
+    ERROR_INTERNAL = 1
+    ERROR_CONSUMER_SIDE = 2
+    ERROR_PRODUCER_SIDE = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the PSC Connection
+
+    Values:
+      STATE_UNSPECIFIED: An invalid state as the default case.
+      ACTIVE: The connection is fully established and ready to use.
+      FAILED: The connection is not functional since some resources on the
+        connection fail to be created.
+      CREATING: The connection is being created.
+      DELETING: The connection is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    FAILED = 2
+    CREATING = 3
+    DELETING = 4
+
+  consumerAddress = _messages.StringField(1)
+  consumerForwardingRule = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
 class RejectSpokeRequest(_messages.Message):
   r"""The request for HubService.RejectSpoke.
 
@@ -2541,6 +3218,275 @@ class RoutingVPC(_messages.Message):
 
   requiredForNewSiteToSiteDataTransferSpokes = _messages.BooleanField(1)
   uri = _messages.StringField(2)
+
+
+class ServiceClass(_messages.Message):
+  r"""The ServiceClass resource. Next id: 8
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the ServiceClass was created.
+    description: A description of this resource.
+    labels: User-defined labels.
+    name: Immutable. The name of a ServiceClass resource. Format:
+      projects/{project}/locations/{location}/serviceClasses/{service_class}
+      See: https://google.aip.dev/122#fields-representing-resource-names
+    serviceClass: Output only. The generated service class name. Use this name
+      to refer to the Service class in Service Connection Maps and Service
+      Connection Policies.
+    serviceConnectionMaps: Output only. URIs of all Service Connection Maps
+      using this service class.
+    updateTime: Output only. Time when the ServiceClass was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  serviceClass = _messages.StringField(5)
+  serviceConnectionMaps = _messages.StringField(6, repeated=True)
+  updateTime = _messages.StringField(7)
+
+
+class ServiceConnectionMap(_messages.Message):
+  r"""The ServiceConnectionMap resource. Next id: 13
+
+  Enums:
+    InfrastructureValueValuesEnum: The infrastructure used for connections
+      between consumers/producers.
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    consumerPscConfigs: The PSC configurations on consumer side.
+    consumerPscConnections: Output only. PSC connection details on consumer
+      side.
+    createTime: Output only. Time when the ServiceConnectionMap was created.
+    description: A description of this resource.
+    infrastructure: The infrastructure used for connections between
+      consumers/producers.
+    labels: User-defined labels.
+    name: Immutable. The name of a ServiceConnectionMap. Format: projects/{pro
+      ject}/locations/{location}/serviceConnectionMaps/{service_connection_map
+      } See: https://google.aip.dev/122#fields-representing-resource-names
+    producerPscConfigs: The PSC configurations on producer side.
+    serviceClass: The service class identifier this ServiceConnectionMap is
+      for.
+    serviceClassUri: Output only. The service class uri this
+      ServiceConnectionMap is for.
+    updateTime: Output only. Time when the ServiceConnectionMap was updated.
+  """
+
+  class InfrastructureValueValuesEnum(_messages.Enum):
+    r"""The infrastructure used for connections between consumers/producers.
+
+    Values:
+      INFRASTRUCTURE_UNSPECIFIED: An invalid infrastructure as the default
+        case.
+      PSC: Private Service Connect is used for connections.
+    """
+    INFRASTRUCTURE_UNSPECIFIED = 0
+    PSC = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consumerPscConfigs = _messages.MessageField('ConsumerPscConfig', 1, repeated=True)
+  consumerPscConnections = _messages.MessageField('ConsumerPscConnection', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  infrastructure = _messages.EnumField('InfrastructureValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  producerPscConfigs = _messages.MessageField('ProducerPscConfig', 8, repeated=True)
+  serviceClass = _messages.StringField(9)
+  serviceClassUri = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class ServiceConnectionPolicy(_messages.Message):
+  r"""The ServiceConnectionPolicy resource. Next id: 11
+
+  Enums:
+    InfrastructureValueValuesEnum: The type of underlying resources used to
+      create the connection.
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the ServiceConnectionMap was created.
+    description: A description of this resource.
+    infrastructure: The type of underlying resources used to create the
+      connection.
+    labels: User-defined labels.
+    name: Immutable. The name of a ServiceConnectionPolicy. Format: projects/{
+      project}/locations/{location}/serviceConnectionPolicies/{service_connect
+      ion_policy} See: https://google.aip.dev/122#fields-representing-
+      resource-names
+    network: The resource path of the consumer network. Example: -
+      projects/{projectNumOrId}/global/networks/{resourceId}. -
+      projects/{projectNumOrId}/locations/global/networks/{resourceId}.
+    pscConfig: Configuration used for Private Service Connect connections.
+      Used when Infrastructure is PSC.
+    pscConnections: Output only. [Output only] Information about each Private
+      Service Connect connection.
+    serviceClass: The service class identifier for which this
+      ServiceConnectionPolicy is for. The service class identifier is a
+      unique, symbolic representation of a ServiceClass. It is provided by the
+      Service Producer. Google services have a prefix of gcp. For example,
+      gcp-cloud-sql. 3rd party services do not. For example, test-
+      service-a3dfcx.
+    updateTime: Output only. Time when the ServiceConnectionMap was updated.
+  """
+
+  class InfrastructureValueValuesEnum(_messages.Enum):
+    r"""The type of underlying resources used to create the connection.
+
+    Values:
+      INFRASTRUCTURE_UNSPECIFIED: An invalid infrastructure as the default
+        case.
+      PSC: Private Service Connect is used for connections.
+    """
+    INFRASTRUCTURE_UNSPECIFIED = 0
+    PSC = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  infrastructure = _messages.EnumField('InfrastructureValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  pscConfig = _messages.MessageField('PscConfig', 7)
+  pscConnections = _messages.MessageField('PscConnection', 8, repeated=True)
+  serviceClass = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class ServiceConnectionToken(_messages.Message):
+  r"""The ServiceConnectionToken resource. Next id: 9
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the ServiceConnectionToken was created.
+    description: A description of this resource.
+    expireTime: Output only. The time to which this token is valid.
+    labels: User-defined labels.
+    name: Immutable. The name of a ServiceConnectionToken. Format: projects/{p
+      roject}/locations/{location}/ServiceConnectionTokens/{service_connection
+      _token} See: https://google.aip.dev/122#fields-representing-resource-
+      names
+    network: The network associated with this token.
+    token: Output only. The token generated by Automation.
+    updateTime: Output only. Time when the ServiceConnectionToken was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  token = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -329,7 +329,7 @@ class DataplexProjectsLocationsDataScansListRequest(_messages.Message):
     orderBy: Optional. Order by fields (name or create_time) for the result.
       If not specified, the ordering is undefined.
     pageSize: Optional. Maximum number of dataScans to return. The service may
-      return fewer than this value. If unspecified, at most 10 scans will be
+      return fewer than this value. If unspecified, at most 500 scans will be
       returned. The maximum value is 1000; values above 1000 will be coerced
       to 1000.
     pageToken: Optional. Page token received from a previous ListDataScans
@@ -3128,9 +3128,12 @@ class GoogleCloudDataplexV1DataProfileResultProfileField(_messages.Message):
       a repeated field.
     name: The name of the field.
     profile: Profile information for the corresponding field.
-    type: The field data type. Possible values include: STRING BYTE INT64
-      INT32 INT16 DOUBLE FLOAT DECIMAL BOOLEAN BINARY TIMESTAMP DATE TIME NULL
-      RECORD
+    type: The data type retrieved from the schema of the data source. For
+      instance, for a BigQuery native table, it is the BigQuery Table Schema (
+      https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#tablefie
+      ldschema). For a Dataplex Entity, it is the Entity Schema (https://cloud
+      .google.com/dataplex/docs/reference/rpc/google.cloud.dataplex.v1#type_3)
+      .
   """
 
   mode = _messages.StringField(1)
@@ -4141,8 +4144,8 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     id: Required. A user-provided entity ID. It is mutable, and will be used
       as the published table name. Specifying a new ID in an update entity
       request will override the existing value. The ID must contain only
-      letters (a-z, A-Z), numbers (0-9), and underscores. Must begin with a
-      letter and consist of 256 or fewer characters.
+      letters (a-z, A-Z), numbers (0-9), and underscores, and consist of 256
+      or fewer characters.
     name: Output only. The resource name of the entity, of the form: projects/
       {project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
       /entities/{id}.

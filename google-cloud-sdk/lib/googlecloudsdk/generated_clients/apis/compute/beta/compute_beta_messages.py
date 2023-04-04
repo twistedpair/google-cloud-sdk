@@ -35693,25 +35693,25 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
-      operating system features.
+      SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE - TDX_CAPABLE For more
+      information, see Enabling guest operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
-      TDX_CAPABLE For more information, see Enabling guest operating system
-      features.
+      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
+      SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
+      operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
-    TDX_CAPABLE For more information, see Enabling guest operating system
-    features.
+    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
+    SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
+    operating system features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -37062,7 +37062,8 @@ class HealthStatus(_messages.Message):
   r"""A HealthStatus object.
 
   Enums:
-    HealthStateValueValuesEnum: Health state of the instance.
+    HealthStateValueValuesEnum: Health state of the IPv4 address of the
+      instance.
     WeightErrorValueValuesEnum:
 
   Messages:
@@ -37073,7 +37074,7 @@ class HealthStatus(_messages.Message):
     forwardingRule: URL of the forwarding rule associated with the health
       status of the instance.
     forwardingRuleIp: A forwarding rule IP address assigned to this instance.
-    healthState: Health state of the instance.
+    healthState: Health state of the IPv4 address of the instance.
     instance: URL of the instance resource.
     ipAddress: For target pool based Network Load Balancing, it indicates the
       forwarding rule's IP address assigned to this instance. For other types
@@ -37085,7 +37086,7 @@ class HealthStatus(_messages.Message):
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
-    r"""Health state of the instance.
+    r"""Health state of the IPv4 address of the instance.
 
     Values:
       HEALTHY: <no description>
@@ -38946,7 +38947,7 @@ class Instance(_messages.Message):
     instance, see Instance life cycle.
 
     Values:
-      DEPROVISIONING: The Nanny is halted and we are performing tear down
+      DEPROVISIONING: The instance is halted and we are performing tear down
         tasks like network deprogramming, releasing quota, IP, tearing down
         disks etc.
       PROVISIONING: Resources are being allocated for the instance.
@@ -42928,7 +42929,7 @@ class InstanceWithNamedPorts(_messages.Message):
     r"""[Output Only] The status of the instance.
 
     Values:
-      DEPROVISIONING: The Nanny is halted and we are performing tear down
+      DEPROVISIONING: The instance is halted and we are performing tear down
         tasks like network deprogramming, releasing quota, IP, tearing down
         disks etc.
       PROVISIONING: Resources are being allocated for the instance.
@@ -46925,7 +46926,7 @@ class ManagedInstance(_messages.Message):
     instance does not exist.
 
     Values:
-      DEPROVISIONING: The Nanny is halted and we are performing tear down
+      DEPROVISIONING: The instance is halted and we are performing tear down
         tasks like network deprogramming, releasing quota, IP, tearing down
         disks etc.
       PROVISIONING: Resources are being allocated for the instance.
@@ -68582,9 +68583,11 @@ class TargetHttpsProxy(_messages.Message):
       networksecurity.ServerTlsPolicy resource that describes how the proxy
       should authenticate inbound traffic. serverTlsPolicy only applies to a
       global TargetHttpsProxy attached to globalForwardingRules with the
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED. If left blank,
-      communications are not encrypted. Note: This field currently has no
-      impact.
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED or EXTERNAL or
+      EXTERNAL_MANAGED. For details which ServerTlsPolicy resources are
+      accepted with INTERNAL_SELF_MANAGED and which with EXTERNAL,
+      EXTERNAL_MANAGED loadBalancingScheme consult ServerTlsPolicy
+      documentation. If left blank, communications are not encrypted.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to

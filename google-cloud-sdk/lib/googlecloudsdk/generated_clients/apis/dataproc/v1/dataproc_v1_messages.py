@@ -1238,6 +1238,61 @@ class DataprocProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DataprocProjectsLocationsSessionTemplatesCreateRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionTemplatesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this session template will be
+      created.
+    sessionTemplate: A SessionTemplate resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  sessionTemplate = _messages.MessageField('SessionTemplate', 2)
+
+
+class DataprocProjectsLocationsSessionTemplatesDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionTemplatesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the session template resource to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsSessionTemplatesGetRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionTemplatesGetRequest object.
+
+  Fields:
+    name: Required. The name of the session template to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsSessionTemplatesListRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionTemplatesListRequest object.
+
+  Fields:
+    filter: Optional. A filter for the session templates to return in the
+      response. Filters are case sensitive and have the following syntax:field
+      = value AND field = value ...
+    pageSize: Optional. The maximum number of sessions to return in each
+      response. The service may return fewer than this value.
+    pageToken: Optional. A page token received from a previous ListSessions
+      call. Provide this token to retrieve the subsequent page.
+    parent: Required. The parent, which owns this collection of session
+      templates.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class DataprocProjectsLocationsSessionsCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsSessionsCreateRequest object.
 
@@ -4366,6 +4421,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListSessionTemplatesResponse(_messages.Message):
+  r"""A list of session templates.
+
+  Fields:
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    sessionTemplates: Output only. Session template list
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sessionTemplates = _messages.MessageField('SessionTemplate', 2, repeated=True)
+
+
 class ListSessionsResponse(_messages.Message):
   r"""A list of interactive sessions.
 
@@ -5512,7 +5580,7 @@ class ResizeNodeGroupRequest(_messages.Message):
 
   Fields:
     gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
-      decomissioning. Graceful decommissioning
+      decommissioning. Graceful decommissioning
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/scaling-clusters#graceful_decommissioning) allows the removal
       of nodes from the Compute Engine node group without interrupting jobs in
@@ -5867,6 +5935,79 @@ class SessionStateHistory(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 1)
   stateMessage = _messages.StringField(2)
   stateStartTime = _messages.StringField(3)
+
+
+class SessionTemplate(_messages.Message):
+  r"""A representation of a session template in the service.
+
+  Messages:
+    LabelsValue: Optional. The labels to associate with sessions created using
+      this template. Label keys must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). Label values
+      may be empty, but, if present, must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than
+      32 labels can be associated with a session.
+
+  Fields:
+    createTime: Output only. The time when the template was created.
+    creator: Output only. The email address of the user who created the
+      template.
+    environmentConfig: Optional. Environment configuration for session
+      execution.
+    jupyterSession: Optional. Jupyter session config.
+    labels: Optional. The labels to associate with sessions created using this
+      template. Label keys must contain 1 to 63 characters, and must conform
+      to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). Label values may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than
+      32 labels can be associated with a session.
+    name: Required. The resource name of the session template.
+    runtimeConfig: Optional. Runtime configuration for session execution.
+    spark: Optional. Spark engine config.
+    updateTime: Output only. The time template was last updated.
+    uuid: Output only. A session template UUID (Unique Universal Identifier).
+      The service generates this value when it creates the session template.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to associate with sessions created using this
+    template. Label keys must contain 1 to 63 characters, and must conform to
+    RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). Label values may be
+    empty, but, if present, must contain 1 to 63 characters, and must conform
+    to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels
+    can be associated with a session.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  creator = _messages.StringField(2)
+  environmentConfig = _messages.MessageField('EnvironmentConfig', 3)
+  jupyterSession = _messages.MessageField('JupyterConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
+  spark = _messages.MessageField('SparkConfig', 8)
+  updateTime = _messages.StringField(9)
+  uuid = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -6372,7 +6513,7 @@ class SparkStandaloneAutoscalingConfig(_messages.Message):
   Fields:
     gracefulDecommissionTimeout: Required. Timeout for Spark graceful
       decommissioning of spark workers. Specifies the duration to wait for
-      spark worker to complete spark decomissioning tasks before forcefully
+      spark worker to complete spark decommissioning tasks before forcefully
       removing workers. Only applicable to downscaling operations.Bounds: 0s,
       1d.
     scaleDownFactor: Required. Fraction of required executors to remove from

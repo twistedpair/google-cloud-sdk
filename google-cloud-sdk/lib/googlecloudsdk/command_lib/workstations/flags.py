@@ -483,3 +483,20 @@ def AddSshArgsAndUserField(parser):
   help_text = """\
   Flags and positionals passed to the underlying ssh implementation."""
   parser.add_argument('ssh_args', nargs=argparse.REMAINDER, help=help_text)
+
+
+def AddEncryptionKeyFields(parser):
+  """Adds the --kms-key and --kms-key-service-account flags to the given parser."""
+  group = parser.add_group(help='Encryption key settings')
+
+  help_text = """\
+  The customer-managed encryption key to use for this config. If not specified,
+  a Google-managed encryption key is used.
+  """
+  group.add_argument('--kms-key', type=str, help=help_text, required=True)
+
+  help_text = """\
+  The service account associated with the provided customer-managed encryption
+  key.
+  """
+  group.add_argument('--kms-key-service-account', type=str, help=help_text)

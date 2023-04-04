@@ -22,6 +22,7 @@ import enum
 import os
 import re
 
+from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
@@ -49,11 +50,12 @@ _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 def get_container_or_container_create_location_resource(path):
   """Returns container or UnknownResource if found nothing. Errors otherwise."""
   path_with_wildcard_trailing_delimiter = (
-      storage_url.storage_url_from_string(path).join('').object_name
+      storage_url.storage_url_from_string(path).join('').versionless_url_string
   )
   resource_iterator = wildcard_iterator.get_wildcard_iterator(
       path_with_wildcard_trailing_delimiter,
       fields_scope=cloud_api.FieldsScope.SHORT,
+      get_bucket_metadata=True,
   )
   plurality_checkable_resource_iterator = (
       plurality_checkable_iterator.PluralityCheckableIterator(resource_iterator)
@@ -127,6 +129,14 @@ def get_hashed_list_file_path(list_file_name, chunk_number=None):
   )
 
 
+def try_to_delete_file(path):
+  """Tries to delete file and debug logs instead of failing on error."""
+  try:
+    os.remove(path)
+  except Exception as e:  # pylint:disable=broad-except
+    log.debug('Failed to delete file {}: {}'.format(path, e))
+
+
 def get_csv_line_from_resource(resource):
   """Builds a line for files listing the contents of the source and destination.
 
@@ -188,7 +198,8 @@ def parse_csv_line_to_resource(line):
       mode_base_eight_string,
       crc32c_string,
       md5_string,
-  ) = line.split(',')
+  ) = line.rstrip().split(',')
+
   url_object = storage_url.storage_url_from_string(url_string)
   if isinstance(url_object, storage_url.FileUrl):
     return resource_reference.FileObjectResource(url_object)
@@ -353,6 +364,21 @@ class _IterateResource(enum.Enum):
   BOTH = 'both'
 
 
+def _maybe_get_full_source_metadata(source_object, destination_object):
+  """Gets full source metadata for cloud-to-cloud copies."""
+  if isinstance(source_object.storage_url, storage_url.CloudUrl) and isinstance(
+      destination_object.storage_url, storage_url.CloudUrl
+  ):
+    # TODO(b/267498851): Set fields_scope to full if preserving POSIX.
+    return api_factory.get_api(
+        source_object.storage_url.scheme
+    ).get_object_metadata(
+        source_object.storage_url.bucket_name,
+        source_object.storage_url.object_name,
+    )
+  return source_object
+
+
 def _compare_equal_urls_to_get_task_and_iteration_instruction(
     user_request_args,
     source_object,
@@ -389,7 +415,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     # POSIX info to upload tasks to avoid an `os.stat` call.
     return (
         copy_task_factory.get_copy_task(
-            source_object,
+            _maybe_get_full_source_metadata(source_object, destination_object),
             destination_object,
             user_request_args=user_request_args,
         ),
@@ -435,8 +461,8 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
   return (None, _IterateResource.BOTH)
 
 
-def _get_comparison_url(object_resource, container_resource):
-  """Gets URL to compare to decide if resources are the same."""
+def _get_url_string_minus_base_container(object_resource, container_resource):
+  """Removes container URL prefix from object URL."""
   container_url = container_resource.storage_url
   container_url_string_with_trailing_delimiter = container_url.join(
       ''
@@ -447,16 +473,40 @@ def _get_comparison_url(object_resource, container_resource):
   ):
     raise errors.Error(
         'Received container {} that does not contain object {}.'.format(
-            container_resource, object_resource
+            container_url_string_with_trailing_delimiter, object_url_string
         )
     )
-  containerless_object_url_string = object_url_string[
-      len(container_url_string_with_trailing_delimiter) :
-  ]
+  return object_url_string[len(container_url_string_with_trailing_delimiter) :]
+
+
+def _get_comparison_url(object_resource, container_resource):
+  """Gets URL to compare to decide if resources are the same."""
+  containerless_object_url_string = _get_url_string_minus_base_container(
+      object_resource, container_resource
+  )
   # Standardizes Windows URLs.
   return containerless_object_url_string.replace(
-      container_url.delimiter, storage_url.CLOUD_URL_DELIMITER
+      container_resource.storage_url.delimiter, storage_url.CLOUD_URL_DELIMITER
   )
+
+
+def _get_copy_destination_resource(
+    source_object, source_container, destination_container
+):
+  """Gets destination resource needed for copy tasks."""
+  containerless_source_string = _get_url_string_minus_base_container(
+      source_object, source_container
+  )
+  destination_delimited_containerless_source_string = (
+      containerless_source_string.replace(
+          source_object.storage_url.delimiter,
+          destination_container.storage_url.delimiter,
+      )
+  )
+  new_destination_object_url = destination_container.storage_url.join(
+      destination_delimited_containerless_source_string
+  )
+  return resource_reference.UnknownResource(new_destination_object_url)
 
 
 def _get_task_and_iteration_instruction(
@@ -528,8 +578,12 @@ def _get_task_and_iteration_instruction(
   if not destination_object:
     return (
         copy_task_factory.get_copy_task(
-            source_object,
-            destination_container,
+            _maybe_get_full_source_metadata(
+                source_object, destination_container
+            ),
+            _get_copy_destination_resource(
+                source_object, source_container, destination_container
+            ),
             user_request_args=user_request_args,
         ),
         _IterateResource.SOURCE,
@@ -542,8 +596,10 @@ def _get_task_and_iteration_instruction(
   if source_url < destination_url:
     return (
         copy_task_factory.get_copy_task(
-            source_object,
-            destination_container,
+            _maybe_get_full_source_metadata(source_object, destination_object),
+            _get_copy_destination_resource(
+                source_object, source_container, destination_container
+            ),
             user_request_args=user_request_args,
         ),
         _IterateResource.SOURCE,
@@ -601,7 +657,8 @@ def get_operation_iterator(
           delete_unmatched_destination_objects,
           skip_if_destination_has_later_modification_time,
       )
-      yield task
+      if task:
+        yield task
       if iteration_instruction in (
           _IterateResource.SOURCE,
           _IterateResource.BOTH,

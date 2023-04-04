@@ -37,6 +37,16 @@ def AddDisplayNameFlag(parser):
   parser.add_argument('--display-name', help=help_text)
 
 
+def AddDatabaseParamsFlags(parser):
+  """Adds the database connectivity flags to the given parser."""
+
+  database_params_group = parser.add_group(required=False, mutex=False)
+  AddUsernameFlag(database_params_group, required=True)
+  AddPasswordFlagGroup(database_params_group, required=True)
+  AddHostFlag(database_params_group, required=True)
+  AddPortFlag(database_params_group, required=True)
+
+
 def AddUsernameFlag(parser, required=False):
   """Adds a --username flag to the given parser."""
   help_text = """\
@@ -143,10 +153,21 @@ def AddInstanceFlag(parser, required=False):
 def AddCloudSQLInstanceFlag(parser, required=False):
   """Adds --cloudsql-instance flag to the given parser."""
   help_text = """\
-    If the source is a Cloud SQL database, use this field to provide the Cloud
-    SQL instance ID of the source.
+    If the source or destination is a Cloud SQL database, then use this field
+    to provide the respective Cloud SQL instance ID.
   """
   parser.add_argument('--cloudsql-instance', help=help_text, required=required)
+
+
+def AddAlloydbClusterFlag(parser, required=False):
+  """Adds the --alloydb-cluster flag to the given parser."""
+  help_text = """\
+    If the destination is an AlloyDB cluster, use this field to provide the
+    AlloyDB cluster ID.
+  """
+  parser.add_argument(
+      '--alloydb-cluster', help=help_text, required=required, hidden=True
+  )
 
 
 def AddProviderFlag(parser):

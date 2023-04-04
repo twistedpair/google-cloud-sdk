@@ -32,8 +32,9 @@ def Run(args, release_track):
   function_ref = args.CONCEPTS.name.Parse()
   function_relative_name = function_ref.RelativeName()
 
-  prompt_message = 'Function [{0}] will be deleted.'.format(
-      function_relative_name)
+  prompt_message = '2nd gen function [{0}] will be deleted.'.format(
+      function_relative_name
+  )
   if not console_io.PromptContinue(message=prompt_message):
     raise exceptions.FunctionsError('Deletion aborted by user.')
 

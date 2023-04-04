@@ -56,7 +56,6 @@ def AddSnapshotDeleteArgs(parser):
   ]).AddToParser(parser)
   AddSnapshotVolumeArg(parser)
   flags.AddResourceAsyncFlag(parser)
-  flags.AddResourceDescriptionArg(parser, 'Snapshot')
 
 
 def AddSnapshotUpdateArgs(parser):

@@ -45,6 +45,7 @@ from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
 from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.functions import secrets_config
+from googlecloudsdk.command_lib.functions.v2 import deploy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util import gcloudignore
@@ -675,28 +676,9 @@ def _GetEventTrigger(args, messages, existing_function):
     updated_fields_set = updated_fields_set.union(retry_updated_field)
 
   if event_trigger and trigger_types.IsPubsubType(event_trigger.eventType):
-    pubsub_sa = 'service-{}@gcp-sa-pubsub.iam.gserviceaccount.com'.format(
-        projects_util.GetProjectNumber(api_util.GetProject())
-    )
-    if not api_util.HasRoleBinding(pubsub_sa, 'roles/pubsub.serviceAgent'):
-      api_util.PromptToBindRoleIfMissing(
-          pubsub_sa,
-          'roles/iam.serviceAccountTokenCreator',
-          reason=(
-              'Pub/Sub needs this role to create identity tokens. '
-              'For more details, please see '
-              'https://cloud.google.com/pubsub/docs/push#authentication'
-          ),
-      )
-
+    deploy_util.ensure_pubsub_sa_has_token_creator_role()
   if event_trigger and trigger_types.IsAuditLogType(event_trigger.eventType):
-    service_filter = [
-        f for f in event_trigger.eventFilters if f.attribute == 'serviceName'
-    ]
-    if service_filter:
-      service = service_filter[0].value
-      if not api_util.HasDataAccessAuditLogsFullyEnabled(service):
-        api_util.PromptToEnableDataAccessAuditLogs(service)
+    deploy_util.ensure_data_access_logs_are_enabled(event_trigger.eventFilters)
 
   return event_trigger, updated_fields_set
 

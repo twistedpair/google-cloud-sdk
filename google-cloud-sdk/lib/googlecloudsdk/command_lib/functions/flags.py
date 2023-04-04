@@ -290,14 +290,19 @@ def AddBuildpackStackFlag(parser):
   parser.add_argument('--buildpack-stack', type=str, help=help_text)
 
 
-def AddGen2Flag(parser):
+def AddGen2Flag(parser, operates_on_existing_function=True):
   """Add the --gen2 flag."""
   help_text = (
-      'If enabled, this command will use Cloud Functions (Second generation). '
-      'If disabled, Cloud Functions (First generation) will be used. If not '
-      'specified, the value of this flag will be taken from the '
-      '`functions/gen2` configuration property.'
+      'If enabled, this command will use Cloud Functions (Second generation).'
+      ' If disabled with `--no-gen2`, Cloud Functions (First generation) will'
+      ' be used. If not specified, the value of this flag will be taken from'
+      ' the `functions/gen2` configuration property.'
   )
+  if operates_on_existing_function:
+    help_text += (
+        ' If the `functions/gen2` configuration property is not set, defaults'
+        ' to looking up the given function and using its generation.'
+    )
   parser.add_argument(
       '--gen2',
       default=False,
@@ -307,7 +312,15 @@ def AddGen2Flag(parser):
 
 
 def ShouldUseGen2():
+  """Returns whether 2nd gen should be used for Cloud Functions."""
   return bool(properties.VALUES.functions.gen2.GetBool())
+
+
+def ShouldUseGen1():
+  """Returns whether 1st gen should be used for Cloud Functions."""
+  return (
+      properties.VALUES.functions.gen2.IsExplicitlySet() and not ShouldUseGen2()
+  )
 
 
 def ShouldEnsureAllUsersInvoke(args):

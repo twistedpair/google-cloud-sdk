@@ -94,7 +94,7 @@ def Create(app_profile_ref,
     app_profile_ref: A resource reference of the new app profile.
     cluster: string, The cluster id for the new app profile to route to using
       single cluster routing.
-    description: string, A description of the app profile.
+    description: string, A description of the new app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
       clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster ids for the new app profile to
@@ -186,14 +186,14 @@ def Update(app_profile_ref,
     description: string, A description of the app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
       clusters, instead of single cluster.
-    restrict_to: list[string] The list of cluster IDs for the new app profile to
+    restrict_to: list[string] The list of cluster IDs for the app profile to
       route to using multi cluster routing.
     failover_radius: string, Restricts clusters that requests can fail over to
       by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
       writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
-    priority: string, The request priority of the new app profile.
+    priority: string, The request priority of the app profile.
 
   Raises:
     ConflictingArgumentsException:

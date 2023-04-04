@@ -219,10 +219,14 @@ class AlphaStoragePoolsAdapter(object):
 
   def UpdateStoragePool(self, storagepool_ref, storagepool_config, update_mask):
     """Send a Patch request for the Cloud NetApp Storage Pool."""
-    update_request = self.messages.NetappProjectsLocationsStoragePoolsPatchRequest(
-        storagePool=storagepool_config,
-        name=storagepool_ref.RelativeName(),
-        updateMask=update_mask)
+    update_request = (
+        self.messages.NetappProjectsLocationsStoragePoolsPatchRequest(
+            storagePool=storagepool_config,
+            name=storagepool_ref.RelativeName(),
+            updateMask=update_mask,
+        )
+    )
     update_op = self.client.projects_locations_storagePools.Patch(
-        update_request)
+        update_request
+    )
     return update_op

@@ -106,6 +106,50 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICECLASSES = (
+      'projects.locations.serviceClasses',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/serviceClasses/'
+              '{serviceClassesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICECONNECTIONMAPS = (
+      'projects.locations.serviceConnectionMaps',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceConnectionMaps/{serviceConnectionMapsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICECONNECTIONPOLICIES = (
+      'projects.locations.serviceConnectionPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceConnectionPolicies/{serviceConnectionPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICECONNECTIONTOKENS = (
+      'projects.locations.serviceConnectionTokens',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceConnectionTokens/{serviceConnectionTokensId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SPOKES = (
       'projects.locations.spokes',
       '{+name}',

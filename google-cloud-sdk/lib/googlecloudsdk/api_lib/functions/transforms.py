@@ -71,7 +71,7 @@ def _TransformState(data, undefined=''):
   return undefined
 
 
-def TransformTrigger(data, undefined=''):
+def _TransformTrigger(data, undefined=''):
   """Returns textual information about functions trigger.
 
   Args:
@@ -170,14 +170,46 @@ def _TransformEnvironments(data):
   return ', '.join(generations)
 
 
+def _TransformUpgradeState(data, undefined=''):
+  """Returns Cloud Functions upgrade state.
+
+  Upgrade state will only be available for gen1 functions which meet the upgrade
+  criteria
+
+  Args:
+    data: JSON-serializable 1st and 2nd gen Functions objects in V2 resource
+      format.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    String representing upgrade state.
+  """
+  if 'upgradeInfo' in data and data['upgradeInfo'] is not None:
+    return data['upgradeInfo'].get('upgradeState', undefined)
+  return undefined
+
+
 _TRANSFORMS = {
-    'trigger': TransformTrigger,
+    'trigger': _TransformTrigger,
     'state': _TransformState,
     'generation': _TransformGeneration,
     'environments': _TransformEnvironments,
 }
 
 
+_TRANSFORMS_ALPHA = {
+    'trigger': _TransformTrigger,
+    'state': _TransformState,
+    'generation': _TransformGeneration,
+    'environments': _TransformEnvironments,
+    'upgradestate': _TransformUpgradeState,
+}
+
+
 def GetTransforms():
   """Returns the functions specific resource transform symbol table."""
   return _TRANSFORMS
+
+
+def GetTransformsAlpha():
+  return _TRANSFORMS_ALPHA

@@ -381,8 +381,7 @@ class InterconnectAttachment(object):
   def Describe(self, only_generate_request=False):
     requests = [self._MakeDescribeRequestTuple()]
     if not only_generate_request:
-      resources = self._compute_client.MakeRequests(requests,
-                                                    enable_single_request=True)
+      resources = self._compute_client.MakeRequests(requests)
       return resources[0]
     return requests
 

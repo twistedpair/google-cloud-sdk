@@ -18,12 +18,375 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
+from googlecloudsdk.api_lib.container.gkeonprem import update_mask
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
 
 
-class StandaloneClustersClient(client.ClientBase):
-  """Client for clusters in gkeonprem bare metal API."""
+class _BareMetalStandaloneClusterClient(client.ClientBase):
+  """Base class for GKE OnPrem Bare Metal Standalone API clients."""
+
+  def _sr_iov_config_enabled(self, args):
+    if 'enable_sr_iov_config' in args.GetSpecifiedArgsDict():
+      return True
+    elif 'disable_sr_iov_config' in args.GetSpecifiedArgsDict():
+      return False
+    else:
+      return None
+
+  def _sr_iov_config(self, args):
+    """Constructs proto message BareMetalStandaloneSrIovConfig."""
+    kwargs = {
+        'enabled': self._sr_iov_config_enabled(args),
+    }
+
+    if self.IsSet(kwargs):
+      return self._messages.BareMetalStandaloneSrIovConfig(**kwargs)
+
+    return None
+
+  def _island_mode_cidr_config(self, args):
+    """Constructs proto message BareMetalStandaloneIslandModeCidrConfig."""
+    kwargs = {
+        'serviceAddressCidrBlocks': getattr(
+            args, 'island_mode_service_address_cidr_blocks', []
+        ),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneIslandModeCidrConfig(**kwargs)
+
+    return None
+
+  def _network_config(self, args):
+    """Constructs proto message BareMetalStandaloneNetworkConfig."""
+    kwargs = {
+        'islandModeCidr': self._island_mode_cidr_config(args),
+        'srIovConfig': self._sr_iov_config(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneNetworkConfig(**kwargs)
+
+    return None
+
+  def parse_node_labels(self, node_labels):
+    """Validates and parses a node label object.
+
+    Args:
+      node_labels: str of key-val pairs separated by ';' delimiter.
+
+    Returns:
+      If label is valid, returns a dict mapping message LabelsValue to its
+      value, otherwise, raise ArgumentTypeError.
+      For example,
+      {
+          'key': LABEL_KEY
+          'value': LABEL_VALUE
+      }
+    """
+    if not node_labels.get('labels'):
+      return None
+
+    input_node_labels = node_labels.get('labels', '').split(';')
+    additional_property_messages = []
+
+    for label in input_node_labels:
+      key_val_pair = label.split('=')
+      if len(key_val_pair) != 2:
+        raise arg_parsers.ArgumentTypeError(
+            'Node Label [{}] not in correct format, expect KEY=VALUE.'.format(
+                input_node_labels
+            )
+        )
+      additional_property_messages.append(
+          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+              key=key_val_pair[0], value=key_val_pair[1]
+          )
+      )
+
+    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+        additionalProperties=additional_property_messages
+    )
+
+    return labels_value_message
+
+  def node_config(self, node_config_args):
+    """Constructs proto message BareMetalNodeConfig."""
+    kwargs = {
+        'nodeIp': node_config_args.get('node-ip', ''),
+        'labels': self.parse_node_labels(node_config_args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalNodeConfig, kwargs
+    )
+
+  def _node_labels(self, labels):
+    """Constructs proto message LabelsValue."""
+    additional_property_messages = []
+    if not labels:
+      return None
+
+    for key, value in labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+
+    labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
+        additionalProperties=additional_property_messages
+    )
+
+    return labels_value_message
+
+  def _control_plane_node_config(self, control_plane_node_config):
+    """Constructs proto message BareMetalNodeConfig."""
+    node_ip = control_plane_node_config.get('nodeIP', '')
+    if not node_ip:
+      raise exceptions.BadArgumentException(
+          '--control_plane_node_configs_from_file',
+          'Missing field [nodeIP] in Control Plane Node configs file.',
+      )
+
+    kwargs = {
+        'nodeIp': node_ip,
+        'labels': self._node_labels(
+            control_plane_node_config.get('labels', {})
+        ),
+    }
+
+    return self._messages.BareMetalNodeConfig(**kwargs)
+
+  def _control_plane_node_configs_from_file(self, args):
+    """Constructs proto message field node_configs."""
+    if not args.control_plane_node_configs_from_file:
+      return []
+
+    control_plane_node_configs = args.control_plane_node_configs_from_file.get(
+        'nodeConfigs', []
+    )
+
+    if not control_plane_node_configs:
+      raise exceptions.BadArgumentException(
+          '--control_plane_node_configs_from_file',
+          'Missing field [nodeConfigs] in Control Plane Node configs file.',
+      )
+
+    control_plane_node_configs_messages = []
+    for control_plane_node_config in control_plane_node_configs:
+      control_plane_node_configs_messages.append(
+          self._control_plane_node_config(control_plane_node_config)
+      )
+
+    return control_plane_node_configs_messages
+
+  def _control_plane_node_configs_from_flag(self, args):
+    """Constructs proto message field node_configs."""
+    node_configs = []
+    node_config_flag_value = getattr(args, 'control_plane_node_configs', None)
+    if node_config_flag_value:
+      for node_config in node_config_flag_value:
+        node_configs.append(self.node_config(node_config))
+
+    return node_configs
+
+  def _control_plane_node_taints(self, args):
+    """Constructs proto message NodeTaint."""
+    taint_messages = []
+    node_taints = getattr(args, 'control_plane_node_taints', {})
+    if not node_taints:
+      return []
+
+    for node_taint in node_taints.items():
+      taint_object = self._parse_node_taint(node_taint)
+      taint_messages.append(self._messages.NodeTaint(**taint_object))
+
+    return taint_messages
+
+  def _control_plane_node_labels(self, args):
+    """Constructs proto message LabelsValue."""
+    node_labels = getattr(args, 'control_plane_node_labels', {})
+    additional_property_messages = []
+    if not node_labels:
+      return None
+
+    for key, value in node_labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+
+    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+        additionalProperties=additional_property_messages
+    )
+
+    return labels_value_message
+
+  def _node_pool_config(self, args):
+    """Constructs proto message BareMetalNodePoolConfig."""
+    if 'control_plane_node_configs_from_file' in args.GetSpecifiedArgsDict():
+      node_configs = self._control_plane_node_configs_from_file(args)
+    else:
+      node_configs = self._control_plane_node_configs_from_flag(args)
+
+    kwargs = {
+        'nodeConfigs': node_configs,
+        'labels': self._control_plane_node_labels(args),
+        'taints': self._control_plane_node_taints(args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalNodePoolConfig, kwargs
+    )
+
+  def _control_plane_node_pool_config(self, args):
+    """Constructs proto message BareMetalStandaloneControlPlaneNodePoolConfig."""
+    kwargs = {
+        'nodePoolConfig': self._node_pool_config(args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneControlPlaneNodePoolConfig, kwargs
+    )
+
+  def _api_server_args(self, args):
+    """Constructs proto message BareMetalStandaloneApiServerArgument."""
+    api_server_args = []
+    api_server_args_flag_value = getattr(args, 'api_server_args', None)
+    if api_server_args_flag_value:
+      for key, val in api_server_args_flag_value.items():
+        api_server_args.append(
+            self._messages.BareMetalStandaloneApiServerArgument(
+                argument=key, value=val
+            )
+        )
+
+    return api_server_args
+
+  def _control_plane_config(self, args):
+    """Constructs proto message BareMetalStandaloneControlPlaneConfig."""
+    kwargs = {
+        'controlPlaneNodePoolConfig': self._control_plane_node_pool_config(
+            args
+        ),
+        'apiServerArgs': self._api_server_args(args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneControlPlaneConfig, kwargs
+    )
+
+  def _cluster_operations_config(self, args):
+    """Constructs proto message BareMetalStandaloneClusterOperationsConfig."""
+    kwargs = {
+        'enableApplicationLogs': getattr(args, 'enable_application_logs', None),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneClusterOperationsConfig, kwargs
+    )
+
+  def _maintenance_config(self, args):
+    """Constructs proto message BareMetalStandaloneMaintenanceConfig."""
+    kwargs = {
+        'maintenanceAddressCidrBlocks': getattr(
+            args, 'maintenance_address_cidr_blocks', []
+        ),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneMaintenanceConfig, kwargs
+    )
+
+  # TODO(b/257292798): Move to common directory
+  def _cluster_users(self, args):
+    """Constructs repeated proto message ClusterUser."""
+    cluster_user_messages = []
+    admin_users = getattr(args, 'admin_users', None)
+    if admin_users:
+      return [
+          self._messages.ClusterUser(username=admin_user)
+          for admin_user in admin_users
+      ]
+
+    # On update, skip setting default value.
+    if args.command_path[-1] == 'update':
+      return None
+
+    # On create, client side default admin user to the current gcloud user.
+    gcloud_config_core_account = properties.VALUES.core.account.Get()
+    if gcloud_config_core_account:
+      default_admin_user_message = self._messages.ClusterUser(
+          username=gcloud_config_core_account
+      )
+      return cluster_user_messages.append(default_admin_user_message)
+
+    return None
+
+  def _authorization(self, args):
+    """Constructs proto message Authorization."""
+    kwargs = {
+        'adminUsers': self._cluster_users(args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.Authorization, kwargs
+    )
+
+  def _security_config(self, args):
+    """Constructs proto message BareMetalStandaloneSecurityConfig."""
+    kwargs = {
+        'authorization': self._authorization(args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneSecurityConfig, kwargs
+    )
+
+  def _node_access_config(self, args):
+    """Constructs proto message BareMetalStandaloneNodeAccessConfig."""
+    kwargs = {
+        'loginUser': getattr(args, 'login_user', 'root'),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneNodeAccessConfig, kwargs
+    )
+
+  def _bare_metal_standalone_cluster(self, args):
+    """Constructs proto message Bare Metal Standalone Cluster."""
+    kwargs = {
+        'name': self._standalone_cluster_name(args),
+        'description': getattr(args, 'description', None),
+        'bareMetalVersion': getattr(args, 'version', None),
+        'networkConfig': self._network_config(args),
+        'controlPlane': self._control_plane_config(args),
+        'clusterOperations': self._cluster_operations_config(args),
+        'maintenanceConfig': self._maintenance_config(args),
+        'securityConfig': self._security_config(args),
+        'nodeAccessConfig': self._node_access_config(args),
+    }
+
+    return self._set_config_if_exists(
+        self._messages.BareMetalStandaloneCluster, kwargs
+    )
+
+  def _set_config_if_exists(self, config_type, kwargs):
+    if any(kwargs.values()):
+      return config_type(**kwargs)
+    else:
+      return None
+
+
+class StandaloneClustersClient(_BareMetalStandaloneClusterClient):
+  """Client for clusters in gkeonprem bare metal standalone API."""
 
   def __init__(self, **kwargs):
     super(StandaloneClustersClient, self).__init__(**kwargs)
@@ -66,3 +429,53 @@ class StandaloneClustersClient(client.ClientBase):
 
     return self._service.Enroll(req)
 
+  def Unenroll(self, args):
+    """Unenrolls an Anthos on bare metal standalone cluster."""
+    kwargs = {
+        'name': self._standalone_cluster_name(args),
+        'force': getattr(args, 'force', None),
+        'allowMissing': getattr(args, 'allow_missing', None),
+    }
+    req = self._messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest(
+        **kwargs
+    )
+
+    return self._service.Unenroll(req)
+
+  def QueryVersionConfig(self, args):
+    """Query Anthos on bare metal standalone cluster version configuration."""
+    kwargs = {
+        'upgradeConfig_clusterName': self._standalone_cluster_name(args),
+        'parent': self._location_ref(args).RelativeName(),
+    }
+
+    # This is a workaround for the limitation in apitools with nested messages.
+    encoding.AddCustomJsonFieldMapping(
+        self._messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersQueryVersionConfigRequest,
+        'upgradeConfig_clusterName',
+        'upgradeConfig.clusterName',
+    )
+
+    req = self._messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersQueryVersionConfigRequest(
+        **kwargs
+    )
+    return self._service.QueryVersionConfig(req)
+
+  def Update(self, args):
+    """Updates an Anthos on bare metal standalone cluster."""
+    kwargs = {
+        'name': self._standalone_cluster_name(args),
+        'allowMissing': getattr(args, 'allow_missing', None),
+        'updateMask': update_mask.get_update_mask(
+            args, update_mask.BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS
+        ),
+        'validateOnly': getattr(args, 'validate_only', False),
+        'bareMetalStandaloneCluster': self._bare_metal_standalone_cluster(args),
+    }
+    req = (
+        self._messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersPatchRequest(
+            **kwargs
+        )
+    )
+
+    return self._service.Patch(req)

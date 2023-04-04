@@ -21,17 +21,14 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import update
+from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.command_lib.util.args import labels_util
-from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
-import six
 
 
 class Error(Exception):
@@ -95,22 +92,55 @@ class DeclarativeArgumentGenerator(object):
   will only be generated for API fields for which attributes were provided.
   """
 
-  def __init__(self, method, arg_info, resource_arg, collection):
+  def __init__(self, method, arg_info):
     """Creates a new Argument Generator.
 
     Args:
       method: APIMethod, The method to generate arguments for.
-      arg_info: [yaml_command_schema.Argument], Information about
+      arg_info: [yaml_arg_schema.Argument], Information about
         request fields and how to map them into arguments.
-      resource_arg: resource_arg_schema.YAMLResourceArgument, The spec for
-        the primary resource arg.
-      collection: The collection for the resource.
     """
     self.method = method
     self.arg_info = arg_info
-    self.resource_arg = resource_arg
-    self.resource_spec = self.resource_arg.GenerateResourceSpec(
-        collection) if self.resource_arg else None
+
+  # TODO(b/272259064): Remove resource and references in yaml_command_translator
+  # if possible. Otherwise, clean up _GetResource to not just return the first
+  # resource arg it finds
+  @property
+  def primary_resource_arg(self):
+    return self._GetPrimaryResource(self.arg_info)
+
+  def _GetPrimaryResource(self, params):
+    """Retrieves the first resource arg from the arg_info tree.
+
+    Args:
+      params: an ArgGroup or list of args to parse through.
+
+    Returns:
+      YAMLConceptArgument (resource arg) or None.
+    """
+    if isinstance(params, yaml_arg_schema.YAMLConceptArgument):
+      return params
+    if isinstance(params, yaml_arg_schema.Argument):
+      return None
+    if isinstance(params, yaml_arg_schema.ArgumentGroup):
+      params = params.arguments
+
+    result = None
+    for param in params:
+      resource = self._GetPrimaryResource(param)
+
+      # TODO(b/273950104): Remove error when multiple resource args are
+      # fully enabled
+      if result is not None and resource is not None:
+        raise util.InvalidSchemaError(
+            'Multiple resource args implementation is in progress. Only'
+            'define one resource arg in arguments.params')
+
+      if resource is not None:
+        result = resource
+
+    return result
 
   def GenerateArgs(self):
     """Generates all the CLI arguments required to call this method.
@@ -118,20 +148,18 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       {str, calliope.base.Action}, A map of field name to the argument.
     """
-    args = []
-    args.extend(self._GenerateArguments())
-    args.extend(self._GenerateResourceArg())
-    return args
+    # message used to get field types while generating flags
+    message = None
+    if self.method:
+      message = self.method.GetRequestType()
+    return [arg.Generate(self.method, message) for arg in self.arg_info]
 
   def CreateRequest(self,
                     namespace,
                     static_fields=None,
-                    resource_method_params=None,
                     labels=None,
                     command_type=None,
-                    use_relative_name=True,
                     override_method=None,
-                    parse_resource_into_request=True,
                     existing_message=None):
     """Generates the request object for the method call from the parsed args.
 
@@ -141,16 +169,10 @@ class DeclarativeArgumentGenerator(object):
         insert into the message. This is a convenient way to insert extra data
         while the request is being constructed for fields that don't have
         corresponding arguments.
-      resource_method_params: {str: str}, A mapping of API method parameter name
-        to resource ref attribute name when the API method uses non-standard
-        names.
       labels: The labels section of the command spec.
       command_type: Type of the command, i.e. CREATE, UPDATE.
-      use_relative_name: Use ref.RelativeName() if True otherwise ref.Name().
       override_method: APIMethod, The method other than self.method, this is
         used when the command has more than one API call.
-      parse_resource_into_request: bool, True if the resource reference should
-        be automatically parsed into the request.
       existing_message: the apitools message returned from server, which is used
         to construct the to-be-modified message when the command follows
         get-modify-update pattern.
@@ -182,25 +204,8 @@ class DeclarativeArgumentGenerator(object):
     arg_utils.ParseStaticFieldsIntoMessage(message, static_fields=static_fields)
 
     # Parse api Fields into message.
-    self._ParseArguments(message, namespace)
-
-    ref = self._ParseResourceArg(namespace)
-    if not ref:
-      return message
-
-    message_resource_map = {}
-    resource_method_params = resource_method_params or {}
-    for message_field_name, param_str in resource_method_params.items():
-      value = yaml_command_schema.FormatResourceAttrStr(param_str, ref)
-      message_resource_map[message_field_name] = value
-
-    # For each method path field, get the value from the resource reference.
-    if parse_resource_into_request:
-      arg_utils.ParseResourceIntoMessage(
-          ref, self.method, message,
-          message_resource_map=message_resource_map,
-          request_id_field=self.resource_arg.request_id_field,
-          use_relative_name=use_relative_name)
+    for arg in self.arg_info:
+      arg.Parse(self.method, message, namespace)
 
     return message
 
@@ -213,7 +218,9 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       resources.Resource, The parsed resource reference.
     """
-    return self._ParseResourceArg(namespace)
+    if not self.primary_resource_arg:
+      return None
+    return self.primary_resource_arg.ParseResourceArg(self.method, namespace)
 
   def GetResponseResourceRef(self, id_value, namespace):
     """Gets a resource reference for a resource returned by a list call.
@@ -242,103 +249,6 @@ class DeclarativeArgumentGenerator(object):
   def PageSize(self, namespace):
     """Gets the value of the page size flag (if present)."""
     return arg_utils.PageSize(self.method, namespace)
-
-  def _GenerateArguments(self):
-    """Generates the arguments for the API fields of this method."""
-    message = None
-    if self.method:
-      message = self.method.GetRequestType()
-    return [arg.Generate(message) for arg in self.arg_info]
-
-  def _GetAnchorArgName(self):
-    """Get the anchor argument name for the resource spec."""
-    if self.resource_arg.name_override:
-      flag_name = self.resource_arg.name_override
-    elif hasattr(self.resource_spec, 'anchor'):
-      flag_name = self.resource_spec.anchor.name
-    else:
-      flag_name = self.resource_arg.name or self.resource_spec.name
-
-    # If left unspecified, decide whether the resource is positional based on
-    # the method.
-    if self.resource_arg.is_positional is None:
-      anchor_arg_is_flag = False
-      if self.method:
-        anchor_arg_is_flag = self.method.IsList()
-    else:
-      anchor_arg_is_flag = not self.resource_arg.is_positional
-    anchor_arg_name = (
-        '--' + flag_name if anchor_arg_is_flag
-        else flag_name)
-    return anchor_arg_name
-
-  def _GenerateResourceArg(self):
-    """Generates the flags to add to the parser that appear in the method path.
-
-    Returns:
-      {str, calliope.base.Argument}, A map of field name to argument.
-    """
-    if not self.resource_arg:
-      return []
-
-    # The anchor arg is positional unless explicitly overridden by the
-    # attributes or for list commands (where everything should be a flag since
-    # the parent resource collection is being used).
-    anchor_arg_name = self._GetAnchorArgName()
-    no_gen = {
-        n: ''
-        for _, n in six.iteritems(concepts.IGNORED_FIELDS)
-        if n in self.resource_arg.attribute_names
-    }
-    no_gen.update({n: '' for n in self.resource_arg.removed_flags})
-    command_level_fallthroughs = {}
-    concept_parsers.UpdateFallthroughsMap(
-        command_level_fallthroughs,
-        anchor_arg_name,
-        self.resource_arg.command_level_fallthroughs)
-    presentation_spec_class = presentation_specs.ResourcePresentationSpec
-    if isinstance(self.resource_spec, multitype.MultitypeResourceSpec):
-      presentation_spec_class = (
-          presentation_specs.MultitypeResourcePresentationSpec)
-    concept = concept_parsers.ConceptParser(
-        [presentation_spec_class(
-            anchor_arg_name,
-            self.resource_spec,
-            self.resource_arg.group_help,
-            prefixes=False,
-            required=True,
-            flag_name_overrides=no_gen)],
-        command_level_fallthroughs=command_level_fallthroughs)
-    return [concept]
-
-  def _ParseArguments(self, message, namespace):
-    """Parse all the arguments from the namespace into the message object.
-
-    Args:
-      message: A constructed apitools message object to inject the value into.
-      namespace: The argparse namespace.
-    """
-    for arg in self.arg_info:
-      arg.Parse(message, namespace)
-
-  def _ParseResourceArg(self, namespace):
-    """Gets the resource ref for the resource specified as the positional arg.
-
-    Args:
-      namespace: The argparse namespace.
-
-    Returns:
-      The parsed resource ref or None if no resource arg was generated for this
-      method.
-    """
-    if not self.resource_arg:
-      return
-
-    result = arg_utils.GetFromNamespace(
-        namespace.CONCEPTS, self._GetAnchorArgName()).Parse()
-    if isinstance(result, multitype.TypedConceptResult):
-      result = result.result
-    return result
 
 
 class AutoArgumentGenerator(object):
@@ -484,7 +394,7 @@ class AutoArgumentGenerator(object):
           for arg in sub_args:
             group.AddArgument(arg)
       else:
-        attributes = yaml_command_schema.Argument(name, name, field_help)
+        attributes = yaml_arg_schema.Argument(name, name, field_help)
         arg = arg_utils.GenerateFlag(field, attributes, fix_bools=False,
                                      category='MESSAGE')
         if not arg.kwargs.get('help'):

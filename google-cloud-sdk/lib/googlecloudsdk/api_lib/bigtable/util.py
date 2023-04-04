@@ -155,7 +155,10 @@ def FormatErrorMessages(exception):
     exceptions.HttpException: Reformatted error raised by API.
   """
   response = json.loads(exception.content)
-  if not response.get('error') or not response.get('error').get('details'):
+  if (
+      response.get('error') is None
+      or response.get('error').get('details') is None
+  ):
     raise exception
   errors = ['Errors:']
   warnings = ['Warnings (use --force to ignore):']

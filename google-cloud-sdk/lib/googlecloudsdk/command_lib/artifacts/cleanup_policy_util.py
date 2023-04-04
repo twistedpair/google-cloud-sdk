@@ -19,9 +19,9 @@ from __future__ import unicode_literals
 
 import json
 
+from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
@@ -53,6 +53,10 @@ def ParseCleanupPolicy(path):
     if name is None:
       raise ar_exceptions.InvalidInputValueError(
           'Key "name" not found in policy.'
+      )
+    if name in policies:
+      raise ar_exceptions.InvalidInputValueError(
+          'Duplicate key "{}" in policy list.'.format(name)
       )
     action = policy.get('action')
     if action is None:
@@ -102,9 +106,14 @@ def SetDeleteCleanupPolicyUpdateMask(unused_ref, unused_args, request):
 
 def RepositoryToCleanupPoliciesResponse(response, unused_args):
   if not response.cleanupPolicies:
-    log.status.Print('No cleanup policies set.')
-    return None
-  return response.cleanupPolicies.additionalProperties
+    return []
+  policies = apitools_encoding.MessageToDict(response.cleanupPolicies)
+  sorted_policies = sorted(policies.values(), key=lambda p: p['id'])
+  for policy in sorted_policies:
+    policy['name'] = policy['id']
+    del policy['id']
+    policy['action'] = {'type': policy['action']}
+  return sorted_policies
 
 
 def SetOverwriteMask(unused_ref, args, request):
@@ -122,6 +131,6 @@ def DeleteCleanupPolicyFields(unused_ref, args, request):
     for policy in request.repository.cleanupPolicies.additionalProperties:
       if policy.key not in removed_policies:
         remaining_policies.append(policy)
-  request.repository.cleanupPolicies.additionalProperties = remaining_policies
+    request.repository.cleanupPolicies.additionalProperties = remaining_policies
   request.updateMask = None
   return request

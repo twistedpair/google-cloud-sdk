@@ -20728,139 +20728,6 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
-class ComputeRegionInstanceTemplatesDeleteRequest(_messages.Message):
-  r"""A ComputeRegionInstanceTemplatesDeleteRequest object.
-
-  Fields:
-    instanceTemplate: The name of the instance template to delete.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  instanceTemplate = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ComputeRegionInstanceTemplatesGetRequest(_messages.Message):
-  r"""A ComputeRegionInstanceTemplatesGetRequest object.
-
-  Fields:
-    instanceTemplate: The name of the instance template.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-  """
-
-  instanceTemplate = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-
-
-class ComputeRegionInstanceTemplatesInsertRequest(_messages.Message):
-  r"""A ComputeRegionInstanceTemplatesInsertRequest object.
-
-  Fields:
-    instanceTemplate: A InstanceTemplate resource to be passed as the request
-      body.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  instanceTemplate = _messages.MessageField('InstanceTemplate', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ComputeRegionInstanceTemplatesListRequest(_messages.Message):
-  r"""A ComputeRegionInstanceTemplatesListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      Most Compute resources support two types of filter expressions:
-      expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
-      expression must specify the field name, an operator, and the value that
-      you want to use for filtering. The value must be a string, a number, or
-      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
-      or `:`. For example, if you are filtering Compute Engine instances, you
-      can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name. You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first. Currently, only sorting by `name` or
-      `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    region: The name of the regions for this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  region = _messages.StringField(6, required=True)
-  returnPartialSuccess = _messages.BooleanField(7)
-
-
 class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
   r"""A ComputeRegionInstancesBulkInsertRequest object.
 
@@ -23715,6 +23582,9 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
       to get the next page of results in subsequent list requests. Acceptable
       values are `0` to `500`, inclusive. (Default: `500`)
+    natName: Name of the nat service to filter the Nat Mapping information. If
+      it is omitted, all nats for this router will be returned. Name should
+      conform to RFC1035.
     orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name. You can
       also sort results in descending order based on the creation timestamp
@@ -23736,12 +23606,13 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  region = _messages.StringField(6, required=True)
-  returnPartialSuccess = _messages.BooleanField(7)
-  router = _messages.StringField(8, required=True)
+  natName = _messages.StringField(3)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
+  router = _messages.StringField(9, required=True)
 
 
 class ComputeRoutersGetRequest(_messages.Message):
@@ -33444,25 +33315,25 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
-      operating system features.
+      SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE - TDX_CAPABLE For more
+      information, see Enabling guest operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
-      TDX_CAPABLE For more information, see Enabling guest operating system
-      features.
+      GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
+      SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
+      operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE -
-    TDX_CAPABLE For more information, see Enabling guest operating system
-    features.
+    GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
+    SEV_SNP_CAPABLE - TDX_CAPABLE For more information, see Enabling guest
+    operating system features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -34775,7 +34646,8 @@ class HealthStatus(_messages.Message):
   r"""A HealthStatus object.
 
   Enums:
-    HealthStateValueValuesEnum: Health state of the instance.
+    HealthStateValueValuesEnum: Health state of the IPv4 address of the
+      instance.
     WeightErrorValueValuesEnum:
 
   Messages:
@@ -34786,7 +34658,7 @@ class HealthStatus(_messages.Message):
     forwardingRule: URL of the forwarding rule associated with the health
       status of the instance.
     forwardingRuleIp: A forwarding rule IP address assigned to this instance.
-    healthState: Health state of the instance.
+    healthState: Health state of the IPv4 address of the instance.
     instance: URL of the instance resource.
     ipAddress: For target pool based Network Load Balancing, it indicates the
       forwarding rule's IP address assigned to this instance. For other types
@@ -34798,7 +34670,7 @@ class HealthStatus(_messages.Message):
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
-    r"""Health state of the instance.
+    r"""Health state of the IPv4 address of the instance.
 
     Values:
       HEALTHY: <no description>
@@ -36526,7 +36398,7 @@ class Instance(_messages.Message):
     instance, see Instance life cycle.
 
     Values:
-      DEPROVISIONING: The Nanny is halted and we are performing tear down
+      DEPROVISIONING: The instance is halted and we are performing tear down
         tasks like network deprogramming, releasing quota, IP, tearing down
         disks etc.
       PROVISIONING: Resources are being allocated for the instance.
@@ -40260,7 +40132,7 @@ class InstanceWithNamedPorts(_messages.Message):
     r"""[Output Only] The status of the instance.
 
     Values:
-      DEPROVISIONING: The Nanny is halted and we are performing tear down
+      DEPROVISIONING: The instance is halted and we are performing tear down
         tasks like network deprogramming, releasing quota, IP, tearing down
         disks etc.
       PROVISIONING: Resources are being allocated for the instance.
@@ -44145,7 +44017,7 @@ class ManagedInstance(_messages.Message):
     instance does not exist.
 
     Values:
-      DEPROVISIONING: The Nanny is halted and we are performing tear down
+      DEPROVISIONING: The instance is halted and we are performing tear down
         tasks like network deprogramming, releasing quota, IP, tearing down
         disks etc.
       PROVISIONING: Resources are being allocated for the instance.
@@ -64649,9 +64521,11 @@ class TargetHttpsProxy(_messages.Message):
       networksecurity.ServerTlsPolicy resource that describes how the proxy
       should authenticate inbound traffic. serverTlsPolicy only applies to a
       global TargetHttpsProxy attached to globalForwardingRules with the
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED. If left blank,
-      communications are not encrypted. Note: This field currently has no
-      impact.
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED or EXTERNAL or
+      EXTERNAL_MANAGED. For details which ServerTlsPolicy resources are
+      accepted with INTERNAL_SELF_MANAGED and which with EXTERNAL,
+      EXTERNAL_MANAGED loadBalancingScheme consult ServerTlsPolicy
+      documentation. If left blank, communications are not encrypted.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to

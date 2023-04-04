@@ -39,6 +39,8 @@ class CollectionInfo(object):
       name: str, collection name for this resource without leading api_name.
       base_url: str, URL for service providing these resources.
       docs_url: str, URL to the API reference docs for this API.
+      enable_uri_parsing: bool, whether to register a parser to build up a
+        search tree to match URLs against URL templates.
   """
 
   def __init__(self,

@@ -562,8 +562,8 @@ class Entity(_messages.Message):
   Messages:
     PropertiesValue: The entity's properties. The map's keys are property
       names. A property name matching regex `__.*__` is reserved. A reserved
-      property name is forbidden in certain documented contexts. The name must
-      not contain more than 500 characters. The name cannot be `""`.
+      property name is forbidden in certain documented contexts. The map keys,
+      represented as UTF-8, must not exceed 1,500 bytes and cannot be empty.
 
   Fields:
     key: The entity's key. An entity must have a key, unless otherwise
@@ -572,16 +572,16 @@ class Entity(_messages.Message):
       it has no key.
     properties: The entity's properties. The map's keys are property names. A
       property name matching regex `__.*__` is reserved. A reserved property
-      name is forbidden in certain documented contexts. The name must not
-      contain more than 500 characters. The name cannot be `""`.
+      name is forbidden in certain documented contexts. The map keys,
+      represented as UTF-8, must not exceed 1,500 bytes and cannot be empty.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""The entity's properties. The map's keys are property names. A property
     name matching regex `__.*__` is reserved. A reserved property name is
-    forbidden in certain documented contexts. The name must not contain more
-    than 500 characters. The name cannot be `""`.
+    forbidden in certain documented contexts. The map keys, represented as
+    UTF-8, must not exceed 1,500 bytes and cannot be empty.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -1897,18 +1897,18 @@ class PropertyFilter(_messages.Message):
         `order_by`.
       EQUAL: The given `property` is equal to the given `value`.
       IN: The given `property` is equal to at least one value in the given
-        array. Requires: * That `value` is a non-empty `ArrayValue` with at
-        most 10 values. * No other `IN` or `NOT_IN` is in the same query.
+        array. Requires: * That `value` is a non-empty `ArrayValue`, subject
+        to disjunction limits. * No `NOT_IN` is in the same query.
       NOT_EQUAL: The given `property` is not equal to the given `value`.
         Requires: * No other `NOT_EQUAL` or `NOT_IN` is in the same query. *
         That `property` comes first in the `order_by`.
       HAS_ANCESTOR: Limit the result set to the given entity and its
-        descendants. Requires: * That `value` is an entity key. * No other
-        `HAS_ANCESTOR` is in the same query.
+        descendants. Requires: * That `value` is an entity key. * All
+        evaluated disjunctions must have the same `HAS_ANCESTOR` filter.
       NOT_IN: The value of the `property` is not in the given array. Requires:
         * That `value` is a non-empty `ArrayValue` with at most 10 values. *
-        No other `IN`, `NOT_IN`, `NOT_EQUAL` is in the same query. * That
-        `field` comes first in the `order_by`.
+        No other `OR`, `IN`, `NOT_IN`, `NOT_EQUAL` is in the same query. *
+        That `field` comes first in the `order_by`.
     """
     OPERATOR_UNSPECIFIED = 0
     LESS_THAN = 1

@@ -35,10 +35,17 @@ def PromptToEnableApiIfDisabled(service_name):
   """
   project_id = properties.VALUES.core.project.GetOrFail()
   try:
-    if console_io.CanPrompt() and not enable_api.IsServiceEnabled(
-        project_id, service_name
-    ):
+    if enable_api.IsServiceEnabled(project_id, service_name):
+      return
+
+    if console_io.CanPrompt():
       api_enablement.PromptToEnableApi(project_id, service_name)
+    else:
+      log.warning(
+          "Service {} is not enabled. This operation may not succeed.".format(
+              service_name
+          )
+      )
   except exceptions.GetServicePermissionDeniedException:
     log.info(
         "Could not verify if service {} is enabled: missing permission"

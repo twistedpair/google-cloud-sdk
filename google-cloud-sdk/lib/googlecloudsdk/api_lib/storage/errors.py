@@ -32,13 +32,16 @@ from six.moves import urllib
 OBJECT_RESOURCE_PATH_PATTERN = re.compile(
     r'b/(?P<bucket>.*)/o/(?P<object>.*?)(\?|$)')
 
-# This regex matches all possible resource paths for a bucket resource that have
-# a bucket name as path parameter.
-# To see a complete list, check the following list:
+# This regex matches all resource paths for buckets operations.
+# To see a complete list, check the following:
 # https://cloud.google.com/storage/docs/json_api/v1#buckets
+# It also matches the resource paths for inserting an object and
+# listing the objects of a bucket.
+# To check the operations, see the following:
+# https://cloud.google.com/storage/docs/json_api/v1#objects
 BUCKET_RESOURCE_PATH_PATTERN = re.compile(
     r'^b/(?P<bucket>[a-z0-9\-_\.]+)(/)?(iam|channels|lockRetentionPolicy|'
-    r'iam/testPermissions)?(\?|$)')
+    r'iam/testPermissions|o)?(\?|$)')
 
 
 class CloudApiError(core_exceptions.Error):

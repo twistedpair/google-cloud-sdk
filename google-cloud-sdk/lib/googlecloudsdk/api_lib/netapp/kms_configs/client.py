@@ -33,9 +33,9 @@ from googlecloudsdk.core import resources
 class KmsConfigsClient(object):
   """Wrapper for working with KMS Configs in the Cloud NetApp Files API Client."""
 
-  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
-    if release_track == base.ReleaseTrack.ALPHA:
-      self._adapter = AlphaKmsConfigsAdapter()
+  def __init__(self, release_track=base.ReleaseTrack.BETA):
+    if release_track == base.ReleaseTrack.BETA:
+      self._adapter = BetaKmsConfigsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           VERSION_MAP[release_track]))
@@ -62,21 +62,48 @@ class KmsConfigsClient(object):
     """
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(
-            self.client.projects_locations_operations), operation_ref,
-        'Waiting for [{0}] to finish'.format(operation_ref.Name()))
+            self.client.projects_locations_operations
+        ),
+        operation_ref,
+        'Waiting for [{0}] to finish'.format(operation_ref.Name()),
+    )
 
   def CreateKmsConfig(self, kmsconfig_ref, async_, kms_config):
     """Create a Cloud NetApp Kms Config."""
     request = self.messages.NetappProjectsLocationsKmsConfigsCreateRequest(
         parent=kmsconfig_ref.Parent().RelativeName(),
         kmsConfigId=kmsconfig_ref.Name(),
-        kmsConfig=kms_config)
+        kmsConfig=kms_config,
+    )
     create_op = self.client.projects_locations_kmsConfigs.Create(request)
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION)
+        create_op.name, collection=OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
+
+  def ParseKmsConfig(
+      self, name=None, crypto_key_name=None, description=None, labels=None
+  ):
+    """Parses the command line arguments for Create KMS Config into a message.
+
+    Args:
+      name: the name of the KMS Config
+      crypto_key_name: the crypto key name of the KMS Config
+      description: the description of the KMS COnfig
+      labels: the parsed labels value
+
+    Returns:
+      The configuration that will be used ass the request body for creating a
+      Cloud NetApp KMS Config.
+    """
+    kms_config = self.messages.KmsConfig()
+    kms_config.name = name
+    kms_config.cryptoKeyName = crypto_key_name
+    kms_config.description = description
+    kms_config.labels = labels
+    return kms_config
 
   def ListKmsConfigs(self, location_ref, limit=None):
     """Make API calls to List Cloud NetApp KMS Configs.
@@ -123,7 +150,28 @@ class KmsConfigsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
+        delete_op.name, collection=OPERATIONS_COLLECTION
+    )
+    return self.WaitForOperation(operation_ref)
+
+  def UpdateKmsConfig(self, kmsconfig_ref, kms_config, update_mask, async_):
+    """Updates a KMS Config.
+
+    Args:
+      kmsconfig_ref: the reference to the kms config.
+      kms_config: KMS Config message, the updated kms config.
+      update_mask: str, a comma-separated list of updated fields.
+      async_: bool, if False, wait for the operation to complete.
+
+    Returns:
+      an Operation or KMS Config message.
+    """
+    update_op = self._adapter.UpdateKmsConfig(kmsconfig_ref,
+                                              kms_config, update_mask)
+    if async_:
+      return update_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        update_op.name, collection=OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
   def ParseUpdatedKmsConfig(self,
@@ -153,22 +201,20 @@ class KmsConfigsClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class AlphaKmsConfigsAdapter(object):
-  """Adapter for the Alpha Cloud NetApp Files API for KMS Configs."""
+class BetaKmsConfigsAdapter(object):
+  """Adapter for the Beta Cloud NetApp Files API for KMS Configs."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.ALPHA
+    self.release_track = base.ReleaseTrack.BETA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 
-  def ParseUpdatedKmsConfig(self,
-                            kms_config,
-                            crypto_key_name=None,
-                            description=None,
-                            labels=None):
+  def ParseUpdatedKmsConfig(
+      self, kms_config, crypto_key_name=None, description=None, labels=None
+  ):
     """Parses updates into a new kms config."""
     if crypto_key_name is not None:
-      kms_config.crypto_key_name = crypto_key_name
+      kms_config.cryptoKeyName = crypto_key_name
     if description is not None:
       kms_config.description = description
     if labels is not None:
