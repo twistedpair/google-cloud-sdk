@@ -625,6 +625,9 @@ class S3Api(cloud_api.CloudApi):
     object_name = destination_resource.storage_url.object_name
     self.client.upload_fileobj(
         Fileobj=source_stream,
+        # TODO(b/276920544): Consider re-enabling parallelism pending resolution
+        # from boto3 maintainers.
+        Config=boto3.s3.transfer.TransferConfig(use_threads=False),
         Bucket=bucket_name,
         Key=object_name,
         ExtraArgs=extra_args)

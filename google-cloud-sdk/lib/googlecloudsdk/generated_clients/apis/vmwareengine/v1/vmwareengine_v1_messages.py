@@ -637,6 +637,22 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLoggingServersResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListLoggingServers
+
+  Fields:
+    loggingServers: A list of Logging Servers.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
+  """
+
+  loggingServers = _messages.MessageField('LoggingServer', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListManagementDnsZoneBindingsResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListManagementDnsZoneBindings
 
@@ -892,6 +908,69 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LoggingServer(_messages.Message):
+  r"""Logging server to receive vCenter or ESXi logs.
+
+  Enums:
+    ProtocolValueValuesEnum: Protocol used by vCenter to send logs to a
+      logging server.
+    SourceTypeValueValuesEnum: The type of component that produces logs that
+      will be forwarded to this logging server.
+
+  Fields:
+    createTime: Output only. Creation time of this resource.
+    hostname: Fully-qualified domain name (FQDN) or IP Address of the logging
+      server.
+    name: Output only. The resource name of this logging server. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/loggingServers/my-logging-server`
+    port: Port number at which the logging server receives logs.
+    protocol: Protocol used by vCenter to send logs to a logging server.
+    sourceType: The type of component that produces logs that will be
+      forwarded to this logging server.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource.
+  """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Protocol used by vCenter to send logs to a logging server.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Unspecified communications protocol. This is the
+        default value.
+      UDP: UDP
+      TCP: TCP
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    UDP = 1
+    TCP = 2
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of component that produces logs that will be forwarded to
+    this logging server.
+
+    Values:
+      SOURCE_TYPE_UNSPECIFIED: The default value. This value should never be
+        used.
+      ESXI: Logs produced by ESXI hosts
+      VCSA: Logs produced by vCenter server
+    """
+    SOURCE_TYPE_UNSPECIFIED = 0
+    ESXI = 1
+    VCSA = 2
+
+  createTime = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  name = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 5)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ManagementCluster(_messages.Message):
@@ -3672,6 +3751,173 @@ class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsLoggingServersCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsLoggingServersCreateRequest
+  object.
+
+  Fields:
+    loggingServer: A LoggingServer resource to be passed as the request body.
+    loggingServerId: Required. The user-provided identifier of the
+      `LoggingServer` to be created. This identifier must be unique among
+      `LoggingServer` resources within the parent and becomes the final token
+      in the name URI. The identifier must meet the following requirements: *
+      Only contains 1-63 alphanumeric characters and hyphens * Begins with an
+      alphabetical character * Ends with a non-hyphen character * Not
+      formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    parent: Required. The resource name of the private cloud to create a new
+      Logging Server in. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud`
+    requestId: A request ID to identify requests. Specify a unique request ID
+      so that if you must retry your request, the server will know to ignore
+      the request if it has already been completed. The server guarantees that
+      a request doesn't result in creation of duplicate commitments for at
+      least 60 minutes. For example, consider a situation where you make an
+      initial request and the request times out. If you make the request again
+      with the same request ID, the server can check if original operation
+      with the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  loggingServer = _messages.MessageField('LoggingServer', 1)
+  loggingServerId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsLoggingServersDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsLoggingServersDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    name: Required. The resource name of the logging server to delete.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/loggingServer/my-logging-server`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsLoggingServersGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsLoggingServersGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Logging Server to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/loggingServers/my-logging-server`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsLoggingServersListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsLoggingServersListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      logging servers, you can exclude the ones named `example-server` by
+      specifying `name != "example-server"`. To filter on multiple
+      expressions, provide each separate expression within parentheses. For
+      example: ``` (name = "example-server") (createTime >
+      "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-server-1") AND (createTime
+      > "2021-04-12T08:15:10.40Z") OR (name = "example-server-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of logging servers to return in one page. The
+      service may return fewer than this value. The maximum value is coerced
+      to 1000. The default value of this field is 500.
+    pageToken: A page token, received from a previous
+      `ListLoggingServersRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListLoggingServersRequest` must match the call that provided the page
+      token.
+    parent: Required. The resource name of the private cloud to be queried for
+      logging servers. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsLoggingServersPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsLoggingServersPatchRequest
+  object.
+
+  Fields:
+    loggingServer: A LoggingServer resource to be passed as the request body.
+    name: Output only. The resource name of this logging server. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/loggingServers/my-logging-server`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `LoggingServer` resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten.
+  """
+
+  loggingServer = _messages.MessageField('LoggingServer', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsManagementDnsZoneBindingsCreateRequest(_messages.Message):

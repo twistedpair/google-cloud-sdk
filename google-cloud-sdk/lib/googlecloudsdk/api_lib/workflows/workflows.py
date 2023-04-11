@@ -127,6 +127,18 @@ class WorkflowsClient(object):
     flags.SetLabels(labels, workflow, updated_fields)
     if release_track == base.ReleaseTrack.GA:
       flags.SetKmsKey(args, workflow, updated_fields)
+      if args.IsSpecified('call_log_level'):
+        call_log_level_enum = self.messages.Workflow.CallLogLevelValueValuesEnum
+        workflow.callLogLevel = arg_utils.ChoiceToEnum(
+            args.call_log_level,
+            call_log_level_enum,
+            valid_choices=[
+                'none',
+                'log-all-calls',
+                'log-errors-only',
+                'log-none',
+            ],
+        )
     return workflow, updated_fields
 
   def WaitForOperation(self, operation, workflow_ref):
@@ -170,7 +182,13 @@ class WorkflowExecutionClient(object):
       execution.callLogLevel = arg_utils.ChoiceToEnum(
           call_log_level,
           call_log_level_enum,
-          valid_choices=['none', 'log-all-calls', 'log-errors-only'])
+          valid_choices=[
+              'none',
+              'log-all-calls',
+              'log-errors-only',
+              'log-none',
+          ],
+      )
     create_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest(
         parent=workflow_ref.RelativeName(),
         execution=execution)

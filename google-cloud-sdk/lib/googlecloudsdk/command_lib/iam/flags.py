@@ -90,6 +90,10 @@ def AddCommonByoidCreateConfigFlags(parser, config_type):
       help='Location to store the generated credential configuration file.',
       required=True)
 
+  parser.add_argument(
+      '--universe-domain', help='The universe domain.', hidden=True
+  )
+
   service_account_impersonation_options = parser.add_group(
       help='Service account impersonation options.')
   service_account_impersonation_options.add_argument(

@@ -63,7 +63,7 @@ class WrongDiscoveryDocError(Exception):
   """Unexpected discovery doc."""
 
 
-def GenerateApi(base_dir, root_dir, api_name, api_version, api_config):
+def GenerateApitoolsApi(base_dir, root_dir, api_name, api_version, api_config):
   """Invokes apitools generator for given api."""
   discovery_doc = api_config['discovery_doc']
 
@@ -229,7 +229,7 @@ def GenerateApiMap(base_dir, root_dir, api_config):
     tpl.render_context(ctx)
 
 
-def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
+def GenerateApitoolsResourceModule(base_dir, root_dir, api_name, api_version,
                            discovery_doc_path, custom_resources):
   """Create resource.py file for given api and its discovery doc.
 

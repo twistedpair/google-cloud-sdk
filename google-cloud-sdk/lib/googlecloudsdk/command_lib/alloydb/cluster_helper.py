@@ -97,8 +97,8 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
   return cluster
 
 
-def _ConstructClusterForCreateRequestAlphaBeta(alloydb_messages, args):
-  """Returns the cluster for alpha or beta create request based on args."""
+def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
+  """Returns the cluster for beta create request based on args."""
   cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
 
   if (
@@ -108,6 +108,18 @@ def _ConstructClusterForCreateRequestAlphaBeta(alloydb_messages, args):
   ):
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
         alloydb_messages, args)
+
+  return cluster
+
+
+def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
+  """Returns the cluster for alpha create request based on args."""
+  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
+
+  if args.allocated_ip_range_name:
+    cluster.networkConfig = alloydb_messages.NetworkConfig(
+        network=args.network, allocatedIpRange=args.allocated_ip_range_name
+    )
 
   return cluster
 
@@ -122,16 +134,25 @@ def ConstructCreateRequestFromArgsGA(alloydb_messages, location_ref, args):
       parent=location_ref.RelativeName())
 
 
-def ConstructCreateRequestFromArgsAlphaBeta(alloydb_messages, location_ref,
-                                            args):
-  """Returns the cluster create request for alpha and beta tracks based on args.
-  """
-  cluster = _ConstructClusterForCreateRequestAlphaBeta(alloydb_messages, args)
+def ConstructCreateRequestFromArgsBeta(alloydb_messages, location_ref, args):
+  """Returns the cluster create request for beta track based on args."""
+  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
 
   return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
       cluster=cluster,
       clusterId=args.cluster,
       parent=location_ref.RelativeName())
+
+
+def ConstructCreateRequestFromArgsAlpha(alloydb_messages, location_ref, args):
+  """Returns the cluster create request for alpha track based on args."""
+  cluster = _ConstructClusterForCreateRequestAlpha(alloydb_messages, args)
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersCreateRequest(
+      cluster=cluster,
+      clusterId=args.cluster,
+      parent=location_ref.RelativeName(),
+  )
 
 
 def _ConstructBackupSourceForRestoreRequest(alloydb_messages, resource_parser,

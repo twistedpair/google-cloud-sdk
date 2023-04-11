@@ -18,33 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.core import resources
-
-
-def SetVPNClusterPath(ref, args, request):
-  """Sets the vpnConnection.cluster field with a relative resource path.
-
-  Args:
-    ref: reference to the cluster object.
-    args: command line arguments.
-    request: API request to be issued
-
-  Returns:
-    modified request
-  """
-
-  # Skips if full path of the cluster resource is provided.
-  if 'projects/' in args.cluster:
-    return request
-
-  cluster = resources.REGISTRY.Create(
-      'edgecontainer.projects.locations.clusters',
-      projectsId=ref.projectsId,
-      locationsId=ref.locationsId,
-      clustersId=args.cluster)
-  request.vpnConnection.cluster = cluster.RelativeName()
-  return request
-
 
 class DescribeVPNTableView:
   """View model for VPN connections describe."""

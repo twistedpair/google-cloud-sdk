@@ -127,3 +127,15 @@ route:
     parameter_name: routesId
     attribute_name: route
     help: Id of the route.
+
+serviceConnectionPolicy:
+  name: service connection policy
+  collection: networkconnectivity.projects.locations.serviceConnectionPolicies
+  request_id_field: serviceConnectionPolicyId
+  attributes:
+  - *project
+  - *region
+  - &serviceConnectionPolicy
+    parameter_name: serviceConnectionPoliciesId
+    attribute_name: service_connection_policy
+    help: Id of the service connection policy.

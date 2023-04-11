@@ -394,6 +394,51 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(3)
 
 
+class Criteria(_messages.Message):
+  r"""Criteria to apply to identify components belonging to this workload.
+  Used to auto-populate the components field.
+
+  Enums:
+    KeyValueValuesEnum: Required. Key for criteria.
+    TypeValueValuesEnum: Required. Type of compute this workload is composed
+      of.
+
+  Fields:
+    key: Required. Key for criteria.
+    type: Required. Type of compute this workload is composed of.
+    value: Required. Criteria value to match against for the associated
+      criteria key. Example: //compute.googleapis.com/projects/123/regions/us-
+      west1/backend_services/bs1
+  """
+
+  class KeyValueValuesEnum(_messages.Enum):
+    r"""Required. Key for criteria.
+
+    Values:
+      CRITERIA_KEY_UNSPECIFIED: Default. Criteria.key is unspecified.
+      COMPONENT_NAME: The criteria key is Component Name.
+      BACKEND_SERVICE: The criteria key is Backend Service.
+    """
+    CRITERIA_KEY_UNSPECIFIED = 0
+    COMPONENT_NAME = 1
+    BACKEND_SERVICE = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of compute this workload is composed of.
+
+    Values:
+      CRITERIA_TYPE_UNSPECIFIED: Default. The criteria type is unspecified.
+      MANAGED_INSTANCE_GROUPS: The criteria type is mananged instacne group
+        (MIGs).
+    """
+    CRITERIA_TYPE_UNSPECIFIED = 0
+    MANAGED_INSTANCE_GROUPS = 1
+
+  key = _messages.EnumField('KeyValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
+
+
 class CustomField(_messages.Message):
   r"""Custom fields. These can be used to create a counter with arbitrary
   field/value pairs. See: go/rpcsp-custom-fields.
@@ -2396,6 +2441,27 @@ class Workload(_messages.Message):
       //compute.googleapis.com/projects/1234/zones/us-east1-a/instances/mig2]
     createTime: Output only. The timestamp when this workload was created in
       Service Directory.
+    criteria: Optional. Criteria to apply to identify components belonging to
+      this workload. Used to auto-populate the components fields. Repeated
+      list of tuples of . Multiple values are treated as OR expression, and
+      components matching any of the entries will be selected. Eg. select all
+      resources of workloadType behind backend service bs1: [ { type:
+      MANAGED_INSTANCE_GROUPS key: BACKEND_SERVICE, value:
+      '//compute.googleapis.com/projects/123/zones/us-
+      east1-c/backend_services/bs1' } ] Eg. select all resources of
+      workloadType behind backend services in bs1 or bs2: [ { type:
+      MANAGED_INSTANCE_GROUPS, key: BACKEND_SERVICE, value:
+      '//compute.googleapis.com/projects/123/zones/us-
+      east1-c/backend_services/bs1' }, { type : MANAGED_INSTANCE_GROUPS, key:
+      BACKEND_SERVICE, value:
+      '//compute.googleapis.com/projects/123/regions/us-
+      east1/backend_services/bs2' }, ] Eg. select resources explicitly by name
+      to be part of the workload: [ { type : MANAGED_INSTANCE_GROUPS, key:
+      COMPONENT_NAME, value: '//compute.googleapis.com/projects/1234/zones/us-
+      east1-c/instancegroups/mig1' }, { type : MANAGED_INSTANCE_GROUPS, key:
+      COMPONENT_NAME, value:
+      '//compute.googleapis.com/projects/1234/regions/us-
+      east1/instancegroups/mig2' } ]
     devOwners: Optional. List of contacts for developer owners of this
       workload. This includes application engineers and architects writing and
       updating this workload.
@@ -2421,15 +2487,16 @@ class Workload(_messages.Message):
   businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
   components = _messages.StringField(2, repeated=True)
   createTime = _messages.StringField(3)
-  devOwners = _messages.MessageField('ContactInfo', 4, repeated=True)
-  displayName = _messages.StringField(5)
-  internalAttributes = _messages.MessageField('InternalAttributes', 6)
-  name = _messages.StringField(7)
-  operatorOwners = _messages.MessageField('ContactInfo', 8, repeated=True)
-  reliabilityAttributes = _messages.MessageField('ReliabilityAttributes', 9)
-  securityAttributes = _messages.MessageField('SecurityAttributes', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  criteria = _messages.MessageField('Criteria', 4, repeated=True)
+  devOwners = _messages.MessageField('ContactInfo', 5, repeated=True)
+  displayName = _messages.StringField(6)
+  internalAttributes = _messages.MessageField('InternalAttributes', 7)
+  name = _messages.StringField(8)
+  operatorOwners = _messages.MessageField('ContactInfo', 9, repeated=True)
+  reliabilityAttributes = _messages.MessageField('ReliabilityAttributes', 10)
+  securityAttributes = _messages.MessageField('SecurityAttributes', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 encoding.AddCustomJsonFieldMapping(

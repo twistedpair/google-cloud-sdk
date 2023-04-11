@@ -158,6 +158,7 @@ definitions:
       # The api version this spec refers to. If empty, it applies to any
       # version.
       api_version: {type: string}
+      # TODO(b/274890004): remove request_id_field from resource_spec
       # The field in the create request that should hold the name of the
       # resource being created (since create requests don't have the resource
       # id as an API parameter.
@@ -213,6 +214,14 @@ definitions:
       # Set the `resource_type` property on `request` to include the
       # resource type in log messages.
       is_parent_resource: {type: boolean}
+      # Set to True if this resource is the resource being operated on ie
+      # being described, created, updated, etc. This helps determine which
+      # resource arg should be validated against the method and included
+      # in the display name, among other things. Only one resource arg can
+      # set is_primary_resource to true. If command does not set any resource
+      # args' is_primary_resource to true, then gcloud will try to assume
+      # which resource is primary based off of request.method.collection
+      is_primary_resource: {type: boolean}
       # The name to use for the resource arg. If set this is the name that
       # will be used for the resource arg in the command. If not set,
       # command will use the name from the spec.
@@ -223,6 +232,10 @@ definitions:
       removed_flags:
         type: array
         items: {type: string}
+      # The field in the create request that should hold the name of the
+      # resource being created (since create requests don't have the resource
+      # id as an API parameter.
+      request_id_field: {$ref: "#/definitions/attribute"}
       # a map of attribute names to a list of fallthroughs *specific to
       # this command* that will be used if the attribute is not directly
       # provided on the command line. Anything in this map takes precedence
@@ -271,6 +284,8 @@ definitions:
       # request method schema. This is useful for API's that have multiple services
       # (and multiple resource collections) that use the same actual resource objects.
       override_resource_collection: {type: boolean}
+      # Whether the flag is required or not.
+      required: {type: boolean}
 
   arg:
     required: [help_text]

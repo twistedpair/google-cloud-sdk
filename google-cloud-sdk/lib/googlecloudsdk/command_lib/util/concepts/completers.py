@@ -353,7 +353,7 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
 
     arg_utils.ParseResourceIntoMessage(
         parent, method, message,
-        message_resource_map=message_resource_map)
+        message_resource_map=message_resource_map, is_primary_resource=True)
     return message
 
   def _GetParentTranslator(self, parameter_info, aggregations=None):

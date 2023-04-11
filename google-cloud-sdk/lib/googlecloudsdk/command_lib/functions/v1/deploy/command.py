@@ -446,6 +446,8 @@ def Run(args, track=None):
     function.timeout = '{}s'.format(args.timeout)
     updated_fields.append('timeout')
   if args.memory:
+    # For v1 convert args.memory from str to number of bytes in int
+    args.memory = flags.ParseMemoryStrToNumBytes(args.memory)
     function.availableMemoryMb = utils.BytesToMb(args.memory)
     updated_fields.append('availableMemoryMb')
   if args.service_account:

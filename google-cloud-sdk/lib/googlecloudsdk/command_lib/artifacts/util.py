@@ -907,18 +907,38 @@ def SanitizeRemoteRepositoryConfig(unused_ref, args, request):
     request.repository.remoteRepositoryConfig.dockerRepository = None
     request.repository.remoteRepositoryConfig.npmRepository = None
     request.repository.remoteRepositoryConfig.pythonRepository = None
+    request.repository.remoteRepositoryConfig.aptRepository = None
+    request.repository.remoteRepositoryConfig.yumRepository = None
   elif args.remote_docker_repo:
     request.repository.remoteRepositoryConfig.mavenRepository = None
     request.repository.remoteRepositoryConfig.npmRepository = None
     request.repository.remoteRepositoryConfig.pythonRepository = None
+    request.repository.remoteRepositoryConfig.aptRepository = None
+    request.repository.remoteRepositoryConfig.yumRepository = None
   elif args.remote_npm_repo:
     request.repository.remoteRepositoryConfig.dockerRepository = None
     request.repository.remoteRepositoryConfig.mavenRepository = None
     request.repository.remoteRepositoryConfig.pythonRepository = None
+    request.repository.remoteRepositoryConfig.aptRepository = None
+    request.repository.remoteRepositoryConfig.yumRepository = None
   elif args.remote_python_repo:
     request.repository.remoteRepositoryConfig.dockerRepository = None
     request.repository.remoteRepositoryConfig.npmRepository = None
     request.repository.remoteRepositoryConfig.mavenRepository = None
+    request.repository.remoteRepositoryConfig.aptRepository = None
+    request.repository.remoteRepositoryConfig.yumRepository = None
+  elif args.remote_apt_repo:
+    request.repository.remoteRepositoryConfig.dockerRepository = None
+    request.repository.remoteRepositoryConfig.mavenRepository = None
+    request.repository.remoteRepositoryConfig.npmRepository = None
+    request.repository.remoteRepositoryConfig.pythonRepository = None
+    request.repository.remoteRepositoryConfig.yumRepository = None
+  elif args.remote_yum_repo:
+    request.repository.remoteRepositoryConfig.dockerRepository = None
+    request.repository.remoteRepositoryConfig.mavenRepository = None
+    request.repository.remoteRepositoryConfig.npmRepository = None
+    request.repository.remoteRepositoryConfig.pythonRepository = None
+    request.repository.remoteRepositoryConfig.aptRepository = None
 
   return request
 

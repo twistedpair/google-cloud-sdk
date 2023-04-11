@@ -518,11 +518,12 @@ def _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config):
   )
 
 
-def _AddMetalLBNodePoolConfig(metal_lb_config_group):
+def _AddMetalLBNodePoolConfig(metal_lb_config_group, is_update=False):
   """Adds a command group to set the node pool config for MetalLB load balancer.
 
   Args:
    metal_lb_config_group: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
   """
   bare_metal_metal_lb_node_pool_config_group = metal_lb_config_group.add_group(
       help='Anthos on bare metal node pool configuration for MetalLB load balancer nodes.',
@@ -533,6 +534,7 @@ def _AddMetalLBNodePoolConfig(metal_lb_config_group):
   _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config)
   _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config)
   _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config)
+  _AddMetalLBKubeletConfig(bare_metal_metal_lb_node_config, is_update=is_update)
 
 
 def _AddMetalLBAddressPools(metal_lb_config_group, is_update=False):
@@ -576,6 +578,22 @@ avoidBuggyIPs | bool                  | optional, mutable, defaults to False
 manualAssign  | bool                  | optional, mutable, defaults to False
 
 """
+
+  metal_lb_address_pools_help_text = """
+MetalLB load balancer configurations.
+
+Examples:
+
+To specify MetalLB load balancer configurations for two address pools `pool1` and `pool2`,
+
+```
+$ {command} example_cluster
+      --metal-lb-address-pools 'pool=pool1,avoid-buggy-ips=True,manual-assign=True,addresses=192.168.1.1/32;192.168.1.2-192.168.1.3'
+      --metal-lb-address-pools 'pool=pool2,avoid-buggy-ips=False,manual-assign=False,addresses=192.168.2.1/32;192.168.2.2-192.168.2.3'
+```
+
+Use quote around the flag value to escape semicolon in the terminal.
+"""
   metal_lb_address_pools_mutex_group.add_argument(
       '--metal-lb-address-pools-from-file',
       help=metal_lb_address_pools_from_file_help_text,
@@ -584,7 +602,7 @@ manualAssign  | bool                  | optional, mutable, defaults to False
   )
   metal_lb_address_pools_mutex_group.add_argument(
       '--metal-lb-address-pools',
-      help='MetalLB address pools configuration.',
+      help=metal_lb_address_pools_help_text,
       action='append',
       type=arg_parsers.ArgDict(
           spec={
@@ -606,19 +624,23 @@ def _AddMetalLBConfig(lb_config_mutex_group, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   metal_lb_config_group = lb_config_mutex_group.add_group(
-      'MetalLB Configuration',
-      )
+      'MetalLB load balancer configuration.',
+  )
 
   _AddMetalLBAddressPools(metal_lb_config_group, is_update)
-  _AddMetalLBNodePoolConfig(metal_lb_config_group)
+  _AddMetalLBNodePoolConfig(metal_lb_config_group, is_update=is_update)
 
 
-def _AddManualLBConfig(lb_config_mutex_group):
+def _AddManualLBConfig(lb_config_mutex_group, is_update=False):
   """Adds flags for manual load balancer.
 
   Args:
     lb_config_mutex_group: The parent mutex group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  if is_update:
+    return None
+
   manual_lb_config_group = lb_config_mutex_group.add_group(
       help='Manual load balancer configuration.',)
   manual_lb_config_group.add_argument(
@@ -629,12 +651,16 @@ def _AddManualLBConfig(lb_config_mutex_group):
   )
 
 
-def _AddVIPConfig(bare_metal_load_balancer_config_group):
+def _AddVIPConfig(bare_metal_load_balancer_config_group, is_update=False):
   """Adds flags to set VIPs used by the load balancer.
 
   Args:
     bare_metal_load_balancer_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  if is_update:
+    return None
+
   bare_metal_vip_config_group = bare_metal_load_balancer_config_group.add_group(
       help=' VIPs used by the load balancer.',
       required=True,
@@ -651,12 +677,18 @@ def _AddVIPConfig(bare_metal_load_balancer_config_group):
   )
 
 
-def _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group):
+def _AddLoadBalancerPortConfig(
+    bare_metal_load_balancer_config_group, is_update=False
+):
   """Adds flags to set port for load balancer.
 
   Args:
     bare_metal_load_balancer_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
   """
+  if is_update:
+    return None
+
   control_plane_load_balancer_port_config_group = bare_metal_load_balancer_config_group.add_group(
       help='Control plane load balancer port configuration.',
       required=True,
@@ -688,13 +720,11 @@ def AddLoadBalancerConfig(parser, is_update=False):
       help='Populate one of the load balancers.',
   )
 
-  if required:
-    _AddVIPConfig(bare_metal_load_balancer_config_group)
-    _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group)
-    _AddMetalLBConfig(lb_config_mutex_group, is_update)
-    _AddManualLBConfig(lb_config_mutex_group)
-  else:
-    _AddMetalLBConfig(lb_config_mutex_group, is_update)
+  _AddMetalLBConfig(lb_config_mutex_group, is_update)
+  _AddBGPLBConfig(lb_config_mutex_group, is_update)
+  _AddVIPConfig(bare_metal_load_balancer_config_group, is_update)
+  _AddLoadBalancerPortConfig(bare_metal_load_balancer_config_group, is_update)
+  _AddManualLBConfig(lb_config_mutex_group, is_update)
 
 
 def _AddStorageLVPShareConfig(bare_metal_lvp_share_config_group):
@@ -885,6 +915,7 @@ def _AddNodePoolConfig(bare_metal_control_plane_node_pool_config_group,
   _AddControlPlaneNodeConfigs(bare_metal_node_config_group, is_update)
   _AddControlPlaneNodeLabels(bare_metal_node_config_group)
   _AddControlPlaneNodeTaints(bare_metal_node_config_group)
+  _AddControlPlaneKubeletConfig(bare_metal_node_config_group, is_update)
 
 
 def _AddControlPlaneNodePoolConfig(bare_metal_control_plane_config_group,
@@ -1309,4 +1340,371 @@ def AddIgnoreErrors(parser):
           ' succeed even if errors occur during deletion.'
       ),
       action='store_true',
+  )
+
+
+def _AddBGPLBConfig(lb_config_mutex_group, is_update=False):
+  """Adds a flag for BGP Load Balancer Config field.
+
+  Args:
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  bgp_lb_config_group = lb_config_mutex_group.add_group(
+      help='BGP load balancer configuration.'
+  )
+  bgp_lb_config_group.add_argument(
+      '--bgp-asn',
+      type=int,
+      required=required,
+      help='BGP autonomous system number (ASN) of the cluster.',
+  )
+  _AddBGPPeerConfigs(bgp_lb_config_group, is_update=is_update)
+  _AddBGPAddressPools(bgp_lb_config_group, is_update=is_update)
+  _AddBGPLoadBalancerNodePoolConfig(bgp_lb_config_group, is_update=is_update)
+
+
+def _AddBGPLoadBalancerNodePoolConfig(bgp_lb_config_group, is_update=False):
+  bgp_lb_node_pool_config_group = bgp_lb_config_group.add_group()
+  bgp_node_pool_config_group = bgp_lb_node_pool_config_group.add_group()
+  _AddBGPNodeConfigs(bgp_node_pool_config_group, is_update=is_update)
+  _AddBGPNodeTaints(bgp_node_pool_config_group)
+  _AddBGPNodeLabels(bgp_node_pool_config_group)
+  _AddBGPKubeletConfig(bgp_node_pool_config_group, is_update=is_update)
+
+
+def _AddBGPPeerConfigs(bgp_node_pool_config_group, is_update=False):
+  """Adds a flag for BGP peer config field.
+
+  Args:
+    bgp_node_pool_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+
+  bgp_peer_config_help_text = """
+List of BGP peers that the cluster will connect to. At least one peer must be configured for each control plane node.
+
+Examples:
+
+To specify configurations for two peers of BGP autonomous system number (ASN) 10000 and 20000,
+
+```
+$ {command} example_cluster
+      --bgp-peer-configs 'asn=10000,ip=192.168.1.1,control-plane-nodes=192.168.1.2;192.168.1.3'
+      --bgp-peer-configs 'asn=20000,ip=192.168.2.1,control-plane-nodes=192.168.2.2;192.168.2.3'
+```
+
+Use quote around the flag value to escape semicolon in the terminal.
+
+  """
+  required = not is_update
+  bgp_node_pool_config_group.add_argument(
+      '--bgp-peer-configs',
+      help=bgp_peer_config_help_text,
+      action='append',
+      required=required,
+      type=arg_parsers.ArgDict(
+          spec={
+              'asn': int,
+              'ip': str,
+              'control-plane-nodes': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['asn', 'ip'],
+      ),
+      metavar='asn=ASN,ip=IP,control-plane-nodes=NODE_IP_1;NODE_IP_2',
+  )
+
+
+def _AddBGPAddressPools(bgp_lb_config_group, is_update=False):
+  """Adds a flag for BGP address pool field.
+
+  Args:
+    bgp_lb_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+
+  bgp_address_pools_help_text = """
+BGP load balancer address pools configurations.
+
+Examples:
+
+To specify configurations for two address pools `pool1` and `pool2`,
+
+```
+$ {command} example_cluster
+      --bgp-address-pools 'pool=pool1,avoid-buggy-ips=True,manual-assign=True,addresses=192.168.1.1/32;192.168.1.2-192.168.1.3'
+      --bgp-address-pools 'pool=pool2,avoid-buggy-ips=False,manual-assign=False,addresses=192.168.2.1/32;192.168.2.2-192.168.2.3'
+```
+
+Use quote around the flag value to escape semicolon in the terminal.
+"""
+  required = not is_update
+  bgp_lb_config_group.add_argument(
+      '--bgp-address-pools',
+      help=bgp_address_pools_help_text,
+      action='append',
+      required=required,
+      type=arg_parsers.ArgDict(
+          spec={
+              'pool': str,
+              'avoid-buggy-ips': arg_parsers.ArgBoolean(),
+              'manual-assign': arg_parsers.ArgBoolean(),
+              'addresses': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['pool', 'addresses'],
+      ),
+  )
+
+
+def _AddBGPNodeConfigs(bgp_lb_config_group, is_update=False):
+  """Adds a flag for BGP node config fields.
+
+  Args:
+    bgp_lb_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+
+  bgp_node_configs_help_text = """
+BGP load balancer data plane node configurations.
+
+Examples:
+
+To specify configurations for two nodes of IP `192.168.0.1` and `192.168.1.1`,
+
+```
+$ {command} example_cluster
+      --bgp-load-balancer-node-configs 'node-ip=192.168.0.1,labels=KEY1=VALUE1;KEY2=VALUE2'
+      --bgp-load-balancer-node-configs 'node-ip=192.168.1.1,labels=KEY3=VALUE3'
+```
+
+Use quote around the flag value to escape semicolon in the terminal.
+"""
+  required = not is_update
+  bgp_lb_config_group.add_argument(
+      '--bgp-load-balancer-node-configs',
+      help=bgp_node_configs_help_text,
+      required=required,
+      metavar='node-ip=IP,labels=KEY1=VALUE1;KEY2=VALUE2',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=['node-ip'],
+      ),
+  )
+
+
+def _AddBGPNodeTaints(bgp_node_pool_config_group):
+  """Adds a flag to specify the node taint in the node pool.
+
+  Args:
+    bgp_node_pool_config_group: The parent group to add the flags to.
+  """
+  bgp_node_pool_config_group.add_argument(
+      '--bgp-load-balancer-node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help='Node taint applied to every Kubernetes node in a node pool.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddBGPNodeLabels(bgp_node_pool_config_group):
+  """Adds a flag to assign labels to nodes in a BGP node pool.
+
+  Args:
+    bgp_node_pool_config_group: The parent group to add the flags to.
+  """
+  bgp_node_pool_config_group.add_argument(
+      '--bgp-load-balancer-node-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Labels assigned to nodes of a BGP node pool.',
+  )
+
+
+def _AddDisableControlPlaneSerializeImagePulls(
+    bare_metal_kubelet_config_group, is_update=False
+):
+  """Adds a flag to specify the enablement of serialize image pulls.
+
+  Args:
+    bare_metal_kubelet_config_group: The parent group to add the flags to.
+    is_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if is_update:
+    serialize_image_pulls_mutex_group = (
+        bare_metal_kubelet_config_group.add_group(mutex=True)
+    )
+    surface = serialize_image_pulls_mutex_group
+  else:
+    surface = bare_metal_kubelet_config_group
+
+  surface.add_argument(
+      '--disable-control-plane-serialize-image-pulls',
+      action='store_true',
+      help=(
+          'If set, prevent the Kubelet from pulling multiple images at a time.'
+      ),
+  )
+  if is_update:
+    surface.add_argument(
+        '--enable-control-plane-serialize-image-pulls',
+        action='store_true',
+        help='If set, enable the Kubelet to pull multiple images at a time.',
+    )
+
+
+def _AddControlPlaneKubeletConfig(
+    bare_metal_node_pool_config_group, is_update=False
+):
+  """Adds flags to specify the kubelet configurations in the node pool.
+
+  Args:
+    bare_metal_node_pool_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  bare_metal_kubelet_config_group = bare_metal_node_pool_config_group.add_group(
+      'Modifiable kubelet configurations for bare metal machines.'
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--control-plane-registry-pull-qps',
+      type=int,
+      help='Limit of registry pulls per second.',
+  )
+  bare_metal_kubelet_config_group.add_argument(
+      '--control-plane-registry-burst',
+      type=int,
+      help=(
+          'Maximum size of bursty pulls, temporarily allow pulls to burst to'
+          ' this number, while still not exceeding registry_pull_qps.'
+      ),
+  )
+  _AddDisableControlPlaneSerializeImagePulls(
+      bare_metal_kubelet_config_group, is_update=is_update
+  )
+
+
+def _AddDisableBGPSerializeImagePulls(
+    bgp_kubelet_config_group, is_update=False
+):
+  """Adds a flag to specify the enablement of serialize image pulls.
+
+  Args:
+    bgp_kubelet_config_group: The parent group to add the flags to.
+    is_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if is_update:
+    serialize_image_pulls_mutex_group = bgp_kubelet_config_group.add_group(
+        mutex=True
+    )
+    surface = serialize_image_pulls_mutex_group
+  else:
+    surface = bgp_kubelet_config_group
+
+  surface.add_argument(
+      '--disable-bgp-load-balancer-serialize-image-pulls',
+      action='store_true',
+      help=(
+          'If set, prevent the Kubelet from pulling multiple images at a time.'
+      ),
+  )
+  if is_update:
+    surface.add_argument(
+        '--enable-bgp-load-balancer-serialize-image-pulls',
+        action='store_true',
+        help='If set, enable the Kubelet to pull multiple images at a time.',
+    )
+
+
+def _AddBGPKubeletConfig(bgp_node_pool_config_group, is_update=False):
+  """Adds flags to specify the kubelet configurations in the node pool.
+
+  Args:
+    bgp_node_pool_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  bgp_kubelet_config_group = bgp_node_pool_config_group.add_group(
+      'Modifiable kubelet configurations for bare metal machines.'
+  )
+  bgp_kubelet_config_group.add_argument(
+      '--bgp-load-balancer-registry-pull-qps',
+      type=int,
+      help='Limit of registry pulls per second.',
+  )
+  bgp_kubelet_config_group.add_argument(
+      '--bgp-load-balancer-registry-burst',
+      type=int,
+      help=(
+          'Maximum size of bursty pulls, temporarily allow pulls to burst to'
+          ' this number, while still not exceeding registry_pull_qps.'
+      ),
+  )
+  _AddDisableBGPSerializeImagePulls(
+      bgp_kubelet_config_group, is_update=is_update
+  )
+
+
+def _AddDisableMetalLBSerializeImagePulls(
+    metal_lb_kubelet_config_group, is_update=False
+):
+  """Adds a flag to specify the enablement of serialize image pulls.
+
+  Args:
+    metal_lb_kubelet_config_group: The parent group to add the flags to.
+    is_update: bool, True to add flags for update command, False to add flags
+      for create command.
+  """
+  if is_update:
+    serialize_image_pulls_mutex_group = metal_lb_kubelet_config_group.add_group(
+        mutex=True
+    )
+    surface = serialize_image_pulls_mutex_group
+  else:
+    surface = metal_lb_kubelet_config_group
+
+  surface.add_argument(
+      '--disable-metal-lb-load-balancer-serialize-image-pulls',
+      action='store_true',
+      help=(
+          'If set, prevent the Kubelet from pulling multiple images at a time.'
+      ),
+  )
+  if is_update:
+    surface.add_argument(
+        '--enable-metal-lb-load-balancer-serialize-image-pulls',
+        action='store_true',
+        help='If set, enable the Kubelet to pull multiple images at a time.',
+    )
+
+
+def _AddMetalLBKubeletConfig(bare_metal_metal_lb_node_config, is_update=False):
+  """Adds flags to specify the kubelet configurations in the node pool.
+
+  Args:
+    bare_metal_metal_lb_node_config: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  metal_lb_kubelet_config_group = bare_metal_metal_lb_node_config.add_group(
+      'Modifiable kubelet configurations for bare metal machines.'
+  )
+  metal_lb_kubelet_config_group.add_argument(
+      '--metal-lb-load-balancer-registry-pull-qps',
+      type=int,
+      help='Limit of registry pulls per second.',
+  )
+  metal_lb_kubelet_config_group.add_argument(
+      '--metal-lb-load-balancer-registry-burst',
+      type=int,
+      help=(
+          'Maximum size of bursty pulls, temporarily allow pulls to burst to'
+          ' this number, while still not exceeding registry_pull_qps.'
+      ),
+  )
+  _AddDisableMetalLBSerializeImagePulls(
+      metal_lb_kubelet_config_group, is_update=is_update
   )

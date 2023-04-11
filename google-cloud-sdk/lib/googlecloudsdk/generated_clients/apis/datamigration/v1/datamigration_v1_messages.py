@@ -1011,7 +1011,7 @@ class DatabaseEntity(_messages.Message):
       DATABASE_ENTITY_TYPE_SYNONYM: Synonym.
       DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package.
       DATABASE_ENTITY_TYPE_UDT: UDT.
-      DATABASE_ENTITY_TYPE_MATERIAL_VIEW: Material View.
+      DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW: Materialized View.
       DATABASE_ENTITY_TYPE_DATABASE: Database.
     """
     DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
@@ -1028,7 +1028,7 @@ class DatabaseEntity(_messages.Message):
     DATABASE_ENTITY_TYPE_SYNONYM = 11
     DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
     DATABASE_ENTITY_TYPE_UDT = 13
-    DATABASE_ENTITY_TYPE_MATERIAL_VIEW = 14
+    DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW = 14
     DATABASE_ENTITY_TYPE_DATABASE = 15
 
   class TreeValueValuesEnum(_messages.Enum):
@@ -3674,10 +3674,13 @@ class SqlIpConfig(_messages.Message):
   r"""IP Management configuration.
 
   Fields:
-    allocatedIpRange: Optional. The name of the allocated IP range for the
-      private IP Cloud SQL instance. This name refers to an already allocated
-      IP range. If set, the instance IP will be created in the allocated
-      range.
+    allocatedIpRange: Optional. The name of the allocated IP address range for
+      the private IP Cloud SQL instance. This name refers to an already
+      allocated IP range address. If set, the instance IP address will be
+      created in the allocated range. Note that this IP address range can't be
+      modified after the instance is created. If you change the VPC when
+      configuring connectivity settings for the migration job, this field is
+      not relevant.
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. See
       https://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation, also known as
@@ -3961,7 +3964,7 @@ class SynonymEntity(_messages.Message):
       DATABASE_ENTITY_TYPE_SYNONYM: Synonym.
       DATABASE_ENTITY_TYPE_DATABASE_PACKAGE: Package.
       DATABASE_ENTITY_TYPE_UDT: UDT.
-      DATABASE_ENTITY_TYPE_MATERIAL_VIEW: Material View.
+      DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW: Materialized View.
       DATABASE_ENTITY_TYPE_DATABASE: Database.
     """
     DATABASE_ENTITY_TYPE_UNSPECIFIED = 0
@@ -3978,7 +3981,7 @@ class SynonymEntity(_messages.Message):
     DATABASE_ENTITY_TYPE_SYNONYM = 11
     DATABASE_ENTITY_TYPE_DATABASE_PACKAGE = 12
     DATABASE_ENTITY_TYPE_UDT = 13
-    DATABASE_ENTITY_TYPE_MATERIAL_VIEW = 14
+    DATABASE_ENTITY_TYPE_MATERIALIZED_VIEW = 14
     DATABASE_ENTITY_TYPE_DATABASE = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')

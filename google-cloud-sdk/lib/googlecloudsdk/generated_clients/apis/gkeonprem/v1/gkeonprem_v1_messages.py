@@ -18,8 +18,11 @@ class Authorization(_messages.Message):
   bootstrap onto the admin cluster.
 
   Fields:
-    adminUsers: Required. Users that will be granted the cluster-admin role on
-      the cluster, providing full access to the cluster.
+    adminUsers: Required. For Vmware User, Bare Metal User and Standalone
+      clusters, users that will be granted the cluster-admin role on the
+      cluster, providing full access to the cluster. For Bare Metal Admin
+      cluster, users will be granted the view role, which is a view only
+      access.
   """
 
   adminUsers = _messages.MessageField('ClusterUser', 1, repeated=True)
@@ -2934,7 +2937,7 @@ class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
   Enums:
     ViewValueValuesEnum: View for bare metal Clusters. When `BASIC` is
       specified, only the cluster resource name and admin cluster membership
-      is returned. The default/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the
+      are returned. The default/unset value `CLUSTER_VIEW_UNSPECIFIED` is the
       same as `FULL', which returns the complete cluster configuration
       details.
 
@@ -2951,15 +2954,15 @@ class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
       "projects/{project}/locations/{location}"
     showDeleted: If true, shows deleted bare metal Clusters.
     view: View for bare metal Clusters. When `BASIC` is specified, only the
-      cluster resource name and admin cluster membership is returned. The
-      default/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the same as `FULL',
+      cluster resource name and admin cluster membership are returned. The
+      default/unset value `CLUSTER_VIEW_UNSPECIFIED` is the same as `FULL',
       which returns the complete cluster configuration details.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""View for bare metal Clusters. When `BASIC` is specified, only the
-    cluster resource name and admin cluster membership is returned. The
-    default/unset value `CLUSTERS_VIEW_UNSPECIFIED` is the same as `FULL',
+    cluster resource name and admin cluster membership are returned. The
+    default/unset value `CLUSTER_VIEW_UNSPECIFIED` is the same as `FULL',
     which returns the complete cluster configuration details.
 
     Values:
@@ -3614,6 +3617,12 @@ class GkeonpremProjectsLocationsVmwareClustersGetRequest(_messages.Message):
 class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsVmwareClustersListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: View for VMware clusters. When `BASIC` is specified,
+      only the cluster resource name and admin cluster membership are
+      returned. The default/unset value `CLUSTER_VIEW_UNSPECIFIED` is the same
+      as `FULL', which returns the complete cluster configuration details.
+
   Fields:
     filter: A resource filtering expression following
       https://google.aip.dev/160. When non-empty, only resource's whose
@@ -3626,13 +3635,36 @@ class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
       clusters are listed in. Format:
       "projects/{project}/locations/{location}"
     showDeleted: If true, shows deleted VMware Clusters.
+    view: View for VMware clusters. When `BASIC` is specified, only the
+      cluster resource name and admin cluster membership are returned. The
+      default/unset value `CLUSTER_VIEW_UNSPECIFIED` is the same as `FULL',
+      which returns the complete cluster configuration details.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""View for VMware clusters. When `BASIC` is specified, only the cluster
+    resource name and admin cluster membership are returned. The default/unset
+    value `CLUSTER_VIEW_UNSPECIFIED` is the same as `FULL', which returns the
+    complete cluster configuration details.
+
+    Values:
+      CLUSTER_VIEW_UNSPECIFIED: If the value is not set, the default `FULL`
+        view is used.
+      BASIC: Includes basic information of a cluster resource including
+        cluster resource name and admin cluster membership.
+      FULL: Includes the complete configuration for VMware Cluster resource.
+        This is the default value for ListVmwareClustersRequest method.
+    """
+    CLUSTER_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   showDeleted = _messages.BooleanField(5)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class GkeonpremProjectsLocationsVmwareClustersOperationsGetRequest(_messages.Message):
@@ -5437,11 +5469,9 @@ class VmwareControlPlaneV2Config(_messages.Message):
 
   Fields:
     controlPlaneIpBlock: Static IP addresses for the control plane nodes.
-    enableControlPlaneV2: Enable control plane V2. Default to false.
   """
 
   controlPlaneIpBlock = _messages.MessageField('VmwareIpBlock', 1)
-  enableControlPlaneV2 = _messages.BooleanField(2)
 
 
 class VmwareControlPlaneVsphereConfig(_messages.Message):

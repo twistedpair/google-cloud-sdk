@@ -1087,9 +1087,6 @@ class WriteObjectSpec(proto.Message):
             error occurs you must start the upload over from scratch,
             this time sending the correct number of bytes.
 
-            The ``object_size`` value is ignored for one-shot
-            (non-resumable) writes.
-
             This field is a member of `oneof`_ ``_object_size``.
     """
 

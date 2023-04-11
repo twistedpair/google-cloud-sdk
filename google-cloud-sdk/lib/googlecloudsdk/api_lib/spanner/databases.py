@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 from cloudsdk.google.protobuf import descriptor_pb2
 from cloudsdk.google.protobuf import text_format
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.iam import iam_util
 
 
@@ -183,3 +184,26 @@ def Restore(database_ref, backup_ref, encryption_type=None, kms_key=None):
       parent=database_ref.Parent().RelativeName(),
       restoreDatabaseRequest=restore_db_request)
   return client.projects_instances_databases.Restore(req)
+
+
+def Update(database_ref, enable_drop_protection):
+  """Update a database."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  if enable_drop_protection is None:
+    raise errors.NoFieldsSpecifiedError(
+        'No updates requested. Flag --[no-]enable-drop-protection was not'
+        ' specified.'
+    )
+  update_mask = ['enable_drop_protection']
+  database_obj = msgs.Database(
+      name=database_ref.RelativeName(),
+      enableDropProtection=enable_drop_protection,
+  )
+  req = msgs.SpannerProjectsInstancesDatabasesPatchRequest(
+      database=database_obj,
+      name=database_ref.RelativeName(),
+      updateMask=','.join(update_mask),
+  )
+  return client.projects_instances_databases.Patch(req)

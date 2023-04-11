@@ -238,7 +238,8 @@ class AsyncOperationPoller(waiter.OperationPoller):
     if self.resource_ref:
       method = self._ResourceGetMethod()
       request = method.GetRequestType()()
-      arg_utils.ParseResourceIntoMessage(self.resource_ref, method, request)
+      arg_utils.ParseResourceIntoMessage(self.resource_ref, method, request,
+                                         is_primary_resource=True)
       result = method.Call(request)
     return _GetAttribute(result, self.spec.async_.result_attribute)
 
@@ -306,7 +307,6 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
                                        self.spec.request.method,
                                        self.spec.request.api_version)
       self.display_resource_type = self.spec.request.display_resource_type
-
     else:
       self.method = None
       self.display_resource_type = None

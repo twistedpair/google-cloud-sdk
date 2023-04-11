@@ -897,6 +897,8 @@ apis:
   looker:
     v1alpha1:
       discovery_doc: looker_v1alpha1.json
+    v1:
+      discovery_doc: looker_v1.json
       default: true
   memcache:
     v1beta2:
@@ -1449,3 +1451,7 @@ apis:
       resources:
         projects.locations.workloadCertificateFeature:
           path: projects/{projectsId}/locations/global/workloadCertificateFeature
+  messagestreams:
+    v1alpha:
+      discovery_doc: messagestreams_v1alpha.json
+      default: true

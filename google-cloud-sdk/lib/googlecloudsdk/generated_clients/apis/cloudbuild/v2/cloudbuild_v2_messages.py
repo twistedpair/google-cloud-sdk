@@ -918,8 +918,8 @@ class Connection(_messages.Message):
     githubConfig: Configuration for connections to github.com.
     githubEnterpriseConfig: Configuration for connections to an instance of
       GitHub Enterprise.
-    gitlabEnterpriseConfig: Configuration for connections to an instance of
-      GitLab Enterprise.
+    gitlabConfig: Configuration for connections to gitlab.com or an instance
+      of GitLab Enterprise.
     installationState: Output only. Installation state of the Connection.
     name: Immutable. The resource name of the connection, in the format
       `projects/{project}/locations/{location}/connections/{connection_id}`.
@@ -960,7 +960,7 @@ class Connection(_messages.Message):
   etag = _messages.StringField(4)
   githubConfig = _messages.MessageField('GitHubConfig', 5)
   githubEnterpriseConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig', 6)
-  gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 7)
+  gitlabConfig = _messages.MessageField('GitLabConfig', 7)
   installationState = _messages.MessageField('InstallationState', 8)
   name = _messages.StringField(9)
   reconciling = _messages.BooleanField(10)
@@ -1032,11 +1032,9 @@ class EmbeddedTask(_messages.Message):
   Messages:
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
-    LabelsValue: Map of key-value pairs of user-defined labels.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
-    labels: Map of key-value pairs of user-defined labels.
     taskSpec: Spec to instantiate this TaskRun.
   """
 
@@ -1065,33 +1063,8 @@ class EmbeddedTask(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Map of key-value pairs of user-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  taskSpec = _messages.MessageField('TaskSpec', 3)
+  taskSpec = _messages.MessageField('TaskSpec', 2)
 
 
 class Empty(_messages.Message):
@@ -1101,10 +1074,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class EmptyDir(_messages.Message):
-  r"""Represents an empty directory"""
 
 
 class EmptyDirVolumeSource(_messages.Message):
@@ -1235,27 +1204,6 @@ class FetchReadWriteTokenResponse(_messages.Message):
   token = _messages.StringField(2)
 
 
-class GCEPersistentDiskVolumeSource(_messages.Message):
-  r"""Represents a Compute Engine Disk resource that is attached to a
-  kubelet's host machine and then exposed to the pod. More info:
-  https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk
-
-  Fields:
-    fsType: Filesystem type of the volume that you want to mount.
-    partition: The partition in the volume that you want to mount. If omitted,
-      the default is to mount by volume name.
-    pdName: Unique name of the PD resource in Compute Engine. Used to identify
-      the disk.
-    readOnly: ReadOnly here will force the ReadOnly setting in VolumeMounts.
-      Defaults to false.
-  """
-
-  fsType = _messages.StringField(1)
-  partition = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pdName = _messages.StringField(3)
-  readOnly = _messages.BooleanField(4)
-
-
 class GitHubConfig(_messages.Message):
   r"""Configuration for connections to github.com.
 
@@ -1271,14 +1219,15 @@ class GitHubConfig(_messages.Message):
   authorizerCredential = _messages.MessageField('OAuthCredential', 2)
 
 
-class GitLabEnterpriseConfig(_messages.Message):
-  r"""Configuration for connections to an instance of GitLab Enterprise.
+class GitLabConfig(_messages.Message):
+  r"""Configuration for connections to gitlab.com or an instance of GitLab
+  Enterprise.
 
   Fields:
     authorizerCredential: Required. A GitLab personal access token with the
       `api` scope access.
-    hostUri: Required. The URI of the GitLab Enterprise host this connection
-      is for.
+    hostUri: The URI of the GitLab Enterprise host this connection is for. If
+      not specified, the default value is https://gitlab.com.
     readAuthorizerCredential: A GitLab personal access token with `read_api`
       scope access. Required if the GitLab Enterprise server verion is older
       than 13.10. See at
@@ -1945,49 +1894,6 @@ class ParamValue(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
-class PersistentVolumeClaim(_messages.Message):
-  r"""PersistentVolumeClaim is a user's request for and claim to a persistent
-  volume
-
-  Fields:
-    spec: Spec defines the desired characteristics of a volume requested by a
-      pod author.
-  """
-
-  spec = _messages.MessageField('PersistentVolumeClaimSpec', 1)
-
-
-class PersistentVolumeClaimSpec(_messages.Message):
-  r"""PersistentVolumeClaimSpec describes the common attributes of storage
-  devices and allows a Source for provider-specific attributes.
-
-  Enums:
-    AccessModesValueListEntryValuesEnum:
-
-  Fields:
-    accessModes: Desired access modes the volume should have.
-    resources: The minimum resources the volume should have.
-  """
-
-  class AccessModesValueListEntryValuesEnum(_messages.Enum):
-    r"""AccessModesValueListEntryValuesEnum enum type.
-
-    Values:
-      PERSISTENT_VOLUME_ACCESS_MODE_UNSPECIFIED: Default enum type; should not
-        be used.
-      READ_WRITE_ONCE: can be mounted in read/write mode to exactly 1 host
-      READ_ONLY_MANY: can be mounted in read-only mode to many hosts
-      READ_WRITE_MANY: can be mounted in read/write mode to many hosts
-    """
-    PERSISTENT_VOLUME_ACCESS_MODE_UNSPECIFIED = 0
-    READ_WRITE_ONCE = 1
-    READ_ONLY_MANY = 2
-    READ_WRITE_MANY = 3
-
-  accessModes = _messages.EnumField('AccessModesValueListEntryValuesEnum', 1, repeated=True)
-  resources = _messages.MessageField('ResourceRequirements', 2)
-
-
 class PipelineRef(_messages.Message):
   r"""PipelineRef can be used to refer to a specific instance of a Pipeline.
 
@@ -2035,7 +1941,6 @@ class PipelineRun(_messages.Message):
   Messages:
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
-    LabelsValue: Map of key-value pairs of user-defined labels.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
@@ -2047,7 +1952,6 @@ class PipelineRun(_messages.Message):
     createTime: Output only. Time at which the request to create the
       `PipelineRun` was received.
     etag: Needed for declarative-friendly resources.
-    labels: Map of key-value pairs of user-defined labels.
     name: Output only. The `PipelineRun` name with format
       `projects/{project}/locations/{location}/pipelineRuns/{pipeline_run}`
     params: Params is a list of parameter names and values.
@@ -2107,52 +2011,27 @@ class PipelineRun(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Map of key-value pairs of user-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotations = _messages.MessageField('AnnotationsValue', 1)
   childReferences = _messages.MessageField('ChildStatusReference', 2, repeated=True)
   completionTime = _messages.StringField(3)
   conditions = _messages.MessageField('Condition', 4, repeated=True)
   createTime = _messages.StringField(5)
   etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  params = _messages.MessageField('Param', 9, repeated=True)
-  pipelineRef = _messages.MessageField('PipelineRef', 10)
-  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 11)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 12)
-  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 13)
-  serviceAccount = _messages.StringField(14)
-  skippedTasks = _messages.MessageField('SkippedTask', 15, repeated=True)
-  startTime = _messages.StringField(16)
-  timeouts = _messages.MessageField('TimeoutFields', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workerPool = _messages.StringField(20)
-  workflow = _messages.StringField(21)
-  workspaces = _messages.MessageField('WorkspaceBinding', 22, repeated=True)
+  name = _messages.StringField(7)
+  params = _messages.MessageField('Param', 8, repeated=True)
+  pipelineRef = _messages.MessageField('PipelineRef', 9)
+  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 10)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 11)
+  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 12)
+  serviceAccount = _messages.StringField(13)
+  skippedTasks = _messages.MessageField('SkippedTask', 14, repeated=True)
+  startTime = _messages.StringField(15)
+  timeouts = _messages.MessageField('TimeoutFields', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  workerPool = _messages.StringField(19)
+  workflow = _messages.StringField(20)
+  workspaces = _messages.MessageField('WorkspaceBinding', 21, repeated=True)
 
 
 class PipelineSpec(_messages.Message):
@@ -2492,70 +2371,6 @@ class Resource(_messages.Message):
   secretVersion = _messages.StringField(3)
   topic = _messages.StringField(4)
   url = _messages.StringField(5)
-
-
-class ResourceRequirements(_messages.Message):
-  r"""Compute resource requirements.
-
-  Messages:
-    LimitsValue: The maximum amount of compute resources allowed.
-    RequestsValue: The minimum amount of compute resources needed.
-
-  Fields:
-    limits: The maximum amount of compute resources allowed.
-    requests: The minimum amount of compute resources needed.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LimitsValue(_messages.Message):
-    r"""The maximum amount of compute resources allowed.
-
-    Messages:
-      AdditionalProperty: An additional property for a LimitsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LimitsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LimitsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RequestsValue(_messages.Message):
-    r"""The minimum amount of compute resources needed.
-
-    Messages:
-      AdditionalProperty: An additional property for a RequestsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type RequestsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RequestsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  limits = _messages.MessageField('LimitsValue', 1)
-  requests = _messages.MessageField('RequestsValue', 2)
 
 
 class Result(_messages.Message):
@@ -2940,7 +2755,6 @@ class TaskRun(_messages.Message):
   Messages:
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
-    LabelsValue: Map of key-value pairs of user-defined labels.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
@@ -2950,7 +2764,6 @@ class TaskRun(_messages.Message):
     createTime: Output only. Time at which the request to create the `TaskRun`
       was received.
     etag: Needed for declarative-friendly resources.
-    labels: Map of key-value pairs of user-defined labels.
     name: Output only. The 'TaskRun' name with format:
       `projects/{project}/locations/{location}/taskRuns/{task_run}`
     params: Params is a list of parameter names and values.
@@ -3012,52 +2825,27 @@ class TaskRun(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Map of key-value pairs of user-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotations = _messages.MessageField('AnnotationsValue', 1)
   completionTime = _messages.StringField(2)
   conditions = _messages.MessageField('Condition', 3, repeated=True)
   createTime = _messages.StringField(4)
   etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  params = _messages.MessageField('Param', 8, repeated=True)
-  resolvedTaskSpec = _messages.MessageField('TaskSpec', 9)
-  serviceAccount = _messages.StringField(10)
-  sidecars = _messages.MessageField('SidecarState', 11, repeated=True)
-  startTime = _messages.StringField(12)
-  steps = _messages.MessageField('StepState', 13, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 14)
-  taskRunResults = _messages.MessageField('TaskRunResult', 15, repeated=True)
-  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 16)
-  taskSpec = _messages.MessageField('TaskSpec', 17)
-  timeout = _messages.StringField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  workerPool = _messages.StringField(21)
-  workspaces = _messages.MessageField('WorkspaceBinding', 22, repeated=True)
+  name = _messages.StringField(6)
+  params = _messages.MessageField('Param', 7, repeated=True)
+  resolvedTaskSpec = _messages.MessageField('TaskSpec', 8)
+  serviceAccount = _messages.StringField(9)
+  sidecars = _messages.MessageField('SidecarState', 10, repeated=True)
+  startTime = _messages.StringField(11)
+  steps = _messages.MessageField('StepState', 12, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 13)
+  taskRunResults = _messages.MessageField('TaskRunResult', 14, repeated=True)
+  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 15)
+  taskSpec = _messages.MessageField('TaskSpec', 16)
+  timeout = _messages.StringField(17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workerPool = _messages.StringField(20)
+  workspaces = _messages.MessageField('WorkspaceBinding', 21, repeated=True)
 
 
 class TaskRunResult(_messages.Message):
@@ -3206,16 +2994,13 @@ class VolumeSource(_messages.Message):
 
   Fields:
     emptyDir: A temporary directory that shares a pod's lifetime.
-    gcePersistentDisk: a Compute Engine Disk resource that is attached to a
-      kubelet's host machine and then exposed to the pod.
     name: Name of the Volume. Must be a DNS_LABEL and unique within the pod.
       More info: https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#names
   """
 
   emptyDir = _messages.MessageField('EmptyDirVolumeSource', 1)
-  gcePersistentDisk = _messages.MessageField('GCEPersistentDiskVolumeSource', 2)
-  name = _messages.StringField(3)
+  name = _messages.StringField(2)
 
 
 class WebhookSecret(_messages.Message):
@@ -3285,7 +3070,6 @@ class Workflow(_messages.Message):
   Messages:
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
-    LabelsValue: Map of key-value pairs of user-defined labels.
     ResourcesValue: Resources referenceable within a workflow.
 
   Fields:
@@ -3295,7 +3079,6 @@ class Workflow(_messages.Message):
     deleteTime: Output only. Server assigned timestamp for when the workflow
       was deleted.
     etag: Needed for declarative-friendly resources.
-    labels: Map of key-value pairs of user-defined labels.
     name: Output only. Format:
       `projects/{project}/locations/{location}/workflows/{workflow}`
     options: Workflow runs can be modified through several Workflow options.
@@ -3343,30 +3126,6 @@ class Workflow(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Map of key-value pairs of user-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourcesValue(_messages.Message):
     r"""Resources referenceable within a workflow.
 
@@ -3394,19 +3153,18 @@ class Workflow(_messages.Message):
   createTime = _messages.StringField(2)
   deleteTime = _messages.StringField(3)
   etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  options = _messages.MessageField('WorkflowOptions', 7)
-  params = _messages.MessageField('ParamSpec', 8, repeated=True)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 9)
-  ref = _messages.MessageField('PipelineRef', 10)
-  resources = _messages.MessageField('ResourcesValue', 11)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 12, repeated=True)
-  serviceAccount = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workflowTriggers = _messages.MessageField('WorkflowTrigger', 16, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceBinding', 17, repeated=True)
+  name = _messages.StringField(5)
+  options = _messages.MessageField('WorkflowOptions', 6)
+  params = _messages.MessageField('ParamSpec', 7, repeated=True)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 8)
+  ref = _messages.MessageField('PipelineRef', 9)
+  resources = _messages.MessageField('ResourcesValue', 10)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 11, repeated=True)
+  serviceAccount = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  workflowTriggers = _messages.MessageField('WorkflowTrigger', 15, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceBinding', 16, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):
@@ -3536,20 +3294,14 @@ class WorkspaceBinding(_messages.Message):
   to refer to a specific instance of a Pipeline.
 
   Fields:
-    emptyDir: EmptyDir represents a temporary directory that shares a Task's
-      lifetime.
     name: Name of the workspace.
     secret: Secret Volume Source.
     volumeClaim: Volume claim that will be created in the same namespace.
-    volumeClaimTemplate: Template for a claim that will be created in the same
-      namespace.
   """
 
-  emptyDir = _messages.MessageField('EmptyDir', 1)
-  name = _messages.StringField(2)
-  secret = _messages.MessageField('SecretVolumeSource', 3)
-  volumeClaim = _messages.MessageField('VolumeClaim', 4)
-  volumeClaimTemplate = _messages.MessageField('PersistentVolumeClaim', 5)
+  name = _messages.StringField(1)
+  secret = _messages.MessageField('SecretVolumeSource', 2)
+  volumeClaim = _messages.MessageField('VolumeClaim', 3)
 
 
 class WorkspaceDeclaration(_messages.Message):

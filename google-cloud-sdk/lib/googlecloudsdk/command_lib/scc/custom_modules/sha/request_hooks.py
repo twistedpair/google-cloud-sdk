@@ -33,6 +33,10 @@ def CreateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
   """Creates a Security Health Analytics custom module."""
   del ref
   req.parent = _ValidateAndGetParent(args)
+  if args.enablement_state not in ["enabled", "disabled"]:
+    raise InvalidSCCInputError(
+        "Invalid custom module enablement state: %s. Enablement state must be"
+        " enabled or disabled." % args.enablement_state)
   return req
 
 
@@ -83,14 +87,14 @@ def ListSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
 
 
 def ListDescendantSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
-  """Lists Descendant Security Health Analytics custom modules."""
+  """Lists descendant Security Health Analytics custom modules."""
   del ref
   req.parent = _ValidateAndGetParent(args)
   return req
 
 
 def ListEffectiveSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
-  """Lists Effective Security Health Analytics custom modules."""
+  """Lists effective Security Health Analytics custom modules."""
   del ref
   req.parent = _ValidateAndGetParent(args)
   return req
@@ -124,6 +128,10 @@ def UpdateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
     custom_module = _ValidateAndGetCustomModuleFullResourceName(args)
     req.name = custom_module
   req.updateMask = CleanUpUserInput(req.updateMask)
+  if args.enablement_state not in ["enabled", "disabled", "inherited"]:
+    raise InvalidSCCInputError(
+        "Invalid custom module enablement state: %s. Enablement state must be"
+        " enabled, disabled or inherited." % args.enablement_state)
   return req
 
 

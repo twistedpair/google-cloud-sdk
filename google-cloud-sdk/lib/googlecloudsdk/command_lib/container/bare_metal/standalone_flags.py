@@ -629,3 +629,473 @@ def AddNetworkConfig(parser, is_update=False):
 
   _AddNetworkModeConfig(bare_metal_network_config_group, is_update)
   _AddSrIovConfig(bare_metal_network_config_group, is_update)
+
+
+def _AddBGPLBAsn(bgp_lb_config_group, is_update=False):
+  """Adds flags for ASN used by BGP LB load balancer of the cluster.
+
+  Args:
+   bgp_lb_config_group: The parent group to add the flags to.
+   is_update: bool, whether the flag is for update command or not.
+  """
+  bgp_lb_config_group.add_argument(
+      '--bgp-lb-asn',
+      required=not is_update,
+      help='BGP autonomous system number (ASN) of the cluster.',
+      type=int,
+  )
+
+
+def _AddBGPLBPeerConfigs(bgp_lb_config_group, is_update=False):
+  """Adds flags for peer configs used by BGP LB load balancer.
+
+  Args:
+    bgp_lb_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  bgp_lb_peer_configs_mutex_group = bgp_lb_config_group.add_group(
+      help='BGP LB peer configuration.',
+      mutex=True,
+      required=required,
+  )
+  bgp_lb_peer_configs_from_file_help_text = """
+Path of the YAML/JSON file that contains the BGP LB peer configs.
+
+Examples:
+
+  bgpPeerConfigs:
+  - asn: 1000
+    controlPlaneNodes:
+    - 10.200.0.14/32
+    - 10.200.0.15/32
+    ipAddress: 10.200.0.16/32
+  - asn: 1001
+    controlPlaneNodes:
+    - 10.200.0.17/32
+    - 10.200.0.18/32
+    ipAddress: 10.200.0.19/32
+
+List of supported fields in `bgpPeerConfigs`
+
+KEY               | VALUE                 | NOTE
+------------------|-----------------------|---------------------------
+asn               | int                   | required, mutable
+controlPlaneNodes | one or more IP ranges | optional, mutable
+ipAddress         | valid IP address      | required, mutable
+
+"""
+  bgp_lb_peer_configs_mutex_group.add_argument(
+      '--bgp-lb-peer-configs-from-file',
+      help=bgp_lb_peer_configs_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  bgp_lb_peer_configs_mutex_group.add_argument(
+      '--bgp-lb-peer-configs',
+      help='BGP LB peer configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'asn': int,
+              'ip-address': str,
+              'control-plane-nodes': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['asn', 'ip-address'],
+      ),
+  )
+
+
+def _AddBGPLBNodeConfigs(bare_metal_bgp_lb_node_config):
+  """Adds flags to set the BGP LB node config.
+
+  Args:
+    bare_metal_bgp_lb_node_config: The parent group to add the flag
+      to.
+  """
+  node_config_mutex_group = bare_metal_bgp_lb_node_config.add_group(
+      help='Populate BGP LB load balancer node config.',
+      mutex=True)
+  bgp_lb_node_configs_from_file_help_text = """
+Path of the YAML/JSON file that contains the BGP LB node configs.
+
+Examples:
+
+  nodeConfigs:
+  - nodeIP: 10.200.0.10
+    labels:
+      node1: label1
+      node2: label2
+  - nodeIP: 10.200.0.11
+    labels:
+      node3: label3
+      node4: label4
+
+List of supported fields in `nodeConfigs`
+
+KEY           | VALUE                     | NOTE
+--------------|---------------------------|---------------------------
+nodeIP        | string                    | required, mutable
+labels        | one or more key-val pairs | optional, mutable
+
+"""
+  node_config_mutex_group.add_argument(
+      '--bgp-lb-load-balancer-node-configs-from-file',
+      help=bgp_lb_node_configs_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  node_config_mutex_group.add_argument(
+      '--bgp-lb-load-balancer-node-configs',
+      help='BGP LB load balancer node configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=['node-ip'],
+      ),
+  )
+
+
+def _AddBGPLBNodeLabels(bare_metal_bgp_lb_node_config):
+  """Adds a flag to assign labels to nodes in a BGP LB node pool.
+
+  Args:
+    bare_metal_bgp_lb_node_config: The parent group to add the
+      flags to.
+  """
+  bare_metal_bgp_lb_node_config.add_argument(
+      '--bgp-lb-load-balancer-node-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Labels assigned to nodes of a BGP LB node pool.',
+  )
+
+
+def _AddBGPLBNodeTaints(bare_metal_bgp_lb_node_config):
+  """Adds a flag to specify the node taint in the BGP LB node pool.
+
+  Args:
+   bare_metal_bgp_lb_node_config: The parent group to add the
+      flags to.
+  """
+  bare_metal_bgp_lb_node_config.add_argument(
+      '--bgp-lb-load-balancer-node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help='Node taint applied to every node in a BGP LB node pool.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddBGPLBNodePoolConfig(bgp_lb_config_group):
+  """Adds a command group to set the node pool config for BGP LB load balancer.
+
+  Args:
+   bgp_lb_config_group: The argparse parser to add the flag to.
+  """
+  bare_metal_bgp_lb_node_pool_config_group = bgp_lb_config_group.add_group(
+      help=(
+          'Anthos on bare metal node pool configuration for BGP LB load'
+          ' balancer nodes.'
+      ),
+  )
+  bare_metal_bgp_lb_node_config = (
+      bare_metal_bgp_lb_node_pool_config_group.add_group(
+          help='BGP LB Node Pool configuration.'
+      )
+  )
+
+  _AddBGPLBNodeConfigs(bare_metal_bgp_lb_node_config)
+  _AddBGPLBNodeLabels(bare_metal_bgp_lb_node_config)
+  _AddBGPLBNodeTaints(bare_metal_bgp_lb_node_config)
+
+
+def _AddBGPLBAddressPools(bgp_lb_config_group, is_update=False):
+  """Adds flags for address pools used by BGP LB load balancer.
+
+  Args:
+    bgp_lb_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  bgp_lb_address_pools_mutex_group = bgp_lb_config_group.add_group(
+      help='BGP LB address pools configuration.',
+      mutex=True,
+      required=required,
+  )
+  bgp_lb_address_pools_from_file_help_text = """
+Path of the YAML/JSON file that contains the BGP LB address pools.
+
+Examples:
+
+  addressPools:
+  - pool: pool-1
+    addresses:
+    - 10.200.0.14/32
+    - 10.200.0.15/32
+    avoidBuggyIPs: True
+    manualAssign: True
+  - pool: pool-2
+    addresses:
+    - 10.200.0.16/32
+    avoidBuggyIPs: False
+    manualAssign: False
+
+List of supported fields in `addressPools`
+
+KEY           | VALUE                 | NOTE
+--------------|-----------------------|---------------------------
+pool          | string                | required, mutable
+addresses     | one or more IP ranges | required, mutable
+avoidBuggyIPs | bool                  | optional, mutable, defaults to False
+manualAssign  | bool                  | optional, mutable, defaults to False
+
+"""
+  bgp_lb_address_pools_mutex_group.add_argument(
+      '--bgp-lb-address-pools-from-file',
+      help=bgp_lb_address_pools_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  bgp_lb_address_pools_mutex_group.add_argument(
+      '--bgp-lb-address-pools',
+      help='BGP LB address pools configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'pool': str,
+              'avoid-buggy-ips': arg_parsers.ArgBoolean(),
+              'manual-assign': arg_parsers.ArgBoolean(),
+              'addresses': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['pool', 'addresses'],
+      ),
+  )
+
+
+def _AddBGPLBConfig(lb_config_mutex_group, is_update=False):
+  """Adds flags for bgpLB load balancer.
+
+  Args:
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  bgp_lb_config_group = lb_config_mutex_group.add_group(
+      'BGP LB Configuration',
+      )
+
+  _AddBGPLBAsn(bgp_lb_config_group, is_update)
+  _AddBGPLBPeerConfigs(bgp_lb_config_group, is_update)
+  _AddBGPLBAddressPools(bgp_lb_config_group, is_update)
+  _AddBGPLBNodePoolConfig(bgp_lb_config_group)
+
+
+def _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config):
+  """Adds flags to set the Metal LB node config.
+
+  Args:
+    bare_metal_metal_lb_node_config: The parent group to add the flag
+      to.
+  """
+  node_config_mutex_group = bare_metal_metal_lb_node_config.add_group(
+      help='Populate MetalLB load balancer node config.',
+      mutex=True)
+  metal_lb_node_configs_from_file_help_text = """
+Path of the YAML/JSON file that contains the Metal LB node configs.
+
+Examples:
+
+  nodeConfigs:
+  - nodeIP: 10.200.0.10
+    labels:
+      node1: label1
+      node2: label2
+  - nodeIP: 10.200.0.11
+    labels:
+      node3: label3
+      node4: label4
+
+List of supported fields in `nodeConfigs`
+
+KEY           | VALUE                     | NOTE
+--------------|---------------------------|---------------------------
+nodeIP        | string                    | required, mutable
+labels        | one or more key-val pairs | optional, mutable
+
+"""
+  node_config_mutex_group.add_argument(
+      '--metal-lb-load-balancer-node-configs-from-file',
+      help=metal_lb_node_configs_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  node_config_mutex_group.add_argument(
+      '--metal-lb-load-balancer-node-configs',
+      help='MetalLB load balancer node configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'node-ip': str,
+              'labels': str,
+          },
+          required_keys=['node-ip'],
+      ),
+  )
+
+
+def _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config):
+  """Adds a flag to assign labels to nodes in a MetalLB node pool.
+
+  Args:
+    bare_metal_metal_lb_node_config: The parent group to add the
+      flags to.
+  """
+  bare_metal_metal_lb_node_config.add_argument(
+      '--metal-lb-load-balancer-node-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help='Labels assigned to nodes of a MetalLB node pool.',
+  )
+
+
+def _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config):
+  """Adds a flag to specify the node taint in the MetalLBnode pool.
+
+  Args:
+   bare_metal_metal_lb_node_config: The parent group to add the
+      flags to.
+  """
+  bare_metal_metal_lb_node_config.add_argument(
+      '--metal-lb-load-balancer-node-taints',
+      metavar='KEY=VALUE:EFFECT',
+      help='Node taint applied to every node in a MetalLB node pool.',
+      type=arg_parsers.ArgDict(),
+  )
+
+
+def _AddMetalLBNodePoolConfig(metal_lb_config_group):
+  """Adds a command group to set the node pool config for MetalLB load balancer.
+
+  Args:
+   metal_lb_config_group: The argparse parser to add the flag to.
+  """
+  bare_metal_metal_lb_node_pool_config_group = metal_lb_config_group.add_group(
+      help=(
+          'Anthos on bare metal node pool configuration for MetalLB load'
+          ' balancer nodes.'
+      ),
+  )
+  bare_metal_metal_lb_node_config = (
+      bare_metal_metal_lb_node_pool_config_group.add_group(
+          help='MetalLB Node Pool configuration.'
+      )
+  )
+
+  _AddMetalLBNodeConfigs(bare_metal_metal_lb_node_config)
+  _AddMetalLBNodeLabels(bare_metal_metal_lb_node_config)
+  _AddMetalLBNodeTaints(bare_metal_metal_lb_node_config)
+
+
+def _AddMetalLBAddressPools(metal_lb_config_group, is_update=False):
+  """Adds flags for address pools used by Metal LB load balancer.
+
+  Args:
+    metal_lb_config_group: The parent group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  metal_lb_address_pools_mutex_group = metal_lb_config_group.add_group(
+      help='MetalLB address pools configuration.',
+      mutex=True,
+      required=required,
+  )
+  metal_lb_address_pools_from_file_help_text = """
+Path of the YAML/JSON file that contains the MetalLB address pools.
+
+Examples:
+
+  addressPools:
+  - pool: pool-1
+    addresses:
+    - 10.200.0.14/32
+    - 10.200.0.15/32
+    avoidBuggyIPs: True
+    manualAssign: True
+  - pool: pool-2
+    addresses:
+    - 10.200.0.16/32
+    avoidBuggyIPs: False
+    manualAssign: False
+
+List of supported fields in `addressPools`
+
+KEY           | VALUE                 | NOTE
+--------------|-----------------------|---------------------------
+pool          | string                | required, mutable
+addresses     | one or more IP ranges | required, mutable
+avoidBuggyIPs | bool                  | optional, mutable, defaults to False
+manualAssign  | bool                  | optional, mutable, defaults to False
+
+"""
+  metal_lb_address_pools_mutex_group.add_argument(
+      '--metal-lb-address-pools-from-file',
+      help=metal_lb_address_pools_from_file_help_text,
+      type=arg_parsers.YAMLFileContents(),
+      hidden=True,
+  )
+  metal_lb_address_pools_mutex_group.add_argument(
+      '--metal-lb-address-pools',
+      help='MetalLB address pools configuration.',
+      action='append',
+      type=arg_parsers.ArgDict(
+          spec={
+              'pool': str,
+              'avoid-buggy-ips': arg_parsers.ArgBoolean(),
+              'manual-assign': arg_parsers.ArgBoolean(),
+              'addresses': arg_parsers.ArgList(custom_delim_char=';'),
+          },
+          required_keys=['pool', 'addresses'],
+      ),
+  )
+
+
+def _AddMetalLBConfig(lb_config_mutex_group, is_update=False):
+  """Adds flags for metalLB load balancer.
+
+  Args:
+    lb_config_mutex_group: The parent mutex group to add the flags to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  metal_lb_config_group = lb_config_mutex_group.add_group(
+      'MetalLB Configuration',
+      )
+
+  _AddMetalLBAddressPools(metal_lb_config_group, is_update)
+  _AddMetalLBNodePoolConfig(metal_lb_config_group)
+
+
+def AddLoadBalancerConfig(parser, is_update=False):
+  """Adds a command group to set the load balancer config.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+    is_update: bool, whether the flag is for update command or not.
+  """
+  required = not is_update
+  bare_metal_load_balancer_config_group = parser.add_group(
+      help=(
+          'Anthos on bare metal standalone cluster load balancer configuration.'
+      ),
+      required=required,
+  )
+
+  lb_config_mutex_group = bare_metal_load_balancer_config_group.add_group(
+      mutex=True,
+      required=required,
+      help='Populate one of the load balancers.',
+  )
+
+  _AddMetalLBConfig(lb_config_mutex_group, is_update)
+  _AddBGPLBConfig(lb_config_mutex_group, is_update)

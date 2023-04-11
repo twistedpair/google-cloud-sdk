@@ -401,7 +401,7 @@ class DataAssetManagerLake(_messages.Message):
     lakeId: Required. The unique lake_id. The lake will be created using
       lake_id.
     location: Required. The physical region where the lake would be located
-      e.g. us-cental1
+      e.g. us-central1
     metastore: Optional. Settings to manage Dataplex lake and Dataproc
       Metastore service instance association.
     project: Required. The project where the lake would be created.
@@ -632,7 +632,7 @@ class DataAssetPubSubAsset(_messages.Message):
 
 
 class DeplomentProcess(_messages.Message):
-  r"""DeplomentProcess represents the process to be instantiated by template.
+  r"""DeploymentProcess represents the process to be instantiated by template.
 
   Messages:
     ParametersValue: Process parameters.
@@ -802,6 +802,7 @@ class DeploymentAsset(_messages.Message):
     TypeValueValuesEnum: Asset type defines dataplex zone of this resource.
 
   Fields:
+    attachedZone: The Dataplex Zone to which this asset is attached.
     bigqueryDataset: BigQueryDataset represents the details of bigquery
       dataset asset.
     bigqueryTable: BigQueryTable represents the details of bigquery table
@@ -849,14 +850,15 @@ class DeploymentAsset(_messages.Message):
     CURATED = 3
     TEMPORARY = 4
 
-  bigqueryDataset = _messages.MessageField('DeploymentAssetBigQueryDataset', 1)
-  bigqueryTable = _messages.MessageField('DeploymentAssetBigQueryTable', 2)
-  gcsBucket = _messages.MessageField('DeploymentAssetGcsBucket', 3)
-  id = _messages.StringField(4)
-  ownership = _messages.EnumField('OwnershipValueValuesEnum', 5)
-  pubsubSubscription = _messages.MessageField('DeploymentAssetPubSubSubscription', 6)
-  pubsubTopic = _messages.MessageField('DeploymentAssetPubSubTopic', 7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  attachedZone = _messages.StringField(1)
+  bigqueryDataset = _messages.MessageField('DeploymentAssetBigQueryDataset', 2)
+  bigqueryTable = _messages.MessageField('DeploymentAssetBigQueryTable', 3)
+  gcsBucket = _messages.MessageField('DeploymentAssetGcsBucket', 4)
+  id = _messages.StringField(5)
+  ownership = _messages.EnumField('OwnershipValueValuesEnum', 6)
+  pubsubSubscription = _messages.MessageField('DeploymentAssetPubSubSubscription', 7)
+  pubsubTopic = _messages.MessageField('DeploymentAssetPubSubTopic', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class DeploymentAssetBigQueryDataset(_messages.Message):
@@ -873,24 +875,54 @@ class DeploymentAssetBigQueryTable(_messages.Message):
   r"""BigQueryTable represents bigquery table data asset.
 
   Fields:
+    clusteringFields: Specifies column names to use for data clustering. Up to
+      four top-level columns are allowed, and should be specified in
+      descending priority order.
     dataset: BigQuery dataset name.
+    expirationDays: The time when this table expires, in days. If not present,
+      the table will persist indefinitely. Expired tables will be deleted and
+      their storage reclaimed.
     name: BigQuery table name.
     schema: Json string defining BigQuery table schema.
+    timePartitioning: Time partitioning information for the table.
   """
 
-  dataset = _messages.StringField(1)
-  name = _messages.StringField(2)
-  schema = _messages.StringField(3)
+  clusteringFields = _messages.StringField(1, repeated=True)
+  dataset = _messages.StringField(2)
+  expirationDays = _messages.IntegerField(3)
+  name = _messages.StringField(4)
+  schema = _messages.StringField(5)
+  timePartitioning = _messages.MessageField('DeploymentAssetBigQueryTableTimePartitioning', 6)
+
+
+class DeploymentAssetBigQueryTableTimePartitioning(_messages.Message):
+  r"""TimePartitioning configures time-based partitioning for the table.
+
+  Fields:
+    field: The field used to determine how to create a time-based partition.
+      If time-based partitioning is enabled without this value, the table is
+      partitioned based on the load time.
+    type: Required. The supported types are DAY, HOUR, MONTH, and YEAR, which
+      will generate one partition per day, hour, month, and year,
+      respectively.
+  """
+
+  field = _messages.StringField(1)
+  type = _messages.StringField(2)
 
 
 class DeploymentAssetGcsBucket(_messages.Message):
   r"""Cloud Storage Bucket represents Cloud Storage bucket data asset.
 
   Fields:
+    ageDays: Age in days after which you want to perform delete action.
     name: Cloud Storage bucket name.
+    retentionDays: Specifies the days for which objects need to be retained.
   """
 
-  name = _messages.StringField(1)
+  ageDays = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+  retentionDays = _messages.IntegerField(3)
 
 
 class DeploymentAssetPubSubSubscription(_messages.Message):

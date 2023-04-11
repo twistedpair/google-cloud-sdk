@@ -243,9 +243,13 @@ def _GetGapicClientInstance(api_name,
     if endpoint_override:
       address = urlparse(endpoint_override).netloc
 
-    if not address_override_func:
+    if address_override_func:
+      address = address_override_func(address)
+
+    if api_name == 'compute':
       return address
-    return address_override_func(address)
+
+    return _UniversifyAddress(address)
 
   client_class = _GetGapicClientClass(
       api_name, api_version, transport_choice=transport_choice)
@@ -254,6 +258,15 @@ def _GetGapicClientInstance(api_name,
       credentials,
       address_override_func=AddressOverride,
       mtls_enabled=_MtlsEnabled(api_name, api_version))
+
+
+def _UniversifyAddress(address):
+  """Take universe into account."""
+  universe_domain_property = properties.VALUES.core.universe_domain
+  if universe_domain_property.IsExplicitlySet():
+    address = address.replace(universe_domain_property.default,
+                              universe_domain_property.Get())
+  return address
 
 
 def _GetMtlsEndpoint(api_name, api_version, client_class=None):
@@ -313,10 +326,16 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
 
   client_class = client_class or _GetClientClass(api_name, api_version)
   if endpoint_override:
-    return _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
-  if _MtlsEnabled(api_name, api_version):
-    return _GetMtlsEndpoint(api_name, api_version, client_class)
-  return client_class.BASE_URL
+    address = _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
+  elif _MtlsEnabled(api_name, api_version):
+    address = _GetMtlsEndpoint(api_name, api_version, client_class)
+  else:
+    address = client_class.BASE_URL
+
+  if api_name == 'compute':
+    return address
+
+  return _UniversifyAddress(address)
 
 
 def _GetMessagesModule(api_name, api_version):

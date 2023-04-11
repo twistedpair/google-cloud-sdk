@@ -2231,20 +2231,23 @@ class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
 
   Enums:
     IpProtocolValueValuesEnum:
-    LoadBalancerTypeValueValuesEnum:
+    LoadBalancerTypeValueValuesEnum: The type of Load Balancer specified by
+      this target. Must match the configuration of the Load Balancer located
+      at the LoadBalancerTarget's IP address/port and region.
 
   Fields:
-    ipAddress: The frontend IP address of the
+    ipAddress: The frontend IP address of the Load Balancer to health check.
     ipProtocol: A IpProtocolValueValuesEnum attribute.
     kind: A string attribute.
-    loadBalancerType: A LoadBalancerTypeValueValuesEnum attribute.
+    loadBalancerType: The type of Load Balancer specified by this target. Must
+      match the configuration of the Load Balancer located at the
+      LoadBalancerTarget's IP address/port and region.
     networkUrl: The fully qualified url of the network on which the ILB is
-    port: Load Balancer to health check. The configured port of the Load
-      Balancer.
-    project: present. This should be formatted like https://www.googleapis.com
-      /compute/v1/projects/{project}/global/networks/{network} The project ID
-      in which the ILB exists.
-    region: The region for regional ILBs.
+      present. This should be formatted like https://www.googleapis.com/comput
+      e/v1/projects/{project}/global/networks/{network}
+    port: The configured port of the Load Balancer.
+    project: The project ID in which the ILB exists.
+    region: The region in which the ILB exists.
   """
 
   class IpProtocolValueValuesEnum(_messages.Enum):
@@ -2260,7 +2263,9 @@ class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):
     undefined = 2
 
   class LoadBalancerTypeValueValuesEnum(_messages.Enum):
-    r"""LoadBalancerTypeValueValuesEnum enum type.
+    r"""The type of Load Balancer specified by this target. Must match the
+    configuration of the Load Balancer located at the LoadBalancerTarget's IP
+    address/port and region.
 
     Values:
       none: <no description>

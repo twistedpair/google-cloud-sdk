@@ -75,6 +75,14 @@ def AddDescriptionFlag(parser, help_text):
       help=help_text)
 
 
+def AddRejectionDetailsFlag(parser):
+  """Adds the --details flag to the given parser."""
+  parser.add_argument(
+      '--details',
+      required=False,
+      help="""Additional details behind the rejection""")
+
+
 def AddGlobalFlag(parser, hidden):
   """Add the --global argument to the given parser."""
   parser.add_argument(
@@ -106,9 +114,64 @@ def AddRegionGroup(parser,
   AddRegionFlag(region_group, supports_region_wildcard, hide_region_arg)
 
 
+def AddSpokeLocationsFlag(parser):
+  """Add the --spoke-locations argument to the given parser."""
+  spoke_locations_help_text = """ \
+        A comma sepeated list of locations. The locations can be set to 'global'
+        and/or Google Cloud supported regions. To see the names of regions, see
+        [Viewing a list of available regions](https://cloud.google.com/compute/docs/regions-zones/viewing-regions-zones#viewing_a_list_of_available_regions)."""
+  parser.add_argument(
+      '--spoke-locations',
+      required=False,
+      help=spoke_locations_help_text,
+      type=arg_parsers.ArgList(),
+      default=[],
+      metavar='LOCATION')
+
+
+def AddViewFlag(parser):
+  """Add the --view argument to the given parser."""
+  view_help_text = """ \
+       Enumeration to control which spoke fields are included in the response."""
+  parser.add_argument(
+      '--view',
+      required=False,
+      choices=['basic', 'detailed'],
+      default='basic',
+      help=view_help_text)
+
+
+def AddHubResourceArg(parser, desc):
+  """Add a resource argument for a hub.
+
+  Args:
+    parser: the parser for the command.
+    desc: the string to describe the resource, such as 'to create'.
+  """
+  hub_concept_spec = concepts.ResourceSpec(
+      'networkconnectivity.projects.locations.global.hubs',
+      resource_name='hub',
+      hubsId=HubAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='hub',
+      concept_spec=hub_concept_spec,
+      required=True,
+      group_help='Name of the hub {}.'.format(desc))
+  concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def SpokeAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='spoke', help_text='The spoke Id.')
+
+
+def HubAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='hub', help_text='The hub Id.'
+  )
 
 
 def LocationAttributeConfig(location_arguments, region_resource_command=False):

@@ -39,7 +39,11 @@ class GkehubV1beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_fleets = self.OrganizationsLocationsFleetsService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
+    self.projects_locations_fleets = self.ProjectsLocationsFleetsService(self)
     self.projects_locations_memberships_bindings = self.ProjectsLocationsMembershipsBindingsService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_namespaces_rbacrolebindings = self.ProjectsLocationsNamespacesRbacrolebindingsService(self)
@@ -48,6 +52,63 @@ class GkehubV1beta(base_api.BaseApiClient):
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsFleetsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_fleets resource."""
+
+    _NAME = 'organizations_locations_fleets'
+
+    def __init__(self, client):
+      super(GkehubV1beta.OrganizationsLocationsFleetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns all fleets within an organization or a project that the caller has access to.
+
+      Args:
+        request: (GkehubOrganizationsLocationsFleetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFleetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/fleets',
+        http_method='GET',
+        method_id='gkehub.organizations.locations.fleets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/fleets',
+        request_field='',
+        request_type_name='GkehubOrganizationsLocationsFleetsListRequest',
+        response_type_name='ListFleetsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(GkehubV1beta.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(GkehubV1beta.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsFeaturesService(base_api.BaseApiService):
     """Service class for the projects_locations_features resource."""
@@ -272,6 +333,151 @@ class GkehubV1beta(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='GkehubProjectsLocationsFeaturesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFleetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_fleets resource."""
+
+    _NAME = 'projects_locations_fleets'
+
+    def __init__(self, client):
+      super(GkehubV1beta.ProjectsLocationsFleetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/fleets',
+        http_method='POST',
+        method_id='gkehub.projects.locations.fleets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta/{+parent}/fleets',
+        request_field='fleet',
+        request_type_name='GkehubProjectsLocationsFleetsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Removes a Fleet. There must be no memberships remaining in the Fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/fleets/{fleetsId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.fleets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFleetsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the details of a fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Fleet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/fleets/{fleetsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.fleets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFleetsGetRequest',
+        response_type_name='Fleet',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns all fleets within an organization or a project that the caller has access to.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFleetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/fleets',
+        http_method='GET',
+        method_id='gkehub.projects.locations.fleets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/fleets',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFleetsListRequest',
+        response_type_name='ListFleetsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/fleets/{fleetsId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.fleets.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='fleet',
+        request_type_name='GkehubProjectsLocationsFleetsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -1170,12 +1170,13 @@ class Message(_messages.Message):
     r"""The new task state.
 
     Values:
-      STATE_UNSPECIFIED: unknown state
+      STATE_UNSPECIFIED: Unknown state.
       PENDING: The Task is created and waiting for resources.
       ASSIGNED: The Task is assigned to at least one VM.
       RUNNING: The Task is running.
       FAILED: The Task has failed.
       SUCCEEDED: The Task has succeeded.
+      UNEXECUTED: The Task has not been executed when the Job finishes.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1183,6 +1184,7 @@ class Message(_messages.Message):
     RUNNING = 3
     FAILED = 4
     SUCCEEDED = 5
+    UNEXECUTED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The message type.
@@ -1671,12 +1673,13 @@ class StatusEvent(_messages.Message):
     r"""Task State
 
     Values:
-      STATE_UNSPECIFIED: unknown state
+      STATE_UNSPECIFIED: Unknown state.
       PENDING: The Task is created and waiting for resources.
       ASSIGNED: The Task is assigned to at least one VM.
       RUNNING: The Task is running.
       FAILED: The Task has failed.
       SUCCEEDED: The Task has succeeded.
+      UNEXECUTED: The Task has not been executed when the Job finishes.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1684,6 +1687,7 @@ class StatusEvent(_messages.Message):
     RUNNING = 3
     FAILED = 4
     SUCCEEDED = 5
+    UNEXECUTED = 6
 
   description = _messages.StringField(1)
   eventTime = _messages.StringField(2)
@@ -1964,12 +1968,13 @@ class TaskStatus(_messages.Message):
     r"""Task state
 
     Values:
-      STATE_UNSPECIFIED: unknown state
+      STATE_UNSPECIFIED: Unknown state.
       PENDING: The Task is created and waiting for resources.
       ASSIGNED: The Task is assigned to at least one VM.
       RUNNING: The Task is running.
       FAILED: The Task has failed.
       SUCCEEDED: The Task has succeeded.
+      UNEXECUTED: The Task has not been executed when the Job finishes.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1977,6 +1982,7 @@ class TaskStatus(_messages.Message):
     RUNNING = 3
     FAILED = 4
     SUCCEEDED = 5
+    UNEXECUTED = 6
 
   resourceUsage = _messages.MessageField('TaskResourceUsage', 1)
   state = _messages.EnumField('StateValueValuesEnum', 2)

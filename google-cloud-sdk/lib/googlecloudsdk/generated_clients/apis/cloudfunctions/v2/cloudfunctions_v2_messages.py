@@ -724,10 +724,10 @@ class Function(_messages.Message):
     environment: Describe whether the function is 1st Gen or 2nd Gen.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
       fires events in response to a condition in another service.
-    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
-      to encrypt/decrypt function resources. It must match the pattern `projec
-      ts/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto
-      _key}`.
+    kmsKeyName: [Preview] Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt function resources. It must match the
+      pattern `projects/{project}/locations/{location}/keyRings/{key_ring}/cry
+      ptoKeys/{crypto_key}`.
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
@@ -829,16 +829,17 @@ class GenerateUploadUrlRequest(_messages.Message):
   r"""Request of `GenerateSourceUploadUrl` method.
 
   Fields:
-    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
-      to encrypt/decrypt function source code objects in intermediate Cloud
-      Storage buckets. When you generate an upload url and upload your source
-      code, it gets copied to an intermediate Cloud Storage bucket. The source
-      code is then copied to a versioned directory in the sources bucket in
-      the consumer project during the function deployment. It must match the
-      pattern `projects/{project}/locations/{location}/keyRings/{key_ring}/cry
-      ptoKeys/{crypto_key}`. The Google Cloud Functions service account
-      (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) must
-      be granted the role 'Cloud KMS CryptoKey Encrypter/Decrypter
+    kmsKeyName: [Preview] Resource name of a KMS crypto key (managed by the
+      user) used to encrypt/decrypt function source code objects in
+      intermediate Cloud Storage buckets. When you generate an upload url and
+      upload your source code, it gets copied to an intermediate Cloud Storage
+      bucket. The source code is then copied to a versioned directory in the
+      sources bucket in the consumer project during the function deployment.
+      It must match the pattern `projects/{project}/locations/{location}/keyRi
+      ngs/{key_ring}/cryptoKeys/{crypto_key}`. The Google Cloud Functions
+      service account (service-{project_number}@gcf-admin-
+      robot.iam.gserviceaccount.com) must be granted the role 'Cloud KMS
+      CryptoKey Encrypter/Decrypter
       (roles/cloudkms.cryptoKeyEncrypterDecrypter)' on the
       Key/KeyRing/Project/Organization (least access preferred).
   """

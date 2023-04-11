@@ -552,6 +552,45 @@ def ReportDuration():
   return _ReportDuration
 
 
+def GetAndCacheArchitecture(user_platform):
+  """Get and cache architecture of client machine.
+
+  For M1 Macs running x86_64 Python using Rosetta, user_platform.architecture
+  (from platform.machine()) returns x86_64. We can use
+  IsActuallyM1ArmArchitecture() to determine the underlying hardware; however,
+  it requires a system call that might take ~5ms.
+  To mitigate this, we will persist this value as an internal property with
+  INSTALLATION scope.
+
+  Args:
+    user_platform: platforms.Platform.Current()
+
+  Returns:
+    client machine architecture
+  """
+  arch = properties.VALUES.metrics.client_arch.Get()
+  if arch:
+    return arch
+
+  # Determine if this is an M1 Mac Python using x86_64 emulation.
+  if (user_platform.operating_system == platforms.OperatingSystem.MACOSX and
+      user_platform.architecture == platforms.Architecture.x86_64 and
+      platforms.Platform.IsActuallyM1ArmArchitecture()):
+    arch = '{}_{}'.format(
+        platforms.Architecture.x86_64, platforms.Architecture.arm)
+  else:
+    arch = user_platform.architecture
+
+  try:
+    properties.PersistProperty(properties.VALUES.metrics.client_arch, arch,
+                               scope=properties.Scope.INSTALLATION)
+  # pylint:disable=bare-except
+  except:
+    pass
+
+  return arch
+
+
 def MakeUserAgentString(cmd_path=None):
   """Return a user-agent string for this request.
 
@@ -564,11 +603,17 @@ def MakeUserAgentString(cmd_path=None):
   Returns:
     str, User Agent string.
   """
+  user_platform = platforms.Platform.Current()
+  architecture = GetAndCacheArchitecture(user_platform)
+
   return ('gcloud/{version}'
           ' command/{cmd}'
           ' invocation-id/{inv_id}'
           ' environment/{environment}'
           ' environment-version/{env_version}'
+          ' client-os/{os}'
+          ' client-os-ver/{os_version}'
+          ' client-pltf-arch/{architecture}'
           ' interactive/{is_interactive}'
           ' from-script/{from_script}'
           ' python/{py_version}'
@@ -579,10 +624,13 @@ def MakeUserAgentString(cmd_path=None):
               inv_id=INVOCATION_ID,
               environment=properties.GetMetricsEnvironment(),
               env_version=properties.VALUES.metrics.environment_version.Get(),
+              os=user_platform.operating_system,
+              os_version=user_platform.operating_system.clean_version,
+              architecture=architecture,
               is_interactive=console_io.IsInteractive(
                   error=True, heuristic=True),
               py_version=platform.python_version(),
-              ua_fragment=platforms.Platform.Current().UserAgentFragment(),
+              ua_fragment=user_platform.UserAgentFragment(),
               from_script=console_io.IsRunFromShellScript(),
               term=console_attr.GetConsoleAttr().GetTermIdentifier())
 

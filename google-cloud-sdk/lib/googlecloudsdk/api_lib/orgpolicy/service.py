@@ -122,6 +122,10 @@ class OrgPolicyApi(object):
     pass
 
   @abc.abstractmethod
+  def BuildEmptyPolicy(self, name, has_spec=False, has_dry_run_spec=False):
+    pass
+
+  @abc.abstractmethod
   def BuildPolicySpecPolicyRule(self,
                                 condition=None,
                                 allow_all=None,
@@ -268,6 +272,17 @@ class OrgPolicyApiGA(OrgPolicyApi):
   def BuildPolicy(self, name):
     spec = self.messages.GoogleCloudOrgpolicyV2PolicySpec()
     return self.messages.GoogleCloudOrgpolicyV2Policy(name=name, spec=spec)
+
+  def BuildEmptyPolicy(self, name, has_spec=False, has_dry_run_spec=False):
+    spec = None
+    dry_run_spec = None
+    if has_spec:
+      spec = self.messages.GoogleCloudOrgpolicyV2PolicySpec()
+    if has_dry_run_spec:
+      dry_run_spec = self.messages.GoogleCloudOrgpolicyV2PolicySpec()
+    return self.messages.GoogleCloudOrgpolicyV2Policy(
+        name=name, spec=spec, dryRunSpec=dry_run_spec
+    )
 
   def BuildPolicySpecPolicyRule(self,
                                 condition=None,

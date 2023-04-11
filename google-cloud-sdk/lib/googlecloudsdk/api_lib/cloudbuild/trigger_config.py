@@ -98,7 +98,7 @@ def AddFlagConfigArgs(flag_config, add_name=True):
   """Adds additional argparse flags related to flag config.
 
   Args:
-    flag_config: argparse argument group. Additional flags will be added to this
+    flag_config: Argparse argument group. Additional flags will be added to this
       group to cover common flag configuration settings.
     add_name: If true, the trigger name is added.
   """
@@ -119,7 +119,7 @@ def AddFlagConfigArgs(flag_config, add_name=True):
   flag_config.add_argument(
       '--require-approval',
       help='Require manual approval for triggered builds.',
-      action='store_true')
+      action=arg_parsers.StoreTrueFalseAction)
 
 
 def AddTriggerConfigFilePathArg(trigger_config):
@@ -628,6 +628,7 @@ def AddGitRepoSource(flag_config):
       help='Flags for repository information')
   gen_config.add_argument(
       '--repository',
+      hidden=True,
       help="""\
 Repository resource (2nd gen) to use, in the format "projects/*/locations/*/connections/*/repositories/*".
 """)
@@ -729,8 +730,10 @@ def ParseRequireApproval(trigger, args, messages):
     messages: A Cloud Build messages module.
   """
 
-  if args.require_approval:
-    trigger.approvalConfig = messages.ApprovalConfig(approvalRequired=True)
+  if args.require_approval is not None:
+    trigger.approvalConfig = messages.ApprovalConfig(
+        approvalRequired=args.require_approval
+    )
 
 
 def ParseIncludeLogsWithStatus(trigger, args, messages):

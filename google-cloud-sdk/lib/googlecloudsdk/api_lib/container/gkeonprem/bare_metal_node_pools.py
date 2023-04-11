@@ -36,8 +36,7 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
 
     for node_taint in node_taints.items():
       taint_object = self._parse_node_taint(node_taint)
-      taint_messages.append(
-          self._messages.NodeTaint(**taint_object))
+      taint_messages.append(self._messages.NodeTaint(**taint_object))
 
     return taint_messages
 
@@ -51,10 +50,13 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     for key, value in node_labels.items():
       additional_property_messages.append(
           self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
-              key=key, value=value))
+              key=key, value=value
+          )
+      )
 
     labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
-        additionalProperties=additional_property_messages)
+        additionalProperties=additional_property_messages
+    )
 
     return labels_value_message
 
@@ -68,7 +70,8 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     if not node_configs:
       raise exceptions.BadArgumentException(
           '--node_configs_from_file',
-          'Missing field [nodeConfigs] in Node configs file.')
+          'Missing field [nodeConfigs] in Node configs file.',
+      )
 
     node_config_messages = []
     for node_config in node_configs:
@@ -83,11 +86,12 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     if not node_ip:
       raise exceptions.BadArgumentException(
           '--node_configs_from_file',
-          'Missing field [nodeIP] in Node configs file.')
+          'Missing field [nodeIP] in Node configs file.',
+      )
 
     kwargs = {
         'nodeIp': node_ip,
-        'labels': self._node_config_labels(node_config.get('labels', {}))
+        'labels': self._node_config_labels(node_config.get('labels', {})),
     }
 
     return self._messages.BareMetalNodeConfig(**kwargs)
@@ -101,48 +105,25 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     for key, value in labels.items():
       additional_property_messages.append(
           self._messages.BareMetalNodeConfig.LabelsValue.AdditionalProperty(
-              key=key, value=value))
+              key=key, value=value
+          )
+      )
 
     labels_value_message = self._messages.BareMetalNodeConfig.LabelsValue(
-        additionalProperties=additional_property_messages)
+        additionalProperties=additional_property_messages
+    )
 
     return labels_value_message
 
   def _node_configs_from_flag(self, args):
     """Constructs proto message field node_configs."""
     node_configs = []
-    node_config_flag_value = getattr(
-        args, 'node_configs', None
-    )
+    node_config_flag_value = getattr(args, 'node_configs', None)
     if node_config_flag_value:
       for node_config in node_config_flag_value:
         node_configs.append(self.node_config(node_config))
 
     return node_configs
-
-  def _cpu_cfs_quota_disabled(self, args):
-    if 'disable_cpu_cfs_quota' in args.GetSpecifiedArgsDict():
-      return True
-    elif 'enable_cpu_cfs_quota' in args.GetSpecifiedArgsDict():
-      return False
-    else:
-      return None
-
-  def _feature_gates(self, args):
-    feature_gates = self.GetFlag(args, 'feature_gates')
-    if not feature_gates:
-      return None
-
-    msg = self._messages.BareMetalKubeletConfig.FeatureGatesValue(
-        additionalProperties=[]
-    )
-    for key, value in feature_gates.items():
-      msg.additionalProperties.append(
-          self._messages.BareMetalKubeletConfig.FeatureGatesValue.AdditionalProperty(
-              key=key, value=value
-          )
-      )
-    return msg
 
   def _serialized_image_pulls_disabled(self, args):
     if 'disable_serialize_image_pulls' in args.GetSpecifiedArgsDict():
@@ -152,26 +133,8 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     else:
       return None
 
-  def _cpu_manager_policy(self, args):
-    cpu_manager_policy = self.GetFlag(args, 'cpu_manager_policy')
-    if cpu_manager_policy:
-      return self._messages.BareMetalKubeletConfig.CpuManagerPolicyValueValuesEnum.lookup_by_name(
-          cpu_manager_policy
-      )
-    return None
-
-  def _cpu_cfs_quota_period(self, args):
-    # TODO(b/273546993)
-    # Only supports second as unit, ms and other units are not supported.
-    return self.GetFlag(args, 'cpu_cfs_quota_period')
-
   def _kubelet_config(self, args):
     kwargs = {
-        'cpuManagerPolicy': self._cpu_manager_policy(args),
-        'cpuCfsQuotaDisabled': self._cpu_cfs_quota_disabled(args),
-        'cpuCfsQuotaPeriod': self._cpu_cfs_quota_period(args),
-        'featureGates': self._feature_gates(args),
-        'podPidsLimit': self.GetFlag(args, 'pod_pids_limit'),
         'registryPullQps': self.GetFlag(args, 'registry_pull_qps'),
         'registryBurst': self.GetFlag(args, 'registry_burst'),
         'serializeImagePullsDisabled': self._serialized_image_pulls_disabled(
@@ -210,10 +173,15 @@ class _BareMetalNodePoolsClient(clusters.ClustersClient):
     for key, value in annotations.items():
       additional_property_messages.append(
           self._messages.BareMetalNodePool.AnnotationsValue.AdditionalProperty(
-              key=key, value=value))
+              key=key, value=value
+          )
+      )
 
-    annotation_value_message = self._messages.BareMetalNodePool.AnnotationsValue(
-        additionalProperties=additional_property_messages)
+    annotation_value_message = (
+        self._messages.BareMetalNodePool.AnnotationsValue(
+            additionalProperties=additional_property_messages
+        )
+    )
     return annotation_value_message
 
   def _bare_metal_node_pool(self, args):
@@ -233,12 +201,15 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
 
   def __init__(self, **kwargs):
     super(NodePoolsClient, self).__init__(**kwargs)
-    self._service = self._client.projects_locations_bareMetalClusters_bareMetalNodePools
+    self._service = (
+        self._client.projects_locations_bareMetalClusters_bareMetalNodePools
+    )
 
   def List(self, location_ref, limit=None, page_size=None):
     """Lists Node Pools in the Anthos clusters on bare metal API."""
     list_req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsListRequest(
-        parent=location_ref.RelativeName())
+        parent=location_ref.RelativeName()
+    )
 
     return list_pager.YieldFromList(
         self._service,
@@ -252,7 +223,8 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
   def Describe(self, resource_ref):
     """Gets a GKE On-Prem Bare Metal API node pool resource."""
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetRequest(
-        name=resource_ref.RelativeName())
+        name=resource_ref.RelativeName()
+    )
 
     return self._service.Get(req)
 
@@ -265,7 +237,8 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
         'ignoreErrors': self.GetFlag(args, 'ignore_errors'),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsDeleteRequest(
-        **kwargs)
+        **kwargs
+    )
 
     return self._service.Delete(req)
 
@@ -279,7 +252,8 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
         'bareMetalNodePoolId': self._node_pool_id(args),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsCreateRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.Create(req)
 
   def Update(self, args):
@@ -287,14 +261,15 @@ class NodePoolsClient(_BareMetalNodePoolsClient):
     kwargs = {
         'allowMissing': self.GetFlag(args, 'allow_missing'),
         'name': self._node_pool_name(args),
-        'updateMask':
-            update_mask.get_update_mask(
-                args, update_mask.BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS),
+        'updateMask': update_mask.get_update_mask(
+            args, update_mask.BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS
+        ),
         'validateOnly': self.GetFlag(args, 'validate_only'),
         'bareMetalNodePool': self._bare_metal_node_pool(args),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsPatchRequest(
-        **kwargs)
+        **kwargs
+    )
     return self._service.Patch(req)
 
   def Enroll(self, args):

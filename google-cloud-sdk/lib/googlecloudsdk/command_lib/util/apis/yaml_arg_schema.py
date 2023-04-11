@@ -121,7 +121,7 @@ class YAMLArgument(six.with_metaclass(abc.ABCMeta, object)):
     return Argument.FromData(data)
 
   @abc.abstractmethod
-  def Generate(self, method, message):
+  def Generate(self, method, message, shared_resource_flags):
     """Generates and returns the base argument."""
     pass
 
@@ -176,12 +176,13 @@ class ArgumentGroup(YAMLArgument):
     self.hidden = hidden
     self.arguments = arguments
 
-  def Generate(self, method, message):
+  def Generate(self, method, message, shared_resource_flags=None):
     """Generates and returns the base argument group.
 
     Args:
       method: registry.APIMethod, used to generate other arguments
       message: The API message, None for non-resource args.
+      shared_resource_flags: [string], list of flags being generated elsewhere
 
     Returns:
       The base argument group.
@@ -190,7 +191,7 @@ class ArgumentGroup(YAMLArgument):
         mutex=self.mutex, required=self.required, help=self.help_text,
         hidden=self.hidden)
     for arg in self.arguments:
-      group.AddArgument(arg.Generate(method, message))
+      group.AddArgument(arg.Generate(method, message, shared_resource_flags))
     return group
 
   def Parse(self, method, message, namespace):
@@ -328,12 +329,13 @@ class Argument(YAMLArgument):
     self.repeated = repeated
     self.generate = generate
 
-  def Generate(self, method, message):
+  def Generate(self, method, message, shared_resource_flags=None):
     """Generates and returns the base argument.
 
     Args:
       method: registry.APIMethod, used to generate other arguments.
       message: The API message, None for non-resource args.
+      shared_resource_flags: [string], list of flags being generated elsewhere.
 
     Returns:
       The base argument.
@@ -385,17 +387,20 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     kwargs = {
         'is_positional': data.get('is_positional'),
         'is_parent_resource': data.get('is_parent_resource', False),
+        'is_primary_resource': data.get('is_primary_resource'),
         'removed_flags': data.get('removed_flags'),
         'arg_name': data.get('arg_name'),
         'command_level_fallthroughs': data.get(
             'command_level_fallthroughs', {}),
         'display_name_hook': data.get('display_name_hook'),
+        'request_id_field': data.get('request_id_field'),
         'resource_method_params': data.get('resource_method_params', {}),
         'parse_resource_into_request': data.get(
             'parse_resource_into_request', True),
         'use_relative_name': data.get('use_relative_name', True),
         'override_resource_collection': data.get(
             'override_resource_collection', False),
+        'required': data.get('required', True),
         'request_api_version': api_version,
     }
 
@@ -404,25 +409,30 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     return YAMLResourceArgument(resource_spec, help_text, **kwargs)
 
   def __init__(self, data, group_help, is_positional=None, removed_flags=None,
-               is_parent_resource=False, arg_name=None,
-               command_level_fallthroughs=None, display_name_hook=None,
+               is_parent_resource=False, is_primary_resource=None,
+               arg_name=None, command_level_fallthroughs=None,
+               display_name_hook=None, request_id_field=None,
                resource_method_params=None, parse_resource_into_request=True,
                use_relative_name=True, override_resource_collection=False,
-               **unused_kwargs):
-    self.name = data['name']
+               required=True, **unused_kwargs):
     self.flag_name_override = arg_name
-    self.request_id_field = data.get('request_id_field')
     self.group_help = group_help
     self.is_positional = is_positional
     self.is_parent_resource = is_parent_resource
+    self.is_primary_resource = is_primary_resource
     self.removed_flags = removed_flags or []
     self.command_level_fallthroughs = self._GenerateFallthroughsMap(
         command_level_fallthroughs)
+    # TODO(b/274890004): Remove data.get('request_id_field')
+    self.request_id_field = request_id_field or data.get('request_id_field')
     self.resource_method_params = resource_method_params or {}
     self.parse_resource_into_request = parse_resource_into_request
     self.use_relative_name = use_relative_name
     self.override_resource_collection = override_resource_collection
+    self.required = required
 
+    # All resource spec types have these values
+    self.name = data['name']
     self._plural_name = data.get('plural_name')
 
     self.display_name_hook = (
@@ -432,6 +442,11 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
   @abc.abstractmethod
   def collection(self):
     """"Get registry.APICollection based on collection and api_version."""
+    pass
+
+  @abc.abstractmethod
+  def IsPrimaryResource(self, resource_collection):
+    """Determines if this resource arg is the primary resource."""
     pass
 
   @abc.abstractmethod
@@ -462,7 +477,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
 
   def _GetAnchorArgName(self, method=None):
     """Get the anchor argument name for the resource spec."""
-    resource_spec = self._ValidateAndGenerateResourceSpec(
+    resource_spec = self._GenerateResourceSpec(
         method and method.resource_argument_collection)
 
     if self.flag_name_override:
@@ -510,30 +525,37 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
 
     return command_level_fallthroughs
 
-  def _GenerateConceptParser(self, method, resource_spec, attribute_names):
+  def _GenerateConceptParser(self, method, resource_spec, attribute_names,
+                             shared_resource_flags=None):
     """Generates a ConceptParser from YAMLConceptArgument.
 
     Args:
       method: registry.APIMethod, helps determine the arg name
       resource_spec: concepts.ResourceSpec, used to create PresentationSpec
       attribute_names: names of resource attributes
+      shared_resource_flags: [string], list of flags being generated elsewhere
 
     Returns:
       ConceptParser that will be added to the parser.
     """
+    shared_resource_flags = shared_resource_flags or []
+    ignored_fields = (list(concepts.IGNORED_FIELDS.values()) +
+                      self.removed_flags + shared_resource_flags)
     no_gen = {
         n: ''
-        for _, n in six.iteritems(concepts.IGNORED_FIELDS)
-        if n in attribute_names
+        for n in ignored_fields if n in attribute_names
     }
 
-    no_gen.update({n: '' for n in self.removed_flags})
     anchor_arg_name = self._GetAnchorArgName(method)
+
     command_level_fallthroughs = {}
+    arg_fallthroughs = self.command_level_fallthroughs.copy()
+    arg_fallthroughs.update({n: ['--' + n] for n in shared_resource_flags})
+
     concept_parsers.UpdateFallthroughsMap(
         command_level_fallthroughs,
         anchor_arg_name,
-        self.command_level_fallthroughs)
+        arg_fallthroughs)
     presentation_spec_class = presentation_specs.ResourcePresentationSpec
 
     if isinstance(resource_spec, multitype.MultitypeResourceSpec):
@@ -546,7 +568,7 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
             resource_spec,
             self.group_help,
             prefixes=False,
-            required=True,
+            required=self.required,
             flag_name_overrides=no_gen)],
         command_level_fallthroughs=command_level_fallthroughs)
 
@@ -584,7 +606,6 @@ class YAMLResourceArgument(YAMLConceptArgument):
     # APICollection.api_version generated YAMLResourceArgument.collection.
     # Passing in method resource_collection was supposed to just validate the
     # resource spec but it was also defaulting the api version.
-    # Update _ValidateAndGenerateResourceSpec to validate api versions align.
     self._api_version = data.get('api_version', request_api_version)
     self._attribute_data = data['attributes']
     self._disable_auto_completers = data.get('disable_auto_completers', True)
@@ -605,14 +626,44 @@ class YAMLResourceArgument(YAMLConceptArgument):
     return registry.GetAPICollection(
         self._full_collection_name, api_version=self._api_version)
 
-  def Generate(self, method, message):
-    # TODO(b/272259064): Update logic to only validate the main resource.
-    # All other resource arguments will fail.
-    resource_collection = method and method.resource_argument_collection
+  def IsPrimaryResource(self, resource_collection=None):
+    if not self.is_primary_resource and self.is_primary_resource is not None:
+      return False
+
+    # If validation is disabled, default to resource being primary
+    if not resource_collection or self.override_resource_collection:
+      return True
+
+    if self.is_parent_resource:
+      resource_collection = self._GetParentResource(resource_collection)
+
+    if resource_collection.full_name != self._full_collection_name:
+      if self.is_primary_resource:
+        raise util.InvalidSchemaError(
+            'Collection names do not match for resource argument specification '
+            '[{}]. Expected [{}], found [{}]'
+            .format(self.name, resource_collection.full_name,
+                    self._full_collection_name))
+      return False
+
+    if (self._api_version and
+        self._api_version != resource_collection.api_version):
+      if self.is_primary_resource:
+        raise util.InvalidSchemaError(
+            'API versions do not match for resource argument specification '
+            '[{}]. Expected [{}], found [{}]'
+            .format(self.name, resource_collection.api_version,
+                    self._api_version))
+      return False
+
+    return True
+
+  def Generate(self, method, message, shared_resource_flags=None):
+    resource_spec = self._GenerateResourceSpec(
+        method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
-        method, self._ValidateAndGenerateResourceSpec(resource_collection),
-        self.attribute_names)
+        method, resource_spec, self.attribute_names, shared_resource_flags)
 
   def Parse(self, method, message, namespace):
     ref = self.ParseResourceArg(method, namespace)
@@ -624,12 +675,19 @@ class YAMLResourceArgument(YAMLConceptArgument):
         ref, method, message,
         message_resource_map=self._GetResourceMap(ref),
         request_id_field=self.request_id_field,
-        use_relative_name=self.use_relative_name)
+        use_relative_name=self.use_relative_name,
+        is_primary_resource=self.IsPrimaryResource(
+            method and method.resource_argument_collection))
 
   def ParseResourceArg(self, method, namespace):
     return self._ParseResourceArg(method, namespace)
 
-  def _ValidateAndGenerateResourceSpec(self, resource_collection=None):
+  def _GetParentResource(self, resource_collection):
+    parent_collection, _, _ = resource_collection.full_name.rpartition('.')
+    return registry.GetAPICollection(
+        parent_collection, api_version=self._api_version)
+
+  def _GenerateResourceSpec(self, resource_collection=None):
     """Validates if the resource matches what the method specifies.
 
     Args:
@@ -644,34 +702,18 @@ class YAMLResourceArgument(YAMLConceptArgument):
       a parser.
     """
 
-    if self.is_parent_resource and resource_collection:
-      parent_collection, _, _ = resource_collection.full_name.rpartition('.')
-      resource_collection = registry.GetAPICollection(
-          parent_collection, api_version=self._api_version)
-
-    if resource_collection and not self.override_resource_collection:
-      # Validate that the expected collection matches what was registered for
-      # the resource argument specification.
-      if resource_collection.full_name != self._full_collection_name:
-        raise util.InvalidSchemaError(
-            'Collection names do not match for resource argument specification '
-            '[{}]. Expected [{}], found [{}]'
-            .format(self.name, resource_collection.full_name,
-                    self._full_collection_name))
-      if (self._api_version and
-          self._api_version != resource_collection.api_version):
-        raise util.InvalidSchemaError(
-            'API versions do not match for resource argument specification '
-            '[{}]. Expected [{}], found [{}]'
-            .format(self.name, resource_collection.api_version,
-                    self._api_version))
-    else:
-      # No required collection, just load whatever the resource arg declared
-      # for itself.
+    if (not resource_collection
+        or self.override_resource_collection
+        or not self.IsPrimaryResource(resource_collection)):
       resource_collection = self.collection
+    elif resource_collection and self.is_parent_resource:
+      resource_collection = self._GetParentResource(resource_collection)
 
+    # If attributes do not match resource_collection.detailed_params, will
+    # raise InvalidSchema error
     attributes = concepts.ParseAttributesFromData(
         self._attribute_data, resource_collection.detailed_params)
+
     return concepts.ResourceSpec(
         resource_collection.full_name,
         resource_name=self.name,
@@ -705,14 +747,30 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
           attribute_names.append(attribute_name)
     return attribute_names
 
-  def Generate(self, method, message):
-    # TODO(b/272259064): Update logic to only validate the main resource.
-    # All other resource arguments will fail.
-    resource_collection = method and method.resource_argument_collection
+  def IsPrimaryResource(self, resource_collection):
+    if not self.is_primary_resource and self.is_primary_resource is not None:
+      return False
+
+    for sub_resource in self._resources:
+      sub_resource_arg = YAMLResourceArgument.FromSpecData(sub_resource)
+      if sub_resource_arg.IsPrimaryResource(resource_collection):
+        return True
+
+    if self.is_primary_resource:
+      raise util.InvalidSchemaError(
+          'Collection names do not align with resource argument '
+          'specification [{}]. Expected [{} version {}], and no contained '
+          'resources matched.'.format(
+              self.name, resource_collection.full_name,
+              resource_collection.api_version))
+    return True
+
+  def Generate(self, method, message, shared_resource_flags=None):
+    resource_spec = self._GenerateResourceSpec(
+        method and method.resource_argument_collection)
 
     return self._GenerateConceptParser(
-        method, self._ValidateAndGenerateResourceSpec(resource_collection),
-        self.attribute_names)
+        method, resource_spec, self.attribute_names, shared_resource_flags)
 
   def Parse(self, method, message, namespace):
     ref = self.ParseResourceArg(method, namespace)
@@ -724,17 +782,19 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         ref, method, message,
         message_resource_map=self._GetResourceMap(ref),
         request_id_field=self.request_id_field,
-        use_relative_name=self.use_relative_name)
+        use_relative_name=self.use_relative_name,
+        is_primary_resource=self.IsPrimaryResource(
+            method and method.resource_argument_collection))
 
   def ParseResourceArg(self, method, namespace):
     return self._ParseResourceArg(method, namespace)
 
-  def _ValidateAndGenerateResourceSpec(self, resource_collection=None):
+  def _GenerateResourceSpec(self, resource_collection=None):
     """Validates if the resource matches what the method specifies.
 
     Args:
       resource_collection: registry.APICollection, The collection that the
-        resource arg must be for. This simply does some extra validation to
+        resource arg must be for. This does some extra validation to
         ensure that resource arg is for the correct collection and api_version.
         If not specified, the resource arg will just be loaded based on the
         collection it specifies.
@@ -745,7 +805,6 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     """
 
     resource_specs = []
-    collections = []
     # Need to find a matching collection for validation, if the collection
     # is specified.
     for sub_resource in self._resources:
@@ -754,23 +813,9 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
       if not sub_resource_arg._disable_auto_completers:
         raise ValueError('disable_auto_completers must be True for '
                          'multitype resource argument [{}]'.format(self.name))
-      sub_resource_spec = sub_resource_arg._ValidateAndGenerateResourceSpec()
+      sub_resource_spec = sub_resource_arg._GenerateResourceSpec(
+          resource_collection)
       resource_specs.append(sub_resource_spec)
-      collections.append((sub_resource_arg._full_collection_name,
-                          sub_resource_arg._api_version))
       # pylint: enable=protected-access
-    if resource_collection:
-      resource_collection_tuple = (resource_collection.full_name,
-                                   resource_collection.api_version)
-      if (resource_collection_tuple not in collections and
-          (resource_collection_tuple[0], None) not in collections):
-        raise util.InvalidSchemaError(
-            'Collection names do not match for resource argument specification '
-            '[{}]. Expected [{} version {}], and no contained resources '
-            'matched. Given collections: [{}]'
-            .format(self.name, resource_collection.full_name,
-                    resource_collection.api_version,
-                    ', '.join(sorted(
-                        ['{} {}'.format(coll, vers)
-                         for (coll, vers) in collections]))))
+
     return multitype.MultitypeResourceSpec(self.name, *resource_specs)

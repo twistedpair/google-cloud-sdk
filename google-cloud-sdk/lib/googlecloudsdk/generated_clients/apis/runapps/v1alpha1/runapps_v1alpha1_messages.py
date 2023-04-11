@@ -643,7 +643,7 @@ class FirebaseHostingStatus(_messages.Message):
   """
 
   domains = _messages.StringField(1, repeated=True)
-  hostingConfig = _messages.StringField(2, repeated=True)
+  hostingConfig = _messages.StringField(2)
 
 
 class HostingSiteConfig(_messages.Message):

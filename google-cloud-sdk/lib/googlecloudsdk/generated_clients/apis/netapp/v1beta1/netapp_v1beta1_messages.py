@@ -221,8 +221,12 @@ class KmsConfig(_messages.Message):
       Format: projects/{project}/locations/{location}/keyRings/{key_ring}/cryp
       toKeys/{key}.
     description: Description of the KmsConfig.
+    instructions: Output only. Instructions to provide the access to the
+      customer provided encryption key.
     labels: Labels as key value pairs
     name: Output only. Name of the KmsConfig.
+    serviceAccount: Output only. The Service account which will have access to
+      the customer provided encryption key.
     state: Output only. State of the KmsConfig.
     stateDetails: Output only. State details of the KmsConfig.
   """
@@ -284,10 +288,12 @@ class KmsConfig(_messages.Message):
   createTime = _messages.StringField(1)
   cryptoKeyName = _messages.StringField(2)
   description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  stateDetails = _messages.StringField(7)
+  instructions = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateDetails = _messages.StringField(9)
 
 
 class ListActiveDirectoriesResponse(_messages.Message):

@@ -24,6 +24,7 @@ import select
 import socket
 import ssl
 import struct
+import threading
 
 from googlecloudsdk.core.util import platforms
 import six
@@ -139,6 +140,11 @@ class IapLightWeightWebsocket(object):
     self.get_mask_key = None
     self.subprotocols = subprotocols
     self.header = header
+    # Multiple threads may attempt to write simultaneously. This
+    # is a bandaid attempt to fix a thread safety issue.
+    # TODO(b/276477340): Find a better solution than to use locks as this code
+    # does seem to decrease performance by ~3%.
+    self.send_write_lock = threading.Lock()
 
   def recv(self):
     """Receives data from the server."""
@@ -164,23 +170,24 @@ class IapLightWeightWebsocket(object):
     frame_data = frame_data.format()
     # We will try to send up to WEBSOCKET_MAX_ATTEMPTS in case the
     # exception is not fatal.
-    for attempt in range(1, WEBSOCKET_MAX_ATTEMPTS + 1):
-      try:
-        if not self.connected or not self.sock:
-          raise websocket_exceptions.WebSocketConnectionClosedException(
-              "Connection closed while sending data.")
-        bytes_sent = self.sock.send(frame_data)
-        # No bytes sent means the socket is closed.
-        if not bytes_sent:
-          raise websocket_exceptions.WebSocketConnectionClosedException(
-              "Connection closed while sending data.")
+    with self.send_write_lock:
+      for attempt in range(1, WEBSOCKET_MAX_ATTEMPTS + 1):
+        try:
+          if not self.connected or not self.sock:
+            raise websocket_exceptions.WebSocketConnectionClosedException(
+                "Connection closed while sending data.")
+          bytes_sent = self.sock.send(frame_data)
+          # No bytes sent means the socket is closed.
+          if not bytes_sent:
+            raise websocket_exceptions.WebSocketConnectionClosedException(
+                "Connection closed while sending data.")
 
-        # If we failed to send all the data, throw error.
-        if len(frame_data) != bytes_sent:
-          raise Exception("Packet was not sent in it's entirety")
-        return bytes_sent
-      except Exception as e:  # pylint: disable=broad-except
-        self._throw_or_wait_for_retry(attempt=attempt, exception=e)
+          # If we failed to send all the data, throw error.
+          if len(frame_data) != bytes_sent:
+            raise Exception("Packet was not sent in it's entirety")
+          return bytes_sent
+        except Exception as e:  # pylint: disable=broad-except
+          self._throw_or_wait_for_retry(attempt=attempt, exception=e)
 
   def close(self, close_code=CLOSE_STATUS_NORMAL, close_message=six.b("")):
     """Closes the connection."""

@@ -349,11 +349,41 @@ class _BareMetalClusterClient(client.ClientBase):
         'nodeConfigs': metal_lb_node_configs,
         'labels': self._metal_lb_labels(args),
         'taints': self._metal_lb_node_taints(args),
+        'kubeletConfig': self._metal_lb_kubelet_config(args),
     }
 
     if any(kwargs.values()):
       return self._messages.BareMetalNodePoolConfig(**kwargs)
+    return None
 
+  def _metal_lb_serialize_image_pulls_disabled(self, args):
+    if (
+        'enable_metal_lb_load_balancer_serialize_image_pulls'
+        in args.GetSpecifiedArgsDict()
+    ):
+      return False
+    elif (
+        'disable_metal_lb_load_balancer_serialize_image_pulls'
+        in args.GetSpecifiedArgsDict()
+    ):
+      return True
+    else:
+      return None
+
+  def _metal_lb_kubelet_config(self, args):
+    kwargs = {
+        'registryBurst': self.GetFlag(
+            args, 'metal_lb_load_balancer_registry_burst'
+        ),
+        'registryPullQps': self.GetFlag(
+            args, 'metal_lb_load_balancer_registry_pull_qps'
+        ),
+        'serializeImagePullsDisabled': (
+            self._metal_lb_serialize_image_pulls_disabled(args)
+        ),
+    }
+    if self.IsSet(kwargs):
+      return self._messages.BareMetalKubeletConfig(**kwargs)
     return None
 
   def _metal_lb_node_pool_config(self, args):
@@ -397,16 +427,160 @@ class _BareMetalClusterClient(client.ClientBase):
   def _load_balancer_config(self, args):
     """Constructs proto message BareMetalLoadBalancerConfig."""
     kwargs = {
-        'manualLbConfig': self._manual_lb_config(args),
-        'metalLbConfig': self._metal_lb_config(args),
-        'portConfig': self._port_config(args),
         'vipConfig': self._vip_config(args),
+        'portConfig': self._port_config(args),
+        'metalLbConfig': self._metal_lb_config(args),
+        'manualLbConfig': self._manual_lb_config(args),
+        'bgpLbConfig': self._bgp_lb_config(args),
     }
 
     if any(kwargs.values()):
       return self._messages.BareMetalLoadBalancerConfig(**kwargs)
 
     return None
+
+  def _bgp_lb_config(self, args):
+    """Constructs proto message BareMetalBgpLbConfig."""
+    kwargs = {
+        'addressPools': self._bgp_address_pools(args),
+        'asn': self.GetFlag(args, 'bgp_asn'),
+        'bgpPeerConfigs': self._bgp_peer_configs(args),
+        'loadBalancerNodePoolConfig': self._bgp_load_balancer_node_pool_config(
+            args
+        ),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalBgpLbConfig(**kwargs)
+    return None
+
+  def _bgp_address_pools(self, args):
+    """Constructs repeated proto message BareMetalBgpLbConfig.BareMetalLoadBalancerAddressPool."""
+    if 'bgp_address_pools' not in args.GetSpecifiedArgsDict():
+      return []
+
+    address_pools = []
+    for address_pool in args.bgp_address_pools:
+      address_pools.append(
+          self._messages.BareMetalLoadBalancerAddressPool(
+              addresses=address_pool.get('addresses', []),
+              avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
+              manualAssign=address_pool.get('manual-assign', None),
+              pool=address_pool.get('pool', None),
+          )
+      )
+
+    return address_pools
+
+  def _bgp_peer_configs(self, args):
+    """Constructs repeated proto message BareMetalBgpPeerConfig."""
+    if 'bgp_peer_configs' not in args.GetSpecifiedArgsDict():
+      return []
+
+    ret = []
+    for peer_config in self.GetFlag(args, 'bgp_peer_configs'):
+      msg = self._messages.BareMetalBgpPeerConfig(
+          asn=peer_config.get('asn', None),
+          controlPlaneNodes=peer_config.get('control-plane-nodes', []),
+          ipAddress=peer_config.get('ip', None),
+      )
+      ret.append(msg)
+
+    return ret
+
+  def _bgp_load_balancer_node_pool_config(self, args):
+    """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig."""
+    kwargs = {
+        'nodePoolConfig': self._bgp_node_pool_config(args),
+    }
+    if any(kwargs.values()):
+      return self._messages.BareMetalLoadBalancerNodePoolConfig(**kwargs)
+
+    return None
+
+  def _bgp_node_pool_config(self, args):
+    """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig."""
+    kwargs = {
+        'labels': self._bgp_load_balancer_node_labels(args),
+        'nodeConfigs': self._bgp_load_balancer_node_configs(args),
+        'taints': self._bgp_load_balancer_node_taints(args),
+        'kubeletConfig': self._bgp_load_balancer_kubelet_config(args),
+    }
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodePoolConfig(**kwargs)
+    return None
+
+  def _bgp_serialize_image_pulls_disabled(self, args):
+    if (
+        'disable_bgp_load_balancer_serialize_image_pulls'
+        in args.GetSpecifiedArgsDict()
+    ):
+      return True
+    elif (
+        'enable_bgp_load_balancer_serialize_image_pulls'
+        in args.GetSpecifiedArgsDict()
+    ):
+      return False
+    else:
+      return None
+
+  def _bgp_load_balancer_kubelet_config(self, args):
+    """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig.BareMetalKubeletConfig."""
+    kwargs = {
+        'registryBurst': self.GetFlag(args, 'bgp_load_balancer_registry_burst'),
+        'registryPullQps': self.GetFlag(
+            args, 'bgp_load_balancer_registry_pull_qps'
+        ),
+        'serializeImagePullsDisabled': self._bgp_serialize_image_pulls_disabled(
+            args
+        ),
+    }
+    if self.IsSet(kwargs):
+      return self._messages.BareMetalKubeletConfig(**kwargs)
+    return None
+
+  def _bgp_load_balancer_node_configs(self, args):
+    """Constructs repeated proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig.BareMetalNodeConfig."""
+    if 'bgp_load_balancer_node_configs' not in args.GetSpecifiedArgsDict():
+      return []
+
+    node_configs = []
+    for node_config in self.GetFlag(args, 'bgp_load_balancer_node_configs'):
+      node_configs.append(self.node_config(node_config))
+
+    return node_configs
+
+  def _bgp_load_balancer_node_labels(self, args):
+    """Constructs proto message BareMetalBgpLbConfig.BareMetalLoadBalancerNodePoolConfig.BareMetalNodePoolConfig.LabelsValue."""
+    if 'bgp_load_balancer_node_labels' not in args.GetSpecifiedArgsDict():
+      return None
+
+    additional_property_messages = []
+    for key, value in args.bgp_load_balancer_node_labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+
+    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+        additionalProperties=additional_property_messages
+    )
+
+    return labels_value_message
+
+  def _bgp_load_balancer_node_taints(self, args):
+    """Constructs repeated proto message NodeTaint."""
+    if 'bgp_load_balancer_node_taints' not in args.GetSpecifiedArgsDict():
+      return []
+
+    node_taints = self.GetFlag(args, 'bgp_load_balancer_node_taints', {})
+    taint_messages = []
+    for node_taint in node_taints.items():
+      taint_object = self._parse_node_taint(node_taint)
+      taint_messages.append(self._messages.NodeTaint(**taint_object))
+
+    return taint_messages
 
   def _lvp_config(self, args):
     """Constructs proto message BareMetalLvpConfig."""
@@ -572,11 +746,40 @@ class _BareMetalClusterClient(client.ClientBase):
         'nodeConfigs': node_configs,
         'labels': self._control_plane_node_labels(args),
         'taints': self._control_plane_node_taints(args),
+        'kubeletConfig': self._control_plane_kubelet_config(args),
     }
 
     if any(kwargs.values()):
       return self._messages.BareMetalNodePoolConfig(**kwargs)
 
+    return None
+
+  def _control_plane_serialize_image_pulls_disabled(self, args):
+    if (
+        'disable_control_plane_serialize_image_pulls'
+        in args.GetSpecifiedArgsDict()
+    ):
+      return True
+    elif (
+        'enable_control_plane_serialize_image_pulls'
+        in args.GetSpecifiedArgsDict()
+    ):
+      return False
+    else:
+      return None
+
+  def _control_plane_kubelet_config(self, args):
+    kwargs = {
+        'registryPullQps': self.GetFlag(
+            args, 'control_plane_registry_pull_qps'
+        ),
+        'registryBurst': self.GetFlag(args, 'control_plane_registry_burst'),
+        'serializeImagePullsDisabled': (
+            self._control_plane_serialize_image_pulls_disabled(args)
+        ),
+    }
+    if self.IsSet(kwargs):
+      return self._messages.BareMetalKubeletConfig(**kwargs)
     return None
 
   def _control_plane_node_pool_config(self, args):

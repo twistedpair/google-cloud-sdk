@@ -220,41 +220,6 @@ def _AddNodeTaints(bare_metal_node_pool_config_group):
   )
 
 
-def _AddDisableCPUCFSQuota(bare_metal_kubelet_config_group, is_update=False):
-  """Adds a flag to specify the enablement of CPU CFS Quota.
-
-  Args:
-    bare_metal_kubelet_config_group: The parent group to add the flags to.
-    is_update: bool, True to add flags for update command, False to add flags
-      for create command.
-  """
-  if is_update:
-    cpu_cfs_quota_mutex_group = bare_metal_kubelet_config_group.add_group(
-        mutex=True
-    )
-    surface = cpu_cfs_quota_mutex_group
-  else:
-    surface = bare_metal_kubelet_config_group
-
-  surface.add_argument(
-      '--disable-cpu-cfs-quota',
-      action='store_true',
-      help=(
-          'If set, disable CPU Completely Fair Scheduler (CFS)  quota'
-          ' enforcement for containers that specify CPU limits.'
-      ),
-  )
-  if is_update:
-    surface.add_argument(
-        '--enable-cpu-cfs-quota',
-        action='store_true',
-        help=(
-            'If set, enable CPU Completely Fair Scheduler (CFS)  quota'
-            ' enforcement for containers that specify CPU limits.'
-        ),
-    )
-
-
 def _AddDisableSerializeImagePulls(
     bare_metal_kubelet_config_group, is_update=False
 ):
@@ -298,37 +263,7 @@ def _AddBareMetalKubeletConfig(
     is_update: bool, whether the flag is for update command or not.
   """
   bare_metal_kubelet_config_group = bare_metal_node_pool_config_group.add_group(
-      'Sets the modifiable kubelet configurations for bare metal machines.'
-  )
-  bare_metal_kubelet_config_group.add_argument(
-      '--cpu-manager-policy',
-      help='The kubelet CPU manager policy.',
-      choices=['NONE', 'STATIC'],
-  )
-  _AddDisableCPUCFSQuota(bare_metal_kubelet_config_group, is_update=is_update)
-
-  bare_metal_kubelet_config_group.add_argument(
-      '--cpu-cfs-quota-period',
-      help=(
-          'CPU Completely Fair Scheduler (CFS) quota period value. Specify with'
-          ' seconds as the time unit, such as 0.2s.'
-      ),
-      type=str,
-  )
-  bare_metal_kubelet_config_group.add_argument(
-      '--feature-gates',
-      type=arg_parsers.ArgDict(
-          key_type=str,
-          value_type=arg_parsers.ArgBoolean(),
-      ),
-      metavar='FEATURE=BOOL',
-      help=(
-          'A map of feature names to bools that enable or disable experimental'
-          ' features.'
-      ),
-  )
-  bare_metal_kubelet_config_group.add_argument(
-      '--pod-pids-limit', type=int, help='Maximum number of PIDs in any pod.'
+      'Modifiable kubelet configurations for bare metal machines.'
   )
   bare_metal_kubelet_config_group.add_argument(
       '--registry-pull-qps',
@@ -339,7 +274,7 @@ def _AddBareMetalKubeletConfig(
       '--registry-burst',
       type=int,
       help=(
-          'Maximum size of bursty pulls, temporarily allows pulls to burst to'
+          'Maximum size of bursty pulls, temporarily allow pulls to burst to'
           ' this number, while still not exceeding registry_pull_qps.'
       ),
   )

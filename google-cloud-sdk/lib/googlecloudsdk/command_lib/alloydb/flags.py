@@ -203,6 +203,23 @@ def AddNetwork(parser):
             'testsharednetwork`'))
 
 
+def AddAllocatedIPRangeName(parser):
+  """Adds the `--allocated-ip-range-name` flag to the parser."""
+  parser.add_argument(
+      '--allocated-ip-range-name',
+      required=False,
+      type=str,
+      help=(
+          'The name of the allocated IP range for the private IP AlloyDB '
+          'cluster. For example: "google-managed-services-default". If set, '
+          'the instance IPs for this cluster will be created in the '
+          'allocated range. The range name must comply with RFC 1035. '
+          'Specifically, the name must be 1-63 characters long and match the '
+          'regular expression [a-z]([-a-z0-9]*[a-z0-9])?.'
+      ),
+  )
+
+
 def AddReadPoolNodeCount(parser):
   """Adds a --node-count flag to parser.
 

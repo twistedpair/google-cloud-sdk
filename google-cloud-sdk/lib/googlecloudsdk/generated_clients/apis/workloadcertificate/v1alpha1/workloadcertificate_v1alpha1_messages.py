@@ -43,8 +43,8 @@ class K8SWorkloadSelector(_messages.Message):
 
   Fields:
     fleetMemberId: Required. Fleet membership ID (only the name part, not the
-      full URI). The "project" and "location" of the membership are the same
-      as the WorkloadRegistration.
+      full URI). The project and location of the membership are the same as
+      the WorkloadRegistration.
   """
 
   fleetMemberId = _messages.StringField(1)

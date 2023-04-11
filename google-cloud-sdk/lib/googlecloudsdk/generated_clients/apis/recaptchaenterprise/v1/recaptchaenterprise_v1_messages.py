@@ -518,6 +518,8 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Messag
   r"""Assessment for Fraud Prevention.
 
   Fields:
+    behavioralTrustVerdict: Assessment of this transaction for behavioral
+      trust.
     cardTestingVerdict: Assessment of this transaction for risk of being part
       of a card testing attack.
     stolenInstrumentVerdict: Assessment of this transaction for risk of a
@@ -526,9 +528,21 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment(_messages.Messag
       Summarizes the combined risk of attack vectors below.
   """
 
-  cardTestingVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdict', 1)
-  stolenInstrumentVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict', 2)
-  transactionRisk = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  behavioralTrustVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentBehavioralTrustVerdict', 1)
+  cardTestingVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdict', 2)
+  stolenInstrumentVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentVerdict', 3)
+  transactionRisk = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentBehavioralTrustVerdict(_messages.Message):
+  r"""Information about behavioral trust of the transaction.
+
+  Fields:
+    trust: Probability (0-1) of this transaction attempt being executed in a
+      behaviorally trustworthy way.
+  """
+
+  trust = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentCardTestingVerdict(_messages.Message):
@@ -793,6 +807,8 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
     ReasonsValueListEntryValuesEnum:
 
   Fields:
+    extendedVerdictReasons: Extended verdict reasons to be used for
+      experimentation only. The set of possible reasons is subject to change.
     reasons: Reasons contributing to the risk analysis verdict.
     score: Legitimate event score from 0.0 to 1.0. (1.0 means very likely
       legitimate traffic while 0.0 means very likely non-legitimate traffic).
@@ -826,8 +842,9 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
     SUSPECTED_CARDING = 6
     SUSPECTED_CHARGEBACK = 7
 
-  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 1, repeated=True)
-  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  extendedVerdictReasons = _messages.StringField(1, repeated=True)
+  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1ScoreDistribution(_messages.Message):
@@ -1315,7 +1332,7 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
       SESSION_TOKEN: Use reCAPTCHA session-tokens to protect the whole user
         session on the site's domain.
       ACTION_TOKEN: Use reCAPTCHA action-tokens to protect user actions.
-      EXPRESS: Use reCAPTCHA WAF express protection to protect any context
+      EXPRESS: Use reCAPTCHA WAF express protection to protect any content
         other than web pages, like APIs and IoT devices.
     """
     WAF_FEATURE_UNSPECIFIED = 0

@@ -810,11 +810,10 @@ class CloudresourcemanagerTagKeysGetNamespacedRequest(_messages.Message):
   r"""A CloudresourcemanagerTagKeysGetNamespacedRequest object.
 
   Fields:
-    name: Required. A namespaced tag key name is now only supported in the
-      format `{orgID}/{tagKeyShort}`, such as `42/foo` for a key with short
-      name "foo" under the organization with ID 42 or `r2-d2/bar` for a key
-      with short name "bar" under the project `r2-d2`. Other formats will be
-      supported when we add non-org parented tags.
+    name: Required. A namespaced tag key name in the format
+      `{parentId}/{tagKeyShort}`, such as `42/foo` for a key with short name
+      "foo" under the organization with ID 42 or `r2-d2/bar` for a key with
+      short name "bar" under the project `r2-d2`.
   """
 
   name = _messages.StringField(1)
@@ -2199,11 +2198,17 @@ class TagBinding(_messages.Message):
       E.g. `//cloudresourcemanager.googleapis.com/projects/123`
     tagValue: The TagValue of the TagBinding. Must be of the form
       `tagValues/456`.
+    tagValueNamespacedName: The namespaced name for the TagValue of the
+      TagBinding. Must be in the format
+      `{parent_id}/{tag_key_short_name}/{short_name}`. For methods that
+      support TagValue namespaced name, only one of tag_value_namespaced_name
+      or tag_value may be filled. Requests with both fields will be rejected.
   """
 
   name = _messages.StringField(1)
   parent = _messages.StringField(2)
   tagValue = _messages.StringField(3)
+  tagValueNamespacedName = _messages.StringField(4)
 
 
 class TagHold(_messages.Message):

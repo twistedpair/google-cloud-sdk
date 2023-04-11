@@ -2426,10 +2426,10 @@ class GoogleCloudDatacatalogV1TaggedEntry(_messages.Message):
   should not be attached to it.
 
   Fields:
-    absentTags: Tags that should be deleted from the Data Catalog. Caller
-      should populate template name and column only.
-    presentTags: Tags that should be ingested into the Data Catalog. Caller
-      should populate template name, column and fields.
+    absentTags: Optional. Tags that should be deleted from the Data Catalog.
+      Caller should populate template name and column only.
+    presentTags: Optional. Tags that should be ingested into the Data Catalog.
+      Caller should populate template name, column and fields.
     v1Entry: Non-encrypted Data Catalog v1 Entry.
   """
 

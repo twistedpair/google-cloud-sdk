@@ -172,13 +172,29 @@ def GetEffectiveTokenUri(cred_json, key='token_uri'):
 
 
 def UseSelfSignedJwt(creds):
-  # Only use self signed jwt for google-auth service account creds and when
-  # service_account_use_self_signed_jwt property is true
+  """Check if self signed jwt should be used.
+
+  Only use self signed jwt for google-auth service account creds, and only when
+  service_account_use_self_signed_jwt property is true or the universe is not
+  the default one.
+
+  Args:
+    creds: google.auth.credentials.Credentials, The credentials to check if
+      self signed jwt should be used.
+
+  Returns:
+    bool, Whether or not self signed jwt should be used.
+  """
   cred_type = CredentialTypeGoogleAuth.FromCredentials(creds)
-  return (
-      cred_type == CredentialTypeGoogleAuth.SERVICE_ACCOUNT
-      and properties.VALUES.auth.service_account_use_self_signed_jwt.GetBool()
-  )
+
+  if cred_type != CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
+    return False
+
+  if properties.VALUES.auth.service_account_use_self_signed_jwt.GetBool():
+    return True
+  if not properties.IsDefaultUniverse():
+    return True
+  return False
 
 
 def EnableSelfSignedJwtIfApplicable(creds):

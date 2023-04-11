@@ -120,4 +120,6 @@ def AddUpdateMaskArgToParser(parser):
             'policy by the set. The fields specified in the update_mask are '
             'relative to the policy, not the full request. The update-mask '
             'flag can be empty, or have values `policy.spec`, '
-            '`policy.dry_run_spec` or `*`'))
+            '`policy.dry_run_spec` or `*`. If the policy does not contain '
+            'the dry_run_spec and update-mask flag is not provided, '
+            'then it defaults to `policy.spec`.'))

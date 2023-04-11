@@ -5476,7 +5476,7 @@ class PathMatcher(_messages.Message):
       `RouteRule` rules support advanced routing behavior, and can match on
       paths, headers and query parameters, as well as status codes and HTTP
       methods. You must specify at least one rule, and can specify a maximum
-      of 64 rules. `RouteRule` rules must not have duplicate priority values.
+      of 200 rules. `RouteRule` rules must not have duplicate priority values.
   """
 
   description = _messages.StringField(1)

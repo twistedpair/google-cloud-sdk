@@ -36,6 +36,8 @@ class SnapshotsClient(object):
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     if release_track == base.ReleaseTrack.ALPHA:
       self._adapter = AlphaSnapshotsAdapter()
+    elif release_track == base.ReleaseTrack.BETA:
+      self._adapter = BetaSnapshotsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           VERSION_MAP[release_track]))
@@ -62,18 +64,25 @@ class SnapshotsClient(object):
     """
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(
-            self.client.projects_locations_operations), operation_ref,
-        'Waiting for [{0}] to finish'.format(operation_ref.Name()))
+            self.client.projects_locations_operations
+        ),
+        operation_ref,
+        'Waiting for [{0}] to finish'.format(operation_ref.Name()),
+    )
 
   def CreateSnapshot(self, snapshot_ref, volume_ref, async_, config):
     """Create a Cloud NetApp Volume Snapshot."""
-    request = self.messages.NetappProjectsLocationsVolumesSnapshotsCreateRequest(
-        parent=volume_ref, snapshotId=snapshot_ref.Name(), snapshot=config)
+    request = (
+        self.messages.NetappProjectsLocationsVolumesSnapshotsCreateRequest(
+            parent=volume_ref, snapshotId=snapshot_ref.Name(), snapshot=config
+        )
+    )
     create_op = self.client.projects_locations_volumes_snapshots.Create(request)
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=OPERATIONS_COLLECTION)
+        create_op.name, collection=OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
   def ParseSnapshotConfig(self, name=None, description=None, labels=None):
@@ -117,12 +126,16 @@ class SnapshotsClient(object):
         request,
         field=SNAPSHOT_RESOURCE,
         limit=limit,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def DeleteSnapshot(self, snapshot_ref, async_):
     """Deletes an existing Cloud NetApp Volume Snapshot."""
-    request = self.messages.NetappProjectsLocationsVolumesSnapshotsDeleteRequest(
-        name=snapshot_ref.RelativeName())
+    request = (
+        self.messages.NetappProjectsLocationsVolumesSnapshotsDeleteRequest(
+            name=snapshot_ref.RelativeName()
+        )
+    )
     return self._DeleteSnapshot(async_, request)
 
   def _DeleteSnapshot(self, async_, request):
@@ -179,11 +192,11 @@ class SnapshotsClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class AlphaSnapshotsAdapter(object):
-  """Adapter for the Alpha Cloud NetApp Files API Snapshot resource."""
+class BetaSnapshotsAdapter(object):
+  """Adapter for the Beta Cloud NetApp Files API Snapshot resource."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.ALPHA
+    self.release_track = base.ReleaseTrack.BETA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 
@@ -209,3 +222,12 @@ class AlphaSnapshotsAdapter(object):
       snapshot_config.labels = labels
     return snapshot_config
 
+
+class AlphaSnapshotsAdapter(BetaSnapshotsAdapter):
+  """Adapter for the Alpha Cloud NetApp Files API Snapshot resource."""
+
+  def __init__(self):
+    super(AlphaSnapshotsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.ALPHA
+    self.client = GetClientInstance(release_track=self.release_track)
+    self.messages = GetMessagesModule(release_track=self.release_track)

@@ -36,20 +36,31 @@ properties:
   httpFilters:
     description: |-
       URLs to networkservices.HttpFilter resources enabled for xDS clients using
-      this configuration. For example,
-      https://networkservices.googleapis.com/v1alpha1/projects/project/locations/location/httpFilters/httpFilter
-      Only filters that handle outbound connection and stream events
-      may be specified. These filters work in conjunction with a default set of
-      HTTP filters that may already be configured by Traffic Director. Traffic
-      Director will determine the final location of these filters within xDS
-      configuration based on the name of the HTTP filter. If Traffic Director
-      positions multiple filters at the same location, those filters will be in
-      the same order as specified in this list. httpFilters only applies for
-      loadbalancers with loadBalancingScheme set to INTERNAL_SELF_MANAGED. See
-      ForwardingRule for more details.
+      this configuration. For example, https://networkservices.g
+      oogleapis.com/v1alpha1/projects/project/locations/
+      locationhttpFilters/httpFilter Only filters that handle outbound
+      connection and stream events may be specified. These filters work in
+      conjunction with a default set of HTTP filters that may already be
+      configured by Traffic Director. Traffic Director will determine the final
+      location of these filters within xDS configuration based on the name of
+      the HTTP filter. If Traffic Director positions multiple filters at the
+      same location, those filters will be in the same order as specified in
+      this list. httpFilters only applies for loadbalancers with
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
+      more details.
     type: array
     items:
       type: string
+  httpKeepAliveTimeoutSec:
+    description: |-
+      Specifies how long to keep a connection open, after completing a
+      response, while there is no matching traffic (in seconds). If an HTTP
+      keep-alive is not specified, a default value (610 seconds) will be
+      used. For Global external HTTP(S) load balancer, the minimum allowed
+      value is 5 seconds and the maximum allowed value is 1200 seconds. For
+      Global external HTTP(S) load balancer (classic), this option is not
+      available publicly.
+    type: integer
   kind:
     description: |-
       [Output Only] Type of resource. Always compute#targetHttpProxy for
@@ -67,9 +78,14 @@ properties:
     type: string
   proxyBind:
     description: |-
-      This field only applies when the loadBalancingScheme is
-      INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP
-      address specified by the forwarding rule. Default is false.
+      This field only applies when the forwarding rule that references this
+      target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      When this field is set to true, Envoy proxies set up inbound traffic
+      interception and bind to the IP address and port specified in the
+      forwarding rule. This is generally useful when using Traffic Director
+      to configure Envoy as a gateway or middle proxy (in other words, not a
+      sidecar proxy). The Envoy proxy listens for inbound requests and
+      handles requests when it receives them. The default is false.
     type: boolean
   region:
     description: |-

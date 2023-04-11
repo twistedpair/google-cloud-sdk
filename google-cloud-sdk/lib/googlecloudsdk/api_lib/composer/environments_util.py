@@ -709,6 +709,27 @@ def DatabaseFailover(environment_ref, release_track=base.ReleaseTrack.ALPHA):
   )
 
 
+def FetchDatabaseProperties(environment_ref,
+                            release_track=base.ReleaseTrack.ALPHA):
+  """Fetch database properties.
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to fetch the
+      database properties for.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    DatabaseProperties: database properties for a given environment.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsFetchDatabasePropertiesRequest(
+      environment=environment_ref.RelativeName())
+  return GetService(release_track=release_track).FetchDatabaseProperties(
+      request_message
+  )
+
+
 def CheckUpgrade(environment_ref,
                  image_version,
                  release_track=base.ReleaseTrack.BETA):

@@ -129,25 +129,72 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       security_policy.recaptchaOptionsConfig.redirectSiteKey = (
           parsed_security_policy['recaptchaOptionsConfig']['redirectSiteKey'])
 
+  if 'userDefinedFields' in parsed_security_policy:
+    user_defined_fields = []
+    for udf in parsed_security_policy['userDefinedFields']:
+      user_defined_field = messages.SecurityPolicyUserDefinedField()
+      user_defined_field.name = udf['name']
+      user_defined_field.base = (
+          messages.SecurityPolicyUserDefinedField.BaseValueValuesEnum(
+              udf['base']
+          )
+      )
+      user_defined_field.offset = udf['offset']
+      user_defined_field.size = udf['size']
+      if 'mask' in udf:
+        user_defined_field.mask = udf['mask']
+      user_defined_fields.append(user_defined_field)
+    security_policy.userDefinedFields = user_defined_fields
+
   rules = []
   for rule in parsed_security_policy['rules']:
     security_policy_rule = messages.SecurityPolicyRule()
     security_policy_rule.action = rule['action']
     if 'description' in rule:
       security_policy_rule.description = rule['description']
-    match = messages.SecurityPolicyRuleMatcher()
-    if 'srcIpRanges' in rule['match']:
-      match.srcIpRanges = rule['match']['srcIpRanges']
-    if 'versionedExpr' in rule['match']:
-      match.versionedExpr = ConvertToEnum(rule['match']['versionedExpr'],
-                                          messages)
-    if 'expr' in rule['match']:
-      match.expr = messages.Expr(expression=rule['match']['expr']['expression'])
-    if 'config' in rule['match']:
-      if 'srcIpRanges' in rule['match']['config']:
-        match.config = messages.SecurityPolicyRuleMatcherConfig(
-            srcIpRanges=rule['match']['config']['srcIpRanges'])
-    security_policy_rule.match = match
+    if 'match' in rule:
+      match = messages.SecurityPolicyRuleMatcher()
+      if 'versionedExpr' in rule['match']:
+        match.versionedExpr = ConvertToEnum(
+            rule['match']['versionedExpr'], messages
+        )
+      if 'expr' in rule['match']:
+        match.expr = messages.Expr(
+            expression=rule['match']['expr']['expression']
+        )
+      if 'config' in rule['match']:
+        if 'srcIpRanges' in rule['match']['config']:
+          match.config = messages.SecurityPolicyRuleMatcherConfig(
+              srcIpRanges=rule['match']['config']['srcIpRanges']
+          )
+      security_policy_rule.match = match
+    if 'networkMatch' in rule:
+      network_match = messages.SecurityPolicyRuleNetworkMatcher()
+      if 'userDefinedFields' in rule['networkMatch']:
+        user_defined_fields = []
+        for udf in rule['networkMatch']['userDefinedFields']:
+          user_defined_field_match = (
+              messages.SecurityPolicyRuleNetworkMatcherUserDefinedFieldMatch()
+          )
+          user_defined_field_match.name = udf['name']
+          user_defined_field_match.values = udf['values']
+          user_defined_fields.append(user_defined_field_match)
+        network_match.userDefinedFields = user_defined_fields
+      if 'srcIpRanges' in rule['networkMatch']:
+        network_match.srcIpRanges = rule['networkMatch']['srcIpRanges']
+      if 'destIpRanges' in rule['networkMatch']:
+        network_match.destIpRanges = rule['networkMatch']['destIpRanges']
+      if 'ipProtocols' in rule['networkMatch']:
+        network_match.ipProtocols = rule['networkMatch']['ipProtocols']
+      if 'srcPorts' in rule['networkMatch']:
+        network_match.srcPorts = rule['networkMatch']['srcPorts']
+      if 'destPorts' in rule['networkMatch']:
+        network_match.destPorts = rule['networkMatch']['destPorts']
+      if 'srcRegionCodes' in rule['networkMatch']:
+        network_match.srcRegionCodes = rule['networkMatch']['srcRegionCodes']
+      if 'srcAsns' in rule['networkMatch']:
+        network_match.srcAsns = rule['networkMatch']['srcAsns']
+      security_policy_rule.networkMatch = network_match
     security_policy_rule.priority = int(rule['priority'])
     if 'preview' in rule:
       security_policy_rule.preview = rule['preview']

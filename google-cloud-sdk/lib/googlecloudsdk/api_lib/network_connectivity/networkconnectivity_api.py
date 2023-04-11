@@ -48,6 +48,24 @@ class SpokesClient(object):
             name=spoke_ref.RelativeName()))
     return self.spoke_service.Deactivate(deactivate_req)
 
+  def Accept(self, spoke_ref):
+    """Call API to activate an existing spoke."""
+    accept_req = (
+        self.messages.NetworkconnectivityProjectsLocationsSpokesAcceptRequest(
+            name=spoke_ref.RelativeName()))
+    return self.spoke_service.Accept(accept_req)
+
+  def Reject(self, spoke_ref, rejection_details):
+    """Call API to reject an existing spoke."""
+    rejection_detailed_req = self.messages.RejectSpokeRequest(
+        details=rejection_details)
+    reject_req = (
+        self.messages
+        .NetworkconnectivityProjectsLocationsSpokesRejectRequest(
+            name=spoke_ref.RelativeName(),
+            rejectSpokeRequest=rejection_detailed_req))
+    return self.spoke_service.Reject(reject_req)
+
   def Delete(self, spoke_ref):
     """Call API to delete an existing spoke."""
     delete_req = (
@@ -106,3 +124,46 @@ class SpokesClient(object):
             spoke=spoke,
             updateMask=update_mask_string))
     return self.spoke_service.Patch(update_req)
+
+
+class HubsClient(object):
+  """Client for hub service in network connectivity API."""
+
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    self.release_track = release_track
+    self.client = networkconnectivity_util.GetClientInstance(release_track)
+    self.messages = networkconnectivity_util.GetMessagesModule(release_track)
+    self.hub_service = self.client.projects_locations_global_hubs
+
+  def ListHubSpokes(
+      self,
+      hub_ref,
+      spoke_locations=None,
+      limit=None,
+      filter_expression=None,
+      order_by='',
+      # If page_size is set to None, ListHubSpokes will return all spokes
+      # (defaults to 500). Accordingly, pagination will be handled on the client
+      # side.
+      page_size=None,
+      page_token=None,
+      view=None,
+  ):
+    """Call API to list spokes."""
+    list_req = self.messages.NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest(
+        name=hub_ref.RelativeName(),
+        spokeLocations=spoke_locations,
+        filter=filter_expression,
+        orderBy=order_by,
+        pageSize=page_size,
+        pageToken=page_token,
+        view=view,
+    )
+    return list_pager.YieldFromList(
+        self.hub_service,
+        list_req,
+        field='spokes',
+        limit=limit,
+        batch_size_attribute='pageSize',
+        method='ListSpokes'
+    )

@@ -1335,8 +1335,9 @@ class NetworkconnectivityProjectsLocationsGlobalHubsListSpokesRequest(_messages.
         view.
       BASIC: Includes `name`, `create_time`, `hub`, `unique_id`, `state`,
         `reasons`, and `spoke_type`. This is the default value.
-      DETAILED: Include all spoke fields. You can use the `DETAILED` view only
-        when you set the `spoke_locations` field to `[global]`.
+      DETAILED: Includes all spoke fields except `labels`. You can use the
+        `DETAILED` view only when you set the `spoke_locations` field to
+        `[global]`.
     """
     SPOKE_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -3298,7 +3299,9 @@ class ServiceConnectionMap(_messages.Message):
       } See: https://google.aip.dev/122#fields-representing-resource-names
     producerPscConfigs: The PSC configurations on producer side.
     serviceClass: The service class identifier this ServiceConnectionMap is
-      for.
+      for. The user of ServiceConnectionMap create API needs to have
+      networkconnecitivty.serviceclasses.use iam permission for the service
+      class.
     serviceClassUri: Output only. The service class uri this
       ServiceConnectionMap is for.
     updateTime: Output only. Time when the ServiceConnectionMap was updated.

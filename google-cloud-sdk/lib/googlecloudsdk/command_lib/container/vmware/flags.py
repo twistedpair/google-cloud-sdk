@@ -378,6 +378,22 @@ def AddAllowMissingDeleteNodePool(parser):
   )
 
 
+def AddAllowMissingUnenrollNodePool(parser):
+  """Adds a flag for unenroll node pool operation to return success and perform no action when there is no matching node pool.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help=(
+          'If set, and the Vmware Node Pool is not found, the request will'
+          ' succeed but no action will be taken.'
+      ),
+  )
+
+
 def AddAllowMissingDeleteCluster(parser):
   """Adds a flag for delete cluster operation to return success and perform no action when there is no matching cluster.
 
@@ -1079,9 +1095,7 @@ def _ParseControlPlaneIpBlock(value):
   parsing_error = """Malformed IP block [{}].
 Expect an individual IP address, or an individual IP address with an optional hostname.
 Examples: --control-plane-ip-block 'netmask=255.255.255.0,gateway=10.0.0.0,ips=192.168.1.1;0.0.0.0 localhost'
-""".format(
-      value
-  )
+""".format(value)
 
   if ' ' not in value:
     return (value, None)
@@ -1111,9 +1125,7 @@ def _ParseStaticIpConfigIpBlock(value):
   parsing_error = """Malformed IP block [{}].
 Expect an individual IP address, an individual IP address with an optional hostname, or a CIDR block.
 Examples: ips=192.168.1.1;0.0.0.0 localhost;192.168.1.2/16
-""".format(
-      value
-  )
+""".format(value)
 
   if ' ' not in value:
     return (value, None)
@@ -1668,7 +1680,7 @@ def _AddVmwareControlPlaneV2Config(
     return None
 
   vmware_control_plane_v2_config_group = vmware_network_config_group.add_group(
-      hidden=True
+      help='Control plane v2 mode configurations.'
   )
   help_text = """
 Static IP addresses for the control plane nodes. The number of IP addresses should match the number of replicas for the control plane nodes, specified by `--replicas`.
@@ -1721,8 +1733,43 @@ def AddEnableControlPlaneV2(parser):
   """
   parser.add_argument(
       '--enable-control-plane-v2',
-      help='If set, enables control plane v2.',
+      help='If set, enable control plane v2.',
       action='store_true',
+  )
+
+
+def AddNodePoolVersion(parser):
+  """Adds a flag for on_prem_version field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  parser.add_argument(
+      '--version',
+      help=(
+          'Anthos version for the node pool. Defaults to the user cluster'
+          ' version.'
+      ),
       hidden=True,
   )
 
+
+def AddUserClusterLocalName(parser):
+  """Adds a flag for local_name field.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  local_name_help_text = """\
+The object name of the VMware OnPremUserCluster custom resource on the
+associated admin cluster. This field is used to support conflicting
+resource names when enrolling existing clusters to the API. When not
+provided, this field will resolve to the vmware_cluster_id. Otherwise, it
+must match the object name of the VMware OnPremUserCluster custom resource.
+It is not modifiable outside / beyond the  enrollment operation.
+"""
+
+  parser.add_argument(
+      '--local-name',
+      help=local_name_help_text,
+  )

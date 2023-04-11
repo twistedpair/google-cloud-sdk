@@ -317,5 +317,6 @@ def _HandleLocationError(error):
   parsed_err = api_lib_exceptions.HttpException(error)
   if _LOCATION_ERROR_REGEX.match(parsed_err.payload.status_message):
     raise exceptions.UnsupportedIntegrationsLocationError(
-        'Currently, this feature is only available in region us-central1.')
+        'Currently, this feature is only available in regions asia-east1, '
+        'us-central1, us-east1, us-west1, europe-west1 and europe-west4.')
   raise error

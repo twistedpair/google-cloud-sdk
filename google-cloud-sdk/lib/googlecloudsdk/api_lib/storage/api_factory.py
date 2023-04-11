@@ -23,8 +23,10 @@ from __future__ import unicode_literals
 import threading
 
 from googlecloudsdk.api_lib.storage import s3_api
+from googlecloudsdk.api_lib.storage.gcs_grpc import client as gcs_grpc_client
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 _INVALID_PROVIDER_PREFIX_MESSAGE = (
@@ -48,6 +50,12 @@ def _get_api_class(provider):
     ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   if provider == storage_url.ProviderPrefix.GCS:
+    if (
+        properties.VALUES.storage.preferred_api.Get()
+        == properties.StoragePreferredApi.GRPC_WITH_JSON_FALLBACK.value
+    ):
+      log.debug('Using gRPC client with JSON Fallback.')
+      return gcs_grpc_client.GrpcClientWithJsonFallback
     return gcs_json_client.JsonClient
   elif provider == storage_url.ProviderPrefix.S3:
     # TODO(b/275749579): Change this after the refactor is done.

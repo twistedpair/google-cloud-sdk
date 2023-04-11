@@ -928,7 +928,6 @@ class DeploymentPodsAvailableOperation(object):
 
     # Ensure that the Deployment has the correct image, so that this operation
     # is tracking the status of a new rollout, not the pre-rollout steady state.
-    # TODO(b/135121228): Check the generation vs observedGeneration as well.
     deployment_image, err = self.kube_client.GetResourceField(
         self.namespace, deployment_resource,
         '.spec.template.spec.containers[0].image')

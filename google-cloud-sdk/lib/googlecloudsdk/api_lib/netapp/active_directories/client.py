@@ -36,6 +36,8 @@ class ActiveDirectoriesClient(object):
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     if release_track == base.ReleaseTrack.ALPHA:
       self._adapter = AlphaActiveDirectoriesAdapter()
+    elif release_track == base.ReleaseTrack.BETA:
+      self._adapter = BetaActiveDirectoriesAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           VERSION_MAP[release_track]))
@@ -269,11 +271,11 @@ class ActiveDirectoriesClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class AlphaActiveDirectoriesAdapter(object):
-  """Adapter for the Alpha Cloud NetApp Files API for Active Directories."""
+class BetaActiveDirectoriesAdapter(object):
+  """Adapter for the Beta Cloud NetApp Files API for Active Directories."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.ALPHA
+    self.release_track = base.ReleaseTrack.BETA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 
@@ -344,3 +346,14 @@ class AlphaActiveDirectoriesAdapter(object):
     update_op = self.client.projects_locations_activeDirectories.Patch(
         update_request)
     return update_op
+
+
+class AlphaActiveDirectoriesAdapter(BetaActiveDirectoriesAdapter):
+  """Adapter for the Alpha Cloud NetApp Files API for Active Directories."""
+
+  def __init__(self):
+    super(AlphaActiveDirectoriesAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.ALPHA
+    self.client = GetClientInstance(release_track=self.release_track)
+    self.messages = GetMessagesModule(release_track=self.release_track)
+

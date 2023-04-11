@@ -44,6 +44,7 @@ VMWARE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
 
 VMWARE_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'display_name': 'display_name',
+    'version': 'on_prem_version',
     'min_replicas': 'node_pool_autoscaling.min_replicas',
     'max_replicas': 'node_pool_autoscaling.max_replicas',
     'cpus': 'config.cpus',
@@ -71,6 +72,10 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'metal_lb_load_balancer_node_configs': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
     'metal_lb_load_balancer_node_labels': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.labels',
     'metal_lb_load_balancer_node_taints': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.taints',
+    'metal_lb_load_balancer_registry_pull_qps': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.registry_pull_qps',
+    'metal_lb_load_balancer_registry_burst': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.registry_burst',
+    'disable_metal_lb_load_balancer_serialize_image_pulls': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
+    'enable_metal_lb_load_balancer_serialize_image_pulls': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
     'control_plane_node_configs_from_file': 'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
     'control_plane_node_configs': 'control_plane.control_plane_node_pool_config.node_pool_config.node_configs',
     'control_plane_node_labels': (
@@ -79,6 +84,10 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'control_plane_node_taints': (
         'control_plane.control_plane_node_pool_config.node_pool_config.taints'
     ),
+    'control_plane_registry_pull_qps': 'control_plane.control_plane_node_pool_config.node_pool_config.kubelet_config.registry_pull_qps',
+    'control_plane_registry_burst': 'control_plane.control_plane_node_pool_config.node_pool_config.kubelet_config.registry_burst',
+    'disable_control_plane_serialize_image_pulls': 'control_plane.control_plane_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
+    'enable_control_plane_serialize_image_pulls': 'control_plane.control_plane_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
     'api_server_args': 'control_plane.api_server_args',
     'description': 'description',
     'version': 'bare_metal_version',
@@ -93,6 +102,16 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     ),
     'enable_sr_iov_config': 'network_config.sr_iov_config.enabled',
     'disable_sr_iov_config': 'network_config.sr_iov_config.enabled',
+    'bgp_asn': 'load_balancer.bgp_lb_config.asn',
+    'bgp_peer_configs': 'load_balancer.bgp_lb_config.bgp_peer_configs',
+    'bgp_address_pools': 'load_balancer.bgp_lb_config.address_pools',
+    'bgp_load_balancer_node_configs': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
+    'bgp_load_balancer_node_taints': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.taints',
+    'bgp_load_balancer_node_labels': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.labels',
+    'bgp_load_balancer_registry_pull_qps': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.registry_pull_qps',
+    'bgp_load_balancer_registry_burst': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.registry_burst',
+    'disable_bgp_load_balancer_serialize_image_pulls': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
+    'enable_bgp_load_balancer_serialize_image_pulls': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
 }
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
@@ -101,18 +120,6 @@ BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
     'node_labels': 'node_pool_config.labels',
     'node_taints': 'node_pool_config.taints',
     'display_name': 'display_name',
-    'cpu_manager_policy': 'node_pool_config.kubelet_config.cpu_manager_policy',
-    'disable_cpu_cfs_quota': (
-        'node_pool_config.kubelet_config.cpu_cfs_quota_disabled'
-    ),
-    'enable_cpu_cfs_quota': (
-        'node_pool_config.kubelet_config.cpu_cfs_quota_disabled'
-    ),
-    'cpu_cfs_quota_period': (
-        'node_pool_config.kubelet_config.cpu_cfs_quota_period'
-    ),
-    'feature_gates': 'node_pool_config.kubelet_config.feature_gates',
-    'pod_pids_limit': 'node_pool_config.kubelet_config.pod_pids_limit',
     'registry_pull_qps': 'node_pool_config.kubelet_config.registry_pull_qps',
     'registry_burst': 'node_pool_config.kubelet_config.registry_burst',
     'disable_serialize_image_pulls': (
@@ -169,7 +176,32 @@ BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
         'network_config.island_mode_cidr.service_address_cidr_blocks'
     ),
     'enable_sr_iov_config': 'network_config.sr_iov_config.enabled',
-    'disable_sr_iov_config': 'network_config.sr_iov_config.enabled'
+    'disable_sr_iov_config': 'network_config.sr_iov_config.enabled',
+    'metal_lb_address_pools': 'load_balancer.metal_lb_config.address_pools',
+    'metal_lb_address_pools_from_file': (
+        'load_balancer.metal_lb_config.address_pools'
+    ),
+    'metal_lb_load_balancer_node_configs_from_file': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
+    'metal_lb_load_balancer_node_configs': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
+    'metal_lb_load_balancer_node_labels': 'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.labels',
+    'metal_lb_load_balancer_node_taints': (
+        'load_balancer.metal_lb_config.load_balancer_node_pool_config.node_pool_config.taints'
+    ),
+    'bgp_lb_address_pools': 'load_balancer.bgp_lb_config.address_pools',
+    'bgp_lb_address_pools_from_file': (
+        'load_balancer.bgp_lb_config.address_pools'
+    ),
+    'bgp_lb_load_balancer_node_configs_from_file': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
+    'bgp_lb_load_balancer_node_configs': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.node_configs',
+    'bgp_lb_load_balancer_node_labels': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.labels',
+    'bgp_lb_load_balancer_node_taints': (
+        'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.taints'
+    ),
+    'bgp_lb_peer_configs': 'load_balancer.bgp_lb_config.bgp_peer_configs',
+    'bgp_lb_peer_configs_from_file': (
+        'load_balancer.bgp_lb_config.bgp_peer_configs'
+    ),
+    'bgp_lb_asn': 'load_balancer.bgp_lb_config.asn'
 }
 
 

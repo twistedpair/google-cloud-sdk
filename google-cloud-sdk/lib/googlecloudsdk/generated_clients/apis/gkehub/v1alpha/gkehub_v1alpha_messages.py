@@ -864,6 +864,7 @@ class ConfigManagementConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    managed: Configuration for Managed Config Sync.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
@@ -875,9 +876,10 @@ class ConfigManagementConfigSync(_messages.Message):
   allowVerticalScale = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('ConfigManagementGitConfig', 3)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 4)
-  preventDrift = _messages.BooleanField(5)
-  sourceFormat = _messages.StringField(6)
+  managed = _messages.MessageField('ConfigManagementManaged', 4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1267,6 +1269,17 @@ class ConfigManagementInstallError(_messages.Message):
   """
 
   errorMessage = _messages.StringField(1)
+
+
+class ConfigManagementManaged(_messages.Message):
+  r"""Configuration for Managed Config Sync.
+
+  Fields:
+    enabled: Set to true to enable Managed Config Sync. Defaults to false
+      which disables Managed Config Sync.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class ConfigManagementMembershipSpec(_messages.Message):
@@ -6252,14 +6265,16 @@ class ServiceMeshMembershipSpec(_messages.Message):
   feature
 
   Enums:
-    ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    ControlPlaneValueValuesEnum: Deprecated: use `management` instead Enables
+      automatic control plane management.
     DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
     ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
-    controlPlane: Enables automatic control plane management.
+    controlPlane: Deprecated: use `management` instead Enables automatic
+      control plane management.
     dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
@@ -6267,7 +6282,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
-    r"""Enables automatic control plane management.
+    r"""Deprecated: use `management` instead Enables automatic control plane
+    management.
 
     Values:
       CONTROL_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified

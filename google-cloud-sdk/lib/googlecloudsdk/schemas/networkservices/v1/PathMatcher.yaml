@@ -40,7 +40,7 @@ properties:
       A list of RouteRule rules to match against. `RouteRule` rules support
       advanced routing behavior, and can match on paths, headers and query
       parameters, as well as status codes and HTTP methods. You must specify at
-      least one rule, and can specify a maximum of 64 rules. `RouteRule` rules
+      least one rule, and can specify a maximum of 200 rules. `RouteRule` rules
       must not have duplicate priority values.
     type: array
     items:

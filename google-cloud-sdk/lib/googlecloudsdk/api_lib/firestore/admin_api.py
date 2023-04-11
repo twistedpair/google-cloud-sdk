@@ -46,6 +46,11 @@ def GetLocationService():
   return GetClient().projects_locations
 
 
+def GetIndexService():
+  """Returns the Firestore Index service for interacting with the Firestore Admin service."""
+  return GetClient().projects_databases_collectionGroups_indexes
+
+
 def CreateDatabase(project, location, database, database_type):
   """Performs a Firestore Admin v1 Database Creation.
 
@@ -63,9 +68,11 @@ def CreateDatabase(project, location, database, database_type):
       messages.FirestoreProjectsDatabasesCreateRequest(
           parent='projects/{}'.format(project),
           databaseId=database,
-          googleFirestoreAdminV1Database=messages
-          .GoogleFirestoreAdminV1Database(
-              type=database_type, locationId=location)))
+          googleFirestoreAdminV1Database=messages.GoogleFirestoreAdminV1Database(
+              type=database_type, locationId=location
+          ),
+      )
+  )
 
 
 def ListDatabases(project):
@@ -80,13 +87,14 @@ def ListDatabases(project):
   messages = GetMessages()
   return GetService().List(
       messages.FirestoreProjectsDatabasesListRequest(
-          parent='projects/{}'.format(project)))
+          parent='projects/{}'.format(project)
+      )
+  )
 
 
-def GetExportDocumentsRequest(database,
-                              output_uri_prefix,
-                              namespace_ids=None,
-                              collection_ids=None):
+def GetExportDocumentsRequest(
+    database, output_uri_prefix, namespace_ids=None, collection_ids=None
+):
   """Returns a request for a Firestore Admin Export.
 
   Args:
@@ -110,15 +118,14 @@ def GetExportDocumentsRequest(database,
   export_request = request_class(**kwargs)
 
   request = messages.FirestoreProjectsDatabasesExportDocumentsRequest(
-      name=database,
-      googleFirestoreAdminV1ExportDocumentsRequest=export_request)
+      name=database, googleFirestoreAdminV1ExportDocumentsRequest=export_request
+  )
   return request
 
 
-def GetImportDocumentsRequest(database,
-                              input_uri_prefix,
-                              namespace_ids=None,
-                              collection_ids=None):
+def GetImportDocumentsRequest(
+    database, input_uri_prefix, namespace_ids=None, collection_ids=None
+):
   """Returns a request for a Firestore Admin Import.
 
   Args:
@@ -143,8 +150,8 @@ def GetImportDocumentsRequest(database,
   import_request = request_class(**kwargs)
 
   return messages.FirestoreProjectsDatabasesImportDocumentsRequest(
-      name=database,
-      googleFirestoreAdminV1ImportDocumentsRequest=import_request)
+      name=database, googleFirestoreAdminV1ImportDocumentsRequest=import_request
+  )
 
 
 def Export(project, database, output_uri_prefix, namespace_ids, collection_ids):
@@ -162,8 +169,13 @@ def Export(project, database, output_uri_prefix, namespace_ids, collection_ids):
   """
   dbname = 'projects/{}/databases/{}'.format(project, database)
   return GetService().ExportDocuments(
-      GetExportDocumentsRequest(dbname, output_uri_prefix, namespace_ids,
-                                collection_ids))
+      GetExportDocumentsRequest(
+          database=dbname,
+          output_uri_prefix=output_uri_prefix,
+          namespace_ids=namespace_ids,
+          collection_ids=collection_ids,
+      )
+  )
 
 
 def Import(project, database, input_uri_prefix, namespace_ids, collection_ids):
@@ -181,8 +193,13 @@ def Import(project, database, input_uri_prefix, namespace_ids, collection_ids):
   """
   dbname = 'projects/{}/databases/{}'.format(project, database)
   return GetService().ImportDocuments(
-      GetImportDocumentsRequest(dbname, input_uri_prefix, namespace_ids,
-                                collection_ids))
+      GetImportDocumentsRequest(
+          database=dbname,
+          input_uri_prefix=input_uri_prefix,
+          namespace_ids=namespace_ids,
+          collection_ids=collection_ids,
+      )
+  )
 
 
 def ListLocations(project):
@@ -197,9 +214,11 @@ def ListLocations(project):
   return list_pager.YieldFromList(
       GetLocationService(),
       GetMessages().FirestoreProjectsLocationsListRequest(
-          name='projects/{}'.format(project)),
+          name='projects/{}'.format(project)
+      ),
       field='locations',
-      batch_size_attribute='pageSize')
+      batch_size_attribute='pageSize',
+  )
 
 
 def DeleteDatabase(project, database, etag, allow_missing):
@@ -220,5 +239,28 @@ def DeleteDatabase(project, database, etag, allow_missing):
           name='projects/{}/databases/{}'.format(project, database),
           etag=etag,
           allowMissing=allow_missing,
+      )
+  )
+
+
+def CreateIndex(project, database, collection_id, index):
+  """Performs a Firestore Admin v1 Index Creation.
+
+  Args:
+    project: the project of the database of the index, a string.
+    database: the database id of the index, a string.
+    collection_id: the current group of the index, a string.
+    index: the index to create, a googleFirestoreAdminV1Index message.
+
+  Returns:
+    an Operation.
+  """
+  messages = GetMessages()
+  return GetIndexService().Create(
+      messages.FirestoreProjectsDatabasesCollectionGroupsIndexesCreateRequest(
+          parent='projects/{}/databases/{}/collectionGroups/{}'.format(
+              project, database, collection_id
+          ),
+          googleFirestoreAdminV1Index=index
       )
   )

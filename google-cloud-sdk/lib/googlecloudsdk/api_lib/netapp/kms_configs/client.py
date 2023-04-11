@@ -200,6 +200,17 @@ class KmsConfigsClient(object):
         encrypt_op.name, collection=OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
+  def VerifyKmsConfig(self, kmsconfig_ref):
+    """Verifies the Cloud NetApp Volumes KMS Config is reachable."""
+    request = (
+        self.messages.NetappProjectsLocationsKmsConfigsVerifyRequest(
+            name=kmsconfig_ref.RelativeName()
+        )
+    )
+    return self.client.projects_locations_kmsConfigs.Verify(
+        request
+    )
+
 
 class BetaKmsConfigsAdapter(object):
   """Adapter for the Beta Cloud NetApp Files API for KMS Configs."""

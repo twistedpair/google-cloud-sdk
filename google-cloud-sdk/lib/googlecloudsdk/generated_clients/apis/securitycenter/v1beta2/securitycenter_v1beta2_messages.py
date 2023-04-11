@@ -101,22 +101,6 @@ class AccessReview(_messages.Message):
   version = _messages.StringField(7)
 
 
-class AssociatedFinding(_messages.Message):
-  r"""A finding that is associated with this node in the exposure path.
-
-  Fields:
-    canonicalFindingName: Canonical name of the associated findings. Example:
-      organizations/123/sources/456/findings/789
-    findingCategory: The additional taxonomy group within findings from a
-      given source.
-    name: Full resource name of the finding.
-  """
-
-  canonicalFindingName = _messages.StringField(1)
-  findingCategory = _messages.StringField(2)
-  name = _messages.StringField(3)
-
-
 class CloudDlpDataProfile(_messages.Message):
   r"""The [data profile](https://cloud.google.com/dlp/docs/data-profiles)
   associated with the finding.
@@ -701,19 +685,6 @@ class Detection(_messages.Message):
   percentPagesMatched = _messages.FloatField(2)
 
 
-class Edge(_messages.Message):
-  r"""Represents a connection between a source node and a destination node in
-  this exposure path.
-
-  Fields:
-    destination: This is the resource name of the destination node.
-    source: This is the resource name of the source node.
-  """
-
-  destination = _messages.StringField(1)
-  source = _messages.StringField(2)
-
-
 class EnvironmentVariable(_messages.Message):
   r"""EnvironmentVariable is a name-value pair to store environment variables
   for Process.
@@ -832,42 +803,6 @@ class Exfiltration(_messages.Message):
 
   sources = _messages.MessageField('ExfilResource', 1, repeated=True)
   targets = _messages.MessageField('ExfilResource', 2, repeated=True)
-
-
-class Expr(_messages.Message):
-  r"""Represents a textual expression in the Common Expression Language (CEL)
-  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec. Example (Comparison):
-  title: "Summary size limit" description: "Determines if a summary is less
-  than 100 chars" expression: "document.summary.size() < 100" Example
-  (Equality): title: "Requestor is owner" description: "Determines if
-  requestor is the document owner" expression: "document.owner ==
-  request.auth.claims.email" Example (Logic): title: "Public documents"
-  description: "Determine whether the document should be publicly visible"
-  expression: "document.type != 'private' && document.type != 'internal'"
-  Example (Data Manipulation): title: "Notification string" description:
-  "Create a notification string with a timestamp." expression: "'New message
-  received at ' + string(document.create_time)" The exact variables and
-  functions that may be referenced within an expression are determined by the
-  service that evaluates it. See the service documentation for additional
-  information.
-
-  Fields:
-    description: Optional. Description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.
-    location: Optional. String indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: Optional. Title for the expression, i.e. a short string describing
-      its purpose. This can be used e.g. in UIs which allow to enter the
-      expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
 
 
 class File(_messages.Message):
@@ -1351,159 +1286,6 @@ class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
 
 
-class GoogleCloudSecuritycenterV1CustomConfig(_messages.Message):
-  r""" Resource capturing CEL config for the custom module.
-
-  Enums:
-    SeverityValueValuesEnum: The severity of the generated finding.
-
-  Fields:
-    customOutput: Custom output properties.
-    description: The description providing context for the generated finding.
-    predicate: Evaluation expression for the resource which will produce a
-      finding.
-    recommendation: The recommendation steps to fix the generated finding.
-    resourceSelector: Selection criteria for the resource type.
-    severity: The severity of the generated finding.
-  """
-
-  class SeverityValueValuesEnum(_messages.Enum):
-    r"""The severity of the generated finding.
-
-    Values:
-      SEVERITY_UNSPECIFIED: Unspecified severity.
-      CRITICAL: Critical severity.
-      HIGH: High severity.
-      MEDIUM: Medium severity.
-      LOW: Low severity.
-    """
-    SEVERITY_UNSPECIFIED = 0
-    CRITICAL = 1
-    HIGH = 2
-    MEDIUM = 3
-    LOW = 4
-
-  customOutput = _messages.MessageField('GoogleCloudSecuritycenterV1CustomOutputSpec', 1)
-  description = _messages.StringField(2)
-  predicate = _messages.MessageField('Expr', 3)
-  recommendation = _messages.StringField(4)
-  resourceSelector = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceSelector', 5)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
-
-
-class GoogleCloudSecuritycenterV1CustomOutputSpec(_messages.Message):
-  r"""Resource capturing custom output property.
-
-  Fields:
-    properties: List of custom output properties with name, CEL expression.
-  """
-
-  properties = _messages.MessageField('GoogleCloudSecuritycenterV1Property', 1, repeated=True)
-
-
-class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_messages.Message):
-  r"""An EffectiveSecurityHealthAnalyticsCustomModule is the representation of
-  SecurityHealthAnalyticsCustomModule at a given level taking hierarchy into
-  account and resolving various fields accordingly. e.g. if the module is
-  enabled at the ancestor level, effective modules at all descendant levels
-  will have enablement_state set to enabled. Similarly, if module.inherited is
-  set, then effective module's config will contain the ancestor's config
-  details. EffectiveSecurityHealthAnalyticsCustomModule is read-only.
-
-  Enums:
-    EnablementStateValueValuesEnum: Output only. The effective state of
-      enablement for the module at the given level of the hierarchy.
-
-  Fields:
-    customConfig: Output only. Config for the effective module. The user
-      specified custom configuration for the module.
-    displayName: Output only. The human readable name to be displayed for the
-      module.
-    enablementState: Output only. The effective state of enablement for the
-      module at the given level of the hierarchy.
-    name: Output only. The resource name of the custom module. Its format is "
-      organizations/{organization}/securityHealthAnalyticsSettings/effectiveCu
-      stomModules/{customModule}", or "folders/{folder}/securityHealthAnalytic
-      sSettings/effectiveCustomModules/{customModule}", or "projects/{project}
-      /securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
-  """
-
-  class EnablementStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The effective state of enablement for the module at the
-    given level of the hierarchy.
-
-    Values:
-      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
-      ENABLED: The module is enabled at the given level.
-      DISABLED: The module is disabled at the given level.
-    """
-    ENABLEMENT_STATE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
-
-  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 1)
-  displayName = _messages.StringField(2)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 3)
-  name = _messages.StringField(4)
-
-
-class GoogleCloudSecuritycenterV1ExposedResource(_messages.Message):
-  r"""A resource that is exposed as a result of a finding.
-
-  Enums:
-    ResourceValueValueValuesEnum: How valuable this resource is.
-
-  Fields:
-    displayName: Human readable name of the resource that is exposed.
-    methods: The ways in which this resource is exposed. Examples: Read, Write
-    name: Exposed Resource Name e.g.:
-      `organizations/123/attackExposureResults/456/exposedResources/789`
-    resource: The name of the resource that is exposed. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceType: The resource type of the exposed resource. See:
-      https://cloud.google.com/asset-inventory/docs/supported-asset-types
-    resourceValue: How valuable this resource is.
-  """
-
-  class ResourceValueValueValuesEnum(_messages.Enum):
-    r"""How valuable this resource is.
-
-    Values:
-      RESOURCE_VALUE_UNSPECIFIED: The resource value isn't specified.
-      RESOURCE_VALUE_LOW: This is a low value resource.
-      RESOURCE_VALUE_MEDIUM: This is a medium value resource.
-      RESOURCE_VALUE_HIGH: This is a high value resource.
-    """
-    RESOURCE_VALUE_UNSPECIFIED = 0
-    RESOURCE_VALUE_LOW = 1
-    RESOURCE_VALUE_MEDIUM = 2
-    RESOURCE_VALUE_HIGH = 3
-
-  displayName = _messages.StringField(1)
-  methods = _messages.StringField(2, repeated=True)
-  name = _messages.StringField(3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.StringField(5)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
-
-
-class GoogleCloudSecuritycenterV1ExposurePath(_messages.Message):
-  r"""A path that an attacker could take to reach an exposed resource.
-
-  Fields:
-    edges: A list of the edges between nodes in this exposure path.
-    exposedResource: The leaf node of this exposure path.
-    name: Exposure Path Name e.g.:
-      `organizations/123/attackExposureResults/456/exposurePaths/789`
-    pathNodes: A list of nodes that exist in this exposure path.
-  """
-
-  edges = _messages.MessageField('Edge', 1, repeated=True)
-  exposedResource = _messages.MessageField('GoogleCloudSecuritycenterV1ExposedResource', 2)
-  name = _messages.StringField(3)
-  pathNodes = _messages.MessageField('PathNode', 4, repeated=True)
-
-
 class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
   r"""Representation of third party SIEM/SOAR fields within SCC.
 
@@ -1588,19 +1370,6 @@ class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
   resource = _messages.MessageField('GoogleCloudSecuritycenterV1Resource', 3)
 
 
-class GoogleCloudSecuritycenterV1Property(_messages.Message):
-  r"""Resource for an individual output property.
-
-  Fields:
-    name: Name of the property for the custom output.
-    valueExpression: CEL Expression for the custom output. The expression can
-      output any standard CEL value types.
-  """
-
-  name = _messages.StringField(1)
-  valueExpression = _messages.MessageField('Expr', 2)
-
-
 class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
@@ -1626,113 +1395,6 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   project = _messages.StringField(6)
   projectDisplayName = _messages.StringField(7)
   type = _messages.StringField(8)
-
-
-class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
-  r"""Resource for selecting resource type.
-
-  Fields:
-    resourceTypes: Resource type for detector to operate on.
-  """
-
-  resourceTypes = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
-  r"""A resource value config is a mapping configuration of user's tag values
-  to resource values. Used by the attack path simulation.
-
-  Enums:
-    ResourceValueValueValuesEnum: Required. Resource value level this
-      expression represents
-
-  Messages:
-    ResourceLabelsSelectorValue: List of resource labels to search for,
-      evaluated with AND. E.g. "resource_labels_selector": {"key": "value",
-      "env": "prod"} will match resources with labels "key": "value" AND
-      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
-      managing-labels
-
-  Fields:
-    createTime: Output only. Timestamp this resource value config was created.
-    description: Description of the resource value config.
-    name: Name for the resource value config
-    resourceLabelsSelector: List of resource labels to search for, evaluated
-      with AND. E.g. "resource_labels_selector": {"key": "value", "env":
-      "prod"} will match resources with labels "key": "value" AND "env":
-      "prod" https://cloud.google.com/resource-manager/docs/creating-managing-
-      labels
-    resourceType: Apply resource_value only to resources that match
-      resource_type. resource_type will be checked with "AND" of other
-      resources. E.g. "storage.googleapis.com/Bucket" with resource_value
-      "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
-      resources.
-    resourceValue: Required. Resource value level this expression represents
-    scope: Project or folder to scope this config to. For example,
-      "project/456" would apply this config only to resources in "project/456"
-      scope will be checked with "AND" of other resources.
-    tagValues: Required. Tag values combined with AND to check against. Values
-      in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
-      "tagValues/789" ] https://cloud.google.com/resource-
-      manager/docs/tags/tags-creating-and-managing
-    updateTime: Output only. Timestamp this resource value config was last
-      updated.
-  """
-
-  class ResourceValueValueValuesEnum(_messages.Enum):
-    r"""Required. Resource value level this expression represents
-
-    Values:
-      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
-      HIGH: High resource value
-      MEDIUM: Medium resource value
-      LOW: Low resource value
-      NONE: No resource value, e.g. ignore these resources
-    """
-    RESOURCE_VALUE_UNSPECIFIED = 0
-    HIGH = 1
-    MEDIUM = 2
-    LOW = 3
-    NONE = 4
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResourceLabelsSelectorValue(_messages.Message):
-    r"""List of resource labels to search for, evaluated with AND. E.g.
-    "resource_labels_selector": {"key": "value", "env": "prod"} will match
-    resources with labels "key": "value" AND "env": "prod"
-    https://cloud.google.com/resource-manager/docs/creating-managing-labels
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ResourceLabelsSelectorValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        ResourceLabelsSelectorValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResourceLabelsSelectorValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 4)
-  resourceType = _messages.StringField(5)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
-  scope = _messages.StringField(7)
-  tagValues = _messages.StringField(8, repeated=True)
-  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -1764,64 +1426,6 @@ class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
 
   duration = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
-
-
-class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.Message):
-  r""" A custom module is a user authored module that is run by SHA on behalf
-  of the user to produce findings. Custom modules can be created anywhere in
-  the CRM hierarchy, and are inherited by all descendants. A resident custom
-  module is a custom module that was created at the CRM scope it is viewed in.
-  An inherited custom module is a custom module that has inherited its
-  configuration and enablement state from an ancestor resident module
-  somewhere up the CRM hierarchy.
-
-  Enums:
-    EnablementStateValueValuesEnum: The enablement state of the custom module.
-
-  Fields:
-    ancestorModule: Output only. If empty, indicates that the current module
-      is a resident module of the current CRM scope. Otherwise, it will
-      contain the name of the CRM ancestor module that this module inherited
-      its enablement state from.
-    customConfig: The user specified custom configuration for the module.
-    displayName: The human readable display name of the custom module. Must be
-      less than 64 characters.
-    enablementState: The enablement state of the custom module.
-    lastEditor: Output only. The editor that last updated the custom module.
-    name: Immutable. The resource name of the custom module. Its format is "or
-      ganizations/{organization}/securityHealthAnalyticsSettings/customModules
-      /{customModule}", or "folders/{folder}/securityHealthAnalyticsSettings/c
-      ustomModules/{customModule}", or "projects/{project}/securityHealthAnaly
-      ticsSettings/customModules/{customModule}" The id {customModule} is
-      server-generated and is not user settable. It will be a numeric id
-      containing 1-20 digits.
-    updateTime: Output only. The time at which the custom module was last
-      updated.
-  """
-
-  class EnablementStateValueValuesEnum(_messages.Enum):
-    r"""The enablement state of the custom module.
-
-    Values:
-      ENABLEMENT_STATE_UNSPECIFIED: Unspecified enablement state.
-      ENABLED: The module is enabled at the given CRM resource.
-      DISABLED: The module is disabled at the given CRM resource.
-      INHERITED: State is inherited from an ancestor module. The module will
-        either be effectively ENABLED or DISABLED based on its closest non-
-        inherited ancestor module in the CRM hierarchy.
-    """
-    ENABLEMENT_STATE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
-    INHERITED = 3
-
-  ancestorModule = _messages.StringField(1)
-  customConfig = _messages.MessageField('GoogleCloudSecuritycenterV1CustomConfig', 2)
-  displayName = _messages.StringField(3)
-  enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 4)
-  lastEditor = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -2618,27 +2222,6 @@ class OnboardingState(_messages.Message):
 
   name = _messages.StringField(1)
   onboardingLevel = _messages.EnumField('OnboardingLevelValueValuesEnum', 2)
-
-
-class PathNode(_messages.Message):
-  r"""Represents one point that an attacker passes through in this exposure
-  path.
-
-  Fields:
-    associatedFindings: The findings associated with this node in the exposure
-      path.
-    displayName: Human readable name of this resource.
-    resource: The name of the resource at this point in the exposure path. The
-      format of the name is:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceType: The resource type of this resource. See:
-      https://cloud.google.com/asset-inventory/docs/supported-asset-types
-  """
-
-  associatedFindings = _messages.MessageField('AssociatedFinding', 1, repeated=True)
-  displayName = _messages.StringField(2)
-  resource = _messages.StringField(3)
-  resourceType = _messages.StringField(4)
 
 
 class Pod(_messages.Message):

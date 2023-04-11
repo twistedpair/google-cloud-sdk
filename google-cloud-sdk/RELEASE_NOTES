@@ -5,6 +5,99 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 426.0.0 (2023-04-11)
+
+### Breaking Changes
+
+*   **(Cloud Firestore)** Switched `firestore database create` to use Firestore API after version 427.0.0.
+*   **(Cloud Firestore)** Deprecated `--region` in `gcloud firestore database create`. Use `--location` to specify the database location. `--region` flag will be remove after version 427.0.0.
+
+
+### Anthos On-Prem
+
+*   Promoted `gcloud container vmware` to beta.
+*   Promoted `gcloud container bare-metal` to beta.
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.74.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/go/release-notes>.
+
+### Batch
+
+* Added `no-external-ip-address` flag to `gcloud batch job submit`.
+
+### BigQuery
+
+* Added warning when `apilog` flag is missing that the logging level is being lowered.
+
+### Cloud Bigtable
+
+* Clarified the functionality of `--transactional-writes` flag in `gcloud bigtable app-profiles update`.
+
+### Cloud Build
+
+* Hide `--repository` flag in `gcloud builds triggers create manual`, `gcloud builds triggers create webhook` and `gcloud builds triggers create pubsub`.
+
+### Cloud Dataflow
+
+* Added `JAVA17` to `gcloud dataflow flex-template` command SDK Language
+  options, allowing users to submit Flex Template jobs using Java 17.
+
+### Cloud Filestore
+
+*   Added `gcloud filestore instances revert` command in GA to revert a filestore
+    instance to specific snapshot.
+
+### Cloud Functions
+
+*   Updated `gcloud functions deploy` to no longer require the flag `--gen2`
+    when updating an existing 2nd gen function. This aligns with the existing
+    behavior of other commands. You can disable this behavior and only work
+    with 1st gen functions by either adding `--no-gen2` to a command
+    or by setting the `functions/gen2` config property to `off`.
+
+### Cloud Memorystore
+
+*   Change to `current default` from `latest` for `--maintenance-version` flag in `gcloud redis instances update` to allow updating to the current default maintenance version.
+
+### Cloud Org Policy
+
+* Added `--update-mask` flag to `gcloud org-policies reset` command to support partial reset of policies (e.g, reset only dry-run policy spec or live policy spec).
+
+### Cloud Run
+
+* Promoted `--cpu-boost` to GA for `--platform=managed` for `gcloud run deploy`.
+
+### Cloud Workflows
+
+* Added the `call-log-level` flag to `gcloud workflows deploy`, and add the
+  `log-none` value to the `call-log-level` flag for
+  `gcloud workflows <execute|run>`, to specify no call logging even if logging
+  was specified at the workflow level.
+
+### Compute Engine
+
+* Promoted `--max-count-per-zone` flag of `gcloud compute instances bulk create` to beta. Flag defines maximum number of instances that can be created per zone for regional bulk insert.
+* Added `SEV_LIVE_MIGRATABLE` to the list of `guestOsFeatures`.
+* Rearranged `gcloud compute images import` source flags by moving `--source-file` & `--source-image` to the beginning.
+
+### Network Connectivity
+
+*   Added `gcloud network-connectivity service-connection-policies create` and
+    `gcloud network-connectivity service-connection-policies delete` commands.
+*   Added `gcloud network-connectivity service-connection-policies list` and
+    `gcloud network-connectivity service-connection-policies describe` commands.
+
+### Security Command Center
+
+* Promoted `gcloud scc custom-modules sha` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 425.0.0 (2023-04-04)
 
 ### Breaking Changes

@@ -37,6 +37,8 @@ class StoragePoolsClient(object):
   def __init__(self, release_track=base.ReleaseTrack.ALPHA):
     if release_track == base.ReleaseTrack.ALPHA:
       self._adapter = AlphaStoragePoolsAdapter()
+    elif release_track == base.ReleaseTrack.BETA:
+      self._adapter = BetaStoragePoolsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           VERSION_MAP[release_track]))
@@ -195,11 +197,11 @@ class StoragePoolsClient(object):
     return self.WaitForOperation(operation_ref)
 
 
-class AlphaStoragePoolsAdapter(object):
-  """Adapter for the Alpha Cloud NetApp Files API for Active Directories."""
+class BetaStoragePoolsAdapter(object):
+  """Adapter for the Beta Cloud NetApp Files API for Active Directories."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.ALPHA
+    self.release_track = base.ReleaseTrack.BETA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 
@@ -230,3 +232,13 @@ class AlphaStoragePoolsAdapter(object):
         update_request
     )
     return update_op
+
+
+class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
+  """Adapter for the Alpha Cloud NetApp Files API for Active Directories."""
+
+  def __init__(self):
+    super(AlphaStoragePoolsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.ALPHA
+    self.client = GetClientInstance(release_track=self.release_track)
+    self.messages = GetMessagesModule(release_track=self.release_track)

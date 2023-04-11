@@ -128,6 +128,30 @@ class OperatingSystem(object):
     def __ge__(self, other):
       return not self.__lt__(other)
 
+    @property
+    def version(self):
+      """Returns the operating system version."""
+      if self == OperatingSystem.WINDOWS:
+        return platform.version()
+      return platform.release()
+
+    @property
+    def clean_version(self):
+      """Returns a cleaned version of the operating system version."""
+      version = self.version
+      if self == OperatingSystem.WINDOWS:
+        capitalized = version.upper()
+        if capitalized in ('XP', 'VISTA'):
+          return version
+        if capitalized.startswith('SERVER'):
+          # Allow Server + 4 digits for year.
+          return version[:11].replace(' ', '_')
+
+      matches = re.match(r'(\d+)(\.\d+)?(\.\d+)?.*', version)
+      if not matches:
+        return None
+      return ''.join(group for group in matches.groups() if group)
+
   WINDOWS = _OS('WINDOWS', 'Windows', 'windows')
   MACOSX = _OS('MACOSX', 'Mac OS X', 'darwin')
   LINUX = _OS('LINUX', 'Linux', 'linux')
@@ -354,12 +378,14 @@ class Platform(object):
       # ('Linux', '<hostname goes here>', '3.2.5-gg1236',
       # '#1 SMP Tue May 21 02:35:06 PDT 2013', 'x86_64', 'x86_64')
       return '({name} {version})'.format(
-          name=self.operating_system.name, version=platform.release())
+          name=self.operating_system.name,
+          version=self.operating_system.version)
     elif self.operating_system == OperatingSystem.WINDOWS:
       # ('Windows', '<hostname goes here>', '7', '6.1.7601', 'AMD64',
       # 'Intel64 Family 6 Model 45 Stepping 7, GenuineIntel')
       return '({name} NT {version})'.format(
-          name=self.operating_system.name, version=platform.version())
+          name=self.operating_system.name,
+          version=self.operating_system.version)
     elif self.operating_system == OperatingSystem.MACOSX:
       # ('Darwin', '<hostname goes here>', '12.4.0',
       # 'Darwin Kernel Version 12.4.0: Wed May  1 17:57:12 PDT 2013;
@@ -368,7 +394,8 @@ class Platform(object):
       arch_string = (self.architecture.name
                      if self.architecture == Architecture.ppc else 'Intel')
       return format_string.format(
-          name=arch_string, version=platform.release())
+          name=arch_string,
+          version=self.operating_system.version)
     else:
       return '()'
 

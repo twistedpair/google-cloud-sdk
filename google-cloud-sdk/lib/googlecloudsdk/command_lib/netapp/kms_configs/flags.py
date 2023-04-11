@@ -114,7 +114,6 @@ def ConstructCryptoKeyName(kms_project, kms_location, kms_keyring, kms_key):
   )
 
 
-
 ## Helper functions to combine KMS Configs args / flags for gcloud commands ##
 
 
@@ -146,3 +145,10 @@ def AddKMSConfigUpdateArgs(parser):
   flags.AddResourceAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
 
+
+def AddKMSConfigEncryptArgs(parser):
+  """Add args for encrypting volumes under a KMS Config."""
+  concept_parsers.ConceptParser(
+      [flags.GetKmsConfigPresentationSpec('The KMS Config used to encrypt')]
+  ).AddToParser(parser)
+  flags.AddResourceAsyncFlag(parser)

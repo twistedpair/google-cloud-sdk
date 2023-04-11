@@ -445,6 +445,40 @@ class _BareMetalAdminClusterClient(client.ClientBase):
 
     return None
 
+  # TODO(b/257292798): Move to common directory
+  def _cluster_users(self, args):
+    """Constructs repeated proto message ClusterUser."""
+    cluster_user_messages = []
+    admin_users = getattr(args, 'admin_users', None)
+    if admin_users:
+      return [
+          self._messages.ClusterUser(username=admin_user)
+          for admin_user in admin_users
+      ]
+    return cluster_user_messages
+
+  def _authorization(self, args):
+    """Constructs proto message Authorization."""
+    kwargs = {
+        'adminUsers': self._cluster_users(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.Authorization(**kwargs)
+
+    return None
+
+  def _security_config(self, args):
+    """Constructs proto message BareMetalAdminSecurityConfig."""
+    kwargs = {
+        'authorization': self._authorization(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalAdminSecurityConfig(**kwargs)
+
+    return None
+
   def _bare_metal_admin_cluster(self, args):
     """Constructs proto message BareMetalAdminCluster."""
     kwargs = {
@@ -461,6 +495,7 @@ class _BareMetalAdminClusterClient(client.ClientBase):
         'maintenanceConfig': self._maintenance_config(args),
         'nodeConfig': self._workload_node_config(args),
         'nodeAccessConfig': self._node_access_config(args),
+        'securityConfig': self._security_config(args),
     }
 
     if any(kwargs.values()):
@@ -494,7 +529,8 @@ class AdminClustersClient(_BareMetalAdminClusterClient):
     """Unenrolls an Anthos on bare metal admin cluster."""
     kwargs = {
         'name': self._admin_cluster_name(args),
-        'allowMissing': getattr(args, 'allow_missing', None),
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalAdminClustersUnenrollRequest(
         **kwargs

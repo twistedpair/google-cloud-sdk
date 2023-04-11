@@ -883,11 +883,6 @@ def _RefreshGoogleAuth(credentials,
       gcloud, or if the provided credentials is not google auth impersonation
       credentials.
   """
-  # Import only when necessary to decrease the startup time. Move it to
-  # global once google-auth is ready to replace oauth2client.
-  # pylint: disable=g-import-not-at-top
-  from google.oauth2 import service_account as google_auth_service_account
-  # pylint: enable=g-import-not-at-top
   request_client = requests.GoogleAuthRequest()
   with HandleGoogleAuthCredentialsRefreshError():
     # If this cred is a service account cred, we may need to enable self signed
@@ -906,8 +901,72 @@ def _RefreshGoogleAuth(credentials,
 
     credentials.refresh(request_client)
 
+    # Only refresh ID token for the default universe domain.
+    # Note that for user account credentials, when we refresh access token in
+    # the line above, the same request refreshes ID token too, so we don't need
+    # to refresh it again.
+    if properties.IsDefaultUniverse():
+      _RefreshGoogleAuthIdToken(
+          credentials,
+          is_impersonated_credential=is_impersonated_credential,
+          include_email=include_email,
+          gce_token_format=gce_token_format,
+          gce_include_license=gce_include_license,
+          refresh_user_account_credentials=False,
+      )
+
+
+def _RefreshGoogleAuthIdToken(
+    credentials,
+    is_impersonated_credential=False,
+    include_email=False,
+    gce_token_format='standard',
+    gce_include_license=False,
+    refresh_user_account_credentials=True,
+):
+  """Refreshes the ID token of google-auth credentials.
+
+  Args:
+    credentials: google.auth.credentials.Credentials, A google-auth credentials
+      to refresh.
+    is_impersonated_credential: bool, True treat provided credential as an
+      impersonated service account credential. If False, treat as service
+      account or user credential. Needed to avoid circular dependency on
+      IMPERSONATION_TOKEN_PROVIDER.
+    include_email: bool, Specifies whether or not the service account email is
+      included in the identity token. Only applicable to impersonated service
+      account.
+    gce_token_format: str, Specifies whether or not the project and instance
+      details are included in the identity token. Choices are "standard",
+      "full".
+    gce_include_license: bool, Specifies whether or not license codes for images
+      associated with GCE instance are included in their identity tokens.
+    refresh_user_account_credentials: bool, Specifies whether or not to refresh
+      user account credentials. Note that when we refresh user account
+      credentials access token, the ID token will be refreshed as well.
+      Depending on where this function is called, we may not need to refresh
+      user account credentials for ID token again.
+
+  Raises:
+    AccountImpersonationError: if impersonation support is not available for
+      gcloud, or if the provided credentials is not google auth impersonation
+      credentials.
+  """
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth is ready to replace oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from google.oauth2 import service_account as google_auth_service_account
+  # pylint: enable=g-import-not-at-top
+
+  request_client = requests.GoogleAuthRequest()
+  with HandleGoogleAuthCredentialsRefreshError():
     id_token = None
-    if is_impersonated_credential:
+    if (
+        c_creds.IsUserAccountCredentials(credentials)
+        and refresh_user_account_credentials
+    ):
+      credentials.refresh(request_client)
+    elif is_impersonated_credential:
       if not IMPERSONATION_TOKEN_PROVIDER:
         raise AccountImpersonationError(
             'gcloud is configured to impersonate a service account but '
@@ -1042,6 +1101,9 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
       cred.service_account_email,
       cred._token_uri,  # pylint: disable=protected-access
       config.CLOUDSDK_CLIENT_ID)
+  if not properties.IsDefaultUniverse():
+    # use IAM endpoint for non-default universe
+    id_token_cred._use_iam_endpoint = True  # pylint: disable=protected-access
 
   try:
     id_token_cred.refresh(request_client)
@@ -1105,7 +1167,9 @@ def Store(credentials, account=None, scopes=None):
 
 def ActivateCredentials(account, credentials):
   """Validates, stores and activates credentials with given account."""
-  Refresh(credentials)
+  if properties.IsDefaultUniverse():
+    # Don't refresh in credential creation for non-default universes.
+    Refresh(credentials)
   Store(credentials, account)
 
   properties.PersistProperty(properties.VALUES.core.account, account)

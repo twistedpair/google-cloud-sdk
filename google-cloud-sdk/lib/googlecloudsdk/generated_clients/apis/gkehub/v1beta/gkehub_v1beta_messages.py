@@ -803,6 +803,7 @@ class ConfigManagementConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    managed: Configuration for Managed Config Sync.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
@@ -814,9 +815,10 @@ class ConfigManagementConfigSync(_messages.Message):
   allowVerticalScale = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('ConfigManagementGitConfig', 3)
-  oci = _messages.MessageField('ConfigManagementOciConfig', 4)
-  preventDrift = _messages.BooleanField(5)
-  sourceFormat = _messages.StringField(6)
+  managed = _messages.MessageField('ConfigManagementManaged', 4)
+  oci = _messages.MessageField('ConfigManagementOciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1206,6 +1208,17 @@ class ConfigManagementInstallError(_messages.Message):
   """
 
   errorMessage = _messages.StringField(1)
+
+
+class ConfigManagementManaged(_messages.Message):
+  r"""Configuration for Managed Config Sync.
+
+  Fields:
+    enabled: Set to true to enable Managed Config Sync. Defaults to false
+      which disables Managed Config Sync.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class ConfigManagementMembershipSpec(_messages.Message):
@@ -2020,6 +2033,84 @@ class FeatureState(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class Fleet(_messages.Message):
+  r"""Fleet contains the Fleet-wide metadata and configuration.
+
+  Enums:
+    SamenessModeValueValuesEnum: Optional. The sameness mode this fleet is
+      using.
+
+  Fields:
+    createTime: Output only. When the Fleet was created.
+    deleteTime: Output only. When the Fleet was deleted.
+    displayName: Optional. A user-assigned display name of the Fleet. When
+      present, it must be between 4 to 30 characters. Allowed characters are:
+      lowercase and uppercase letters, numbers, hyphen, single-quote, double-
+      quote, space, and exclamation point. Example: `Production Fleet`
+    name: Output only. The full, unique resource name of this fleet in the
+      format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
+      GCP project can have at most one fleet resource, named "default".
+    samenessMode: Optional. The sameness mode this fleet is using.
+    state: Output only. State of the namespace resource.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all Fleet resources. If a Fleet resource is deleted and another
+      resource with the same name is created, it gets a different uid.
+    updateTime: Output only. When the Fleet was last updated.
+  """
+
+  class SamenessModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The sameness mode this fleet is using.
+
+    Values:
+      SAMENESS_MODE_UNSPECIFIED: <no description>
+      ALL_CLUSTER_NAMESPACES: All cluster namespaces are considered the same
+        (default).
+      MAPPED_FLEET_NAMESPACES: Restrict sameness to cluster namespaces that
+        are active-fleet namespaces on the membership.
+    """
+    SAMENESS_MODE_UNSPECIFIED = 0
+    ALL_CLUSTER_NAMESPACES = 1
+    MAPPED_FLEET_NAMESPACES = 2
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 5)
+  state = _messages.MessageField('FleetLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class FleetLifecycleState(_messages.Message):
+  r"""FleetLifecycleState describes the state of a Fleet resource.
+
+  Enums:
+    CodeValueValuesEnum: Output only. The current state of the Fleet resource.
+
+  Fields:
+    code: Output only. The current state of the Fleet resource.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Fleet resource.
+
+    Values:
+      CODE_UNSPECIFIED: The code is not set.
+      CREATING: The fleet is being created.
+      READY: The fleet active.
+      DELETING: The fleet is being deleted.
+      UPDATING: The fleet is being updated.
+    """
+    CODE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    UPDATING = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class FleetObservabilityFeatureSpec(_messages.Message):
   r"""**Fleet Observability**: The Hub-wide input for the FleetObservability
   feature.
@@ -2133,6 +2224,27 @@ class GkeCluster(_messages.Message):
 
   clusterMissing = _messages.BooleanField(1)
   resourceLink = _messages.StringField(2)
+
+
+class GkehubOrganizationsLocationsFleetsListRequest(_messages.Message):
+  r"""A GkehubOrganizationsLocationsFleetsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of fleets to return. The service
+      may return fewer than this value. If unspecified, at most 200 fleets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListFleets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListFleets` must match the call that
+      provided the page token.
+    parent: Required. The organization or project to list for Fleets under, in
+      the format `organizations/*/locations/*` or `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
@@ -2312,6 +2424,78 @@ class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkehubProjectsLocationsFleetsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsCreateRequest object.
+
+  Fields:
+    fleet: A Fleet resource to be passed as the request body.
+    parent: Required. The parent (project and location) where the Fleet will
+      be created. Specified in the format `projects/*/locations/*`.
+  """
+
+  fleet = _messages.MessageField('Fleet', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsFleetsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsDeleteRequest object.
+
+  Fields:
+    name: Required. The Fleet resource name in the format
+      `projects/*/locations/*/fleets/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFleetsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsGetRequest object.
+
+  Fields:
+    name: Required. The Fleet resource name in the format
+      `projects/*/locations/*/fleets/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFleetsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of fleets to return. The service
+      may return fewer than this value. If unspecified, at most 200 fleets
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListFleets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListFleets` must match the call that
+      provided the page token.
+    parent: Required. The organization or project to list for Fleets under, in
+      the format `organizations/*/locations/*` or `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsFleetsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsPatchRequest object.
+
+  Fields:
+    fleet: A Fleet resource to be passed as the request body.
+    name: Output only. The full, unique resource name of this fleet in the
+      format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
+      GCP project can have at most one fleet resource, named "default".
+    updateMask: Required. The fields to be updated;
+  """
+
+  fleet = _messages.MessageField('Fleet', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsGetRequest(_messages.Message):
@@ -3366,6 +3550,20 @@ class ListFeaturesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Feature', 2, repeated=True)
+
+
+class ListFleetsResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ListFleetsResponse` method.
+
+  Fields:
+    fleets: The list of matching fleets.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. The
+      token is only valid for 1h.
+  """
+
+  fleets = _messages.MessageField('Fleet', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -5315,16 +5513,19 @@ class ServiceMeshMembershipSpec(_messages.Message):
   feature
 
   Enums:
-    ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    ControlPlaneValueValuesEnum: Deprecated: use `management` instead Enables
+      automatic control plane management.
     ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
-    controlPlane: Enables automatic control plane management.
+    controlPlane: Deprecated: use `management` instead Enables automatic
+      control plane management.
     management: Enables automatic Service Mesh management.
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
-    r"""Enables automatic control plane management.
+    r"""Deprecated: use `management` instead Enables automatic control plane
+    management.
 
     Values:
       CONTROL_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified

@@ -248,7 +248,18 @@ class OperationData(object):
       request.zone = path_simplifier.Name(self.operation.zone)
     elif self.operation.region:
       request.region = path_simplifier.Name(self.operation.region)
-    name_field = self.resource_service.GetMethodConfig('Get').ordered_params[-1]
+    resource_params = self.resource_service.GetMethodConfig(
+        'Get'
+    ).ordered_params
+    name_field = resource_params[-1]
+    if len(resource_params) == 4:
+      # This is a nested resource, which means it has four params
+      # used to locate it: project, scope (zone/region/global),
+      # parent_resource_name, and resource_name. Top level resources only have
+      # three such params: project, scope (zone/region/global), resource_name.
+      parent_resource_field = resource_params[2]
+      parent_resource_name = self.operation.targetLink.split('/')[-3]
+      setattr(request, parent_resource_field, parent_resource_name)
 
     resource_name = self.followup_override or path_simplifier.Name(
         self.operation.targetLink)

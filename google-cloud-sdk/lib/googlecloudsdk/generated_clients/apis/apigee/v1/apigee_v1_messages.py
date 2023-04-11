@@ -9176,10 +9176,16 @@ class GoogleCloudApigeeV1ProvisionOrganizationRequest(_messages.Message):
       For valid values, see [Create an
       organization](https://cloud.google.com/apigee/docs/hybrid/latest/precog-
       provision). Defaults to `us-west1`.
-    authorizedNetwork: Name of the customer project's VPC network. If
-      provided, the network needs to be peered through Service Networking. If
-      none is provided, the organization will have access only to the public
-      internet.
+    authorizedNetwork: Compute Engine network used for Service Networking to
+      be peered with Apigee runtime instances. See [Getting started with the
+      Service Networking API](https://cloud.google.com/service-
+      infrastructure/docs/service-networking/getting-started). Apigee also
+      supports shared VPC (that is, the host network project is not the same
+      as the one that is peering with Apigee). See [Shared VPC
+      overview](https://cloud.google.com/vpc/docs/shared-vpc). To use a shared
+      VPC network, use the following format: `projects/{host-project-
+      id}/{region}/networks/{network-name}`. For example: `projects/my-
+      sharedvpc-host/global/networks/mynetwork`
     runtimeLocation: Cloud Platform location for the runtime instance.
       Defaults to zone `us-west1-a`. If a region is provided, `EVAL`
       organizations will use the region for automatically selecting a zone for

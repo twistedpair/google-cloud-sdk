@@ -43,6 +43,22 @@ LIST_FORMAT = """
     )
 """
 
+LIST_SPOKES_FORMAT = """
+    table(
+      name.basename(),
+      name.segment(3):label=LOCATION,
+      spokeType:label=TYPE,
+      state,
+      reasons.code.list():label="STATE REASON",
+      format(
+        "{0}{1}",
+        linkedVpcNetwork.yesno(yes="N/A", no=""),
+        firstof(linkedVpnTunnels.siteToSiteDataTransfer, linkedInterconnectAttachments.siteToSiteDataTransfer, linkedRouterApplianceInstances.siteToSiteDataTransfer).yesno(yes="On", no="")
+      ).yesno(no="Off").if(view=detailed):label="DATA TRANSFER",
+      description.if(view=detailed)
+    )
+"""
+
 
 def AppendLocationsGlobalToParent(unused_ref, unused_args, request):
   """Add locations/global to parent path."""

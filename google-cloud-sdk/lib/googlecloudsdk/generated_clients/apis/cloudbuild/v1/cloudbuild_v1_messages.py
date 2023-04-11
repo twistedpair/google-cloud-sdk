@@ -2909,7 +2909,8 @@ class GitFileSource(_messages.Message):
     r"""See RepoType above.
 
     Values:
-      UNKNOWN: The default, unknown repo type.
+      UNKNOWN: The default, unknown repo type. Don't use it, instead use one
+        of the other repo types.
       CLOUD_SOURCE_REPOSITORIES: A Google Cloud Source Repositories-hosted
         repo.
       GITHUB: A GitHub-hosted repo not necessarily on "github.com" (i.e.
@@ -3238,7 +3239,8 @@ class GitRepoSource(_messages.Message):
     r"""See RepoType below.
 
     Values:
-      UNKNOWN: The default, unknown repo type.
+      UNKNOWN: The default, unknown repo type. Don't use it, instead use one
+        of the other repo types.
       CLOUD_SOURCE_REPOSITORIES: A Google Cloud Source Repositories-hosted
         repo.
       GITHUB: A GitHub-hosted repo not necessarily on "github.com" (i.e.
@@ -3274,7 +3276,8 @@ class GitSource(_messages.Message):
       information on string values accepted by `git fetch`, see https://git-
       scm.com/docs/gitrevisions#_specifying_revisions. For information on `git
       fetch`, see https://git-scm.com/docs/git-fetch.
-    url: Location of the Git repo to build.
+    url: Location of the Git repo to build. This will be used as a `git
+      remote`, see https://git-scm.com/docs/git-remote.
   """
 
   dir = _messages.StringField(1)

@@ -151,9 +151,9 @@ class Channel(_messages.Message):
       token must be used by the provider to register the channel for
       publishing.
     createTime: Output only. The creation time.
-    cryptoKeyName: Optional. Resource name of a KMS crypto key (managed by the
-      user) used to encrypt/decrypt their event data. It must match the
-      pattern `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    cryptoKeyName: Resource name of a KMS crypto key (managed by the user)
+      used to encrypt/decrypt their event data. It must match the pattern
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     name: Required. The resource name of the channel. Must be unique within
       the location on the project and must be in
       `projects/{project}/locations/{location}/channels/{channel_id}` format.
@@ -1729,7 +1729,7 @@ class Trigger(_messages.Message):
       ensure that the client has an up-to-date value before proceeding.
     eventDataContentType: Optional. EventDataContentType specifies the type of
       payload in MIME format that is expected from the CloudEvent data field.
-      This will be set to `application/json` if the value is not defined.
+      This is set to `application/json` if the value is not defined.
     eventFilters: Required. Unordered list. The list of filters that applies
       to event attributes. Only events that match all the provided filters are
       sent to the destination.

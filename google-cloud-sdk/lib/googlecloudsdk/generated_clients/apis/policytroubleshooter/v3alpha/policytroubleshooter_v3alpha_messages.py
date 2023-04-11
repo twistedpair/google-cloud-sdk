@@ -1277,7 +1277,6 @@ class GoogleCloudPolicytroubleshooterIamV3alphaTroubleshootIamPolicyResponse(_me
 
   class OverallAccessStateValueValuesEnum(_messages.Enum):
     r"""Indicates whether the member has the specified permission for the
-
     specified resource, based on evaluating all types of the applicable IAM
     policies.
 

@@ -57,6 +57,7 @@ class ClustersClient(client.ClientBase):
         'adminClusterMembership': self._admin_cluster_membership_name(args),
         'vmwareClusterId': self._user_cluster_id(args),
         'localName': flags.Get(args, 'local_name'),
+        'validateOnly': flags.Get(args, 'validate_only'),
     }
     enroll_vmware_cluster_request = self._messages.EnrollVmwareClusterRequest(
         **kwargs

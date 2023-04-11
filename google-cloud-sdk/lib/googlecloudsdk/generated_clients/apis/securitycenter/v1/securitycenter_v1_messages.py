@@ -212,22 +212,6 @@ class AssetDiscoveryConfig(_messages.Message):
   projectIds = _messages.StringField(3, repeated=True)
 
 
-class AssociatedFinding(_messages.Message):
-  r"""A finding that is associated with this node in the exposure path.
-
-  Fields:
-    canonicalFindingName: Canonical name of the associated findings. Example:
-      organizations/123/sources/456/findings/789
-    findingCategory: The additional taxonomy group within findings from a
-      given source.
-    name: Full resource name of the finding.
-  """
-
-  canonicalFindingName = _messages.StringField(1)
-  findingCategory = _messages.StringField(2)
-  name = _messages.StringField(3)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -814,19 +798,6 @@ class Detection(_messages.Message):
 
   binary = _messages.StringField(1)
   percentPagesMatched = _messages.FloatField(2)
-
-
-class Edge(_messages.Message):
-  r"""Represents a connection between a source node and a destination node in
-  this exposure path.
-
-  Fields:
-    destination: This is the resource name of the destination node.
-    source: This is the resource name of the source node.
-  """
-
-  destination = _messages.StringField(1)
-  source = _messages.StringField(2)
 
 
 class EffectiveEventThreatDetectionCustomModule(_messages.Message):
@@ -1697,63 +1668,6 @@ class GoogleCloudSecuritycenterV1EffectiveSecurityHealthAnalyticsCustomModule(_m
   name = _messages.StringField(4)
 
 
-class GoogleCloudSecuritycenterV1ExposedResource(_messages.Message):
-  r"""A resource that is exposed as a result of a finding.
-
-  Enums:
-    ResourceValueValueValuesEnum: How valuable this resource is.
-
-  Fields:
-    displayName: Human readable name of the resource that is exposed.
-    methods: The ways in which this resource is exposed. Examples: Read, Write
-    name: Exposed Resource Name e.g.:
-      `organizations/123/attackExposureResults/456/exposedResources/789`
-    resource: The name of the resource that is exposed. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceType: The resource type of the exposed resource. See:
-      https://cloud.google.com/asset-inventory/docs/supported-asset-types
-    resourceValue: How valuable this resource is.
-  """
-
-  class ResourceValueValueValuesEnum(_messages.Enum):
-    r"""How valuable this resource is.
-
-    Values:
-      RESOURCE_VALUE_UNSPECIFIED: The resource value isn't specified.
-      RESOURCE_VALUE_LOW: This is a low value resource.
-      RESOURCE_VALUE_MEDIUM: This is a medium value resource.
-      RESOURCE_VALUE_HIGH: This is a high value resource.
-    """
-    RESOURCE_VALUE_UNSPECIFIED = 0
-    RESOURCE_VALUE_LOW = 1
-    RESOURCE_VALUE_MEDIUM = 2
-    RESOURCE_VALUE_HIGH = 3
-
-  displayName = _messages.StringField(1)
-  methods = _messages.StringField(2, repeated=True)
-  name = _messages.StringField(3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.StringField(5)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
-
-
-class GoogleCloudSecuritycenterV1ExposurePath(_messages.Message):
-  r"""A path that an attacker could take to reach an exposed resource.
-
-  Fields:
-    edges: A list of the edges between nodes in this exposure path.
-    exposedResource: The leaf node of this exposure path.
-    name: Exposure Path Name e.g.:
-      `organizations/123/attackExposureResults/456/exposurePaths/789`
-    pathNodes: A list of nodes that exist in this exposure path.
-  """
-
-  edges = _messages.MessageField('Edge', 1, repeated=True)
-  exposedResource = _messages.MessageField('GoogleCloudSecuritycenterV1ExposedResource', 2)
-  name = _messages.StringField(3)
-  pathNodes = _messages.MessageField('PathNode', 4, repeated=True)
-
-
 class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
   r"""Representation of third party SIEM/SOAR fields within SCC.
 
@@ -1886,103 +1800,6 @@ class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
   """
 
   resourceTypes = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
-  r"""A resource value config is a mapping configuration of user's tag values
-  to resource values. Used by the attack path simulation.
-
-  Enums:
-    ResourceValueValueValuesEnum: Required. Resource value level this
-      expression represents
-
-  Messages:
-    ResourceLabelsSelectorValue: List of resource labels to search for,
-      evaluated with AND. E.g. "resource_labels_selector": {"key": "value",
-      "env": "prod"} will match resources with labels "key": "value" AND
-      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
-      managing-labels
-
-  Fields:
-    createTime: Output only. Timestamp this resource value config was created.
-    description: Description of the resource value config.
-    name: Name for the resource value config
-    resourceLabelsSelector: List of resource labels to search for, evaluated
-      with AND. E.g. "resource_labels_selector": {"key": "value", "env":
-      "prod"} will match resources with labels "key": "value" AND "env":
-      "prod" https://cloud.google.com/resource-manager/docs/creating-managing-
-      labels
-    resourceType: Apply resource_value only to resources that match
-      resource_type. resource_type will be checked with "AND" of other
-      resources. E.g. "storage.googleapis.com/Bucket" with resource_value
-      "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
-      resources.
-    resourceValue: Required. Resource value level this expression represents
-    scope: Project or folder to scope this config to. For example,
-      "project/456" would apply this config only to resources in "project/456"
-      scope will be checked with "AND" of other resources.
-    tagValues: Required. Tag values combined with AND to check against. Values
-      in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
-      "tagValues/789" ] https://cloud.google.com/resource-
-      manager/docs/tags/tags-creating-and-managing
-    updateTime: Output only. Timestamp this resource value config was last
-      updated.
-  """
-
-  class ResourceValueValueValuesEnum(_messages.Enum):
-    r"""Required. Resource value level this expression represents
-
-    Values:
-      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
-      HIGH: High resource value
-      MEDIUM: Medium resource value
-      LOW: Low resource value
-      NONE: No resource value, e.g. ignore these resources
-    """
-    RESOURCE_VALUE_UNSPECIFIED = 0
-    HIGH = 1
-    MEDIUM = 2
-    LOW = 3
-    NONE = 4
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResourceLabelsSelectorValue(_messages.Message):
-    r"""List of resource labels to search for, evaluated with AND. E.g.
-    "resource_labels_selector": {"key": "value", "env": "prod"} will match
-    resources with labels "key": "value" AND "env": "prod"
-    https://cloud.google.com/resource-manager/docs/creating-managing-labels
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ResourceLabelsSelectorValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        ResourceLabelsSelectorValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResourceLabelsSelectorValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 4)
-  resourceType = _messages.StringField(5)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
-  scope = _messages.StringField(7)
-  tagValues = _messages.StringField(8, repeated=True)
-  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -3500,27 +3317,6 @@ class OrganizationSettings(_messages.Message):
   assetDiscoveryConfig = _messages.MessageField('AssetDiscoveryConfig', 1)
   enableAssetDiscovery = _messages.BooleanField(2)
   name = _messages.StringField(3)
-
-
-class PathNode(_messages.Message):
-  r"""Represents one point that an attacker passes through in this exposure
-  path.
-
-  Fields:
-    associatedFindings: The findings associated with this node in the exposure
-      path.
-    displayName: Human readable name of this resource.
-    resource: The name of the resource at this point in the exposure path. The
-      format of the name is:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceType: The resource type of this resource. See:
-      https://cloud.google.com/asset-inventory/docs/supported-asset-types
-  """
-
-  associatedFindings = _messages.MessageField('AssociatedFinding', 1, repeated=True)
-  displayName = _messages.StringField(2)
-  resource = _messages.StringField(3)
-  resourceType = _messages.StringField(4)
 
 
 class Pod(_messages.Message):

@@ -132,20 +132,21 @@ class NetAppClient(object):
         batch_size_attribute='pageSize')
 
 
-class AlphaNetappAdapter(object):
-  """Adapter for the Alpha Cloud NetApp Files API."""
-
-  def __init__(self):
-    self.release_track = base.ReleaseTrack.ALPHA
-    self.client = GetClientInstance(release_track=self.release_track)
-    self.messages = GetMessagesModule(release_track=self.release_track)
-
-
 class BetaNetappAdapter(object):
   """Adapter for the Beta Cloud NetApp Files API."""
 
   def __init__(self):
     self.release_track = base.ReleaseTrack.BETA
+    self.client = GetClientInstance(release_track=self.release_track)
+    self.messages = GetMessagesModule(release_track=self.release_track)
+
+
+class AlphaNetappAdapter(BetaNetappAdapter):
+  """Adapter for the Alpha Cloud NetApp Files API."""
+
+  def __init__(self):
+    super(AlphaNetappAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.ALPHA
     self.client = GetClientInstance(release_track=self.release_track)
     self.messages = GetMessagesModule(release_track=self.release_track)
 

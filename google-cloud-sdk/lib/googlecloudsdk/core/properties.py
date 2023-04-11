@@ -1234,6 +1234,9 @@ class _SectionApiEndpointOverrides(_Section):
         'marketplacesolutions', command='gcloud mps')
     self.mediaasset = self._Add('mediaasset', command='gcloud media')
     self.memcache = self._Add('memcache', command='gcloud memcache')
+    self.messagestreams = self._Add('messagestreams',
+                                    command='gcloud messagestreams',
+                                    hidden=True)
     self.metastore = self._Add('metastore', command='gcloud metastore')
     self.ml = self._Add('ml', hidden=True)
     self.monitoring = self._Add('monitoring', command='gcloud monitoring')
@@ -2892,6 +2895,7 @@ class _SectionMetrics(_Section):
     self.environment = self._Add('environment', hidden=True)
     self.environment_version = self._Add('environment_version', hidden=True)
     self.command_name = self._Add('command_name', internal=True)
+    self.client_arch = self._Add('client_arch', internal=True)
 
 
 class _SectionMlEngine(_Section):
@@ -3198,6 +3202,13 @@ class CheckHashes(enum.Enum):
   NEVER = 'never'
 
 
+class StoragePreferredApi(enum.Enum):
+  """Preferred API for gcloud storage."""
+
+  JSON = 'json'
+  GRPC_WITH_JSON_FALLBACK = 'grpc_with_json_fallback'
+
+
 class _SectionStorage(_Section):
   """Contains the properties for the 'storage' section."""
 
@@ -3489,11 +3500,15 @@ class _SectionStorage(_Section):
         ' on the same thread. Turning off can help with some bugs but will'
         ' hurt performance.')
 
-    self.use_grpc = self._AddBool(
-        'use_grpc',
-        default=False,
+    self.preferred_api = self._Add(
+        'preferred_api',
+        default=StoragePreferredApi.JSON.value,
         hidden=True,
-        help_text='Use GRPC API for GCS.')
+        help_text='Specifies the API to be used for performing'
+        ' `gcloud storage` operations. If `grpc_with_json_fallback` is set,'
+        ' the gRPC API will be used if the operations is supported by'
+        ' `gcloud storage`, else it will fallback to using the JSON API.',
+        choices=([api.value for api in StoragePreferredApi]))
 
 
 class _SectionSurvey(_Section):

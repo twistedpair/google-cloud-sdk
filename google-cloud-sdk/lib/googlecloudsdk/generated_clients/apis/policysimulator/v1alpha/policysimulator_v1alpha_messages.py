@@ -93,7 +93,7 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
       prefix `organizations/{organization_id}/customConstraints/` is not
       counted.
     resourceTypes: Immutable. The resource instance type on which this policy
-      applies. Format will be of the form : "/" Example: *
+      applies. Format will be of the form : `/` Example: *
       `compute.googleapis.com/Instance`.
     updateTime: Output only. The last time this custom constraint was updated.
       This represents the last time that the `CreateCustomConstraint` or

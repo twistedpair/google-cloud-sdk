@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
@@ -84,6 +85,110 @@ def _ParseLabelsIntoUpdateMessage(message, args, api_field):
   return True
 
 
+def _GetResources(params):
+  """Retrieves all resource args from the arg_info tree.
+
+  Args:
+    params: an ArgGroup or list of args to parse through.
+
+  Returns:
+    YAMLConceptArgument (resource arg) list.
+  """
+  if isinstance(params, yaml_arg_schema.YAMLConceptArgument):
+    return [params]
+  if isinstance(params, yaml_arg_schema.Argument):
+    return []
+  if isinstance(params, yaml_arg_schema.ArgumentGroup):
+    params = params.arguments
+
+  result = []
+  for param in params:
+    result.extend(_GetResources(param))
+
+  return result
+
+
+def _GetPrimaryResource(resource_params, resource_collection):
+  """Retrieves the primary resource arg.
+
+  Args:
+    resource_params: list of YAMLConceptParser
+    resource_collection: registry.APICollection, resource collection
+      associated with method
+
+  Returns:
+    YAMLConceptArgument (resource arg) or None.
+  """
+
+  # No resource params occurs if resource args are added through a hook.
+  if not resource_params:
+    return None
+
+  primary_resources = [
+      arg for arg in resource_params
+      if arg.IsPrimaryResource(resource_collection)]
+
+  if not primary_resources:
+    if resource_collection:
+      full_name = resource_collection.full_name
+      api_version = resource_collection.api_version
+    else:
+      full_name = None
+      api_version = None
+
+    raise util.InvalidSchemaError(
+        'No resource args were found that correspond with [{name} {version}]. '
+        'Add resource arguments that corresponds with request.method '
+        'collection [{name} {version}]. HINT: Can set resource arg '
+        'is_primary_resource to True in yaml schema to receive more assistance '
+        'with validation.'.format(
+            name=full_name, version=api_version))
+
+  if len(primary_resources) > 1:
+    primary_resource_names = [arg.name for arg in primary_resources]
+    raise util.InvalidSchemaError(
+        'Only one resource arg can be listed as primary. Remove one of the '
+        'primary resource args [{}] or set is_primary_resource to False in '
+        'yaml schema.'.format(', '.join(primary_resource_names)))
+
+  return primary_resources[0]
+
+
+def _GetSharedAttributes(resource_params):
+  """Retrieves shared attributes between resource args.
+
+  Args:
+    resource_params: [yaml_arg_schema.Argument], yaml argument tree
+
+  Returns:
+    Map of attribute names to list of resources that contain that attribute.
+  """
+  resource_names = set()
+  attributes = {}
+  for arg in resource_params:
+    if arg.name in resource_names:
+      raise util.InvalidSchemaError(
+          'More than one resource argument has the name [{}]. Remove one '
+          'of the duplicate resource declarations.'.format(arg.name))
+    else:
+      resource_names.add(arg.name)
+
+    for attribute_name in arg.attribute_names:
+      if (attribute_name not in arg.removed_flags and
+          not concepts.IGNORED_FIELDS.get(attribute_name)):
+        attributes[attribute_name] = attributes.get(attribute_name, set())
+
+        if arg.name in attributes[attribute_name]:
+          raise util.InvalidSchemaError(
+              'Attribute {} listed more than once in resource {}. '
+              'Remove one of the duplicate attribute declarations.'.format(
+                  attribute_name, arg.name))
+
+        attributes[attribute_name].add(arg.name)
+
+  return attributes
+
+
 class DeclarativeArgumentGenerator(object):
   """An argument generator that operates off a declarative configuration.
 
@@ -103,44 +208,10 @@ class DeclarativeArgumentGenerator(object):
     self.method = method
     self.arg_info = arg_info
 
-  # TODO(b/272259064): Remove resource and references in yaml_command_translator
-  # if possible. Otherwise, clean up _GetResource to not just return the first
-  # resource arg it finds
-  @property
-  def primary_resource_arg(self):
-    return self._GetPrimaryResource(self.arg_info)
-
-  def _GetPrimaryResource(self, params):
-    """Retrieves the first resource arg from the arg_info tree.
-
-    Args:
-      params: an ArgGroup or list of args to parse through.
-
-    Returns:
-      YAMLConceptArgument (resource arg) or None.
-    """
-    if isinstance(params, yaml_arg_schema.YAMLConceptArgument):
-      return params
-    if isinstance(params, yaml_arg_schema.Argument):
-      return None
-    if isinstance(params, yaml_arg_schema.ArgumentGroup):
-      params = params.arguments
-
-    result = None
-    for param in params:
-      resource = self._GetPrimaryResource(param)
-
-      # TODO(b/273950104): Remove error when multiple resource args are
-      # fully enabled
-      if result is not None and resource is not None:
-        raise util.InvalidSchemaError(
-            'Multiple resource args implementation is in progress. Only'
-            'define one resource arg in arguments.params')
-
-      if resource is not None:
-        result = resource
-
-    return result
+    self.resource_args = _GetResources(self.arg_info)
+    self.primary_resource_arg = _GetPrimaryResource(
+        self.resource_args,
+        self.method and self.method.resource_argument_collection)
 
   def GenerateArgs(self):
     """Generates all the CLI arguments required to call this method.
@@ -152,7 +223,31 @@ class DeclarativeArgumentGenerator(object):
     message = None
     if self.method:
       message = self.method.GetRequestType()
-    return [arg.Generate(self.method, message) for arg in self.arg_info]
+
+    flag_map = _GetSharedAttributes(self.resource_args)
+    shared_resource_flags = []
+    for attribute, resource_args in flag_map.items():
+      if len(resource_args) > 1:
+        shared_resource_flags.append(attribute)
+
+    args = [arg.Generate(self.method, message, shared_resource_flags)
+            for arg in self.arg_info]
+
+    primary = self.primary_resource_arg and self.primary_resource_arg.name
+
+    for arg in shared_resource_flags:
+      resource_names = list(flag_map.get(arg))
+      resource_names.sort(
+          key=lambda name: '' if primary and name == primary else name)
+
+      args.append(base.Argument(
+          '--' + arg,
+          help='For resources [{}], provides fallback value for resource '
+               '{attr} attribute. When the resource\'s full URI path is not '
+               'provided, {attr} will fallback to this flag value.'.format(
+                   ', '.join(resource_names), attr=arg)))
+
+    return args
 
   def CreateRequest(self,
                     namespace,

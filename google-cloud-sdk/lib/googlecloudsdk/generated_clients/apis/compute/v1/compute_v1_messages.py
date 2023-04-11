@@ -1787,6 +1787,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       sets the number of I/O operations per second that the disk can handle.
       Values must be between 10,000 and 120,000. For more details, see the
       Extreme persistent disk documentation.
+    replicaZones: Required for each regional disk associated with the
+      instance. Specify the URLs of the zones where the disk should be
+      replicated to. You must provide exactly two replica zones, and one zone
+      must be the same as the instance zone. You can't use this option with
+      boot disks.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -1918,12 +1923,13 @@ class AttachedDiskInitializeParams(_messages.Message):
   licenses = _messages.StringField(7, repeated=True)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
   provisionedIops = _messages.IntegerField(9)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 10)
-  resourcePolicies = _messages.StringField(11, repeated=True)
-  sourceImage = _messages.StringField(12)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
-  sourceSnapshot = _messages.StringField(14)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  replicaZones = _messages.StringField(10, repeated=True)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 11)
+  resourcePolicies = _messages.StringField(12, repeated=True)
+  sourceImage = _messages.StringField(13)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceSnapshot = _messages.StringField(15)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
 
 
 class AuditConfig(_messages.Message):
@@ -32205,6 +32211,8 @@ class ForwardingRule(_messages.Message):
       TargetInstance. If the field is set to TRUE, clients can access ILB from
       all regions. Otherwise only allows access from clients in the same
       region as the internal load balancer.
+    allowPscGlobalAccess: This is used in PSC consumer ForwardingRule to
+      control whether the PSC endpoint can be accessed from another region.
     backendService: Identifies the backend service to which the forwarding
       rule sends traffic. Required for Internal TCP/UDP Load Balancing and
       Network Load Balancing; must be omitted for all other load balancer
@@ -32279,10 +32287,11 @@ class ForwardingRule(_messages.Message):
       a letter.
     network: This field is not used for external load balancing. For Internal
       TCP/UDP Load Balancing, this field identifies the network that the load
-      balanced IP should belong to for this Forwarding Rule. If this field is
-      not specified, the default network will be used. For Private Service
-      Connect forwarding rules that forward traffic to Google APIs, a network
-      must be provided.
+      balanced IP should belong to for this Forwarding Rule. If the subnetwork
+      is specified, the network of the subnetwork will be used. If neither
+      subnetwork nor this field is specified, the default network will be
+      used. For Private Service Connect forwarding rules that forward traffic
+      to Google APIs, a network must be provided.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -32498,35 +32507,36 @@ class ForwardingRule(_messages.Message):
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   allPorts = _messages.BooleanField(3)
   allowGlobalAccess = _messages.BooleanField(4)
-  backendService = _messages.StringField(5)
-  baseForwardingRule = _messages.StringField(6)
-  creationTimestamp = _messages.StringField(7)
-  description = _messages.StringField(8)
-  fingerprint = _messages.BytesField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 11)
-  isMirroringCollector = _messages.BooleanField(12)
-  kind = _messages.StringField(13, default='compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 16)
-  metadataFilters = _messages.MessageField('MetadataFilter', 17, repeated=True)
-  name = _messages.StringField(18)
-  network = _messages.StringField(19)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 20)
-  noAutomateDnsZone = _messages.BooleanField(21)
-  portRange = _messages.StringField(22)
-  ports = _messages.StringField(23, repeated=True)
-  pscConnectionId = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 25)
-  region = _messages.StringField(26)
-  selfLink = _messages.StringField(27)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 28, repeated=True)
-  serviceLabel = _messages.StringField(29)
-  serviceName = _messages.StringField(30)
-  sourceIpRanges = _messages.StringField(31, repeated=True)
-  subnetwork = _messages.StringField(32)
-  target = _messages.StringField(33)
+  allowPscGlobalAccess = _messages.BooleanField(5)
+  backendService = _messages.StringField(6)
+  baseForwardingRule = _messages.StringField(7)
+  creationTimestamp = _messages.StringField(8)
+  description = _messages.StringField(9)
+  fingerprint = _messages.BytesField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 12)
+  isMirroringCollector = _messages.BooleanField(13)
+  kind = _messages.StringField(14, default='compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
+  metadataFilters = _messages.MessageField('MetadataFilter', 18, repeated=True)
+  name = _messages.StringField(19)
+  network = _messages.StringField(20)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 21)
+  noAutomateDnsZone = _messages.BooleanField(22)
+  portRange = _messages.StringField(23)
+  ports = _messages.StringField(24, repeated=True)
+  pscConnectionId = _messages.IntegerField(25, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 26)
+  region = _messages.StringField(27)
+  selfLink = _messages.StringField(28)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 29, repeated=True)
+  serviceLabel = _messages.StringField(30)
+  serviceName = _messages.StringField(31)
+  sourceIpRanges = _messages.StringField(32, repeated=True)
+  subnetwork = _messages.StringField(33)
+  target = _messages.StringField(34)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -44680,7 +44690,7 @@ class NetworkAttachmentConnectedEndpoint(_messages.Message):
       interface. This value will be a range in case of Serverless.
     projectIdOrNum: The project id or number of the interface to which the IP
       was assigned.
-    secondaryIpCidrRanges: Alias IP ranges from the same subnetwork
+    secondaryIpCidrRanges: Alias IP ranges from the same subnetwork.
     status: The status of a connected endpoint to this network attachment.
     subnetwork: The subnetwork used to assign the IP to the producer instance
       network interface.
@@ -52509,11 +52519,15 @@ class Quota(_messages.Message):
       NETWORK_ATTACHMENTS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
       NETWORK_FIREWALL_POLICIES: <no description>
+      NET_LB_SECURITY_POLICIES_PER_REGION: <no description>
+      NET_LB_SECURITY_POLICY_RULES_PER_REGION: <no description>
+      NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION: <no description>
       NODE_GROUPS: <no description>
       NODE_TEMPLATES: <no description>
       NVIDIA_A100_80GB_GPUS: <no description>
       NVIDIA_A100_GPUS: <no description>
       NVIDIA_K80_GPUS: <no description>
+      NVIDIA_L4_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
       NVIDIA_P4_GPUS: <no description>
@@ -52528,6 +52542,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_A100_80GB_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_L4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
@@ -52551,6 +52566,7 @@ class Quota(_messages.Message):
       ROUTES: <no description>
       SECURITY_POLICIES: <no description>
       SECURITY_POLICIES_PER_REGION: <no description>
+      SECURITY_POLICY_ADVANCED_RULES_PER_REGION: <no description>
       SECURITY_POLICY_CEVAL_RULES: <no description>
       SECURITY_POLICY_RULES: <no description>
       SECURITY_POLICY_RULES_PER_REGION: <no description>
@@ -52652,72 +52668,78 @@ class Quota(_messages.Message):
     NETWORK_ATTACHMENTS = 73
     NETWORK_ENDPOINT_GROUPS = 74
     NETWORK_FIREWALL_POLICIES = 75
-    NODE_GROUPS = 76
-    NODE_TEMPLATES = 77
-    NVIDIA_A100_80GB_GPUS = 78
-    NVIDIA_A100_GPUS = 79
-    NVIDIA_K80_GPUS = 80
-    NVIDIA_P100_GPUS = 81
-    NVIDIA_P100_VWS_GPUS = 82
-    NVIDIA_P4_GPUS = 83
-    NVIDIA_P4_VWS_GPUS = 84
-    NVIDIA_T4_GPUS = 85
-    NVIDIA_T4_VWS_GPUS = 86
-    NVIDIA_V100_GPUS = 87
-    PACKET_MIRRORINGS = 88
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 89
-    PREEMPTIBLE_CPUS = 90
-    PREEMPTIBLE_LOCAL_SSD_GB = 91
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 92
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 93
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 96
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 97
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 98
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 99
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 100
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 101
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 102
-    PSC_INTERNAL_LB_FORWARDING_RULES = 103
-    PUBLIC_ADVERTISED_PREFIXES = 104
-    PUBLIC_DELEGATED_PREFIXES = 105
-    REGIONAL_AUTOSCALERS = 106
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 107
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 108
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 109
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 110
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 111
-    RESERVATIONS = 112
-    RESOURCE_POLICIES = 113
-    ROUTERS = 114
-    ROUTES = 115
-    SECURITY_POLICIES = 116
-    SECURITY_POLICIES_PER_REGION = 117
-    SECURITY_POLICY_CEVAL_RULES = 118
-    SECURITY_POLICY_RULES = 119
-    SECURITY_POLICY_RULES_PER_REGION = 120
-    SERVICE_ATTACHMENTS = 121
-    SNAPSHOTS = 122
-    SSD_TOTAL_GB = 123
-    SSL_CERTIFICATES = 124
-    STATIC_ADDRESSES = 125
-    STATIC_BYOIP_ADDRESSES = 126
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 127
-    SUBNETWORKS = 128
-    T2A_CPUS = 129
-    T2D_CPUS = 130
-    TARGET_HTTPS_PROXIES = 131
-    TARGET_HTTP_PROXIES = 132
-    TARGET_INSTANCES = 133
-    TARGET_POOLS = 134
-    TARGET_SSL_PROXIES = 135
-    TARGET_TCP_PROXIES = 136
-    TARGET_VPN_GATEWAYS = 137
-    URL_MAPS = 138
-    VPN_GATEWAYS = 139
-    VPN_TUNNELS = 140
-    XPN_SERVICE_PROJECTS = 141
+    NET_LB_SECURITY_POLICIES_PER_REGION = 76
+    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 77
+    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 78
+    NODE_GROUPS = 79
+    NODE_TEMPLATES = 80
+    NVIDIA_A100_80GB_GPUS = 81
+    NVIDIA_A100_GPUS = 82
+    NVIDIA_K80_GPUS = 83
+    NVIDIA_L4_GPUS = 84
+    NVIDIA_P100_GPUS = 85
+    NVIDIA_P100_VWS_GPUS = 86
+    NVIDIA_P4_GPUS = 87
+    NVIDIA_P4_VWS_GPUS = 88
+    NVIDIA_T4_GPUS = 89
+    NVIDIA_T4_VWS_GPUS = 90
+    NVIDIA_V100_GPUS = 91
+    PACKET_MIRRORINGS = 92
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 93
+    PREEMPTIBLE_CPUS = 94
+    PREEMPTIBLE_LOCAL_SSD_GB = 95
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 96
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 97
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 98
+    PREEMPTIBLE_NVIDIA_L4_GPUS = 99
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 100
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 101
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 102
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 103
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 104
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 105
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 106
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 107
+    PSC_INTERNAL_LB_FORWARDING_RULES = 108
+    PUBLIC_ADVERTISED_PREFIXES = 109
+    PUBLIC_DELEGATED_PREFIXES = 110
+    REGIONAL_AUTOSCALERS = 111
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 112
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 113
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 114
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 115
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 116
+    RESERVATIONS = 117
+    RESOURCE_POLICIES = 118
+    ROUTERS = 119
+    ROUTES = 120
+    SECURITY_POLICIES = 121
+    SECURITY_POLICIES_PER_REGION = 122
+    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 123
+    SECURITY_POLICY_CEVAL_RULES = 124
+    SECURITY_POLICY_RULES = 125
+    SECURITY_POLICY_RULES_PER_REGION = 126
+    SERVICE_ATTACHMENTS = 127
+    SNAPSHOTS = 128
+    SSD_TOTAL_GB = 129
+    SSL_CERTIFICATES = 130
+    STATIC_ADDRESSES = 131
+    STATIC_BYOIP_ADDRESSES = 132
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 133
+    SUBNETWORKS = 134
+    T2A_CPUS = 135
+    T2D_CPUS = 136
+    TARGET_HTTPS_PROXIES = 137
+    TARGET_HTTP_PROXIES = 138
+    TARGET_INSTANCES = 139
+    TARGET_POOLS = 140
+    TARGET_SSL_PROXIES = 141
+    TARGET_TCP_PROXIES = 142
+    TARGET_VPN_GATEWAYS = 143
+    URL_MAPS = 144
+    VPN_GATEWAYS = 145
+    VPN_TUNNELS = 146
+    XPN_SERVICE_PROJECTS = 147
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -58880,22 +58902,27 @@ class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
 
 
 class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Message):
-  r"""Configuration options for L7 DDoS detection.
+  r"""Configuration options for L7 DDoS detection. This field is only
+  supported in Global Security Policies of type CLOUD_ARMOR.
 
   Enums:
     RuleVisibilityValueValuesEnum: Rule visibility can be one of the
       following: STANDARD - opaque rules. (default) PREMIUM - transparent
-      rules.
+      rules. This field is only supported in Global Security Policies of type
+      CLOUD_ARMOR.
 
   Fields:
-    enable: If set to true, enables CAAP for L7 DDoS detection.
+    enable: If set to true, enables CAAP for L7 DDoS detection. This field is
+      only supported in Global Security Policies of type CLOUD_ARMOR.
     ruleVisibility: Rule visibility can be one of the following: STANDARD -
-      opaque rules. (default) PREMIUM - transparent rules.
+      opaque rules. (default) PREMIUM - transparent rules. This field is only
+      supported in Global Security Policies of type CLOUD_ARMOR.
   """
 
   class RuleVisibilityValueValuesEnum(_messages.Enum):
     r"""Rule visibility can be one of the following: STANDARD - opaque rules.
-    (default) PREMIUM - transparent rules.
+    (default) PREMIUM - transparent rules. This field is only supported in
+    Global Security Policies of type CLOUD_ARMOR.
 
     Values:
       PREMIUM: <no description>
@@ -59150,7 +59177,8 @@ class SecurityPolicyRecaptchaOptionsConfig(_messages.Message):
       GOOGLE_RECAPTCHA under the security policy. The specified site key needs
       to be created from the reCAPTCHA API. The user is responsible for the
       validity of the specified site key. If not specified, a Google-managed
-      site key is used.
+      site key is used. This field is only supported in Global Security
+      Policies of type CLOUD_ARMOR.
   """
 
   redirectSiteKey = _messages.StringField(1)
@@ -59180,13 +59208,16 @@ class SecurityPolicyRule(_messages.Message):
       RateLimitOptions. Requires rate_limit_options to be set. - redirect:
       redirect to a different target. This can either be an internal reCAPTCHA
       redirect, or an external URL-based redirect via a 302 response.
-      Parameters for this action can be configured via redirectOptions. -
-      throttle: limit client traffic to the configured threshold. Configure
-      parameters for this action in rateLimitOptions. Requires
-      rate_limit_options to be set for this.
+      Parameters for this action can be configured via redirectOptions. This
+      action is only supported in Global Security Policies of type
+      CLOUD_ARMOR. - throttle: limit client traffic to the configured
+      threshold. Configure parameters for this action in rateLimitOptions.
+      Requires rate_limit_options to be set for this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     headerAction: Optional, additional actions that are performed on headers.
+      This field is only supported in Global Security Policies of type
+      CLOUD_ARMOR.
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
@@ -59203,7 +59234,8 @@ class SecurityPolicyRule(_messages.Message):
     rateLimitOptions: Must be specified if the action is "rate_based_ban" or
       "throttle". Cannot be specified for any other actions.
     redirectOptions: Parameters defining the redirect action. Cannot be
-      specified for any other actions.
+      specified for any other actions. This field is only supported in Global
+      Security Policies of type CLOUD_ARMOR.
   """
 
   action = _messages.StringField(1)
@@ -59257,7 +59289,12 @@ class SecurityPolicyRuleMatcher(_messages.Message):
       specified and cannot be specified if versioned_expr is not specified.
     expr: User defined CEVAL expression. A CEVAL expression is used to specify
       match criteria such as origin.ip, source.region_code and contents in the
-      request header.
+      request header. Expressions containing `evaluateThreatIntelligence`
+      require Cloud Armor Managed Protection Plus tier and are not supported
+      in Edge Policies nor in Regional Policies. Expressions containing
+      `evaluatePreconfiguredExpr('sourceiplist-*')` require Cloud Armor
+      Managed Protection Plus tier and are only supported in Global Security
+      Policies.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -59435,10 +59472,12 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       code, or redirect to a different endpoint. Valid options are
       `deny(STATUS)`, where valid values for `STATUS` are 403, 404, 429, and
       502, and `redirect`, where the redirect parameters come from
-      `exceedRedirectOptions` below.
+      `exceedRedirectOptions` below. The `redirect` action is only supported
+      in Global Security Policies of type CLOUD_ARMOR.
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
-      not redirect.
+      not redirect. This field is only supported in Global Security Policies
+      of type CLOUD_ARMOR.
     rateLimitThreshold: Threshold at which to begin ratelimiting.
   """
 

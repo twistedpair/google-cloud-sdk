@@ -412,7 +412,8 @@ def _MapChoice(choices, value):
 
 
 def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
-                             request_id_field=None, use_relative_name=True):
+                             request_id_field=None, use_relative_name=True,
+                             is_primary_resource=False):
   """Set fields in message corresponding to a resource.
 
   Args:
@@ -424,6 +425,7 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
     request_id_field: str, the name that the ID of the resource arg takes if the
       API method params and the resource params don't match.
     use_relative_name: Used ref.RelativeName() if True, otherwise ref.Name().
+    is_primary_resource: Determines if we should use method.params.
   """
   message_resource_map = message_resource_map or {}
   message_resource_map = message_resource_map.copy()
@@ -433,7 +435,8 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
   # case, we re-parse the resource as its parent collection (to fill in the
   # API parameters, and we insert the name of the resource itself into the
   # correct position in the body of the request method.
-  if (request_id_field and method and
+  # request_id_field should not be used on resource args that are not primary.
+  if (request_id_field and is_primary_resource and method and
       method.resource_argument_collection.detailed_params
       != method.request_collection.detailed_params):
     # Sets the name of the resource in the message object body.
@@ -443,7 +446,7 @@ def ParseResourceIntoMessage(ref, method, message, message_resource_map=None,
         parent_collection=method.request_collection.full_name)
 
   ref_name = ref.RelativeName() if use_relative_name else ref.Name()
-  params = method.params if method else []
+  params = method.params if method and is_primary_resource else []
   for p in params:
     value = message_resource_map.pop(p, None) or getattr(ref, p, ref_name)
     SetFieldInMessage(message, p, value)

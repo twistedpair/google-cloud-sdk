@@ -588,6 +588,42 @@ class CreateInstanceMetadata(_messages.Message):
   startTime = _messages.StringField(4)
 
 
+class CreateInstancePartitionMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by CreateInstancePartition.
+
+  Fields:
+    cancelTime: The time at which this operation was cancelled. If set, this
+      operation is in the process of undoing itself (which is guaranteed to
+      succeed) and cannot be cancelled again.
+    endTime: The time at which this operation failed or was completed
+      successfully.
+    instancePartition: The instance partition being created.
+    startTime: The time at which the CreateInstancePartition request was
+      received.
+  """
+
+  cancelTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  instancePartition = _messages.MessageField('InstancePartition', 3)
+  startTime = _messages.StringField(4)
+
+
+class CreateInstancePartitionRequest(_messages.Message):
+  r"""The request for CreateInstancePartition.
+
+  Fields:
+    instancePartition: Required. The instance partition to create. The
+      instance_partition.name may be omitted, but if specified must be
+      `/instancePartitions/`.
+    instancePartitionId: Required. The ID of the instance partition to create.
+      Valid identifiers are of the form `a-z*[a-z0-9]` and must be between 2
+      and 64 characters in length.
+  """
+
+  instancePartition = _messages.MessageField('InstancePartition', 1)
+  instancePartitionId = _messages.StringField(2)
+
+
 class CreateInstanceRequest(_messages.Message):
   r"""The request for CreateInstance.
 
@@ -1778,6 +1814,87 @@ class InstanceOperationProgress(_messages.Message):
   endTime = _messages.StringField(1)
   progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   startTime = _messages.StringField(3)
+
+
+class InstancePartition(_messages.Message):
+  r"""An isolated set of Cloud Spanner resources that databases can define
+  placements on.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current instance partition state.
+
+  Fields:
+    config: Required. The name of the instance partition's configuration.
+      Values are of the form `projects//instanceConfigs/`. See also
+      InstanceConfig and ListInstanceConfigs.
+    createTime: Output only. The time at which the instance partition was
+      created.
+    displayName: Required. The descriptive name for this instance partition as
+      it appears in UIs. Must be unique per project and between 4 and 30
+      characters in length.
+    etag: Used for optimistic concurrency control as a way to help prevent
+      simultaneous updates of a instance partition from overwriting each
+      other. It is strongly suggested that systems make use of the etag in the
+      read-modify-write cycle to perform instance partition updates in order
+      to avoid race conditions: An etag is returned in the response which
+      contains instance partitions, and systems are expected to put that etag
+      in the request to update instance partitions to ensure that their change
+      will be applied to the same version of the instance partition. If no
+      etag is provided in the call to update instance partition, then the
+      existing instance partition is overwritten blindly.
+    name: Required. A unique identifier for the instance partition. Values are
+      of the form `projects//instances//instancePartitions/a-z*[a-z0-9]`. The
+      final segment of the name must be between 2 and 64 characters in length.
+      An instance partition's name cannot be changed after the instance
+      partition is created.
+    nodeCount: The number of nodes allocated to this instance partition. Users
+      can set the node_count field to specify the target number of nodes
+      allocated to the instance partition. This may be zero in API responses
+      for instance partitions that are not yet in state `READY`.
+    processingUnits: The number of processing units allocated to this instance
+      partition. Users can set the processing_units field to specify the
+      target number of processing units allocated to the instance partition.
+      This may be zero in API responses for instance partitions that are not
+      yet in state `READY`.
+    referencingBackups: Output only. The names of the backups that reference
+      this instance partition. Referencing backups should share the parent
+      instance. The existence of any referencing backup prevents the instance
+      partition from being deleted.
+    referencingDatabases: Output only. The names of the databases that
+      reference this instance partition. Referencing databases should share
+      the parent instance. The existence of any referencing database prevents
+      the instance partition from being deleted.
+    state: Output only. The current instance partition state.
+    updateTime: Output only. The time at which the instance partition was most
+      recently updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current instance partition state.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified.
+      CREATING: The instance partition is still being created. Resources may
+        not be available yet, and operations such as creating placements using
+        this instance partition may not work.
+      READY: The instance partition is fully created and ready to do work such
+        as creating placements and using in databases.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+
+  config = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  referencingBackups = _messages.StringField(8, repeated=True)
+  referencingDatabases = _messages.StringField(9, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class KeyRange(_messages.Message):
@@ -4749,6 +4866,98 @@ class SpannerProjectsInstancesGetRequest(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsCreateRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsCreateRequest object.
+
+  Fields:
+    createInstancePartitionRequest: A CreateInstancePartitionRequest resource
+      to be passed as the request body.
+    parent: Required. The name of the instance in which to create the instance
+      partition. Values are of the form `projects//instances/`.
+  """
+
+  createInstancePartitionRequest = _messages.MessageField('CreateInstancePartitionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsDeleteRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsDeleteRequest object.
+
+  Fields:
+    etag: Optional. If not empty, the API only deletes the instance partition
+      when the etag provided matches the current status of the requested
+      instance partition. Otherwise, deletes the instance partition without
+      checking the current status of the requested instance partition.
+    name: Required. The name of the instance partition to be deleted. Values
+      are of the form `projects/{project}/instances/{instance}/instancePartiti
+      ons/{instance_partition}`
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsGetRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the requested instance partition. Values are
+      of the form `projects/{project}/instances/{instance}/instancePartitions/
+      {instance_partition}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsOperationsCancelRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsOperationsDeleteRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsOperationsGetRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionsOperationsListRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class SpannerProjectsInstancesListRequest(_messages.Message):

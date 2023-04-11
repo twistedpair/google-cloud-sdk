@@ -36,7 +36,6 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_iam_util
 from googlecloudsdk.api_lib.storage import headers_util
-from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_json import download
 from googlecloudsdk.api_lib.storage.gcs_json import error_util
 from googlecloudsdk.api_lib.storage.gcs_json import metadata_util
@@ -254,16 +253,6 @@ class JsonClient(cloud_api.CloudApi):
     self._stream_response_handler = _StorageStreamResponseHandler()
     self._download_http_client = None
     self._upload_http_client = None
-    self._gapic_client = None
-
-  def _get_gapic_client(self):
-    # Not using @property because the side-effect is non-trivial and
-    # might not be obvious. Someone might accidentally access the
-    # property and end up creating the gapic client.
-    # Creating the gapic client before "fork" will lead to a deadlock.
-    if self._gapic_client is None:
-      self._gapic_client = core_apis.GetGapicClientInstance('storage', 'v2')
-    return self._gapic_client
 
   @contextlib.contextmanager
   def _apitools_request_headers_context(self, headers):
@@ -756,19 +745,6 @@ class JsonClient(cloud_api.CloudApi):
     ):
       return None
 
-    if properties.VALUES.storage.use_grpc.GetBool():
-      log.debug('Using GRPC client')
-      grpc_util.download_object(
-          gapic_client=self._get_gapic_client(),
-          cloud_resource=cloud_resource,
-          download_stream=download_stream,
-          digesters=digesters,
-          progress_callback=progress_callback,
-          start_byte=start_byte,
-          end_byte=end_byte)
-      # TODO(b/261180916) Return server encoding.
-      return None
-
     serialization_data = get_download_serialization_data(
         cloud_resource, start_byte)
     apitools_download = apitools_transfer.Download.FromData(
@@ -985,12 +961,6 @@ class JsonClient(cloud_api.CloudApi):
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See CloudApi class for function doc strings."""
-    if properties.VALUES.storage.use_grpc.GetBool():
-      log.debug('Using GRPC client')
-      return grpc_util.upload_object(self._get_gapic_client(),
-                                     source_stream,
-                                     destination_resource,
-                                     request_config)
 
     if self._upload_http_client is None:
       self._upload_http_client = transports.GetApitoolsTransport(

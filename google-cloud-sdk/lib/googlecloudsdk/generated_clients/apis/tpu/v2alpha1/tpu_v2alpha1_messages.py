@@ -1740,7 +1740,7 @@ class TpuProjectsLocationsQueuedResourcesCreateRequest(_messages.Message):
     queuedResource: A QueuedResource resource to be passed as the request
       body.
     queuedResourceId: The unqualified resource name. Should follow the
-      ^[A-Za-z0-9_.~+%-]+$ regex format.
+      `^[A-Za-z0-9_.~+%-]+$` regex format.
     requestId: Idempotent request UUID.
   """
 

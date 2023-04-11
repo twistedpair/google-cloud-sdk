@@ -2182,6 +2182,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'looker': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.looker.v1',
+                    client_classpath='looker_v1_client.LookerV1',
+                    base_url='https://looker.googleapis.com/',
+                    messages_modulepath='looker_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -2189,7 +2199,7 @@ MAP = {
                     client_classpath='looker_v1alpha1_client.LookerV1alpha1',
                     base_url='https://looker.googleapis.com/',
                     messages_modulepath='looker_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -2268,6 +2278,18 @@ MAP = {
                     base_url='https://memcache.googleapis.com/',
                     messages_modulepath='memcache_v1beta2_messages'),
                 default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'messagestreams': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.messagestreams.v1alpha',
+                    client_classpath='messagestreams_v1alpha_client.MessagestreamsV1alpha',
+                    base_url='https://messagestreams.googleapis.com/',
+                    messages_modulepath='messagestreams_v1alpha_messages'),
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

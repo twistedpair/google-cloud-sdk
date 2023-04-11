@@ -67,6 +67,7 @@ class AllocationPolicy(_messages.Message):
     location: Location where compute resources should be allocated for the
       Job.
     network: The network policy.
+    placement: The placement policy.
     serviceAccount: Service account that VMs will run as.
   """
 
@@ -103,7 +104,8 @@ class AllocationPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   location = _messages.MessageField('LocationPolicy', 3)
   network = _messages.MessageField('NetworkPolicy', 4)
-  serviceAccount = _messages.MessageField('ServiceAccount', 5)
+  placement = _messages.MessageField('PlacementPolicy', 5)
+  serviceAccount = _messages.MessageField('ServiceAccount', 6)
 
 
 class AttachedDisk(_messages.Message):
@@ -1039,12 +1041,13 @@ class Message(_messages.Message):
     r"""The new task state.
 
     Values:
-      STATE_UNSPECIFIED: unknown state
+      STATE_UNSPECIFIED: Unknown state.
       PENDING: The Task is created and waiting for resources.
       ASSIGNED: The Task is assigned to at least one VM.
       RUNNING: The Task is running.
       FAILED: The Task has failed.
       SUCCEEDED: The Task has succeeded.
+      UNEXECUTED: The Task has not been executed when the Job finishes.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1052,6 +1055,7 @@ class Message(_messages.Message):
     RUNNING = 3
     FAILED = 4
     SUCCEEDED = 5
+    UNEXECUTED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The message type.
@@ -1256,9 +1260,32 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PlacementPolicy(_messages.Message):
+  r"""PlacementPolicy describes a group placement policy for the VMs
+  controlled by this AllocationPolicy.
+
+  Fields:
+    collocation: UNSPECIFIED vs. COLLOCATED (default UNSPECIFIED). Use
+      COLLOCATED when you want VMs to be located close to each other for low
+      network latency between the VMs. No placement policy will be generated
+      when collocation is UNSPECIFIED.
+    maxDistance: When specified, causes the job to fail if more than
+      max_distance logical switches are required between VMs. Batch uses the
+      most compact possible placement of VMs even when max_distance is not
+      specified. An explicit max_distance makes that level of compactness a
+      strict requirement. Not yet implemented
+  """
+
+  collocation = _messages.StringField(1)
+  maxDistance = _messages.IntegerField(2)
+
+
 class Runnable(_messages.Message):
   r"""Runnable describes instructions for executing a specific script or
   container as part of a Task.
+
+  Messages:
+    LabelsValue: Labels for this Runnable.
 
   Fields:
     alwaysRun: By default, after a Runnable fails, no further Runnable are
@@ -1278,9 +1305,34 @@ class Runnable(_messages.Message):
       set for the whole Task or TaskGroup).
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
       fail. This flag allows execution of other Runnables to continue instead.
+    labels: Labels for this Runnable.
     script: Script runnable.
     timeout: Timeout for this Runnable.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels for this Runnable.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   alwaysRun = _messages.BooleanField(1)
   background = _messages.BooleanField(2)
@@ -1288,8 +1340,9 @@ class Runnable(_messages.Message):
   container = _messages.MessageField('Container', 4)
   environment = _messages.MessageField('Environment', 5)
   ignoreExitStatus = _messages.BooleanField(6)
-  script = _messages.MessageField('Script', 7)
-  timeout = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 7)
+  script = _messages.MessageField('Script', 8)
+  timeout = _messages.StringField(9)
 
 
 class Script(_messages.Message):
@@ -1464,12 +1517,13 @@ class StatusEvent(_messages.Message):
     r"""Task State
 
     Values:
-      STATE_UNSPECIFIED: unknown state
+      STATE_UNSPECIFIED: Unknown state.
       PENDING: The Task is created and waiting for resources.
       ASSIGNED: The Task is assigned to at least one VM.
       RUNNING: The Task is running.
       FAILED: The Task has failed.
       SUCCEEDED: The Task has succeeded.
+      UNEXECUTED: The Task has not been executed when the Job finishes.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1477,6 +1531,7 @@ class StatusEvent(_messages.Message):
     RUNNING = 3
     FAILED = 4
     SUCCEEDED = 5
+    UNEXECUTED = 6
 
   description = _messages.StringField(1)
   eventTime = _messages.StringField(2)
@@ -1678,12 +1733,13 @@ class TaskStatus(_messages.Message):
     r"""Task state
 
     Values:
-      STATE_UNSPECIFIED: unknown state
+      STATE_UNSPECIFIED: Unknown state.
       PENDING: The Task is created and waiting for resources.
       ASSIGNED: The Task is assigned to at least one VM.
       RUNNING: The Task is running.
       FAILED: The Task has failed.
       SUCCEEDED: The Task has succeeded.
+      UNEXECUTED: The Task has not been executed when the Job finishes.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1691,6 +1747,7 @@ class TaskStatus(_messages.Message):
     RUNNING = 3
     FAILED = 4
     SUCCEEDED = 5
+    UNEXECUTED = 6
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
   statusEvents = _messages.MessageField('StatusEvent', 2, repeated=True)

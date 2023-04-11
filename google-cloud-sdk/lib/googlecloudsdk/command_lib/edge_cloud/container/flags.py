@@ -252,7 +252,8 @@ def AddControlPlaneSharedDeploymentPolicy(parser):
       DISALLOWED. ALLOWED means that user application can be deployed on
       control plane nodes. DISALLOWED means that user application can not be
       deployed on control plane nodes. Instead, it can only be deployed on
-      worker nodes. By default, this value is DISALLOWED.
+      worker nodes. By default, this value is DISALLOWED. The input is case
+      insensitive.
       """
   )
 

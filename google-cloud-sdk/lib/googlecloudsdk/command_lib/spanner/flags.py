@@ -245,6 +245,16 @@ def ProcessingUnits(required=False):
       help='Number of processing units for the instance.')
 
 
+def EnableDropProtection(required=False):
+  return base.Argument(
+      '--enable-drop-protection',
+      required=required,
+      dest='enable_drop_protection',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Enable database deletion protection on this database.',
+  )
+
+
 def OperationId(database=False):
   return base.Argument(
       'operation',

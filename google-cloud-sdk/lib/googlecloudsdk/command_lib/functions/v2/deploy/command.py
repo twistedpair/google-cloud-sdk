@@ -60,8 +60,6 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
 
-import six
-
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
     'There was a problem uploading the source code to a signed Cloud Storage '
     'URL. Please try again.'
@@ -1204,30 +1202,6 @@ def _SetInvokerPermissions(args, function, is_new_function):
   )
 
 
-def _GetFunction(client, function_ref):
-  # type: (client_v2.FunctionsClient, resources.Resource) -> Function
-  """Get function and return None if doesn't exist.
-
-  Args:
-    client: the GCFv2 API client.
-    function_ref: the GCFv2 functions resource reference.
-
-  Returns:
-    function: cloudfunctions_v2_messages.Function, fetched GCFv2 function
-  """
-  try:
-    # We got response for a GET request, so a function exists.
-    return client.client.projects_locations_functions.Get(
-        client.messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
-            name=function_ref.RelativeName()
-        )
-    )
-  except apitools_exceptions.HttpError as error:
-    if error.status_code == six.moves.http_client.NOT_FOUND:
-      return None
-    raise
-
-
 def _CreateAndWait(gcf_client, function_ref, function):
   # type: (client_v2.FunctionsClient, resources.Resource, Function) -> None
   """Create a function.
@@ -1304,7 +1278,7 @@ def Run(args, release_track):
 
   _ValidateV1OnlyFlags(args, release_track)
 
-  existing_function = _GetFunction(client, function_ref)
+  existing_function = client.GetFunction(function_ref.RelativeName())
 
   is_new_function = existing_function is None
   if is_new_function and not args.runtime:
@@ -1312,8 +1286,11 @@ def Run(args, release_track):
       raise calliope_exceptions.RequiredArgumentException(
           'runtime', 'Flag `--runtime` is required for new functions.'
       )
+
     runtimes = [
-        r.name for r in client.ListRuntimes(function_ref.locationsId).runtimes
+        r.name
+        for r in client.ListRuntimes(function_ref.locationsId).runtimes
+        if str(r.environment) == 'GEN_2'
     ]
     idx = console_io.PromptChoice(
         runtimes, message='Please select a runtime:\n'
@@ -1394,11 +1371,7 @@ def Run(args, release_track):
   else:
     _UpdateAndWait(client, function_ref, function, updated_fields)
 
-  function = client.client.projects_locations_functions.Get(
-      messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
-          name=function_ref.RelativeName()
-      )
-  )
+  function = client.GetFunction(function_ref.RelativeName())
 
   if event_trigger is None:
     _SetInvokerPermissions(args, function, is_new_function)

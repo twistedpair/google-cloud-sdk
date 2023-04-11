@@ -1905,6 +1905,11 @@ class AttachedDiskInitializeParams(_messages.Message):
     provisionedThroughput: Indicates how much throughput to provision for the
       disk. This sets the number of throughput mb per second that the disk can
       handle. Values must be between 1 and 7,124.
+    replicaZones: Required for each regional disk associated with the
+      instance. Specify the URLs of the zones where the disk should be
+      replicated to. You must provide exactly two replica zones, and one zone
+      must be the same as the instance zone. You can't use this option with
+      boot disks.
     resourceManagerTags: Resource manager tags to be bound to the disk. Tag
       keys and values have the same definition as resource manager tags. Keys
       must be in the format `tagKeys/{tag_key_id}`, and values are in the
@@ -2039,12 +2044,13 @@ class AttachedDiskInitializeParams(_messages.Message):
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 10)
   provisionedIops = _messages.IntegerField(11)
   provisionedThroughput = _messages.IntegerField(12)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 13)
-  resourcePolicies = _messages.StringField(14, repeated=True)
-  sourceImage = _messages.StringField(15)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceSnapshot = _messages.StringField(17)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  replicaZones = _messages.StringField(13, repeated=True)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 14)
+  resourcePolicies = _messages.StringField(15, repeated=True)
+  sourceImage = _messages.StringField(16)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceSnapshot = _messages.StringField(18)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
 
 
 class AuditConfig(_messages.Message):
@@ -31734,6 +31740,12 @@ class DiskAsyncReplication(_messages.Message):
   r"""A DiskAsyncReplication object.
 
   Fields:
+    consistencyGroupPolicy: [Output Only] URL of the
+      DiskConsistencyGroupPolicy if replication was started on the disk as a
+      member of a group.
+    consistencyGroupPolicyId: [Output Only] ID of the
+      DiskConsistencyGroupPolicy if replication was started on the disk as a
+      member of a group.
     disk: The other disk asynchronously replicated to or from the current
       disk. You can provide this as a partial or full URL to the resource. For
       example, the following are valid values: -
@@ -31748,8 +31760,10 @@ class DiskAsyncReplication(_messages.Message):
       the exact version of the disk that was used.
   """
 
-  disk = _messages.StringField(1)
-  diskId = _messages.StringField(2)
+  consistencyGroupPolicy = _messages.StringField(1)
+  consistencyGroupPolicyId = _messages.StringField(2)
+  disk = _messages.StringField(3)
+  diskId = _messages.StringField(4)
 
 
 class DiskAsyncReplicationList(_messages.Message):
@@ -34637,10 +34651,11 @@ class ForwardingRule(_messages.Message):
       a letter.
     network: This field is not used for external load balancing. For Internal
       TCP/UDP Load Balancing, this field identifies the network that the load
-      balanced IP should belong to for this Forwarding Rule. If this field is
-      not specified, the default network will be used. For Private Service
-      Connect forwarding rules that forward traffic to Google APIs, a network
-      must be provided.
+      balanced IP should belong to for this Forwarding Rule. If the subnetwork
+      is specified, the network of the subnetwork will be used. If neither
+      subnetwork nor this field is specified, the default network will be
+      used. For Private Service Connect forwarding rules that forward traffic
+      to Google APIs, a network must be provided.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -47601,7 +47616,7 @@ class NetworkAttachmentConnectedEndpoint(_messages.Message):
       interface. This value will be a range in case of Serverless.
     projectIdOrNum: The project id or number of the interface to which the IP
       was assigned.
-    secondaryIpCidrRanges: Alias IP ranges from the same subnetwork
+    secondaryIpCidrRanges: Alias IP ranges from the same subnetwork.
     status: The status of a connected endpoint to this network attachment.
     subnetwork: The subnetwork used to assign the IP to the producer instance
       network interface.
@@ -55694,11 +55709,15 @@ class Quota(_messages.Message):
       NETWORK_ATTACHMENTS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
       NETWORK_FIREWALL_POLICIES: <no description>
+      NET_LB_SECURITY_POLICIES_PER_REGION: <no description>
+      NET_LB_SECURITY_POLICY_RULES_PER_REGION: <no description>
+      NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION: <no description>
       NODE_GROUPS: <no description>
       NODE_TEMPLATES: <no description>
       NVIDIA_A100_80GB_GPUS: <no description>
       NVIDIA_A100_GPUS: <no description>
       NVIDIA_K80_GPUS: <no description>
+      NVIDIA_L4_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
       NVIDIA_P4_GPUS: <no description>
@@ -55713,6 +55732,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_A100_80GB_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_L4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
@@ -55737,6 +55757,7 @@ class Quota(_messages.Message):
       ROUTES: <no description>
       SECURITY_POLICIES: <no description>
       SECURITY_POLICIES_PER_REGION: <no description>
+      SECURITY_POLICY_ADVANCED_RULES_PER_REGION: <no description>
       SECURITY_POLICY_CEVAL_RULES: <no description>
       SECURITY_POLICY_RULES: <no description>
       SECURITY_POLICY_RULES_PER_REGION: <no description>
@@ -55838,73 +55859,79 @@ class Quota(_messages.Message):
     NETWORK_ATTACHMENTS = 73
     NETWORK_ENDPOINT_GROUPS = 74
     NETWORK_FIREWALL_POLICIES = 75
-    NODE_GROUPS = 76
-    NODE_TEMPLATES = 77
-    NVIDIA_A100_80GB_GPUS = 78
-    NVIDIA_A100_GPUS = 79
-    NVIDIA_K80_GPUS = 80
-    NVIDIA_P100_GPUS = 81
-    NVIDIA_P100_VWS_GPUS = 82
-    NVIDIA_P4_GPUS = 83
-    NVIDIA_P4_VWS_GPUS = 84
-    NVIDIA_T4_GPUS = 85
-    NVIDIA_T4_VWS_GPUS = 86
-    NVIDIA_V100_GPUS = 87
-    PACKET_MIRRORINGS = 88
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 89
-    PREEMPTIBLE_CPUS = 90
-    PREEMPTIBLE_LOCAL_SSD_GB = 91
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 92
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 93
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 96
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 97
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 98
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 99
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 100
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 101
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 102
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 103
-    PSC_INTERNAL_LB_FORWARDING_RULES = 104
-    PUBLIC_ADVERTISED_PREFIXES = 105
-    PUBLIC_DELEGATED_PREFIXES = 106
-    REGIONAL_AUTOSCALERS = 107
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 108
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 109
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 110
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 111
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 112
-    RESERVATIONS = 113
-    RESOURCE_POLICIES = 114
-    ROUTERS = 115
-    ROUTES = 116
-    SECURITY_POLICIES = 117
-    SECURITY_POLICIES_PER_REGION = 118
-    SECURITY_POLICY_CEVAL_RULES = 119
-    SECURITY_POLICY_RULES = 120
-    SECURITY_POLICY_RULES_PER_REGION = 121
-    SERVICE_ATTACHMENTS = 122
-    SNAPSHOTS = 123
-    SSD_TOTAL_GB = 124
-    SSL_CERTIFICATES = 125
-    STATIC_ADDRESSES = 126
-    STATIC_BYOIP_ADDRESSES = 127
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 128
-    SUBNETWORKS = 129
-    T2A_CPUS = 130
-    T2D_CPUS = 131
-    TARGET_HTTPS_PROXIES = 132
-    TARGET_HTTP_PROXIES = 133
-    TARGET_INSTANCES = 134
-    TARGET_POOLS = 135
-    TARGET_SSL_PROXIES = 136
-    TARGET_TCP_PROXIES = 137
-    TARGET_VPN_GATEWAYS = 138
-    URL_MAPS = 139
-    VPN_GATEWAYS = 140
-    VPN_TUNNELS = 141
-    XPN_SERVICE_PROJECTS = 142
+    NET_LB_SECURITY_POLICIES_PER_REGION = 76
+    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 77
+    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 78
+    NODE_GROUPS = 79
+    NODE_TEMPLATES = 80
+    NVIDIA_A100_80GB_GPUS = 81
+    NVIDIA_A100_GPUS = 82
+    NVIDIA_K80_GPUS = 83
+    NVIDIA_L4_GPUS = 84
+    NVIDIA_P100_GPUS = 85
+    NVIDIA_P100_VWS_GPUS = 86
+    NVIDIA_P4_GPUS = 87
+    NVIDIA_P4_VWS_GPUS = 88
+    NVIDIA_T4_GPUS = 89
+    NVIDIA_T4_VWS_GPUS = 90
+    NVIDIA_V100_GPUS = 91
+    PACKET_MIRRORINGS = 92
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 93
+    PREEMPTIBLE_CPUS = 94
+    PREEMPTIBLE_LOCAL_SSD_GB = 95
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 96
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 97
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 98
+    PREEMPTIBLE_NVIDIA_L4_GPUS = 99
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 100
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 101
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 102
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 103
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 104
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 105
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 106
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 107
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 108
+    PSC_INTERNAL_LB_FORWARDING_RULES = 109
+    PUBLIC_ADVERTISED_PREFIXES = 110
+    PUBLIC_DELEGATED_PREFIXES = 111
+    REGIONAL_AUTOSCALERS = 112
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 113
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 114
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 115
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 116
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 117
+    RESERVATIONS = 118
+    RESOURCE_POLICIES = 119
+    ROUTERS = 120
+    ROUTES = 121
+    SECURITY_POLICIES = 122
+    SECURITY_POLICIES_PER_REGION = 123
+    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 124
+    SECURITY_POLICY_CEVAL_RULES = 125
+    SECURITY_POLICY_RULES = 126
+    SECURITY_POLICY_RULES_PER_REGION = 127
+    SERVICE_ATTACHMENTS = 128
+    SNAPSHOTS = 129
+    SSD_TOTAL_GB = 130
+    SSL_CERTIFICATES = 131
+    STATIC_ADDRESSES = 132
+    STATIC_BYOIP_ADDRESSES = 133
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 134
+    SUBNETWORKS = 135
+    T2A_CPUS = 136
+    T2D_CPUS = 137
+    TARGET_HTTPS_PROXIES = 138
+    TARGET_HTTP_PROXIES = 139
+    TARGET_INSTANCES = 140
+    TARGET_POOLS = 141
+    TARGET_SSL_PROXIES = 142
+    TARGET_TCP_PROXIES = 143
+    TARGET_VPN_GATEWAYS = 144
+    URL_MAPS = 145
+    VPN_GATEWAYS = 146
+    VPN_TUNNELS = 147
+    XPN_SERVICE_PROJECTS = 148
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -60626,6 +60653,9 @@ class RouterNat(_messages.Message):
   auto-allocate ephemeral IPs if no external IPs are provided.
 
   Enums:
+    AutoNetworkTierValueValuesEnum: The network tier to use when automatically
+      reserving IP addresses. Must be one of: PREMIUM, STANDARD. If not
+      specified, PREMIUM tier will be used.
     EndpointTypesValueListEntryValuesEnum:
     NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption, which
       can take one of the following values: - MANUAL_ONLY: Uses only Nat IP
@@ -60646,6 +60676,9 @@ class RouterNat(_messages.Message):
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
+    autoNetworkTier: The network tier to use when automatically reserving IP
+      addresses. Must be one of: PREMIUM, STANDARD. If not specified, PREMIUM
+      tier will be used.
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
       must be valid static external IPs that have been assigned to the NAT.
       These IPs should be used for updating/patching a NAT only.
@@ -60709,6 +60742,25 @@ class RouterNat(_messages.Message):
       30s if not set.
   """
 
+  class AutoNetworkTierValueValuesEnum(_messages.Enum):
+    r"""The network tier to use when automatically reserving IP addresses.
+    Must be one of: PREMIUM, STANDARD. If not specified, PREMIUM tier will be
+    used.
+
+    Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
+      PREMIUM: High quality, Google-grade network tier, support for all
+        networking products.
+      STANDARD: Public internet quality, only limited support for other
+        networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
+    """
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
+
   class EndpointTypesValueListEntryValuesEnum(_messages.Enum):
     r"""EndpointTypesValueListEntryValuesEnum enum type.
 
@@ -60760,24 +60812,25 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
-  drainNatIps = _messages.StringField(1, repeated=True)
-  enableDynamicPortAllocation = _messages.BooleanField(2)
-  enableEndpointIndependentMapping = _messages.BooleanField(3)
-  endpointTypes = _messages.EnumField('EndpointTypesValueListEntryValuesEnum', 4, repeated=True)
-  icmpIdleTimeoutSec = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 6)
-  maxPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 10)
-  natIps = _messages.StringField(11, repeated=True)
-  rules = _messages.MessageField('RouterNatRule', 12, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 13)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 14, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  tcpTimeWaitTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  autoNetworkTier = _messages.EnumField('AutoNetworkTierValueValuesEnum', 1)
+  drainNatIps = _messages.StringField(2, repeated=True)
+  enableDynamicPortAllocation = _messages.BooleanField(3)
+  enableEndpointIndependentMapping = _messages.BooleanField(4)
+  endpointTypes = _messages.EnumField('EndpointTypesValueListEntryValuesEnum', 5, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 7)
+  maxPortsPerVm = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  name = _messages.StringField(10)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 11)
+  natIps = _messages.StringField(12, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 13, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 14)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 15, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -62358,22 +62411,27 @@ class SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig(_messages.Message):
 
 
 class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Message):
-  r"""Configuration options for L7 DDoS detection.
+  r"""Configuration options for L7 DDoS detection. This field is only
+  supported in Global Security Policies of type CLOUD_ARMOR.
 
   Enums:
     RuleVisibilityValueValuesEnum: Rule visibility can be one of the
       following: STANDARD - opaque rules. (default) PREMIUM - transparent
-      rules.
+      rules. This field is only supported in Global Security Policies of type
+      CLOUD_ARMOR.
 
   Fields:
-    enable: If set to true, enables CAAP for L7 DDoS detection.
+    enable: If set to true, enables CAAP for L7 DDoS detection. This field is
+      only supported in Global Security Policies of type CLOUD_ARMOR.
     ruleVisibility: Rule visibility can be one of the following: STANDARD -
-      opaque rules. (default) PREMIUM - transparent rules.
+      opaque rules. (default) PREMIUM - transparent rules. This field is only
+      supported in Global Security Policies of type CLOUD_ARMOR.
   """
 
   class RuleVisibilityValueValuesEnum(_messages.Enum):
     r"""Rule visibility can be one of the following: STANDARD - opaque rules.
-    (default) PREMIUM - transparent rules.
+    (default) PREMIUM - transparent rules. This field is only supported in
+    Global Security Policies of type CLOUD_ARMOR.
 
     Values:
       PREMIUM: <no description>
@@ -62650,7 +62708,8 @@ class SecurityPolicyRecaptchaOptionsConfig(_messages.Message):
       GOOGLE_RECAPTCHA under the security policy. The specified site key needs
       to be created from the reCAPTCHA API. The user is responsible for the
       validity of the specified site key. If not specified, a Google-managed
-      site key is used.
+      site key is used. This field is only supported in Global Security
+      Policies of type CLOUD_ARMOR.
   """
 
   redirectSiteKey = _messages.StringField(1)
@@ -62684,10 +62743,11 @@ class SecurityPolicyRule(_messages.Message):
       RateLimitOptions. Requires rate_limit_options to be set. - redirect:
       redirect to a different target. This can either be an internal reCAPTCHA
       redirect, or an external URL-based redirect via a 302 response.
-      Parameters for this action can be configured via redirectOptions. -
-      throttle: limit client traffic to the configured threshold. Configure
-      parameters for this action in rateLimitOptions. Requires
-      rate_limit_options to be set for this.
+      Parameters for this action can be configured via redirectOptions. This
+      action is only supported in Global Security Policies of type
+      CLOUD_ARMOR. - throttle: limit client traffic to the configured
+      threshold. Configure parameters for this action in rateLimitOptions.
+      Requires rate_limit_options to be set for this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     direction: The direction in which this rule applies. This field may only
@@ -62698,6 +62758,8 @@ class SecurityPolicyRule(_messages.Message):
       Note: you cannot enable logging on "goto_next" rules. This field may
       only be specified when the versioned_expr is set to FIREWALL.
     headerAction: Optional, additional actions that are performed on headers.
+      This field is only supported in Global Security Policies of type
+      CLOUD_ARMOR.
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
@@ -62714,7 +62776,8 @@ class SecurityPolicyRule(_messages.Message):
     rateLimitOptions: Must be specified if the action is "rate_based_ban" or
       "throttle". Cannot be specified for any other actions.
     redirectOptions: Parameters defining the redirect action. Cannot be
-      specified for any other actions.
+      specified for any other actions. This field is only supported in Global
+      Security Policies of type CLOUD_ARMOR.
     ruleNumber: Identifier for the rule. This is only unique within the given
       security policy. This can only be set during rule creation, if rule
       number is not specified it will be generated by the server.
@@ -62797,7 +62860,12 @@ class SecurityPolicyRuleMatcher(_messages.Message):
       specified and cannot be specified if versioned_expr is not specified.
     expr: User defined CEVAL expression. A CEVAL expression is used to specify
       match criteria such as origin.ip, source.region_code and contents in the
-      request header.
+      request header. Expressions containing `evaluateThreatIntelligence`
+      require Cloud Armor Managed Protection Plus tier and are not supported
+      in Edge Policies nor in Regional Policies. Expressions containing
+      `evaluatePreconfiguredExpr('sourceiplist-*')` require Cloud Armor
+      Managed Protection Plus tier and are only supported in Global Security
+      Policies.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -63008,10 +63076,12 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       code, or redirect to a different endpoint. Valid options are
       `deny(STATUS)`, where valid values for `STATUS` are 403, 404, 429, and
       502, and `redirect`, where the redirect parameters come from
-      `exceedRedirectOptions` below.
+      `exceedRedirectOptions` below. The `redirect` action is only supported
+      in Global Security Policies of type CLOUD_ARMOR.
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
-      not redirect.
+      not redirect. This field is only supported in Global Security Policies
+      of type CLOUD_ARMOR.
     rateLimitThreshold: Threshold at which to begin ratelimiting.
   """
 

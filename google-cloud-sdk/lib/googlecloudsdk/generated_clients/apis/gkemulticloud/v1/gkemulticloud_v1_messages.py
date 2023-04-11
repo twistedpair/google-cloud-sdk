@@ -1533,10 +1533,13 @@ class GoogleCloudGkemulticloudV1AwsK8sVersionInfo(_messages.Message):
   r"""Kubernetes version information of GKE cluster on AWS.
 
   Fields:
+    enabled: Optional. Whether new clusters can be created using this version.
+      This is false for end of life cluster versions.
     version: Kubernetes version name.
   """
 
-  version = _messages.StringField(1)
+  enabled = _messages.BooleanField(1)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
@@ -1850,7 +1853,10 @@ class GoogleCloudGkemulticloudV1AwsServerConfig(_messages.Message):
   Fields:
     name: The resource name of the config.
     supportedAwsRegions: The list of supported AWS regions.
-    validVersions: List of valid Kubernetes versions.
+    validVersions: List of all released Kubernetes versions, including ones
+      which are end of life and can no longer be used. Filter by the `enabled`
+      property to limit to currently available versions. Valid versions
+      supported for both create and update operations
   """
 
   name = _messages.StringField(1)

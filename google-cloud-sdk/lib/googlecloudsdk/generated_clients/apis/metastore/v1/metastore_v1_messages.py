@@ -879,13 +879,16 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
+    multiRegionMetadata: The multi-region metadata if the current region is a
+      multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
       used when creating a new metastore service in this location. The server
       guarantees that exactly one HiveMetastoreVersion in the list will set
       is_default.
   """
 
-  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 1, repeated=True)
+  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 1)
+  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 2, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1739,6 +1742,18 @@ class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class MultiRegionMetadata(_messages.Message):
+  r"""The metadata for the multi-region that includes the constituent regions.
+  The metadata is only populated if the region is multi-region. For single
+  region, it will be empty.
+
+  Fields:
+    constituentRegions: The regions constituting the multi-region.
+  """
+
+  constituentRegions = _messages.StringField(1, repeated=True)
 
 
 class NetworkConfig(_messages.Message):

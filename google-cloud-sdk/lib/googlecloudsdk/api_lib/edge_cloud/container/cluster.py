@@ -146,7 +146,7 @@ def PopulateClusterAlphaMessage(req, messages, args):
     ):
       req.cluster.controlPlane.local.sharedDeploymentPolicy = (
           messages.Local.SharedDeploymentPolicyValueValuesEnum(
-              args.control_plane_shared_deployment_policy
+              args.control_plane_shared_deployment_policy.upper()
           )
       )
   resource_args.SetSystemAddonsConfig(args, req)

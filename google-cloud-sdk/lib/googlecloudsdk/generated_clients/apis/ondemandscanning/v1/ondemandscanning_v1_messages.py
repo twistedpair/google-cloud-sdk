@@ -173,6 +173,18 @@ class AttestationOccurrence(_messages.Message):
   signatures = _messages.MessageField('Signature', 3, repeated=True)
 
 
+class Binary(_messages.Message):
+  r"""A Binary object.
+
+  Fields:
+    name: A string attribute.
+    version: A string attribute.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
 class BuildOccurrence(_messages.Message):
   r"""Details of a build occurrence.
 
@@ -1595,6 +1607,11 @@ class PackageData(_messages.Message):
 
   Fields:
     architecture: The architecture of the package.
+    binary: The binary package. This is significant when the source is
+      different than the binary itself. Historically if they've differed,
+      we've stored the name of the source and its version in the
+      package/version fields, but we should also store the binary package
+      info, as that's what's actually installed. See b/175908657#comment15.
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       in which the vulnerability may manifest. Examples include distro or
       storage location for vulnerable jar.
@@ -1640,18 +1657,19 @@ class PackageData(_messages.Message):
     NPM = 6
 
   architecture = _messages.StringField(1)
-  cpeUri = _messages.StringField(2)
-  dependencyChain = _messages.MessageField('LanguagePackageDependency', 3, repeated=True)
-  fileLocation = _messages.MessageField('FileLocation', 4, repeated=True)
-  hashDigest = _messages.StringField(5)
-  maintainer = _messages.MessageField('Maintainer', 6)
-  os = _messages.StringField(7)
-  osVersion = _messages.StringField(8)
-  package = _messages.StringField(9)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 10)
-  patchedCve = _messages.StringField(11, repeated=True)
-  unused = _messages.StringField(12)
-  version = _messages.StringField(13)
+  binary = _messages.MessageField('Binary', 2)
+  cpeUri = _messages.StringField(3)
+  dependencyChain = _messages.MessageField('LanguagePackageDependency', 4, repeated=True)
+  fileLocation = _messages.MessageField('FileLocation', 5, repeated=True)
+  hashDigest = _messages.StringField(6)
+  maintainer = _messages.MessageField('Maintainer', 7)
+  os = _messages.StringField(8)
+  osVersion = _messages.StringField(9)
+  package = _messages.StringField(10)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 11)
+  patchedCve = _messages.StringField(12, repeated=True)
+  unused = _messages.StringField(13)
+  version = _messages.StringField(14)
 
 
 class PackageIssue(_messages.Message):

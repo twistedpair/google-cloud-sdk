@@ -490,10 +490,60 @@ class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
       JWT issued by the identity provider.
     issuerUri: Required. The OIDC issuer URI. Must be a valid URI using the
       'https' scheme.
+    webSsoConfig: Required. Configuration for web single sign-on for the OIDC
+      provider. Here, web sign-in refers to console sign-in and gcloud sign-in
+      through the browser.
   """
 
   clientId = _messages.StringField(1)
   issuerUri = _messages.StringField(2)
+  webSsoConfig = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig', 3)
+
+
+class GoogleIamAdminV1WorkforcePoolProviderOidcWebSsoConfig(_messages.Message):
+  r"""Configuration for web single sign-on for the OIDC provider.
+
+  Enums:
+    AssertionClaimsBehaviorValueValuesEnum: Required. The behavior for how
+      OIDC Claims are included in the `assertion` object used for attribute
+      mapping and attribute condition.
+    ResponseTypeValueValuesEnum: Required. The Response Type to request for in
+      the OIDC Authorization Request for web sign-in.
+
+  Fields:
+    assertionClaimsBehavior: Required. The behavior for how OIDC Claims are
+      included in the `assertion` object used for attribute mapping and
+      attribute condition.
+    responseType: Required. The Response Type to request for in the OIDC
+      Authorization Request for web sign-in.
+  """
+
+  class AssertionClaimsBehaviorValueValuesEnum(_messages.Enum):
+    r"""Required. The behavior for how OIDC Claims are included in the
+    `assertion` object used for attribute mapping and attribute condition.
+
+    Values:
+      ASSERTION_CLAIMS_BEHAVIOR_UNSPECIFIED: No assertion claims behavior
+        specified.
+      ONLY_ID_TOKEN_CLAIMS: Only include ID Token Claims.
+    """
+    ASSERTION_CLAIMS_BEHAVIOR_UNSPECIFIED = 0
+    ONLY_ID_TOKEN_CLAIMS = 1
+
+  class ResponseTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The Response Type to request for in the OIDC Authorization
+    Request for web sign-in.
+
+    Values:
+      RESPONSE_TYPE_UNSPECIFIED: No Response Type specified.
+      ID_TOKEN: The `response_type=id_token` selection uses the Implicit Flow
+        for web sign-in.
+    """
+    RESPONSE_TYPE_UNSPECIFIED = 0
+    ID_TOKEN = 1
+
+  assertionClaimsBehavior = _messages.EnumField('AssertionClaimsBehaviorValueValuesEnum', 1)
+  responseType = _messages.EnumField('ResponseTypeValueValuesEnum', 2)
 
 
 class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
@@ -2531,13 +2581,13 @@ class KeyData(_messages.Message):
 
   Enums:
     FormatValueValuesEnum: Output only. The format of the key.
-    KeySpecValueValuesEnum: Immutable. The specifications for the key.
+    KeySpecValueValuesEnum: Required. The specifications for the key.
 
   Fields:
     format: Output only. The format of the key.
     key: Output only. The key data. The format of the key is represented by
       the format field.
-    keySpec: Immutable. The specifications for the key.
+    keySpec: Required. The specifications for the key.
     notAfterTime: Output only. Latest timestamp when this key is valid.
       Attempts to use this key after this time will fail. Only present if the
       key data represents a X.509 certificate.
@@ -2561,7 +2611,7 @@ class KeyData(_messages.Message):
     RSA_X509_PEM = 1
 
   class KeySpecValueValuesEnum(_messages.Enum):
-    r"""Immutable. The specifications for the key.
+    r"""Required. The specifications for the key.
 
     Values:
       KEY_SPEC_UNSPECIFIED: No key specification specified.
@@ -4116,7 +4166,7 @@ class WorkforcePoolProviderKey(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The state of the key.
-    UseValueValuesEnum: Immutable. The purpose of the key.
+    UseValueValuesEnum: Required. The purpose of the key.
 
   Fields:
     expireTime: Output only. The time after which the key will be permanently
@@ -4125,7 +4175,7 @@ class WorkforcePoolProviderKey(_messages.Message):
     keyData: Immutable. Public half of the asymmetric key.
     name: Output only. The resource name of the key.
     state: Output only. The state of the key.
-    use: Immutable. The purpose of the key.
+    use: Required. The purpose of the key.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -4143,7 +4193,7 @@ class WorkforcePoolProviderKey(_messages.Message):
     DELETED = 2
 
   class UseValueValuesEnum(_messages.Enum):
-    r"""Immutable. The purpose of the key.
+    r"""Required. The purpose of the key.
 
     Values:
       KEY_USE_UNSPECIFIED: KeyUse unspecified.
@@ -4521,7 +4571,7 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The state of the key.
-    UseValueValuesEnum: Immutable. The purpose of the key.
+    UseValueValuesEnum: Required. The purpose of the key.
 
   Fields:
     expireTime: Output only. Time after which the key will be permanently
@@ -4530,7 +4580,7 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
     keyData: Immutable. Public half of the asymmetric key.
     name: Output only. The resource name of the key.
     state: Output only. The state of the key.
-    use: Immutable. The purpose of the key.
+    use: Required. The purpose of the key.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -4549,7 +4599,7 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
     DELETED = 2
 
   class UseValueValuesEnum(_messages.Enum):
-    r"""Immutable. The purpose of the key.
+    r"""Required. The purpose of the key.
 
     Values:
       KEY_USE_UNSPECIFIED: The key use is not known.

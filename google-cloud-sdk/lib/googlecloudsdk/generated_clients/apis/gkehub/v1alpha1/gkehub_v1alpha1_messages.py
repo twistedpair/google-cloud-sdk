@@ -728,6 +728,7 @@ class ConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    managed: Configuration for Managed Config Sync.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. Defaults to false which disables the Config Sync
@@ -739,9 +740,10 @@ class ConfigSync(_messages.Message):
   allowVerticalScale = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   git = _messages.MessageField('GitConfig', 3)
-  oci = _messages.MessageField('OciConfig', 4)
-  preventDrift = _messages.BooleanField(5)
-  sourceFormat = _messages.StringField(6)
+  managed = _messages.MessageField('Managed', 4)
+  oci = _messages.MessageField('OciConfig', 5)
+  preventDrift = _messages.BooleanField(6)
+  sourceFormat = _messages.StringField(7)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -2522,6 +2524,17 @@ class LoggingConfig(_messages.Message):
 
   defaultConfig = _messages.MessageField('RoutingConfig', 1)
   fleetScopeLogsConfig = _messages.MessageField('RoutingConfig', 2)
+
+
+class Managed(_messages.Message):
+  r"""Configuration for Managed Config Sync.
+
+  Fields:
+    enabled: Set to true to enable Managed Config Sync. Defaults to false
+      which disables Managed Config Sync.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class MemberConfig(_messages.Message):

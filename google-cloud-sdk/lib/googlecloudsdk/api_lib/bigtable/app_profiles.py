@@ -33,10 +33,9 @@ def Describe(app_profile_ref):
     App profile resource object.
   """
   client = util.GetAdminClient()
-  msg = (
-      util.GetAdminMessages()
-      .BigtableadminProjectsInstancesAppProfilesGetRequest(
-          name=app_profile_ref.RelativeName()))
+  msg = util.GetAdminMessages().BigtableadminProjectsInstancesAppProfilesGetRequest(
+      name=app_profile_ref.RelativeName()
+  )
   return client.projects_instances_appProfiles.Get(msg)
 
 
@@ -50,15 +49,15 @@ def List(instance_ref):
     Generator of app profile resource objects.
   """
   client = util.GetAdminClient()
-  msg = (
-      util.GetAdminMessages()
-      .BigtableadminProjectsInstancesAppProfilesListRequest(
-          parent=instance_ref.RelativeName()))
+  msg = util.GetAdminMessages().BigtableadminProjectsInstancesAppProfilesListRequest(
+      parent=instance_ref.RelativeName()
+  )
   return list_pager.YieldFromList(
       client.projects_instances_appProfiles,
       msg,
       field='appProfiles',
-      batch_size_attribute=None)
+      batch_size_attribute=None,
+  )
 
 
 def Delete(app_profile_ref, force=False):
@@ -72,22 +71,23 @@ def Delete(app_profile_ref, force=False):
     Empty response.
   """
   client = util.GetAdminClient()
-  msg = (
-      util.GetAdminMessages()
-      .BigtableadminProjectsInstancesAppProfilesDeleteRequest(
-          name=app_profile_ref.RelativeName(), ignoreWarnings=force))
+  msg = util.GetAdminMessages().BigtableadminProjectsInstancesAppProfilesDeleteRequest(
+      name=app_profile_ref.RelativeName(), ignoreWarnings=force
+  )
   return client.projects_instances_appProfiles.Delete(msg)
 
 
-def Create(app_profile_ref,
-           cluster=None,
-           description='',
-           multi_cluster=False,
-           restrict_to=None,
-           failover_radius=None,
-           transactional_writes=False,
-           force=False,
-           priority=None):
+def Create(
+    app_profile_ref,
+    cluster=None,
+    description='',
+    multi_cluster=False,
+    restrict_to=None,
+    failover_radius=None,
+    transactional_writes=False,
+    force=False,
+    priority=None,
+):
   """Create an app profile.
 
   Args:
@@ -121,18 +121,22 @@ def Create(app_profile_ref,
   if multi_cluster and cluster:
     raise exceptions.ConflictingArgumentsException('--route-to', '--route-any')
   if multi_cluster and transactional_writes:
-    raise exceptions.ConflictingArgumentsException('--route-any',
-                                                   '--transactional-writes')
+    raise exceptions.ConflictingArgumentsException(
+        '--route-any', '--transactional-writes'
+    )
   if cluster and restrict_to:
-    raise exceptions.ConflictingArgumentsException('--route-to',
-                                                   '--restrict-to')
+    raise exceptions.ConflictingArgumentsException(
+        '--route-to', '--restrict-to'
+    )
   if cluster and failover_radius:
-    raise exceptions.ConflictingArgumentsException('--route-to',
-                                                   '--failover-radius')
+    raise exceptions.ConflictingArgumentsException(
+        '--route-to', '--failover-radius'
+    )
   if not multi_cluster and not cluster:
     raise exceptions.OneOfArgumentsRequiredException(
         ['--route-to', '--route-any'],
-        'Either --route-to or --route-any must be specified.')
+        'Either --route-to or --route-any must be specified.',
+    )
 
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
@@ -145,38 +149,47 @@ def Create(app_profile_ref,
     # Default failover radius to ANY_REGION.
     failover_radius_enum = (
         msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
-            failover_radius or 'ANY_REGION'))
+            failover_radius or 'ANY_REGION'
+        )
+    )
     multi_cluster_routing = msgs.MultiClusterRoutingUseAny(
-        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum)
+        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum
+    )
   elif cluster:
     single_cluster_routing = msgs.SingleClusterRouting(
-        clusterId=cluster, allowTransactionalWrites=transactional_writes)
+        clusterId=cluster, allowTransactionalWrites=transactional_writes
+    )
 
   # Default priority to PRIORITY_UNSPECIFIED.
   priority_enum = msgs.AppProfile.PriorityValueValuesEnum(
-      priority or 'PRIORITY_UNSPECIFIED')
+      priority or 'PRIORITY_UNSPECIFIED'
+  )
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesCreateRequest(
       appProfile=msgs.AppProfile(
           description=description,
           multiClusterRoutingUseAny=multi_cluster_routing,
           singleClusterRouting=single_cluster_routing,
-          priority=priority_enum),
+          priority=priority_enum,
+      ),
       appProfileId=app_profile_ref.Name(),
       parent=instance_ref.RelativeName(),
-      ignoreWarnings=force)
+      ignoreWarnings=force,
+  )
   return client.projects_instances_appProfiles.Create(msg)
 
 
-def Update(app_profile_ref,
-           cluster=None,
-           description='',
-           multi_cluster=False,
-           restrict_to=None,
-           failover_radius=None,
-           transactional_writes=False,
-           force=False,
-           priority=None):
+def Update(
+    app_profile_ref,
+    cluster=None,
+    description='',
+    multi_cluster=False,
+    restrict_to=None,
+    failover_radius=None,
+    transactional_writes=False,
+    force=False,
+    priority=None,
+):
   """Update an app profile.
 
   Args:
@@ -210,18 +223,22 @@ def Update(app_profile_ref,
   if multi_cluster and cluster:
     raise exceptions.ConflictingArgumentsException('--route-to', '--route-any')
   if multi_cluster and transactional_writes:
-    raise exceptions.ConflictingArgumentsException('--route-any',
-                                                   '--transactional-writes')
+    raise exceptions.ConflictingArgumentsException(
+        '--route-any', '--transactional-writes'
+    )
   if cluster and restrict_to:
-    raise exceptions.ConflictingArgumentsException('--route-to',
-                                                   '--restrict-to')
+    raise exceptions.ConflictingArgumentsException(
+        '--route-to', '--restrict-to'
+    )
   if cluster and failover_radius:
-    raise exceptions.ConflictingArgumentsException('--route-to',
-                                                   '--failover-radius')
+    raise exceptions.ConflictingArgumentsException(
+        '--route-to', '--failover-radius'
+    )
   if not multi_cluster and not cluster:
     raise exceptions.OneOfArgumentsRequiredException(
         ['--route-to', '--route-any'],
-        'Either --route-to or --route-any must be specified.')
+        'Either --route-to or --route-any must be specified.',
+    )
 
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
@@ -232,14 +249,21 @@ def Update(app_profile_ref,
   if cluster:
     changed_fields.append('singleClusterRouting')
     app_profile.singleClusterRouting = msgs.SingleClusterRouting(
-        clusterId=cluster, allowTransactionalWrites=transactional_writes)
+        clusterId=cluster, allowTransactionalWrites=transactional_writes
+    )
   elif multi_cluster:
     changed_fields.append('multiClusterRoutingUseAny')
-    failover_radius_enum = (
-        msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
-            failover_radius) if failover_radius else None)
+    if failover_radius:
+      failover_radius_enum = (
+          msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
+              failover_radius
+          )
+      )
+    else:
+      failover_radius_enum = None
     app_profile.multiClusterRoutingUseAny = msgs.MultiClusterRoutingUseAny(
-        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum)
+        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum
+    )
 
   if description:
     changed_fields.append('description')
@@ -254,5 +278,6 @@ def Update(app_profile_ref,
       appProfile=app_profile,
       name=app_profile_ref.RelativeName(),
       updateMask=','.join(changed_fields),
-      ignoreWarnings=force)
+      ignoreWarnings=force,
+  )
   return client.projects_instances_appProfiles.Patch(msg)

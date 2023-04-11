@@ -56,6 +56,8 @@ class AdminClustersClient(client.ClientBase):
     """Unenrolls an Anthos on VMware admin cluster."""
     kwargs = {
         'name': self._admin_cluster_name(args),
+        'validateOnly': self.GetFlag(args, 'validate_only'),
+        'allowMissing': self.GetFlag(args, 'allow_missing'),
     }
     req = (
         self._messages

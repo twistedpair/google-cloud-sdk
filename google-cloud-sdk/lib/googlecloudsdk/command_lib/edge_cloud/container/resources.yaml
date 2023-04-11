@@ -34,7 +34,6 @@ zone:
 cluster:
   name: cluster
   collection: edgecontainer.projects.locations.clusters
-  request_id_field: clusterId
   attributes:
   - *project
   - *location

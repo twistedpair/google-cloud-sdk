@@ -40,7 +40,8 @@ class ClusterCompleter(completers.ListCommandCompleter):
     super(ClusterCompleter, self).__init__(
         collection='bigtableadmin.projects.instances.clusters',
         list_command='beta bigtable clusters list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
 class InstanceCompleter(completers.ListCommandCompleter):
@@ -49,7 +50,8 @@ class InstanceCompleter(completers.ListCommandCompleter):
     super(InstanceCompleter, self).__init__(
         collection='bigtableadmin.projects.instances',
         list_command='beta bigtable instances list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
 class TableCompleter(completers.ListCommandCompleter):
@@ -58,7 +60,8 @@ class TableCompleter(completers.ListCommandCompleter):
     super(TableCompleter, self).__init__(
         collection='bigtableadmin.projects.instances.tables',
         list_command='beta bigtable instances tables list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
 def ProcessInstanceTypeAndNodes(args):
@@ -89,11 +92,13 @@ def ProcessInstanceTypeAndNodes(args):
     if instance_type == msgs.Instance.TypeValueValuesEnum.DEVELOPMENT:
       raise exceptions.InvalidArgumentException(
           '--cluster-num-nodes',
-          'Cannot set --cluster-num-nodes for DEVELOPMENT instances.')
+          'Cannot set --cluster-num-nodes for DEVELOPMENT instances.',
+      )
     elif num_nodes < 1:
       raise exceptions.InvalidArgumentException(
           '--cluster-num-nodes',
-          'Clusters of PRODUCTION instances must have at least 1 node.')
+          'Clusters of PRODUCTION instances must have at least 1 node.',
+      )
   return num_nodes
 
 
@@ -113,7 +118,8 @@ class ArgAdder(object):
         '--cluster',
         completer=ClusterCompleter,
         help='ID of the cluster.',
-        required=True)
+        required=True,
+    )
     return self
 
   def AddDeprecatedCluster(self):
@@ -125,9 +131,13 @@ class ArgAdder(object):
         required=False,
         action=actions.DeprecationAction(
             '--cluster',
-            warn='The {flag_name} argument is deprecated; use --cluster-config instead.',
+            warn=(
+                'The {flag_name} argument is deprecated; use --cluster-config'
+                ' instead.'
+            ),
             removed=False,
-            action='store'),
+            action='store',
+        ),
     )
     return self
 
@@ -140,9 +150,13 @@ class ArgAdder(object):
         type=int,
         action=actions.DeprecationAction(
             '--cluster-num-nodes',
-            warn='The {flag_name} argument is deprecated; use --cluster-config instead.',
+            warn=(
+                'The {flag_name} argument is deprecated; use --cluster-config'
+                ' instead.'
+            ),
             removed=False,
-            action='store'),
+            action='store',
+        ),
     )
     return self
 
@@ -151,45 +165,54 @@ class ArgAdder(object):
         '--cluster-storage-type',
         choices=['hdd', 'ssd'],
         default='ssd',
-        help_str='Storage class for the cluster.')
+        help_str='Storage class for the cluster.',
+    )
     storage_argument.AddToParser(self.parser)
     return self
 
   def AddClusterZone(self, in_instance=False):
     self.parser.add_argument(
         '--cluster-zone' if in_instance else '--zone',
-        help='ID of the zone where the cluster is located. Supported zones '
-        'are listed at https://cloud.google.com/bigtable/docs/locations.',
-        required=True)
+        help=(
+            'ID of the zone where the cluster is located. Supported zones '
+            'are listed at https://cloud.google.com/bigtable/docs/locations.'
+        ),
+        required=True,
+    )
     return self
 
   def AddDeprecatedClusterZone(self):
     """Add deprecated cluster zone argument."""
     self.parser.add_argument(
         '--cluster-zone',
-        help='ID of the zone where the cluster is located. Supported zones '
-        'are listed at https://cloud.google.com/bigtable/docs/locations.',
+        help=(
+            'ID of the zone where the cluster is located. Supported zones '
+            'are listed at https://cloud.google.com/bigtable/docs/locations.'
+        ),
         required=False,
         action=actions.DeprecationAction(
             '--cluster-zone',
-            warn='The {flag_name} argument is deprecated; use --cluster-config instead.',
+            warn=(
+                'The {flag_name} argument is deprecated; use --cluster-config'
+                ' instead.'
+            ),
             removed=False,
-            action='store'),
+            action='store',
+        ),
     )
     return self
 
-  def AddInstance(self, positional=True, required=True, multiple=False,
-                  additional_help=None):
+  def AddInstance(
+      self, positional=True, required=True, multiple=False, additional_help=None
+  ):
     """Add argument for instance ID to parser."""
-    help_text = 'ID of the {}.'.format(text.Pluralize(2 if multiple else 1,
-                                                      'instance'))
+    help_text = 'ID of the {}.'.format(
+        text.Pluralize(2 if multiple else 1, 'instance')
+    )
     if additional_help:
       help_text = ' '.join([help_text, additional_help])
     name = 'instance' if positional else '--instance'
-    args = {
-        'completer': InstanceCompleter,
-        'help': help_text
-    }
+    args = {'completer': InstanceCompleter, 'help': help_text}
     if multiple:
       if positional:
         args['nargs'] = '+'
@@ -209,12 +232,13 @@ class ArgAdder(object):
         '--table',
         completer=TableCompleter,
         help='ID of the table.',
-        required=True)
+        required=True,
+    )
     return self
 
-  def AddAppProfileRouting(self,
-                           required=True,
-                           allow_failover_radius=False):
+  def AddAppProfileRouting(
+      self, required=True, allow_failover_radius=False, is_update=False
+  ):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
     any_group = routing_group.add_group('Multi Cluster Routing Policy')
@@ -223,44 +247,65 @@ class ArgAdder(object):
         action='store_true',
         required=True,
         default=False,
-        help='Use Multi Cluster Routing policy.')
+        help='Use Multi Cluster Routing policy.',
+    )
     any_group.add_argument(
         '--restrict-to',
         type=arg_parsers.ArgList(),
-        help='Cluster IDs to route to using the Multi Cluster Routing Policy.'
-        ' If unset, all clusters in the instance are eligible.',
-        metavar='RESTRICT_TO')
+        help=(
+            'Cluster IDs to route to using the Multi Cluster Routing Policy.'
+            ' If unset, all clusters in the instance are eligible.'
+        ),
+        metavar='RESTRICT_TO',
+    )
     if allow_failover_radius:
       choices = {
-          'ANY_REGION':
-              'Requests will be allowed to fail over to all eligible clusters.',
-          'INITIAL_REGION_ONLY':
+          'ANY_REGION': (
+              'Requests will be allowed to fail over to all eligible clusters.'
+          ),
+          'INITIAL_REGION_ONLY': (
               'Requests will only be allowed to fail over to clusters within '
               'the region the request was first routed to.'
+          ),
       }
       any_group.add_argument(
           '--failover-radius',
           type=lambda x: x.replace('-', '_').upper(),
           choices=choices,
-          help='Restricts clusters that requests can fail over to by proximity.'
-          ' Failover radius must be either any-region or initial-region-only. '
-          'any-region allows requests to fail over without restriction. '
-          'initial-region-only prohibits requests from failing over to any '
-          'clusters outside of the initial region the request was routed to. '
-          'If omitted, any-region will be used by default.',
+          help=(
+              'Restricts clusters that requests can fail over to by proximity.'
+              ' Failover radius must be either any-region or'
+              ' initial-region-only. any-region allows requests to fail over'
+              ' without restriction. initial-region-only prohibits requests'
+              ' from failing over to any clusters outside of the initial region'
+              ' the request was routed to. If omitted, any-region will be used'
+              ' by default.'
+          ),
           metavar='FAILOVER_RADIUS',
-          hidden=True)
+          hidden=True,
+      )
     route_to_group = routing_group.add_group('Single Cluster Routing Policy')
     route_to_group.add_argument(
         '--route-to',
         completer=ClusterCompleter,
         required=True,
-        help='Cluster ID to route to using Single Cluster Routing policy.')
+        help='Cluster ID to route to using Single Cluster Routing policy.',
+    )
+    transactional_write_help = (
+        'Allow transactional writes with a Single Cluster Routing policy.'
+    )
+    if is_update:
+      transactional_write_help += (
+          '\n\nIf your app profile has single row transactions enabled, you'
+          ' must specify this flag when updating that app profile. If you do'
+          ' not specify this flag, then single row transactions are disabled.'
+      )
     route_to_group.add_argument(
         '--transactional-writes',
         action='store_true',
         default=False,
-        help='Allow transactional writes with a Single Cluster Routing policy.')
+        help=transactional_write_help,
+    )
     return self
 
   def AddDescription(self, resource, required=True):
@@ -268,7 +313,8 @@ class ArgAdder(object):
     self.parser.add_argument(
         '--description',
         help='Friendly name of the {}.'.format(resource),
-        required=required)
+        required=required,
+    )
     return self
 
   def AddForce(self, verb):
@@ -277,27 +323,28 @@ class ArgAdder(object):
         '--force',
         action='store_true',
         default=False,
-        help='Ignore warnings and force {}.'.format(verb))
+        help='Ignore warnings and force {}.'.format(verb),
+    )
     return self
 
   def AddRequestPriority(self):
     """Add argument for request priority to parser."""
     choices = {
-        'PRIORITY_LOW':
-            'Requests will be treated with low priority.',
-        'PRIORITY_MEDIUM':
-            'Requests will be treated with medium priority.',
-        'PRIORITY_HIGH':
-            'Requests will be treated with high priority.'
+        'PRIORITY_LOW': 'Requests will be treated with low priority.',
+        'PRIORITY_MEDIUM': 'Requests will be treated with medium priority.',
+        'PRIORITY_HIGH': 'Requests will be treated with high priority.',
     }
     self.parser.add_argument(
         '--priority',
         type=lambda x: x.replace('-', '_').upper(),
         choices=choices,
         default=None,
-        help='Specify the request priority. '
-        'If omitted, PRIORITY_HIGH will be used by default.',
-        hidden=True)  # TODO(b/249618888): Remove hidden=True for GA
+        help=(
+            'Specify the request priority. '
+            'If omitted, PRIORITY_HIGH will be used by default.'
+        ),
+        hidden=True,
+    )  # TODO(b/249618888): Remove hidden=True for GA
     return self
 
   def AddInstanceDisplayName(self, required=False):
@@ -305,43 +352,25 @@ class ArgAdder(object):
     self.parser.add_argument(
         '--display-name',
         help='Friendly name of the instance.',
-        required=required)
-    return self
-
-  def AddInstanceType(self):
-    """Add default instance type choices to parser."""
-    choices = {
-        'PRODUCTION':
-            'Production instances have a minimum of '
-            'three nodes, provide high availability, and are suitable for '
-            'applications in production.',
-        'DEVELOPMENT': 'Development instances are low-cost instances meant '
-                       'for development and testing only. They do not '
-                       'provide high availability and no service level '
-                       'agreement applies.'
-    }
-
-    self.parser.add_argument(
-        '--instance-type',
-        default='PRODUCTION',
-        type=lambda x: x.upper(),
-        choices=choices,
-        help='The type of instance to create.')
-
+        required=required,
+    )
     return self
 
   def AddDeprecatedInstanceType(self):
     """Add deprecated instance type argument."""
     choices = {
-        'PRODUCTION':
+        'PRODUCTION': (
             'Production instances provide high availability and are '
             'suitable for applications in production. Production instances '
             'created with the --instance-type argument have 3 nodes if a value '
-            'is not provided for --cluster-num-nodes.',
-        'DEVELOPMENT': 'Development instances are low-cost instances meant '
-                       'for development and testing only. They do not '
-                       'provide high availability and no service level '
-                       'agreement applies.'
+            'is not provided for --cluster-num-nodes.'
+        ),
+        'DEVELOPMENT': (
+            'Development instances are low-cost instances meant '
+            'for development and testing only. They do not '
+            'provide high availability and no service level '
+            'agreement applies.'
+        ),
     }
     self.parser.add_argument(
         '--instance-type',
@@ -352,9 +381,13 @@ class ArgAdder(object):
         required=False,
         action=actions.DeprecationAction(
             '--instance-type',
-            warn='The {flag_name} argument is deprecated. DEVELOPMENT instances are no longer offered. All instances are of type PRODUCTION.',
+            warn=(
+                'The {flag_name} argument is deprecated. DEVELOPMENT instances'
+                ' are no longer offered. All instances are of type PRODUCTION.'
+            ),
             removed=False,
-            action='store'),
+            action='store',
+        ),
     )
     return self
 
@@ -375,12 +408,15 @@ class ArgAdder(object):
                 'autoscaling-storage-target': int,
             },
             required_keys=['id', 'zone'],
-            max_length=8),
-        metavar='id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY,'
-        'autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
-        'autoscaling-max-nodes=AUTOSCALING_MAX_NODES,'
-        'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET,'
-        'autoscaling-storage-target=AUTOSCALING_STORAGE_TARGET',
+            max_length=8,
+        ),
+        metavar=(
+            'id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY,'
+            'autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
+            'autoscaling-max-nodes=AUTOSCALING_MAX_NODES,'
+            'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET,'
+            'autoscaling-storage-target=AUTOSCALING_STORAGE_TARGET'
+        ),
         help=textwrap.dedent("""\
         *Repeatable*. Specify cluster config as a key-value dictionary.
 
@@ -407,16 +443,19 @@ class ArgAdder(object):
         If this argument is specified, the deprecated arguments for configuring a single cluster will be ignored, including *--cluster*, *--cluster-zone*, *--cluster-num-nodes*.
 
         See *EXAMPLES* section.
-        """))
+        """),
+    )
 
     return self
 
-  def AddScalingArgs(self,
-                     required=False,
-                     num_nodes_required=False,
-                     num_nodes_default=None,
-                     add_disable_autoscaling=False,
-                     require_all_essential_autoscaling_args=False):
+  def AddScalingArgs(
+      self,
+      required=False,
+      num_nodes_required=False,
+      num_nodes_default=None,
+      add_disable_autoscaling=False,
+      require_all_essential_autoscaling_args=False,
+  ):
     """Add scaling related arguments."""
     scaling_group = self.parser.add_mutually_exclusive_group(required=required)
     manual_scaling_group = scaling_group.add_group('Manual Scaling')
@@ -426,15 +465,21 @@ class ArgAdder(object):
         default=num_nodes_default,
         required=num_nodes_required,
         type=int,
-        metavar='NUM_NODES')
+        metavar='NUM_NODES',
+    )
     if add_disable_autoscaling:
       manual_scaling_group.add_argument(
           '--disable-autoscaling',
-          help='Set this flag and --num-nodes to disable autoscaling. If autoscaling is currently not enabled, setting this flag does nothing.',
+          help=(
+              'Set this flag and --num-nodes to disable autoscaling. If'
+              ' autoscaling is currently not enabled, setting this flag does'
+              ' nothing.'
+          ),
           action='store_true',
           default=False,
           required=False,
-          hidden=False)
+          hidden=False,
+      )
 
     autoscaling_group = scaling_group.add_group('Autoscaling', hidden=False)
     autoscaling_group.add_argument(
@@ -443,65 +488,83 @@ class ArgAdder(object):
         default=None,
         required=require_all_essential_autoscaling_args,
         type=int,
-        metavar='AUTOSCALING_MIN_NODES')
+        metavar='AUTOSCALING_MIN_NODES',
+    )
     autoscaling_group.add_argument(
         '--autoscaling-max-nodes',
         help='The maximum number of nodes for autoscaling.',
         default=None,
         required=require_all_essential_autoscaling_args,
         type=int,
-        metavar='AUTOSCALING_MAX_NODES')
+        metavar='AUTOSCALING_MAX_NODES',
+    )
     autoscaling_group.add_argument(
         '--autoscaling-cpu-target',
-        help='The target CPU utilization percentage for autoscaling. Accepted values are from 10 to 80.',
+        help=(
+            'The target CPU utilization percentage for autoscaling. Accepted'
+            ' values are from 10 to 80.'
+        ),
         default=None,
         required=require_all_essential_autoscaling_args,
         type=int,
-        metavar='AUTOSCALING_CPU_TARGET')
+        metavar='AUTOSCALING_CPU_TARGET',
+    )
     autoscaling_group.add_argument(
         '--autoscaling-storage-target',
-        help='The target storage utilization gibibytes per node for autoscaling. Accepted values are from 2560 to 5120 for SSD clusters and 8192 to 16384 for HDD clusters.',
+        help=(
+            'The target storage utilization gibibytes per node for autoscaling.'
+            ' Accepted values are from 2560 to 5120 for SSD clusters and 8192'
+            ' to 16384 for HDD clusters.'
+        ),
         default=None,
         required=False,
         type=int,
-        metavar='AUTOSCALING_STORAGE_TARGET')
+        metavar='AUTOSCALING_STORAGE_TARGET',
+    )
     return self
 
   def AddScalingArgsForClusterUpdate(self):
     """Add scaling related arguments."""
     return self.AddScalingArgs(
-        required=True, num_nodes_required=True, add_disable_autoscaling=True)
+        required=True, num_nodes_required=True, add_disable_autoscaling=True
+    )
 
   def AddScalingArgsForClusterCreate(self):
     """Add scaling related arguments."""
-    return self.AddScalingArgs(num_nodes_default=3,
-                               require_all_essential_autoscaling_args=True)
+    return self.AddScalingArgs(
+        num_nodes_default=3, require_all_essential_autoscaling_args=True
+    )
 
 
 def InstanceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='instance', help_text='Cloud Bigtable instance for the {resource}.')
+      name='instance', help_text='Cloud Bigtable instance for the {resource}.'
+  )
 
 
 def TableAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='table', help_text='Cloud Bigtable table for the {resource}.')
+      name='table', help_text='Cloud Bigtable table for the {resource}.'
+  )
 
 
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='Cloud Bigtable cluster for the {resource}.')
+      name='cluster', help_text='Cloud Bigtable cluster for the {resource}.'
+  )
 
 
 def AppProfileAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='app profile',
-      help_text='Cloud Bigtable application profile for the {resource}.')
+      help_text='Cloud Bigtable application profile for the {resource}.',
+  )
 
 
 def BackupAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='backup', help_text='Cloud Bigtable backup for the {resource}.')
+      name='backup', help_text='Cloud Bigtable backup for the {resource}.'
+  )
 
 
 def KmsKeyAttributeConfig():
@@ -511,17 +574,20 @@ def KmsKeyAttributeConfig():
 
 def KmsKeyringAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-keyring', help_text='The KMS keyring id of the {resource}.')
+      name='kms-keyring', help_text='The KMS keyring id of the {resource}.'
+  )
 
 
 def KmsLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-location', help_text='The Cloud location for the {resource}.')
+      name='kms-location', help_text='The Cloud location for the {resource}.'
+  )
 
 
 def KmsProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-project', help_text='The Cloud project id for the {resource}.')
+      name='kms-project', help_text='The Cloud project id for the {resource}.'
+  )
 
 
 def GetInstanceResourceSpec():
@@ -531,7 +597,8 @@ def GetInstanceResourceSpec():
       resource_name='instance',
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def GetTableResourceSpec():
@@ -542,7 +609,8 @@ def GetTableResourceSpec():
       tablesId=TableAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def GetClusterResourceSpec():
@@ -553,7 +621,8 @@ def GetClusterResourceSpec():
       clustersId=ClusterAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def GetAppProfileResourceSpec():
@@ -563,7 +632,8 @@ def GetAppProfileResourceSpec():
       resource_name='app profile',
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def GetKmsKeyResourceSpec():
@@ -574,7 +644,8 @@ def GetKmsKeyResourceSpec():
       keyRingsId=KmsKeyringAttributeConfig(),
       locationsId=KmsLocationAttributeConfig(),
       projectsId=KmsProjectAttributeConfig(),
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def GetBackupResourceSpec():
@@ -585,7 +656,8 @@ def GetBackupResourceSpec():
       clustersId=ClusterAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def AddInstancesResourceArg(parser, verb, positional=False):
@@ -595,7 +667,8 @@ def AddInstancesResourceArg(parser, verb, positional=False):
       GetInstanceResourceSpec(),
       'The instances {}.'.format(verb),
       required=positional,
-      plural=True).AddToParser(parser)
+      plural=True,
+  ).AddToParser(parser)
 
 
 def AddInstanceResourceArg(parser, verb, positional=False, required=True):
@@ -605,7 +678,8 @@ def AddInstanceResourceArg(parser, verb, positional=False, required=True):
       GetInstanceResourceSpec(),
       'The instance {}.'.format(verb),
       required=required,
-      plural=False).AddToParser(parser)
+      plural=False,
+  ).AddToParser(parser)
 
 
 def AddTableResourceArg(parser, verb, positional=False):
@@ -615,7 +689,8 @@ def AddTableResourceArg(parser, verb, positional=False):
       GetTableResourceSpec(),
       'The table {}.'.format(verb),
       required=True,
-      plural=False).AddToParser(parser)
+      plural=False,
+  ).AddToParser(parser)
 
 
 def AddClusterResourceArg(parser, verb):
@@ -624,7 +699,8 @@ def AddClusterResourceArg(parser, verb):
       'cluster',
       GetClusterResourceSpec(),
       'The cluster {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAppProfileResourceArg(parser, verb):
@@ -633,23 +709,27 @@ def AddAppProfileResourceArg(parser, verb):
       'app_profile',
       GetAppProfileResourceSpec(),
       'The app profile {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddBackupResourceArg(parser, verb):
   """Add backup positional resource argument to the parser."""
-  concept_parsers.ConceptParser(
-      [presentation_specs.ResourcePresentationSpec(
+  concept_parsers.ConceptParser([
+      presentation_specs.ResourcePresentationSpec(
           '--instance',
           GetInstanceResourceSpec(),
           'The instance {}.'.format(verb),
-          required=False),
-       presentation_specs.ResourcePresentationSpec(
-           '--cluster',
-           GetClusterResourceSpec(),
-           'The cluster {}.'.format(verb),
-           required=False,
-           flag_name_overrides={'instance': ''})]).AddToParser(parser)
+          required=False,
+      ),
+      presentation_specs.ResourcePresentationSpec(
+          '--cluster',
+          GetClusterResourceSpec(),
+          'The cluster {}.'.format(verb),
+          required=False,
+          flag_name_overrides={'instance': ''},
+      ),
+  ]).AddToParser(parser)
 
 
 def AddTableRestoreResourceArg(parser):
@@ -665,7 +745,8 @@ def AddTableRestoreResourceArg(parser):
           prefixes=True,
           attribute_overrides={'backup': 'source'},
           positional=False,
-          resource_data=backup_spec_data.GetData()),
+          resource_data=backup_spec_data.GetData(),
+      ),
       resource_args.GetResourcePresentationSpec(
           verb='to restore to',
           name='destination',
@@ -673,11 +754,12 @@ def AddTableRestoreResourceArg(parser):
           prefixes=True,
           attribute_overrides={'table': 'destination'},
           positional=False,
-          resource_data=table_spec_data.GetData())
+          resource_data=table_spec_data.GetData(),
+      ),
   ]
   fallthroughs = {
       '--source.instance': ['--destination.instance'],
-      '--destination.instance': ['--source.instance']
+      '--destination.instance': ['--source.instance'],
   }
   concept_parsers.ConceptParser(arg_specs, fallthroughs).AddToParser(parser)
 
@@ -701,7 +783,8 @@ def AddKmsKeyResourceArg(parser, resource, flag_overrides=None, required=False):
       'The Cloud KMS (Key Management Service) cryptokey that will be used to '
       'protect the {}.'.format(resource),
       flag_name_overrides=flag_overrides,
-      required=required).AddToParser(parser)
+      required=required,
+  ).AddToParser(parser)
 
 
 def GetAndValidateKmsKeyName(args):
@@ -715,9 +798,10 @@ def GetAndValidateKmsKeyName(args):
       if getattr(args, keyword.replace('-', '_'), None):
         raise exceptions.InvalidArgumentException(
             '--kms-project --kms-location --kms-keyring --kms-key',
-            'Specify fully qualified KMS key ID with --kms-key, or use ' +
-            'combination of --kms-project, --kms-location, --kms-keyring and ' +
-            '--kms-key to specify the key ID in pieces.')
+            'Specify fully qualified KMS key ID with --kms-key, or use '
+            + 'combination of --kms-project, --kms-location, --kms-keyring and '
+            + '--kms-key to specify the key ID in pieces.',
+        )
     return None  # User didn't specify KMS key
 
 
@@ -726,9 +810,12 @@ def AddStartTimeArgs(parser, verb):
       '--start-time',
       required=False,
       type=arg_parsers.Datetime.Parse,
-      help=('Start time of the time range {}. '
-            'See $ gcloud topic datetimes for information on time formats.'
-            .format(verb)))
+      help=(
+          'Start time of the time range {}. '
+          'See $ gcloud topic datetimes for information on time formats.'
+          .format(verb)
+      ),
+  )
 
 
 def AddEndTimeArgs(parser, verb):
@@ -736,9 +823,12 @@ def AddEndTimeArgs(parser, verb):
       '--end-time',
       required=False,
       type=arg_parsers.Datetime.Parse,
-      help=('End time of the time range {}. '
-            'See $ gcloud topic datetimes for information on time formats.'
-            .format(verb)))
+      help=(
+          'End time of the time range {}. '
+          'See $ gcloud topic datetimes for information on time formats.'
+          .format(verb)
+      ),
+  )
 
 
 def AddCopyBackupResourceArgs(parser):
@@ -754,7 +844,8 @@ def AddCopyBackupResourceArgs(parser):
               'instance': '--source-instance',
               'cluster': '--source-cluster',
               'backup': '--source-backup',
-          }),
+          },
+      ),
       presentation_specs.ResourcePresentationSpec(
           '--destination',
           GetBackupResourceSpec(),
@@ -765,12 +856,13 @@ def AddCopyBackupResourceArgs(parser):
               'instance': '--destination-instance',
               'cluster': '--destination-cluster',
               'backup': '--destination-backup',
-          }),
+          },
+      ),
   ]
   fallthroughs = {
       '--source.project': ['--destination.project'],
       '--destination.project': ['--source.project'],
       '--source.instance': ['--destination.instance'],
-      '--destination.instance': ['--source.instance']
+      '--destination.instance': ['--source.instance'],
   }
   concept_parsers.ConceptParser(arg_specs, fallthroughs).AddToParser(parser)

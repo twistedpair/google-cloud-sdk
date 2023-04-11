@@ -179,3 +179,19 @@ service_account_scopes:
   type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
   help_text: |
     List of comma-separated scopes to be made available for the service account.
+
+metadata:
+  arg_name: metadata
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    List of comma-separated metadata key-value pairs for the Cloud TPU VM node.
+    Example: `--metadata='key1=value1,key2=value2'`
+
+metadata_from_file:
+  arg_name: metadata-from-file
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    Same as `--metadata` except the value for the entry will be read from a local file.
+    Example: `--metadata-from-file='key1=value1.txt'`

@@ -74,6 +74,116 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
 
     return None
 
+  def _address_pools_from_file(self, args):
+    """Constructs proto message field address_pools."""
+    if not args.metal_lb_address_pools_from_file:
+      return []
+
+    address_pools = args.metal_lb_address_pools_from_file.get(
+        'addressPools', []
+    )
+
+    if not address_pools:
+      self._raise_bad_argument_exception_error(
+          '--metal_lb_address_pools_from_file',
+          'addressPools',
+          'Metal LB address pools file',
+      )
+
+    address_pool_messages = [
+        self._metal_lb_address_pool(address_pool)
+        for address_pool in address_pools
+    ]
+
+    return address_pool_messages
+
+  def _metal_lb_address_pool(self, address_pool):
+    """Constructs proto message BareMetalStandaloneLoadBalancerAddressPool."""
+    addresses = address_pool.get('addresses', [])
+    if not addresses:
+      self._raise_bad_argument_exception_error(
+          '--metal_lb_address_pools_from_file',
+          'addresses',
+          'Metal LB address pools file',
+      )
+
+    pool = address_pool.get('pool', None)
+    if not pool:
+      self._raise_bad_argument_exception_error(
+          '--metal_lb_address_pools_from_file',
+          'pool',
+          'Metal LB address pools file',
+      )
+
+    kwargs = {
+        'addresses': addresses,
+        'avoidBuggyIps': address_pool.get('avoidBuggyIPs', None),
+        'manualAssign': address_pool.get('manualAssign', None),
+        'pool': pool,
+    }
+
+    return self._messages.BareMetalStandaloneLoadBalancerAddressPool(**kwargs)
+
+  def _address_pools_from_flag(self, args):
+    if not args.metal_lb_address_pools:
+      return []
+
+    address_pools = []
+    for address_pool in args.metal_lb_address_pools:
+      address_pools.append(
+          self._messages.BareMetalStandaloneLoadBalancerAddressPool(
+              addresses=address_pool.get('addresses', []),
+              avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
+              manualAssign=address_pool.get('manual-assign', None),
+              pool=address_pool.get('pool', None),
+          )
+      )
+
+    return address_pools
+
+  def _metal_lb_node_config(self, metal_lb_node_config):
+    """Constructs proto message BareMetalNodeConfig."""
+    node_ip = metal_lb_node_config.get('nodeIP', '')
+    if not node_ip:
+      self._raise_bad_argument_exception_error(
+          '--metal_lb_load_balancer_node_configs_from_file',
+          'nodeIp',
+          'Metal LB Node configs file',
+      )
+
+    kwargs = {
+        'nodeIp': node_ip,
+        'labels': self._node_labels(metal_lb_node_config.get('labels', {})),
+    }
+
+    return self._messages.BareMetalNodeConfig(**kwargs)
+
+  def _metal_lb_node_configs_from_file(self, args):
+    """Constructs proto message field node_configs."""
+    if not args.metal_lb_load_balancer_node_configs_from_file:
+      return []
+
+    metal_lb_node_configs = (
+        args.metal_lb_load_balancer_node_configs_from_file.get(
+            'nodeConfigs', []
+        )
+    )
+
+    if not metal_lb_node_configs:
+      self._raise_bad_argument_exception_error(
+          '--metal_lb_load_balancer_node_configs_from_file',
+          'nodeConfigs',
+          'Metal LB Node configs file',
+      )
+
+    metal_lb_node_configs_messages = []
+    for metal_lb_node_config in metal_lb_node_configs:
+      metal_lb_node_configs_messages.append(
+          self._metal_lb_node_config(metal_lb_node_config)
+      )
+
+    return metal_lb_node_configs_messages
+
   def parse_node_labels(self, node_labels):
     """Validates and parses a node label object.
 
@@ -126,6 +236,389 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
         self._messages.BareMetalNodeConfig, kwargs
     )
 
+  def _metal_lb_node_configs_from_flag(self, args):
+    """Constructs proto message field node_configs."""
+    node_config_flag_value = (
+        getattr(args, 'metal_lb_load_balancer_node_configs', [])
+        if args.metal_lb_load_balancer_node_configs
+        else []
+    )
+
+    return [
+        self.node_config(node_config) for node_config in node_config_flag_value
+    ]
+
+  def _metal_lb_node_taints(self, args):
+    """Constructs proto message NodeTaint."""
+    taint_messages = []
+    node_taints = getattr(args, 'metal_lb_load_balancer_node_taints', {})
+    if not node_taints:
+      return []
+
+    for node_taint in node_taints.items():
+      taint_object = self._parse_node_taint(node_taint)
+      taint_messages.append(self._messages.NodeTaint(**taint_object))
+
+    return taint_messages
+
+  def _metal_lb_labels(self, args):
+    """Constructs proto message LabelsValue."""
+    node_labels = getattr(args, 'metal_lb_load_balancer_node_labels', {})
+    additional_property_messages = []
+
+    if not node_labels:
+      return None
+
+    for key, value in node_labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+
+    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+        additionalProperties=additional_property_messages
+    )
+
+    return labels_value_message
+
+  def _metal_lb_load_balancer_node_pool_config(self, args):
+    """Constructs proto message BareMetalNodePoolConfig."""
+    if (
+        'metal_lb_load_balancer_node_configs_from_file'
+        in args.GetSpecifiedArgsDict()
+    ):
+      metal_lb_node_configs = self._metal_lb_node_configs_from_file(args)
+    else:
+      metal_lb_node_configs = self._metal_lb_node_configs_from_flag(args)
+
+    kwargs = {
+        'nodeConfigs': metal_lb_node_configs,
+        'labels': self._metal_lb_labels(args),
+        'taints': self._metal_lb_node_taints(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodePoolConfig(**kwargs)
+
+    return None
+
+  def _metal_lb_node_pool_config(self, args):
+    """Constructs proto message BareMetalStandaloneLoadBalancerNodePoolConfig."""
+    kwargs = {
+        'nodePoolConfig': self._metal_lb_load_balancer_node_pool_config(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneLoadBalancerNodePoolConfig(
+          **kwargs
+      )
+
+    return None
+
+  def _metal_lb_config(self, args):
+    """Constructs proto message BareMetalStandaloneMetalLbConfig."""
+    if 'metal_lb_address_pools_from_file' in args.GetSpecifiedArgsDict():
+      address_pools = self._address_pools_from_file(args)
+    else:
+      address_pools = self._address_pools_from_flag(args)
+    kwargs = {
+        'addressPools': address_pools,
+        'loadBalancerNodePoolConfig': self._metal_lb_node_pool_config(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneMetalLbConfig(**kwargs)
+
+    return None
+
+  def _bgp_address_pools_from_file(self, args):
+    """Constructs proto message field address_pools."""
+    if not args.bgp_lb_address_pools_from_file:
+      return []
+
+    address_pools = args.bgp_lb_address_pools_from_file.get(
+        'addressPools', []
+    )
+
+    if not address_pools:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_address_pools_from_file',
+          'addressPools',
+          'BGP LB address pools file',
+      )
+
+    address_pool_messages = []
+    for address_pool in address_pools:
+      address_pool_messages.append(self._bgp_lb_address_pool(address_pool))
+
+    return address_pool_messages
+
+  def _bgp_lb_address_pool(self, address_pool):
+    """Constructs proto message BareMetalStandaloneLoadBalancerAddressPool."""
+    addresses = address_pool.get('addresses', [])
+    if not addresses:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_address_pools_from_file',
+          'addresses',
+          'BGP LB address pools file',
+      )
+
+    pool = address_pool.get('pool', None)
+    if not pool:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_address_pools_from_file',
+          'pool',
+          'BGP LB address pools file',
+      )
+
+    kwargs = {
+        'addresses': addresses,
+        'avoidBuggyIps': address_pool.get('avoidBuggyIPs', None),
+        'manualAssign': address_pool.get('manualAssign', None),
+        'pool': pool,
+    }
+
+    return self._messages.BareMetalStandaloneLoadBalancerAddressPool(**kwargs)
+
+  def _bgp_address_pools_from_flag(self, args):
+    if not args.bgp_lb_address_pools:
+      return []
+
+    address_pools = []
+    for address_pool in args.bgp_lb_address_pools:
+      address_pools.append(
+          self._messages.BareMetalStandaloneLoadBalancerAddressPool(
+              addresses=address_pool.get('addresses', []),
+              avoidBuggyIps=address_pool.get('avoid-buggy-ips', None),
+              manualAssign=address_pool.get('manual-assign', None),
+              pool=address_pool.get('pool', None),
+          )
+      )
+
+    return address_pools
+
+  def _bgp_lb_node_config(self, bgp_lb_node_config):
+    """Constructs proto message BareMetalNodeConfig."""
+    node_ip = bgp_lb_node_config.get('nodeIP', '')
+    if not node_ip:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_load_balancer_node_configs_from_file',
+          'nodeIP',
+          'BGP LB Node configs file',
+      )
+
+    kwargs = {
+        'nodeIp': node_ip,
+        'labels': self._node_labels(bgp_lb_node_config.get('labels', {})),
+    }
+
+    return self._messages.BareMetalNodeConfig(**kwargs)
+
+  def _bgp_lb_node_configs_from_file(self, args):
+    """Constructs proto message field node_configs."""
+    if not args.bgp_lb_load_balancer_node_configs_from_file:
+      return []
+
+    bgp_lb_node_configs = (
+        args.bgp_lb_load_balancer_node_configs_from_file.get(
+            'nodeConfigs', []
+        )
+    )
+
+    if not bgp_lb_node_configs:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_load_balancer_node_configs_from_file',
+          'nodeConfigs',
+          'BGP LB Node configs file',
+      )
+
+    bgp_lb_node_configs_messages = []
+    for bgp_lb_node_config in bgp_lb_node_configs:
+      bgp_lb_node_configs_messages.append(
+          self._bgp_lb_node_config(bgp_lb_node_config)
+      )
+
+    return bgp_lb_node_configs_messages
+
+  def _bgp_lb_node_configs_from_flag(self, args):
+    """Constructs proto message field node_configs."""
+    node_config_flag_value = (
+        getattr(args, 'bgp_lb_load_balancer_node_configs', [])
+        if args.bgp_lb_load_balancer_node_configs
+        else []
+    )
+
+    return [
+        self.node_config(node_config) for node_config in node_config_flag_value
+    ]
+
+  def _bgp_lb_node_taints(self, args):
+    """Constructs proto message NodeTaint."""
+    taint_messages = []
+    node_taints = getattr(args, 'bgp_lb_load_balancer_node_taints', {})
+    if not node_taints:
+      return []
+
+    for node_taint in node_taints.items():
+      taint_object = self._parse_node_taint(node_taint)
+      taint_messages.append(self._messages.NodeTaint(**taint_object))
+
+    return taint_messages
+
+  def _bgp_lb_labels(self, args):
+    """Constructs proto message LabelsValue."""
+    node_labels = getattr(args, 'bgp_lb_load_balancer_node_labels', {})
+    additional_property_messages = []
+
+    if not node_labels:
+      return None
+
+    for key, value in node_labels.items():
+      additional_property_messages.append(
+          self._messages.BareMetalNodePoolConfig.LabelsValue.AdditionalProperty(
+              key=key, value=value
+          )
+      )
+
+    labels_value_message = self._messages.BareMetalNodePoolConfig.LabelsValue(
+        additionalProperties=additional_property_messages
+    )
+
+    return labels_value_message
+
+  def _bgp_lb_load_balancer_node_pool_config(self, args):
+    """Constructs proto message BareMetalNodePoolConfig."""
+    if (
+        'bgp_lb_load_balancer_node_configs_from_file'
+        in args.GetSpecifiedArgsDict()
+    ):
+      bgp_lb_node_configs = self._bgp_lb_node_configs_from_file(args)
+    else:
+      bgp_lb_node_configs = self._bgp_lb_node_configs_from_flag(args)
+
+    kwargs = {
+        'nodeConfigs': bgp_lb_node_configs,
+        'labels': self._bgp_lb_labels(args),
+        'taints': self._bgp_lb_node_taints(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalNodePoolConfig(**kwargs)
+
+    return None
+
+  def _bgp_lb_node_pool_config(self, args):
+    """Constructs proto message BareMetalStandaloneLoadBalancerNodePoolConfig."""
+    kwargs = {
+        'nodePoolConfig': self._bgp_lb_load_balancer_node_pool_config(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneLoadBalancerNodePoolConfig(
+          **kwargs
+      )
+
+    return None
+
+  def _bgp_peer_configs_from_file(self, args):
+    """Constructs proto message field address_pools."""
+    if not args.bgp_lb_peer_configs_from_file:
+      return []
+
+    peer_configs = args.bgp_lb_peer_configs_from_file.get('bgpPeerConfigs', [])
+
+    if not peer_configs:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_peer_configs_from_file',
+          'bgpPeerConfigs',
+          'BGP LB peer configs file',
+      )
+
+    peer_configs_messages = []
+    for peer_config in peer_configs:
+      peer_configs_messages.append(self._peer_configs(peer_config))
+
+    return peer_configs_messages
+
+  def _peer_configs(self, peer_config):
+    """Constructs proto message BareMetalStandaloneBgpPeerConfig."""
+    asn = peer_config.get('asn', None)
+    if not asn:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_peer_configs_from_file',
+          'asn',
+          'BGP LB peer configs file',
+      )
+
+    ip_address = peer_config.get('ipAddress', None)
+    if not ip_address:
+      self._raise_bad_argument_exception_error(
+          '--bgp_lb_peer_configs_from_file',
+          'ipAddress',
+          'BGP LB peer configs file',
+      )
+
+    kwargs = {
+        'asn': asn,
+        'ipAddress': ip_address,
+        'controlPlaneNodes': peer_config.get('controlPlaneNodes', []),
+    }
+
+    return self._messages.BareMetalStandaloneBgpPeerConfig(**kwargs)
+
+  def _bgp_peer_configs_from_flag(self, args):
+    if not args.bgp_lb_peer_configs:
+      return []
+
+    peer_configs = []
+    for peer_config in args.bgp_lb_peer_configs:
+      peer_configs.append(
+          self._messages.BareMetalStandaloneBgpPeerConfig(
+              controlPlaneNodes=peer_config.get('control-plane-nodes', []),
+              asn=peer_config.get('asn', None),
+              ipAddress=peer_config.get('ip-address', None),
+          )
+      )
+
+    return peer_configs
+
+  def _bgp_lb_config(self, args):
+    """Constructs proto message BareMetalStandaloneBgpLbConfig."""
+    if 'bgp_lb_address_pools_from_file' in args.GetSpecifiedArgsDict():
+      address_pools = self._bgp_address_pools_from_file(args)
+    else:
+      address_pools = self._bgp_address_pools_from_flag(args)
+
+    if 'bgp_lb_peer_configs_from_file' in args.GetSpecifiedArgsDict():
+      peer_configs = self._bgp_peer_configs_from_file(args)
+    else:
+      peer_configs = self._bgp_peer_configs_from_flag(args)
+
+    kwargs = {
+        'addressPools': address_pools,
+        'asn': getattr(args, 'bgp_lb_asn', None),
+        'loadBalancerNodePoolConfig': self._bgp_lb_node_pool_config(args),
+        'bgpPeerConfigs': peer_configs,
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneBgpLbConfig(**kwargs)
+
+    return None
+
+  def _load_balancer_config(self, args):
+    """Constructs proto message BareMetalStandaloneLoadBalancerConfig."""
+    kwargs = {
+        'metalLbConfig': self._metal_lb_config(args),
+        'bgpLbConfig': self._bgp_lb_config(args),
+    }
+
+    if any(kwargs.values()):
+      return self._messages.BareMetalStandaloneLoadBalancerConfig(**kwargs)
+
+    return None
+
   def _node_labels(self, labels):
     """Constructs proto message LabelsValue."""
     additional_property_messages = []
@@ -149,9 +642,10 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
     """Constructs proto message BareMetalNodeConfig."""
     node_ip = control_plane_node_config.get('nodeIP', '')
     if not node_ip:
-      raise exceptions.BadArgumentException(
+      self._raise_bad_argument_exception_error(
           '--control_plane_node_configs_from_file',
-          'Missing field [nodeIP] in Control Plane Node configs file.',
+          'nodeIP',
+          'Control Plane Node configs file',
       )
 
     kwargs = {
@@ -173,9 +667,10 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
     )
 
     if not control_plane_node_configs:
-      raise exceptions.BadArgumentException(
+      self._raise_bad_argument_exception_error(
           '--control_plane_node_configs_from_file',
-          'Missing field [nodeConfigs] in Control Plane Node configs file.',
+          'nodeConfigs',
+          'Control Plane Node configs file',
       )
 
     control_plane_node_configs_messages = []
@@ -185,6 +680,11 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
       )
 
     return control_plane_node_configs_messages
+
+  def _raise_bad_argument_exception_error(self, flag, field, file):
+    raise exceptions.BadArgumentException(
+        flag, 'Missing field [' + field + '] in ' + file
+    )
 
   def _control_plane_node_configs_from_flag(self, args):
     """Constructs proto message field node_configs."""
@@ -367,6 +867,7 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
         'description': getattr(args, 'description', None),
         'bareMetalVersion': getattr(args, 'version', None),
         'networkConfig': self._network_config(args),
+        'loadBalancer': self._load_balancer_config(args),
         'controlPlane': self._control_plane_config(args),
         'clusterOperations': self._cluster_operations_config(args),
         'maintenanceConfig': self._maintenance_config(args),

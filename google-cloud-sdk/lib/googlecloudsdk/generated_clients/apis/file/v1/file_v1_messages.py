@@ -401,6 +401,21 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
   restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
 
 
+class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesRevertRequest object.
+
+  Fields:
+    name: Required.
+      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      The resource name of the instance, in the format
+    revertInstanceRequest: A RevertInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  revertInstanceRequest = _messages.MessageField('RevertInstanceRequest', 2)
+
+
 class FileProjectsLocationsInstancesSnapshotsCreateRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesSnapshotsCreateRequest object.
 
@@ -1191,6 +1206,7 @@ class Instance(_messages.Message):
         the `suspension_reasons` field of the `Instance` resource.
       SUSPENDING: The instance is in the process of becoming suspended.
       RESUMING: The instance is in the process of becoming active.
+      REVERTING: The instance is reverting to a snapshot.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1202,6 +1218,7 @@ class Instance(_messages.Message):
     SUSPENDED = 7
     SUSPENDING = 8
     RESUMING = 9
+    REVERTING = 10
 
   class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
     r"""SuspensionReasonsValueListEntryValuesEnum enum type.
@@ -1814,6 +1831,20 @@ class RestoreInstanceRequest(_messages.Message):
 
   fileShare = _messages.StringField(1)
   sourceBackup = _messages.StringField(2)
+
+
+class RevertInstanceRequest(_messages.Message):
+  r"""RevertInstanceRequest reverts the given instance's file share to the
+  specified snapshot.
+
+  Fields:
+    targetSnapshotId: Required. The snapshot resource ID, in the format 'my-
+      snapshot', where the specified ID is the {snapshot_id} of the fully
+      qualified name like projects/{project_id}/locations/{location_id}/instan
+      ces/{instance_id}/snapshots/{snapshot_id}
+  """
+
+  targetSnapshotId = _messages.StringField(1)
 
 
 class Schedule(_messages.Message):

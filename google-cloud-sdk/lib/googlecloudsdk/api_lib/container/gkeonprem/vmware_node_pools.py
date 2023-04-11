@@ -105,6 +105,19 @@ class NodePoolsClient(client.ClientBase):
     )
     return self._service.Enroll(req)
 
+  def Unenroll(self, args):
+    """Unenrolls an Anthos on VMware node pool API resource."""
+    kwargs = {
+        'allowMissing': flags.Get(args, 'allow_missing'),
+        'etag': flags.Get(args, 'etag'),
+        'name': self._node_pool_name(args),
+        'validateOnly': flags.Get(args, 'validate_only'),
+    }
+    req = self._messages.GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsUnenrollRequest(
+        **kwargs
+    )
+    return self._service.Unenroll(req)
+
   def _vmware_node_pool(self, args):
     """Constructs proto message VmwareNodePool."""
     kwargs = {
@@ -112,6 +125,7 @@ class NodePoolsClient(client.ClientBase):
         'displayName': flags.Get(args, 'display_name'),
         'annotations': self._annotations(args),
         'config': self._vmware_node_config(args),
+        'onPremVersion': flags.Get(args, 'version'),
         'nodePoolAutoscaling': self._vmware_node_pool_autoscaling_config(args),
     }
     return self._messages.VmwareNodePool(**kwargs)

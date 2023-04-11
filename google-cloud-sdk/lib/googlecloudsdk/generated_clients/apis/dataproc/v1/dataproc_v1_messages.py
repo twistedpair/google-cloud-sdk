@@ -5965,8 +5965,6 @@ class SessionTemplate(_messages.Message):
     runtimeConfig: Optional. Runtime configuration for session execution.
     spark: Optional. Spark engine config.
     updateTime: Output only. The time template was last updated.
-    uuid: Output only. A session template UUID (Unique Universal Identifier).
-      The service generates this value when it creates the session template.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6007,7 +6005,6 @@ class SessionTemplate(_messages.Message):
   runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
   spark = _messages.MessageField('SparkConfig', 8)
   updateTime = _messages.StringField(9)
-  uuid = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -7382,8 +7382,11 @@ class TextDetectionParams(_messages.Message):
   and DOCUMENT_TEXT_DETECTION features.
 
   Fields:
-    advancedOcrOptions: A list of advanced OCR options to fine-tune OCR
-      behavior.
+    advancedOcrOptions: A list of advanced OCR options to further fine-tune
+      OCR behavior. Current valid values are: - `legacy_layout`: a heuristics
+      layout detection algorithm, which serves as an alternative to the
+      current ML-based layout detection algorithm. Customers can choose the
+      best suitable layout algorithm based on their situation.
     enableTextDetectionConfidenceScore: By default, Cloud Vision API only
       includes confidence score for DOCUMENT_TEXT_DETECTION result. Set the
       flag to true to include confidence score for TEXT_DETECTION as well.

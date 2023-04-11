@@ -72,20 +72,27 @@ def _ResourcesTransform(workflow):
   """Transform resources message."""
 
   resources_map = {}
-  types = ["repo", "url", "topic", "secretVersion"]
+  types = ["topic", "secretVersion"]
   for resource in workflow.get("resources", []):
     if "name" not in resource:
       raise cloudbuild_exceptions.InvalidYamlError(
           "Name is required for resource.")
-    if "secretVersion" in resource:
-      resource["secret"] = {"secretVersion": resource.pop("secretVersion")}
+    if any(t in resource for t in types):
       resources_map[resource.pop("name")] = resource
-    elif any(t in resource for t in types):
+    elif "repository" in resource:
+      if resource["repository"].startswith("projects/"):
+        resource["repo"] = resource.pop("repository")
+      elif resource["repository"].startswith("https://"):
+        resource["url"] = resource.pop("repository")
+      else:
+        raise cloudbuild_exceptions.InvalidYamlError(
+            "Malformed repo/url resource: {}".format(resource["repository"]))
       resources_map[resource.pop("name")] = resource
     else:
       raise cloudbuild_exceptions.InvalidYamlError(
           ("Unknown resource. "
-           "Accepted types: {types}").format(types=",".join(types)))
+           "Accepted types: {types}").format(
+               types=",".join(types + ["repository"])))
 
   if resources_map:
     workflow["resources"] = resources_map

@@ -23,7 +23,9 @@ import enum
 import json
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+
 import six
 
 
@@ -34,26 +36,28 @@ class ConfigType(enum.Enum):
 
 class ByoidEndpoints(object):
   """Base class for BYOID endpoints.
-
-  In the future this should be extended to support other TPC use cases
-  or replaced by a common TPC endpoint builder.
   """
 
-  def __init__(self, service, enable_mtls=False):
-    self._sts_template = 'https://{service}.{mtls}googleapis.com'
+  def __init__(
+      self, service, enable_mtls=False, universe_domain='googleapis.com'
+  ):
+    self._sts_template = 'https://{service}.{mtls}{universe}'
     self._service = service
     self._mtls = 'mtls.' if enable_mtls else ''
+    self._universe_domain = universe_domain
 
   @property
   def _base_url(self):
-    return self._sts_template.format(service=self._service, mtls=self._mtls)
+    return self._sts_template.format(
+        service=self._service, mtls=self._mtls, universe=self._universe_domain
+    )
 
 
 class StsEndpoints(ByoidEndpoints):
   """Simple class to build STS endpoints."""
 
-  def __init__(self, enable_mtls=False):
-    super(StsEndpoints, self).__init__('sts', enable_mtls=enable_mtls)
+  def __init__(self, **kwargs):
+    super(StsEndpoints, self).__init__('sts', **kwargs)
 
   @property
   def token_url(self):
@@ -74,10 +78,9 @@ class StsEndpoints(ByoidEndpoints):
 class IamEndpoints(ByoidEndpoints):
   """Simple class to build IAM Credential endpoints."""
 
-  def __init__(self, service_account, enable_mtls=False):
+  def __init__(self, service_account, **kwargs):
     self._service_account = service_account
-    super(IamEndpoints, self).__init__(
-        'iamcredentials', enable_mtls=enable_mtls)
+    super(IamEndpoints, self).__init__('iamcredentials', **kwargs)
 
   @property
   def impersonation_url(self):
@@ -91,7 +94,20 @@ RESOURCE_TYPE = 'credential configuration file'
 def create_credential_config(args, config_type):
   """Creates the byoid credential config based on CLI arguments."""
   enable_mtls = getattr(args, 'enable_mtls', False)
-  token_endpoint_builder = StsEndpoints(enable_mtls=enable_mtls)
+
+  # Take universe_domain into account.
+  universe_domain_property = properties.VALUES.core.universe_domain
+  if getattr(args, 'universe_domain', None):
+    # Universe_domain arg takes precedence.
+    universe_domain = args.universe_domain
+  elif universe_domain_property.IsExplicitlySet():
+    universe_domain = universe_domain_property.Get()
+  else:
+    universe_domain = 'googleapis.com'
+
+  token_endpoint_builder = StsEndpoints(
+      enable_mtls=enable_mtls, universe_domain=universe_domain
+  )
 
   try:
     generator = get_generator(args, config_type)
@@ -102,22 +118,27 @@ def create_credential_config(args, config_type):
         'token_url': token_endpoint_builder.token_url,
         'credential_source': generator.get_source(args),
     }
+    # TODO(b/276367366): Add in all cases once approved.
+    if universe_domain != 'googleapis.com':
+      output['universe_domain'] = universe_domain
 
     if config_type is ConfigType.WORKFORCE_POOLS:
       output['workforce_pool_user_project'] = args.workforce_pool_user_project
 
     if args.service_account:
-
       sa_endpoint_builder = IamEndpoints(
-          args.service_account, enable_mtls=enable_mtls)
+          args.service_account, enable_mtls=enable_mtls
+      )
       output['service_account_impersonation_url'] = (
-          sa_endpoint_builder.impersonation_url)
+          sa_endpoint_builder.impersonation_url
+      )
 
       service_account_impersonation = {}
 
       if args.service_account_token_lifetime_seconds:
-        service_account_impersonation[
-            'token_lifetime_seconds'] = args.service_account_token_lifetime_seconds
+        service_account_impersonation['token_lifetime_seconds'] = (
+            args.service_account_token_lifetime_seconds
+        )
         output['service_account_impersonation'] = service_account_impersonation
     else:
       output['token_info_url'] = token_endpoint_builder.token_info_url

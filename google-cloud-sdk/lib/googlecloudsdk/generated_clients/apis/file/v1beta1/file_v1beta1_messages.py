@@ -2038,6 +2038,11 @@ class Share(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
+    backup: Immutable. Full name of the Cloud Filestore Backup resource that
+      this Share is restored from, in the format of
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+      Empty, if the Share is created from scratch and not restored from a
+      backup.
     capacityGb: File share capacity in gigabytes (GB). Filestore defines 1 GB
       as 1024^3 bytes. Must be greater than 0.
     createTime: Output only. The time when the share was created.
@@ -2092,14 +2097,15 @@ class Share(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  capacityGb = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  mountName = _messages.StringField(5)
-  name = _messages.StringField(6)
-  nfsExportOptions = _messages.MessageField('NfsExportOptions', 7, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  backup = _messages.StringField(1)
+  capacityGb = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  mountName = _messages.StringField(6)
+  name = _messages.StringField(7)
+  nfsExportOptions = _messages.MessageField('NfsExportOptions', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class Snapshot(_messages.Message):

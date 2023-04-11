@@ -332,8 +332,9 @@ workforce_pool:
     api_field: workforcePool.disabled
     arg_name: disabled
     help_text: |-
-      Whether or not the workforce pool is disabled. You cannot use a disabled workforce pool to
-      perform new token exchanges or sign-ins using any provider in the workforce pool.
+      Disables the workforce pool. You cannot use a disabled workforce pool to
+      perform new token exchanges or sign-ins using any provider in the workforce pool. Specify
+      `--no-disabled` to enable a disabled pool.
 
 workforce_pool_provider:
   display_name:
@@ -350,8 +351,9 @@ workforce_pool_provider:
     api_field: workforcePoolProvider.disabled
     arg_name: disabled
     help_text: |-
-      Whether the workforce pool provider is disabled. You cannot use a disabled provider to perform
-      new token exchanges or sign-ins. However, existing tokens still grant access.
+      Disables the workforce pool provider. You cannot use a disabled provider to perform
+      new token exchanges or sign-ins. However, existing tokens still grant access. Specify
+      `--no-disabled` to enable a disabled pool.
   attribute_mapping:
     api_field: workforcePoolProvider.attributeMapping
     arg_name: attribute-mapping
@@ -451,6 +453,18 @@ workforce_pool_provider:
     help_text: |-
       The OIDC client ID. This must match the audience claim of the JWT issued by the identity
       provider.
+  oidc_web_sso_response_type:
+    api_field: workforcePoolProvider.oidc.webSsoConfig.responseType
+    arg_name: web-sso-response-type
+    hidden: true
+    help_text: |-
+      Response Type to request for in the OIDC Authorization Request for web sign-in.
+  oidc_web_sso_assertion_claims_behavior:
+    api_field: workforcePoolProvider.oidc.webSsoConfig.assertionClaimsBehavior
+    arg_name: web-sso-assertion-claims-behavior
+    hidden: true
+    help_text: |-
+      The behavior for how OIDC Claims are included in the `assertion` object used for attribute mapping and attribute condition.
   saml_idp_metadata_path:
     api_field: workforcePoolProvider.saml.idpMetadataXml
     type: "googlecloudsdk.calliope.arg_parsers:FileContents:"

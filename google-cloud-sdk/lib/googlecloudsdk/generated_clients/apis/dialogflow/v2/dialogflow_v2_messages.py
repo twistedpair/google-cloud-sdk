@@ -6194,6 +6194,8 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
   Fields:
     detectIntentResponseId: Always present. The unique identifier of the
       DetectIntentResponse that will be returned to the API caller.
+    dtmfDigits: If DTMF was provided as input, this field will contain the
+      DTMF digits.
     fulfillmentInfo: Always present. Information about the fulfillment that
       triggered this webhook call.
     intentInfo: Information about the last matched intent.
@@ -6243,18 +6245,19 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   detectIntentResponseId = _messages.StringField(1)
-  fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo', 2)
-  intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestIntentInfo', 3)
-  languageCode = _messages.StringField(4)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 5, repeated=True)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 6)
-  payload = _messages.MessageField('PayloadValue', 7)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 8)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 9)
-  text = _messages.StringField(10)
-  transcript = _messages.StringField(11)
-  triggerEvent = _messages.StringField(12)
-  triggerIntent = _messages.StringField(13)
+  dtmfDigits = _messages.StringField(2)
+  fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo', 3)
+  intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestIntentInfo', 4)
+  languageCode = _messages.StringField(5)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 6, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 7)
+  payload = _messages.MessageField('PayloadValue', 8)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 9)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 10)
+  text = _messages.StringField(11)
+  transcript = _messages.StringField(12)
+  triggerEvent = _messages.StringField(13)
+  triggerIntent = _messages.StringField(14)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo(_messages.Message):
@@ -8374,6 +8377,8 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
   Fields:
     detectIntentResponseId: Always present. The unique identifier of the
       DetectIntentResponse that will be returned to the API caller.
+    dtmfDigits: If DTMF was provided as input, this field will contain the
+      DTMF digits.
     fulfillmentInfo: Always present. Information about the fulfillment that
       triggered this webhook call.
     intentInfo: Information about the last matched intent.
@@ -8423,18 +8428,19 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   detectIntentResponseId = _messages.StringField(1)
-  fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo', 2)
-  intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo', 3)
-  languageCode = _messages.StringField(4)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 5, repeated=True)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 6)
-  payload = _messages.MessageField('PayloadValue', 7)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 8)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 9)
-  text = _messages.StringField(10)
-  transcript = _messages.StringField(11)
-  triggerEvent = _messages.StringField(12)
-  triggerIntent = _messages.StringField(13)
+  dtmfDigits = _messages.StringField(2)
+  fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo', 3)
+  intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo', 4)
+  languageCode = _messages.StringField(5)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 6, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 7)
+  payload = _messages.MessageField('PayloadValue', 8)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 9)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 10)
+  text = _messages.StringField(11)
+  transcript = _messages.StringField(12)
+  triggerEvent = _messages.StringField(13)
+  triggerIntent = _messages.StringField(14)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo(_messages.Message):

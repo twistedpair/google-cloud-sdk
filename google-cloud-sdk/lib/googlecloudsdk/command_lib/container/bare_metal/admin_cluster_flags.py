@@ -1059,16 +1059,13 @@ def _AddAuthorization(bare_metal_security_config_group, is_update=False):
   """
   required = not is_update
   authorization_group = bare_metal_security_config_group.add_group(
-      help=(
-          'User cluster authorization configurations to bootstrap onto the'
-          ' admin cluster'
-      )
+      help='Admin cluster authorization configurations'
   )
   authorization_group.add_argument(
       '--admin-users',
       help=(
-          'Users that will be granted the cluster-admin role on the cluster,'
-          ' providing full access to the cluster.'
+          'Users that will be granted the view role on the admin cluster,'
+          ' providing view only access to the cluster.'
       ),
       action='append',
       required=required,
@@ -1083,7 +1080,7 @@ def AddSecurityConfig(parser, is_update=False):
     is_update: bool, whether the flag is for update command or not.
   """
   bare_metal_security_config_group = parser.add_group(
-      help='Anthos on bare metal cluster security configuration.',
+      help='Anthos on bare metal admin cluster security configuration.',
   )
 
   _AddAuthorization(bare_metal_security_config_group, is_update)

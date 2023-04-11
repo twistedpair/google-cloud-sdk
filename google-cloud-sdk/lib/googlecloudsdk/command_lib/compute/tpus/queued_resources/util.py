@@ -17,13 +17,42 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.util import times
 
+import six
+
 
 def GetMessagesModule(version='v2alpha1'):
   return apis.GetMessagesModule('tpu', version)
+
+
+# TODO(b/276933950) Consider merging this MergeMetadata with
+# googlecloudsdk.command_lib.compute.tpus.tpu_vm.util.MergeMetadata by moving
+# it to googlecloudsdk.command_lib.compute.tpus.util
+def MergeMetadata(args):
+  """Creates the metadata for the Node.
+
+  Based on googlecloudsdk.command_lib.compute.tpus.tpu_vm.util.MergeMetadata.
+
+  Args:
+    args:  The gcloud args
+
+  Returns:
+    The constructed MetadataValue.
+  """
+  metadata_dict = metadata_utils.ConstructMetadataDict(
+      args.metadata, args.metadata_from_file
+  )
+  tpu_messages = GetMessagesModule()
+  metadata = tpu_messages.Node.MetadataValue()
+  for key, value in six.iteritems(metadata_dict):
+    metadata.additionalProperties.append(
+        tpu_messages.Node.MetadataValue.AdditionalProperty(key=key, value=value)
+    )
+  return metadata
 
 
 def CreateNodeSpec(ref, args, request):
@@ -53,6 +82,8 @@ def CreateNodeSpec(ref, args, request):
   if args.scopes:
     node_spec.node.serviceAccount.scope = args.scopes
   node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
+
+  node_spec.node.metadata = MergeMetadata(args)
 
   if args.node_id:
     node_spec.nodeId = args.node_id

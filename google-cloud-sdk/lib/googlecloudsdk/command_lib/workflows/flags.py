@@ -148,15 +148,54 @@ def AddLoggingArg(parser):
   log_level = base.ChoiceArgument(
       '--call-log-level',
       choices={
-          'none':
-              'Perform no call logging.',
-          'log-all-calls':
-              'Log all calls to subworkflows or library functions and their results.',
-          'log-errors-only':
-              'Log when a call is stopped due to an exception.',
+          'none': 'No logging level specified.',
+          'log-all-calls': (
+              'Log all calls to subworkflows or library functions and their'
+              ' results.'
+          ),
+          'log-errors-only': 'Log when a call is stopped due to an exception.',
+          'log-none': 'Perform no call logging.',
       },
       help_str='Level of call logging to apply during execution.',
-      default='none')
+      default='none',
+  )
+  log_level.AddToParser(parser)
+
+
+def AddBetaLoggingArg(parser):
+  """Adds argument for specifying the logging level for an execution."""
+  log_level = base.ChoiceArgument(
+      '--call-log-level',
+      choices={
+          'none': 'Perform no call logging.',
+          'log-all-calls': (
+              'Log all calls to subworkflows or library functions and their'
+              ' results.'
+          ),
+          'log-errors-only': 'Log when a call is stopped due to an exception.',
+      },
+      help_str='Level of call logging to apply during execution.',
+      default='none',
+  )
+  log_level.AddToParser(parser)
+
+
+def AddWorkflowLoggingArg(parser):
+  """Adds argument for specifying the logging level for a workflow."""
+  log_level = base.ChoiceArgument(
+      '--call-log-level',
+      choices={
+          'none': 'No logging level specified.',
+          'log-all-calls': (
+              'Log all calls to subworkflows or library functions and their'
+              ' results.'
+          ),
+          'log-errors-only': 'Log when a call is stopped due to an exception.',
+          'log-none': 'Perform no call logging.',
+      },
+      help_str='Level of call logging to apply by default for the workflow.',
+      default='none',
+  )
   log_level.AddToParser(parser)
 
 
