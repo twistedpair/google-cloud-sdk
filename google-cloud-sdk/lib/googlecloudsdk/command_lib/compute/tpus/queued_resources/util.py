@@ -81,16 +81,24 @@ def CreateNodeSpec(ref, args, request):
     node_spec.node.serviceAccount.email = args.service_account
   if args.scopes:
     node_spec.node.serviceAccount.scope = args.scopes
+  if args.tags:
+    node_spec.node.tags = args.tags
   node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
   node_spec.node.metadata = MergeMetadata(args)
 
+  if args.node_prefix and not args.node_count:
+    raise exceptions.ConflictingArgumentsException(
+        'Can only specify --node-prefix if --node-count is also specified.'
+    )
+
   if args.node_id:
     node_spec.nodeId = args.node_id
-  elif args.node_prefix and args.node_count:
+  elif args.node_count:
     node_spec.multiNodeParams = tpu_messages.MultiNodeParams()
-    node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
     node_spec.multiNodeParams.nodeCount = args.node_count
+    if args.node_prefix:
+      node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
   request.queuedResource.tpu.nodeSpec = [node_spec]
 
   return request
@@ -196,4 +204,13 @@ def CreateReservationName(ref, args, request):
 
   if reservation_name:
     request.queuedResource.reservationName = reservation_name
+  return request
+
+
+def SetForce(ref, args, request):
+  """Sets force arg to true if flag is set."""
+  del ref  # unused
+  if hasattr(args, 'force') and args.force:
+    request.force = True
+
   return request

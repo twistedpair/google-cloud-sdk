@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import json
 import re
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.command_lib.artifacts import docker_util
 from googlecloudsdk.core.util import files
 import six
 
@@ -126,6 +127,55 @@ def ParseJsonSbom(file_path):
     raise ar_exceptions.InvalidInputValueError(_UNSUPPORTED_SBOM_FORMAT_ERROR)
 
 
+def _IsARDockerImage(uri):
+  return re.match(docker_util.DOCKER_REPO_REGEX, uri) is not None
+
+
+def _GetARDockerImage(uri):
+  """Retrieves metadata from the given AR docker image.
+
+  Args:
+    uri: Uri of the AR docker image.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError: If the uri is invalid.
+
+  Returns:
+    An Artifact object with metadata of the given artifact.
+  """
+
+  image, docker_version = docker_util.DockerUrlToVersion(uri)
+  repo = image.docker_repo
+
+  return Artifact(
+      resource_uri=docker_version.GetDockerString(),
+      project=repo.project,
+      location=repo.location,
+      digest=docker_version.digest,
+  )
+
+
+def ProcessArtifact(uri):
+  """Retrieves information about the given artifact.
+
+  Args:
+    uri: str, The artifact uri.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError: If the artifact type is unsupported.
+
+  Returns:
+    An Artifact object with metadata of the given artifact.
+  """
+
+  if _IsARDockerImage(uri):
+    return _GetARDockerImage(uri)
+  else:
+    raise ar_exceptions.InvalidInputValueError(
+        'Unsupported artifact {0}.'.format(uri)
+    )
+
+
 class SbomFile(object):
   """Holder for SBOM file's metadata.
 
@@ -145,3 +195,36 @@ class SbomFile(object):
   @property
   def version(self):
     return self._version
+
+
+class Artifact(object):
+  """Holder for Artifact's metadata.
+
+  Properties:
+    resource_uri: str, Uri will be used when storing as a reference occurrence.
+    project: str, Project of the artifact.
+    location: str, Location of the artifact.
+    digest: str, Digest of the artifact.
+  """
+
+  def __init__(self, resource_uri, project, location, digest):
+    self._resource_uri = resource_uri
+    self._project = project
+    self._location = location
+    self._digest = digest
+
+  @property
+  def resource_uri(self):
+    return self._resource_uri
+
+  @property
+  def project(self):
+    return self._project
+
+  @property
+  def location(self):
+    return self._location
+
+  @property
+  def digest(self):
+    return self._digest

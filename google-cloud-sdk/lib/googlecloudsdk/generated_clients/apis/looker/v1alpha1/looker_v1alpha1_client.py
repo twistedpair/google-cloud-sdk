@@ -435,7 +435,7 @@ class LookerV1alpha1(base_api.BaseApiClient):
         method_id='looker.projects.locations.instances.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1alpha1/{+parent}/instances',
         request_field='',
         request_type_name='LookerProjectsLocationsInstancesListRequest',

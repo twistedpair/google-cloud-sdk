@@ -113,11 +113,13 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
-    if source_url.scheme != destination_url.scheme or force_daisy_chain:
-      if (user_request_args and user_request_args.resource_args and
-          user_request_args.resource_args.preserve_acl):
-        raise ValueError(
-            'Cannot preserve ACLs while copying between cloud providers.')
+    different_providers = source_url.scheme != destination_url.scheme
+    if (different_providers and user_request_args and
+        user_request_args.resource_args and
+        user_request_args.resource_args.preserve_acl):
+      raise ValueError(
+          'Cannot preserve ACLs while copying between cloud providers.')
+    if different_providers or force_daisy_chain:
       return daisy_chain_copy_task.DaisyChainCopyTask(
           source_resource,
           destination_resource,

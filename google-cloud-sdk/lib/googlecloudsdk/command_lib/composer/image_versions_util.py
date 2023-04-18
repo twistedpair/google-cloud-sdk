@@ -174,6 +174,27 @@ def CompareVersions(v1, v2):
   return _CompareVersions(v1, v2)
 
 
+def IsVersionComposer25Compatible(image_version):
+  """Checks if given `version` is compatible with Composer 2.5 .
+
+  Args:
+    image_version: image version str that includes Composer version.
+
+  Returns:
+    True if Composer version is compatible with Composer 2.5
+    >=2.5.x otherwise False
+  """
+
+  if image_version:
+    version_item = _ImageVersionItem(image_version)
+    if version_item and version_item.composer_ver:
+      composer_version = version_item.composer_ver
+      return IsVersionInRange(
+          composer_version, flags.MIN_COMPOSER25_VERSION, None,
+          True)
+  return False
+
+
 def IsVersionTriggererCompatible(image_version):
   """Checks if given `version` is compatible with triggerer .
 

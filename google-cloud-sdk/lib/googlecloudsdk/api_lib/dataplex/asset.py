@@ -71,7 +71,34 @@ def GenerateAssetForCreateRequest(args):
   resource_spec_field = module.GoogleCloudDataplexV1AssetResourceSpec
   resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec(
       name=args.resource_name,
-      type=resource_spec_field.TypeValueValuesEnum(args.resource_type))
+      type=resource_spec_field.TypeValueValuesEnum(args.resource_type),
+  )
+  request = module.GoogleCloudDataplexV1Asset(
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
+      resourceSpec=resource_spec,
+  )
+  discovery = GenerateDiscoverySpec(args)
+  if discovery != module.GoogleCloudDataplexV1AssetDiscoverySpec():
+    setattr(request, 'discoverySpec', discovery)
+  return request
+
+
+def GenerateAssetForCreateRequestAlpha(args):
+  """Create Asset for Message Create Requests."""
+  module = dataplex_api.GetMessageModule()
+  resource_spec_field = module.GoogleCloudDataplexV1AssetResourceSpec
+  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec(
+      name=args.resource_name,
+      type=resource_spec_field.TypeValueValuesEnum(args.resource_type),
+  )
+  if args.IsSpecified('resource_read_access_mode'):
+    resource_spec.readAccessMode = (
+        resource_spec_field.ReadAccessModeValueValuesEnum(
+            args.resource_read_access_mode
+        )
+    )
   request = module.GoogleCloudDataplexV1Asset(
       description=args.description,
       displayName=args.display_name,
@@ -91,6 +118,30 @@ def GenerateAssetForUpdateRequest(args):
       displayName=args.display_name,
       labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
       discoverySpec=GenerateDiscoverySpec(args))
+
+
+def GenerateAssetForUpdateRequestAlpha(args):
+  """Create Asset for Message Update Requests."""
+  module = dataplex_api.GetMessageModule()
+  asset = module.GoogleCloudDataplexV1Asset(
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
+      discoverySpec=GenerateDiscoverySpec(args),
+  )
+  if args.IsSpecified('resource_read_access_mode'):
+    setattr(
+        asset,
+        'resourceSpec',
+        module.GoogleCloudDataplexV1AssetResourceSpec(
+            readAccessMode=(
+                module.GoogleCloudDataplexV1AssetResourceSpec.ReadAccessModeValueValuesEnum(
+                    args.resource_read_access_mode
+                )
+            )
+        ),
+    )
+  return asset
 
 
 def GenerateDiscoverySpec(args):
@@ -131,6 +182,13 @@ def GenerateJsonOptions(args):
   ).GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions(
       encoding=args.json_encoding,
       disableTypeInference=args.json_disable_type_inference)
+
+
+def GenerateUpdateMaskAlpha(args):
+  update_mask = GenerateUpdateMask(args)
+  if args.IsSpecified('resource_read_access_mode'):
+    update_mask.append('resourceSpec.readAccessMode')
+  return update_mask
 
 
 def GenerateUpdateMask(args):

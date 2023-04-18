@@ -678,10 +678,9 @@ def AddMutexEnvVarsFlagsForCreate(parser):
 
 
 def AddOverrideEnvVarsFlag(parser):
-  """Add the --override-env-vars flag."""
+  """Add the --update-env-vars flag."""
   parser.add_argument(
       '--update-env-vars',
-      hidden=True,
       metavar='KEY=VALUE',
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(
@@ -1075,7 +1074,6 @@ def AddArgsFlag(parser, for_execution_overrides=False):
     )
   parser.add_argument(
       '--args',
-      hidden=for_execution_overrides,
       metavar='ARG',
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
@@ -1219,7 +1217,6 @@ def AddTasksFlag(parser, for_execution_overrides=False):
     )
     parser.add_argument(
         '--tasks',
-        hidden=for_execution_overrides,
         type=arg_parsers.BoundedInt(lower_bound=1),
         help=help_text,
     )
@@ -1227,7 +1224,6 @@ def AddTasksFlag(parser, for_execution_overrides=False):
     help_text += ' Use this flag to trigger multiple runs of the job.'
     parser.add_argument(
         '--tasks',
-        hidden=for_execution_overrides,
         type=arg_parsers.BoundedInt(lower_bound=1),
         default=1,
         help=help_text,
@@ -1284,7 +1280,6 @@ def AddTaskTimeoutFlags(parser, for_execution_overrides=False):
     )
   parser.add_argument(
       '--task-timeout',
-      hidden=for_execution_overrides,
       type=arg_parsers.Duration(lower_bound='1s'),
       help=help_text,
   )

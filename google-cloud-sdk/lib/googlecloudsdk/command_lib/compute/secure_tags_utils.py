@@ -36,6 +36,8 @@ def GetSecureTags(secure_tags):
     if tag.startswith('tagValues/'):
       ret_secure_tags.append(tag)
     else:
-      ret_secure_tags.append(tag_utils.GetTagValueFromNamespacedName(tag).name)
+      ret_secure_tags.append(
+          tag_utils.GetNamespacedResource(tag, tag_utils.TAG_VALUES).name
+      )
 
   return ret_secure_tags

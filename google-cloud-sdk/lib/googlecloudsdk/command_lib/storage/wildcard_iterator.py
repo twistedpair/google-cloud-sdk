@@ -66,6 +66,7 @@ def get_wildcard_iterator(
     files_only=False,
     get_bucket_metadata=False,
     ignore_symlinks=False,
+    preserve_symlinks=False,
 ):
   """Instantiate a WildcardIterator for the given URL string.
 
@@ -87,6 +88,7 @@ def get_wildcard_iterator(
     get_bucket_metadata (bool): If true, perform a bucket GET request when
       fetching bucket resources.
     ignore_symlinks (bool): Skip over symlinks instead of following them.
+    preserve_symlinks (bool): Preserve symlinks instead of following them.
 
   Returns:
     A WildcardIterator object.
@@ -109,6 +111,7 @@ def get_wildcard_iterator(
         exclude_patterns=exclude_patterns,
         files_only=files_only,
         ignore_symlinks=ignore_symlinks,
+        preserve_symlinks=preserve_symlinks,
     )
   else:
     raise command_errors.InvalidUrlError('Unknown url type %s.' % url)
@@ -163,6 +166,7 @@ class FileWildcardIterator(WildcardIterator):
       exclude_patterns=None,
       files_only=False,
       ignore_symlinks=False,
+      preserve_symlinks=False,
   ):
     """Initialize FileWildcardIterator instance.
 
@@ -171,6 +175,7 @@ class FileWildcardIterator(WildcardIterator):
       exclude_patterns (Patterns|None): See get_wildcard_iterator.
       files_only (bool): Return files and symlinks, not folders and streams.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
+      preserve_symlinks (bool): Preserve symlinks instead of following them.
     """
     super(FileWildcardIterator, self).__init__(
         url,
@@ -178,6 +183,7 @@ class FileWildcardIterator(WildcardIterator):
         files_only=files_only,
     )
     self._ignore_symlinks = ignore_symlinks
+    self._preserve_symlinks = preserve_symlinks
 
     self._path = self._url.object_name
 
@@ -204,8 +210,14 @@ class FileWildcardIterator(WildcardIterator):
         continue
 
       # Follow symlinks unless pointing to directory or exclude flag is present.
-      if os.path.islink(path) and (os.path.isdir(path) or
-                                   self._ignore_symlinks):
+      # However, include even directory symlinks (as files) when symlinks are
+      # being preserved.
+      is_symlink = os.path.islink(path)
+      if (
+          is_symlink
+          and not self._preserve_symlinks
+          and (os.path.isdir(path) or self._ignore_symlinks)
+      ):
         log.warning('Skipping symlink {}'.format(path))
         continue
 
@@ -218,10 +230,12 @@ class FileWildcardIterator(WildcardIterator):
         continue
 
       file_url = storage_url.FileUrl(path)
-      if os.path.isdir(path):
+      if not is_symlink and os.path.isdir(path):
         yield resource_reference.FileDirectoryResource(file_url)
       else:
-        yield resource_reference.FileObjectResource(file_url)
+        yield resource_reference.FileObjectResource(
+            file_url, is_symlink=is_symlink
+        )
 
 
 class CloudWildcardIterator(WildcardIterator):

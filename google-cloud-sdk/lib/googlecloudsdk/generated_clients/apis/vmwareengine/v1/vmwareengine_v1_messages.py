@@ -244,6 +244,33 @@ class Credentials(_messages.Message):
   username = _messages.StringField(2)
 
 
+class DnsForwarding(_messages.Message):
+  r"""DNS forwarding config. This config defines a list of domain to name
+  server mappings, and is attached to the private cloud for custom domain
+  resolution.
+
+  Fields:
+    createTime: Output only. Creation time of this resource.
+    etag: Checksum that may be sent on update requests to ensure that the
+      user-provided value is up to date before the server processes a request.
+      The server computes checksums based on the value of other fields in the
+      request.
+    forwardingRules: Required. List of domain mappings to configure
+    name: Output only. The resource name of this DNS profile. Resource names
+      are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/dnsForwarding`
+    updateTime: Output only. Last update time of this resource.
+  """
+
+  createTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  forwardingRules = _messages.MessageField('ForwardingRule', 3, repeated=True)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -449,6 +476,20 @@ class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):
 
   externalAddresses = _messages.MessageField('ExternalAddress', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ForwardingRule(_messages.Message):
+  r"""A forwarding rule is a mapping of a `domain` to `name_servers`. This
+  mapping allows VMware Engine to resolve domains for attached private clouds
+  by forwarding DNS requests for a given domain to the specified nameservers.
+
+  Fields:
+    domain: Required. Domain used to resolve a `name_servers` list.
+    nameServers: Required. List of DNS servers to use for domain resolution
+  """
+
+  domain = _messages.StringField(1)
+  nameServers = _messages.StringField(2, repeated=True)
 
 
 class Hcx(_messages.Message):
@@ -3531,6 +3572,21 @@ class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest(_m
   updateMask = _messages.StringField(4)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsGetDnsForwardingRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsGetDnsForwardingRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of a `DnsForwarding` to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/dnsForwarding`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest object.
 
@@ -4303,6 +4359,42 @@ class VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   undeletePrivateCloudRequest = _messages.MessageField('UndeletePrivateCloudRequest', 2)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsUpdateDnsForwardingRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsUpdateDnsForwardingRequest
+  object.
+
+  Fields:
+    dnsForwarding: A DnsForwarding resource to be passed as the request body.
+    name: Output only. The resource name of this DNS profile. Resource names
+      are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1-a/privateClouds/my-
+      cloud/dnsForwarding`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `DnsForwarding` resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten.
+  """
+
+  dnsForwarding = _messages.MessageField('DnsForwarding', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsPrivateConnectionsCreateRequest(_messages.Message):

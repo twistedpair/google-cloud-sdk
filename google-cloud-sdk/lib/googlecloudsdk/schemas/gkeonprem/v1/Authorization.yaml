@@ -29,8 +29,10 @@ properties:
       type: string
   adminUsers:
     description: |-
-      Users that will be granted the cluster-admin role on the cluster,
-      providing full access to the cluster.
+      For Vmware User, Bare Metal User and Standalone clusters, users that will
+      be granted the cluster-admin role on the cluster, providing full access to
+      the cluster. For Bare Metal Admin cluster, users will be granted the view
+      role, which is a view only access.
     type: array
     items:
       $ref: ClusterUser.yaml

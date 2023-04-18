@@ -236,8 +236,8 @@ def get_tracker_file_path(destination_url,
         destination_url.bucket_name, destination_url.object_name,
         destination_url.scheme.value)
 
-  result_tracker_file_name = re.sub(
-      RE_DELIMITER_PATTERN, '_', raw_result_tracker_file_name
+  result_tracker_file_name = get_delimiterless_file_path(
+      raw_result_tracker_file_name
   )
   resumable_tracker_directory = _create_tracker_directory_if_needed()
   return _get_hashed_tracker_file_path(
@@ -246,6 +246,18 @@ def get_tracker_file_path(destination_url,
       resumable_tracker_directory,
       component_number,
   )
+
+
+def get_delimiterless_file_path(file_path):
+  """Returns a string representation of the given path without any delimiters.
+
+  Args:
+    file_path (str): Path from which delimiters should be removed.
+
+  Returns:
+    A copy of file_path without any delimiters.
+  """
+  return re.sub(RE_DELIMITER_PATTERN, '_', file_path)
 
 
 def _get_sliced_download_tracker_file_paths(destination_url):

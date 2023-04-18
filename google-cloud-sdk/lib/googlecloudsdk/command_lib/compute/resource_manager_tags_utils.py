@@ -35,9 +35,9 @@ def GetResourceManagerTags(resource_manager_tags):
   ret_resource_manager_tags = {}
   for key, value in resource_manager_tags.items():
     if not key.startswith('tagKeys/'):
-      key = tag_utils.GetTagKeyFromNamespacedName(key).name
+      key = tag_utils.GetNamespacedResource(key, tag_utils.TAG_KEYS).name
     if not value.startswith('tagValues/'):
-      value = tag_utils.GetTagValueFromNamespacedName(value).name
+      value = tag_utils.GetNamespacedResource(key, tag_utils.TAG_VALUES).name
     ret_resource_manager_tags[key] = value
 
   return ret_resource_manager_tags

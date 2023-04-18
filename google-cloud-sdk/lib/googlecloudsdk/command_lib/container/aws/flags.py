@@ -20,12 +20,14 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 def AddAwsRegion(parser):
   parser.add_argument(
-      '--aws-region', required=True, help='AWS region to deploy the cluster.')
+      '--aws-region', required=True, help='AWS region to deploy the cluster.'
+  )
 
 
 def GetAwsRegion(args):
@@ -34,7 +36,8 @@ def GetAwsRegion(args):
 
 def AddVpcId(parser):
   parser.add_argument(
-      '--vpc-id', required=True, help='VPC associated with the cluster.')
+      '--vpc-id', required=True, help='VPC associated with the cluster.'
+  )
 
 
 def GetVpcId(args):
@@ -46,8 +49,11 @@ def AddIamInstanceProfile(parser, kind='cluster', required=True):
   parser.add_argument(
       '--iam-instance-profile',
       required=required,
-      help='Name or ARN of the IAM instance profile associated with the {}.'
-      .format(kind))
+      help=(
+          'Name or ARN of the IAM instance profile associated with the {}.'
+          .format(kind)
+      ),
+  )
 
 
 def GetIamInstanceProfile(args):
@@ -58,19 +64,55 @@ def AddInstanceType(parser, kind='control plane'):
   """Adds the --instance-type flag."""
   parser.add_argument(
       '--instance-type',
-      help='AWS EC2 instance type for the {}\'s nodes.'.format(kind))
+      help="AWS EC2 instance type for the {}'s nodes.".format(kind),
+  )
 
 
 def GetInstanceType(args):
   return getattr(args, 'instance_type', None)
 
 
+def AddSpotInstanceTypes(parser, kind='node pool'):
+  """Adds the --spot-instance-types flag."""
+  parser.add_argument(
+      '--spot-instance-types',
+      type=arg_parsers.ArgList(),
+      metavar='INSTANCE_TYPE',
+      help=(
+          "List of AWS EC2 instance types for creating a spot {}'s nodes. The"
+          ' specified instance types must have the same number of CPUs and'
+          ' memory. You can use the Amazon EC2 Instance Selector tool'
+          ' (https://github.com/aws/amazon-ec2-instance-selector) to choose'
+          ' instance types with matching CPU and memory configurations.'.format(
+              kind
+          )
+      ),
+  )
+
+
+def AddOnDemandOrSpotInstanceType(parser, track, kind='node pool'):
+  """Adds instance configurtion for creating node pool."""
+  group = parser.add_group('Node pool instance configuration', mutex=True)
+  if track == base.ReleaseTrack.GA:
+    AddInstanceType(group, kind)
+  else:
+    AddInstanceType(group, kind)
+    AddSpotInstanceTypes(group, kind)
+
+
+def GetSpotInstanceTypes(args):
+  return getattr(args, 'spot_instance_types', None)
+
+
 def AddSshEC2KeyPair(parser, kind='control plane'):
   """Adds the --ssh-ec2-key-pair flag."""
   parser.add_argument(
       '--ssh-ec2-key-pair',
-      help='Name of the EC2 key pair authorized to login to the {}\'s nodes.'
-      .format(kind))
+      help=(
+          "Name of the EC2 key pair authorized to login to the {}'s nodes."
+          .format(kind)
+      ),
+  )
 
 
 def GetSshEC2KeyPair(args):
@@ -83,8 +125,11 @@ def AddClearSshEc2KeyPair(parser, kind):
       '--clear-ssh-ec2-key-pair',
       action='store_true',
       default=None,
-      help='Clear the EC2 key pair authorized to login to the {}\'s nodes.'
-      .format(kind))
+      help=(
+          "Clear the EC2 key pair authorized to login to the {}'s nodes."
+          .format(kind)
+      ),
+  )
 
 
 def AddSshEC2KeyPairForUpdate(parser, kind='control plane'):
@@ -98,8 +143,11 @@ def AddRoleArn(parser, required=True):
   parser.add_argument(
       '--role-arn',
       required=required,
-      help=('Amazon Resource Name (ARN) of the IAM role to assume when '
-            'managing AWS resources.'))
+      help=(
+          'Amazon Resource Name (ARN) of the IAM role to assume when '
+          'managing AWS resources.'
+      ),
+  )
 
 
 def GetRoleArn(args):
@@ -108,7 +156,8 @@ def GetRoleArn(args):
 
 def AddRoleSessionName(parser):
   parser.add_argument(
-      '--role-session-name', help='Identifier for the assumed role session.')
+      '--role-session-name', help='Identifier for the assumed role session.'
+  )
 
 
 def GetRoleSessionName(args):
@@ -121,8 +170,12 @@ def AddSecurityGroupIds(parser, kind='control plane'):
       '--security-group-ids',
       type=arg_parsers.ArgList(),
       metavar='SECURITY_GROUP_ID',
-      help='IDs of additional security groups to add to the {}\'s nodes.'
-      .format(kind))
+      help=(
+          "IDs of additional security groups to add to the {}'s nodes.".format(
+              kind
+          )
+      ),
+  )
 
 
 def GetSecurityGroupIds(args):
@@ -141,9 +194,12 @@ def AddClearSecurityGroupIds(parser, noun):
       '--clear-security-group-ids',
       action='store_true',
       default=None,
-      help='Clear any additional security groups associated with the '
-      '{}\'s nodes. This does not remove the default security groups.'.format(
-          noun))
+      help=(
+          'Clear any additional security groups associated with the '
+          "{}'s nodes. This does not remove the default security groups."
+          .format(noun)
+      ),
+  )
 
 
 def AddSecurityGroupFlagsForUpdate(parser, noun):
@@ -162,10 +218,10 @@ def AddSecurityGroupFlagsForUpdate(parser, noun):
 def _VolumeTypeEnumMapper(prefix):
   return arg_utils.ChoiceEnumMapper(
       '--{}-volume-type'.format(prefix),
-      api_util.GetMessagesModule().GoogleCloudGkemulticloudV1AwsVolumeTemplate
-      .VolumeTypeValueValuesEnum,
+      api_util.GetMessagesModule().GoogleCloudGkemulticloudV1AwsVolumeTemplate.VolumeTypeValueValuesEnum,
       include_filter=lambda volume_type: 'UNSPECIFIED' not in volume_type,
-      help_str='Type of the {} volume.'.format(prefix))
+      help_str='Type of the {} volume.'.format(prefix),
+  )
 
 
 def AddRootVolumeType(parser):
@@ -190,8 +246,11 @@ def _AddVolumeIops(parser, prefix):
   parser.add_argument(
       '--{}-volume-iops'.format(prefix),
       type=int,
-      help=('Number of I/O operations per second (IOPS) to provision '
-            'for the {} volume.'.format(prefix)))
+      help=(
+          'Number of I/O operations per second (IOPS) to provision '
+          'for the {} volume.'.format(prefix)
+      ),
+  )
 
 
 def AddRootVolumeIops(parser):
@@ -214,8 +273,11 @@ def _AddKmsKeyArn(parser, prefix, target, required=False):
   parser.add_argument(
       '--{}-kms-key-arn'.format(prefix),
       required=required,
-      help='Amazon Resource Name (ARN) of the AWS KMS key to encrypt the {}.'
-      .format(target))
+      help=(
+          'Amazon Resource Name (ARN) of the AWS KMS key to encrypt the {}.'
+          .format(target)
+      ),
+  )
 
 
 def AddRootVolumeKmsKeyArn(parser):
@@ -253,10 +315,10 @@ def GetConfigEncryptionKmsKeyArn(args):
 def _TenancyEnumMapper():
   return arg_utils.ChoiceEnumMapper(
       '--instance-placement',
-      api_util.GetMessagesModule()
-      .GoogleCloudGkemulticloudV1AwsInstancePlacement.TenancyValueValuesEnum,
+      api_util.GetMessagesModule().GoogleCloudGkemulticloudV1AwsInstancePlacement.TenancyValueValuesEnum,
       include_filter=lambda tenancy: 'UNSPECIFIED' not in tenancy,
-      help_str='Type of the tenancy.')
+      help_str='Type of the tenancy.',
+  )
 
 
 def AddInstancePlacement(parser):
@@ -265,8 +327,11 @@ def AddInstancePlacement(parser):
 
 def GetInstancePlacement(args):
   instance_placement = getattr(args, 'instance_placement', None)
-  return _TenancyEnumMapper().GetEnumForChoice(
-      instance_placement) if instance_placement else None
+  return (
+      _TenancyEnumMapper().GetEnumForChoice(instance_placement)
+      if instance_placement
+      else None
+  )
 
 
 def AddClearProxyConfig(parser, noun):
@@ -281,15 +346,19 @@ def AddClearProxyConfig(parser, noun):
       '--clear-proxy-config',
       action='store_true',
       default=None,
-      help='Clear the proxy configuration associated with the {}.'.format(noun))
+      help='Clear the proxy configuration associated with the {}.'.format(noun),
+  )
 
 
 def AddProxySecretArn(parser, required=False):
   parser.add_argument(
       '--proxy-secret-arn',
       required=required,
-      help=('ARN of the AWS Secrets Manager secret that contains a proxy '
-            'configuration.'))
+      help=(
+          'ARN of the AWS Secrets Manager secret that contains a proxy '
+          'configuration.'
+      ),
+  )
 
 
 def GetProxySecretArn(args):
@@ -300,8 +369,11 @@ def AddProxySecretVersionId(parser, required=False):
   parser.add_argument(
       '--proxy-secret-version-id',
       required=required,
-      help=('Version ID string of the AWS Secrets Manager secret that contains '
-            'a proxy configuration.'))
+      help=(
+          'Version ID string of the AWS Secrets Manager secret that contains '
+          'a proxy configuration.'
+      ),
+  )
 
 
 def GetProxySecretVersionId(args):
@@ -329,8 +401,9 @@ def AddProxyConfigForUpdate(parser, noun):
   """
 
   group = parser.add_group('Proxy config', mutex=True)
-  update_proxy_group = group.add_group('Update existing proxy config '
-                                       'parameters')
+  update_proxy_group = group.add_group(
+      'Update existing proxy config parameters'
+  )
   AddProxySecretArn(update_proxy_group)
   AddProxySecretVersionId(update_proxy_group)
   AddClearProxyConfig(group, noun)
@@ -356,8 +429,11 @@ def AddAutoscalingMetricsGranularity(parser, required=False):
   parser.add_argument(
       '--autoscaling-metrics-granularity',
       required=required,
-      help=('Frequency at which EC2 Auto Scaling sends aggregated data to '
-            'AWS CloudWatch. The only valid value is "1Minute".'))
+      help=(
+          'Frequency at which EC2 Auto Scaling sends aggregated data to '
+          'AWS CloudWatch. The only valid value is "1Minute".'
+      ),
+  )
 
 
 def GetAutoscalingMetricsGranularity(args):
@@ -370,10 +446,13 @@ def AddAutoscalingMetrics(parser):
       type=arg_parsers.ArgList(),
       metavar='AUTOSCALING_METRIC',
       required=False,
-      help=('Autoscaling metrics to enable. For a list of valid metrics, '
-            'refer to https://docs.aws.amazon.com/autoscaling/ec2/APIReference/'
-            'API_EnableMetricsCollection.html. If granularity is specified '
-            'but not any metrics, all metrics are enabled.'))
+      help=(
+          'Autoscaling metrics to enable. For a list of valid metrics, '
+          'refer to https://docs.aws.amazon.com/autoscaling/ec2/APIReference/'
+          'API_EnableMetricsCollection.html. If granularity is specified '
+          'but not any metrics, all metrics are enabled.'
+      ),
+  )
 
 
 def GetAutoscalingMetrics(args):
@@ -388,10 +467,11 @@ def AddAutoScalingMetricsCollectionForUpdate(parser):
   """
 
   group = parser.add_group(
-      'Node pool autoscaling metrics collection', mutex=True)
+      'Node pool autoscaling metrics collection', mutex=True
+  )
   update_metrics_group = group.add_group(
-      'Update existing cloudwatch '
-      'autoscaling metrics collection parameters')
+      'Update existing cloudwatch autoscaling metrics collection parameters'
+  )
   AddAutoscalingMetricsGranularity(update_metrics_group)
   AddAutoscalingMetrics(update_metrics_group)
   AddClearAutoscalingMetrics(group)
@@ -408,5 +488,8 @@ def AddClearAutoscalingMetrics(parser):
       '--clear-autoscaling-metrics',
       action='store_true',
       default=None,
-      help='Clear the cloudwatch autoscaling metrics collection '
-      'associated with the nodepool.')
+      help=(
+          'Clear the cloudwatch autoscaling metrics collection '
+          'associated with the nodepool.'
+      ),
+  )

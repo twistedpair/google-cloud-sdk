@@ -205,3 +205,18 @@ def AddPrivateConnectionToParser(parser, positional=False):
       required=True,
       group_help='private_connection.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddLoggingServerArgToParser(parser):
+  """Sets up an argument for the Logging Server resource."""
+
+  logging_server_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.logging_server')
+  resource_spec = concepts.ResourceSpec.FromYaml(logging_server_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='logging_server',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='logging_server.',
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

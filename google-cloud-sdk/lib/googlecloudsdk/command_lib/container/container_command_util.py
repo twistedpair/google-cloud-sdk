@@ -363,6 +363,18 @@ def ParseUpdateOptionsBase(args, locations):
           'PersistentVolumes will also fail to start.',
           cancel_on_no=True)
 
+  if (args.disable_addons and
+      api_adapter.GCSFUSECSIDRIVER in args.disable_addons):
+    gcsfusecsi_disabled = args.disable_addons[
+        api_adapter.GCSFUSECSIDRIVER]
+    if gcsfusecsi_disabled:
+      console_io.PromptContinue(
+          message='If the Cloud Storage Fuse CSI Driver is disabled, then any '
+          'pods currently using PersistentVolumes owned by the driver '
+          'will fail to terminate. Any new pods that try to use those '
+          'PersistentVolumes will also fail to start.',
+          cancel_on_no=True)
+
   flags.WarnForLocationPolicyDefault(args)
 
   return opts

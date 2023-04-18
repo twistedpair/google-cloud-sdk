@@ -2454,7 +2454,7 @@ def AddAdditionalPodIpv4RangesFlag(parser):
   """Adds additional pod IPv4 ranges flag to parser."""
 
   help_text = """\
-Additional IP ranges(by name) for pods that need to be added to the cluster.
+Additional IP address ranges(by name) for pods that need to be added to the cluster.
 
 Examples:
 
@@ -2463,7 +2463,6 @@ Examples:
   parser.add_argument(
       '--additional-pod-ipv4-ranges',
       metavar='NAME',
-      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       help=help_text)
 
@@ -2481,7 +2480,6 @@ Examples:
   parser.add_argument(
       '--remove-additional-pod-ipv4-ranges',
       metavar='NAME',
-      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       help=help_text)
 

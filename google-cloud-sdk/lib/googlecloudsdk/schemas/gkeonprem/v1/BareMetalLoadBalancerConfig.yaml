@@ -25,6 +25,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  bgpLbConfig:
+    description: |-
+      Configuration for BGP typed load balancers. When set
+      network_config.advanced_networking is automatically set to true.
+    $ref: BareMetalBgpLbConfig.yaml
   manualLbConfig:
     description: Manually configured load balancers.
     $ref: BareMetalManualLbConfig.yaml

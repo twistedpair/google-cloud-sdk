@@ -40,6 +40,70 @@ def AddInstanceArgToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddImageArgToParser(parser, positional=False):
+  """Sets up an argument for the image resource."""
+  if positional:
+    name = 'image'
+  else:
+    name = '--image'
+  image_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_image')
+  resource_spec = concepts.ResourceSpec.FromYaml(image_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='image.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddNetworkArgToParser(parser, positional=False):
+  """Sets up an argument for the network resource."""
+  if positional:
+    name = 'network'
+  else:
+    name = '--network'
+  network_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_network')
+  resource_spec = concepts.ResourceSpec.FromYaml(network_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='network.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddVolumeArgToParser(parser, positional=False):
+  """Sets up an argument for the volume resource."""
+  if positional:
+    name = 'volume'
+  else:
+    name = '--volume'
+  volume_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_volume')
+  resource_spec = concepts.ResourceSpec.FromYaml(volume_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='volume.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddSSHKeyArgToParser(parser, positional=False):
+  """Sets up an argument for the image resource."""
+  if positional:
+    name = 'ssh_key'
+  else:
+    name = '--ssh_key'
+  ssh_key_data = yaml_data.ResourceYAMLData.FromPath('mps.converge_ssh_key')
+  resource_spec = concepts.ResourceSpec.FromYaml(ssh_key_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='ssh-key.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddRegionArgToParser(parser, positional=False):
   """Parses region flag."""
   region_data = yaml_data.ResourceYAMLData.FromPath('mps.region')

@@ -33,8 +33,8 @@ def _has_not_created_operation(result, retryer_state):
 
 def api_get(name):
   """Returns job details from API as Apitools object."""
-  client = apis.GetClientInstance('storagetransfer', 'v1')
-  messages = apis.GetMessagesModule('storagetransfer', 'v1')
+  client = apis.GetClientInstance('transfer', 'v1')
+  messages = apis.GetMessagesModule('transfer', 'v1')
 
   formatted_job_name = name_util.add_job_prefix(name)
   return client.transferJobs.Get(

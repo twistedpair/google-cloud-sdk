@@ -865,10 +865,23 @@ class RunAppsOperations(object):
     else:
       raise exceptions.IntegrationsOperationError(
           'Configuration returned in unexpected state "{}".'.format(
-              response.status.state.name))
+              response.status.state.name
+          )
+      )
 
   def _AppendTypeMatcher(self, type_matchers, res_type, res_name):
     for matcher in type_matchers:
       if matcher['type'] == res_type and matcher['name'] == res_name:
         return
     type_matchers.append({'type': res_type, 'name': res_name})
+
+  def VerifyLocation(self):
+    app_ref = self.GetAppRef(_DEFAULT_APP_NAME)
+    response = api_utils.ListLocations(self._client, app_ref.projectsId)
+
+    if not any(l.locationId == self._region for l in response.locations):
+      raise exceptions.UnsupportedIntegrationsLocationError(
+          'Currently this feature is only available in regions {0}.'.format(
+              ', '.join([l.locationId for l in response.locations])
+          )
+      )

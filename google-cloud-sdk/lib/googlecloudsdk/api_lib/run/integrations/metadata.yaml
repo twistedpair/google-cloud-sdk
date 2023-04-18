@@ -86,3 +86,19 @@ integrations:
   - sqladmin.googleapis.com
   - cloudresourcemanager.googleapis.com
   - secretmanager.googleapis.com
+
+- integration_type: firebase-hosting
+  resource_type: firebase-hosting
+  description: Configure custom domains for Cloud Run services with Firebase Hosting.
+  example_command: |-
+    $ gcloud {track} run integrations create --service=[SERVICE] --type=firebase-hosting --parameters=site-id=examplesite
+  service_type: ingress
+  visible: false
+  parameters:
+  - name: site-id
+    description: 'The name of the Firebase Hosting site, which is the sub-domain of the default firebase domains created.'
+    data_type: string
+    update_allowed: true
+    required: true
+  required_apis:
+  - firebasehosting.googleapis.com

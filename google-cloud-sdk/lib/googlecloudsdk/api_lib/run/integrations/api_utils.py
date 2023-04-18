@@ -24,7 +24,6 @@ import re
 from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import resources
@@ -72,8 +71,6 @@ def GetApplication(client, app_ref):
       name=app_ref.RelativeName())
   try:
     return client.projects_locations_applications.Get(request)
-  except apitools_exceptions.HttpForbiddenError as e:
-    _HandleLocationError(e)
   except apitools_exceptions.HttpNotFoundError:
     return None
 
@@ -112,8 +109,6 @@ def GetApplicationStatus(client, app_ref, resource_name=None):
       name=app_ref.RelativeName(), readMask=read_mask)
   try:
     return client.projects_locations_applications.GetStatus(request)
-  except apitools_exceptions.HttpForbiddenError as e:
-    _HandleLocationError(e)
   except apitools_exceptions.HttpNotFoundError:
     return None
 
@@ -304,19 +299,18 @@ def GetDeploymentOperationMetadata(messages, operation):
       apitools_encoding.MessageToPyValue(operation.metadata))
 
 
-def _HandleLocationError(error):
-  """Get the metadata message for the deployment operation.
+def ListLocations(client, proj_id):
+  """Get the list of all available regions from control plane.
 
   Args:
-    error: The original HttpError.
+    client: (base_api.BaseApiClient), instance of a client to use for the list
+      request.
+    proj_id: string, project id of the project to query.
 
-  Raises:
-    UnsupportedIntegrationsLocationError if it's location error. Otherwise
-    raise the original error.
+  Returns:
+    A list of location resources.
   """
-  parsed_err = api_lib_exceptions.HttpException(error)
-  if _LOCATION_ERROR_REGEX.match(parsed_err.payload.status_message):
-    raise exceptions.UnsupportedIntegrationsLocationError(
-        'Currently, this feature is only available in regions asia-east1, '
-        'us-central1, us-east1, us-west1, europe-west1 and europe-west4.')
-  raise error
+  request = client.MESSAGES_MODULE.RunappsProjectsLocationsListRequest(
+      name='projects/{0}'.format(proj_id)
+  )
+  return client.projects_locations.List(request)

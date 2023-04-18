@@ -118,6 +118,18 @@ preemptible:
 
     Preemptible TPUs cannot be restarted.
 
+spot:
+  api_field: node.schedulingConfig.spot
+  arg_name: spot
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    If specified, create this VM as a spot VM.
+    Spot VMs make unused capacity available at highly discounted rates.
+    Spot VMs may be preempted at any time if the capacity is needed, but unless preempted there is
+    no limit on runtime duration. Spot VM TPUs cannot be restarted, and must be recreated again.
+
 reserved:
   api_field: node.schedulingConfig.reserved
   arg_name: reserved
@@ -155,20 +167,6 @@ labels:
   help_text: |
     Resource labels to represent user-provided metadata. See
     https://cloud.google.com/compute/docs/labeling-resources for details.
-
-metadata:
-  arg_name: metadata
-  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
-  required: false
-  help_text: |
-    List of comma-separated metadata key-value pairs for the Cloud TPU VM node.
-
-metadata_from_file:
-  arg_name: metadata-from-file
-  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
-  required: false
-  help_text: |
-    Same as --metadata except the value for the entry will be read from a local file.
 
 tags:
   api_field: node.tags

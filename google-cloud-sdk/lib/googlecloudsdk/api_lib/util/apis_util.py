@@ -61,4 +61,5 @@ class GapicTransport(enum.Enum):
 # helper method can be used to convert it into a (name, alias) tuple.
 _API_NAME_ALIASES = {
     'sql': 'sqladmin',
+    'transfer': 'storagetransfer',
 }

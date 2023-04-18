@@ -786,7 +786,8 @@ class ResourceArgument(object):
       mutex_group=None,
       operation_type='operate on',
       cust_metavar=None,
-      category=None
+      category=None,
+      scope_required=False,
   ):
     """Add this set of arguments to argparse parser."""
 
@@ -838,7 +839,9 @@ class ResourceArgument(object):
       return
 
     if len(self.scopes) > 1:
-      scope = parser.add_group(mutex=True, category=category)
+      scope = parser.add_group(
+          mutex=True, category=category, required=scope_required
+      )
     else:
       scope = parser
 

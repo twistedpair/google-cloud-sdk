@@ -41,28 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_AZUREINSTANCES = (
-      'projects.locations.azureInstances',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/azureInstances/'
-              '{azureInstancesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_BAREMETALINSTANCES = (
-      'projects.locations.bareMetalInstances',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'bareMetalInstances/{bareMetalInstancesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_CONVERGEIMAGES = (
       'projects.locations.convergeImages',
       '{+name}',
@@ -114,27 +92,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/convergeVolumes/'
               '{convergeVolumesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_FAKES = (
-      'projects.locations.fakes',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/fakes/{fakesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_NETAPPVOLUMES = (
-      'projects.locations.netappVolumes',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/netappVolumes/'
-              '{netappVolumesId}',
       },
       ['name'],
       True

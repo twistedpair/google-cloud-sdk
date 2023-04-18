@@ -146,3 +146,16 @@ private_connection:
     attribute_name: private-connection
     help: Private Connection
   disable_auto_completers: false
+
+logging_server:
+  name: Logging Server
+  collection: vmwareengine.projects.locations.privateClouds.loggingServers
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - &logging_server
+    parameter_name: loggingServersId
+    attribute_name: logging-server
+    help: Resource ID of the Logging Server
+  disable_auto_completers: false

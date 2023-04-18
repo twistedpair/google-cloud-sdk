@@ -426,6 +426,10 @@ class Workflow(_messages.Message):
       can only contain lowercase letters, numeric characters, underscores, and
       dashes. Label keys must start with a letter. International characters
       are allowed.
+    UserEnvVarsValue: Optional. User-defined environment variables associated
+      with this workflow revision. This map has a maximum length of 20. Each
+      string can take up to 40KiB. Keys cannot be empty strings and cannot
+      start with "GOOGLE" or "WORKFLOWS".
 
   Fields:
     callLogLevel: Optional. Describes the level of platform logging to apply
@@ -472,6 +476,10 @@ class Workflow(_messages.Message):
       unavailable due to revoked KMS key permissions.
     updateTime: Output only. The timestamp for when the workflow was last
       updated.
+    userEnvVars: Optional. User-defined environment variables associated with
+      this workflow revision. This map has a maximum length of 20. Each string
+      can take up to 40KiB. Keys cannot be empty strings and cannot start with
+      "GOOGLE" or "WORKFLOWS".
   """
 
   class CallLogLevelValueValuesEnum(_messages.Enum):
@@ -532,6 +540,34 @@ class Workflow(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserEnvVarsValue(_messages.Message):
+    r"""Optional. User-defined environment variables associated with this
+    workflow revision. This map has a maximum length of 20. Each string can
+    take up to 40KiB. Keys cannot be empty strings and cannot start with
+    "GOOGLE" or "WORKFLOWS".
+
+    Messages:
+      AdditionalProperty: An additional property for a UserEnvVarsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserEnvVarsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserEnvVarsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   cryptoKeyName = _messages.StringField(3)
@@ -545,6 +581,7 @@ class Workflow(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
   stateError = _messages.MessageField('StateError', 12)
   updateTime = _messages.StringField(13)
+  userEnvVars = _messages.MessageField('UserEnvVarsValue', 14)
 
 
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):

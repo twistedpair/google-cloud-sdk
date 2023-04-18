@@ -31,3 +31,51 @@ converge_instance:
     attribute_name: converge_instance
     help: Marketplace Solutions Converge instance.
   disable_auto_completers: false
+
+converge_image:
+  name: converge_image
+  collection: marketplacesolutions.projects.locations.convergeImages
+  attributes:
+  - *project
+  - *region
+  - &converge_image
+    parameter_name: convergeImagesId
+    attribute_name: converge_image
+    help: Marketplace Solutions Converge image.
+  disable_auto_completers: false
+
+converge_network:
+  name: converge_network
+  collection: marketplacesolutions.projects.locations.convergeNetworks
+  attributes:
+  - *project
+  - *region
+  - &converge_network
+    parameter_name: convergeNetworksId
+    attribute_name: converge_network
+    help: Marketplace Solutions Converge network.
+  disable_auto_completers: false
+
+converge_volume:
+  name: converge_volume
+  collection: marketplacesolutions.projects.locations.convergeVolumes
+  attributes:
+  - *project
+  - *region
+  - &converge_volume
+    parameter_name: convergeVolumesId
+    attribute_name: converge_volume
+    help: Marketplace Solutions Converge volume.
+  disable_auto_completers: false
+
+converge_ssh_key:
+  name: converge_ssh_key
+  collection: marketplacesolutions.projects.locations.convergeSshKeys
+  attributes:
+  - *project
+  - *region
+  - &converge_ssh_key
+    parameter_name: convergeSshKeysId
+    attribute_name: converge_ssh_key
+    help: Marketplace Solutions Converge ssh key.
+  disable_auto_completers: false

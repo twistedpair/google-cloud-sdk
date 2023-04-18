@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 DEFAULT_ACTIONS = ["DEFAULT", "ALLOW", "ALERT", "DENY"]
+DEFAULT_PROFILE_TYPES = ["THREAT_PREVENTION"]
 
 
 def AddSeverityorThreatIDArg(parser, required=True):
@@ -57,6 +58,14 @@ def AddActionArg(parser, actions=None, required=True):
       required=required,
       choices=choices,
       help="Action associated with severity or threat-id",
+  )
+
+
+def AddProfileDescription(parser, required=False):
+  parser.add_argument(
+      "--description",
+      required=required,
+      help="Brief description of the security profile",
   )
 
 
@@ -97,6 +106,6 @@ def AddSecurityProfileResource(parser):
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help="Security Profile Name",
+      group_help="Security Profile Name.",
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

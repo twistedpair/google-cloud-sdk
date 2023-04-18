@@ -369,13 +369,17 @@ For more details, see: https://cloud.google.com/cloud-build/docs/build-config
   return build_config
 
 
-def AddBuildDockerArgs(argument_group, require_docker_image=False):
+def AddBuildDockerArgs(
+    argument_group,
+    require_docker_image=False,
+    update=False):
   """Adds additional argparse flags to a group for build docker options.
 
   Args:
     argument_group: argparse argument group to which build docker flag will
       be added.
     require_docker_image: If true, --dockerfile-image must be provided.
+    update: Whether the command is update.
   """
   docker = argument_group.add_argument_group(
       help='Dockerfile build configuration flags')
@@ -390,9 +394,12 @@ build using the specified file.
 
 The filename is relative to the Dockerfile directory.
 """)
+  default_dir = '/'
+  if update:
+    default_dir = None
   docker.add_argument(
       '--dockerfile-dir',
-      default='/',
+      default=default_dir,
       help="""\
 Location of the directory containing the Dockerfile in the repository.
 
@@ -453,7 +460,7 @@ def AddBuildConfigArgsForUpdate(flag_config,
       Local path to a YAML or JSON file containing a build configuration.
     """)
 
-  AddBuildDockerArgs(build_config, require_docker_image=True)
+  AddBuildDockerArgs(build_config, require_docker_image=True, update=True)
 
   return build_config
 
@@ -549,7 +556,7 @@ def ParseBuildConfigArgsForUpdate(trigger,
     if args.dockerfile_dir:
       dockerfile_dir = args.dockerfile_dir
     elif old_trigger.build and old_trigger.build.steps:
-      dockerfile_dir = old_trigger.steps[0].dir
+      dockerfile_dir = old_trigger.build.steps[0].dir
     else:
       dockerfile_dir = '/'
 

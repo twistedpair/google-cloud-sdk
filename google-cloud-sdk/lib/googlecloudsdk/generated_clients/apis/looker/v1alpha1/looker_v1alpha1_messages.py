@@ -531,48 +531,11 @@ class EncryptionConfig(_messages.Message):
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
 
 
-class EncryptionConfigInternal(_messages.Message):
-  r"""Configuration for Encryption - e.g. CMEK Currently we only allow the key
-  name to be modified here, but in the future we may add some additional
-  tuning parameters that are currently hard-coded. Other fields are *output*
-  fields reflecting the current status of the instance w.r.t. CMEK encryption
-  and should not be set by the user.
-
-  Enums:
-    KmsKeyStateValueValuesEnum: Output only. Current status of this instance
-      w.r.t. CMEK
-
-  Fields:
-    kmsKeyName: Name of the CMEK key in KMS (input parameter)
-    kmsKeyNameVersion: Output only. Full name+version of the CMEK key
-      currently in use to encrypt Looker data Empty if CMEK is not configured
-      in this instance
-    kmsKeyState: Output only. Current status of this instance w.r.t. CMEK
-  """
-
-  class KmsKeyStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current status of this instance w.r.t. CMEK
-
-    Values:
-      KMS_KEY_STATE_UNSPECIFIED: CMEK status not specified
-      VALID: CMEK key is currently valid
-      REVOKED: CMEK key is currently revoked (instance should in restricted
-        mode)
-    """
-    KMS_KEY_STATE_UNSPECIFIED = 0
-    VALID = 1
-    REVOKED = 2
-
-  kmsKeyName = _messages.StringField(1)
-  kmsKeyNameVersion = _messages.StringField(2)
-  kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
-
-
 class ExportEncryptionConfig(_messages.Message):
   r"""Configuration for Encryption - e.g. CMEK
 
   Fields:
-    kmsKeyName: Name of the CMEK key in KMS.
+    kmsKeyName: Required. Name of the CMEK key in KMS.
   """
 
   kmsKeyName = _messages.StringField(1)
@@ -582,14 +545,52 @@ class ExportInstanceRequest(_messages.Message):
   r"""Requestion options for exporting data of an Instance.
 
   Fields:
-    encryptionConfig: Encryption configuration (CMEK). Required only for non
-      cmek instances
+    encryptionConfig: Required. Encryption configuration (CMEK). For CMEK
+      enabled instances it should be same as looker CMEK.
     gcsUri: The path to the folder in Google Cloud Storage where the export
       will be stored. The URI is in the form `gs://bucketName/folderName`.
   """
 
   encryptionConfig = _messages.MessageField('ExportEncryptionConfig', 1)
   gcsUri = _messages.StringField(2)
+
+
+class ExportMetadata(_messages.Message):
+  r"""ExportMetadata represents the metadata of the exported artifacts. The
+  metadata.json file in export artifact can be parsed as this message
+
+  Fields:
+    exportEncryptionKey: Encryption key that was used to encrypt the export
+      artifacts.
+    filePaths: List of files created as part of export artifact (excluding the
+      metadata). The paths are relative to the folder containing the metadata.
+    lookerEncryptionKey: Looker encryption key, encrypted with the provided
+      export encryption key. This value will only be populated if the looker
+      instance uses Looker managed encryption instead of CMEK.
+    lookerInstance: Name of the exported instance. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+    lookerPlatformEdition: Platform edition of the exported instance.
+    lookerVersion: Version of instance when the export was created.
+  """
+
+  exportEncryptionKey = _messages.MessageField('ExportMetadataEncryptionKey', 1)
+  filePaths = _messages.StringField(2, repeated=True)
+  lookerEncryptionKey = _messages.StringField(3)
+  lookerInstance = _messages.StringField(4)
+  lookerPlatformEdition = _messages.StringField(5)
+  lookerVersion = _messages.StringField(6)
+
+
+class ExportMetadataEncryptionKey(_messages.Message):
+  r"""Encryption key details for the exported artifact.
+
+  Fields:
+    cmek: Name of the CMEK.
+    version: Version of the CMEK.
+  """
+
+  cmek = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class Expr(_messages.Message):
@@ -655,14 +656,11 @@ class Instance(_messages.Message):
     createTime: Output only. The time when the Looker instance provisioning
       was first requested.
     customDomain: Custom Domain Information
-    deleteTime: Output only. The time when the Looker instance was (soft)
-      deleted.
     denyMaintenancePeriod: Maintenance denial period for this instance.
     egressPublicIp: Output only. Public Egress IP (IPv4).
     enablePrivateIp: Whether private IP is enabled on the Looker instance.
     enablePublicIp: Whether public IP is enabled on the Looker instance.
     encryptionConfig: Encryption configuration (CMEK) -- if enabled
-    expireTime: Output only. The time when the Looker instance will expire at.
     ingressPrivateIp: Output only. Private Ingress IP (IPv4).
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
     lastDenyMaintenancePeriod: Last maintenance denial period for this
@@ -675,6 +673,7 @@ class Instance(_messages.Message):
     maintenanceWindow: Maintenance window for this instance.
     name: Output only. Format:
       projects/{project}/locations/{location}/instances/{instance}
+    oauthConfig: Looker Instance OAuth login settings.
     platformEdition: Platform edition.
     reservedRange: Name of a reserved IP address range within the consumer
       network, to be used for private servicie access connection. User may or
@@ -714,8 +713,6 @@ class Instance(_messages.Message):
       SUSPENDED: Instance was suspended.
       UPDATING: Instance update is in progress.
       DELETING: Instance delete is in progress.
-      DELETED: Instance has been deleted.
-      PURGING: Instance is being purged. (This is different from DELETING).
       EXPORTING: Instance is being exported.
       IMPORTING: Instance is importing data.
     """
@@ -726,35 +723,32 @@ class Instance(_messages.Message):
     SUSPENDED = 4
     UPDATING = 5
     DELETING = 6
-    DELETED = 7
-    PURGING = 8
-    EXPORTING = 9
-    IMPORTING = 10
+    EXPORTING = 7
+    IMPORTING = 8
 
   adminSettings = _messages.MessageField('AdminSettings', 1)
   consumerNetwork = _messages.StringField(2)
   createTime = _messages.StringField(3)
   customDomain = _messages.MessageField('CustomDomain', 4)
-  deleteTime = _messages.StringField(5)
-  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 6)
-  egressPublicIp = _messages.StringField(7)
-  enablePrivateIp = _messages.BooleanField(8)
-  enablePublicIp = _messages.BooleanField(9)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 10)
-  expireTime = _messages.StringField(11)
-  ingressPrivateIp = _messages.StringField(12)
-  ingressPublicIp = _messages.StringField(13)
-  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 14)
-  lookerUri = _messages.StringField(15)
-  lookerVersion = _messages.StringField(16)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
-  name = _messages.StringField(19)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
-  reservedRange = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
-  users = _messages.MessageField('Users', 24)
+  denyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 5)
+  egressPublicIp = _messages.StringField(6)
+  enablePrivateIp = _messages.BooleanField(7)
+  enablePublicIp = _messages.BooleanField(8)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
+  ingressPrivateIp = _messages.StringField(10)
+  ingressPublicIp = _messages.StringField(11)
+  lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 12)
+  lookerUri = _messages.StringField(13)
+  lookerVersion = _messages.StringField(14)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 15)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
+  name = _messages.StringField(17)
+  oauthConfig = _messages.MessageField('OAuthConfig', 18)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 19)
+  reservedRange = _messages.StringField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
+  users = _messages.MessageField('Users', 23)
 
 
 class InstanceBackup(_messages.Message):
@@ -794,51 +788,6 @@ class InstanceBackup(_messages.Message):
   expireTime = _messages.StringField(3)
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
-
-
-class InstanceBackupInternal(_messages.Message):
-  r"""A InstanceBackupInternal object.
-
-  Enums:
-    StateValueValuesEnum: The current state of the backup.
-
-  Fields:
-    createTime: The time when the backup was started.
-    encryptionConfig: Output only. Current status of the CMEK encryption
-    expireTime: The time when the backup will be deleted.
-    filestoreBackupId: Filestore backup id.
-    mysqlBackupId: MySQL backup id.
-    name: The relative resource name of the backup, in the following form: `pr
-      ojects/{project_number}/locations/{location_id}/instances/{instance_id}/
-      backups/{backup_id}`
-    state: The current state of the backup.
-    tenantProjectId: Tenant project ID where looker instance is running.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the backup.
-
-    Values:
-      STATE_UNSPECIFIED: The state of the backup is unknown.
-      CREATING: The backup is being created.
-      DELETING: The backup is being deleted.
-      ACTIVE: The backup is active and ready to use.
-      FAILED: The backup failed.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    DELETING = 2
-    ACTIVE = 3
-    FAILED = 4
-
-  createTime = _messages.StringField(1)
-  encryptionConfig = _messages.MessageField('EncryptionConfigInternal', 2)
-  expireTime = _messages.StringField(3)
-  filestoreBackupId = _messages.StringField(4)
-  mysqlBackupId = _messages.StringField(5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  tenantProjectId = _messages.StringField(8)
 
 
 class ListInstanceBackupsResponse(_messages.Message):
@@ -1219,13 +1168,11 @@ class LookerProjectsLocationsInstancesListRequest(_messages.Message):
       most X will be returned. The maximum value is Y.
     pageToken: A page token received from a previous ListInstances request.
     parent: Required. Format: projects/{project}/locations/{location}
-    showDeleted: Show deleted instances
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  showDeleted = _messages.BooleanField(4)
 
 
 class LookerProjectsLocationsInstancesPatchRequest(_messages.Message):
@@ -1428,6 +1375,21 @@ class MaintenanceWindow(_messages.Message):
 
   dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
   startTime = _messages.MessageField('TimeOfDay', 2)
+
+
+class OAuthConfig(_messages.Message):
+  r"""Looker Instance OAuth login settings.
+
+  Fields:
+    clientId: Input only. client_id from an external OAuth application. This
+      is an input-only field, and thus will not be set in any responses.
+    clientSecret: Input only. client_secret from an external OAuth
+      application. This is an input-only field, and thus will not be set in
+      any responses.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

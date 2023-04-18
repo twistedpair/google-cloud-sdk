@@ -42,14 +42,14 @@ def _is_agent_pool_still_creating(result, retryer_state):
     Boolean representing if AgentPool's state is "CREATING." False = "CREATED".
   """
   del retryer_state  # Unused.
-  messages = apis.GetMessagesModule('storagetransfer', 'v1')
+  messages = apis.GetMessagesModule('transfer', 'v1')
   return result.state == messages.AgentPool.StateValueValuesEnum.CREATING
 
 
 def api_get(name):
   """Returns agent pool details from API as Apitools object."""
-  client = apis.GetClientInstance('storagetransfer', 'v1')
-  messages = apis.GetMessagesModule('storagetransfer', 'v1')
+  client = apis.GetClientInstance('transfer', 'v1')
+  messages = apis.GetMessagesModule('transfer', 'v1')
   formatted_agent_pool_name = name_util.add_agent_pool_prefix(name)
   return client.projects_agentPools.Get(
       messages.StoragetransferProjectsAgentPoolsGetRequest(

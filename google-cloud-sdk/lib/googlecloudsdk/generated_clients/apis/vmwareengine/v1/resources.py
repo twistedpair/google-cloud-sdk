@@ -130,6 +130,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_DNSFORWARDING = (
+      'projects.locations.privateClouds.dnsForwarding',
+      'projects/{project}/locations/{location}/privateClouds/{private_cloud}/'
+      'dnsForwarding',
+      {},
+      ['project', 'location', 'private_cloud'],
+      True
+  )
   PROJECTS_LOCATIONS_PRIVATECLOUDS_EXTERNALADDRESSES = (
       'projects.locations.privateClouds.externalAddresses',
       '{+name}',

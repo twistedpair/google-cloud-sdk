@@ -117,7 +117,7 @@ def AddRegionGroup(parser,
 def AddSpokeLocationsFlag(parser):
   """Add the --spoke-locations argument to the given parser."""
   spoke_locations_help_text = """ \
-        A comma sepeated list of locations. The locations can be set to 'global'
+        A comma separated list of locations. The locations can be set to 'global'
         and/or Google Cloud supported regions. To see the names of regions, see
         [Viewing a list of available regions](https://cloud.google.com/compute/docs/regions-zones/viewing-regions-zones#viewing_a_list_of_available_regions)."""
   parser.add_argument(

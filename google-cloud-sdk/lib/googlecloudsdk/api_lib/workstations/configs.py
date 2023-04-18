@@ -26,6 +26,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
+import six
+
 IMAGE_URL_MAP = {
     'codeoss':
         'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest',
@@ -77,6 +79,15 @@ class Configs:
     config.name = config_name
     config.idleTimeout = '{}s'.format(args.idle_timeout)
     config.runningTimeout = '{}s'.format(args.running_timeout)
+    if args.labels:
+      config.labels = self.messages.WorkstationConfig.LabelsValue(
+          additionalProperties=[
+              self.messages.WorkstationConfig.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in sorted(six.iteritems(args.labels))
+          ]
+      )
 
     # GCE Instance Config
     config.host = self.messages.Host()
@@ -189,6 +200,17 @@ class Configs:
     if args.running_timeout:
       config.runningTimeout = '{}s'.format(args.running_timeout)
       update_mask.append('running_timeout')
+
+    if args.labels:
+      config.labels = self.messages.WorkstationConfig.LabelsValue(
+          additionalProperties=[
+              self.messages.WorkstationConfig.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in sorted(six.iteritems(args.labels))
+          ]
+      )
+      update_mask.append('labels')
 
     # GCE Instance Config
     config.host = self.messages.Host()

@@ -55,8 +55,8 @@ def _is_operation_in_progress(result, retryer_state):
 
 def api_get(name):
   """Returns operation details from API as Apitools object."""
-  client = apis.GetClientInstance('storagetransfer', 'v1')
-  messages = apis.GetMessagesModule('storagetransfer', 'v1')
+  client = apis.GetClientInstance('transfer', 'v1')
+  messages = apis.GetMessagesModule('transfer', 'v1')
 
   formatted_operation_name = name_util.add_operation_prefix(name)
   return client.transferOperations.Get(

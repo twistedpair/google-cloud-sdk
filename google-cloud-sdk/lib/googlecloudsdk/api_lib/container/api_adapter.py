@@ -267,6 +267,7 @@ BACKUPRESTORE = 'BackupRestore'
 CONFIGCONNECTOR = 'ConfigConnector'
 GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 GCPFILESTORECSIDRIVER = 'GcpFilestoreCsiDriver'
+GCSFUSECSIDRIVER = 'GcsFuseCsiDriver'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -304,6 +305,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
+    GCSFUSECSIDRIVER,
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
@@ -4617,6 +4619,11 @@ class V1Beta1Adapter(V1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
+      # GcsFuseCSIDriver is disabled by default.
+      if GCSFUSECSIDRIVER in options.addons:
+        cluster.addonsConfig.gcsFuseCsiDriverConfig = (
+            self.messages.GcsFuseCsiDriverConfig(enabled=True)
+        )
     if (options.enable_autoprovisioning is not None or
         options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
@@ -4874,6 +4881,10 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
+      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
+        update.desiredAddonsConfig.gcsFuseCsiDriverConfig = (
+            self.messages.GcsFuseCsiDriverConfig(
+                enabled=(not options.disable_addons.get(GCSFUSECSIDRIVER))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -5131,6 +5142,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
+      # GcsFuseCSIDriver is disabled by default.
+      if GCSFUSECSIDRIVER in options.addons:
+        cluster.addonsConfig.gcsFuseCsiDriverConfig = (
+            self.messages.GcsFuseCsiDriverConfig(enabled=True)
+        )
     if options.enable_workload_certificates:
       if not options.workload_pool:
         raise util.Error(
@@ -5394,6 +5410,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
+      if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
+        update.desiredAddonsConfig.gcsFuseCsiDriverConfig = (
+            self.messages.GcsFuseCsiDriverConfig(
+                enabled=(not options.disable_addons.get(GCSFUSECSIDRIVER))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(

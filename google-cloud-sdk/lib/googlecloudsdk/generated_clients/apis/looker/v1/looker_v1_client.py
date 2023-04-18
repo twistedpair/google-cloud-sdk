@@ -200,6 +200,33 @@ class LookerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Export instance.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:export',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:export',
+        request_field='exportInstanceRequest',
+        request_type_name='LookerProjectsLocationsInstancesExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Instance.
 
@@ -251,6 +278,33 @@ class LookerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='LookerProjectsLocationsInstancesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Import instance.
+
+      Args:
+        request: (LookerProjectsLocationsInstancesImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:import',
+        http_method='POST',
+        method_id='looker.projects.locations.instances.import',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:import',
+        request_field='importInstanceRequest',
+        request_type_name='LookerProjectsLocationsInstancesImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

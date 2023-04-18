@@ -78,9 +78,15 @@ class Client:
         name=name
     )
     response = self._sp_client.Get(req)
-    return response.etag, encoding.MessageToDict(
-        response.threatPreventionProfile
-    )
+    if response.threatPreventionProfile is None:
+      return response.etag, {
+          'severityOverrides': [],
+          'threatOverrides': [],
+      }
+    else:
+      return response.etag, encoding.MessageToDict(
+          response.threatPreventionProfile
+      )
 
   def CheckOverridesExist(
       self,
@@ -101,9 +107,6 @@ class Client:
       existing_threat_prevention_profile_object if the override exists or None
       is returned.
     """
-    if update_mask not in existing_threat_prevention_profile_object:
-      existing_threat_prevention_profile_object[update_mask] = []
-
     update_field = ''
 
     if update_mask == 'severityOverrides':
@@ -265,3 +268,18 @@ class Client:
         updateMask='threatPreventionProfile',
     )
     return self._sp_client.Patch(req)
+
+  def CreateSecurityProfile(
+      self, name, sp_id, parent, description, profile_type='THREAT_PREVENTION'
+  ):
+    """Calls the Create Security Profile API."""
+    security_profile = self.messages.SecurityProfile(
+        name=name,
+        description=description,
+        type=self._ParseSecurityProfileType(profile_type),
+    )
+
+    req = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
+        parent=parent, securityProfile=security_profile, securityProfileId=sp_id
+    )
+    return self._sp_client.Create(req)

@@ -452,6 +452,7 @@ class ConnectSettings(_messages.Message):
       POSTGRES_12: The database version is PostgreSQL 12.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
+      POSTGRES_15: The database version is PostgreSQL 15.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -491,19 +492,20 @@ class ConnectSettings(_messages.Message):
     POSTGRES_12 = 12
     POSTGRES_13 = 13
     POSTGRES_14 = 14
-    MYSQL_8_0 = 15
-    MYSQL_8_0_18 = 16
-    MYSQL_8_0_26 = 17
-    MYSQL_8_0_27 = 18
-    MYSQL_8_0_28 = 19
-    MYSQL_8_0_29 = 20
-    MYSQL_8_0_30 = 21
-    MYSQL_8_0_31 = 22
-    MYSQL_8_0_32 = 23
-    SQLSERVER_2019_STANDARD = 24
-    SQLSERVER_2019_ENTERPRISE = 25
-    SQLSERVER_2019_EXPRESS = 26
-    SQLSERVER_2019_WEB = 27
+    POSTGRES_15 = 15
+    MYSQL_8_0 = 16
+    MYSQL_8_0_18 = 17
+    MYSQL_8_0_26 = 18
+    MYSQL_8_0_27 = 19
+    MYSQL_8_0_28 = 20
+    MYSQL_8_0_29 = 21
+    MYSQL_8_0_30 = 22
+    MYSQL_8_0_31 = 23
+    MYSQL_8_0_32 = 24
+    SQLSERVER_2019_STANDARD = 25
+    SQLSERVER_2019_ENTERPRISE = 26
+    SQLSERVER_2019_EXPRESS = 27
+    SQLSERVER_2019_WEB = 28
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -703,6 +705,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_12: The database version is PostgreSQL 12.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
+      POSTGRES_15: The database version is PostgreSQL 15.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -742,19 +745,20 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_12 = 12
     POSTGRES_13 = 13
     POSTGRES_14 = 14
-    MYSQL_8_0 = 15
-    MYSQL_8_0_18 = 16
-    MYSQL_8_0_26 = 17
-    MYSQL_8_0_27 = 18
-    MYSQL_8_0_28 = 19
-    MYSQL_8_0_29 = 20
-    MYSQL_8_0_30 = 21
-    MYSQL_8_0_31 = 22
-    MYSQL_8_0_32 = 23
-    SQLSERVER_2019_STANDARD = 24
-    SQLSERVER_2019_ENTERPRISE = 25
-    SQLSERVER_2019_EXPRESS = 26
-    SQLSERVER_2019_WEB = 27
+    POSTGRES_15 = 15
+    MYSQL_8_0 = 16
+    MYSQL_8_0_18 = 17
+    MYSQL_8_0_26 = 18
+    MYSQL_8_0_27 = 19
+    MYSQL_8_0_28 = 20
+    MYSQL_8_0_29 = 21
+    MYSQL_8_0_30 = 22
+    MYSQL_8_0_31 = 23
+    MYSQL_8_0_32 = 24
+    SQLSERVER_2019_STANDARD = 25
+    SQLSERVER_2019_ENTERPRISE = 26
+    SQLSERVER_2019_EXPRESS = 27
+    SQLSERVER_2019_WEB = 28
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -778,6 +782,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_12: The database version is PostgreSQL 12.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
+      POSTGRES_15: The database version is PostgreSQL 15.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -817,19 +822,20 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_12 = 12
     POSTGRES_13 = 13
     POSTGRES_14 = 14
-    MYSQL_8_0 = 15
-    MYSQL_8_0_18 = 16
-    MYSQL_8_0_26 = 17
-    MYSQL_8_0_27 = 18
-    MYSQL_8_0_28 = 19
-    MYSQL_8_0_29 = 20
-    MYSQL_8_0_30 = 21
-    MYSQL_8_0_31 = 22
-    MYSQL_8_0_32 = 23
-    SQLSERVER_2019_STANDARD = 24
-    SQLSERVER_2019_ENTERPRISE = 25
-    SQLSERVER_2019_EXPRESS = 26
-    SQLSERVER_2019_WEB = 27
+    POSTGRES_15 = 15
+    MYSQL_8_0 = 16
+    MYSQL_8_0_18 = 17
+    MYSQL_8_0_26 = 18
+    MYSQL_8_0_27 = 19
+    MYSQL_8_0_28 = 20
+    MYSQL_8_0_29 = 21
+    MYSQL_8_0_30 = 22
+    MYSQL_8_0_31 = 23
+    MYSQL_8_0_32 = 24
+    SQLSERVER_2019_STANDARD = 25
+    SQLSERVER_2019_ENTERPRISE = 26
+    SQLSERVER_2019_EXPRESS = 27
+    SQLSERVER_2019_WEB = 28
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1306,6 +1312,7 @@ class Flag(_messages.Message):
       POSTGRES_12: The database version is PostgreSQL 12.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
+      POSTGRES_15: The database version is PostgreSQL 15.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -1345,19 +1352,20 @@ class Flag(_messages.Message):
     POSTGRES_12 = 12
     POSTGRES_13 = 13
     POSTGRES_14 = 14
-    MYSQL_8_0 = 15
-    MYSQL_8_0_18 = 16
-    MYSQL_8_0_26 = 17
-    MYSQL_8_0_27 = 18
-    MYSQL_8_0_28 = 19
-    MYSQL_8_0_29 = 20
-    MYSQL_8_0_30 = 21
-    MYSQL_8_0_31 = 22
-    MYSQL_8_0_32 = 23
-    SQLSERVER_2019_STANDARD = 24
-    SQLSERVER_2019_ENTERPRISE = 25
-    SQLSERVER_2019_EXPRESS = 26
-    SQLSERVER_2019_WEB = 27
+    POSTGRES_15 = 15
+    MYSQL_8_0 = 16
+    MYSQL_8_0_18 = 17
+    MYSQL_8_0_26 = 18
+    MYSQL_8_0_27 = 19
+    MYSQL_8_0_28 = 20
+    MYSQL_8_0_29 = 21
+    MYSQL_8_0_30 = 22
+    MYSQL_8_0_31 = 23
+    MYSQL_8_0_32 = 24
+    SQLSERVER_2019_STANDARD = 25
+    SQLSERVER_2019_ENTERPRISE = 26
+    SQLSERVER_2019_EXPRESS = 27
+    SQLSERVER_2019_WEB = 28
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,

@@ -500,3 +500,20 @@ def AddEncryptionKeyFields(parser):
   key.
   """
   group.add_argument('--kms-key-service-account', type=str, help=help_text)
+
+
+def AddLabelsField(parser):
+  """Adds a --labels flag to the given parser."""
+  help_text = """\
+  Labels that are applied to the resource and propagated to the underlying
+  Compute Engine resources.
+
+  Example:
+
+    $ {command} --labels=label1=value1,label2=value2"""
+  parser.add_argument(
+      '--labels',
+      metavar='LABELS',
+      type=arg_parsers.ArgDict(key_type=str, value_type=str),
+      help=help_text,
+  )

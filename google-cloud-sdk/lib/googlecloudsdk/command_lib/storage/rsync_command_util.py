@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import enum
 import os
-import re
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -108,8 +107,8 @@ def get_hashed_list_file_path(list_file_name, chunk_number=None):
   Raises:
     Error: Hashed file path is too long.
   """
-  delimiterless_file_name = re.sub(
-      tracker_file_util.RE_DELIMITER_PATTERN, '_', list_file_name
+  delimiterless_file_name = tracker_file_util.get_delimiterless_file_path(
+      list_file_name
   )
   hashed_file_name = tracker_file_util.get_hashed_file_name(
       delimiterless_file_name

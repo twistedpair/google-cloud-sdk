@@ -5,6 +5,140 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 427.0.0 (2023-04-18)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Deprecated Python 2. The minimum supported Python version is Python 3.5.
+*   **(Cloud Datastore)** Remove `gcloud datastore databases create` after version 427.0.0. Please use `gcloud firestore database update --type=datastore-mode` instead.
+*   **(Cloud Firestore)** Switched `firestore database create` to use Firestore API.
+*   **(Cloud Firestore)** Deprecated `--region` in `gcloud firestore database create`. Use `--location` to specify the database location.
+
+
+### Google Cloud CLI
+
+* Added `--lifetime` flag to `gcloud auth print-access-token` to configure
+service account impersonation access token lifetime.
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.75.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/go/release-notes>.
+* Updated the Java SDK to version 2.0.13 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.13>.
+* Upgraded Jetty web server to version 9.4.51.v20230217.
+
+### Artifact Registry
+
+* Promoted `gcloud artifacts googet` command group to GA.
+
+### BigQuery
+
+* Removed restrictions to what locations can be used with `--location` when
+  combined with `--use_regional_endpoints`.
+* Improved `Format RANGE<TIMESTAMP>` formatting.
+
+### Certificate Authority Service
+
+* Added `ignore_dependent_resources` parameter to disable CA, delete CA, and delete CA Pool. These commands would normally fail if the CA Pool would be in a state where it's not able to issue certificates while there's a resource that depends on it. This flag skips the check and may cause unintended and unrecoverable effects on any dependent resource(s) since the CA Pool would no longer be able to issue certificates.
+
+### Cloud Firestore
+
+* Promoted `firestore databases describe` to beta.
+* Promoted `firestore databases update` to beta.
+* Promoted `firestore databases list` to beta.
+* Promoted `firestore databases describe` to GA.
+* Promoted `firestore databases update` to GA.
+* Promoted `firestore databases list` to GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.16.2
+  * Fixed an issue where some http/1 headers were causing 400 errors.
+
+### Cloud On Demand Scanning
+
+*   Updated `local-extract` component to 1.5.8 to allow it to run in
+    environments without `glibc`.
+
+### Cloud Run
+
+* Promoted `--session-affinity` to GA for `--platform=managed` for `gcloud run deploy` and `gcloud run services update`.
+* Promoted `--add-custom-audiences`, `--clear-custom-audiences`, `--remove-custom-audiences` and `--set-custom-audiences` to beta for `--platform=managed` for `gcloud run deploy` and `gcloud run services update`.
+
+### Cloud SQL
+
+* Added PostgreSQL 15 to database versions.
+
+### Cloud Spanner
+
+* Added database drop protection column to `gcloud spanner databases list`
+command.
+
+### Cloud Storage
+
+* Promoted `gcloud storage insights` commands to GA.
+
+### Cloud TPU
+
+* Add `gcloud compute tpus topologies list` to list available TPUs by chip
+topology.
+
+### Cloud Workstations
+
+* Adding support for labels in the `beta workstations config create` and
+`beta workstations config update` commands.
+
+### Compute Engine
+
+* Updated the scope flags `--zone` or `--region` of the primary disk,
+`--secondary-disk-zone` or `--secondary-disk-region` of the secondary disk to be
+required for `gcloud compute disks start-async-replication`.
+
+### Dataproc Metastore
+
+* Added support for Dataproc Metastore admin interface. The following commands have been added to alpha/beta release tracks:
+  * `metastore services alter-table-properties`
+
+### Events
+
+* Deprecated `gcloud beta events` surface and all commands within. This surface
+  will be removed in an upcoming release. Please use `gcloud eventarc` instead.
+
+### GKE Hub
+
+* Added `--location` flag to `gcloud container fleet memberships register` and
+`gcloud beta container fleet memberships register`.
+* If `--location` is not specified when registering GKE clusters, Membership
+region is selected to match to GKE cluster location by default.
+* If `--location` is not specified when registering non-GKE clusters, Membership
+region is selected as "global" by default.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.29 to v1.0.0-beta.30. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.30> for more details.
+
+### Kubernetes Engine
+
+*   Added `--addons=GcsFuseCsiDriver` to `gcloud beta container clusters
+    create` and `--update-addons=GcsFuseCsiDriver` to `gcloud
+    beta container clusters update` to enable/disable the Cloud Storage FUSE
+    Container Storage Interface (CSI) Driver.
+*   Allow `--enable-managed-prometheus` or `--disable-managed-prometheus` flag
+    to be passed with `--logging` and `--monitoring` flags at the same time
+    in `gcloud container clusters update`.
+*   Added `--additional-pod-ipv4-ranges` and `--remove-additional-pod-ipv4-ranges`
+    flags of `gcloud container clusters update` to GA.
+
+### Network Connectivity
+
+*   Renamed 'psc-subnetworks' field to 'subnets' based on review comments.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 426.0.0 (2023-04-11)
 
 ### Breaking Changes

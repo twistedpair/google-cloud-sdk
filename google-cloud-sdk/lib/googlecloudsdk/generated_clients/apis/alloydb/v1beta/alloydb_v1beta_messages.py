@@ -1761,6 +1761,7 @@ class Instance(_messages.Message):
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
       deleted.
+    updatePolicy: Update policy that will be applied during instance update.
     updateTime: Output only. Update time stamp
     writableNode: Output only. This is set for the read-write VM of the
       PRIMARY instance only.
@@ -1935,8 +1936,9 @@ class Instance(_messages.Message):
   reconciling = _messages.BooleanField(17)
   state = _messages.EnumField('StateValueValuesEnum', 18)
   uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  writableNode = _messages.MessageField('Node', 21)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 20)
+  updateTime = _messages.StringField(21)
+  writableNode = _messages.MessageField('Node', 22)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2642,6 +2644,33 @@ class TimeBasedRetention(_messages.Message):
   """
 
   retentionPeriod = _messages.StringField(1)
+
+
+class UpdatePolicy(_messages.Message):
+  r"""Policy to be used while updating the instance.
+
+  Enums:
+    ModeValueValuesEnum: Mode for updating the instance.
+
+  Fields:
+    mode: Mode for updating the instance.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Mode for updating the instance.
+
+    Values:
+      MODE_UNSPECIFIED: Mode is unknown.
+      LOW_DOWNTIME: Least disruptive way to apply the update. This is the
+        default mode.
+      FORCE_APPLY: Performs a forced update when applicable. This will be fast
+        but may incur a downtime.
+    """
+    MODE_UNSPECIFIED = 0
+    LOW_DOWNTIME = 1
+    FORCE_APPLY = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class User(_messages.Message):

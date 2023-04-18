@@ -868,6 +868,11 @@ class DisableCertificateAuthorityRequest(_messages.Message):
   CertificateAuthorityService.DisableCertificateAuthority.
 
   Fields:
+    ignoreDependentResources: Optional. This field allows this CA to be
+      disabled even if it's being depended on by another resource. However,
+      doing so may result in unintended and unrecoverable effects on any
+      dependent resource(s) since the CA will no longer be able to issue
+      certificates.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
@@ -881,7 +886,8 @@ class DisableCertificateAuthorityRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  requestId = _messages.StringField(1)
+  ignoreDependentResources = _messages.BooleanField(1)
+  requestId = _messages.StringField(2)
 
 
 class EcKeyType(_messages.Message):
@@ -1878,6 +1884,11 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest(_mess
     ignoreActiveCertificates: Optional. This field allows the CA to be deleted
       even if the CA has active certs. Active certs include both unrevoked and
       unexpired certs.
+    ignoreDependentResources: Optional. This field allows this ca to be
+      deleted even if it's being depended on by another resource. However,
+      doing so may result in unintended and unrecoverable effects on any
+      dependent resource(s) since the CA will no longer be able to issue
+      certificates.
     name: Required. The resource name for this CertificateAuthority in the
       format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
@@ -1898,9 +1909,10 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest(_mess
   """
 
   ignoreActiveCertificates = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  skipGracePeriod = _messages.BooleanField(4)
+  ignoreDependentResources = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  skipGracePeriod = _messages.BooleanField(5)
 
 
 class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDisableRequest(_messages.Message):
@@ -2186,6 +2198,11 @@ class PrivatecaProjectsLocationsCaPoolsDeleteRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsCaPoolsDeleteRequest object.
 
   Fields:
+    ignoreDependentResources: Optional. This field allows this pool to be
+      deleted even if it's being depended on by another resource. However,
+      doing so may result in unintended and unrecoverable effects on any
+      dependent resource(s) since the pool will no longer be able to issue
+      certificates.
     name: Required. The resource name for this CaPool in the format
       `projects/*/locations/*/caPools/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
@@ -2201,8 +2218,9 @@ class PrivatecaProjectsLocationsCaPoolsDeleteRequest(_messages.Message):
       (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  ignoreDependentResources = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class PrivatecaProjectsLocationsCaPoolsFetchCaCertsRequest(_messages.Message):

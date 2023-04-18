@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
+
 from googlecloudsdk.api_lib.datastore import util
 from googlecloudsdk.api_lib.firestore import admin_api as firestore_admin_api
 from googlecloudsdk.core.console import progress_tracker
@@ -87,6 +90,71 @@ def ApiMessageToIndexDefinition(proto):
   if proto.ancestor is not NO_ANCESTOR:
     index.ancestor = True
   return proto.indexId, index
+
+
+def _Fullmatch(regex, string):
+  """Emulate python-3.4 re.fullmatch()."""
+  return re.match('(?:' + regex + r')\Z', string, flags=0)
+
+
+def CollectionIdAndIndexIdFromResourcePath(resource_path):
+  """Extracts collectionId and indexId from a collectionGroup resource path.
+
+  Args:
+    resource_path: A str to represent firestore resource path contains
+      collection group. ex: projects/p/databases/d/collectionGroups/c/indexes/i.
+
+  Returns:
+    collection_id: A str to represent the collection id in the resource path.
+    index_id: A str to represent the index id in the resource path.
+
+  Raises:
+    ValueError: If the resource path is invalid.
+  """
+  index_name_pattern = '^projects/([^/]*)/databases/([^/]*)/collectionGroups/([^/]*)/indexes/([^/]*)$'
+  match = _Fullmatch(regex=index_name_pattern, string=resource_path)
+  if not match:
+    raise ValueError('Invalid resource path: {}'.format(resource_path))
+
+  return match.group(3), match.group(4)
+
+
+def FirestoreApiMessageToIndexDefinition(proto):
+  """Converts a GoogleFirestoreAdminV1Index to an index definition structure.
+
+  Args:
+    proto: GoogleFirestoreAdminV1Index
+
+  Returns:
+    index_id: A str to represent the index id in the resource path.
+    index: A datastore_index.Index that contains index definition.
+
+  Raises:
+    ValueError: If GoogleFirestoreAdminV1Index cannot be converted to index
+    definition structure.
+  """
+  properties = []
+  for field_proto in proto.fields:
+    prop_definition = datastore_index.Property(name=str(field_proto.fieldPath))
+    if field_proto.order == FIRESTORE_DESCENDING:
+      prop_definition.direction = 'desc'
+    else:
+      prop_definition.direction = 'asc'
+    properties.append(prop_definition)
+
+  collection_id, index_id = CollectionIdAndIndexIdFromResourcePath(proto.name)
+  index = datastore_index.Index(kind=str(collection_id), properties=properties)
+  if proto.apiScope != DATASTORE_API_SCOPE:
+    raise ValueError('Invalid api scope: {}'.format(proto.apiScope))
+
+  if proto.queryScope == COLLECTION_RECURSIVE:
+    index.ancestor = True
+  elif proto.queryScope == COLLECTION_GROUP:
+    index.ancestor = False
+  else:
+    raise ValueError('Invalid query scope: {}'.format(proto.queryScope))
+
+  return index_id, index
 
 
 def BuildIndexProto(ancestor, kind, project_id, properties):
@@ -167,6 +235,24 @@ def ListIndexes(project_id):
   return {ApiMessageToIndexDefinition(index) for index in response.indexes}
 
 
+def ListDatastoreIndexesViaFirestoreApi(project_id, database_id):
+  """Lists all datastore indexes under a database with Firestore Admin API.
+
+  Args:
+    project_id: A str to represent the project id.
+    database_id: A str to represent the database id.
+
+  Returns:
+    List[index]: A list of datastore_index.Index that contains index definition.
+  """
+  response = firestore_admin_api.ListIndexes(project_id, database_id)
+  return {
+      FirestoreApiMessageToIndexDefinition(index)
+      for index in response.indexes
+      if index.apiScope == DATASTORE_API_SCOPE
+  }
+
+
 def CreateIndexes(project_id, indexes_to_create):
   """Sends the index creation requests."""
   cnt = 0
@@ -190,21 +276,18 @@ def CreateIndexes(project_id, indexes_to_create):
 
 def CreateIndexesViaFirestoreApi(project_id, database_id, indexes_to_create):
   """Sends the index creation requests via Firestore API."""
-  normalized_indexes = NormalizeIndexes(indexes_to_create.indexes)
-  cnt = 0
   detail_message = None
   with progress_tracker.ProgressTracker(
       '.', autotick=False, detail_message_callback=lambda: detail_message
   ) as pt:
-    for index in normalized_indexes:
+    for i, index in enumerate(indexes_to_create):
       firestore_admin_api.CreateIndex(
           project_id,
           database_id,
           index.kind,
           BuildIndexFirestoreProto(index.ancestor, index.properties),
       )
-      cnt = cnt + 1
-      detail_message = '{0:.0%}'.format(cnt / len(normalized_indexes))
+      detail_message = '{0:.0%}'.format(i / len(indexes_to_create))
       pt.Tick()
 
 
@@ -234,3 +317,17 @@ def CreateMissingIndexes(project_id, index_definitions):
   normalized_indexes = NormalizeIndexes(index_definitions.indexes)
   new_indexes = normalized_indexes - {index for _, index in indexes}
   CreateIndexes(project_id, new_indexes)
+
+
+def CreateMissingIndexesViaFirestoreApi(
+    project_id, database_id, index_definitions
+):
+  """Creates the indexes via Firestore API if the index configuration is not present."""
+  indexes = ListDatastoreIndexesViaFirestoreApi(project_id, database_id)
+  normalized_indexes = NormalizeIndexes(index_definitions.indexes)
+  new_indexes = normalized_indexes - {index for _, index in indexes}
+  CreateIndexesViaFirestoreApi(
+      project_id=project_id,
+      database_id=database_id,
+      indexes_to_create=new_indexes,
+  )

@@ -47,12 +47,14 @@ class AcceleratorType(_messages.Message):
   r"""A accelerator type that a Node can be configured with.
 
   Fields:
+    acceleratorConfigs: The accelerator config.
     name: The resource name.
     type: the accelerator type.
   """
 
-  name = _messages.StringField(1)
-  type = _messages.StringField(2)
+  acceleratorConfigs = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
+  name = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class AccessConfig(_messages.Message):
@@ -1078,7 +1080,7 @@ class TpuProjectsLocationsNodesStartRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesStartRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
     startNodeRequest: A StartNodeRequest resource to be passed as the request
       body.
   """
@@ -1091,7 +1093,7 @@ class TpuProjectsLocationsNodesStopRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesStopRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
     stopNodeRequest: A StopNodeRequest resource to be passed as the request
       body.
   """

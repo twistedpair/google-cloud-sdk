@@ -120,7 +120,7 @@ def DisplayProposedDeployment(app,
             '[{f}] could not be converted to the App Engine configuration '
             'format for the following reason: {msg}'.format(
                 f=service.service_info, msg=six.text_type(e)))
-      display_service_account = 'App Engine default service account'
+      display_service_account = app.serviceAccount
       if service_account:
         display_service_account = service_account
       elif service_account_from_yaml:

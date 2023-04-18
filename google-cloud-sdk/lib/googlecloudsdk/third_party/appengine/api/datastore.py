@@ -1164,7 +1164,7 @@ class Entity(dict):
           e.__projection = True
         try:
           value = datastore_types.FromPropertyPb(prop)
-        except (AssertionError, AttributeError, TypeError, ValueError), e:
+        except (AssertionError, AttributeError, TypeError, ValueError):
           raise datastore_errors.Error(
             'Property %s is corrupt in the datastore:\n%s' %
             (prop.name(), traceback.format_exc()))

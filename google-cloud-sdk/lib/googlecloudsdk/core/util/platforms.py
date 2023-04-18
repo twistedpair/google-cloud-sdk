@@ -467,16 +467,14 @@ class Platform(object):
 class PythonVersion(object):
   """Class to validate the Python version we are using.
 
-  The Cloud SDK officially supports Python 2.7.
+  The Cloud SDK officially supports Python 3.5.
 
-  However, many commands do work with Python 2.6, so we don't error out when
+  However, many commands do work with Python 3.4, so we don't error out when
   users are using this (we consider it sometimes "compatible" but not
   "supported").
   """
 
   # See class docstring for descriptions of what these mean
-  MIN_REQUIRED_PY2_VERSION = (2, 6)
-  MIN_SUPPORTED_PY2_VERSION = (2, 7)
   MIN_REQUIRED_PY3_VERSION = (3, 4)
   MIN_SUPPORTED_PY3_VERSION = (3, 5)
   ENV_VAR_MESSAGE = """\
@@ -504,8 +502,7 @@ the CLOUDSDK_PYTHON environment variable to point to it.
 
     This will print an error message if not compatible.
 
-    Compatible versions are 2.6 and 2.7 and > 3.4.
-    We don't guarantee support for 2.6 so we want to warn about it.
+    Compatible versions are 3.4+.
     We don't guarantee support for 3.4 so we want to warn about it.
 
     Args:
@@ -519,6 +516,13 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       bool, True if the version is valid, False otherwise.
     """
     error = None
+    allow_py2 = (
+        encoding.GetEncodedValue(
+            os.environ, 'CLOUDSDK_ALLOW_PY2', 'False'
+        ).lower()
+        == 'true'
+    )
+    py2_error = False
     if not self.version:
       # We don't know the version, not a good sign.
       error = ('ERROR: Your current version of Python is not compatible with '
@@ -527,11 +531,11 @@ the CLOUDSDK_PYTHON environment variable to point to it.
     else:
       if self.version[0] < 3:
         # Python 2 Mode
-        if self.version < PythonVersion.MIN_REQUIRED_PY2_VERSION:
-          error = ('ERROR: Python {0}.{1} is not compatible with the Google '
-                   'Cloud SDK. {2}\n'
-                   .format(self.version[0], self.version[1],
-                           self.SupportedVersionMessage()))
+        error = (
+            'ERROR: Python 2 is not compatible with the Google '
+            'Cloud SDK. {0}\n'.format(self.SupportedVersionMessage())
+        )
+        py2_error = True
       else:
         # Python 3 Mode
         if self.version < PythonVersion.MIN_REQUIRED_PY3_VERSION:
@@ -540,20 +544,15 @@ the CLOUDSDK_PYTHON environment variable to point to it.
                    .format(self.version[0], self.version[1],
                            self.SupportedVersionMessage()))
 
-    if error:
+    if error and allow_py2 and py2_error:
+      sys.stderr.write(error)
+      sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
+    elif error:
       if raise_exception:
         raise Error(error)
       sys.stderr.write(error)
       sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
       return False
-
-    # Warn that Python 2 is being deprecated.
-    if self.version[0] < 3:
-      sys.stderr.write("""\
-WARNING:  Python 2 will soon be deprecated by the Google Cloud SDK
-and may not function correctly. {0}
-{1}""".format(self.SupportedVersionMessage(),
-              PythonVersion.ENV_VAR_MESSAGE))
 
     # Warn that 3.4 might not work. XXX this logic needs some work
     if (self.version >= self.MIN_REQUIRED_PY3_VERSION and

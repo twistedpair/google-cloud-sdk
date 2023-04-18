@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import copy
 import json
 
 from apitools.base.py import encoding_helper
@@ -72,6 +73,15 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
 
     self._messages = apis.GetMessagesModule('storage', 'v1')
 
+  def _copy_acl_from_source_if_source_is_a_cloud_object_and_preserve_acl_is_true(
+      self, destination_metadata
+  ):
+    if (
+        isinstance(self._source_resource, resource_reference.ObjectResource)
+        and self._request_config.resource_args.preserve_acl
+    ):
+      destination_metadata.acl = copy.deepcopy(self._source_resource.acl)
+
   def _get_validated_insert_request(self):
     """Get an insert request that includes validated object metadata."""
     if self._request_config.predefined_acl_string:
@@ -99,6 +109,10 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
               self._messages.Object.MetadataValue,
           )
       )
+
+    self._copy_acl_from_source_if_source_is_a_cloud_object_and_preserve_acl_is_true(
+        object_metadata
+    )
 
     metadata_util.update_object_metadata_from_request_config(
         object_metadata, self._request_config, source_file_path)

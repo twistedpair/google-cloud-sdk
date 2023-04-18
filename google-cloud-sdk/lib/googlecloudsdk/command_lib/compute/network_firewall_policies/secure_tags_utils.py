@@ -40,6 +40,10 @@ def TranslateSecureTagsForFirewallPolicy(client, secure_tags):
     else:
       ret_secure_tags.append(
           client.messages.FirewallPolicyRuleSecureTag(
-              name=tag_utils.GetTagValueFromNamespacedName(tag).name))
+              name=tag_utils.GetNamespacedResource(
+                  tag, tag_utils.TAG_VALUES
+              ).name
+          )
+      )
 
   return ret_secure_tags

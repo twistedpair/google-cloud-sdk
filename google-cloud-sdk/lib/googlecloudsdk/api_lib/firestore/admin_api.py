@@ -264,3 +264,21 @@ def CreateIndex(project, database, collection_id, index):
           googleFirestoreAdminV1Index=index
       )
   )
+
+
+def ListIndexes(project, database):
+  """Performs a Firestore Admin v1 Index list.
+
+  Args:
+    project: the project of the database of the index, a string.
+    database: the database id of the index, a string.
+
+  Returns:
+    a list of Indexes.
+  """
+  messages = GetMessages()
+  return GetIndexService().List(
+      messages.FirestoreProjectsDatabasesCollectionGroupsIndexesListRequest(
+          parent='projects/{}/databases/{}'.format(project, database),
+      )
+  )

@@ -1303,6 +1303,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.testing = self._Add('testing', command='gcloud firebase test')
     self.toolresults = self._Add('toolresults', hidden=True)
     self.tpu = self._Add('tpu', hidden=True)
+    # Aliased to `storagetransfer` in `api_lib/apis/apis_util.py`.
+    self.transfer = self._Add('transfer', command='gcloud transfer')
     self.vision = self._Add('vision', command='gcloud ml vision')
     self.vpcaccess = self._Add('vpcaccess', hidden=True)
     self.workflowexecutions = self._Add(

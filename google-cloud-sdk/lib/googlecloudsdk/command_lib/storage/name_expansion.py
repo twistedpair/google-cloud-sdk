@@ -63,6 +63,7 @@ class NameExpansionIterator:
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       ignore_symlinks=False,
       include_buckets=BucketSetting.NO,
+      preserve_symlinks=False,
       recursion_requested=RecursionSetting.NO_WITH_WARNING,
   ):
     """Instantiates NameExpansionIterator.
@@ -76,6 +77,7 @@ class NameExpansionIterator:
       ignore_symlinks (bool): Skip over symlinks instead of following them.
       include_buckets (BucketSetting): Whether to fetch matched buckets and
         whether to raise an error.
+      preserve_symlinks (bool): Preserve symlinks instead of following them.
       recursion_requested (RecursionSetting): Says whether or not recursion is
         requested.
     """
@@ -86,6 +88,7 @@ class NameExpansionIterator:
     self._fields_scope = fields_scope
     self._ignore_symlinks = ignore_symlinks
     self._include_buckets = include_buckets
+    self._preserve_symlinks = preserve_symlinks
     self._recursion_requested = recursion_requested
 
     self._top_level_iterator = (
@@ -100,7 +103,9 @@ class NameExpansionIterator:
         url,
         all_versions=self.all_versions,
         fields_scope=self._fields_scope,
-        ignore_symlinks=self._ignore_symlinks)
+        ignore_symlinks=self._ignore_symlinks,
+        preserve_symlinks=self._preserve_symlinks,
+    )
 
   @property
   def has_multiple_top_level_resources(self):

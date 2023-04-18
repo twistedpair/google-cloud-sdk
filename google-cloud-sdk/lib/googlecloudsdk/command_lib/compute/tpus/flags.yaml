@@ -99,3 +99,19 @@ reserved:
     make a reservation of 128 V2 TPUs and later on make another reservation of 128 V2 TPUs then
     creates a v2-256 TPU instance. If there exists no reservation or not sufficient amount of
     reserved cores under the project, the request will fail due to lack of capacity.
+
+metadata:
+  arg_name: metadata
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    List of comma-separated metadata key-value pairs for the Cloud TPU VM node.
+    Example: `--metadata='key1=value1,key2=value2'`
+
+metadata_from_file:
+  arg_name: metadata-from-file
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    Same as `--metadata` except the value for the entry will be read from a local file.
+    Example: `--metadata-from-file='key1=value1.txt'`

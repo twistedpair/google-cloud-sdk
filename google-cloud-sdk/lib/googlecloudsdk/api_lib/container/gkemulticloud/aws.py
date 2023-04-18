@@ -147,6 +147,11 @@ class _AwsClientBase(client.ClientBase):
     return self._messages.GoogleCloudGkemulticloudV1AwsSshConfig(
         **kwargs) if any(kwargs.values()) else None
 
+  def _SpotConfig(self, args):
+    kwargs = {'instanceTypes': aws_flags.GetSpotInstanceTypes(args)}
+    return self._messages.GoogleCloudGkemulticloudV1SpotConfig(
+        **kwargs) if any(kwargs.values()) else None
+
   def _InstancePlacement(self, args):
     kwargs = {'tenancy': aws_flags.GetInstancePlacement(args)}
     return self._messages.GoogleCloudGkemulticloudV1AwsInstancePlacement(
@@ -179,6 +184,8 @@ class _AwsClientBase(client.ClientBase):
             self._VolumeTemplate(args, 'root'),
         'securityGroupIds':
             aws_flags.GetSecurityGroupIds(args),
+        'spotConfig':
+            self._SpotConfig(args),
         'sshConfig':
             self._SshConfig(args),
         'taints':

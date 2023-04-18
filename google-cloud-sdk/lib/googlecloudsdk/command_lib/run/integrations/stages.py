@@ -86,6 +86,8 @@ def _TypeToDescriptiveName(resource_type):
     return 'VPC Connector'
   elif resource_type == 'cloudsql':
     return 'Cloud SQL Instance'
+  elif resource_type == 'firebase-hosting':
+    return 'Firebase Hosting'
   return resource_type
 
 

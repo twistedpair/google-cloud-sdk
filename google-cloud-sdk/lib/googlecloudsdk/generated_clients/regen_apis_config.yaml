@@ -1389,6 +1389,9 @@ apis:
     v1:
       discovery_doc: vmwareengine_v1.json
       default: true
+      resources:
+        projects.locations.privateClouds.dnsForwarding:
+          path: projects/{project}/locations/{location}/privateClouds/{private_cloud}/dnsForwarding
   ondemandscanning:
     v1beta1:
       discovery_doc: ondemandscanning_v1beta1.json

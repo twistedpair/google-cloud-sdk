@@ -672,11 +672,7 @@ def DescribeDockerImage(args):
           "This command only supports Artifact Registry. You can enable"
           " redirection to use gcr.io repositories in Artifact Registry."
       )
-  image, version_or_tag = _ParseDockerImage(
-      ar_image_name, _INVALID_IMAGE_ERROR, strict=False
-  )
-  _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
-  docker_version = _ValidateAndGetDockerVersion(version_or_tag)
+  image, docker_version = DockerUrlToVersion(ar_image_name)
 
   scanning_allowed = True
   # This is the version to send to scanning API. For pkg.dev versions, it is the
@@ -888,3 +884,24 @@ def ListDockerTags(args):
           "version": tag.version,
       })
   return tag_list
+
+
+def DockerUrlToVersion(url):
+  """Validates a Docker image URL and get Docker version information.
+
+  Args:
+    url: Url of a docker image.
+
+  Returns:
+    A DockerImage, and a DockerVersion.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError: If user input is invalid.
+
+  """
+  image, version_or_tag = _ParseDockerImage(
+      url, _INVALID_IMAGE_ERROR, strict=False
+  )
+  _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
+  docker_version = _ValidateAndGetDockerVersion(version_or_tag)
+  return image, docker_version

@@ -1803,6 +1803,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetDnsForwarding(self, request, global_params=None):
+      r"""Gets details of the `DnsForwarding` config.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsGetDnsForwardingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsForwarding) The response message.
+      """
+      config = self.GetMethodConfig('GetDnsForwarding')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDnsForwarding.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/dnsForwarding',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.getDnsForwarding',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsGetDnsForwardingRequest',
+        response_type_name='DnsForwarding',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2069,6 +2096,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:undelete',
         request_field='undeletePrivateCloudRequest',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def UpdateDnsForwarding(self, request, global_params=None):
+      r"""Updates the parameters of the `DnsForwarding` config, like associated domains. Only fields specified in `update_mask` are applied.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsUpdateDnsForwardingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateDnsForwarding')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateDnsForwarding.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/dnsForwarding',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.privateClouds.updateDnsForwarding',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='dnsForwarding',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsUpdateDnsForwardingRequest',
         response_type_name='Operation',
         supports_download=False,
     )
