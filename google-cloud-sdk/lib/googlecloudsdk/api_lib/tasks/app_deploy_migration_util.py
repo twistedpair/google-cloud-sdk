@@ -732,7 +732,9 @@ def DeployQueuesYamlFile(
         # modify all attributes even for pull queues.
         constants.PUSH_QUEUE,
         tasks_api.messages,
-        release_track=ct_api_version)
+        release_track=ct_api_version,
+        http_queue=False,
+    )
     updated_fields = parsers.GetSpecifiedFieldsMask(
         cloud_task_args, constants.PUSH_QUEUE, release_track=ct_api_version)
     # TaskTTL and TombstoneTTL are both immutable so we only set them upon

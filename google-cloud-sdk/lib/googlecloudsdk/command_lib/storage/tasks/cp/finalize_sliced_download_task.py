@@ -126,11 +126,12 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
             temporary_object_path, self._source_resource.crc32c_hash,
             downloaded_file_hash_digest)
 
-    download_util.decompress_or_rename_file(
+    download_util.finalize_download(
         self._source_resource,
         temporary_object_path,
         final_destination_object_path,
-        do_not_decompress_flag=self._do_not_decompress)
+        do_not_decompress_flag=self._do_not_decompress,
+    )
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)
 

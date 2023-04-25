@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'binaryauthorization'
@@ -105,6 +106,16 @@ class AllowlistPattern(_messages.Message):
   """
 
   namePattern = _messages.StringField(1)
+
+
+class AllowlistResult(_messages.Message):
+  r"""Result of evaluating an image name allowlist.
+
+  Fields:
+    matchedPattern: The allowlist pattern that the image matched.
+  """
+
+  matchedPattern = _messages.StringField(1)
 
 
 class AttestationAuthenticator(_messages.Message):
@@ -360,6 +371,20 @@ class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BinaryauthorizationProjectsPlatformsGkePoliciesEvaluateRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPlatformsGkePoliciesEvaluateRequest object.
+
+  Fields:
+    evaluateGkePolicyRequest: A EvaluateGkePolicyRequest resource to be passed
+      as the request body.
+    name: Required. The name of the platform policy to evaluate in the format
+      `projects/*/platforms/*/policies/*`.
+  """
+
+  evaluateGkePolicyRequest = _messages.MessageField('EvaluateGkePolicyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BinaryauthorizationProjectsPlatformsListRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsPlatformsListRequest object.
 
@@ -576,10 +601,15 @@ class Check(_messages.Message):
     displayName: Optional. A user-provided name for this Check. This field has
       no effect on the policy evaluation behavior except to improve
       readability of messages in evaluation results.
-    imageApprovalAttestationCheck: Optional. Require an ImageApproval-type
+    imageAllowlist: Optional. Images exempted from this Check. If any of the
+      patterns match the image url, the check will not be evaluated.
+    imageApprovalAttestationCheck: Optional. TO BE DEPRECATED!!! Use
+      SimpleSigningAttestationCheck instead! Require an ImageApproval-type
       attestation for every image in the deployment.
     imageFreshnessCheck: Optional. Require that an image is no older than a
       configured expiration time. Image age is determined by its upload time.
+    simpleSigningAttestationCheck: Optional. Require a SimpleSigning-type
+      attestation for every image in the deployment.
     trustedDirectoryCheck: Optional. Require that an image lives in a trusted
       directory.
     vulnerabilityCheck: Optional. Require that an image does not contain
@@ -589,10 +619,44 @@ class Check(_messages.Message):
 
   alwaysDeny = _messages.BooleanField(1)
   displayName = _messages.StringField(2)
-  imageApprovalAttestationCheck = _messages.MessageField('ImageApprovalAttestationCheck', 3)
-  imageFreshnessCheck = _messages.MessageField('ImageFreshnessCheck', 4)
-  trustedDirectoryCheck = _messages.MessageField('TrustedDirectoryCheck', 5)
-  vulnerabilityCheck = _messages.MessageField('VulnerabilityCheck', 6)
+  imageAllowlist = _messages.MessageField('ImageAllowlist', 3)
+  imageApprovalAttestationCheck = _messages.MessageField('ImageApprovalAttestationCheck', 4)
+  imageFreshnessCheck = _messages.MessageField('ImageFreshnessCheck', 5)
+  simpleSigningAttestationCheck = _messages.MessageField('SimpleSigningAttestationCheck', 6)
+  trustedDirectoryCheck = _messages.MessageField('TrustedDirectoryCheck', 7)
+  vulnerabilityCheck = _messages.MessageField('VulnerabilityCheck', 8)
+
+
+class CheckResult(_messages.Message):
+  r"""Result of evaluating one check.
+
+  Fields:
+    allowlistResult: If the image was exempted by an allowlist_pattern in the
+      check, contains the pattern that the image name matched.
+    displayName: The name of the check.
+    evaluationResult: If a check was evaluated, contains the result of the
+      check.
+    explanation: Explanation of this check result.
+    index: The index of the check.
+    type: The type of the check.
+  """
+
+  allowlistResult = _messages.MessageField('AllowlistResult', 1)
+  displayName = _messages.StringField(2)
+  evaluationResult = _messages.MessageField('EvaluationResult', 3)
+  explanation = _messages.StringField(4)
+  index = _messages.IntegerField(5)
+  type = _messages.StringField(6)
+
+
+class CheckResults(_messages.Message):
+  r"""Result of evaluating one or more checks.
+
+  Fields:
+    results: Per-check details.
+  """
+
+  results = _messages.MessageField('CheckResult', 1, repeated=True)
 
 
 class CheckSet(_messages.Message):
@@ -611,9 +675,8 @@ class CheckSet(_messages.Message):
       has no effect on the policy evaluation behavior except to improve
       readability of messages in evaluation results.
     imageAllowlist: Optional. Images exempted from this CheckSet. If any of
-      the patterns match the image being evaluated, evaluation of this
-      CheckSet will short-circuit and return a verdict of "allowed" due to
-      image exemption.
+      the patterns match the image being evaluated, no checks in the CheckSet
+      will be evaluated.
     scope: Optional. The scope to which this CheckSet applies. If unset or an
       empty string (the default), applies to all namespaces and service
       accounts. See the Scope message documentation for details on scoping
@@ -626,6 +689,29 @@ class CheckSet(_messages.Message):
   scope = _messages.MessageField('Scope', 4)
 
 
+class CheckSetResult(_messages.Message):
+  r"""Result of evaluating one check set.
+
+  Fields:
+    allowlistResult: If the image was exempted by an allowlist_pattern in the
+      check set, contains the pattern that the image name matched.
+    checkResults: If checks were evaluated, contains the results of evaluating
+      each check.
+    displayName: The name of the check set.
+    explanation: Explanation of this check set result. Only populated if no
+      checks were evaluated.
+    index: The index of the check set.
+    scope: The scope of the check set.
+  """
+
+  allowlistResult = _messages.MessageField('AllowlistResult', 1)
+  checkResults = _messages.MessageField('CheckResults', 2)
+  displayName = _messages.StringField(3)
+  explanation = _messages.StringField(4)
+  index = _messages.IntegerField(5)
+  scope = _messages.MessageField('Scope', 6)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -633,6 +719,104 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EvaluateGkePolicyRequest(_messages.Message):
+  r"""Request message for PlatformPolicyEvaluationService.EvaluateGkePolicy.
+
+  Messages:
+    ResourceValue: Required. JSON or YAML blob representing a Kubernetes
+      resource.
+
+  Fields:
+    resource: Required. JSON or YAML blob representing a Kubernetes resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceValue(_messages.Message):
+    r"""Required. JSON or YAML blob representing a Kubernetes resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resource = _messages.MessageField('ResourceValue', 1)
+
+
+class EvaluateGkePolicyResponse(_messages.Message):
+  r"""Response message for PlatformPolicyEvaluationService.EvaluateGkePolicy.
+
+  Enums:
+    VerdictValueValuesEnum: The result of evaluating all Pods in the request.
+
+  Fields:
+    results: Evaluation result for each Pod contained in the request.
+    verdict: The result of evaluating all Pods in the request.
+  """
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""The result of evaluating all Pods in the request.
+
+    Values:
+      VERDICT_UNSPECIFIED: Not specified. This should never be used.
+      CONFORMANT: All Pods in the request conform to the policy.
+      NON_CONFORMANT: At least one Pod does not conform to the policy.
+      ERROR: Encountered at least one error evaluating a Pod and all other
+        Pods conform to the policy. Non-conformance has precedance over
+        errors.
+    """
+    VERDICT_UNSPECIFIED = 0
+    CONFORMANT = 1
+    NON_CONFORMANT = 2
+    ERROR = 3
+
+  results = _messages.MessageField('PodResult', 1, repeated=True)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 2)
+
+
+class EvaluationResult(_messages.Message):
+  r"""Result of evaluating one check.
+
+  Enums:
+    VerdictValueValuesEnum: The result of evaluating this check.
+
+  Fields:
+    verdict: The result of evaluating this check.
+  """
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""The result of evaluating this check.
+
+    Values:
+      CHECK_VERDICT_UNSPECIFIED: Not specified. This should never be used.
+      CONFORMANT: The check was successfully evaluated and the image satisfied
+        the check.
+      NON_CONFORMANT: The check was successfully evaluated and the image did
+        not satisfy the check.
+      ERROR: The check was not successfully evaluated.
+    """
+    CHECK_VERDICT_UNSPECIFIED = 0
+    CONFORMANT = 1
+    NON_CONFORMANT = 2
+    ERROR = 3
+
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 1)
 
 
 class EvaluationRule(_messages.Message):
@@ -748,8 +932,8 @@ class GkePolicy(_messages.Message):
       a CheckSet with no scope set, i.e. a catchall to handle any situation
       not caught by the preceding CheckSets.
     imageAllowlist: Optional. Images exempted from this policy. If any of the
-      patterns match the image being evaluated, the policy evaluation will
-      short-circuit and return a verdict of "allowed due to image exemption".
+      patterns match the image being evaluated, the rest of the policy will
+      not be evaluated.
   """
 
   checkSets = _messages.MessageField('CheckSet', 1, repeated=True)
@@ -845,9 +1029,10 @@ class ImageAllowlist(_messages.Message):
 
 
 class ImageApprovalAttestationCheck(_messages.Message):
-  r"""Require a signed [DSSE](https://github.com/secure-systems-lab/dsse)
-  attestation with type ImageApproval. For backwards compatibility with older
-  Binauthz policies, "raw" signatures (i.e. signatures without the DSSE PAE
+  r"""TO BE DEPRECATED!!! Use SimpleSigningAttestationCheck instead! Require a
+  signed [DSSE](https://github.com/secure-systems-lab/dsse) attestation with
+  type ImageApproval. For backwards compatibility with older Binauthz
+  policies, "raw" signatures (i.e. signatures without the DSSE PAE
   transformation) are also accepted by this check when the source of the
   signature is a Container Analysis AttestationOccurrence. This backwards-
   compatibility shim is only true for legacy attestations from
@@ -885,6 +1070,49 @@ class ImageFreshnessCheck(_messages.Message):
   """
 
   maxUploadAgeDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ImageResult(_messages.Message):
+  r"""Result of evaluating one image.
+
+  Enums:
+    VerdictValueValuesEnum: The result of evaluating this image.
+
+  Fields:
+    allowlistResult: If the image was exempted by a top-level
+      allowlist_pattern, contains the allowlist pattern that the image name
+      matched.
+    checkSetResult: If a check set was evaluated, contains the result of the
+      check set. Empty if there were no check sets.
+    explanation: Explanation of this image result. Only populated if no check
+      sets were evaluated.
+    imageUri: Image URI from the request.
+    systemPolicyResult: If the image was exempted by the system policy,
+      contains the allowlist pattern that was matched in the system policy.
+    verdict: The result of evaluating this image.
+  """
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""The result of evaluating this image.
+
+    Values:
+      IMAGE_VERDICT_UNSPECIFIED: Not specified. This should never be used.
+      CONFORMANT: Image conforms to the policy.
+      NON_CONFORMANT: Image does not conform to the policy.
+      ERROR: Error evaluating the image. Non-conformance has precedance over
+        errors.
+    """
+    IMAGE_VERDICT_UNSPECIFIED = 0
+    CONFORMANT = 1
+    NON_CONFORMANT = 2
+    ERROR = 3
+
+  allowlistResult = _messages.MessageField('AllowlistResult', 1)
+  checkSetResult = _messages.MessageField('CheckSetResult', 2)
+  explanation = _messages.StringField(3)
+  imageUri = _messages.StringField(4)
+  systemPolicyResult = _messages.MessageField('SystemPolicyResult', 5)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 6)
 
 
 class InlineAttestor(_messages.Message):
@@ -1118,6 +1346,43 @@ class PlatformPolicy(_messages.Message):
   gkePolicy = _messages.MessageField('GkePolicy', 3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
+
+
+class PodResult(_messages.Message):
+  r"""Result of evaluating the whole GKE policy for one Pod.
+
+  Enums:
+    VerdictValueValuesEnum: The result of evaluating this Pod.
+
+  Fields:
+    imageResults: Per-image details.
+    kubernetesNamespace: The Kubernetes namespace of the Pod.
+    kubernetesServiceAccount: The Kubernetes service account of the Pod.
+    podName: The name of the Pod.
+    verdict: The result of evaluating this Pod.
+  """
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""The result of evaluating this Pod.
+
+    Values:
+      POD_VERDICT_UNSPECIFIED: Not specified. This should never be used.
+      CONFORMANT: All images conform to the policy.
+      NON_CONFORMANT: At least one image does not conform to the policy.
+      ERROR: Encountered at least one error evaluating an image and all other
+        images conform to the policy. Non-conformance has precedance over
+        errors.
+    """
+    POD_VERDICT_UNSPECIFIED = 0
+    CONFORMANT = 1
+    NON_CONFORMANT = 2
+    ERROR = 3
+
+  imageResults = _messages.MessageField('ImageResult', 1, repeated=True)
+  kubernetesNamespace = _messages.StringField(2)
+  kubernetesServiceAccount = _messages.StringField(3)
+  podName = _messages.StringField(4)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 5)
 
 
 class Policy(_messages.Message):
@@ -1405,6 +1670,32 @@ class Signature(_messages.Message):
   signature = _messages.BytesField(2)
 
 
+class SimpleSigningAttestationCheck(_messages.Message):
+  r"""Require a signed [DSSE](https://github.com/secure-systems-lab/dsse)
+  attestation with type SimpleSigning.
+
+  Fields:
+    attestationAuthenticators: Required. The authenticators required by this
+      check to verify an attestation. Typically this is one or more PKIX
+      public keys for signature verification. Only one authenticator needs to
+      consider an attestation verified in order for an attestation to be
+      considered fully authenticated. In otherwords, this list of
+      authenticators is an "OR" of the authenticator results. At least one
+      authenticator is required.
+    containerAnalysisAttestationProjects: Optional. The projects where
+      attestations are stored as Container Analysis Occurrences. Only one
+      attestation needs to successfully verify an image for this check to
+      pass, so a single verified attestation found in any of
+      `container_analysis_attestation_projects` is sufficient for the check to
+      pass. When fetching Occurrences from Container Analysis, only
+      'AttestationOccurrence' kinds are considered. In the future, additional
+      Occurrence kinds may be added to the query.
+  """
+
+  attestationAuthenticators = _messages.MessageField('AttestationAuthenticator', 1, repeated=True)
+  containerAnalysisAttestationProjects = _messages.StringField(2, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1466,6 +1757,16 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class SystemPolicyResult(_messages.Message):
+  r"""Result of evaluating the system policy.
+
+  Fields:
+    matchedPattern: The allowlist pattern that the image matched.
+  """
+
+  matchedPattern = _messages.StringField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

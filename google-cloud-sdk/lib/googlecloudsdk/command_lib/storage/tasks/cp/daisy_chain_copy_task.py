@@ -426,32 +426,40 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
   location by keeping an in-memory buffer.
   """
 
-  def __init__(self,
-               source_resource,
-               destination_resource,
-               delete_source=False,
-               print_created_message=False,
-               user_request_args=None):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      delete_source=False,
+      print_created_message=False,
+      print_source_version=False,
+      user_request_args=None,
+      verbose=False,
+  ):
     """Initializes task.
 
     Args:
-      source_resource (resource_reference.ObjectResource): Must
-        contain the full object path of existing object.
-        Directories will not be accepted.
-      destination_resource (resource_reference.UnknownResource): Must
-        contain the full object path. Object may not exist yet.
-        Existing objects at the this location will be overwritten.
-        Directories will not be accepted.
+      source_resource (resource_reference.ObjectResource): Must contain the full
+        object path of existing object. Directories will not be accepted.
+      destination_resource (resource_reference.UnknownResource): Must contain
+        the full object path. Object may not exist yet. Existing objects at the
+        this location will be overwritten. Directories will not be accepted.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      print_source_version (bool): Print source object version in status message
+        enabled by the `verbose` kwarg.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      verbose (bool): Print a "copying" status message on initialization.
     """
     super(DaisyChainCopyTask, self).__init__(
         source_resource,
         destination_resource,
-        user_request_args=user_request_args)
+        print_source_version=print_source_version,
+        user_request_args=user_request_args,
+        verbose=verbose,
+    )
     if (not isinstance(source_resource.storage_url, storage_url.CloudUrl)
         or not isinstance(destination_resource.storage_url,
                           storage_url.CloudUrl)):

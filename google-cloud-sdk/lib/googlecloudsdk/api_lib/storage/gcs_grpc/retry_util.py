@@ -27,7 +27,7 @@ from googlecloudsdk.api_lib.storage import retry_util
 import requests
 
 # pylint:disable=g-import-not-at-top
-# TODO(b/277356731) Remove the condition once Python2 is deprecated.
+# TODO(b/277356731) Remove version check after gcloud drops Python <= 3.5.
 if sys.version_info.major == 3 and sys.version_info.minor > 5:
   from google.api_core import exceptions
 # pylint:enable=g-import-not-at-top

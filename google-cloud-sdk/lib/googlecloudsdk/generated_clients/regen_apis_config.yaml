@@ -29,7 +29,16 @@
 #     unelidable_request_methods: <list of request method id>
 #     default: <true|false in case there more that one api version>
 #     resources:
-#       resource_collection_name: <parsing_template>
+#       <resource_collection_name>:
+#         path: <parsing_template>
+#         gapic_compatible: <true|false> defaults to true
+#         apitools_compatible: <true|false> defaults to true
+#
+# Since gapic and apitools process resources slightly different, such as
+# different parameter naming, any custom resource defined may not be able to
+# be use in both client generation processes. With the "gapic_compatible"
+# and "apitools_compatible" fields, each custom resource definition can be controlled
+# w.r.t what resource module it gets included in.
 
 root_dir: googlecloudsdk/generated_clients/apis
 
@@ -437,6 +446,8 @@ apis:
           path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
+        regionSecurityPolicyRules:
+          path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     v1:
@@ -1061,10 +1072,10 @@ apis:
       discovery_doc: privateca_v1.json
   publicca:
     v1:
+      default: true
       discovery_doc: publicca_v1.json
       enable_mtls: false
     v1beta1:
-      default: true
       discovery_doc: publicca_v1beta1.json
       enable_mtls: false
     v1alpha1:
@@ -1200,6 +1211,8 @@ apis:
     v1:
       discovery_doc: serviceusage_v1.json
       default: true
+    v2:
+      discovery_doc: serviceusage_v2.json
   source:
     v1:
       discovery_doc: source_v1.json
@@ -1214,6 +1227,7 @@ apis:
       resources:
         projects.instances.databases.roles:
           path: projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/databaseRoles/{rolesName}
+          gapic_compatible: false
       default: true
   speech:
     v1:
@@ -1249,7 +1263,6 @@ apis:
         projects:
           path: projects/{project}
     v2:
-      discovery_doc: storage_v1.json
       gcloud_gapic_library: google/storage/v2:storage_v2_py
   storageinsights:
     v1:

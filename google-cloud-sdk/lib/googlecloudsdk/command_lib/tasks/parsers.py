@@ -130,12 +130,29 @@ class QueueUpdatableConfiguration(object):
         config.app_engine_routing_override = {
             'routing_override': 'appEngineRoutingOverride',
         }
+        config.http_target = {
+            'http_uri_override':
+                'uriOverride',
+            'http_method_override':
+                'httpMethod',
+            'http_header_override':
+                'headerOverrides',
+            'http_oauth_service_account_email_override':
+                'oauthToken.serviceAccountEmail',
+            'http_oauth_token_scope_override':
+                'oauthToken.scope',
+            'http_oidc_service_account_email_override':
+                'oidcToken.serviceAccountEmail',
+            'http_oidc_token_audience_override':
+                'oidcToken.audience',
+        }
         config.stackdriver_logging_config = {
             'log_sampling_ratio': 'samplingRatio',
         }
         config.retry_config_mask_prefix = 'retryConfig'
         config.rate_limits_mask_prefix = 'rateLimits'
         config.app_engine_routing_override_mask_prefix = 'appEngineHttpQueue'
+        config.http_target_mask_prefix = 'httpTarget'
         config.stackdriver_logging_config_mask_prefix = 'stackdriverLoggingConfig'
       else:
         config.retry_config = {
@@ -288,37 +305,53 @@ def ExtractLocationRefFromQueueRef(queue_ref):
   return location_ref
 
 
-def ParseCreateOrUpdateQueueArgs(args,
-                                 queue_type,
-                                 messages,
-                                 is_update=False,
-                                 release_track=base.ReleaseTrack.GA):
+def ParseCreateOrUpdateQueueArgs(
+    args,
+    queue_type,
+    messages,
+    is_update=False,
+    release_track=base.ReleaseTrack.GA,
+    http_queue=True,
+):
   """Parses queue level args."""
   if release_track == base.ReleaseTrack.ALPHA:
-
     app_engine_http_target = _ParseAppEngineHttpTargetArgs(
-        args, queue_type, messages)
-    http_target = _ParseHttpTargetArgs(args, queue_type, messages)
+        args, queue_type, messages
+    )
+    http_target = (
+        _ParseHttpTargetArgs(args, queue_type, messages) if http_queue else None
+    )
 
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
-            args, queue_type, messages, is_update, is_alpha=True),
-        rateLimits=_ParseAlphaRateLimitsArgs(args, queue_type, messages,
-                                             is_update),
+            args, queue_type, messages, is_update, is_alpha=True
+        ),
+        rateLimits=_ParseAlphaRateLimitsArgs(
+            args, queue_type, messages, is_update
+        ),
         pullTarget=_ParsePullTargetArgs(args, queue_type, messages, is_update),
         appEngineHttpTarget=app_engine_http_target,
         httpTarget=http_target,
     )
   elif release_track == base.ReleaseTrack.BETA:
+    http_target = (
+        _ParseHttpTargetArgs(args, queue_type, messages) if http_queue else None
+    )
+
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
-            args, queue_type, messages, is_update, is_alpha=False),
+            args, queue_type, messages, is_update, is_alpha=False
+        ),
         rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
         stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
-            args, queue_type, messages, is_update),
-        appEngineHttpQueue=_ParseAppEngineHttpQueueArgs(args, queue_type,
-                                                        messages),
-        type=_ParseQueueType(args, queue_type, messages, is_update))
+            args, queue_type, messages, is_update
+        ),
+        appEngineHttpQueue=_ParseAppEngineHttpQueueArgs(
+            args, queue_type, messages
+        ),
+        httpTarget=http_target,
+        type=_ParseQueueType(args, queue_type, messages, is_update),
+    )
   else:
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
@@ -328,6 +361,68 @@ def ParseCreateOrUpdateQueueArgs(args,
             args, queue_type, messages, is_update),
         appEngineRoutingOverride=_ParseAppEngineRoutingOverrideArgs(
             args, queue_type, messages))
+
+
+def GetHttpTargetArgs(queue_config):
+  """Returns a pair of each http target attribute and its value in the queue."""
+  # pylint: disable=g-long-ternary
+  http_uri_override = (
+      queue_config.httpTarget.uriOverride
+      if queue_config.httpTarget is not None
+      else None
+  )
+  http_method_override = (
+      queue_config.httpTarget.httpMethod
+      if queue_config.httpTarget is not None
+      else None
+  )
+  http_header_override = (
+      queue_config.httpTarget.headerOverrides
+      if queue_config.httpTarget is not None
+      else None
+  )
+  http_oauth_email_override = (
+      queue_config.httpTarget.oauthToken.serviceAccountEmail
+      if (
+          queue_config.httpTarget is not None
+          and queue_config.httpTarget.oauthToken is not None
+      )
+      else None
+  )
+  http_oauth_scope_override = (
+      queue_config.httpTarget.oauthToken.scope
+      if (
+          queue_config.httpTarget is not None
+          and queue_config.httpTarget.oauthToken is not None
+      )
+      else None
+  )
+  http_oidc_email_override = (
+      queue_config.httpTarget.oidcToken.serviceAccountEmail
+      if (
+          queue_config.httpTarget is not None
+          and queue_config.httpTarget.oidcToken is not None
+      )
+      else None
+  )
+  http_oidc_audience_override = (
+      queue_config.httpTarget.oidcToken.audience
+      if (
+          queue_config.httpTarget is not None
+          and queue_config.httpTarget.oidcToken is not None
+      )
+      else None
+  )
+
+  return {
+      'http_uri_override': http_uri_override,
+      'http_method_override': http_method_override,
+      'http_header_override': http_header_override,
+      'http_oauth_email_override': http_oauth_email_override,
+      'http_oauth_scope_override': http_oauth_scope_override,
+      'http_oidc_email_override': http_oidc_email_override,
+      'http_oidc_audience_override': http_oidc_audience_override,
+  }
 
 
 def ExtractTargetFromAppEngineHostUrl(job, project):
@@ -427,10 +522,22 @@ def _SpecifiedArgs(specified_args_object, args_list, clear_args=False):
     Returns:
       True if the argument was specified at CLI invocation, False otherwise.
     """
+    # HTTP queue overrides should be ignored when running 'app deploy'
+    http_queue_args = [
+        'http_uri_override',
+        'http_method_override',
+        'http_header_override',
+        'http_oauth_service_account_email_override',
+        'http_oauth_token_scope_override',
+        'http_oidc_service_account_email_override',
+        'http_oidc_token_audience_override',
+    ]
     try:
       return specified_args_object.IsSpecified(arg)
     except parser_errors.UnknownDestinationException:
-      if arg in ('max_burst_size', 'clear_max_burst_size'):
+      if arg in ('max_burst_size', 'clear_max_burst_size') or any(
+          flag in arg for flag in http_queue_args
+      ):
         return False
       raise
 
@@ -561,7 +668,12 @@ def _ParseHttpTargetArgs(args, queue_type, messages):
     oauth_token = _ParseHttpTargetOAuthArgs(args, messages)
     oidc_token = _ParseHttpTargetOidcArgs(args, messages)
 
-    if uri_override is None and http_method is None and oauth_token is None and oidc_token is None:
+    if (
+        uri_override is None
+        and http_method is None
+        and oauth_token is None
+        and oidc_token is None
+    ):
       return None
 
     return messages.HttpTarget(
@@ -576,9 +688,11 @@ def _ParseAppEngineHttpQueueArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.appEngineHttpQueue."""
   if queue_type == constants.PUSH_QUEUE:
     routing_override = _ParseAppEngineRoutingOverrideArgs(
-        args, queue_type, messages)
+        args, queue_type, messages
+    )
     return messages.AppEngineHttpQueue(
-        appEngineRoutingOverride=routing_override)
+        appEngineRoutingOverride=routing_override
+    )
 
 
 def _ParseAppEngineRoutingOverrideArgs(args, queue_type, messages):
@@ -614,7 +728,7 @@ def _ParseUriOverride(messages,
   return messages.UriOverride(
       scheme=scheme,
       host=host,
-      port=port,
+      port=int(port),
       pathOverride=messages.PathOverride(path=path),
       queryOverride=messages.QueryOverride(queryParams=query),
       uriOverrideEnforceMode=uri_override_enforce_mode)

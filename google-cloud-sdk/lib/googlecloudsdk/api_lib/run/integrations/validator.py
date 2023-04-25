@@ -27,6 +27,13 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
+_API_ENABLEMENT_CONFIRMATION_TEXT = {
+    'firebasehosting.googleapis.com': (
+        'By enabling the Firebase Hosting API you are agreeing to the Firebase'
+        ' Terms of Service. Learn more at https://firebase.google.com/terms'
+    )
+}
+
 
 def GetIntegrationValidator(integration_type):
   """Gets the integration validator based on the integration type."""
@@ -61,12 +68,11 @@ class Validator:
       console_io.PromptContinue(
           default=False,
           cancel_on_no=True,
-          message=
-          'The following APIs are not enabled on project [{0}]:\n\t{1}'.format(
-              project_id, apis_to_enable
+          message=(
+              'The following APIs are not enabled on project [{0}]:\n\t{1}'
+              .format(project_id, apis_to_enable)
           ),
-          prompt_string='Do you want enable these APIs to ' +
-          'continue (this will take a few minutes)?'
+          prompt_string=self._ConstructPrompt(apis_not_enabled),
       )
 
       log.status.Print(
@@ -86,15 +92,39 @@ class Validator:
       A list of strings.  Each item is a GCP API that is not enabled.
     """
     required_apis = set(self.type_metadata.required_apis).union(
-        types_utils.BASELINE_APIS)
+        types_utils.BASELINE_APIS
+    )
     project_id = properties.VALUES.core.project.Get()
     apis_not_enabled = [
         # iterable is sorted for scenario tests.  The order of API calls
         # should happen in the same order each time for the scenario tests.
-        api for api in sorted(required_apis)
+        api
+        for api in sorted(required_apis)
         if not enable_api.IsServiceEnabled(project_id, api)
     ]
     return apis_not_enabled
+
+  def _ConstructPrompt(self, apis_not_enabled):
+    """Returns a prompt to enable APIs with any custom text per-API.
+
+    Args:
+      apis_not_enabled: Set of APIs that are to be enabled.
+    Returns: prompt string to be displayed for confirmation.
+    """
+    if not apis_not_enabled:
+      return ''
+    base_prompt = (
+        'Do you want to enable these APIs to continue (this will take a few'
+        ' minutes)?'
+    )
+
+    prompt = ''
+    for api in apis_not_enabled:
+      if api in _API_ENABLEMENT_CONFIRMATION_TEXT:
+        prompt += _API_ENABLEMENT_CONFIRMATION_TEXT[api] + '\n'
+
+    prompt += base_prompt
+    return prompt
 
   def ValidateCreateParameters(self, parameters, service):
     """Validates parameters provided for creating an integration.

@@ -82,7 +82,8 @@ class AuthorizationPolicy(_messages.Message):
     Values:
       ACTION_UNSPECIFIED: Default value.
       ALLOW: Grant access.
-      DENY: Deny access.
+      DENY: Deny access. Deny rules should be avoided unless they are used to
+        provide a default "deny all" fallback.
     """
     ACTION_UNSPECIFIED = 0
     ALLOW = 1
@@ -167,7 +168,19 @@ class ClientTlsPolicy(_messages.Message):
       empty, client does not validate the server certificate.
     sni: Optional. Server Name Indication string to present to the server
       during TLS handshake. E.g: "secure.example.com".
+    targets: Optional. Define a list of targets this policy should serve. A
+      target can only be a BackendService and it should be the fully qualified
+      name of the BackendService, e.g.:
+      projects/xxx/backendServices/locations/global/xxx NOTE: ClientTlsPolicy
+      and the referenced BackendServices must be present in the same project.
     updateTime: Output only. The timestamp when the resource was updated.
+    workloadContextSelectors: Optional. Selects the workload where the policy
+      should be applied to its targets. A policy without a
+      WorkloadContextSelector should always be applied to its targets when
+      there is no conflict. If there are multiple WorkloadContextSelectors
+      then the policy will be applied to all targets if ANY of the
+      WorkloadContextSelectors match. Therefore these selectors can be
+      combined in an OR fashion.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -201,7 +214,9 @@ class ClientTlsPolicy(_messages.Message):
   name = _messages.StringField(5)
   serverValidationCa = _messages.MessageField('ValidationCA', 6, repeated=True)
   sni = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  targets = _messages.StringField(8, repeated=True)
+  updateTime = _messages.StringField(9)
+  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 10, repeated=True)
 
 
 class CreateReferenceRequest(_messages.Message):
@@ -209,16 +224,17 @@ class CreateReferenceRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent resource name (target_resource of this
-      reference). For example: `targetservice.googleapis.com/projects/{my-
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
     reference: Required. The reference to be created.
-    referenceId: The unique id of this resource. Can be any arbitrary string,
-      either GUID or any other string. Must be unique within a scope of a
-      target resource, but does not have to be globally unique. Reference ID
-      is part of resource name of the reference. Resource name is generated in
-      the following way: {parent}/references/{reference_id}. Reference ID
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
       field is currently required but id auto generation might be added in the
-      future.
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
     requestId: Optional. Request ID is an idempotency ID of the request. It
       must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
       is not supported.
@@ -234,9 +250,10 @@ class DeleteReferenceRequest(_messages.Message):
   r"""The DeleteReferenceRequest request.
 
   Fields:
-    name: Required. Resource name of the reference, in the following format:
-      `{targer_service}/{target_resource}/references/{reference_id}`. For
-      example: `targetservice.googleapis.com/projects/{my-
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
     requestId: Optional. Request ID is an idempotency ID of the request. It
       must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
@@ -251,21 +268,24 @@ class Destination(_messages.Message):
   r"""Specification of traffic destination attributes.
 
   Fields:
-    hosts: Required. List of host names to match. Matched against HOST header
-      in http requests. At least one host should match. Each host can be an
-      exact match, or a prefix match (example "mydomain.*") or a suffix match
-      (example // *.myorg.com") or a presence(any) match "*".
+    hosts: Required. List of host names to match. Matched against the
+      ":authority" header in http requests. At least one host should match.
+      Each host can be an exact match, or a prefix match (example
+      "mydomain.*") or a suffix match (example "*.myorg.com") or a presence
+      (any) match "*".
     httpHeaderMatch: Optional. Match against key:value pair in http header.
       Provides a flexible match based on HTTP headers, for potentially
-      advanced use cases. At least one header should match.
+      advanced use cases. At least one header should match. Avoid using header
+      matches to make authorization decisions unless there is a strong
+      guarantee that requests arrive through a trusted client or proxy.
     methods: Optional. A list of HTTP methods to match. At least one method
       should match. Should not be set for gRPC services.
     paths: Optional. A list of HTTP paths to match. gRPC methods must be
       presented as fully-qualified name in the form of
       "/packageName.serviceName/methodName". At least one path should match.
       Each path can be an exact match, or a prefix match (example,
-      "/packageName.serviceName/*") or a suffix match (example, */video") or a
-      presence(any) match "*".
+      "/packageName.serviceName/*") or a suffix match (example, "*/video") or
+      a presence (any) match "*".
     ports: Required. List of destination ports to match. At least one port
       should match.
   """
@@ -281,8 +301,7 @@ class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
 
@@ -323,13 +342,93 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GatewaySecurityPolicy(_messages.Message):
+  r"""The GatewaySecurityPolicy resource contains a collection of
+  GatewaySecurityPolicyRules and associated metadata.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy
+      } gateway_security_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    tlsInspectionPolicy: Optional. Name of a TLS Inspection Policy resource
+      that defines how TLS inspection will be performed for any rule(s) which
+      enables it.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  tlsInspectionPolicy = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class GatewaySecurityPolicyRule(_messages.Message):
+  r"""The GatewaySecurityPolicyRule resource is in a nested collection within
+  a GatewaySecurityPolicy and represents a traffic matching condition and
+  associated action to perform.
+
+  Enums:
+    BasicProfileValueValuesEnum: Required. Profile which tells what the
+      primitive action should be.
+
+  Fields:
+    applicationMatcher: Optional. CEL expression for matching on
+      L7/application level criteria.
+    basicProfile: Required. Profile which tells what the primitive action
+      should be.
+    createTime: Output only. Time when the rule was created.
+    description: Optional. Free-text description of the resource.
+    enabled: Required. Whether the rule is enforced.
+    name: Required. Immutable. Name of the resource. ame is the full resource
+      name so projects/{project}/locations/{location}/gatewaySecurityPolicies/
+      {gateway_security_policy}/rules/{rule} rule should match the pattern:
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    priority: Required. Priority of the rule. Lower number corresponds to
+      higher precedence.
+    sessionMatcher: Required. CEL expression for matching on session criteria.
+    tlsInspectionEnabled: Optional. Flag to enable TLS inspection of traffic
+      matching on , can only be true if the parent GatewaySecurityPolicy
+      references a TLSInspectionConfig.
+    updateTime: Output only. Time when the rule was updated.
+  """
+
+  class BasicProfileValueValuesEnum(_messages.Enum):
+    r"""Required. Profile which tells what the primitive action should be.
+
+    Values:
+      BASIC_PROFILE_UNSPECIFIED: If there is not a mentioned action for the
+        target.
+      ALLOW: Allow the matched traffic.
+      DENY: Deny the matched traffic.
+    """
+    BASIC_PROFILE_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  applicationMatcher = _messages.StringField(1)
+  basicProfile = _messages.EnumField('BasicProfileValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enabled = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sessionMatcher = _messages.StringField(8)
+  tlsInspectionEnabled = _messages.BooleanField(9)
+  updateTime = _messages.StringField(10)
+
+
 class GetReferenceRequest(_messages.Message):
   r"""The GetReferenceRequest request.
 
   Fields:
-    name: Required. Resource name of the reference, in the following format:
-      `{target_service}/{target_resource}/references/{reference_id}`. For
-      example: `targetservice.googleapis.com/projects/{my-
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
   """
 
@@ -356,11 +455,17 @@ class GoogleCloudNetworksecurityV1GrpcEndpoint(_messages.Message):
   r"""Specification of the GRPC Endpoint.
 
   Fields:
+    sdsResource: Optional. sds_resource is used to set the name of the SDS
+      configuration. When used in the context of GSM, the following rules
+      apply If the resource name is "default" and "ROOTCA" then it implies
+      ISTIO_MUTUAL tlsMode. If the resource name begins with "file-cert"
+      and/or "file-root", it implies custom MUTUAL tlsMode
     targetUri: Required. The target URI of the gRPC endpoint. Only UDS path is
       supported, and should start with "unix:".
   """
 
-  targetUri = _messages.StringField(1)
+  sdsResource = _messages.StringField(1)
+  targetUri = _messages.StringField(2)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -378,20 +483,18 @@ class GoogleIamV1AuditConfig(_messages.Message):
   "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
   "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
   sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class GoogleIamV1AuditLogConfig(_messages.Message):
@@ -431,7 +534,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     bindingId: A string attribute.
@@ -439,22 +542,32 @@ class GoogleIamV1Binding(_messages.Message):
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Google Cloud
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
       identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
       `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
@@ -471,11 +584,9 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+      group retains the role in the binding.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   bindingId = _messages.StringField(1)
@@ -543,19 +654,21 @@ class GoogleIamV1Condition(_messages.Message):
         (go/security-realms). When used with IN, the condition indicates "any
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
-        can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm, which is currently but not guaranteed to be
-        campus-sized) - 'self:metro' (i.e., clients that are in the same
-        metro) - 'self:cloud-region' (i.e., allow connections from clients
-        that are in the same cloud region) - 'guardians' (i.e., allow
+        can be: - 'self:campus' (i.e., clients that are in the same campus) -
+        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
+        region' (i.e., allow connections from clients that are in the same
+        cloud region) - 'self:prod-region' (i.e., allow connections from
+        clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - a realm (e.g., 'campus-
-        abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
-        groups) A match is determined by a realm group membership check
-        performed by a RealmAclRep object (go/realm-acl-howto). It is not
-        permitted to grant access based on the *absence* of a realm, so realm
-        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
+        allow connections from clients that are in the same security realm,
+        which is currently but not guaranteed to be campus-sized) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -725,15 +838,15 @@ class GoogleIamV1LogConfig(_messages.Message):
 class GoogleIamV1Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -755,9 +868,15 @@ class GoogleIamV1Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -769,7 +888,6 @@ class GoogleIamV1Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
       DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
@@ -799,9 +917,8 @@ class GoogleIamV1Policy(_messages.Message):
   auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('GoogleIamV1Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('GoogleIamV1Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1Rule(_messages.Message):
@@ -817,8 +934,8 @@ class GoogleIamV1Rule(_messages.Message):
     description: Human-readable description of the rule.
     in_: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
@@ -863,8 +980,8 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
       provided, the following default mask is used: `paths: "bindings, etag"`
@@ -879,7 +996,7 @@ class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
       For more information see [IAM
       Overview](https://cloud.google.com/iam/docs/overview#permissions).
   """
@@ -899,7 +1016,7 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
 
 
 class HttpHeaderMatch(_messages.Message):
-  r"""Specification of HTTP header match atrributes.
+  r"""Specification of HTTP header match attributes.
 
   Fields:
     headerName: Required. The name of the HTTP header to match. For matching
@@ -948,6 +1065,40 @@ class ListClientTlsPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListGatewaySecurityPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListGatewaySecurityPolicies method.
+
+  Fields:
+    gatewaySecurityPolicies: List of GatewaySecurityPolicies resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+    unreachable: Locations that could not be reached.
+  """
+
+  gatewaySecurityPolicies = _messages.MessageField('GatewaySecurityPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListGatewaySecurityPolicyRulesResponse(_messages.Message):
+  r"""Response returned by the ListGatewaySecurityPolicyRules method.
+
+  Fields:
+    gatewaySecurityPolicyRules: List of GatewaySecurityPolicyRule resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+    unreachable: Locations that could not be reached.
+  """
+
+  gatewaySecurityPolicyRules = _messages.MessageField('GatewaySecurityPolicyRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -985,7 +1136,7 @@ class ListReferencesRequest(_messages.Message):
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: Required. The parent resource name (target_resource of this
-      reference). For example: `targetservice.googleapis.com/projects/{my-
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
   """
 
@@ -1022,8 +1173,42 @@ class ListServerTlsPoliciesResponse(_messages.Message):
   serverTlsPolicies = _messages.MessageField('ServerTlsPolicy', 2, repeated=True)
 
 
+class ListTlsInspectionPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListTlsInspectionPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then 'next_page_token' is included. To get the next set of
+      results, call this method again using the value of 'next_page_token' as
+      'page_token'.
+    tlsInspectionPolicies: List of TlsInspectionPolicies resources.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tlsInspectionPolicies = _messages.MessageField('TlsInspectionPolicy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListUrlListsResponse(_messages.Message):
+  r"""Response returned by the ListUrlLists method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    unreachable: Locations that could not be reached.
+    urlLists: List of UrlList resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  urlLists = _messages.MessageField('UrlList', 3, repeated=True)
+
+
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1105,12 +1290,91 @@ class Location(_messages.Message):
 class MTLSPolicy(_messages.Message):
   r"""Specification of the MTLSPolicy.
 
+  Enums:
+    ClientValidationModeValueValuesEnum: When the client presents an invalid
+      certificate or no certificate to the load balancer, the
+      `client_validation_mode` specifies how the client connection is handled.
+      Required if the policy is to be used with the external HTTPS load
+      balancing. For Traffic Director it must be empty.
+    TierValueValuesEnum: Mutual TLS tier. Allowed only if the policy is to be
+      used with external HTTPS load balancers.
+
   Fields:
-    clientValidationCa:  Defines the mechanism to obtain the Certificate
-      Authority certificate to validate the client certificate.
+    clientValidationCa: Required if the policy is to be used with Traffic
+      Director. For external HTTPS load balancers it must be empty. Defines
+      the mechanism to obtain the Certificate Authority certificate to
+      validate the client certificate.
+    clientValidationMode: When the client presents an invalid certificate or
+      no certificate to the load balancer, the `client_validation_mode`
+      specifies how the client connection is handled. Required if the policy
+      is to be used with the external HTTPS load balancing. For Traffic
+      Director it must be empty.
+    clientValidationTrustConfig: Reference to the TrustConfig from
+      certificatemanager.googleapis.com namespace. If specified, the chain
+      validation will be performed against certificates configured in the
+      given TrustConfig. Allowed only if the policy is to be used with
+      external HTTPS load balancers.
+    tier: Mutual TLS tier. Allowed only if the policy is to be used with
+      external HTTPS load balancers.
   """
 
+  class ClientValidationModeValueValuesEnum(_messages.Enum):
+    r"""When the client presents an invalid certificate or no certificate to
+    the load balancer, the `client_validation_mode` specifies how the client
+    connection is handled. Required if the policy is to be used with the
+    external HTTPS load balancing. For Traffic Director it must be empty.
+
+    Values:
+      CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
+      ALLOW_INVALID_OR_MISSING_CLIENT_CERT: Allow connection even if
+        certificate chain validation of the client certificate failed or no
+        client certificate was presented. The proof of possession of the
+        private key is always checked if client certificate was presented.
+        This mode requires the backend to implement processing of data
+        extracted from a client certificate to authenticate the peer, or to
+        reject connections if the client certificate fingerprint is missing.
+      REJECT_INVALID: Require a client certificate and allow connection to the
+        backend only if validation of the client certificate passed. If set,
+        requires a reference to non-empty TrustConfig specified in
+        `client_validation_trust_config`.
+    """
+    CLIENT_VALIDATION_MODE_UNSPECIFIED = 0
+    ALLOW_INVALID_OR_MISSING_CLIENT_CERT = 1
+    REJECT_INVALID = 2
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""Mutual TLS tier. Allowed only if the policy is to be used with
+    external HTTPS load balancers.
+
+    Values:
+      TIER_UNSPECIFIED: If tier is unspecified in the request, the system will
+        choose a default value - `STANDARD` tier at present.
+      STANDARD: Default Tier. Primarily for Software Providers (service to
+        service/API communication).
+      ADVANCED: Advanced Tier. For customers in strongly regulated
+        environments, specifying longer keys, complex certificate chains.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    ADVANCED = 2
+
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
+  clientValidationMode = _messages.EnumField('ClientValidationModeValueValuesEnum', 2)
+  clientValidationTrustConfig = _messages.StringField(3)
+  tier = _messages.EnumField('TierValueValuesEnum', 4)
+
+
+class MetadataSelector(_messages.Message):
+  r"""This message type exists as opposed to using a map to support additional
+  fields in the future such as priority.
+
+  Fields:
+    key: Required. The metadata field being selected on
+    value: Required. The value for this metadata field to be compared with
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messages.Message):
@@ -1152,17 +1416,22 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesGetIamPolicyRequest(_
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1233,8 +1502,9 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesSetIamPolicyRequest(_
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1250,8 +1520,9 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesTestIamPermissionsReq
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
@@ -1293,17 +1564,22 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesGetIamPolicyRequest(_mess
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1368,8 +1644,9 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesSetIamPolicyRequest(_mess
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1386,12 +1663,195 @@ class NetworksecurityProjectsLocationsClientTlsPoliciesTestIamPermissionsRequest
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesCreateRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicy: A GatewaySecurityPolicy resource to be passed as
+      the request body.
+    gatewaySecurityPolicyId: Required. Short name of the GatewaySecurityPolicy
+      resource to be created. This value should be 1-63 characters long,
+      containing only letters, numbers, hyphens, and underscores, and should
+      not start with a number. E.g. "gateway_security_policy1".
+    parent: Required. The parent resource of the GatewaySecurityPolicy. Must
+      be in the format `projects/{project}/locations/{location}`.
+  """
+
+  gatewaySecurityPolicy = _messages.MessageField('GatewaySecurityPolicy', 1)
+  gatewaySecurityPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the GatewaySecurityPolicy to delete. Must be in
+      the format
+      `projects/{project}/locations/{location}/gatewaySecurityPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the GatewaySecurityPolicy to get. Must be in the
+      format
+      `projects/{project}/locations/{location}/gatewaySecurityPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of GatewaySecurityPolicies to return per call.
+    pageToken: The value returned by the last
+      'ListGatewaySecurityPoliciesResponse' Indicates that this is a
+      continuation of a prior 'ListGatewaySecurityPolicies' call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the
+      GatewaySecurityPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesPatchRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicy: A GatewaySecurityPolicy resource to be passed as
+      the request body.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/gatewaySecurityPolicies/{gateway_security_policy
+      } gateway_security_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the GatewaySecurityPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  gatewaySecurityPolicy = _messages.MessageField('GatewaySecurityPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesCreateRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesCreateRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicyRule: A GatewaySecurityPolicyRule resource to be
+      passed as the request body.
+    gatewaySecurityPolicyRuleId: The ID to use for the rule, which will become
+      the final component of the rule's resource name. This value should be
+      4-63 characters, and valid characters are /a-z-/.
+    parent: Required. The parent where this rule will be created. Format :
+      projects/{project}/location/{location}/gatewaySecurityPolicies/*
+  """
+
+  gatewaySecurityPolicyRule = _messages.MessageField('GatewaySecurityPolicyRule', 1)
+  gatewaySecurityPolicyRuleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesDeleteRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the GatewaySecurityPolicyRule to delete. Must be
+      in the format `projects/{project}/locations/{location}/gatewaySecurityPo
+      licies/{gatewaySecurityPolicy}/rules/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the GatewaySecurityPolicyRule to retrieve.
+      Format:
+      projects/{project}/location/{location}/gatewaySecurityPolicies/*/rules/*
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesListRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of GatewaySecurityPolicyRules to return per call.
+    pageToken: The value returned by the last
+      'ListGatewaySecurityPolicyRulesResponse' Indicates that this is a
+      continuation of a prior 'ListGatewaySecurityPolicyRules' call, and that
+      the system should return the next page of data.
+    parent: Required. The project, location and GatewaySecurityPolicy from
+      which the GatewaySecurityPolicyRules should be listed, specified in the
+      format `projects/{project}/locations/{location}/gatewaySecurityPolicies/
+      {gatewaySecurityPolicy}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesPatchRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsGatewaySecurityPoliciesRulesPatchRequest
+  object.
+
+  Fields:
+    gatewaySecurityPolicyRule: A GatewaySecurityPolicyRule resource to be
+      passed as the request body.
+    name: Required. Immutable. Name of the resource. ame is the full resource
+      name so projects/{project}/locations/{location}/gatewaySecurityPolicies/
+      {gateway_security_policy}/rules/{rule} rule should match the pattern:
+      (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the GatewaySecurityPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  gatewaySecurityPolicyRule = _messages.MessageField('GatewaySecurityPolicyRule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsGetRequest(_messages.Message):
@@ -1409,7 +1869,7 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like "displayName=tokyo", and is
+      filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     includeUnrevealedLocations: If true, the returned list will include
       locations which are not yet revealed.
@@ -1511,17 +1971,22 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesGetIamPolicyRequest(_mess
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1586,8 +2051,9 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesSetIamPolicyRequest(_mess
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
       to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
@@ -1604,12 +2070,184 @@ class NetworksecurityProjectsLocationsServerTlsPoliciesTestIamPermissionsRequest
       GoogleIamV1TestIamPermissionsRequest resource to be passed as the
       request body.
     resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
   """
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource of the TlsInspectionPolicy. Must be
+      in the format `projects/{project}/locations/{location}`.
+    tlsInspectionPolicy: A TlsInspectionPolicy resource to be passed as the
+      request body.
+    tlsInspectionPolicyId: Required. Short name of the TlsInspectionPolicy
+      resource to be created. This value should be 1-63 characters long,
+      containing only letters, numbers, hyphens, and underscores, and should
+      not start with a number. E.g. "tls_inspection_policy1".
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  tlsInspectionPolicyId = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesDeleteRequest
+  object.
+
+  Fields:
+    force: If set to true, any rules for this TlsInspectionPolicy will also be
+      deleted. (Otherwise, the request will only work if the
+      TlsInspectionPolicy has no rules.)
+    name: Required. A name of the TlsInspectionPolicy to delete. Must be in
+      the format `projects/{project}/locations/{location}/tlsInspectionPolicie
+      s/{tls_inspection_policy}`.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the TlsInspectionPolicy to get. Must be in the
+      format `projects/{project}/locations/{location}/tlsInspectionPolicies/{t
+      ls_inspection_policy}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of TlsInspectionPolicies to return per call.
+    pageToken: The value returned by the last
+      'ListTlsInspectionPoliciesResponse' Indicates that this is a
+      continuation of a prior 'ListTlsInspectionPolicies' call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the
+      TlsInspectionPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}
+      tls_inspection_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    tlsInspectionPolicy: A TlsInspectionPolicy resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TlsInspectionPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tlsInspectionPolicy = _messages.MessageField('TlsInspectionPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the UrlList. Must be in the
+      format `projects/*/locations/{location}`.
+    urlList: A UrlList resource to be passed as the request body.
+    urlListId: Required. Short name of the UrlList resource to be created.
+      This value should be 1-63 characters long, containing only letters,
+      numbers, hyphens, and underscores, and should not start with a number.
+      E.g. "url_list".
+  """
+
+  parent = _messages.StringField(1, required=True)
+  urlList = _messages.MessageField('UrlList', 2)
+  urlListId = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsUrlListsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the UrlList to delete. Must be in the format
+      `projects/*/locations/{location}/urlLists/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUrlListsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsGetRequest object.
+
+  Fields:
+    name: Required. A name of the UrlList to get. Must be in the format
+      `projects/*/locations/{location}/urlLists/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsUrlListsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of UrlLists to return per call.
+    pageToken: The value returned by the last `ListUrlListsResponse` Indicates
+      that this is a continuation of a prior `ListUrlLists` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the UrlLists should
+      be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsUrlListsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUrlListsPatchRequest object.
+
+  Fields:
+    name: Required. Name of the resource provided by the user. Name is of the
+      form projects/{project}/locations/{location}/urlLists/{url_list}
+      url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the UrlList resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    urlList: A UrlList resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  urlList = _messages.MessageField('UrlList', 3)
 
 
 class Operation(_messages.Message):
@@ -1759,16 +2397,21 @@ class Reference(_messages.Message):
       Cumulative size of the field must not be more than 1KiB. Note: For the
       Arcus Reference API, you must add the proto you store in this field to
       http://cs/symbol:cloud.cluster.reference.ReferencePayload
-    name: Output only. Resource name of the reference. Includes target
-      resource as a parent and reference uid
+    name: Output only. Relative resource name of the reference. Includes
+      target resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,
       `projects/{my-project}/locations/{location}/instances/{my-
       instance}/references/{xyz}`.
     sourceResource: Required. Full resource name of the resource which refers
       the target resource. For example:
       //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
     type: Required. Type of the reference. A service might impose limits on
-      number of references of a specific type.
+      number of references of a specific type. Note: It's recommended to use
+      CAPITALS_WITH_UNDERSCORES style for a type name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1801,7 +2444,8 @@ class Reference(_messages.Message):
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   name = _messages.StringField(3)
   sourceResource = _messages.StringField(4)
-  type = _messages.StringField(5)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class Rule(_messages.Message):
@@ -1826,33 +2470,46 @@ class Rule(_messages.Message):
 class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
   authenticate incoming requests. This resource itself does not affect
-  configuration unless it is attached to a target https proxy or endpoint
-  config selector resource.
+  configuration unless it is attached to a target HTTPS proxy or endpoint
+  config selector resource. ServerTlsPolicy in the form accepted by external
+  HTTPS load balancers can be attached only to TargetHttpsProxy with an
+  `EXTERNAL` or `EXTERNAL_MANAGED` load balancing scheme. Traffic Director
+  compatible ServerTlsPolicies can be attached to EndpointPolicy and
+  TargetHttpsProxy with Traffic Director `INTERNAL_SELF_MANAGED` load
+  balancing scheme.
 
   Messages:
     LabelsValue: Set of label tags associated with the resource.
 
   Fields:
-    allowOpen:  Determines if server allows plaintext connections. If set to
-      true, server allows plain text connections. By default, it is set to
-      false. This setting is not exclusive of other encryption modes. For
-      example, if `allow_open` and `mtls_policy` are set, server allows both
-      plain text and mTLS connections. See documentation of other encryption
-      modes to confirm compatibility.
+    allowOpen: This field applies only for Traffic Director policies. It is
+      must be set to false for external HTTPS load balancer policies.
+      Determines if server allows plaintext connections. If set to true,
+      server allows plain text connections. By default, it is set to false.
+      This setting is not exclusive of other encryption modes. For example, if
+      `allow_open` and `mtls_policy` are set, server allows both plain text
+      and mTLS connections. See documentation of other encryption modes to
+      confirm compatibility. Consider using it if you wish to upgrade in place
+      your deployment to TLS while having mixed TLS and non-TLS traffic
+      reaching port :80.
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
     labels: Set of label tags associated with the resource.
-    mtlsPolicy:  Defines a mechanism to provision peer validation certificates
-      for peer to peer authentication (Mutual TLS - mTLS). If not specified,
-      client certificate will not be requested. The connection is treated as
-      TLS and not mTLS. If `allow_open` and `mtls_policy` are set, server
-      allows both plain text and mTLS connections.
+    mtlsPolicy: This field is required if the policy is used with external
+      HTTPS load balancers. This field can be empty for Traffic Director.
+      Defines a mechanism to provision peer validation certificates for peer
+      to peer authentication (Mutual TLS - mTLS). If not specified, client
+      certificate will not be requested. The connection is treated as TLS and
+      not mTLS. If `allow_open` and `mtls_policy` are set, server allows both
+      plain text and mTLS connections.
     name: Required. Name of the ServerTlsPolicy resource. It matches the
       pattern
       `projects/*/locations/{location}/serverTlsPolicies/{server_tls_policy}`
-    serverCertificate:  Defines a mechanism to provision server identity
-      (public and private keys). Cannot be combined with `allow_open` as a
-      permissive mode that allows both plain text and TLS is not supported.
+    serverCertificate: Optional if policy is to be used with Traffic Director.
+      For external HTTPS load balancer must be empty. Defines a mechanism to
+      provision server identity (public and private keys). Cannot be combined
+      with `allow_open` as a permissive mode that allows both plain text and
+      TLS is not supported.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -1896,11 +2553,15 @@ class Source(_messages.Message):
   Fields:
     ipBlocks: Optional. List of CIDR ranges to match based on source IP
       address. At least one IP block should match. Single IP (e.g., "1.2.3.4")
-      and CIDR (e.g., "1.2.3.0/24") are supported.
+      and CIDR (e.g., "1.2.3.0/24") are supported. Authorization based on
+      source IP alone should be avoided. The IP addresses of any load
+      balancers or proxies should be considered untrusted.
     principals: Optional. List of peer identities to match for authorization.
       At least one principal should match. Each peer can be an exact match, or
-      a prefix match (example, "namespace/*") or a suffix match (example, //
-      */service-account") or a presence match "*".
+      a prefix match (example, "namespace/*") or a suffix match (example,
+      "*/service-account") or a presence match "*". Authorization based on the
+      principal name without certificate validation (configured by
+      ServerTlsPolicy resource) is considered insecure.
   """
 
   ipBlocks = _messages.StringField(1, repeated=True)
@@ -2021,6 +2682,71 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TlsInspectionPolicy(_messages.Message):
+  r"""The TlsInspectionPolicy resource contains references to CA pools in
+  Certificate Authority Service and associated metadata.
+
+  Fields:
+    caPool: Required. A CA pool resource used to issue interception
+      certificates. The CA pool string has a relative resource path following
+      the form "projects/{project}/locations/{location}/caPools/{ca_pool}".
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    excludePublicCaSet: Optional. If FALSE (the default), use our default set
+      of public CAs in addition to any CAs specified in trust_config. These
+      public CAs are currently based on the Mozilla Root Program and are
+      subject to change over time. If TRUE, do not accept our default set of
+      public CAs. Only CAs specified in trust_config will be accepted. This
+      defaults to FALSE (use public CAs in addition to trust_config) for
+      backwards compatibility, but trusting public root CAs is *not
+      recommended* unless the traffic in question is outbound to public web
+      servers. When possible, prefer setting this to "false" and explicitly
+      specifying trusted CAs and certificates in a TrustConfig. Note that
+      Secure Web Proxy does not yet honor this field.
+    name: Required. Name of the resource. Name is of the form projects/{projec
+      t}/locations/{location}/tlsInspectionPolicies/{tls_inspection_policy}
+      tls_inspection_policy should match the
+      pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    trustConfig: Optional. A TrustConfig resource used when making a
+      connection to the TLS server. This is a relative resource path following
+      the form
+      "projects/{project}/locations/{location}/trustConfigs/{trust_config}".
+      This is necessary to intercept TLS connections to servers with
+      certificates signed by a private CA or self-signed certificates. Note
+      that Secure Web Proxy does not yet honor this field.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  caPool = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  excludePublicCaSet = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  trustConfig = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class UrlList(_messages.Message):
+  r"""UrlList proto helps users to set reusable, independently manageable
+  lists of hosts, host patterns, URLs, URL patterns.
+
+  Fields:
+    createTime: Output only. Time when the security policy was created.
+    description: Optional. Free-text description of the resource.
+    name: Required. Name of the resource provided by the user. Name is of the
+      form projects/{project}/locations/{location}/urlLists/{url_list}
+      url_list should match the pattern:(^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$).
+    updateTime: Output only. Time when the security policy was updated.
+    values: Required. FQDNs and URLs.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  values = _messages.StringField(5, repeated=True)
+
+
 class ValidationCA(_messages.Message):
   r"""Specification of ValidationCA. Defines the mechanism to obtain the
   Certificate Authority certificate to validate the peer certificate.
@@ -2035,6 +2761,20 @@ class ValidationCA(_messages.Message):
 
   certificateProviderInstance = _messages.MessageField('CertificateProviderInstance', 1)
   grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1GrpcEndpoint', 2)
+
+
+class WorkloadContextSelector(_messages.Message):
+  r"""Determines which workloads a policy is applicable for
+
+  Fields:
+    metadataSelectors: Required. A map of metadata label values used to select
+      workloads. If multiple MetadataSelectors are provided, all
+      MetadataSelectors must match in order for the policy to be applied to
+      this workload. Therefore these selectors must be combined in an AND
+      fashion.
+  """
+
+  metadataSelectors = _messages.MessageField('MetadataSelector', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

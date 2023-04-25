@@ -156,21 +156,19 @@ def _AddRulesArg(parser):
 def _AddAutoNetworkTier(parser):
   choices = {
       'PREMIUM':
-          'High quality, Google-grade network tier, support for all networking'
-          ' products.',
+          'High quality, Google-grade network tier with support for all '
+          'networking products.',
       'STANDARD':
-          'Public internet quality, only limited support for other networking '
-          'products.',
+          'Public internet quality, with only limited support for other '
+          'networking products.',
   }
   parser.add_argument(
       '--auto-network-tier',
-      help=textwrap.dedent("""\
-          The network tier to use when automatically reserving IP addresses.
-
-          Must be one of: PREMIUM, STANDARD."""),
+      help=textwrap.dedent(
+          'The network tier to use when automatically reserving NAT IP '
+          'addresses.'),
       choices=choices,
-      required=False,
-      hidden=True)
+      required=False)
 
 
 def _AddIpAllocationArgs(parser, for_create, with_private_nat):

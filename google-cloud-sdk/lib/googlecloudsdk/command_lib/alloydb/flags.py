@@ -299,14 +299,16 @@ def AddCPUCount(parser, required=True):
           'machines).'))
 
 
-def AddDBRoles(parser):
+def AddDBRoles(parser, required=False):
   """Adds a --db-roles flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --db-roles is required.
   """
   parser.add_argument(
       '--db-roles',
+      required=required,
       type=arg_parsers.ArgList(),
       metavar='ROLE',
       help=(
@@ -340,7 +342,7 @@ def AddUserType(parser):
   )
 
 
-def AddSuperuser(parser):
+def AddCreateSuperuser(parser):
   """Adds a --superuser flag to parser.
 
   Args:
@@ -348,12 +350,27 @@ def AddSuperuser(parser):
   """
   parser.add_argument(
       '--superuser',
-      type=bool,
+      type=arg_parsers.ArgBoolean(),
       default=False,
       help=(
           'If true, new user will have AlloyDB superuser privileges. Default'
           ' value is false.'
       ),
+  )
+
+
+def AddSetSuperuser(parser):
+  """Adds a --superuser flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--superuser',
+      type=arg_parsers.ArgBoolean(),
+      default=False,
+      required=True,
+      help='If true, user will have AlloyDB superuser privileges',
   )
 
 
@@ -380,16 +397,18 @@ def AddPassword(parser):
   )
 
 
-def AddUserPassword(parser):
+def AddUserPassword(parser, required=False):
   """Adds a --password flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --password is required.
   """
   parser.add_argument(
       '--password',
+      required=required,
       type=str,
-      help='Password for this new database user.',
+      help='Password for this database user.',
   )
 
 

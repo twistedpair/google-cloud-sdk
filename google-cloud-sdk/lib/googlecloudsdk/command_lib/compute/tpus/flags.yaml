@@ -115,3 +115,21 @@ metadata_from_file:
   help_text: |
     Same as `--metadata` except the value for the entry will be read from a local file.
     Example: `--metadata-from-file='key1=value1.txt'`
+
+topology:
+  arg_name: topology
+  help_text: |
+    Chip topology for TPU.
+  type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
+
+type:
+  arg_name: type
+  help_text: |
+    Type of TPU.
+  choices:
+  - arg_value: v2
+    enum_value: V2
+  - arg_value: v3
+    enum_value: V3
+  - arg_value: v4
+    enum_value: V4

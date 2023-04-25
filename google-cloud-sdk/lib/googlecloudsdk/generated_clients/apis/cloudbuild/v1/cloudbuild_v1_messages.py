@@ -140,6 +140,11 @@ class Artifacts(_messages.Message):
       specified Artifact Registry repository using the builder service
       account's credentials. If any artifacts fail to be pushed, the build is
       marked FAILURE.
+    npmPackages: A list of npm packages to be uploaded to Artifact Registry
+      upon successful completion of all build steps. Npm packages in the
+      specified paths will be uploaded to the specified Artifact Registry
+      repository using the builder service account's credentials. If any
+      packages fail to be pushed, the build is marked FAILURE.
     objects: A list of objects to be uploaded to Cloud Storage upon successful
       completion of all build steps. Files in the workspace matching specified
       paths globs will be uploaded to the specified Cloud Storage location
@@ -155,8 +160,9 @@ class Artifacts(_messages.Message):
 
   images = _messages.StringField(1, repeated=True)
   mavenArtifacts = _messages.MessageField('MavenArtifact', 2, repeated=True)
-  objects = _messages.MessageField('ArtifactObjects', 3)
-  pythonPackages = _messages.MessageField('PythonPackage', 4, repeated=True)
+  npmPackages = _messages.MessageField('NpmPackage', 3, repeated=True)
+  objects = _messages.MessageField('ArtifactObjects', 4)
+  pythonPackages = _messages.MessageField('PythonPackage', 5, repeated=True)
 
 
 class BatchCreateBitbucketServerConnectedRepositoriesRequest(_messages.Message):
@@ -810,10 +816,12 @@ class BuildOptions(_messages.Message):
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
       MD5: Use a md5 hash.
+      SHA512: Use a sha512 hash.
     """
     NONE = 0
     SHA256 = 1
     MD5 = 2
+    SHA512 = 3
 
   class SubstitutionOptionValueValuesEnum(_messages.Enum):
     r"""Option to specify behavior when there is an error in the substitution
@@ -3386,10 +3394,12 @@ class Hash(_messages.Message):
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
       MD5: Use a md5 hash.
+      SHA512: Use a sha512 hash.
     """
     NONE = 0
     SHA256 = 1
     MD5 = 2
+    SHA512 = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
@@ -3795,6 +3805,22 @@ class NetworkConfig(_messages.Message):
   egressOption = _messages.EnumField('EgressOptionValueValuesEnum', 1)
   peeredNetwork = _messages.StringField(2)
   peeredNetworkIpRange = _messages.StringField(3)
+
+
+class NpmPackage(_messages.Message):
+  r"""Npm package to upload to Artifact Registry upon successful completion of
+  all build steps.
+
+  Fields:
+    packagePath: Path to the package.json. e.g. workspace/path/to/package
+    repository: Artifact Registry repository, in the form "https://$REGION-
+      npm.pkg.dev/$PROJECT/$REPOSITORY" Npm package in the workspace specified
+      by path will be zipped and uploaded to Artifact Registry with this
+      location as a prefix.
+  """
+
+  packagePath = _messages.StringField(1)
+  repository = _messages.StringField(2)
 
 
 class OAuthRegistrationURI(_messages.Message):
@@ -4335,6 +4361,8 @@ class Results(_messages.Message):
     images: Container images that were built as a part of the build.
     mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
       of the build.
+    npmPackages: Npm packages uploaded to Artifact Registry at the end of the
+      build.
     numArtifacts: Number of non-container artifacts uploaded to Cloud Storage.
       Only populated when artifacts are uploaded to Cloud Storage.
     pythonPackages: Python artifacts uploaded to Artifact Registry at the end
@@ -4347,8 +4375,9 @@ class Results(_messages.Message):
   buildStepOutputs = _messages.BytesField(4, repeated=True)
   images = _messages.MessageField('BuiltImage', 5, repeated=True)
   mavenArtifacts = _messages.MessageField('UploadedMavenArtifact', 6, repeated=True)
-  numArtifacts = _messages.IntegerField(7)
-  pythonPackages = _messages.MessageField('UploadedPythonPackage', 8, repeated=True)
+  npmPackages = _messages.MessageField('UploadedNpmPackage', 7, repeated=True)
+  numArtifacts = _messages.IntegerField(8)
+  pythonPackages = _messages.MessageField('UploadedPythonPackage', 9, repeated=True)
 
 
 class RetryBuildRequest(_messages.Message):
@@ -4817,6 +4846,22 @@ class UploadedMavenArtifact(_messages.Message):
     pushTiming: Output only. Stores timing information for pushing the
       specified artifact.
     uri: URI of the uploaded artifact.
+  """
+
+  fileHashes = _messages.MessageField('FileHashes', 1)
+  pushTiming = _messages.MessageField('TimeSpan', 2)
+  uri = _messages.StringField(3)
+
+
+class UploadedNpmPackage(_messages.Message):
+  r"""An npm package uploaded to Artifact Registry using the NpmPackage
+  directive.
+
+  Fields:
+    fileHashes: Hash types and values of the npm package.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: URI of the uploaded npm package.
   """
 
   fileHashes = _messages.MessageField('FileHashes', 1)

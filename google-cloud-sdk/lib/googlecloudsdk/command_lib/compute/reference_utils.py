@@ -20,6 +20,10 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib import network_security
 from googlecloudsdk.api_lib import network_services
+from googlecloudsdk.core import resources
+
+
+CERTIFICATE_MANAGER_BASE_API = 'https://certificatemanager.googleapis.com/v1/'
 
 
 def BuildFullResourceUrl(base_uri, container_type, container_name, location,
@@ -72,6 +76,20 @@ def BuildServiceBindingUrl(project_name, location, binding_name):
       location=location,
       collection_name='serviceBindings',
       resource_name=binding_name)
+
+
+def BuildCcmCertificateUrl(project_name, location, certificate_name):
+  base_uri = (
+      resources.GetApiBaseUrl('certificatemanager', 'v1')
+      or CERTIFICATE_MANAGER_BASE_API
+  )
+  return BuildFullResourceUrlForProjectBasedResource(
+      base_uri=base_uri,
+      project_name=project_name,
+      location=location,
+      collection_name='certificates',
+      resource_name=certificate_name,
+  )
 
 
 def CompareUrlRelativeReferences(url1, url2):

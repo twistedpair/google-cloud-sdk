@@ -48,13 +48,17 @@ def _get_random_prefix():
 class FileUploadTask(copy_util.CopyTaskWithExitHandler):
   """Represents a command operation triggering a file upload."""
 
-  def __init__(self,
-               source_resource,
-               destination_resource,
-               delete_source=False,
-               print_created_message=False,
-               user_request_args=None,
-               is_composite_upload_eligible=False):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      delete_source=False,
+      is_composite_upload_eligible=False,
+      print_created_message=False,
+      print_source_version=False,
+      user_request_args=None,
+      verbose=False,
+  ):
     """Initializes task.
 
     Args:
@@ -66,19 +70,25 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         Existing objects at the this location will be overwritten.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
+      is_composite_upload_eligible (bool): If True, parallel composite upload
+        may be performed.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      print_source_version (bool): Print source object version in status message
+        enabled by the `verbose` kwarg.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      is_composite_upload_eligible (bool): If True, parallel composite
-        upload may be performed.
+      verbose (bool): Print a "copying" status message on initialization.
     """
     super(FileUploadTask, self).__init__(
         source_resource,
         destination_resource,
-        user_request_args=user_request_args)
+        print_source_version=print_source_version,
+        user_request_args=user_request_args,
+        verbose=verbose,
+    )
     self._delete_source = delete_source
-    self._print_created_message = print_created_message
     self._is_composite_upload_eligible = is_composite_upload_eligible
+    self._print_created_message = print_created_message
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)

@@ -119,6 +119,13 @@ def IsGlobalTargetHttpsProxiesRef(target_https_proxy_ref):
   return target_https_proxy_ref.Collection() == 'compute.targetHttpsProxies'
 
 
+def GetLocation(target_https_proxy_ref):
+  """Transforms compute global/region of Target HTTPS Proxy to location."""
+  if IsRegionalTargetHttpsProxiesRef(target_https_proxy_ref):
+    return target_https_proxy_ref.region
+  return 'global'
+
+
 def SendGetRequest(client, target_https_proxy_ref):
   """Send Url Maps get request."""
   if target_https_proxy_ref.Collection() == 'compute.regionTargetHttpsProxies':

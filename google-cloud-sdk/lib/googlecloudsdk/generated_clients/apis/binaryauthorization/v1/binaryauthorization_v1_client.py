@@ -40,6 +40,8 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_attestors = self.ProjectsAttestorsService(self)
+    self.projects_platforms_gke_policies = self.ProjectsPlatformsGkePoliciesService(self)
+    self.projects_platforms_gke = self.ProjectsPlatformsGkeService(self)
     self.projects_platforms_policies = self.ProjectsPlatformsPoliciesService(self)
     self.projects_platforms = self.ProjectsPlatformsService(self)
     self.projects_policy = self.ProjectsPolicyService(self)
@@ -298,6 +300,53 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
         response_type_name='ValidateAttestationOccurrenceResponse',
         supports_download=False,
     )
+
+  class ProjectsPlatformsGkePoliciesService(base_api.BaseApiService):
+    """Service class for the projects_platforms_gke_policies resource."""
+
+    _NAME = 'projects_platforms_gke_policies'
+
+    def __init__(self, client):
+      super(BinaryauthorizationV1.ProjectsPlatformsGkePoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Evaluate(self, request, global_params=None):
+      r"""Evaluates a Kubernetes object versus a GKE platform policy. Returns NOT_FOUND if the policy doesn't exist, INVALID_ARGUMENT if the policy or request is malformed and PERMISSION_DENIED if the client does not have sufficient permissions.
+
+      Args:
+        request: (BinaryauthorizationProjectsPlatformsGkePoliciesEvaluateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EvaluateGkePolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('Evaluate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Evaluate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/platforms/gke/policies/{policiesId}:evaluate',
+        http_method='POST',
+        method_id='binaryauthorization.projects.platforms.gke.policies.evaluate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:evaluate',
+        request_field='evaluateGkePolicyRequest',
+        request_type_name='BinaryauthorizationProjectsPlatformsGkePoliciesEvaluateRequest',
+        response_type_name='EvaluateGkePolicyResponse',
+        supports_download=False,
+    )
+
+  class ProjectsPlatformsGkeService(base_api.BaseApiService):
+    """Service class for the projects_platforms_gke resource."""
+
+    _NAME = 'projects_platforms_gke'
+
+    def __init__(self, client):
+      super(BinaryauthorizationV1.ProjectsPlatformsGkeService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsPlatformsPoliciesService(base_api.BaseApiService):
     """Service class for the projects_platforms_policies resource."""

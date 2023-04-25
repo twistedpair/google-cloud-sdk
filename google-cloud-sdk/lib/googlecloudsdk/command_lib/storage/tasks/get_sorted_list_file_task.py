@@ -40,17 +40,18 @@ class GetSortedContainerContentsTask(task.Task):
       self,
       container,
       output_path,
+      recurse=False,
   ):
     """Initializes task.
 
     Args:
       container (Resource): Contains path of files to fetch.
       output_path (str): Where to write final sorted file list.
+      recurse (bool): Gather nested items in container.
     """
     super(GetSortedContainerContentsTask, self).__init__()
-    # TODO(b/267499915): Use '**' for recursion.
     self._container_path = container.storage_url.join(
-        '*'
+        '**' if recurse else '*'
     ).versionless_url_string
     self._output_path = output_path
 

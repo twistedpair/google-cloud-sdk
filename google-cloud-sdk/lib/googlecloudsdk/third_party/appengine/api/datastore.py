@@ -2750,8 +2750,7 @@ def _DoOneTry(function, args, kwargs):
   """
   try:
     result = function(*args, **kwargs)
-  except:
-    original_exception = sys.exc_info()
+  except original_exception:
     try:
       _GetConnection().rollback()
     except Exception:
@@ -2759,11 +2758,10 @@ def _DoOneTry(function, args, kwargs):
       # it.  We want to propagate the original exception.
       # TODO(user): Maybe move this logic to datastore_rpc.py?
       logging.exception('Exception sending Rollback:')
-    type, value, trace = original_exception
-    if isinstance(value, datastore_errors.Rollback):
+    if isinstance(original_exception, datastore_errors.Rollback):
       return True, None
     else:
-      raise type, value, trace
+      raise
   else:
     if _GetConnection().commit():
       return True, result

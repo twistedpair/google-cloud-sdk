@@ -550,7 +550,8 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
 
     command_level_fallthroughs = {}
     arg_fallthroughs = self.command_level_fallthroughs.copy()
-    arg_fallthroughs.update({n: ['--' + n] for n in shared_resource_flags})
+    arg_fallthroughs.update(
+        {n: ['--' + n] for n in shared_resource_flags if n in attribute_names})
 
     concept_parsers.UpdateFallthroughsMap(
         command_level_fallthroughs,

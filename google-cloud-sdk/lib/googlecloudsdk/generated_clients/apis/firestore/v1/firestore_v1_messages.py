@@ -1367,6 +1367,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       to use for this database.
     ConcurrencyModeValueValuesEnum: The concurrency control mode to use for
       this database.
+    DeleteProtectionStateValueValuesEnum: State of delete protection for the
+      database.
     TypeValueValuesEnum: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -1376,6 +1378,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       database.
     concurrencyMode: The concurrency control mode to use for this database.
     createTime: Output only. The timestamp at which this database was created.
+      Databases created before 2016 do not populate create_time.
+    deleteProtectionState: State of delete protection for the database.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -1435,6 +1439,19 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     PESSIMISTIC = 2
     OPTIMISTIC_WITH_ENTITY_GROUPS = 3
 
+  class DeleteProtectionStateValueValuesEnum(_messages.Enum):
+    r"""State of delete protection for the database.
+
+    Values:
+      DELETE_PROTECTION_STATE_UNSPECIFIED: The default value. Delete
+        protection type is not specified
+      DELETE_PROTECTION_DISABLED: Delete protection is disabled
+      DELETE_PROTECTION_ENABLED: Delete protection is enabled
+    """
+    DELETE_PROTECTION_STATE_UNSPECIFIED = 0
+    DELETE_PROTECTION_DISABLED = 1
+    DELETE_PROTECTION_ENABLED = 2
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the database. See
     https://cloud.google.com/datastore/docs/firestore-or-datastore for
@@ -1453,13 +1470,14 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   appEngineIntegrationMode = _messages.EnumField('AppEngineIntegrationModeValueValuesEnum', 1)
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  keyPrefix = _messages.StringField(5)
-  locationId = _messages.StringField(6)
-  name = _messages.StringField(7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  deleteProtectionState = _messages.EnumField('DeleteProtectionStateValueValuesEnum', 4)
+  etag = _messages.StringField(5)
+  keyPrefix = _messages.StringField(6)
+  locationId = _messages.StringField(7)
+  name = _messages.StringField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
@@ -2359,7 +2377,7 @@ class ListenResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

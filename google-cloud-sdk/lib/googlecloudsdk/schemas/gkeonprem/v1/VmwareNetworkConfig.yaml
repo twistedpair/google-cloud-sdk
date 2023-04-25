@@ -28,6 +28,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  controlPlaneV2Config:
+    description: Configuration for control plane V2 mode.
+    $ref: VmwareControlPlaneV2Config.yaml
   dhcpIpConfig:
     description: Configuration settings for a DHCP IP configuration.
     $ref: VmwareDhcpIpConfig.yaml

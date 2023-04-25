@@ -173,6 +173,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PUBLICTEMPLATES = (
+      'projects.locations.publicTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/publicTemplates/'
+              '{publicTemplatesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_STREAMINGESTIONPIPELINES = (
       'projects.locations.streamIngestionPipelines',
       '{+name}',

@@ -631,82 +631,11 @@ class DataAssetPubSubAsset(_messages.Message):
   topic = _messages.StringField(1)
 
 
-class DeplomentProcess(_messages.Message):
-  r"""DeploymentProcess represents the process to be instantiated by template.
-
-  Messages:
-    ParametersValue: Process parameters.
-
-  Fields:
-    dataflowJob: DataflowJob represents the details about the dataflow job.
-    id: Process ID.
-    inputAssetIds: Input assets for process, used for recording dependency.
-    outputAssetIds: Output assets for process, used for recording dependency.
-    parameters: Process parameters.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
-    r"""Process parameters.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParametersValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ParametersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ParametersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  dataflowJob = _messages.MessageField('DeplomentProcessDataflowJob', 1)
-  id = _messages.StringField(2)
-  inputAssetIds = _messages.StringField(3, repeated=True)
-  outputAssetIds = _messages.StringField(4, repeated=True)
-  parameters = _messages.MessageField('ParametersValue', 5)
-
-
-class DeplomentProcessDataflowJob(_messages.Message):
-  r"""DataflowJob represents dataflow job and its configurations.
+class Deployment(_messages.Message):
+  r"""Message describing Deployment object.
 
   Enums:
-    TypeValueValuesEnum: Dataflow job type.
-
-  Fields:
-    schedule: schedule reprsents configuration to schedule dataflow job.
-    templateGcsPath: Cloud Storage bucket path where flex template is present.
-    type: Dataflow job type.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Dataflow job type.
-
-    Values:
-      TYPE_UNSPECIFIED: Default value. This value is unused.
-      CLASSIC: Classic dataflow job.
-      FLEX: Flex dataflow job.
-    """
-    TYPE_UNSPECIFIED = 0
-    CLASSIC = 1
-    FLEX = 2
-
-  schedule = _messages.StringField(1)
-  templateGcsPath = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-
-
-class Deployment(_messages.Message):
-  r"""Message describing Deployment object
+    StateValueValuesEnum: Output only. Current state of the Deployment.
 
   Messages:
     LabelsValue: Labels as key value pairs
@@ -715,6 +644,7 @@ class Deployment(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     deploymentView: Output only. [Output only] Details about the deployment.
+    fabricId: Fabric ID of the Deployment.
     labels: Labels as key value pairs
     lake: Dataplex Lake that the assets are attached to.
     lakeInfo: Input only. LakeInfo supplied by the consumer. TDF would create
@@ -726,10 +656,31 @@ class Deployment(_messages.Message):
     parameters: Key/value pair that will be replaced in the template.
     projectId: Id of project where template will be deployed, if not supplied
       the default is resource's project.
-    templateId: Id of the template to use for deployment. This resource will
-      be in the format "/projects/*/locations/*/template/"
+    state: Output only. Current state of the Deployment.
+    templateId: Required. Id of the template to use for deployment. This
+      resource will be in the format "/projects/*/locations/*/template/"
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the Deployment.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+      FAILED: Resource encountered an error.
+      MALFORMED: Resource is in inderministic state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+    FAILED = 5
+    MALFORMED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -781,15 +732,17 @@ class Deployment(_messages.Message):
 
   createTime = _messages.StringField(1)
   deploymentView = _messages.MessageField('DeploymentView', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  lake = _messages.MessageField('DeploymentLake', 4)
-  lakeInfo = _messages.MessageField('DeploymentLakeInfo', 5)
-  locationId = _messages.StringField(6)
-  name = _messages.StringField(7)
-  parameters = _messages.MessageField('ParametersValue', 8)
-  projectId = _messages.StringField(9)
-  templateId = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  fabricId = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  lake = _messages.MessageField('DeploymentLake', 5)
+  lakeInfo = _messages.MessageField('DeploymentLakeInfo', 6)
+  locationId = _messages.StringField(7)
+  name = _messages.StringField(8)
+  parameters = _messages.MessageField('ParametersValue', 9)
+  projectId = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  templateId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class DeploymentAsset(_messages.Message):
@@ -953,9 +906,11 @@ class DeploymentLake(_messages.Message):
 
   Fields:
     lakeId: LakeID for the Dataplex Lake.
+    metastore: Metastore service in the DataprocMetastore.
   """
 
   lakeId = _messages.StringField(1)
+  metastore = _messages.MessageField('DeploymentMetastore', 2)
 
 
 class DeploymentLakeInfo(_messages.Message):
@@ -968,6 +923,90 @@ class DeploymentLakeInfo(_messages.Message):
   lake = _messages.MessageField('DeploymentLake', 1)
 
 
+class DeploymentMetastore(_messages.Message):
+  r"""Metastore represents a service in DataprocMetastore.
+
+  Fields:
+    serviceId: Service id for the DataprocMetastore service.
+  """
+
+  serviceId = _messages.StringField(1)
+
+
+class DeploymentProcess(_messages.Message):
+  r"""DeploymentProcess represents the process to be instantiated by template.
+
+  Messages:
+    ParametersValue: Process parameters.
+
+  Fields:
+    dataflowJob: DataflowJob represents the details about the dataflow job.
+    id: Process ID.
+    inputAssetIds: Input assets for process, used for recording dependency.
+    outputAssetIds: Output assets for process, used for recording dependency.
+    parameters: Process parameters.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Process parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  dataflowJob = _messages.MessageField('DeploymentProcessDataflowJob', 1)
+  id = _messages.StringField(2)
+  inputAssetIds = _messages.StringField(3, repeated=True)
+  outputAssetIds = _messages.StringField(4, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 5)
+
+
+class DeploymentProcessDataflowJob(_messages.Message):
+  r"""DataflowJob represents dataflow job and its configurations.
+
+  Enums:
+    TypeValueValuesEnum: Dataflow job type.
+
+  Fields:
+    schedule: schedule reprsents configuration to schedule dataflow job.
+    templateGcsPath: Cloud Storage bucket path where flex template is present.
+    type: Dataflow job type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Dataflow job type.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      CLASSIC: Classic dataflow job.
+      FLEX: Flex dataflow job.
+    """
+    TYPE_UNSPECIFIED = 0
+    CLASSIC = 1
+    FLEX = 2
+
+  schedule = _messages.StringField(1)
+  templateGcsPath = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class DeploymentView(_messages.Message):
   r"""DeploymentView represents all details about template deployment.
 
@@ -977,7 +1016,7 @@ class DeploymentView(_messages.Message):
   """
 
   assets = _messages.MessageField('DeploymentAsset', 1, repeated=True)
-  processes = _messages.MessageField('DeplomentProcess', 2, repeated=True)
+  processes = _messages.MessageField('DeploymentProcess', 2, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -1245,6 +1284,21 @@ class ListPipelineSchedulersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   pipelineSchedulers = _messages.MessageField('PipelineScheduler', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListPublicTemplatesResponse(_messages.Message):
+  r"""Message for response to listing PublicTemplates
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    publicTemplates: The list of PublicTemplate
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publicTemplates = _messages.MessageField('PublicTemplate', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1747,6 +1801,51 @@ class PipelineScheduler(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
+
+
+class PublicTemplate(_messages.Message):
+  r"""Message describing Template object
+
+  Messages:
+    LabelsValue: Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Labels as key value pairs
+    name: name of resource
+    parameters: Parameters will be used by template during provisioning.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  parameters = _messages.MessageField('TemplateParameter', 4, repeated=True)
   updateTime = _messages.StringField(5)
 
 
@@ -3257,6 +3356,35 @@ class TelecomdatafabricProjectsLocationsPipelineSchedulersPatchRequest(_messages
   updateMask = _messages.StringField(4)
 
 
+class TelecomdatafabricProjectsLocationsPublicTemplatesGetRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsPublicTemplatesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TelecomdatafabricProjectsLocationsPublicTemplatesListRequest(_messages.Message):
+  r"""A TelecomdatafabricProjectsLocationsPublicTemplatesListRequest object.
+
+  Fields:
+    filter: Filtering results
+    orderBy: Hint for how to order the results
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. Parent value for ListPublicTemplatesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class TelecomdatafabricProjectsLocationsStreamIngestionPipelinesCreateRequest(_messages.Message):
   r"""A
   TelecomdatafabricProjectsLocationsStreamIngestionPipelinesCreateRequest
@@ -3373,6 +3501,22 @@ class TelecomdatafabricProjectsLocationsStreamIngestionPipelinesPatchRequest(_me
   requestId = _messages.StringField(2)
   streamIngestionPipeline = _messages.MessageField('StreamIngestionPipeline', 3)
   updateMask = _messages.StringField(4)
+
+
+class TemplateParameter(_messages.Message):
+  r"""Message describing TemplateParameter object.
+
+  Fields:
+    description: Parameter description.
+    isRequired: True, if parameter is required.
+    name: Parameter name.
+    regexp: Regex to validate parameter value provided during provisioning.
+  """
+
+  description = _messages.StringField(1)
+  isRequired = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  regexp = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

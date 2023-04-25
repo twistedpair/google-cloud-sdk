@@ -48,12 +48,6 @@ _INIT_FILE_CONTENT = """\
 
 """
 
-# TODO(b/254265765) Remove once gRPC can generate resources.py module.
-SKIP_APITOOLS_GENERATION = {
-    'storage': set(
-        ['v2']),  # For v2 version, we do not have an equivalent JSON API.
-}
-
 
 class NoDefaultApiError(Exception):
   """Multiple apis versions are specified but no default is set."""
@@ -170,11 +164,12 @@ def _MakeApiMap(root_package, api_config):
     api_versions_map = apis_map.setdefault(api_name, {})
     has_default = False
     for api_version, api_config in six.iteritems(api_version_config):
-      if api_version in SKIP_APITOOLS_GENERATION.get(api_name, []):
-        apitools_client = None
+      if api_config.get('discovery_doc'):
+        apitools_client = _MakeApitoolsClientDef(
+            root_package, api_name, api_version
+        )
       else:
-        apitools_client = _MakeApitoolsClientDef(root_package, api_name,
-                                                 api_version)
+        apitools_client = None
       if api_config.get('gcloud_gapic_library'):
         gapic_client = _MakeGapicClientDef(root_package, api_name, api_version)
       else:
@@ -215,22 +210,29 @@ def GenerateApiMap(base_dir, root_dir, api_config):
   api_def_filename, _ = os.path.splitext(api_def.__file__)
   api_def_source = files.ReadFileContents(api_def_filename + '.py')
 
-  tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
-                                                'template.tpl'))
+  tpl = template.Template(
+      filename=os.path.join(os.path.dirname(__file__), 'template.tpl')
+  )
   api_map_file = os.path.join(base_dir, root_dir, 'apis_map.py')
   logging.debug('Generating api map at %s', api_map_file)
 
   api_map = _MakeApiMap(root_dir.replace('/', '.'), api_config)
   logging.debug('Creating following api map %s', api_map)
   with files.FileWriter(api_map_file) as apis_map_file:
-    ctx = runtime.Context(apis_map_file,
-                          api_def_source=api_def_source,
-                          apis_map=api_map)
+    ctx = runtime.Context(
+        apis_map_file, api_def_source=api_def_source, apis_map=api_map
+    )
     tpl.render_context(ctx)
 
 
-def GenerateApitoolsResourceModule(base_dir, root_dir, api_name, api_version,
-                           discovery_doc_path, custom_resources):
+def GenerateApitoolsResourceModule(
+    base_dir,
+    root_dir,
+    api_name,
+    api_version,
+    discovery_doc_path,
+    custom_resources,
+):
   """Create resource.py file for given api and its discovery doc.
 
   Args:
@@ -246,8 +248,7 @@ def GenerateApitoolsResourceModule(base_dir, root_dir, api_name, api_version,
 
   discovery_doc = resource_generator.DiscoveryDoc.FromJson(
       os.path.join(base_dir, root_dir, discovery_doc_path))
-  if (api_name.lower() not in resource_generator.MISMATCHED_VERSION_ALLOWLIST
-      and discovery_doc.api_version != api_version):
+  if discovery_doc.api_version != api_version:
     logging.warning(
         'Discovery api version %s does not match %s, '
         'this client will be accessible via new alias.',
@@ -262,6 +263,11 @@ def GenerateApitoolsResourceModule(base_dir, root_dir, api_name, api_version,
     matched_resources = set([])
     for collection in resource_collections:
       if collection.name in custom_resources:
+        apitools_compatible = custom_resources[collection.name].get(
+            'apitools_compatible', True
+        )
+        if not apitools_compatible:
+          continue
         matched_resources.add(collection.name)
         custom_path = custom_resources[collection.name]['path']
         if isinstance(custom_path, dict):
@@ -273,6 +279,11 @@ def GenerateApitoolsResourceModule(base_dir, root_dir, api_name, api_version,
     for collection_name in set(custom_resources.keys()) - matched_resources:
       collection_def = custom_resources[collection_name]
       collection_path = collection_def['path']
+      apitools_compatible = collection_def.get(
+          'apitools_compatible', True
+      )
+      if not apitools_compatible:
+        continue
       enable_uri_parsing = collection_def.get('enable_uri_parsing', True)
       collection_info = discovery_doc.MakeResourceCollection(
           collection_name, collection_path, enable_uri_parsing, api_version)

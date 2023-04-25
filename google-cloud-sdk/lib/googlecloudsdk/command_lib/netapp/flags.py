@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.netapp.constants import ACTIVEDIRECTORIES_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import KMSCONFIGS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import LOCATIONS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import OPERATIONS_COLLECTION
+from googlecloudsdk.api_lib.netapp.constants import REPLICATIONS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import SNAPSHOTS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import STORAGEPOOLS_COLLECTION
 from googlecloudsdk.api_lib.netapp.constants import VOLUMES_COLLECTION
@@ -90,6 +91,11 @@ def GetSnapshotAttributeConfig(positional=True):
     help_text = 'The snapshot of the {resource}'
   return concepts.ResourceParameterAttributeConfig(
       'snapshot', help_text=help_text)
+
+
+def GetReplicationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      'replication', 'The instance of the {resource}')
 
 
 def GetOperationAttributeConfig():
@@ -201,6 +207,19 @@ def GetSnapshotResourceSpec(revert_op=False, positional=True):
       snapshotsId=GetSnapshotAttributeConfig(positional=positional))
 
 
+def GetReplicationResourceSpec():
+  location_attribute_config = GetLocationAttributeConfig()
+  volume_attribute_config = GetVolumeAttributeConfig(positional=False)
+  return concepts.ResourceSpec(
+      REPLICATIONS_COLLECTION,
+      resource_name='replication',
+      api_version='v1beta1',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=location_attribute_config,
+      volumesId=volume_attribute_config,
+      replicationsId=GetReplicationAttributeConfig())
+
+
 def GetActiveDirectoryResourceSpec():
   return concepts.ResourceSpec(
       ACTIVEDIRECTORIES_COLLECTION,
@@ -264,6 +283,15 @@ def GetSnapshotPresentationSpec(group_help):
   return presentation_specs.ResourcePresentationSpec(
       'snapshot',
       GetSnapshotResourceSpec(),
+      group_help,
+      required=True,
+      flag_name_overrides={'volume': ''})
+
+
+def GetReplicationPresentationSpec(group_help):
+  return presentation_specs.ResourcePresentationSpec(
+      'replication',
+      GetReplicationResourceSpec(),
       group_help,
       required=True,
       flag_name_overrides={'volume': ''})

@@ -142,7 +142,9 @@ class Duration(object):
 
     # Returns (whole,fraction) of pleasingly rounded f.
     def _Percolate(f):
-      return int(f), round(f, 4) - int(f)
+      int_value = int(f)
+      fraction = round(round(f, 4) - int_value, 4)
+      return int_value, fraction
 
     self.years, fraction = _Percolate(self.years)
     if fraction:

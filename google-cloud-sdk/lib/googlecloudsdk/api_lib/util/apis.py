@@ -82,11 +82,11 @@ def _AddToApisMap(api_name, api_version, api_def):
 def SetDefaultVersion(api_name, api_version):
   """Resets default version for given api."""
   # pylint:disable=protected-access
-  api_def = apis_internal._GetApiDef(api_name, api_version)
+  api_def = apis_internal.GetApiDef(api_name, api_version)
   # pylint:disable=protected-access
   default_version = apis_internal._GetDefaultVersion(api_name)
   # pylint:disable=protected-access
-  default_api_def = apis_internal._GetApiDef(api_name, default_version)
+  default_api_def = apis_internal.GetApiDef(api_name, default_version)
   default_api_def.default_version = False
   api_def.default_version = True
 
@@ -340,7 +340,7 @@ def GetMessagesModule(api_name, api_version):
     Module containing the definitions of messages for the specified API.
   """
   # pylint:disable=protected-access
-  api_def = apis_internal._GetApiDef(api_name, api_version)
+  api_def = apis_internal.GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
   return __import__(api_def.apitools.messages_full_modulepath,

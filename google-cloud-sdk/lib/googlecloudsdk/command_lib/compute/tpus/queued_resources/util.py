@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core.util import times
 
 import six
@@ -68,8 +69,38 @@ def CreateNodeSpec(ref, args, request):
   node_spec.parent = ref.Parent().RelativeName()
 
   node_spec.node = tpu_messages.Node()
-  node_spec.node.acceleratorType = args.accelerator_type
+  if args.accelerator_type:
+    node_spec.node.acceleratorType = args.accelerator_type
+  else:
+    node_spec.node.acceleratorConfig = tpu_messages.AcceleratorConfig()
+    node_spec.node.acceleratorConfig.topology = args.topology
+    node_spec.node.acceleratorConfig.type = arg_utils.ChoiceToEnum(
+        args.type, tpu_messages.AcceleratorConfig.TypeValueValuesEnum
+    )
+
   node_spec.node.runtimeVersion = args.runtime_version
+  if args.data_disk:
+    node_spec.node.dataDisks = []
+    for data_disk in args.data_disk:
+      attached_disk = tpu_messages.AttachedDisk(
+          sourceDisk=data_disk.sourceDisk, mode=data_disk.mode
+      )
+      node_spec.node.dataDisks.append(attached_disk)
+  if args.description:
+    node_spec.node.description = args.description
+  if args.labels:
+    node_spec.node.labels = tpu_messages.Node.LabelsValue()
+    node_spec.node.labels.additionalProperties = []
+    for key, value in args.labels.items():
+      node_spec.node.labels.additionalProperties.append(
+          tpu_messages.Node.LabelsValue.AdditionalProperty(key=key, value=value)
+      )
+  if args.range:
+    node_spec.node.cidrBlock = args.range
+  if args.shielded_secure_boot:
+    node_spec.node.shieldedInstanceConfig = tpu_messages.ShieldedInstanceConfig(
+        enableSecureBoot=True
+    )
 
   node_spec.node.networkConfig = tpu_messages.NetworkConfig()
   node_spec.node.serviceAccount = tpu_messages.ServiceAccount()

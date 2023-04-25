@@ -17,7 +17,54 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
+from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import arg_parsers
+
+
+messages = apis.GetMessagesModule('networkservices', 'v1alpha1')
+LOG_LEVEL_VALUES = (
+    messages.WasmPluginLogConfig.MinLogLevelValueValuesEnum.to_dict().keys()
+)
+
 
 def SetLocationAsGlobal():
   """Set default location to global."""
   return 'global'
+
+
+class LogConfig(arg_parsers.ArgDict):
+
+  def __init__(self):
+    super(LogConfig, self).__init__(
+        spec={
+            'enable': arg_parsers.ArgBoolean(),
+            'sample-rate': arg_parsers.BoundedFloat(0.0, 1.0),
+            'min-log-level': _GetLogLevelValidator(),
+        },
+        required_keys=['enable'],
+    )
+
+
+def _GetLogLevelValidator():
+  return arg_parsers.CustomFunctionValidator(
+      lambda k: k in LOG_LEVEL_VALUES,
+      'Only the following keys are valid for log level: [{}].'.format(
+          ', '.join(LOG_LEVEL_VALUES)
+      ),
+      lambda x: x.upper(),
+  )
+
+
+def GetLogConfig(parsed_dict):
+  log_config_dict = {
+      _ConvertToCamelCase(key): parsed_dict[key]
+      for key, value in parsed_dict.items()
+  }
+  return encoding.DictToMessage(log_config_dict, messages.WasmPluginLogConfig)
+
+
+def _ConvertToCamelCase(name):
+  """Converts kebab-case name to camelCase."""
+  part = name.split('-')
+  return part[0] + ''.join(x.title() for x in part[1:])

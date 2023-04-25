@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Task iterator for copy functionality."""
 
 from __future__ import absolute_import
@@ -324,13 +323,11 @@ class CopyTaskIterator:
     try:
       if resource.is_container():
         return
+      size = resource.size
       if isinstance(resource, resource_reference.FileObjectResource):
         self._has_local_source = True
-        size = os.path.getsize(resource.storage_url.object_name)
-      elif (isinstance(resource, resource_reference.ObjectResource) and
-            resource.size is not None):
+      elif isinstance(resource, resource_reference.ObjectResource):
         self._has_cloud_source = True
-        size = resource.size
       else:
         raise errors.ValueCannotBeDeterminedError
     except (OSError, errors.ValueCannotBeDeterminedError):
@@ -340,7 +337,7 @@ class CopyTaskIterator:
       self._total_size = -1
     else:
       self._total_file_count += 1
-      self._total_size += size
+      self._total_size += size or 0
 
   def __iter__(self):
     self._raise_error_if_source_matches_destination()
@@ -400,16 +397,9 @@ class CopyTaskIterator:
         # but there is only one object that needs to be copied over.
         self._raise_if_destination_is_file_url_and_not_a_directory_or_pipe()
 
-      if source.original_url.generation or self._all_versions:
-        source_url_string = source_url.url_string
-      else:
-        source_url_string = source_url.versionless_url_string
-
       if self._custom_md5_digest:
         source.resource.md5_hash = self._custom_md5_digest
 
-      log.status.Print('Copying {} to {}'.format(
-          source_url_string, destination_url.versionless_url_string))
       self._update_workload_estimation(source.resource)
 
       yield copy_task_factory.get_copy_task(
@@ -419,8 +409,13 @@ class CopyTaskIterator:
           delete_source=self._delete_source,
           force_daisy_chain=self._force_daisy_chain,
           print_created_message=self._print_created_message,
+          print_source_version=(
+              source.original_url.generation or self._all_versions
+          ),
           shared_stream=self._shared_stream,
-          user_request_args=self._user_request_args)
+          verbose=True,
+          user_request_args=self._user_request_args,
+      )
 
     if (self._task_status_queue and
         (self._total_file_count > 0 or self._total_size > 0)):

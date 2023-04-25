@@ -1708,3 +1708,41 @@ def _AddMetalLBKubeletConfig(bare_metal_metal_lb_node_config, is_update=False):
   _AddDisableMetalLBSerializeImagePulls(
       metal_lb_kubelet_config_group, is_update=is_update
   )
+
+
+def AddUpdateAnnotations(parser):
+  """Adds flags to update annotations.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  annotations_mutex_group = parser.add_group(mutex=True)
+  annotations_mutex_group.add_argument(
+      '--add-annotations',
+      metavar='KEY1=VALUE1,KEY2=VALUE2',
+      help=(
+          'Add the given key-value pairs to the current annotations, or update'
+          ' its value if the key already exists.'
+      ),
+      type=arg_parsers.ArgDict(),
+  )
+  annotations_mutex_group.add_argument(
+      '--remove-annotations',
+      metavar='KEY1,KEY2',
+      help='Remove annotations of the given keys.',
+      type=arg_parsers.ArgList(),
+  )
+  annotations_mutex_group.add_argument(
+      '--clear-annotations',
+      hidden=True,
+      action='store_true',
+      help='Clear all the current annotations',
+  )
+  annotations_mutex_group.add_argument(
+      '--set-annotations',
+      hidden=True,
+      metavar='KEY1=VALUE1,KEY2=VALUE2',
+      type=arg_parsers.ArgDict(),
+      help='Replace all the current annotations',
+  )
+

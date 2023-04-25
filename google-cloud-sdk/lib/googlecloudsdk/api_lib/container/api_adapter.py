@@ -1198,6 +1198,8 @@ class CreateNodePoolOptions(object):
                enable_fast_socket=None,
                logging_variant=None,
                windows_os_version=None,
+               enable_best_effort_provision=None,
+               min_provision_nodes=None,
                additional_node_network=None,
                additional_pod_network=None,
                enable_nested_virtualization=None):
@@ -1272,6 +1274,8 @@ class CreateNodePoolOptions(object):
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
     self.windows_os_version = windows_os_version
+    self.enable_best_effort_provision = enable_best_effort_provision
+    self.min_provision_nodes = min_provision_nodes
     self.additional_node_network = additional_node_network
     self.additional_pod_network = additional_pod_network
 
@@ -2152,30 +2156,38 @@ class APIAdapter(object):
           initialNodeCount=nodes,
           config=node_config,
           version=options.node_version,
-          management=self._GetNodeManagement(options))
+          management=self._GetNodeManagement(options),
+      )
       if options.enable_autoscaling:
         pool.autoscaling = self.messages.NodePoolAutoscaling(
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes,
             totalMinNodeCount=options.total_min_nodes,
-            totalMaxNodeCount=options.total_max_nodes)
+            totalMaxNodeCount=options.total_max_nodes,
+        )
         if options.location_policy is not None:
           pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
-              self.messages, options.location_policy)
+              self.messages, options.location_policy
+          )
       if options.max_pods_per_node:
         if not options.enable_ip_alias:
           raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
         pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
-            maxPodsPerNode=options.max_pods_per_node)
-      if (options.max_surge_upgrade is not None or
-          options.max_unavailable_upgrade is not None):
+            maxPodsPerNode=options.max_pods_per_node
+        )
+      if (
+          options.max_surge_upgrade is not None
+          or options.max_unavailable_upgrade is not None
+      ):
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
       if options.placement_type == 'COMPACT':
         pool.placementPolicy = self.messages.PlacementPolicy()
-        pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+        pool.placementPolicy.type = (
+            self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+        )
       if options.enable_queued_provisioning:
         pool.queuedProvisioning = self.messages.QueuedPolicy()
         pool.queuedProvisioning.enabled = True
@@ -3676,41 +3688,57 @@ class APIAdapter(object):
       pool.autoscaling.totalMaxNodeCount = options.total_max_nodes
       if options.location_policy is not None:
         pool.autoscaling.locationPolicy = LocationPolicyEnumFromString(
-            self.messages, options.location_policy)
+            self.messages, options.location_policy
+        )
+
+    if options.enable_best_effort_provision:
+      pool.bestEffortProvisioning = self.messages.BestEffortProvisioning()
+      pool.bestEffortProvisioning.enabled = True
+      pool.bestEffortProvisioning.minProvisionNodes = (
+          options.min_provision_nodes
+      )
 
     if options.enable_autoprovisioning:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
 
     if options.max_pods_per_node is not None:
       pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
-          maxPodsPerNode=options.max_pods_per_node)
+          maxPodsPerNode=options.max_pods_per_node
+      )
 
-    if (options.enable_surge_upgrade or options.enable_blue_green_upgrade or
-        options.max_surge_upgrade is not None or
-        options.max_unavailable_upgrade is not None or
-        options.standard_rollout_policy is not None or
-        options.node_pool_soak_duration is not None):
+    if (
+        options.enable_surge_upgrade
+        or options.enable_blue_green_upgrade
+        or options.max_surge_upgrade is not None
+        or options.max_unavailable_upgrade is not None
+        or options.standard_rollout_policy is not None
+        or options.node_pool_soak_duration is not None
+    ):
       pool.upgradeSettings = self.messages.UpgradeSettings()
       pool.upgradeSettings = self.UpdateUpgradeSettings(
-          None, options, pool=pool)
+          None, options, pool=pool
+      )
 
     if options.node_locations is not None:
       pool.locations = sorted(options.node_locations)
 
     if options.system_config_from_file is not None:
-      util.LoadSystemConfigFromYAML(node_config,
-                                    options.system_config_from_file,
-                                    self.messages)
+      util.LoadSystemConfigFromYAML(
+          node_config, options.system_config_from_file, self.messages
+      )
 
     pool.networkConfig = self._GetNetworkConfig(options)
 
     if options.network_performance_config:
-      pool.networkConfig.networkPerformanceConfig = self._GetNetworkPerformanceConfig(
-          options)
+      pool.networkConfig.networkPerformanceConfig = (
+          self._GetNetworkPerformanceConfig(options)
+      )
 
     if options.placement_type == 'COMPACT':
       pool.placementPolicy = self.messages.PlacementPolicy()
-      pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+      pool.placementPolicy.type = (
+          self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+      )
 
     if options.tpu_topology:
       if options.placement_type is None or options.placement_type != 'COMPACT':

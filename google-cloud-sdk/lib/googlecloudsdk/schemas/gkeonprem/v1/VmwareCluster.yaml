@@ -66,6 +66,9 @@ properties:
   description:
     description: A human readable description of this VMware user cluster.
     type: string
+  enableControlPlaneV2:
+    description: Enable control plane V2. Default to false.
+    type: boolean
   etag:
     description: |-
       This checksum is computed by the server based on the value of other

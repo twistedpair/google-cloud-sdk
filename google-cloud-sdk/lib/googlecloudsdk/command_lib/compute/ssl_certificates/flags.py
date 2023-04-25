@@ -122,5 +122,5 @@ def GetClearSslCertificatesArgumentForOtherResource(proxy_type, required=False):
       default=False,
       required=required,
       help="""\
-      Removes any attached SSL Certificates from the {} proxy.
+      Remove any attached SSL certificates from the {} proxy.
       """.format(proxy_type))

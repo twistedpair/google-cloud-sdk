@@ -601,3 +601,10 @@ def remove_scheme(url_string):
     return url_string
   _, _, schemeless_url = url_string.partition(SCHEME_DELIMITER)
   return schemeless_url
+
+
+def add_gcs_scheme_if_missing(url_string):
+  """Returns a string with gs:// prefixed, if URL has no scheme."""
+  if SCHEME_DELIMITER in url_string:
+    return url_string
+  return ProviderPrefix.GCS.value + SCHEME_DELIMITER + url_string

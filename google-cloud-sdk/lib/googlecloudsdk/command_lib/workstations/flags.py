@@ -505,7 +505,7 @@ def AddEncryptionKeyFields(parser):
 def AddLabelsField(parser):
   """Adds a --labels flag to the given parser."""
   help_text = """\
-  Labels that are applied to the resource and propagated to the underlying
+  Labels that are applied to the configuration and propagated to the underlying
   Compute Engine resources.
 
   Example:

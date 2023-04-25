@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
-from googlecloudsdk.command_lib.functions.v2.add_invoker_policy_binding import command as add_invoker_policy_binding_command
+from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -79,7 +79,22 @@ def Run(args, release_track):
             ' permission to invoke function [{}]'
         ).format(args.member, function_ref.Name()),
     ):
-      add_invoker_policy_binding_command.Run(args, release_track)
+      function = client.projects_locations_functions.Get(
+          messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+              name=function_ref.RelativeName()
+          )
+      )
+      run_util.AddOrRemoveInvokerBinding(
+          function, args.member, add_binding=True
+      )
+      log.status.Print(
+          'The role [roles/run.invoker] was successfully bound to the'
+          ' underlying Cloud Run service. You can view its IAM policy by'
+          ' running:\n'
+          'gcloud run services get-iam-policy {}\n'.format(
+              function.serviceConfig.service
+          )
+      )
       return policy
 
     log.status.Print(

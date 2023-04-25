@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
@@ -31,6 +33,16 @@ VERSION_MAP = {base.ReleaseTrack.GA: 'v1'}
 def _GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance('transcoder', api_version)
+
+
+def _GetTranscoderMessages():
+  """Get a resource reference to the transcoder proto."""
+  return apis.GetMessagesModule('transcoder', 'v1')
+
+
+class ProcessingMode(enum.Enum):
+  PROCESSING_MODE_INTERACTIVE = 'PROCESSING_MODE_INTERACTIVE'
+  PROCESSING_MODE_BATCH = 'PROCESSING_MODE_BATCH'
 
 
 class JobsClient(object):
@@ -58,6 +70,10 @@ class JobsClient(object):
     input_uri = args.input_uri
     output_uri = args.output_uri
     template_id = args.template_id
+    mode = None
+    if args.mode is not None:
+      msg = _GetTranscoderMessages()
+      mode = msg.Job.ModeValueValuesEnum(args.mode)
     job_json = None
     if template_id is None:
       job_json = util.GetContent(args.file, args.json)
@@ -67,12 +83,15 @@ class JobsClient(object):
           inputUri=input_uri,
           outputUri=output_uri,
           templateId=template_id,
-          labels=labels)
+          labels=labels,
+          mode=mode,
+      )
     else:
       job = encoding.JsonToMessage(self._job_class, job_json)
       job.inputUri = input_uri or job.inputUri
       job.outputUri = output_uri or job.outputUri
       job.labels = labels or job.labels
+      job.mode = mode or job.mode
     req = self.message.TranscoderProjectsLocationsJobsCreateRequest(
         parent=parent_ref.RelativeName(), job=job)
     return self._service.Create(req)

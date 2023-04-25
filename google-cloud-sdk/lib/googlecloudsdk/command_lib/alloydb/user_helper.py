@@ -21,13 +21,13 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import properties
 
 
-def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
+def ConstructCreateRequestFromArgs(client, alloydb_messages, cluster_ref, args):
   """Validates command line input arguments and passes parent's resources.
 
   Args:
     client: Client for api_utils.py class.
     alloydb_messages: Messages module for the API client.
-    project_ref: parent resource path of the resource being created
+    cluster_ref: parent resource path of the resource being created
     args: Command line input arguments.
 
   Returns:
@@ -53,13 +53,76 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   # set user type if provided
   user_resource.userType = _ParseUserType(alloydb_messages, args.type)
   # set database roles if provided
-  user_resource.databaseRoles = _ParseDatabaseRoles(args)
+  if args.db_roles:
+    user_resource.databaseRoles = args.db_roles
+  # set superuser role if provided
+  if args.superuser:
+    user_resource.databaseRoles.append('alloydbsuperuser')
 
   return alloydb_messages.AlloydbProjectsLocationsClustersUsersCreateRequest(
       user=user_resource,
       userId=args.username,
-      parent=project_ref.RelativeName(),
+      parent=cluster_ref.RelativeName(),
   )
+
+
+def ConstructPatchRequestFromArgs(alloydb_messages, user_ref, args):
+  """Constructs the request to update an AlloyDB instance.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    user_ref: parent resource path of the resource being updated
+    args: Command line input arguments.
+
+  Returns:
+    Fully-constructed request to update an AlloyDB user.
+  """
+  user_resource, mask = ConstructUserAndMaskFromArgs(
+      alloydb_messages, user_ref, args
+  )
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersUsersPatchRequest(
+      user=user_resource, name=user_ref.RelativeName(), updateMask=mask
+  )
+
+
+def ConstructUserAndMaskFromArgs(alloydb_messages, user_ref, args):
+  """Validates command line arguments and creates the user and field mask.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    user_ref: resource path of the resource being updated
+    args: Command line input arguments.
+
+  Returns:
+    An AlloyDB user and mask for update.
+  """
+  password_path = 'password'
+  database_roles_path = 'database_roles'
+
+  user_resource = alloydb_messages.User()
+  user_resource.name = user_ref.RelativeName()
+
+  # handle set-password
+  if 'set-password' in args.command_path:
+    user_resource.password = args.password
+    return user_resource, password_path
+
+  # handle set-database-roles
+  if 'set-roles' in args.command_path:
+    user_resource.databaseRoles = args.db_roles
+    return user_resource, database_roles_path
+
+  # handle set-superuser
+  if 'set-superuser' in args.command_path:
+    if args.superuser:
+      args.db_roles.append('alloydbsuperuser')
+    else:
+      args.db_roles.remove('alloydbsuperuser')
+    user_resource.databaseRoles = args.db_roles
+    return user_resource, database_roles_path
+
+  return user_resource, None
 
 
 def _ParseAuthenticationMethod(alloydb_messages, authentication_method):
@@ -76,15 +139,3 @@ def _ParseUserType(alloydb_messages, authentication_method):
   elif authentication_method == 'IAM_BASED':
     return alloydb_messages.User.UserTypeValueValuesEnum.ALLOYDB_IAM_USER
   return None
-
-
-def _ParseDatabaseRoles(args):
-  if args.db_roles:
-    if args.superuser:
-      return args.db_roles + ['alloydbsuperuser']
-    else:
-      return args.db_roles
-  else:
-    if args.superuser:
-      return ['alloydbsuperuser']
-  return []

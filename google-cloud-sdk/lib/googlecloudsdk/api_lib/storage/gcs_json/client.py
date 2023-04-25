@@ -45,6 +45,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import gzip_util
+from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import user_request_args_factory
@@ -854,6 +855,21 @@ class JsonClient(cloud_api.CloudApi):
     if fields_scope == cloud_api.FieldsScope.SHORT:
       global_params = self.messages.StandardQueryParameters(
           fields='prefixes,items/name,items/size,items/generation,nextPageToken'
+      )
+    elif fields_scope == cloud_api.FieldsScope.RSYNC:
+      global_params = self.messages.StandardQueryParameters(
+          fields=(
+              'prefixes,items/name,items/size,items/generation,'
+              'items/timeCreated,items/metadata/{},items/metadata{},'
+              'items/metadata/{},items/metadata/{},items/metadata/{},'
+              'nextPageToken'
+          ).format(
+              posix_util.ATIME_METADATA_KEY,
+              posix_util.GID_METADATA_KEY,
+              posix_util.MODE_METADATA_KEY,
+              posix_util.MTIME_METADATA_KEY,
+              posix_util.UID_METADATA_KEY,
+          )
       )
 
     object_list = None

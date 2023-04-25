@@ -1237,9 +1237,9 @@ def GetApiBaseUrl(api_name, api_version):
       # Check base url style. If it includes api version then override
       # also replaces the version, otherwise it only overrides the domain.
       # pylint:disable=protected-access
-      client_class = apis_internal._GetClientClass(api_name, api_version)
-      _, url_version, _ = resource_util.SplitEndpointUrl(
-          client_class.BASE_URL)
+      client_base_url = apis_internal._GetBaseUrlFromApi(api_name, api_version)
+
+      _, url_version, _ = resource_util.SplitEndpointUrl(client_base_url)
       if url_version is None:
         base_url += api_version + '/'
   return base_url

@@ -360,6 +360,14 @@ def AddSshKeyArgToParser(parser, positional=False, name=None):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddInstanceNewNameArgToParser(parser):
+  parser.add_argument(
+      '--new-name',
+      type=str,
+      help="""New instance name for renaming an already existing instance.""",
+      required=True)
+
+
 def AddInstanceOsImageToParser(parser, hidden):
   parser.add_argument(
       '--os-image',

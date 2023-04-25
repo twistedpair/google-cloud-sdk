@@ -673,6 +673,7 @@ class ConnectionProfile(_messages.Message):
     oracle: An Oracle database connection profile.
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
+    spanner: A Spanner database connection profile.
     state: The current connection profile state (e.g. DRAFT, READY, or
       FAILED).
     updateTime: Output only. The timestamp when the resource was last updated.
@@ -756,8 +757,9 @@ class ConnectionProfile(_messages.Message):
   oracle = _messages.MessageField('OracleConnectionProfile', 9)
   postgresql = _messages.MessageField('PostgreSqlConnectionProfile', 10)
   provider = _messages.EnumField('ProviderValueValuesEnum', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  spanner = _messages.MessageField('SpannerConnectionProfile', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class ConstraintEntity(_messages.Message):
@@ -2919,6 +2921,8 @@ class MigrationJob(_messages.Message):
       "mass": "1.3kg", "count": "3" }`.
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/migrationJobs/{migrationJob}.
+    performanceConfig: The performance configuration used by the migration.
+      Currently applicable for MySQL to MySQL migrations only.
     phase: Output only. The current migration job phase.
     reverseSshConnectivity: The details needed to communicate to the source
       over Reverse SSH tunnel connectivity.
@@ -3046,15 +3050,16 @@ class MigrationJob(_messages.Message):
   filter = _messages.StringField(11)
   labels = _messages.MessageField('LabelsValue', 12)
   name = _messages.StringField(13)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 14)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 15)
-  source = _messages.StringField(16)
-  sourceDatabase = _messages.MessageField('DatabaseType', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
-  updateTime = _messages.StringField(21)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 22)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 14)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 15)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 16)
+  source = _messages.StringField(17)
+  sourceDatabase = _messages.MessageField('DatabaseType', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 23)
 
 
 class MigrationJobVerificationError(_messages.Message):
@@ -3158,6 +3163,7 @@ class MySqlConnectionProfile(_messages.Message):
   Fields:
     cloudSqlId: If the source is a Cloud SQL database, use this field to
       provide the Cloud SQL instance ID of the source.
+    forwardSshConnectivity: Forward SSH tunnel connectivity.
     host: Required. The IP or hostname of the source MySQL database.
     password: Required. Input only. The password for the user that Database
       Migration Service will be using to connect to the database. This field
@@ -3166,20 +3172,25 @@ class MySqlConnectionProfile(_messages.Message):
     passwordSet: Output only. Indicates If this connection profile password is
       stored.
     port: Required. The network port of the source MySQL database.
+    privateConnectivity: Private connectivity.
     ssl: SSL configuration for the destination to connect to the source
       database.
+    staticServiceIpConnectivity: Static Service IP connectivity.
     username: Required. The username that Database Migration Service will use
       to connect to the database. The value is encrypted when stored in
       Database Migration Service.
   """
 
   cloudSqlId = _messages.StringField(1)
-  host = _messages.StringField(2)
-  password = _messages.StringField(3)
-  passwordSet = _messages.BooleanField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  ssl = _messages.MessageField('SslConfig', 6)
-  username = _messages.StringField(7)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 2)
+  host = _messages.StringField(3)
+  password = _messages.StringField(4)
+  passwordSet = _messages.BooleanField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 7)
+  ssl = _messages.MessageField('SslConfig', 8)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 9)
+  username = _messages.StringField(10)
 
 
 class Operation(_messages.Message):
@@ -3365,6 +3376,34 @@ class PackageEntity(_messages.Message):
   customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
   packageBody = _messages.StringField(2)
   packageSqlCode = _messages.StringField(3)
+
+
+class PerformanceConfig(_messages.Message):
+  r"""Performance configuration definition.
+
+  Enums:
+    DumpParallelLevelValueValuesEnum: Initial dump parallelism level.
+
+  Fields:
+    dumpParallelLevel: Initial dump parallelism level.
+  """
+
+  class DumpParallelLevelValueValuesEnum(_messages.Enum):
+    r"""Initial dump parallelism level.
+
+    Values:
+      DUMP_PARALLEL_LEVEL_UNSPECIFIED: Unknown dump parallel level. Will be
+        defaulted to OPTIMAL.
+      MIN: Minimal parallel level.
+      OPTIMAL: Optimal parallel level.
+      MAX: Maximum parallel level.
+    """
+    DUMP_PARALLEL_LEVEL_UNSPECIFIED = 0
+    MIN = 1
+    OPTIMAL = 2
+    MAX = 3
+
+  dumpParallelLevel = _messages.EnumField('DumpParallelLevelValueValuesEnum', 1)
 
 
 class Policy(_messages.Message):
@@ -3919,6 +3958,19 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SpannerConnectionProfile(_messages.Message):
+  r"""Specifies connection parameters required specifically for Spanner
+  databases.
+
+  Fields:
+    database: Required. The database in the spanner instance to connect to, in
+      the form: "projects/my-project/instances/my-instance/databases/my-
+      database"
+  """
+
+  database = _messages.StringField(1)
 
 
 class SqlAclEntry(_messages.Message):

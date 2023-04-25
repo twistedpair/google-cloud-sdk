@@ -39,7 +39,6 @@ node_prefix:
 
 accelerator_type:
   arg_name: accelerator-type
-  required: true
   type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   help_text: |
     Accelerator type for the TPU.
@@ -185,3 +184,73 @@ tags:
     Tags to apply to the TPU Node. Tags are used to identify valid sources or
     targets for network firewalls. See https://cloud.google.com/vpc/docs/add-remove-network-tags for
     more details.
+
+data_disks:
+  api_field: queuedResource.tpu.nodeSpec.node.dataDisks
+  arg_name: data-disk
+  type:
+    arg_dict:
+      flatten: false
+      spec:
+      - api_field: sourceDisk
+        arg_name: source
+        type: str
+        required: true
+      - api_field: mode
+        arg_name: mode
+        type: str
+        required: false
+        choices:
+        - arg_value: read-write
+          enum_value: READ_WRITE
+        - arg_value: read-only
+          enum_value: READ_ONLY
+  required: false
+  help_text: |
+    Additional data disks for the TPU VM.
+
+    This flag must be repeated to provide multiple data disks. For example:
+
+      $ {command} --data-disk source=projects/my-project/zones/us-central1-c/disks/my-disk,mode=read-only
+
+    The following keys are allowed:
+
+    *source*::: Specifies the full path to an existing disk. Required. The disk must be in the same zone.
+
+    *mode*::: Specifies the mode in which to attach this disk. Valid options are 'read-write',
+    'read-only'. If not specified, the default is 'read-write'.
+
+description:
+  arg_name: description
+  required: false
+  help_text: |
+    Text description of the TPU.
+
+labels:
+  arg_name: labels
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    Resource labels to represent user-provided metadata. See
+    https://cloud.google.com/compute/docs/labeling-resources for details.
+
+range: &range
+  arg_name: range
+  help_text: |
+    CIDR range for the TPU.
+
+    The IP range that the TPU will select an IP address from.
+    Must be in CIDR notation and a `/29` range, for example
+    `192.168.0.0/29`. Errors will occur if the CIDR range has already been
+    used for a currently existing TPU, the CIDR range conflicts with any
+    networks in the user's provided network, or the provided network is
+    peered with another network that is using that CIDR range.
+
+enable_secure_boot:
+  arg_name: shielded-secure-boot
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    Specifies that the TPU instances are created with secure boot enabled. This implicitly makes
+    them Shielded VM instances.

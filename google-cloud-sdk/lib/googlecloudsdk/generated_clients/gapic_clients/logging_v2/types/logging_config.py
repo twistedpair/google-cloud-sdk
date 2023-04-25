@@ -2090,10 +2090,6 @@ class Settings(proto.Message):
             ingestion if there is already an aggregated sink configured
             in the hierarchy. The \_Default sink can be re-enabled
             manually if needed.
-        logging_service_account_id (str):
-            Output only. The service account for the given container.
-            Sinks use this service account as their ``writer_identity``
-            if no custom service account is provided.
     """
 
     name = proto.Field(
@@ -2115,10 +2111,6 @@ class Settings(proto.Message):
     disable_default_sink = proto.Field(
         proto.BOOL,
         number=5,
-    )
-    logging_service_account_id = proto.Field(
-        proto.STRING,
-        number=7,
     )
 
 

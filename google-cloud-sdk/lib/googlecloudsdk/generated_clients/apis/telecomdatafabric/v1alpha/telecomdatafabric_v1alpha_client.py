@@ -51,6 +51,7 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
     self.projects_locations_metricsProcessors = self.ProjectsLocationsMetricsProcessorsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_pipelineSchedulers = self.ProjectsLocationsPipelineSchedulersService(self)
+    self.projects_locations_publicTemplates = self.ProjectsLocationsPublicTemplatesService(self)
     self.projects_locations_streamIngestionPipelines = self.ProjectsLocationsStreamIngestionPipelinesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1765,6 +1766,70 @@ class TelecomdatafabricV1alpha(base_api.BaseApiClient):
         request_field='pipelineScheduler',
         request_type_name='TelecomdatafabricProjectsLocationsPipelineSchedulersPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPublicTemplatesService(base_api.BaseApiService):
+    """Service class for the projects_locations_publicTemplates resource."""
+
+    _NAME = 'projects_locations_publicTemplates'
+
+    def __init__(self, client):
+      super(TelecomdatafabricV1alpha.ProjectsLocationsPublicTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PublicTemplate.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsPublicTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/publicTemplates/{publicTemplatesId}',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.publicTemplates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsPublicTemplatesGetRequest',
+        response_type_name='PublicTemplate',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PublicTemplates in a given project and location.
+
+      Args:
+        request: (TelecomdatafabricProjectsLocationsPublicTemplatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPublicTemplatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/publicTemplates',
+        http_method='GET',
+        method_id='telecomdatafabric.projects.locations.publicTemplates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/publicTemplates',
+        request_field='',
+        request_type_name='TelecomdatafabricProjectsLocationsPublicTemplatesListRequest',
+        response_type_name='ListPublicTemplatesResponse',
         supports_download=False,
     )
 

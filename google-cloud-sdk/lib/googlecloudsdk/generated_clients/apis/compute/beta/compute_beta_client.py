@@ -7040,7 +7040,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instances.simulateMaintenanceEvent',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=[],
+        query_params=['requestId'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/simulateMaintenanceEvent',
         request_field='',
         request_type_name='ComputeInstancesSimulateMaintenanceEventRequest',
@@ -14896,6 +14896,32 @@ class ComputeBeta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddRule(self, request, global_params=None):
+      r"""Inserts a rule into a security policy.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.addRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['validateOnly'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/addRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeRegionSecurityPoliciesAddRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified policy.
 
@@ -14945,6 +14971,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionSecurityPoliciesGetRequest',
         response_type_name='SecurityPolicy',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      r"""Gets a rule at the specified priority.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionSecurityPolicies.getRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/getRule',
+        request_field='',
+        request_type_name='ComputeRegionSecurityPoliciesGetRuleRequest',
+        response_type_name='SecurityPolicyRule',
         supports_download=False,
     )
 
@@ -15022,6 +15074,58 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}',
         request_field='securityPolicyResource',
         request_type_name='ComputeRegionSecurityPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      r"""Patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.patchRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['priority', 'validateOnly'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/patchRule',
+        request_field='securityPolicyRule',
+        request_type_name='ComputeRegionSecurityPoliciesPatchRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      r"""Deletes a rule at the specified priority.
+
+      Args:
+        request: (ComputeRegionSecurityPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionSecurityPolicies.removeRule',
+        ordered_params=['project', 'region', 'securityPolicy'],
+        path_params=['project', 'region', 'securityPolicy'],
+        query_params=['priority'],
+        relative_path='projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/removeRule',
+        request_field='',
+        request_type_name='ComputeRegionSecurityPoliciesRemoveRuleRequest',
         response_type_name='Operation',
         supports_download=False,
     )

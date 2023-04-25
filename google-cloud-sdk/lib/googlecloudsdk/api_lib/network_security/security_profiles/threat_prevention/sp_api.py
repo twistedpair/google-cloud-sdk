@@ -84,9 +84,16 @@ class Client:
           'threatOverrides': [],
       }
     else:
-      return response.etag, encoding.MessageToDict(
-          response.threatPreventionProfile
-      )
+      profile = encoding.MessageToDict(response.threatPreventionProfile)
+
+      # If Threat Prevention Profile is empty, format the profile response.
+      if not any(profile):
+        return response.etag, {
+            'severityOverrides': [],
+            'threatOverrides': [],
+        }
+      else:
+        return response.etag, profile
 
   def CheckOverridesExist(
       self,

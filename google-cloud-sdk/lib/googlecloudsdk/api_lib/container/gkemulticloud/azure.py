@@ -73,6 +73,7 @@ class _AzureClientBase(client.ClientBase):
         'autoscaling': self._Autoscaling(args),
         'azureAvailabilityZone': flags.GetAzureAvailabilityZone(args),
         'config': self._NodeConfig(args),
+        'management': self._NodeManagement(args),
         'maxPodsConstraint': self._MaxPodsConstraint(args),
         'name': node_pool_ref.azureNodePoolsId,
         'subnetId': flags.GetSubnetID(args),
@@ -188,6 +189,13 @@ class _AzureClientBase(client.ClientBase):
         'vmSize': flags.GetVMSize(args),
     }
     return self._messages.GoogleCloudGkemulticloudV1AzureNodeConfig(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _NodeManagement(self, args):
+    kwargs = {
+        'autoRepair': flags.GetAutoRepair(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AzureNodeManagement(
         **kwargs) if any(kwargs.values()) else None
 
 

@@ -911,16 +911,24 @@ def AddBinauthzFlags(parser,
     )
 
 
-def AddZoneAndRegionFlags(parser):
-  """Adds the --zone and --region flags to the parser."""
+def AddLocationFlags(parser):
+  """Adds the --location, --zone, and --region flags to the parser."""
   # TODO(b/33343238): Remove the short form of the zone flag.
   # TODO(b/18105938): Add zone prompting
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
+      '--location',
+      help=(
+          'Compute zone or region (e.g. us-central1-a or us-central1) for the '
+          'cluster.'
+      ),
+  )
+  group.add_argument(
       '--zone',
       '-z',
-      help='Compute zone (e.g. us-central1-a) for the cluster',
-      action=actions.StoreProperty(properties.VALUES.compute.zone))
+      help='Compute zone (e.g. us-central1-a) for the cluster.',
+      action=actions.StoreProperty(properties.VALUES.compute.zone),
+  )
   group.add_argument(
       '--region', help='Compute region (e.g. us-central1) for the cluster.')
 
@@ -2785,7 +2793,7 @@ def AddNodeLocationsFlag(parser):
       help="""\
 The set of zones in which the specified node footprint should be replicated.
 All zones must be in the same region as the cluster's master(s), specified by
-the `--zone` or `--region` flag. Additionally, for zonal clusters,
+the `-location`, `--zone`, or `--region` flag. Additionally, for zonal clusters,
 `--node-locations` must contain the cluster's primary zone. If not specified,
 all nodes will be in the cluster's primary zone (for zonal clusters) or spread
 across three randomly chosen zones within the cluster's region (for regional
@@ -2796,8 +2804,9 @@ specify `--num-nodes=4` and choose two locations, 8 nodes will be created.
 
 Multiple locations can be specified, separated by commas. For example:
 
-  $ {command} example-cluster --zone us-central1-a --node-locations us-central1-a,us-central1-b
-""")
+  $ {command} example-cluster --location us-central1-a --node-locations us-central1-a,us-central1-b
+""",
+  )
 
 
 def AddLoggingServiceFlag(parser):
@@ -3738,7 +3747,8 @@ To see available sole tenant node-groups, run:
 To create a sole tenant node group, run:
 
   $ gcloud compute sole-tenancy node-groups create [GROUP_NAME] \
-    --zone [ZONE] --node-template [TEMPLATE_NAME] --target-size [TARGET_SIZE]
+    --location [ZONE] --node-template [TEMPLATE_NAME] \
+    --target-size [TARGET_SIZE]
 
 See https://cloud.google.com/compute/docs/nodes for more
 information on sole tenancy and node groups.
@@ -5033,6 +5043,31 @@ def AddWindowsOsVersionFlag(parser, hidden=False):
       hidden=hidden,
       choices=['ltsc2019', 'ltsc2022'],
       default=None)
+
+
+def AddBestEffortProvisionFlags(parser, hidden=True):
+  """Adds the argument to enable best effort provisioning."""
+  group_text = """\
+      Specifies minimum number of nodes to be created when best effort
+      provisioning enabled.
+  """
+  enable_best_provision = """\
+      Enable best effort provision for nodes
+  """
+  min_provision_nodes = """\
+      Specifies the minimum number of nodes to be provisioned during creation
+  """
+  group = parser.add_group(help=group_text, hidden=hidden)
+  group.add_argument(
+      '--enable-best-effort-provision',
+      default=None,
+      help=enable_best_provision,
+      action='store_true')
+  group.add_argument(
+      '--min-provision-nodes',
+      default=None,
+      type=int,
+      help=min_provision_nodes)
 
 
 def AddEnableMultiNetworkingFlag(parser, hidden=True):

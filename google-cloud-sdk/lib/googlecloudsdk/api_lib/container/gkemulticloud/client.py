@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import itertools
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util
 from googlecloudsdk.command_lib.container.gkemulticloud import flags
@@ -81,7 +83,18 @@ class ClientBase(object):
     ])
 
   def List(self, parent_ref, page_size=None, limit=None, parent_field='parent'):
-    """Lists gkemulticloud API resources."""
+    """Lists gkemulticloud API resources.
+
+    Args:
+      parent_ref: Reference to the parent field to list resources.
+      page_size: Page size for listing resources.
+      limit: Limit for listing resources.
+      parent_field: Name of the parent field.
+
+    Returns:
+      iterator: List of resources returned from the server.
+      bool: True if empty. False, otherwise.
+    """
     kwargs = {parent_field: parent_ref.RelativeName()}
     req = self._service.GetRequestType('List')(**kwargs)
     kwargs = {
@@ -92,8 +105,13 @@ class ClientBase(object):
       kwargs['limit'] = limit
     if page_size:
       kwargs['batch_size'] = page_size
-    for item in list_pager.YieldFromList(self._service, req, **kwargs):
-      yield item
+    items = list_pager.YieldFromList(self._service, req, **kwargs)
+    try:
+      first_item = next(items)
+      items = itertools.chain([first_item], items)
+      return items, False
+    except StopIteration:
+      return items, True
 
   def Get(self, resource_ref):
     """Gets a gkemulticloud API resource."""

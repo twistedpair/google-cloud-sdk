@@ -68,7 +68,8 @@ def AddSubnetArgToParser(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddClusterArgToParser(parser, positional=False):
+def AddClusterArgToParser(parser, positional=False,
+                          hide_resource_argument_flags=False):
   """Sets up an argument for the cluster resource."""
   if positional:
     name = 'cluster'
@@ -76,10 +77,10 @@ def AddClusterArgToParser(parser, positional=False):
     name = '--cluster'
   cluster_data = yaml_data.ResourceYAMLData.FromPath('vmware.cluster')
   resource_spec = concepts.ResourceSpec.FromYaml(cluster_data.GetData())
-  flag_name_overrides = {'location': '', 'private-cloud': ''}
+  flag_name_overrides = None
 
-  if positional:
-    flag_name_overrides = None
+  if hide_resource_argument_flags:
+    flag_name_overrides = {'location': '', 'private-cloud': ''}
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
@@ -218,5 +219,20 @@ def AddLoggingServerArgToParser(parser):
       concept_spec=resource_spec,
       required=True,
       group_help='logging_server.',
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddNodeArgToParser(parser):
+  """Sets up an argument for the node resource."""
+
+  node_data = yaml_data.ResourceYAMLData.FromPath('vmware.node')
+  resource_spec = concepts.ResourceSpec.FromYaml(node_data.GetData())
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='node',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='node.'
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage.gcs_grpc import download
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.util import apis as core_apis
@@ -57,14 +58,18 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     ):
       return None
 
-    grpc_util.download_object(
+    downloader = download.GrpcDownload(
         gapic_client=self._get_gapic_client(),
         cloud_resource=cloud_resource,
         download_stream=download_stream,
-        digesters=digesters,
-        progress_callback=progress_callback,
         start_byte=start_byte,
-        end_byte=end_byte)
+        end_byte=end_byte,
+        digesters=digesters,
+        progress_callback=progress_callback)
+    if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
+      downloader.simple_download()
+    else:
+      downloader.run(retriable_in_flight=True)
     # TODO(b/261180916) Return server encoding.
     return None
 

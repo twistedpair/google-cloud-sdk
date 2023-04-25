@@ -28,12 +28,14 @@ from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import posix_util
+from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks import patch_file_posix_task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.objects import patch_object_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
@@ -416,7 +418,9 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
         copy_task_factory.get_copy_task(
             _maybe_get_full_source_metadata(source_object, destination_object),
             destination_object,
+            do_not_decompress=True,
             user_request_args=user_request_args,
+            verbose=True,
         ),
         _IterateResource.BOTH,
     )
@@ -508,6 +512,10 @@ def _get_copy_destination_resource(
   return resource_reference.UnknownResource(new_destination_object_url)
 
 
+def _log_skipping_symlink(resource):
+  log.warning('Skipping symlink {}'.format(resource))
+
+
 def _get_task_and_iteration_instruction(
     user_request_args,
     source_object,
@@ -516,6 +524,7 @@ def _get_task_and_iteration_instruction(
     destination_container,
     compare_only_hashes=False,
     delete_unmatched_destination_objects=False,
+    ignore_symlinks=False,
     skip_if_destination_has_later_modification_time=False,
 ):
   """Compares resources and returns next rsync step.
@@ -536,6 +545,7 @@ def _get_task_and_iteration_instruction(
     compare_only_hashes (bool): Skip modification time comparison.
     delete_unmatched_destination_objects (bool): Clear objects at the
       destination that are not present at the source.
+    ignore_symlinks (bool): Skip operations involving symlinks.
     skip_if_destination_has_later_modification_time (bool): Don't act if mtime
       metadata indicates we'd be overwriting with an older version of an object.
 
@@ -574,6 +584,10 @@ def _get_task_and_iteration_instruction(
       )
     return (None, _IterateResource.DESTINATION)
 
+  if ignore_symlinks and source_object.is_symlink:
+    _log_skipping_symlink(source_object)
+    return (None, _IterateResource.SOURCE)
+
   if not destination_object:
     return (
         copy_task_factory.get_copy_task(
@@ -583,10 +597,16 @@ def _get_task_and_iteration_instruction(
             _get_copy_destination_resource(
                 source_object, source_container, destination_container
             ),
+            do_not_decompress=True,
             user_request_args=user_request_args,
+            verbose=True,
         ),
         _IterateResource.SOURCE,
     )
+
+  if ignore_symlinks and destination_object.is_symlink:
+    _log_skipping_symlink(destination_object)
+    return (None, _IterateResource.DESTINATION)
 
   source_url = _get_comparison_url(source_object, source_container)
   destination_url = _get_comparison_url(
@@ -599,7 +619,9 @@ def _get_task_and_iteration_instruction(
             _get_copy_destination_resource(
                 source_object, source_container, destination_container
             ),
+            do_not_decompress=True,
             user_request_args=user_request_args,
+            verbose=True,
         ),
         _IterateResource.SOURCE,
     )
@@ -634,9 +656,12 @@ def get_operation_iterator(
     destination_container,
     compare_only_hashes=False,
     delete_unmatched_destination_objects=False,
+    ignore_symlinks=False,
     skip_if_destination_has_later_modification_time=False,
+    task_status_queue=None,
 ):
   """Returns task with next rsync operation (patch, delete, copy, etc)."""
+  operation_count = bytes_operated_on = 0
   with files.FileReader(source_list_file) as source_reader, files.FileReader(
       destination_list_file
   ) as destination_reader:
@@ -652,11 +677,19 @@ def get_operation_iterator(
           source_container,
           destination_object,
           destination_container,
-          compare_only_hashes,
-          delete_unmatched_destination_objects,
-          skip_if_destination_has_later_modification_time,
+          compare_only_hashes=compare_only_hashes,
+          delete_unmatched_destination_objects=(
+              delete_unmatched_destination_objects
+          ),
+          ignore_symlinks=ignore_symlinks,
+          skip_if_destination_has_later_modification_time=(
+              skip_if_destination_has_later_modification_time
+          ),
       )
       if task:
+        operation_count += 1
+        if isinstance(task, copy_util.CopyTask):
+          bytes_operated_on += source_object.size or 0
         yield task
       if iteration_instruction in (
           _IterateResource.SOURCE,
@@ -670,3 +703,8 @@ def get_operation_iterator(
         destination_object = parse_csv_line_to_resource(
             next(destination_reader, None)
         )
+
+  if task_status_queue and (operation_count or bytes_operated_on):
+    progress_callbacks.workload_estimator_callback(
+        task_status_queue, item_count=operation_count, size=bytes_operated_on
+    )

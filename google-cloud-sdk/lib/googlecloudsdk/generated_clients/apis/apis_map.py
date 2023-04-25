@@ -2777,7 +2777,7 @@ MAP = {
                     client_classpath='publicca_v1_client.PubliccaV1',
                     base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1alpha1':
@@ -2797,7 +2797,7 @@ MAP = {
                     client_classpath='publicca_v1beta1_client.PubliccaV1beta1',
                     base_url='https://publicca.googleapis.com/',
                     messages_modulepath='publicca_v1beta1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -3169,6 +3169,16 @@ MAP = {
                     client_classpath='serviceusage_v1beta1_client.ServiceusageV1beta1',
                     base_url='https://serviceusage.googleapis.com/',
                     messages_modulepath='serviceusage_v1beta1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.serviceusage.v2',
+                    client_classpath='serviceusage_v2_client.ServiceusageV2',
+                    base_url='https://serviceusage.googleapis.com/',
+                    messages_modulepath='serviceusage_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

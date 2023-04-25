@@ -36,6 +36,26 @@ wasmPlugin:
     api_field: wasmPlugin.description
     help_text: |-
       A human-readable description of the resource.
+  logConfig:
+    arg_name: log-config
+    api_field: wasmPlugin.logConfig
+    type: 'googlecloudsdk.command_lib.network_actions.util:LogConfig:'
+    processor: googlecloudsdk.command_lib.network_actions.util:GetLogConfig
+    help_text: |
+      Logging options for the activity performed by this WasmPlugin.
+      Following options can be set:
+      - enable - whether to enable logging
+
+      - sample-rate - configures the sampling rate of activity logs, where 1.0 means all
+        logged activity is reported and 0.0 means no activity is reported.
+        The default value is 1.0, and the value of the field must be in [0, 1].
+
+      - min-log-level - specificies the lowest level of the logs which should be exported to Cloud
+        Logging. The default value is INFO.
+
+      Example usage:
+      --log-config=enable=True,sample-rate=0.5,min-log-level=INFO
+      --log_config=enable=False
   labels:
     arg_name: labels
     api_field: wasmPlugin.labels

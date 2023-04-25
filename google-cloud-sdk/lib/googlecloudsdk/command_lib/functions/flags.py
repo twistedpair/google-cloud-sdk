@@ -259,8 +259,7 @@ def AddAllowUnauthenticatedFlag(parser):
   """Add the --allow-unauthenticated flag."""
   parser.add_argument(
       '--allow-unauthenticated',
-      default=False,
-      action='store_true',
+      action=arg_parsers.StoreTrueFalseAction,
       help=(
           'If set, makes this a public function. This will allow all '
           'callers, without checking authentication.'

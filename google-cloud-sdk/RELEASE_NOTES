@@ -5,6 +5,127 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 428.0.0 (2023-04-25)
+
+### Breaking Changes
+
+*   **(Cloud Run)** For `gcloud beta run jobs deploy`, `gcloud run jobs create`, and
+  `gcloud run jobs update`, mark `--execute-now` and `--async` flags
+  mutually exclusive.
+
+
+### Google Cloud CLI
+
+* Added `--lifetime` flag to
+`gcloud auth application-default print-access-token` to configure service
+account impersonation access token lifetime.
+* Duration flags now support fractional input.
+
+### Anthos Multi-Cloud
+
+*   Promoted `--enable-managed-prometheus` flag of `gcloud container aws clusters create` to GA.
+*   Promoted `--enable-managed-prometheus` and `--disable-managed-prometheus` flags of `gcloud container aws clusters update` to GA.
+*   Promoted `--enable-managed-prometheus` flag of `gcloud container azure clusters create` to GA.
+*   Promoted `--enable-managed-prometheus` and `--disable-managed-prometheus` flags of `gcloud container azure clusters update` to GA.
+*   Fixed issue where `--max-nodes`, `--min-nodes`, and `--max-pods-per-node` flags of `gcloud container aws node-pools create` and `gcloud container azure node-pools create` were incorrectly documented as optional.
+
+### Anthos On-Prem
+
+* Added `gcloud container bare-metal admin-clusters unenroll` which removes Cluster API resources so that the cluster is no longer managed by the Anthos On-Prem API.
+* Added support for annotations in the `container bare-metal clusters update`
+command.
+
+### Cloud Bigtable
+
+* Rebuilding cbt cli with go version 1.20 which fixed cve-2023-24537.
+
+### Cloud Bigtable Emulator
+
+* Rebuilding cbt emulator with go version 1.20 which fixed cve-2023-24537.
+
+### Cloud Run
+
+* Added `firebase-hosting` integration type to `gcloud beta run integrations`
+  command group.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.23.
+
+### Cloud Tasks
+
+*   Added `gcloud beta tasks buffer` which enables creation of an HTTP task
+    without specifying the task body. It requires the parent queue to have
+    an HTTP target override and is only enabled in the beta track.
+
+### Cloud Workstations
+
+* Added `-labels` flag to `gcloud beta workstations create` and
+`gcloud beta workstations cluster create`.
+
+### Compute Engine
+
+* Added `--auto-network-tier` flag of `gcloud compute routers nats create` and `gcloud compute routers nats update` in beta to select network tier to be used by NAT in auto mode.
+* Promoted flag `--enforce-on-key-configs` of `gcloud compute security-policies rules create|update` to GA.
+* Added `--certificate-manager-certificates` flag to `gcloud compute target-https-proxies create/update` to add a list of ssl certificates created in certificate-manager to the target https proxy.
+* Added `--allow-psc-global-access` flag of `gcloud compute forwarding-rules <create|update>` to v1.
+
+### Compute Firewall Policies
+
+* Promoted `--src-threat-intelligence` and `--dest-threat-intelligence` flags to
+  GA in `gcloud compute firewall-policies rules create`
+  , `gcloud compute firewall-policies rules update`
+  , `gcloud compute network-firewall-policies rules create`
+  and `gcloud compute network-firewall-policies rules update` commands.
+* Promoted `--src-region-codes` and `--dest-region-codes` flags to GA
+  in `gcloud compute firewall-policies rules create`
+  , `gcloud compute firewall-policies rules update`
+  , `gcloud compute network-firewall-policies rules create`
+  and `gcloud compute network-firewall-policies rules update` commands.
+* Promoted `--src-fqdns` and `--dest-fqdns` flags to GA in
+  `gcloud compute firewall-policies rules create/update` and
+  `gcloud compute network-firewall-policies rules create/update` commands.
+* Promoted `--src-address-groups` and `--dest-address-groups` flags to GA
+  in `gcloud compute firewall-policies rules create/update` and
+  `gcloud compute network-firewall-policies rules create/update` commands.
+
+### Kubernetes Engine
+
+*   Added `--location` flag to `clusters`, `node-pools`, and `operations`
+    surfaces as a simpler alternative to `--zone` or `--region`.
+* Updated default kubectl from 1.24.12 to 1.24.13.
+* Additional kubectl versions:
+  * kubectl.1.21 (1.21.14)
+  * kubectl.1.22 (1.22.17)
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.13)
+  * kubectl.1.25 (1.25.9)
+  * kubectl.1.26 (1.26.4)
+
+### Network Security
+
+*   Added `gcloud network-security server-tls-policies describe` to alpha and beta.
+*   Promoted `gcloud network-security gateway-security-policies` to GA.
+*   Promoted `gcloud network-security gateway-security-policies rules` to GA.
+*   Promoted `gcloud network-security url-lists` to GA.
+*   Promoted `gcloud network-security tls-inspection-policies` to GA.
+
+### Public CA
+
+*   Promoted `gcloud publicca` to GA.
+
+### Security Command Center
+
+* Fixed `gcloud scc findings list` to provide descriptive error message when `parent` argument is omitted.
+
+### Transcoder
+
+* Added support for `--mode` flag when creating a new job.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 427.0.0 (2023-04-18)
 
 ### Breaking Changes

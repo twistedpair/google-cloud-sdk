@@ -33,12 +33,6 @@ _METHOD_ID_RE_RAW = r'(?P<collection>{collection})\.get'.format(
     collection=_COLLECTION_SUB_RE)
 _METHOD_ID_RE = re.compile(_METHOD_ID_RE_RAW)
 DEFAULT_PATH_NAME = ''
-# List of APIs that should be allowed to use different API versions for
-# gRPC vs JSON API.
-# TODO(b/254265765) Remove once resources can be generated using gRPC.
-MISMATCHED_VERSION_ALLOWLIST = frozenset([
-    'storage',  # The JSON API uses v1, whereas gRPC uses v2.
-])
 
 
 class Error(Exception):
@@ -126,42 +120,52 @@ class DiscoveryDoc(object):
     flat_path = get_method.get('flatPath')
     path = get_method.get('path')
     return self._MakeResourceCollection(
-        api_version, collection_name, path, flat_path)
+        api_version, collection_name, path, flat_path
+    )
 
-  def _MakeResourceCollection(self, api_version,
-                              collection_name, path, flat_path=None):
+  def _MakeResourceCollection(
+      self, api_version, collection_name, path, flat_path=None
+  ):
     """Make resource collection object given its name and path."""
     if flat_path == path:
       flat_path = None
     # Normalize base url so it includes api_version.
     url = self.base_url + path
-    url_api_name, url_api_vesion, path = (
-        resource_util.SplitEndpointUrl(url))
-    if (self.api_name.lower() not in MISMATCHED_VERSION_ALLOWLIST and
-        url_api_vesion != api_version):
+    url_api_name, url_api_version, path = resource_util.SplitEndpointUrl(url)
+    if url_api_version != api_version:
       raise UnsupportedDiscoveryDoc(
           'Collection {0} for version {1}/{2} is using url {3} '
           'with version {4}'.format(
-              collection_name, self.api_name, api_version, url, url_api_vesion))
+              collection_name, self.api_name, api_version, url, url_api_version
+          )
+      )
     if flat_path:
       _, _, flat_path = resource_util.SplitEndpointUrl(
-          self.base_url + flat_path)
+          self.base_url + flat_path
+      )
     # Use url_api_name instead as it is assumed to be source of truth.
     # Also note that api_version not always equal to url_api_version,
     # this is the case where api_version is an alias.
     url = url[:-len(path)]
     return resource_util.CollectionInfo(
-        url_api_name, api_version, url, self.docs_url, collection_name, path,
+        url_api_name,
+        api_version,
+        url,
+        self.docs_url,
+        collection_name,
+        path,
         {DEFAULT_PATH_NAME: flat_path} if flat_path else {},
-        resource_util.GetParamsFromPath(path))
+        resource_util.GetParamsFromPath(path),
+    )
 
   def _GenerateMissingParentCollections(
-      self, collections, custom_resources, api_version):
+      self, collections, custom_resources, api_version
+  ):
     """Generates parent collections for any existing collection missing one.
 
     Args:
-      collections: [resource.CollectionInfo], The existing collections from
-        the discovery doc.
+      collections: [resource.CollectionInfo], The existing collections from the
+        discovery doc.
       custom_resources: {str, str}, A mapping of collection name to path that
         have been registered manually in the yaml file.
       api_version: Override api_version for each found resource collection.

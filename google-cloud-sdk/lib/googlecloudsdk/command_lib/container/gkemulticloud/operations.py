@@ -30,9 +30,12 @@ _OPERATION_TABLE_FORMAT = """\
     )"""
 
 
-def AddFilter(parser, noun):
-  parser.display_info.AddFilter(
-      'metadata.target ~ projects/\\d+/locations/.+/{}*'.format(noun))
+def AddFilter(args, noun):
+  predicate = 'metadata.target ~ projects/\\d+/locations/.+/{}*'.format(noun)
+  if args.filter:
+    args.filter = predicate + ' AND ' + args.filter
+  else:
+    args.filter = predicate
 
 
 def AddFormat(parser):

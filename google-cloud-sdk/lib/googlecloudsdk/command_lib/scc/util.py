@@ -39,7 +39,7 @@ def GetParentFromPositionalArguments(args):
     # Use organization property as backup for legacy behavior.
     parent = properties.VALUES.scc.organization.Get()
 
-  if parent is None:
+  if parent is None and hasattr(args, "organization"):
     parent = args.organization
 
   if parent is None:

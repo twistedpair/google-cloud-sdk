@@ -30,9 +30,66 @@ from googlecloudsdk.core import properties
 class _BareMetalClusterClient(client.ClientBase):
   """Base class for GKE OnPrem Bare Metal API clients."""
 
-  def _annotations(self, args):
-    """Constructs proto message AnnotationsValue."""
+  def _create_annotations(self, args):
+    """Constructs proto message AnnotationsValue for create command."""
     annotations = getattr(args, 'annotations', {})
+
+    return self._dict_to_annotations_message(annotations)
+
+  def _add_annotations(self, args):
+    """Constructs proto message AnnotationsValue for adding new annotations."""
+    result = {**self._get_current_annotations(args), **args.add_annotations}
+
+    return self._dict_to_annotations_message(result)
+
+  def _clear_annotations(self, args):
+    """Constructs proto message AnnotationsValue for clearing annotations."""
+    return self._messages.BareMetalCluster.AnnotationsValue()
+
+  def _remove_annotations(self, args):
+    """Constructs proto message AnnotationsValue for removing annotations."""
+    curr_annotations = self._get_current_annotations(args)
+    updated_annotations = {
+        key: value
+        for key, value in curr_annotations.items()
+        if key not in args.remove_annotations
+    }
+
+    return self._dict_to_annotations_message(updated_annotations)
+
+  def _set_annotations(self, args):
+    """Constructs proto message AnnotationsValue for setting annotations."""
+    return self._dict_to_annotations_message(args.set_annotations)
+
+  def _get_current_annotations(self, args):
+    """Fetches the standalone cluster annotations."""
+    cluster_ref = args.CONCEPTS.cluster.Parse()
+    cluster_response = self.Describe(cluster_ref)
+
+    curr_annotations = {}
+    if cluster_response.annotations:
+      for annotation in cluster_response.annotations.additionalProperties:
+        curr_annotations[annotation.key] = annotation.value
+
+    return curr_annotations
+
+  def _update_annotations(self, args):
+    """Constructs proto message AnnotationsValue for update command."""
+    specified_args = args.GetSpecifiedArgsDict()
+    if 'add_annotations' in specified_args:
+      return self._add_annotations(args)
+
+    if 'clear_annotations' in specified_args:
+      return self._clear_annotations(args)
+
+    if 'remove_annotations' in specified_args:
+      return self._remove_annotations(args)
+
+    if 'set_annotations' in specified_args:
+      return self._set_annotations(args)
+
+  def _dict_to_annotations_message(self, annotations):
+    """Converts key-val pairs to proto message AnnotationsValue."""
     additional_property_messages = []
     if not annotations:
       return None
@@ -44,10 +101,22 @@ class _BareMetalClusterClient(client.ClientBase):
           )
       )
 
-    annotation_value_message = self._messages.BareMetalCluster.AnnotationsValue(
-        additionalProperties=additional_property_messages
+    annotation_value_message = (
+        self._messages.BareMetalCluster.AnnotationsValue(
+            additionalProperties=additional_property_messages
+        )
     )
     return annotation_value_message
+
+  def _annotations(self, args):
+    """Constructs proto message AnnotationsValue."""
+    if args.command_path[-1] == 'update':
+      return self._update_annotations(args)
+
+    if args.command_path[-1] == 'create':
+      return self._create_annotations(args)
+
+    return None
 
   def _island_mode_cidr_config(self, args):
     """Constructs proto message BareMetalIslandModeCidrConfig."""

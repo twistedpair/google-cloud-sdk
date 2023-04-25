@@ -133,7 +133,9 @@ AWS_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'autoscaling_metrics':
         'config.autoscaling_metrics_collection.metrics',
     'clear_autoscaling_metrics':
-        'config.autoscaling_metrics_collection'
+        'config.autoscaling_metrics_collection',
+    'enable_autorepair':
+        'management.auto_repair'
 }
 
 AZURE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
@@ -162,7 +164,8 @@ AZURE_NODEPOOL_ARGS_TO_UPDATE_MASKS = {
     'node_version': 'version',
     'ssh_public_key': 'config.ssh_config.authorized_key',
     'annotations': 'annotations',
-    'clear_annotations': 'annotations'
+    'clear_annotations': 'annotations',
+    'enable_autorepair': 'management.auto_repair'
 }
 
 

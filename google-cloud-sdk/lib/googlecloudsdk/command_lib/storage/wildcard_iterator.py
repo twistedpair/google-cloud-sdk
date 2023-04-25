@@ -40,6 +40,7 @@ from googlecloudsdk.core.util import debug_output
 import six
 
 
+_NON_FILE_ERROR_FORMAT = 'Expected files or objects. Received: {}'
 COMPRESS_WILDCARDS_REGEX = re.compile(r'\*{3,}')
 WILDCARD_REGEX = re.compile(r'[*?\[\]]')
 
@@ -191,7 +192,9 @@ class FileWildcardIterator(WildcardIterator):
     # Files named '-' will not be copied, as that string makes is_stdio true.
     if self._url.is_stdio:
       if self._files_only:
-        return
+        raise command_errors.InvalidUrlError(
+            _NON_FILE_ERROR_FORMAT.format(self._url.object_name)
+        )
       yield resource_reference.FileObjectResource(self._url)
 
     recursion_needed = '**' in self._path
@@ -202,12 +205,12 @@ class FileWildcardIterator(WildcardIterator):
     else:
       hidden_file_iterator = []
     for path in itertools.chain(normal_file_iterator, hidden_file_iterator):
-      if (
-          self._exclude_patterns
-          and self._exclude_patterns.match(path)
-          or (self._files_only and not os.path.isfile(path))
-      ):
+      if self._exclude_patterns and self._exclude_patterns.match(path):
         continue
+      if self._files_only and not os.path.isfile(path):
+        raise command_errors.InvalidUrlError(
+            _NON_FILE_ERROR_FORMAT.format(self._url.object_name)
+        )
 
       # Follow symlinks unless pointing to directory or exclude flag is present.
       # However, include even directory symlinks (as files) when symlinks are
@@ -284,7 +287,9 @@ class CloudWildcardIterator(WildcardIterator):
 
   def __iter__(self):
     if self._files_only and (self._url.is_provider() or self._url.is_bucket()):
-      return
+      raise command_errors.InvalidUrlError(
+          _NON_FILE_ERROR_FORMAT.format(self._url)
+      )
     if self._url.is_provider():
       for bucket_resource in self._client.list_buckets(self._fields_scope):
         yield bucket_resource
@@ -295,19 +300,16 @@ class CloudWildcardIterator(WildcardIterator):
         else:  # URL is an object or prefix.
           for obj_resource in self._fetch_objects(
               bucket_or_unknown_resource.storage_url.bucket_name):
-            if (
-                self._exclude_patterns
-                and self._exclude_patterns.match(
-                    obj_resource.storage_url.versionless_url_string
-                )
-                or (
-                    self._files_only
-                    and not isinstance(
-                        obj_resource, resource_reference.ObjectResource
-                    )
-                )
+            if self._exclude_patterns and self._exclude_patterns.match(
+                obj_resource.storage_url.versionless_url_string
             ):
               continue
+            if self._files_only and not isinstance(
+                obj_resource, resource_reference.ObjectResource
+            ):
+              raise command_errors.InvalidUrlError(
+                  _NON_FILE_ERROR_FORMAT.format(self._url)
+              )
             yield obj_resource
 
   def _decrypt_resource_if_necessary(self, resource):

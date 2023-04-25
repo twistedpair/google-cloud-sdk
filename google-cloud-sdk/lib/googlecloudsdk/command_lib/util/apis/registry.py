@@ -23,7 +23,6 @@ from apitools.base.protorpclite import messages
 from apitools.base.py import  exceptions as apitools_exc
 from apitools.base.py import list_pager
 
-from googlecloudsdk.api_lib.regen import generate
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import resource
@@ -92,12 +91,12 @@ class APICallError(Error):
 class API(object):
   """A data holder for returning API data for display."""
 
-  def __init__(self, name, version, is_default, client):
+  def __init__(self, name, version, is_default, client, base_url):
     self.name = name
     self.version = version
     self.is_default = is_default
     self._client = client
-    self.base_url = client.BASE_URL
+    self.base_url = base_url
 
   def GetMessagesModule(self):
     return self._client.MESSAGES_MODULE
@@ -457,9 +456,24 @@ def GetAPI(api_name, api_version=None):
   """
   api_version = _ValidateAndGetDefaultVersion(api_name, api_version)
   # pylint: disable=protected-access
-  api_def = apis_internal._GetApiDef(api_name, api_version)
-  api_client = apis_internal._GetClientClassFromDef(api_def)
-  return API(api_name, api_version, api_def.default_version, api_client)
+  api_def = apis_internal.GetApiDef(api_name, api_version)
+  if api_def.apitools:
+    api_client = apis_internal._GetClientClassFromDef(api_def)
+  else:
+    api_client = apis_internal._GetGapicClientClass(api_name, api_version)
+
+  if hasattr(api_client, 'BASE_URL'):
+    base_url = api_client.BASE_URL
+  else:
+    try:
+      base_url = apis_internal._GetResourceModule(
+          api_name, api_version
+      ).BASE_URL
+    except ImportError:
+      base_url = 'https://{}.googleapis.com/{}'.format(api_name, api_version)
+  return API(
+      api_name, api_version, api_def.default_version, api_client, base_url
+  )
 
 
 def GetAllAPIs():
@@ -471,9 +485,6 @@ def GetAllAPIs():
   all_apis = []
   for api_name, versions in six.iteritems(apis_map.MAP):
     for api_version, _ in six.iteritems(versions):
-      # TODO(b/254265765) Remove once gRPC can generate resources.py module.
-      if api_version in generate.SKIP_APITOOLS_GENERATION.get(api_name, []):
-        continue
       all_apis.append(GetAPI(api_name, api_version))
   return all_apis
 
@@ -556,6 +567,16 @@ def _GetService(client, collection_name):
   return getattr(client, collection_name.replace(NAME_SEPARATOR, '_'), None)
 
 
+def _GetApiClient(api_name, api_version):
+  """Gets the repesctive api client for the api."""
+  api_def = apis_internal.GetApiDef(api_name, api_version)
+  if api_def.apitools:
+    client = apis.GetClientInstance(api_name, api_version, no_http=True)
+  else:
+    client = apis.GetGapicClientInstance(api_name, api_version)
+  return client
+
+
 def GetMethods(full_collection_name, api_version=None):
   """Gets all the methods available on the given collection.
 
@@ -569,8 +590,8 @@ def GetMethods(full_collection_name, api_version=None):
   """
   api_collection = GetAPICollection(full_collection_name,
                                     api_version=api_version)
-  client = apis.GetClientInstance(api_collection.api_name,
-                                  api_collection.api_version, no_http=True)
+
+  client = _GetApiClient(api_collection.api_name, api_collection.api_version)
   service = _GetService(client, api_collection.name)
   if not service:
     # This is a synthetic collection that does not actually have a backing API.

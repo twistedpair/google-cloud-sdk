@@ -112,6 +112,10 @@ BARE_METAL_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'bgp_load_balancer_registry_burst': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.registry_burst',
     'disable_bgp_load_balancer_serialize_image_pulls': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
     'enable_bgp_load_balancer_serialize_image_pulls': 'load_balancer.bgp_lb_config.load_balancer_node_pool_config.node_pool_config.kubelet_config.serialize_image_pulls_disabled',
+    'add_annotations': 'annotations',
+    'clear_annotations': 'annotations',
+    'remove_annotations': 'annotations',
+    'set_annotations': 'annotations',
 }
 
 BARE_METAL_NODE_POOL_ARGS_TO_UPDATE_MASKS = {
@@ -201,7 +205,11 @@ BARE_METAL_STANDALONE_CLUSTER_ARGS_TO_UPDATE_MASKS = {
     'bgp_lb_peer_configs_from_file': (
         'load_balancer.bgp_lb_config.bgp_peer_configs'
     ),
-    'bgp_lb_asn': 'load_balancer.bgp_lb_config.asn'
+    'bgp_lb_asn': 'load_balancer.bgp_lb_config.asn',
+    'add_annotations': 'annotations',
+    'clear_annotations': 'annotations',
+    'remove_annotations': 'annotations',
+    'set_annotations': 'annotations',
 }
 
 

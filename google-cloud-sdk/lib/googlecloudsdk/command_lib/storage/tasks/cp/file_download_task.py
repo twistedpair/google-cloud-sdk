@@ -80,8 +80,10 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
       delete_source=False,
       do_not_decompress=False,
       print_created_message=False,
+      print_source_version=False,
       system_posix_data=None,
       user_request_args=None,
+      verbose=False,
   ):
     """Initializes task.
 
@@ -98,13 +100,19 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         gzips.
       print_created_message (bool): Print a message containing the versioned URL
         of the copy result.
+      print_source_version (bool): Print source object version in status message
+        enabled by the `verbose` kwarg.
       system_posix_data (SystemPosixData): System-wide POSIX info.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      verbose (bool): Print a "copying" status message on initialization.
     """
     super(FileDownloadTask, self).__init__(
         source_resource,
         destination_resource,
-        user_request_args=user_request_args)
+        print_source_version=print_source_version,
+        user_request_args=user_request_args,
+        verbose=verbose,
+    )
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._print_created_message = print_created_message
@@ -256,12 +264,13 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         part_download_task_output.messages, task.Topic.API_DOWNLOAD_RESULT
     )
 
-    download_util.decompress_or_rename_file(
+    download_util.finalize_download(
         self._source_resource,
         temporary_file_url.object_name,
         destination_url.object_name,
         do_not_decompress_flag=self._do_not_decompress,
-        server_encoding=server_encoding)
+        server_encoding=server_encoding,
+    )
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files
     # were left behind.

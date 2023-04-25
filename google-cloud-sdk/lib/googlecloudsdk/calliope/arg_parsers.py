@@ -471,11 +471,12 @@ def Duration(default_unit='s',
 
   Returns:
     A function that accepts a single time duration as input to be
-      parsed.
+      parsed an returns an integer if the parsed value is not a fraction;
+      Otherwise, a float value rounded up to 4 decimals places.
   """
 
   def Parse(value):
-    """Parses a duration from value and returns integer of the parsed_unit."""
+    """Parses a duration from value and returns it in the parsed_unit."""
     if parsed_unit == 'ms':
       multiplier = 1000
     elif parsed_unit == 'us':
@@ -487,7 +488,13 @@ def Duration(default_unit='s',
           _GenerateErrorMessage('parsed_unit must be one of s, ms, us.'))
     try:
       duration = times.ParseDuration(value, default_suffix=default_unit)
-      return int(duration.total_seconds * multiplier)
+      parsed_value = duration.total_seconds * multiplier
+      parsed_int_value = int(parsed_value)
+      parsed_rounded_value = round(parsed_value, 4)
+      fraction = parsed_rounded_value - parsed_int_value
+      if fraction:
+        return parsed_rounded_value
+      return parsed_int_value
     except times.Error as e:
       message = six.text_type(e).rstrip('.')
       raise ArgumentTypeError(_GenerateErrorMessage(

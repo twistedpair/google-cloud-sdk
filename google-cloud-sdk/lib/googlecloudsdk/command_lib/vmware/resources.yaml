@@ -159,3 +159,17 @@ logging_server:
     attribute_name: logging-server
     help: Resource ID of the Logging Server
   disable_auto_completers: false
+
+node:
+  name: node
+  collection: vmwareengine.projects.locations.privateClouds.clusters.nodes
+  attributes:
+  - *project
+  - *location
+  - *private_cloud
+  - *cluster
+  - &node
+    parameter_name: nodesId
+    attribute_name: node
+    help: Resource ID of the Node
+  disable_auto_completers: false

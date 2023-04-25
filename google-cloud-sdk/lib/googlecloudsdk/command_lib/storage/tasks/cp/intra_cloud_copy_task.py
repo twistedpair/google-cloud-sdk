@@ -41,30 +41,40 @@ from googlecloudsdk.core import log
 class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
   """Represents a command operation copying an object around the cloud."""
 
-  def __init__(self,
-               source_resource,
-               destination_resource,
-               delete_source=False,
-               print_created_message=False,
-               user_request_args=None):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      delete_source=False,
+      print_created_message=False,
+      print_source_version=False,
+      user_request_args=None,
+      verbose=False,
+  ):
     """Initializes task.
 
     Args:
-      source_resource (resource_reference.Resource): Must
-        contain the full object path. Directories will not be accepted.
-      destination_resource (resource_reference.Resource): Must
-        contain the full object path. Directories will not be accepted.
-        Existing objects at the this location will be overwritten.
+      source_resource (resource_reference.Resource): Must contain the full
+        object path. Directories will not be accepted.
+      destination_resource (resource_reference.Resource): Must contain the full
+        object path. Directories will not be accepted. Existing objects at the
+        this location will be overwritten.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      print_source_version (bool): Print source object version in status message
+        enabled by the `verbose` kwarg.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      verbose (bool): Print a "copying" status message on initialization.
     """
     super(IntraCloudCopyTask, self).__init__(
         source_resource,
         destination_resource,
-        user_request_args=user_request_args)
+        print_source_version=print_source_version,
+        user_request_args=user_request_args,
+        verbose=verbose,
+    )
 
     if ((source_resource.storage_url.scheme
          != destination_resource.storage_url.scheme)
@@ -141,5 +151,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         and self._destination_resource == other._destination_resource
         and self._delete_source == other._delete_source
         and self._print_created_message == other._print_created_message
+        and self._print_source_version == other._print_source_version
         and self._user_request_args == other._user_request_args
+        and self._verbose == other._verbose
     )

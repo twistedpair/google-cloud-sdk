@@ -478,6 +478,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'securityPolicy'],
       True
   )
+  REGIONSECURITYPOLICYRULES = (
+      'regionSecurityPolicyRules',
+      'projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/'
+      'securityPolicyRules/{securityPolicyRule}',
+      {},
+      ['project', 'region', 'securityPolicy', 'securityPolicyRule'],
+      True
+  )
   REGIONSSLCERTIFICATES = (
       'regionSslCertificates',
       'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',

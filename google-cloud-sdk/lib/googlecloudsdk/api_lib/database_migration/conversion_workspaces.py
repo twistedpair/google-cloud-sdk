@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
+import six
 
 
 class UnsupportedConversionWorkspaceDBTypeError(core_exceptions.Error):
@@ -47,6 +48,11 @@ class ConversionWorkspacesClient(object):
         self.client.projects_locations_conversionWorkspaces_mappingRules
     )
     self._release_track = release_track
+
+    self.high_severity_issues = frozenset([
+        self.messages.EntityIssue.SeverityValueValuesEnum.ISSUE_SEVERITY_WARNING,
+        self.messages.EntityIssue.SeverityValueValuesEnum.ISSUE_SEVERITY_ERROR,
+    ])
 
   def _GetDatabaseEngine(self, database_engine):
     return (
@@ -215,6 +221,43 @@ class ConversionWorkspacesClient(object):
       describe_entities_req.filter = server_filter
 
     return describe_entities_req
+
+  def _GetDescribeDDLsRequest(self, conversion_workspace_ref, args):
+    """Returns describe ddl conversion workspace request."""
+    describe_ddl_req = self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest(
+        commitId=args.commit_id,
+        conversionWorkspace=conversion_workspace_ref,
+        uncommitted=args.uncommitted,
+    )
+    if args.IsKnownAndSpecified('tree_type'):
+      describe_ddl_req.tree = self._GetTreeType(args.tree_type)
+    else:
+      describe_ddl_req.tree = (
+          self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.DRAFT_TREE
+      )
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      describe_ddl_req.filter = server_filter
+
+    return describe_ddl_req
+
+  def _GetDescribeIssuesRequest(self, conversion_workspace_ref, args):
+    """Returns describe issues conversion workspace request."""
+    describe_issues_req = self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest(
+        commitId=args.commit_id,
+        conversionWorkspace=conversion_workspace_ref,
+        uncommitted=args.uncommitted,
+        tree=self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.DRAFT_TREE,
+    )
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      describe_issues_req.filter = server_filter
+
+    return describe_issues_req
 
   def Create(self, parent_ref, conversion_workspace_id, args=None):
     """Creates a conversion workspace.
@@ -455,3 +498,62 @@ class ConversionWorkspacesClient(object):
     """
     describe_req = self._GetDescribeEntitiesRequest(name, args)
     return self._service.DescribeDatabaseEntities(describe_req).databaseEntities
+
+  def DescribeDDLs(self, name, args=None):
+    """Describe DDLs in a conversion worksapce.
+
+    Args:
+      name: str, the name for conversion worksapce being described.
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+
+    Returns:
+      DDLs for the entities of the conversion worksapce.
+    """
+    describe_req = self._GetDescribeDDLsRequest(name, args)
+    entities = self._service.DescribeDatabaseEntities(
+        describe_req
+    ).databaseEntities
+
+    entity_ddls = []
+    for entity in entities:
+      for entity_ddl in entity.entityDdl:
+        entity_ddls.append({
+            'ddl': entity_ddl.ddl,
+        })
+    return entity_ddls
+
+  def DescribeIssues(self, name, args=None):
+    """Describe database entity issues in a conversion worksapce.
+
+    Args:
+      name: str, the name for conversion worksapce being described.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      Issues found for the database entities of the conversion worksapce.
+    """
+    describe_req = self._GetDescribeIssuesRequest(name, args)
+    entities = self._service.DescribeDatabaseEntities(
+        describe_req
+    ).databaseEntities
+
+    entity_issues = []
+    for entity in entities:
+      for issue in entity.issues:
+        if issue.severity in self.high_severity_issues:
+          entity_issues.append({
+              'parentEntity': entity.parentEntity,
+              'shortName': entity.shortName,
+              'entityType': six.text_type(entity.entityType).replace(
+                  'DATABASE_ENTITY_TYPE_', ''
+              ),
+              'issueType': six.text_type(issue.type).replace('ISSUE_TYPE_', ''),
+              'issueSeverity': six.text_type(issue.severity).replace(
+                  'ISSUE_SEVERITY_', ''
+              ),
+              'issueCode': issue.code,
+              'issueMessage': issue.message,
+          })
+    return entity_issues

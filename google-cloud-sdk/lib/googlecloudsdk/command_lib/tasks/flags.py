@@ -69,22 +69,28 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreatePushQueueFlags(parser,
-                            release_track=base.ReleaseTrack.GA,
-                            app_engine_queue=False, http_queue=True):
+def AddCreatePushQueueFlags(
+    parser,
+    release_track=base.ReleaseTrack.GA,
+    app_engine_queue=False,
+    http_queue=True,
+):
   """Creates flags related to Push queues."""
 
   if release_track == base.ReleaseTrack.ALPHA:
-    if http_queue and not app_engine_queue:
-      flags = _AlphaHttpPushQueueFlags()
+    flags = _AlphaPushQueueFlags()
+    if http_queue:
+      flags += _HttpPushQueueFlags()
       _AddHttpTargetAuthFlags(parser, is_email_required=True)
-    else:
-      flags = _AlphaPushQueueFlags()
-
   else:
     flags = _PushQueueFlags(release_track)
-    if release_track == base.ReleaseTrack.BETA and not app_engine_queue:
-      AddQueueTypeFlag(parser)
+    if release_track == base.ReleaseTrack.BETA:
+      if not app_engine_queue:
+        AddQueueTypeFlag(parser)
+      if http_queue:
+        flags += _HttpPushQueueFlags()
+        _AddHttpTargetAuthFlags(parser, is_email_required=True)
+
   for flag in flags:
     flag.AddToParser(parser)
 
@@ -94,21 +100,25 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdatePushQueueFlags(parser,
-                            release_track=base.ReleaseTrack.GA,
-                            app_engine_queue=False,
-                            http_queue=False):
+def AddUpdatePushQueueFlags(
+    parser,
+    release_track=base.ReleaseTrack.GA,
+    app_engine_queue=False,
+    http_queue=True,
+):
   """Updates flags related to Push queues."""
   if release_track == base.ReleaseTrack.ALPHA:
-    if http_queue and not app_engine_queue:
-      flags = _AlphaHttpPushQueueFlags()
-      flags = flags + _AddHttpTargetAuthFlags()
-    else:
-      flags = _AlphaPushQueueFlags()
+    flags = _AlphaPushQueueFlags()
+    if http_queue:
+      flags += _HttpPushQueueFlags() + _AddHttpTargetAuthFlags()
   else:
     flags = _PushQueueFlags(release_track)
-    if release_track == base.ReleaseTrack.BETA and not app_engine_queue:
-      AddQueueTypeFlag(parser)
+    if release_track == base.ReleaseTrack.BETA:
+      if not app_engine_queue:
+        AddQueueTypeFlag(parser)
+      if http_queue:
+        flags += _HttpPushQueueFlags() + _AddHttpTargetAuthFlags()
+
   for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)
 
@@ -304,8 +314,8 @@ def _AlphaPushQueueFlags():
   ]
 
 
-def _AlphaHttpPushQueueFlags():
-  return _AlphaPushQueueFlags() + [
+def _HttpPushQueueFlags():
+  return  [
       base.Argument(
           '--http-uri-override',
           type=arg_parsers.ArgDict(
@@ -335,7 +345,7 @@ def _AlphaHttpPushQueueFlags():
           action='append',
           type=_GetHeaderArgValidator(),
           help="""\
-          If provided, the specified HTTP headers overrides the existing
+          If provided, the specified HTTP headers override the existing
           headers for all tasks in the queue.
           If a task has a header with the same Key as a queue-level header
           override, then the value of the task header will be overriden with

@@ -2984,11 +2984,13 @@ def AddTaskFilterFlags(parser):
 
 
 def AddExecuteNowFlag(parser):
-  """Add --execute-now flag for Job creation."""
+  """Add --execute-now flag for Job creation or update."""
   parser.add_argument(
       '--execute-now',
       action='store_true',
-      help='Execute the job immediately after creation.',
+      help='Execute the job immediately after the creation or update ' +
+      ' completes. gcloud exits once the job has started unless the ' +
+      '`--wait` flag is set.'
   )
 
 

@@ -1661,6 +1661,21 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
   taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 14, repeated=True)
 
 
+class GoogleCloudGkemulticloudV1AwsNodeManagement(_messages.Message):
+  r"""AwsNodeManagement defines the set of node management features turned on
+  for an AWS node pool.
+
+  Fields:
+    autoRepair: Optional. Whether or not the nodes will be automatically
+      repaired. When set to true, the nodes in this node pool will be
+      monitored and if they fail health checks consistently over a period of
+      time, an automatic repair action will be triggered to replace them with
+      new nodes.
+  """
+
+  autoRepair = _messages.BooleanField(1)
+
+
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
   r"""An Anthos node pool running on AWS.
 
@@ -1691,6 +1706,7 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+    management: Optional. The Management configuration for this node pool.
     maxPodsConstraint: Required. The constraint on the maximum number of pods
       that can be run simultaneously on a node in the node pool.
     name: The name of this resource. Node pool names are formatted as
@@ -1771,14 +1787,15 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
   createTime = _messages.StringField(4)
   errors = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePoolError', 5, repeated=True)
   etag = _messages.StringField(6)
-  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  subnetId = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
-  version = _messages.StringField(14)
+  management = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeManagement', 7)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  subnetId = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  version = _messages.StringField(15)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
@@ -2402,10 +2419,13 @@ class GoogleCloudGkemulticloudV1AzureK8sVersionInfo(_messages.Message):
   r"""Information about a supported Kubernetes version.
 
   Fields:
+    enabled: Optional. Whether new clusters can be created using this version.
+      This is false for end of life cluster versions.
     version: A supported Kubernetes version (for example, `1.19.10-gke.1000`)
   """
 
-  version = _messages.StringField(1)
+  enabled = _messages.BooleanField(1)
+  version = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
@@ -2512,6 +2532,21 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
   vmSize = _messages.StringField(9)
 
 
+class GoogleCloudGkemulticloudV1AzureNodeManagement(_messages.Message):
+  r"""AzureNodeManagement defines the set of node management features turned
+  on for an Azure node pool.
+
+  Fields:
+    autoRepair: Optional. Whether or not the nodes will be automatically
+      repaired. When set to true, the nodes in this node pool will be
+      monitored and if they fail health checks consistently over a period of
+      time, an automatic repair action will be triggered to replace them with
+      new nodes.
+  """
+
+  autoRepair = _messages.BooleanField(1)
+
+
 class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
   r"""An Anthos node pool running on Azure.
 
@@ -2544,6 +2579,7 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+    management: Optional. The Management configuration for this node pool.
     maxPodsConstraint: Required. The constraint on the maximum number of pods
       that can be run simultaneously on a node in the node pool.
     name: The name of this resource. Node pool names are formatted as
@@ -2626,14 +2662,15 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
   createTime = _messages.StringField(5)
   errors = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePoolError', 6, repeated=True)
   etag = _messages.StringField(7)
-  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  subnetId = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  version = _messages.StringField(15)
+  management = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodeManagement', 8)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  subnetId = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  version = _messages.StringField(16)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):
@@ -2714,7 +2751,10 @@ class GoogleCloudGkemulticloudV1AzureServerConfig(_messages.Message):
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud Platform resource names.
     supportedAzureRegions: The list of supported Azure regions.
-    validVersions: List of valid Kubernetes versions.
+    validVersions: List of all released Kubernetes versions, including ones
+      which are end of life and can no longer be used. Filter by the `enabled`
+      property to limit to currently available versions. Valid versions
+      supported for both create and update operations
   """
 
   name = _messages.StringField(1)

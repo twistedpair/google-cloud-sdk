@@ -285,6 +285,8 @@ class _FilesAndBytesStatusTracker(_StatusTracker, metrics_util.MetricsReporter):
       self._set_source_and_destination_schemes(status_message)
       # If files start getting counted twice, see b/225182075.
       self._add_progress(status_message)
+    elif isinstance(status_message, thread_messages.IncrementProgressMessage):
+      self._completed_files += 1
     elif isinstance(status_message, thread_messages.ManifestMessage):
       self._add_to_manifest(status_message)
 

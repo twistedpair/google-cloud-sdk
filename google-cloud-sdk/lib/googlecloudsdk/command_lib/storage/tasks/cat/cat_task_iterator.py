@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import streaming_download_task
 
 
@@ -63,10 +65,15 @@ def get_cat_task_iterator(source_iterator, show_url, start_byte, end_byte):
   """
 
   stdout = os.fdopen(1, 'wb')
+  dummy_destination_resource = resource_reference.FileObjectResource(
+      storage_url.FileUrl('-')
+  )
   for item in source_iterator:
     yield streaming_download_task.StreamingDownloadTask(
         item.resource,
-        stdout,
+        dummy_destination_resource,
+        download_stream=stdout,
         show_url=show_url,
         start_byte=_get_start_byte(start_byte, item.resource.size),
-        end_byte=end_byte)
+        end_byte=end_byte,
+    )

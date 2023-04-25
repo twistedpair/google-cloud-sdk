@@ -134,6 +134,24 @@ def GetValidateOnly(args):
   return getattr(args, 'validate_only', None)
 
 
+def AddEnableAutoRepair(parser, for_create=False):
+  help_text = """\
+Enable node autorepair feature for a node pool. Use --no-enable-autorepair to disable.
+
+  $ {command} --enable-autorepair
+"""
+  if for_create:
+    help_text += """
+Node autorepair is disabled by default.
+"""
+  parser.add_argument('--enable-autorepair', action='store_true', default=None,
+                      help=help_text)
+
+
+def GetAutoRepair(args):
+  return getattr(args, 'enable_autorepair', None)
+
+
 def AddClusterVersion(parser, required=True):
   parser.add_argument(
       '--cluster-version',
@@ -237,7 +255,7 @@ def AddAutoscaling(parser, required=True):
     required: bool, whether autoscaling flags are required.
   """
 
-  group = parser.add_argument_group('Node pool autoscaling')
+  group = parser.add_argument_group('Node pool autoscaling', required=required)
   group.add_argument(
       '--min-nodes',
       required=required,
@@ -269,7 +287,11 @@ def GetMaxNodes(args):
 
 def AddMaxPodsPerNode(parser):
   parser.add_argument(
-      '--max-pods-per-node', type=int, help='Maximum number of pods per node.')
+      '--max-pods-per-node',
+      type=int,
+      help='Maximum number of pods per node.',
+      required=True,
+  )
 
 
 def GetMaxPodsPerNode(args):

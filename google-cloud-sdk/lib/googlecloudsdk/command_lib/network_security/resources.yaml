@@ -125,7 +125,7 @@ organization:
     parameter_name: organizationsId
     attribute_name: organization
     help: |
-      The organization number.
+      Organization number.
 
 orgLocation:
   name: location
@@ -136,7 +136,7 @@ orgLocation:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location Id.
+      Location Id.
 
 orgAddressGroup:
   name: address group

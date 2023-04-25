@@ -601,6 +601,16 @@ class IndexConfig(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class IntegerArrayValue(_messages.Message):
+  r"""An array of integers within a parameter.
+
+  Fields:
+    values: The values of the array.
+  """
+
+  values = _messages.IntegerField(1, repeated=True)
+
+
 class Interval(_messages.Message):
   r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
   a Timestamp end (exclusive).The start must be less than or equal to the end.
@@ -5959,7 +5969,9 @@ class Measure(_messages.Message):
       binning is enabled on the dimension. If binning is not enabled, this
       value is ignored.
     column: Required. The column name within the output of the previous step
-      to use. May be the same column as the dimension.
+      to use. May be the same column as the dimension. May be left empty if
+      the aggregation is set to "count" (but not "count-distinct" or "count-
+      distinct-approx").
   """
 
   aggregation = _messages.MessageField('ChartingAggregation', 1)
@@ -6742,6 +6754,29 @@ class QueryLogEntriesRequest(_messages.Message):
   validateOnly = _messages.BooleanField(8)
 
 
+class QueryParameter(_messages.Message):
+  r"""A parameter given to a query.
+
+  Fields:
+    description: Optional. Human-oriented description of the field.
+    intArray: Optional. The value of a parameter containing an array of
+      integers.
+    intValue: Optional. The value of an integer parameter.
+    name: Optional. If unset, this is a positional parameter. Otherwise,
+      should be unique within a query.
+    stringArray: Optional. The value of a parameter containing an array of
+      strings.
+    stringValue: Optional. The value of a string parameter.
+  """
+
+  description = _messages.StringField(1)
+  intArray = _messages.MessageField('IntegerArrayValue', 2)
+  intValue = _messages.IntegerField(3)
+  name = _messages.StringField(4)
+  stringArray = _messages.MessageField('StringArrayValue', 5)
+  stringValue = _messages.StringField(6)
+
+
 class QueryRestriction(_messages.Message):
   r"""Specifies query restrictions to apply. This allows UI to provide common
   filter needs (e.g. timestamps) without having the user to write them in SQL.
@@ -7135,9 +7170,6 @@ class Settings(_messages.Message):
       obtain the service account ID.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
-    loggingServiceAccountId: Output only. The service account for the given
-      container. Sinks use this service account as their writer_identity if no
-      custom service account is provided.
     name: Output only. The resource name of the settings.
     storageLocation: Optional. The Cloud region that will be used for _Default
       and _Required log buckets for newly created projects and folders. For
@@ -7148,9 +7180,8 @@ class Settings(_messages.Message):
   disableDefaultSink = _messages.BooleanField(1)
   kmsKeyName = _messages.StringField(2)
   kmsServiceAccountId = _messages.StringField(3)
-  loggingServiceAccountId = _messages.StringField(4)
-  name = _messages.StringField(5)
-  storageLocation = _messages.StringField(6)
+  name = _messages.StringField(4)
+  storageLocation = _messages.StringField(5)
 
 
 class SourceLocation(_messages.Message):
@@ -7192,6 +7223,8 @@ class SqlQueryStep(_messages.Message):
   r"""A query step defined in raw SQL.
 
   Fields:
+    parameters: Optional. Parameters to be injected into the query at
+      execution time.
     queryRestriction: Optional. Restrictions being requested, e.g. timerange
       restrictions.
     sqlQuery: Required. A query string, following the BigQuery SQL query
@@ -7204,8 +7237,9 @@ class SqlQueryStep(_messages.Message):
       company.com:abc.us.my-bucket._AllLogs;
   """
 
-  queryRestriction = _messages.MessageField('QueryRestriction', 1)
-  sqlQuery = _messages.StringField(2)
+  parameters = _messages.MessageField('QueryParameter', 1, repeated=True)
+  queryRestriction = _messages.MessageField('QueryRestriction', 2)
+  sqlQuery = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -7320,6 +7354,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StringArrayValue(_messages.Message):
+  r"""An array of strings within a parameter.
+
+  Fields:
+    values: The values of the array.
+  """
+
+  values = _messages.StringField(1, repeated=True)
 
 
 class SuppressionInfo(_messages.Message):

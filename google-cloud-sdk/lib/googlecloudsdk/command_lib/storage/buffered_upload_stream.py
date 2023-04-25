@@ -209,3 +209,17 @@ class BufferedUploadStream(upload_stream.UploadStream):
     self._catch_up_digesters(new_position)
     self._position = new_position
 
+  def seekable(self):
+    """Indicates that this stream is not seekable.
+
+    Needed so that boto3 can correctly identify how to treat this stream.
+    The library attempts to seek to the beginning after an upload completes,
+    which is not always possible.
+
+    Apitools does not check the return value of this method, so it will not
+    raise issues for resumable uploads.
+
+    Returns:
+      False
+    """
+    return False

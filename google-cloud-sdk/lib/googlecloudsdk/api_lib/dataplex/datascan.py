@@ -26,7 +26,15 @@ from googlecloudsdk.core import yaml
 def GenerateData(args):
   """Generate Data From Arguments."""
   module = dataplex_api.GetMessageModule()
-  data = module.GoogleCloudDataplexV1DataSource(entity=args.data_source_entity)
+
+  if args.IsSpecified('data_source_entity'):
+    data = module.GoogleCloudDataplexV1DataSource(
+        entity=args.data_source_entity
+    )
+  else:
+    data = module.GoogleCloudDataplexV1DataSource(
+        resource=args.data_source_resource
+    )
   return data
 
 
@@ -65,7 +73,8 @@ def GenerateExecutionSpec(args):
   """Generate ExecutionSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
   executionspec = module.GoogleCloudDataplexV1DataScanExecutionSpec(
-      field=args.field, trigger=GenerateTrigger(args))
+      field=args.field, trigger=GenerateTrigger(args)
+  )
   return executionspec
 
 
@@ -75,14 +84,17 @@ def GenerateDatascanForCreateRequest(args):
   request = module.GoogleCloudDataplexV1DataScan(
       description=args.description,
       displayName=args.display_name,
-      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1DataScan,
-                                       args),
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1DataScan, args
+      ),
       data=GenerateData(args),
-      executionSpec=GenerateExecutionSpec(args))
+      executionSpec=GenerateExecutionSpec(args),
+  )
   if args.scan_type == 'PROFILE':
     if args.IsSpecified('data_quality_spec_file'):
       raise ValueError(
-          'Data Quality Spec file specified for Data Profile Scan.')
+          'Data Quality Spec file specified for Data Profile Scan.'
+      )
     else:
       request.dataProfileSpec = module.GoogleCloudDataplexV1DataProfileSpec()
   elif args.scan_type == 'QUALITY':
@@ -90,7 +102,8 @@ def GenerateDatascanForCreateRequest(args):
       request.dataQualitySpec = GenerateDataQualitySpec(args)
     else:
       raise ValueError(
-          'If scan-type="QUALITY" , data-quality-spec-file is a required argument.'
+          'If scan-type="QUALITY" , data-quality-spec-file is a required'
+          ' argument.'
       )
   return request
 
@@ -98,5 +111,5 @@ def GenerateDatascanForCreateRequest(args):
 def WaitForOperation(operation):
   """Waits for the given google.longrunning.Operation to complete."""
   return dataplex_api.WaitForOperation(
-      operation,
-      dataplex_api.GetClientInstance().projects_locations_dataScans)
+      operation, dataplex_api.GetClientInstance().projects_locations_dataScans
+  )

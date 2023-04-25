@@ -30,42 +30,57 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
-from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 
 
-class StreamingDownloadTask(task.Task):
+class StreamingDownloadTask(copy_util.CopyTask):
   """Represents a command operation triggering a streaming download."""
 
-  def __init__(self,
-               source_resource,
-               download_stream,
-               print_created_message=False,
-               user_request_args=None,
-               show_url=False,
-               start_byte=0,
-               end_byte=None):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      download_stream,
+      print_created_message=False,
+      print_source_version=False,
+      show_url=False,
+      start_byte=0,
+      end_byte=None,
+      user_request_args=None,
+      verbose=False,
+  ):
     """Initializes task.
 
     Args:
       source_resource (ObjectResource): Must contain the full path of object to
         download, including bucket. Directories will not be accepted. Does not
         need to contain metadata.
+      destination_resource (resource_reference.Resource): Target resource to
+        copy to. In this case, it contains the path of the destination stream or
+        '-' for stdout.
       download_stream (stream): Reusable stream to write download to.
-      print_created_message (bool): Print a message containing the versioned
-        URL of the copy result.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      print_created_message (bool): Print a message containing the versioned URL
+        of the copy result.
+      print_source_version (bool): Print source object version in status message
+        enabled by the `verbose` kwarg.
       show_url (bool): Says whether or not to print the header before each
         object's content
       start_byte (int): The byte index to start streaming from.
       end_byte (int|None): The byte index to stop streaming from.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      verbose (bool): Print a "copying" status message on initialization.
     """
-    super(StreamingDownloadTask, self).__init__()
-    self._source_resource = source_resource
+    super(StreamingDownloadTask, self).__init__(
+        source_resource,
+        destination_resource,
+        print_source_version=print_source_version,
+        user_request_args=user_request_args,
+        verbose=verbose,
+    )
     self._download_stream = download_stream
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
     self._show_url = show_url
     self._start_byte = start_byte
     self._end_byte = end_byte
@@ -111,15 +126,18 @@ class StreamingDownloadTask(task.Task):
         end_byte=self._end_byte)
     self._download_stream.flush()
     if self._print_created_message:
-      log.status.Print('Created: {}'.format(self._download_stream.name))
+      log.status.Print('Created: {}'.format(self._destination_resource))
 
   def __eq__(self, other):
     if not isinstance(other, self.__class__):
       return NotImplemented
-    return (self._source_resource == other._source_resource and
-            self._download_stream == other._download_stream and
-            self._print_created_message == other._print_created_message and
-            self._user_request_args == other._user_request_args and
-            self._show_url == other._show_url and
-            self._start_byte == other._start_byte and
-            self._end_byte == other._end_byte)
+    return (
+        self._source_resource == other._source_resource
+        and self._destination_resource == other._destination_resource
+        and self._download_stream == other._download_stream
+        and self._print_created_message == other._print_created_message
+        and self._user_request_args == other._user_request_args
+        and self._show_url == other._show_url
+        and self._start_byte == other._start_byte
+        and self._end_byte == other._end_byte
+    )

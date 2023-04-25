@@ -242,6 +242,17 @@ class BmsClient(object):
 
     return self.instances_service.Patch(request)
 
+  def RenameInstance(self, instance_resource, new_name):
+    """Rename an existing instance resource."""
+    rename_instance_request = self.messages.RenameInstanceRequest(
+        newInstanceId=new_name)
+    request = (
+        self.messages.BaremetalsolutionProjectsLocationsInstancesRenameRequest(
+            name=instance_resource.RelativeName(),
+            renameInstanceRequest=rename_instance_request)
+    )
+    return self.instances_service.Rename(request)
+
   def ListSnapshotSchedulePolicies(self,
                                    project_resource,
                                    limit=None,

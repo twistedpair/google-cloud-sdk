@@ -49,11 +49,11 @@ _INSUFFICIENT_OTHER_READ_ACCESS_FORMAT = (
 )
 
 # For transporting POSIX info through an object's custom metadata.
-_ATIME_METADATA_KEY = 'goog-reserved-file-atime'
-_GID_METADATA_KEY = 'goog-reserved-posix-gid'
-_MODE_METADATA_KEY = 'goog-reserved-posix-mode'
-_MTIME_METADATA_KEY = 'goog-reserved-file-mtime'
-_UID_METADATA_KEY = 'goog-reserved-posix-uid'
+ATIME_METADATA_KEY = 'goog-reserved-file-atime'
+GID_METADATA_KEY = 'goog-reserved-posix-gid'
+MODE_METADATA_KEY = 'goog-reserved-posix-mode'
+MTIME_METADATA_KEY = 'goog-reserved-file-mtime'
+UID_METADATA_KEY = 'goog-reserved-posix-uid'
 
 
 def convert_base_ten_to_base_eight_str(base_ten_int):
@@ -287,9 +287,12 @@ PosixAttributes = collections.namedtuple(
     'PosixAttributes', ['atime', 'mtime', 'uid', 'gid', 'mode'])
 
 
-def get_posix_attributes_from_file(file_path):
+def get_posix_attributes_from_file(file_path, preserve_symlinks=False):
   """Takes file path and returns PosixAttributes object."""
-  mode, _, _, _, uid, gid, _, atime, mtime, _ = os.stat(file_path)
+  follow_symlinks = not preserve_symlinks
+  mode, _, _, _, uid, gid, _, atime, mtime, _ = os.stat(
+      file_path, follow_symlinks=follow_symlinks
+  )
   return PosixAttributes(atime, mtime, uid, gid,
                          PosixMode.from_base_ten_int(mode))
 
@@ -300,6 +303,7 @@ def set_posix_attributes_on_file_if_valid(
     destination_resource,
     known_source_posix=None,
     known_destination_posix=None,
+    preserve_symlinks=False,
 ):
   """Sets custom POSIX attributes on file if the final metadata will be valid.
 
@@ -318,6 +322,8 @@ def set_posix_attributes_on_file_if_valid(
       of extracting from source.
     known_destination_posix (PosixAttributes|None): Use pre-parsed POSIX data
       instead of extracting from destination.
+    preserve_symlinks (bool): Whether symlinks should be preserved rather than
+      followed.
 
   Raises:
     PermissionError: Custom metadata asked for file ownership change that user
@@ -338,7 +344,7 @@ def set_posix_attributes_on_file_if_valid(
   )
   existing_posix_attributes = (
       known_destination_posix
-      or get_posix_attributes_from_file(destination_path)
+      or get_posix_attributes_from_file(destination_path, preserve_symlinks)
   )
 
   if custom_posix_attributes.atime is None:
@@ -358,8 +364,10 @@ def set_posix_attributes_on_file_if_valid(
         or custom_posix_attributes.mtime != existing_posix_attributes.mtime
     )
 
+  # Don't follow symlinks if they're being preserved.
+  follow_symlinks = not preserve_symlinks
   if need_utime_call:
-    os.utime(destination_path, (atime, mtime))
+    os.utime(destination_path, (atime, mtime), follow_symlinks=follow_symlinks)
 
   if platforms.OperatingSystem.IsWindows():
     # Windows does not use the remaining POSIX attributes.
@@ -395,13 +403,17 @@ def set_posix_attributes_on_file_if_valid(
 
   if need_chown_call:
     # Note: chown doesn't do anything for negative numbers like _INVALID_ID.
-    os.chown(destination_path, uid, gid)
+    os.chown(destination_path, uid, gid, follow_symlinks=follow_symlinks)
 
   if custom_posix_attributes.mode is not None and (
       custom_posix_attributes.mode.base_ten_int
       != existing_posix_attributes.mode.base_ten_int
   ):
-    os.chmod(destination_path, custom_posix_attributes.mode.base_ten_int)
+    os.chmod(
+        destination_path,
+        custom_posix_attributes.mode.base_ten_int,
+        follow_symlinks=follow_symlinks,
+    )
 
 
 def _extract_time_from_custom_metadata(resource, key):
@@ -461,20 +473,20 @@ def _extract_mode_from_custom_metadata(resource):
   """Finds, validates, and returns a POSIX mode value."""
   if (
       not resource.custom_fields
-      or resource.custom_fields.get(_MODE_METADATA_KEY) is None
+      or resource.custom_fields.get(MODE_METADATA_KEY) is None
   ):
     return None
   try:
     return PosixMode.from_base_eight_str(
-        resource.custom_fields[_MODE_METADATA_KEY]
+        resource.custom_fields[MODE_METADATA_KEY]
     )
   except ValueError:
     log.warning(
         '{} metadata did not contain a valid permissions octal string'
         ' for {}: {}'.format(
             resource.storage_url.url_string,
-            _MODE_METADATA_KEY,
-            resource.custom_fields[_MODE_METADATA_KEY],
+            MODE_METADATA_KEY,
+            resource.custom_fields[MODE_METADATA_KEY],
         )
     )
   return None
@@ -493,20 +505,22 @@ def get_posix_attributes_from_cloud_resource(resource):
   Returns:
     PosixAttributes object populated from metadata_dict.
   """
-  atime = _extract_time_from_custom_metadata(resource, _ATIME_METADATA_KEY)
-  mtime = _extract_time_from_custom_metadata(resource, _MTIME_METADATA_KEY)
-  uid = _extract_id_from_custom_metadata(resource, _UID_METADATA_KEY)
-  gid = _extract_id_from_custom_metadata(resource, _GID_METADATA_KEY)
+  atime = _extract_time_from_custom_metadata(resource, ATIME_METADATA_KEY)
+  mtime = _extract_time_from_custom_metadata(resource, MTIME_METADATA_KEY)
+  uid = _extract_id_from_custom_metadata(resource, UID_METADATA_KEY)
+  gid = _extract_id_from_custom_metadata(resource, GID_METADATA_KEY)
   mode = _extract_mode_from_custom_metadata(resource)
   return PosixAttributes(atime, mtime, uid, gid, mode)
 
 
-def get_posix_attributes_from_resource(resource):
+def get_posix_attributes_from_resource(resource, preserve_symlinks=False):
   """Parses unknown resource type for POSIX data."""
   if isinstance(resource, resource_reference.ObjectResource):
     return get_posix_attributes_from_cloud_resource(resource)
   if isinstance(resource, resource_reference.FileObjectResource):
-    return get_posix_attributes_from_file(resource.storage_url.object_name)
+    return get_posix_attributes_from_file(
+        resource.storage_url.object_name, preserve_symlinks
+    )
   raise errors.Error(
       'Can only retrieve POSIX attributes from file or cloud'
       ' object, not: {}'.format(resource.TYPE_STRING)
@@ -517,15 +531,15 @@ def update_custom_metadata_dict_with_posix_attributes(metadata_dict,
                                                       posix_attributes):
   """Updates custom metadata_dict with PosixAttributes data."""
   if posix_attributes.atime is not None:
-    metadata_dict[_ATIME_METADATA_KEY] = str(posix_attributes.atime)
+    metadata_dict[ATIME_METADATA_KEY] = str(posix_attributes.atime)
   if posix_attributes.mtime is not None:
-    metadata_dict[_MTIME_METADATA_KEY] = str(posix_attributes.mtime)
+    metadata_dict[MTIME_METADATA_KEY] = str(posix_attributes.mtime)
   if posix_attributes.uid is not None:
-    metadata_dict[_UID_METADATA_KEY] = str(posix_attributes.uid)
+    metadata_dict[UID_METADATA_KEY] = str(posix_attributes.uid)
   if posix_attributes.gid is not None:
-    metadata_dict[_GID_METADATA_KEY] = str(posix_attributes.gid)
+    metadata_dict[GID_METADATA_KEY] = str(posix_attributes.gid)
   if posix_attributes.mode is not None:
-    metadata_dict[_MODE_METADATA_KEY] = posix_attributes.mode.base_eight_str
+    metadata_dict[MODE_METADATA_KEY] = posix_attributes.mode.base_eight_str
 
 
 def raise_if_source_and_destination_not_valid_for_preserve_posix(

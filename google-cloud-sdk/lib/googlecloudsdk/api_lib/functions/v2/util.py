@@ -46,6 +46,10 @@ _V2_ALPHA = 'v2alpha'
 _V2_BETA = 'v2beta'
 _V2_GA = 'v2'
 
+_DEFAULT_ABORTED_MESSAGE = (
+    'Aborted by user (background API operations may still be in progress).'
+)
+
 RELEASE_TRACK_TO_API_VERSION = {
     calliope_base.ReleaseTrack.ALPHA: 'v2alpha',
     calliope_base.ReleaseTrack.BETA: 'v2beta',
@@ -285,7 +289,9 @@ def WaitForOperation(
       name=operation.name
   )
   # Wait for stages to be loaded.
-  with progress_tracker.ProgressTracker('Preparing function') as tracker:
+  with progress_tracker.ProgressTracker(
+      'Preparing function', aborted_message=_DEFAULT_ABORTED_MESSAGE
+  ) as tracker:
     retryer = retry.Retryer(max_wait_ms=MAX_WAIT_MS)
     try:
       # List[progress_tracker.Stage]
@@ -306,7 +312,9 @@ def WaitForOperation(
   # Wait for LRO to complete.
   description += '...'
 
-  with progress_tracker.StagedProgressTracker(description, stages) as tracker:
+  with progress_tracker.StagedProgressTracker(
+      description, stages, aborted_message=_DEFAULT_ABORTED_MESSAGE
+  ) as tracker:
     if operation.done and not stages:
       # No stages to show in the progress tracker so just return the operation.
       return operation

@@ -30,13 +30,27 @@ def AddCreateJobFlags(parser):
 
   parser.add_argument(
       '--input-uri',
-      help='Google Cloud Storage URI. If inputs '
-      'URI exists in job config, this value will be ignored')
+      help=(
+          'Google Cloud Storage URI. This value '
+          'will override input URI in job config.'
+      ),
+  )
   parser.add_argument(
       '--output-uri',
-      help='Google Cloud Storage directory URI '
-      '(followed by a trailing forward slash). If output URI'
-      'exists in job config, this value will be ignored.')
+      help=(
+          'Google Cloud Storage directory URI '
+          '(followed by a trailing forward slash). This value '
+          'will override output URI in job config.'
+      ),
+  )
+  parser.add_argument(
+      '--mode',
+      choices=['PROCESSING_MODE_INTERACTIVE', 'PROCESSING_MODE_BATCH'],
+      help=(
+          'Processing mode of transcode job. This value '
+          'will override mode in job config.'
+      ),
+  )
   parser.add_argument(
       '--priority',
       help='Job priority, default 0.',

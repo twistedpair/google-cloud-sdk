@@ -1,0 +1,43 @@
+project:
+  name: project
+  collection: telecomdatafabric.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+    property: core/project
+
+location:
+  name: location
+  collection: telecomdatafabric.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+
+operation:
+  name: operation
+  collection: telecomdatafabric.projects.locations.operations
+  request_id_field: operationId
+  attributes:
+  - *project
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: TDF long-running operation.
+  disable_auto_completers: false
+
+deployment:
+  name: deployment
+  collection: telecomdatafabric.projects.locations.deployments
+  request_id_field: deploymentId
+  attributes:
+  - *project
+  - *location
+  - &deployment
+    parameter_name: deploymentsId
+    attribute_name: deployment
+    help: TDF Deployment.

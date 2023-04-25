@@ -254,7 +254,17 @@ def AddCertificateMapEntryAndCertificatesResourceArgs(parser,
   ]).AddToParser(parser)
 
 
-def AddCertificateResourceArg(parser, verb, noun=None, positional=True):
+def AddCertificateResourceArg(
+    parser,
+    verb,
+    noun=None,
+    name='certificate',
+    positional=True,
+    required=True,
+    plural=False,
+    group=None,
+    with_location=True,
+):
   """Add a resource argument for a Certificate Manager certificate.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -263,13 +273,25 @@ def AddCertificateResourceArg(parser, verb, noun=None, positional=True):
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
     noun: str, the resource; default: 'The certificate'.
+    name: str, the name of the flag.
     positional: bool, if True, means that the certificate ID is a positional arg
       rather than a flag.
+    required: bool, if True the flag is required.
+    plural: bool, if True the flag is a list.
+    group: args group.
+    with_location: bool, if False, means that location flag is hidden.
   """
   noun = noun or 'The certificate'
   concept_parsers.ConceptParser([
       _GetCertificateResourcePresentationSpec(
-          'certificate' if positional else '--certificate', noun, verb),
+          'certificate' if positional else '--' + name,
+          noun,
+          verb,
+          required,
+          plural,
+          group,
+          with_location,
+      ),
   ]).AddToParser(parser)
 
 

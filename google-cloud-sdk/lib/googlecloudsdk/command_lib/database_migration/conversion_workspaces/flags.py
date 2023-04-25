@@ -134,7 +134,7 @@ def AddFilterFlag(parser):
   parser.add_argument('--filter', help=help_text)
 
 
-def AddTreeTypeFlag(parser, required=True):
+def AddTreeTypeFlag(parser, required=True, default_value='DRAFT'):
   """Adds the --tree-type flag to the given parser."""
   help_text = """\
     Tree type for database entities.
@@ -142,7 +142,11 @@ def AddTreeTypeFlag(parser, required=True):
   choices = ['SOURCE', 'DRAFT']
 
   parser.add_argument(
-      '--tree-type', help=help_text, choices=choices, required=required
+      '--tree-type',
+      help=help_text,
+      choices=choices,
+      required=required,
+      default=default_value,
   )
 
 

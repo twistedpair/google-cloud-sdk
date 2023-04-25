@@ -860,6 +860,87 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
         self._messages.BareMetalStandaloneNodeAccessConfig, kwargs
     )
 
+  def _add_annotations(self, args):
+    """Constructs proto message AnnotationsValue for adding new annotations."""
+    curr_annotations = self._get_current_annotations(args)
+    for key, value in args.add_annotations.items():
+      curr_annotations[key] = value
+
+    return self._dict_to_annotations_message(curr_annotations)
+
+  def _clear_annotations(self, args):
+    """Constructs proto message AnnotationsValue for clearing annotations."""
+    return self._messages.BareMetalStandaloneCluster.AnnotationsValue()
+
+  def _remove_annotations(self, args):
+    """Constructs proto message AnnotationsValue for removing annotations."""
+    curr_annotations = self._get_current_annotations(args)
+    updated_annotations = {
+        key: value
+        for key, value in curr_annotations.items()
+        if key not in args.remove_annotations
+    }
+
+    return self._dict_to_annotations_message(updated_annotations)
+
+  def _set_annotations(self, args):
+    """Constructs proto message AnnotationsValue for setting annotations."""
+    return self._dict_to_annotations_message(args.set_annotations)
+
+  def _get_current_annotations(self, args):
+    """Fetches the standalone cluster annotations."""
+    cluster_ref = args.CONCEPTS.standalone_cluster.Parse()
+    cluster_response = self.Describe(cluster_ref)
+
+    curr_annotations = {}
+    if cluster_response.annotations:
+      for annotation in cluster_response.annotations.additionalProperties:
+        curr_annotations[annotation.key] = annotation.value
+
+    return curr_annotations
+
+  def _update_annotations(self, args):
+    """Constructs proto message AnnotationsValue for update command."""
+    if 'add_annotations' in args.GetSpecifiedArgsDict():
+      return self._add_annotations(args)
+
+    if 'clear_annotations' in args.GetSpecifiedArgsDict():
+      return self._clear_annotations(args)
+
+    if 'remove_annotations' in args.GetSpecifiedArgsDict():
+      return self._remove_annotations(args)
+
+    if 'set_annotations' in args.GetSpecifiedArgsDict():
+      return self._set_annotations(args)
+
+    return None
+
+  def _dict_to_annotations_message(self, annotations):
+    """Converts key-val pairs to proto message AnnotationsValue."""
+    additional_property_messages = []
+    if not annotations:
+      return None
+
+    for key, value in annotations.items():
+      additional_property_messages.append(
+          (self._messages.BareMetalStandaloneCluster.AnnotationsValue
+           .AdditionalProperty)(key=key, value=value)
+      )
+
+    annotation_value_message = (
+        self._messages.BareMetalStandaloneCluster.AnnotationsValue(
+            additionalProperties=additional_property_messages
+        )
+    )
+    return annotation_value_message
+
+  def _annotations(self, args):
+    """Constructs proto message AnnotationsValue."""
+    if args.command_path[-1] == 'update':
+      return self._update_annotations(args)
+
+    return None
+
   def _bare_metal_standalone_cluster(self, args):
     """Constructs proto message Bare Metal Standalone Cluster."""
     kwargs = {
@@ -873,6 +954,7 @@ class _BareMetalStandaloneClusterClient(client.ClientBase):
         'maintenanceConfig': self._maintenance_config(args),
         'securityConfig': self._security_config(args),
         'nodeAccessConfig': self._node_access_config(args),
+        'annotations': self._annotations(args),
     }
 
     return self._set_config_if_exists(
@@ -934,7 +1016,6 @@ class StandaloneClustersClient(_BareMetalStandaloneClusterClient):
     """Unenrolls an Anthos on bare metal standalone cluster."""
     kwargs = {
         'name': self._standalone_cluster_name(args),
-        'force': getattr(args, 'force', None),
         'allowMissing': getattr(args, 'allow_missing', None),
     }
     req = self._messages.GkeonpremProjectsLocationsBareMetalStandaloneClustersUnenrollRequest(

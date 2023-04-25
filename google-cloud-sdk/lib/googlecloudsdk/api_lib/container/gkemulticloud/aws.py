@@ -51,6 +51,7 @@ class _AwsClientBase(client.ClientBase):
         'autoscaling': self._NodePoolAutoscaling(args),
         'config': self._NodeConfig(args),
         'maxPodsConstraint': self._MaxPodsConstraint(args),
+        'management': self._NodeManagement(args),
         'name': node_pool_ref.awsNodePoolsId,
         'subnetId': flags.GetSubnetID(args),
         'version': flags.GetNodeVersion(args)
@@ -163,6 +164,13 @@ class _AwsClientBase(client.ClientBase):
         'metrics': aws_flags.GetAutoscalingMetrics(args)
     }
     return self._messages.GoogleCloudGkemulticloudV1AwsAutoscalingGroupMetricsCollection(
+        **kwargs) if any(kwargs.values()) else None
+
+  def _NodeManagement(self, args):
+    kwargs = {
+        'autoRepair': flags.GetAutoRepair(args),
+    }
+    return self._messages.GoogleCloudGkemulticloudV1AwsNodeManagement(
         **kwargs) if any(kwargs.values()) else None
 
   def _NodeConfig(self, args):

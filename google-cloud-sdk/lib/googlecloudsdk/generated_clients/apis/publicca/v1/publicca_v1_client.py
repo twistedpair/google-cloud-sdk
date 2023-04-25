@@ -15,7 +15,7 @@ class PubliccaV1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://publicca.mtls.googleapis.com/'
 
   _PACKAGE = 'publicca'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'
@@ -39,3 +39,63 @@ class PubliccaV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_externalAccountKeys = self.ProjectsLocationsExternalAccountKeysService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsExternalAccountKeysService(base_api.BaseApiService):
+    """Service class for the projects_locations_externalAccountKeys resource."""
+
+    _NAME = 'projects_locations_externalAccountKeys'
+
+    def __init__(self, client):
+      super(PubliccaV1.ProjectsLocationsExternalAccountKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new ExternalAccountKey bound to the project.
+
+      Args:
+        request: (PubliccaProjectsLocationsExternalAccountKeysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExternalAccountKey) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/externalAccountKeys',
+        http_method='POST',
+        method_id='publicca.projects.locations.externalAccountKeys.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/externalAccountKeys',
+        request_field='externalAccountKey',
+        request_type_name='PubliccaProjectsLocationsExternalAccountKeysCreateRequest',
+        response_type_name='ExternalAccountKey',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(PubliccaV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = 'projects'
+
+    def __init__(self, client):
+      super(PubliccaV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }

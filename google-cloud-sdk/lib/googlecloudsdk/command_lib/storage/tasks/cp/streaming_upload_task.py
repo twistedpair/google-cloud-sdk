@@ -23,35 +23,47 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import user_request_args_factory
-from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.core import log
 
 
-class StreamingUploadTask(task.Task):
+class StreamingUploadTask(copy_util.CopyTask):
   """Represents a command operation triggering a streaming upload."""
 
-  def __init__(self,
-               source_resource,
-               destination_resource,
-               print_created_message=False,
-               user_request_args=None):
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      print_created_message=False,
+      print_source_version=False,
+      user_request_args=None,
+      verbose=False,
+  ):
     """Initializes task.
 
     Args:
       source_resource (FileObjectResource): Points to the stream or named pipe
-          to read from.
+        to read from.
       destination_resource (UnknownResource|ObjectResource): The full path of
-          object to upload to.
+        object to upload to.
       print_created_message (bool): Print the versioned URL of each successfully
-          copied object.
+        copied object.
+      print_source_version (bool): Print source object version in status message
+        enabled by the `verbose` kwarg.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      verbose (bool): Print a "copying" status message on initialization.
     """
-    super(__class__, self).__init__()
+    super(StreamingUploadTask, self).__init__(
+        source_resource,
+        destination_resource,
+        print_source_version=print_source_version,
+        user_request_args=user_request_args,
+        verbose=verbose,
+    )
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._print_created_message = print_created_message
-    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     """Runs upload from stream."""
@@ -62,13 +74,14 @@ class StreamingUploadTask(task.Task):
         md5_hash=self._source_resource.md5_hash,
         user_request_args=self._user_request_args)
 
-    gzip_type = getattr(request_config.gzip_settings, 'type', None)
-    if gzip_type is user_request_args_factory.GzipType.LOCAL:
-      # TODO(b/202729249): Supporting this is possible after dropping Python 2.
-      raise errors.Error(
-          'Gzip content encoding is not currently supported for streaming'
-          ' uploads. Remove the compression flag or save the streamed output'
-          ' to a file before uploading.')
+    if getattr(request_config, 'gzip_settings', None):
+      gzip_type = getattr(request_config.gzip_settings, 'type', None)
+      if gzip_type is user_request_args_factory.GzipType.LOCAL:
+        # TODO(b/202729249): Can support this after dropping Python 2.
+        raise errors.Error(
+            'Gzip content encoding is not currently supported for streaming'
+            ' uploads. Remove the compression flag or save the streamed output'
+            ' to a file before uploading.')
 
     digesters = upload_util.get_digesters(
         self._source_resource,

@@ -1300,6 +1300,7 @@ class _SectionApiEndpointOverrides(_Section):
         hidden=True)
     self.stream = self._Add('stream', hidden=True)
     self.telcoautomation = self._Add('telcoautomation', hidden=True)
+    self.telecomdatafabric = self._Add('telecomdatafabric', hidden=True)
     self.testing = self._Add('testing', command='gcloud firebase test')
     self.toolresults = self._Add('toolresults', hidden=True)
     self.tpu = self._Add('tpu', hidden=True)
@@ -1317,6 +1318,7 @@ class _SectionApiEndpointOverrides(_Section):
         'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
     self.securesourcemanager = self._Add('securesourcemanager', hidden=True)
     self.workloadcertificate = self._Add('workloadcertificate', hidden=True)
+    self.workstations = self._Add('workstations', hidden=True)
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""
@@ -3453,6 +3455,18 @@ class _SectionStorage(_Section):
         default=True,
         help_text='If True, logs messages about when Storage Transfer Service'
         ' might be a better tool than gcloud storage.')
+
+    self.symlink_placeholder_directory = self._Add(
+        'symlink_placeholder_directory',
+        default=os.path.join(
+            config.Paths().global_config_dir,
+            'surface_data',
+            'storage',
+            'symlink_placeholders',
+        ),
+        help_text='Directory path to temporary symlink placeholder files.',
+        hidden=True,
+    )
 
     self.tracker_files_directory = self._Add(
         'tracker_files_directory',

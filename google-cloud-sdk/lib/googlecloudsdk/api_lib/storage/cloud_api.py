@@ -80,7 +80,8 @@ class FieldsScope(enum.Enum):
   """Values used to determine fields and projection values for API calls."""
   FULL = 1
   NO_ACL = 2
-  SHORT = 3
+  RSYNC = 3  # Only for objects.
+  SHORT = 4
 
 
 class HmacKeyState(enum.Enum):

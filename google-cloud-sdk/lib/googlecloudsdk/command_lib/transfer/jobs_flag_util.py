@@ -202,10 +202,13 @@ def setup_parser(parser, is_update=False):
       ' interact with any of your existing Cloud Storage data.')
   job_information.add_argument(
       '--manifest-file',
-      help='Path to a .csv file in a Google Cloud Storage bucket'
-      ' containing a list of files to transfer from your source. E.g.,'
-      ' gs://mybucket/manifest.csv. For manifest file formatting, see'
-      ' https://cloud.google.com/storage-transfer/docs/manifest.')
+      help='Path to a .csv file containing a list of files to transfer from'
+      ' your source. For manifest files in Cloud Storage, specify the absolute'
+      ' path (e.g., `gs://mybucket/manifest.csv`). For manifest files stored in'
+      ' a source or destination POSIX file system, provide the relative path'
+      ' (e.g., `source://path/to/manfest.csv` or'
+      ' `destination://path/to/manifest.csv`). For manifest file formatting,'
+      ' see https://cloud.google.com/storage-transfer/docs/manifest.')
 
   event_stream = parser.add_group(
       help=('EVENT STREAM\n\nConfigure an event stream to transfer data'

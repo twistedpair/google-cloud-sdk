@@ -70,7 +70,7 @@ def _GetVersions(api_name):
   return list(version_map.keys())
 
 
-def _GetApiDef(api_name, api_version):
+def GetApiDef(api_name, api_version):
   """Returns the APIDef for the specified API and version.
 
   Args:
@@ -118,12 +118,12 @@ def _GetClientClass(api_name, api_version):
   Returns:
     base_api.BaseApiClient, Client class for the specified API.
   """
-  api_def = _GetApiDef(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
   return _GetClientClassFromDef(api_def)
 
 
 def _GetClientClassFromDef(api_def):
-  """Returns the client class for the API definition specified in the args.
+  """Returns the apitools client class for the API definition specified in args.
 
   Args:
     api_def: apis_map.APIDef, The definition of the API.
@@ -196,7 +196,7 @@ def _GetGapicClientClass(api_name,
     transport_choice: apis_util.GapicTransport, The transport to be used by the
       client.
   """
-  api_def = _GetApiDef(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
   if transport_choice == apis_util.GapicTransport.GRPC_ASYNCIO:
     client_full_classpath = api_def.gapic.async_client_full_classpath
   elif transport_choice == apis_util.GapicTransport.REST:
@@ -271,8 +271,11 @@ def _UniversifyAddress(address):
 
 def _GetMtlsEndpoint(api_name, api_version, client_class=None):
   """Returns mtls endpoint."""
-  client_class = client_class or _GetClientClass(api_name, api_version)
-  api_def = _GetApiDef(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
+  if api_def.apitools:
+    client_class = client_class or _GetClientClass(api_name, api_version)
+  else:
+    client_class = client_class or _GetGapicClientClass(api_name, api_version)
   return api_def.mtls_endpoint_override or client_class.MTLS_BASE_URL
 
 
@@ -301,7 +304,7 @@ def _MtlsEnabled(api_name, api_version):
   if not properties.VALUES.context_aware.use_client_certificate.GetBool():
     return False
 
-  api_def = _GetApiDef(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
   return api_def.enable_mtls
 
 
@@ -316,6 +319,25 @@ def _BuildEndpointOverride(endpoint_override, base_url):
                        url_endpoint_override.netloc), url_base.path)
 
 
+def _GetBaseUrlFromApi(api_name, api_version):
+  """Returns base url for given api."""
+  if GetApiDef(api_name, api_version).apitools:
+    client_class = _GetClientClass(api_name, api_version)
+  else:
+    client_class = _GetGapicClientClass(api_name, api_version)
+
+  if hasattr(client_class, 'BASE_URL'):
+    client_base_url = client_class.BASE_URL
+  else:
+    try:
+      client_base_url = _GetResourceModule(api_name, api_version).BASE_URL
+    except AttributeError:
+      client_base_url = 'https://{}.googleapis.com/{}'.format(
+          api_name, api_version
+      )
+  return client_base_url
+
+
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   """Returns effective endpoint for given api."""
   try:
@@ -324,13 +346,18 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   except properties.NoSuchPropertyError:
     endpoint_override = None
 
-  client_class = client_class or _GetClientClass(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
+  if api_def.apitools:
+    client_class = client_class or _GetClientClass(api_name, api_version)
+  else:
+    client_class = client_class or _GetGapicClientClass(api_name, api_version)
+  client_base_url = _GetBaseUrlFromApi(api_name, api_version)
   if endpoint_override:
-    address = _BuildEndpointOverride(endpoint_override, client_class.BASE_URL)
+    address = _BuildEndpointOverride(endpoint_override, client_base_url)
   elif _MtlsEnabled(api_name, api_version):
     address = _GetMtlsEndpoint(api_name, api_version, client_class)
   else:
-    address = client_class.BASE_URL
+    address = client_base_url
 
   if api_name == 'compute':
     return address
@@ -348,7 +375,7 @@ def _GetMessagesModule(api_name, api_version):
   Returns:
     Module containing the definitions of messages for the specified API.
   """
-  api_def = _GetApiDef(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
   return __import__(
@@ -358,11 +385,17 @@ def _GetMessagesModule(api_name, api_version):
 def _GetResourceModule(api_name, api_version):
   """Imports and returns given api resources module."""
 
-  api_def = _GetApiDef(api_name, api_version)
+  api_def = GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
+  if api_def.apitools:
+    return __import__(
+        api_def.apitools.class_path + '.' + 'resources', fromlist=['something']
+    )
+  # ApiDef must be gapic-only:
   return __import__(
-      api_def.apitools.class_path + '.' + 'resources', fromlist=['something'])
+      api_def.gapic.class_path + '.' + 'resources', fromlist=['something']
+  )
 
 
 def _GetApiCollections(api_name, api_version):

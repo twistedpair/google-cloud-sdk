@@ -6062,6 +6062,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
       GENERAL_PURPOSE_T2D: <no description>
+      GRAPHICS_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED_M3: <no description>
       TYPE_UNSPECIFIED: <no description>
@@ -6075,9 +6076,10 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_N2 = 6
     GENERAL_PURPOSE_N2D = 7
     GENERAL_PURPOSE_T2D = 8
-    MEMORY_OPTIMIZED = 9
-    MEMORY_OPTIMIZED_M3 = 10
-    TYPE_UNSPECIFIED = 11
+    GRAPHICS_OPTIMIZED = 9
+    MEMORY_OPTIMIZED = 10
+    MEMORY_OPTIMIZED_M3 = 11
+    TYPE_UNSPECIFIED = 12
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -14318,12 +14320,23 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesStartRequest(_messages.Message):
@@ -23217,6 +23230,25 @@ class ComputeRegionOperationsWaitRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
+class ComputeRegionSecurityPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+    validateOnly: If true, the request will not be committed.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+  validateOnly = _messages.BooleanField(5)
+
+
 class ComputeRegionSecurityPoliciesDeleteRequest(_messages.Message):
   r"""A ComputeRegionSecurityPoliciesDeleteRequest object.
 
@@ -23254,6 +23286,23 @@ class ComputeRegionSecurityPoliciesGetRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionSecurityPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSecurityPoliciesInsertRequest(_messages.Message):
@@ -23378,6 +23427,43 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   securityPolicy = _messages.StringField(4, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 5)
+
+
+class ComputeRegionSecurityPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+    validateOnly: If true, the request will not be committed.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class ComputeRegionSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
@@ -33461,10 +33547,17 @@ class ExternalVpnGatewayInterface(_messages.Message):
       IPv4 is supported. This IP address can be either from your on-premise
       gateway or another Cloud provider's VPN gateway, it cannot be an IP
       address from Google Compute Engine.
+    ipv6Address: IPv6 address of the interface in the external VPN gateway.
+      This IPv6 address can be either from your on-premise gateway or another
+      Cloud provider's VPN gateway, it cannot be an IP address from Google
+      Compute Engine. Must specify an IPv6 address (not IPV4-mapped) using any
+      format described in RFC 4291 (e.g. 2001:db8:0:0:2d9:51:0:0). The output
+      format is RFC 5952 format (e.g. 2001:db8::2d9:51:0:0).
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
   ipAddress = _messages.StringField(2)
+  ipv6Address = _messages.StringField(3)
 
 
 class ExternalVpnGatewayList(_messages.Message):
@@ -36136,11 +36229,11 @@ class HealthCheck(_messages.Message):
   * [Regional](/compute/docs/reference/rest/beta/regionHealthChecks) Internal
   HTTP(S) load balancers must use regional health checks
   (`compute.v1.regionHealthChecks`). Traffic Director must use global health
-  checks (`compute.v1.HealthChecks`). Internal TCP/UDP load balancers can use
+  checks (`compute.v1.healthChecks`). Internal TCP/UDP load balancers can use
   either regional or global health checks (`compute.v1.regionHealthChecks` or
-  `compute.v1.HealthChecks`). External HTTP(S), TCP proxy, and SSL proxy load
+  `compute.v1.healthChecks`). External HTTP(S), TCP proxy, and SSL proxy load
   balancers as well as managed instance group auto-healing must use global
-  health checks (`compute.v1.HealthChecks`). Backend service-based network
+  health checks (`compute.v1.healthChecks`). Backend service-based network
   load balancers must use regional health checks
   (`compute.v1.regionHealthChecks`). Target pool-based network load balancers
   must use legacy HTTP health checks (`compute.v1.httpHealthChecks`). For more
@@ -37179,6 +37272,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   Enums:
     HealthStateValueValuesEnum: Health state of the network endpoint
       determined based on the health checks configured.
+    Ipv6HealthStateValueValuesEnum: Health state of the ipv6 network endpoint
+      determined based on the health checks configured.
 
   Fields:
     backendService: URL of the backend service associated with the health
@@ -37191,6 +37286,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
       health state of the network endpoint.
     healthState: Health state of the network endpoint determined based on the
       health checks configured.
+    ipv6HealthState: Health state of the ipv6 network endpoint determined
+      based on the health checks configured.
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
@@ -37208,11 +37305,27 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
     UNHEALTHY = 2
     UNKNOWN = 3
 
+  class Ipv6HealthStateValueValuesEnum(_messages.Enum):
+    r"""Health state of the ipv6 network endpoint determined based on the
+    health checks configured.
+
+    Values:
+      DRAINING: Endpoint is being drained.
+      HEALTHY: Endpoint is healthy.
+      UNHEALTHY: Endpoint is unhealthy.
+      UNKNOWN: Health status of the endpoint is unknown.
+    """
+    DRAINING = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    UNKNOWN = 3
+
   backendService = _messages.MessageField('BackendServiceReference', 1)
   forwardingRule = _messages.MessageField('ForwardingRuleReference', 2)
   healthCheck = _messages.MessageField('HealthCheckReference', 3)
   healthCheckService = _messages.MessageField('HealthCheckServiceReference', 4)
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
+  ipv6HealthState = _messages.EnumField('Ipv6HealthStateValueValuesEnum', 6)
 
 
 class Help(_messages.Message):
@@ -48364,6 +48477,7 @@ class NetworkEndpoint(_messages.Message):
       aliased IP range). If the IP address is not specified, then the primary
       IP address for the VM instance in the network that the network endpoint
       group belongs to will be used.
+    ipv6Address: Optional IPv6 address of network endpoint.
     port: Optional port number of network endpoint. If not specified, the
       defaultPort for the network endpoint group will be used.
   """
@@ -48397,7 +48511,8 @@ class NetworkEndpoint(_messages.Message):
   fqdn = _messages.StringField(2)
   instance = _messages.StringField(3)
   ipAddress = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  ipv6Address = _messages.StringField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class NetworkEndpointGroup(_messages.Message):
@@ -55658,6 +55773,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_A100_80GB_GPUS: <no description>
       COMMITTED_NVIDIA_A100_GPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
+      COMMITTED_NVIDIA_L4_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
@@ -55808,130 +55924,131 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_A100_80GB_GPUS = 22
     COMMITTED_NVIDIA_A100_GPUS = 23
     COMMITTED_NVIDIA_K80_GPUS = 24
-    COMMITTED_NVIDIA_P100_GPUS = 25
-    COMMITTED_NVIDIA_P4_GPUS = 26
-    COMMITTED_NVIDIA_T4_GPUS = 27
-    COMMITTED_NVIDIA_V100_GPUS = 28
-    COMMITTED_T2A_CPUS = 29
-    COMMITTED_T2D_CPUS = 30
-    CPUS = 31
-    CPUS_ALL_REGIONS = 32
-    DISKS_TOTAL_GB = 33
-    E2_CPUS = 34
-    EXTERNAL_MANAGED_FORWARDING_RULES = 35
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 36
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 37
-    EXTERNAL_VPN_GATEWAYS = 38
-    FIREWALLS = 39
-    FORWARDING_RULES = 40
-    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 41
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 42
-    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 43
-    GLOBAL_INTERNAL_ADDRESSES = 44
-    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 45
-    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 46
-    GPUS_ALL_REGIONS = 47
-    HEALTH_CHECKS = 48
-    IMAGES = 49
-    INSTANCES = 50
-    INSTANCE_GROUPS = 51
-    INSTANCE_GROUP_MANAGERS = 52
-    INSTANCE_TEMPLATES = 53
-    INTERCONNECTS = 54
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 55
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 56
-    INTERCONNECT_TOTAL_GBPS = 57
-    INTERNAL_ADDRESSES = 58
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 59
-    IN_PLACE_SNAPSHOTS = 60
-    IN_USE_ADDRESSES = 61
-    IN_USE_BACKUP_SCHEDULES = 62
-    IN_USE_SNAPSHOT_SCHEDULES = 63
-    LOCAL_SSD_TOTAL_GB = 64
-    M1_CPUS = 65
-    M2_CPUS = 66
-    M3_CPUS = 67
-    MACHINE_IMAGES = 68
-    N2A_CPUS = 69
-    N2D_CPUS = 70
-    N2_CPUS = 71
-    NETWORKS = 72
-    NETWORK_ATTACHMENTS = 73
-    NETWORK_ENDPOINT_GROUPS = 74
-    NETWORK_FIREWALL_POLICIES = 75
-    NET_LB_SECURITY_POLICIES_PER_REGION = 76
-    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 77
-    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 78
-    NODE_GROUPS = 79
-    NODE_TEMPLATES = 80
-    NVIDIA_A100_80GB_GPUS = 81
-    NVIDIA_A100_GPUS = 82
-    NVIDIA_K80_GPUS = 83
-    NVIDIA_L4_GPUS = 84
-    NVIDIA_P100_GPUS = 85
-    NVIDIA_P100_VWS_GPUS = 86
-    NVIDIA_P4_GPUS = 87
-    NVIDIA_P4_VWS_GPUS = 88
-    NVIDIA_T4_GPUS = 89
-    NVIDIA_T4_VWS_GPUS = 90
-    NVIDIA_V100_GPUS = 91
-    PACKET_MIRRORINGS = 92
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 93
-    PREEMPTIBLE_CPUS = 94
-    PREEMPTIBLE_LOCAL_SSD_GB = 95
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 96
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 97
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 98
-    PREEMPTIBLE_NVIDIA_L4_GPUS = 99
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 100
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 101
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 102
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 103
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 104
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 105
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 106
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 107
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 108
-    PSC_INTERNAL_LB_FORWARDING_RULES = 109
-    PUBLIC_ADVERTISED_PREFIXES = 110
-    PUBLIC_DELEGATED_PREFIXES = 111
-    REGIONAL_AUTOSCALERS = 112
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 113
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 114
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 115
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 116
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 117
-    RESERVATIONS = 118
-    RESOURCE_POLICIES = 119
-    ROUTERS = 120
-    ROUTES = 121
-    SECURITY_POLICIES = 122
-    SECURITY_POLICIES_PER_REGION = 123
-    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 124
-    SECURITY_POLICY_CEVAL_RULES = 125
-    SECURITY_POLICY_RULES = 126
-    SECURITY_POLICY_RULES_PER_REGION = 127
-    SERVICE_ATTACHMENTS = 128
-    SNAPSHOTS = 129
-    SSD_TOTAL_GB = 130
-    SSL_CERTIFICATES = 131
-    STATIC_ADDRESSES = 132
-    STATIC_BYOIP_ADDRESSES = 133
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 134
-    SUBNETWORKS = 135
-    T2A_CPUS = 136
-    T2D_CPUS = 137
-    TARGET_HTTPS_PROXIES = 138
-    TARGET_HTTP_PROXIES = 139
-    TARGET_INSTANCES = 140
-    TARGET_POOLS = 141
-    TARGET_SSL_PROXIES = 142
-    TARGET_TCP_PROXIES = 143
-    TARGET_VPN_GATEWAYS = 144
-    URL_MAPS = 145
-    VPN_GATEWAYS = 146
-    VPN_TUNNELS = 147
-    XPN_SERVICE_PROJECTS = 148
+    COMMITTED_NVIDIA_L4_GPUS = 25
+    COMMITTED_NVIDIA_P100_GPUS = 26
+    COMMITTED_NVIDIA_P4_GPUS = 27
+    COMMITTED_NVIDIA_T4_GPUS = 28
+    COMMITTED_NVIDIA_V100_GPUS = 29
+    COMMITTED_T2A_CPUS = 30
+    COMMITTED_T2D_CPUS = 31
+    CPUS = 32
+    CPUS_ALL_REGIONS = 33
+    DISKS_TOTAL_GB = 34
+    E2_CPUS = 35
+    EXTERNAL_MANAGED_FORWARDING_RULES = 36
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 37
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 38
+    EXTERNAL_VPN_GATEWAYS = 39
+    FIREWALLS = 40
+    FORWARDING_RULES = 41
+    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 42
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 43
+    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 44
+    GLOBAL_INTERNAL_ADDRESSES = 45
+    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 46
+    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 47
+    GPUS_ALL_REGIONS = 48
+    HEALTH_CHECKS = 49
+    IMAGES = 50
+    INSTANCES = 51
+    INSTANCE_GROUPS = 52
+    INSTANCE_GROUP_MANAGERS = 53
+    INSTANCE_TEMPLATES = 54
+    INTERCONNECTS = 55
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 56
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 57
+    INTERCONNECT_TOTAL_GBPS = 58
+    INTERNAL_ADDRESSES = 59
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 60
+    IN_PLACE_SNAPSHOTS = 61
+    IN_USE_ADDRESSES = 62
+    IN_USE_BACKUP_SCHEDULES = 63
+    IN_USE_SNAPSHOT_SCHEDULES = 64
+    LOCAL_SSD_TOTAL_GB = 65
+    M1_CPUS = 66
+    M2_CPUS = 67
+    M3_CPUS = 68
+    MACHINE_IMAGES = 69
+    N2A_CPUS = 70
+    N2D_CPUS = 71
+    N2_CPUS = 72
+    NETWORKS = 73
+    NETWORK_ATTACHMENTS = 74
+    NETWORK_ENDPOINT_GROUPS = 75
+    NETWORK_FIREWALL_POLICIES = 76
+    NET_LB_SECURITY_POLICIES_PER_REGION = 77
+    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 78
+    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 79
+    NODE_GROUPS = 80
+    NODE_TEMPLATES = 81
+    NVIDIA_A100_80GB_GPUS = 82
+    NVIDIA_A100_GPUS = 83
+    NVIDIA_K80_GPUS = 84
+    NVIDIA_L4_GPUS = 85
+    NVIDIA_P100_GPUS = 86
+    NVIDIA_P100_VWS_GPUS = 87
+    NVIDIA_P4_GPUS = 88
+    NVIDIA_P4_VWS_GPUS = 89
+    NVIDIA_T4_GPUS = 90
+    NVIDIA_T4_VWS_GPUS = 91
+    NVIDIA_V100_GPUS = 92
+    PACKET_MIRRORINGS = 93
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 94
+    PREEMPTIBLE_CPUS = 95
+    PREEMPTIBLE_LOCAL_SSD_GB = 96
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 97
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 98
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 99
+    PREEMPTIBLE_NVIDIA_L4_GPUS = 100
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 101
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 102
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 103
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 104
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 105
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 106
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 107
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 108
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 109
+    PSC_INTERNAL_LB_FORWARDING_RULES = 110
+    PUBLIC_ADVERTISED_PREFIXES = 111
+    PUBLIC_DELEGATED_PREFIXES = 112
+    REGIONAL_AUTOSCALERS = 113
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 114
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 115
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 116
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 117
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 118
+    RESERVATIONS = 119
+    RESOURCE_POLICIES = 120
+    ROUTERS = 121
+    ROUTES = 122
+    SECURITY_POLICIES = 123
+    SECURITY_POLICIES_PER_REGION = 124
+    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 125
+    SECURITY_POLICY_CEVAL_RULES = 126
+    SECURITY_POLICY_RULES = 127
+    SECURITY_POLICY_RULES_PER_REGION = 128
+    SERVICE_ATTACHMENTS = 129
+    SNAPSHOTS = 130
+    SSD_TOTAL_GB = 131
+    SSL_CERTIFICATES = 132
+    STATIC_ADDRESSES = 133
+    STATIC_BYOIP_ADDRESSES = 134
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 135
+    SUBNETWORKS = 136
+    T2A_CPUS = 137
+    T2D_CPUS = 138
+    TARGET_HTTPS_PROXIES = 139
+    TARGET_HTTP_PROXIES = 140
+    TARGET_INSTANCES = 141
+    TARGET_POOLS = 142
+    TARGET_SSL_PROXIES = 143
+    TARGET_TCP_PROXIES = 144
+    TARGET_VPN_GATEWAYS = 145
+    URL_MAPS = 146
+    VPN_GATEWAYS = 147
+    VPN_TUNNELS = 148
+    XPN_SERVICE_PROJECTS = 149
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -60210,6 +60327,13 @@ class RouterBgpPeer(_messages.Message):
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering.
+    customLearnedIpRanges: A list of user-defined custom learned route IP
+      address ranges for a BGP session.
+    customLearnedRoutePriority: The user-defined custom learned route priority
+      for a BGP session. This value is applied to all custom learned route
+      ranges for the session. You can choose a value from `0` to `65335`. If
+      you don't provide a value, Google Cloud assigns a priority of `100` to
+      the ranges.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -60310,18 +60434,20 @@ class RouterBgpPeer(_messages.Message):
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
-  enable = _messages.EnumField('EnableValueValuesEnum', 6)
-  enableIpv6 = _messages.BooleanField(7)
-  interfaceName = _messages.StringField(8)
-  ipAddress = _messages.StringField(9)
-  ipv6NexthopAddress = _messages.StringField(10)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
-  md5AuthenticationKeyName = _messages.StringField(12)
-  name = _messages.StringField(13)
-  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(15)
-  peerIpv6NexthopAddress = _messages.StringField(16)
-  routerApplianceInstance = _messages.StringField(17)
+  customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
+  customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  enable = _messages.EnumField('EnableValueValuesEnum', 8)
+  enableIpv6 = _messages.BooleanField(9)
+  interfaceName = _messages.StringField(10)
+  ipAddress = _messages.StringField(11)
+  ipv6NexthopAddress = _messages.StringField(12)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
+  md5AuthenticationKeyName = _messages.StringField(14)
+  name = _messages.StringField(15)
+  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(17)
+  peerIpv6NexthopAddress = _messages.StringField(18)
+  routerApplianceInstance = _messages.StringField(19)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -60377,6 +60503,19 @@ class RouterBgpPeerBfd(_messages.Message):
   minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   multiplier = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
   sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 4)
+
+
+class RouterBgpPeerCustomLearnedIpRange(_messages.Message):
+  r"""A RouterBgpPeerCustomLearnedIpRange object.
+
+  Fields:
+    range: The custom learned route IP address range. Must be a valid CIDR-
+      formatted prefix. If an IP address is provided without a subnet mask, it
+      is interpreted as, for IPv4, a `/32` singular IP address range, and, for
+      IPv6, `/128`.
+  """
+
+  range = _messages.StringField(1)
 
 
 class RouterInterface(_messages.Message):
@@ -63441,6 +63580,16 @@ class ServiceAttachment(_messages.Message):
       this service attachment.
     pscServiceAttachmentId: [Output Only] An 128-bit global unique ID of the
       PSC service attachment.
+    reconcileConnections: This flag determines whether a consumer
+      accept/reject list change can reconcile the statuses of existing
+      ACCEPTED or REJECTED PSC endpoints. - If false, connection policy update
+      will only affect existing PENDING PSC endpoints. Existing
+      ACCEPTED/REJECTED endpoints will remain untouched regardless how the
+      connection policy is modified . - If true, update will affect both
+      PENDING and ACCEPTED/REJECTED PSC endpoints. For example, an ACCEPTED
+      PSC endpoint will be moved to REJECTED if its project is added to the
+      reject list. For newly created service attachment, this boolean defaults
+      to true.
     region: [Output Only] URL of the region where the service attachment
       resides. This field applies only to the region resource. You must
       specify this field as part of the HTTP request URL. It is not settable
@@ -63479,9 +63628,10 @@ class ServiceAttachment(_messages.Message):
   natSubnets = _messages.StringField(13, repeated=True)
   producerForwardingRule = _messages.StringField(14)
   pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  targetService = _messages.StringField(18)
+  reconcileConnections = _messages.BooleanField(16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  targetService = _messages.StringField(19)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -68511,7 +68661,9 @@ class TargetHttpsProxiesSetCertificateMapRequest(_messages.Message):
 
   Fields:
     certificateMap: URL of the Certificate Map to associate with this
-      TargetHttpsProxy.
+      TargetHttpsProxy. Accepted format is
+      //certificatemanager.googleapis.com/projects/{project
+      }/locations/{location}/certificateMaps/{resourceName}.
   """
 
   certificateMap = _messages.StringField(1)
@@ -68592,7 +68744,9 @@ class TargetHttpsProxy(_messages.Message):
       INTERNAL_SELF_MANAGED. Note: This field currently has no impact.
     certificateMap: URL of a certificate map that identifies a certificate map
       associated with the given target proxy. This field can only be set for
-      global target proxies. If set, sslCertificates will be ignored.
+      global target proxies. If set, sslCertificates will be ignored. Accepted
+      format is //certificatemanager.googleapis.com/projects/{project
+      }/locations/{location}/certificateMaps/{resourceName}.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -70335,7 +70489,9 @@ class TargetSslProxiesSetCertificateMapRequest(_messages.Message):
 
   Fields:
     certificateMap: URL of the Certificate Map to associate with this
-      TargetSslProxy.
+      TargetSslProxy. Accepted format is
+      //certificatemanager.googleapis.com/projects/{project
+      }/locations/{location}/certificateMaps/{resourceName}.
   """
 
   certificateMap = _messages.StringField(1)
@@ -70393,7 +70549,9 @@ class TargetSslProxy(_messages.Message):
   Fields:
     certificateMap: URL of a certificate map that identifies a certificate map
       associated with the given target proxy. This field can only be set for
-      global target proxies. If set, sslCertificates will be ignored.
+      global target proxies. If set, sslCertificates will be ignored. Accepted
+      format is //certificatemanager.googleapis.com/projects/{project
+      }/locations/{location}/certificateMaps/{resourceName}.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -73245,6 +73403,8 @@ class VpnGateway(_messages.Message):
   Cloud VPN topologies .
 
   Enums:
+    GatewayIpVersionValueValuesEnum: The IP family of the gateway IPs for the
+      HA-VPN gateway interfaces. If not specified, IPV4 will be used.
     StackTypeValueValuesEnum: The stack type for this VPN gateway to identify
       the IP protocols that are enabled. Possible values are: IPV4_ONLY,
       IPV4_IPV6. If not specified, IPV4_ONLY will be used.
@@ -73259,6 +73419,8 @@ class VpnGateway(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    gatewayIpVersion: The IP family of the gateway IPs for the HA-VPN gateway
+      interfaces. If not specified, IPV4 will be used.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#vpnGateway for VPN
@@ -73291,6 +73453,17 @@ class VpnGateway(_messages.Message):
     vpnInterfaces: The list of VPN interfaces associated with this VPN
       gateway.
   """
+
+  class GatewayIpVersionValueValuesEnum(_messages.Enum):
+    r"""The IP family of the gateway IPs for the HA-VPN gateway interfaces. If
+    not specified, IPV4 will be used.
+
+    Values:
+      IPV4: Every HA-VPN gateway interface is configured with an IPv4 address.
+      IPV6: Every HA-VPN gateway interface is configured with an IPv6 address.
+    """
+    IPV4 = 0
+    IPV6 = 1
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this VPN gateway to identify the IP protocols that
@@ -73332,16 +73505,17 @@ class VpnGateway(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default='compute#vpnGateway')
-  labelFingerprint = _messages.BytesField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 11)
-  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 12, repeated=True)
+  gatewayIpVersion = _messages.EnumField('GatewayIpVersionValueValuesEnum', 3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#vpnGateway')
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
+  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 13, repeated=True)
 
 
 class VpnGatewayAggregatedList(_messages.Message):
@@ -73761,7 +73935,7 @@ class VpnGatewayStatusTunnel(_messages.Message):
       associated with.
     peerGatewayInterface: The peer gateway interface this VPN tunnel is
       connected to, the peer gateway could either be an external VPN gateway
-      or GCP VPN gateway.
+      or a Google Cloud VPN gateway.
     tunnelUrl: URL reference to the VPN tunnel.
   """
 
@@ -73772,8 +73946,8 @@ class VpnGatewayStatusTunnel(_messages.Message):
 
 class VpnGatewayStatusVpnConnection(_messages.Message):
   r"""A VPN connection contains all VPN tunnels connected from this VpnGateway
-  to the same peer gateway. The peer gateway could either be a external VPN
-  gateway or GCP VPN gateway.
+  to the same peer gateway. The peer gateway could either be an external VPN
+  gateway or a Google Cloud VPN gateway.
 
   Fields:
     peerExternalGateway: URL reference to the peer external VPN gateways to
@@ -73813,11 +73987,15 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
       addresses or regional external IP addresses. For regular (non HA VPN
       over Cloud Interconnect) HA VPN tunnels, the IP address must be a
       regional external IP address.
+    ipv6Address: [Output Only] IPv6 address for this VPN interface associated
+      with the VPN gateway. The IPv6 address must be a regional external IPv6
+      address. The format is RFC 5952 format (e.g. 2001:db8::2d9:51:0:0).
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
   interconnectAttachment = _messages.StringField(2)
   ipAddress = _messages.StringField(3)
+  ipv6Address = _messages.StringField(4)
 
 
 class VpnGatewaysGetStatusResponse(_messages.Message):
