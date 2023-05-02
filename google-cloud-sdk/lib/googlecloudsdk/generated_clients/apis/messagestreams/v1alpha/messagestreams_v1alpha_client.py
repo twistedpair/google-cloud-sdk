@@ -173,7 +173,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Stream in a given project and location.
+      r"""Creates a new stream in a given project and location.
 
       Args:
         request: (MessagestreamsProjectsLocationsStreamsCreateRequest) input message
@@ -200,7 +200,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Stream.
+      r"""Deletes a single stream.
 
       Args:
         request: (MessagestreamsProjectsLocationsStreamsDeleteRequest) input message
@@ -218,7 +218,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
         method_id='messagestreams.projects.locations.streams.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['etag', 'requestId'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='MessagestreamsProjectsLocationsStreamsDeleteRequest',
@@ -227,7 +227,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Stream.
+      r"""Gets details of a single stream.
 
       Args:
         request: (MessagestreamsProjectsLocationsStreamsGetRequest) input message
@@ -254,7 +254,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Streams in a given project and location.
+      r"""Lists streams in a given project and location.
 
       Args:
         request: (MessagestreamsProjectsLocationsStreamsListRequest) input message
@@ -281,7 +281,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Stream.
+      r"""Updates the parameters of a single stream.
 
       Args:
         request: (MessagestreamsProjectsLocationsStreamsPatchRequest) input message

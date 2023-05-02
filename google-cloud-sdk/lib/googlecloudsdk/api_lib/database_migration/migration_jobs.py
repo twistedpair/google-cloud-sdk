@@ -152,6 +152,20 @@ class MigrationJobsClient(object):
         conversion_workspace_obj.commitId = conversion_workspace.latestCommitId
       return conversion_workspace_obj
 
+  def _GetPerformanceConfig(self, args):
+    """Returns the performance config with dump parallel level.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+    """
+    performance_config_obj = self.messages.PerformanceConfig
+    return performance_config_obj(
+        dumpParallelLevel=performance_config_obj.DumpParallelLevelValueValuesEnum.lookup_by_name(
+            args.dump_parallel_level
+        )
+    )
+
   def _GetMigrationJob(
       self, source_ref, destination_ref, conversion_workspace_ref, args
   ):
@@ -191,6 +205,9 @@ class MigrationJobsClient(object):
       )
       migration_job_obj.filter = server_filter
 
+    if args.IsKnownAndSpecified('dump_parallel_level'):
+      migration_job_obj.performanceConfig = self._GetPerformanceConfig(args)
+
     return migration_job_obj
 
   def _UpdateConnectivity(self, migration_job, args):
@@ -227,6 +244,8 @@ class MigrationJobsClient(object):
          for field in sorted(self._REVERSE_MAP) if args.IsSpecified(field)])
     if args.IsSpecified('peer_vpc'):
       update_fields.append('vpcPeeringConnectivity.vpc')
+    if args.IsKnownAndSpecified('dump_parallel_level'):
+      update_fields.append('performanceConfig.dumpParallelLevel')
     return  update_fields
 
   def _GetUpdatedMigrationJob(
@@ -243,6 +262,8 @@ class MigrationJobsClient(object):
       migration_job.source = source_ref.RelativeName()
     if args.IsSpecified('destination'):
       migration_job.destination = destination_ref.RelativeName()
+    if args.IsKnownAndSpecified('dump_parallel_level'):
+      migration_job.performanceConfig = self._GetPerformanceConfig(args)
     self._UpdateConnectivity(migration_job, args)
     self._UpdateLabels(args, migration_job, update_fields)
     return migration_job, update_fields

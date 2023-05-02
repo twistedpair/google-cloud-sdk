@@ -223,6 +223,14 @@ class Collections(enum.Enum):
       ['project', 'interconnectLocation'],
       True
   )
+  INTERCONNECTREMOTELOCATIONS = (
+      'interconnectRemoteLocations',
+      'projects/{project}/global/interconnectRemoteLocations/'
+      '{interconnectRemoteLocation}',
+      {},
+      ['project', 'interconnectRemoteLocation'],
+      True
+  )
   INTERCONNECTS = (
       'interconnects',
       'projects/{project}/global/interconnects/{interconnect}',

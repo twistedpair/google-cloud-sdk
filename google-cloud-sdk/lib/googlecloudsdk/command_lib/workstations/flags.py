@@ -88,7 +88,7 @@ def WorkstationsAttributeConfig(help_text=''):
       help_text=help_text if help_text else ('The workstation.'))
 
 
-def AddConfigResourceArg(parser, api_version='v1beta'):
+def AddConfigResourceArg(parser, api_version='v1beta', flag_anchor=False):
   """Create a config resource argument."""
   spec = concepts.ResourceSpec(
       'workstations.projects.locations.workstationClusters.workstationConfigs',
@@ -98,9 +98,10 @@ def AddConfigResourceArg(parser, api_version='v1beta'):
       workstationClustersId=ClustersAttributeConfig(),
       locationsId=LocationsAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
   )
   concept_parsers.ConceptParser.ForResource(
-      'config',
+      '--config' if flag_anchor else 'config',
       spec,
       'The group of arguments defining a config',
       required=True,

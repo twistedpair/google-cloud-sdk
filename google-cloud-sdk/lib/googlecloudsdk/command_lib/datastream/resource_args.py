@@ -520,7 +520,7 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
             "kmsKeyName": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}"
           }
         },
-        "dataFreshness": 3600
+        "dataFreshness": "3600s"
       }
       ```
         """,

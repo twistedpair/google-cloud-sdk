@@ -235,6 +235,8 @@ class FileWildcardIterator(WildcardIterator):
       file_url = storage_url.FileUrl(path)
       if not is_symlink and os.path.isdir(path):
         yield resource_reference.FileDirectoryResource(file_url)
+      elif is_symlink and self._preserve_symlinks:
+        yield resource_reference.FileSymlinkPlaceholderResource(file_url)
       else:
         yield resource_reference.FileObjectResource(
             file_url, is_symlink=is_symlink

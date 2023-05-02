@@ -126,3 +126,15 @@ def AddCommitIdFlag(parser):
       ' job. If not specified, the latest commit id will be used by default.'
   )
   parser.add_argument('--commit-id', help=help_text, hidden=True)
+
+
+def AddDumpParallelLevelFlag(parser):
+  """Adds a --dump-parallel-level flag to the given parser."""
+  help_text = (
+      'Parallelization level during initial dump of the migration job. If not'
+      ' specified, will be defaulted to OPTIMAL.'
+  )
+  choices = ['MIN', 'OPTIMAL', 'MAX']
+  parser.add_argument(
+      '--dump-parallel-level', help=help_text, choices=choices, hidden=True
+  )

@@ -265,6 +265,46 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES = (
+      'projects.locations.featureOnlineStores',
+      'projects/{projectsId}/locations/{locationsId}/featureOnlineStores/'
+      '{featureOnlineStoresId}',
+      {},
+      ['projectsId', 'locationsId', 'featureOnlineStoresId'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS = (
+      'projects.locations.featureOnlineStores.featureViews',
+      'projects/{projectsId}/locations/{locationsId}/featureOnlineStores/'
+      '{featureOnlineStoresId}/featureViews/{featureViewsId}',
+      {},
+      ['projectsId', 'locationsId', 'featureOnlineStoresId', 'featureViewsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS_OPERATIONS = (
+      'projects.locations.featureOnlineStores.featureViews.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+              '{featureViewsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES_OPERATIONS = (
+      'projects.locations.featureOnlineStores.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FEATURESTORES = (
       'projects.locations.featurestores',
       '{+name}',
@@ -500,6 +540,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MODELMONITORS = (
+      'projects.locations.modelMonitors',
+      'projects/{projectsId}/locations/{locationsId}/modelMonitors/'
+      '{modelMonitorsId}',
+      {},
+      ['projectsId', 'locationsId', 'modelMonitorsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_MODELMONITORS_OPERATIONS = (
+      'projects.locations.modelMonitors.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/modelMonitors/'
+              '{modelMonitorsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MODELS = (
       'projects.locations.models',
       '{+name}',
@@ -633,9 +692,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_SCHEDULES = (
       'projects.locations.schedules',
-      'projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}',
-      {},
-      ['projectsId', 'locationsId', 'schedulesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/schedules/'
+              '{schedulesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_SCHEDULES_OPERATIONS = (

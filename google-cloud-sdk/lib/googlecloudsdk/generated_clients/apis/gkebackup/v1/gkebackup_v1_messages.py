@@ -271,6 +271,12 @@ class BackupConfig(_messages.Message):
 class BackupPlan(_messages.Message):
   r"""Defines the configuration and scheduling for a "line" of Backups.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the BackupPlan. This State
+      field reflects the various stages a BackupPlan can be in during the
+      Create operation. It will be set to "DEACTIVATED" if the BackupPlan is
+      deactivated on an Update
+
   Messages:
     LabelsValue: A set of custom labels supplied by user.
 
@@ -306,12 +312,41 @@ class BackupPlan(_messages.Message):
       the last successful Backup created via this BackupPlan.
     retentionPolicy: RetentionPolicy governs lifecycle of Backups created
       under this plan.
+    state: Output only. State of the BackupPlan. This State field reflects the
+      various stages a BackupPlan can be in during the Create operation. It
+      will be set to "DEACTIVATED" if the BackupPlan is deactivated on an
+      Update
+    stateReason: Output only. Human-readable description of why BackupPlan is
+      in the current `state`
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
       format.
     updateTime: Output only. The timestamp when this BackupPlan resource was
       last updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the BackupPlan. This State field reflects the
+    various stages a BackupPlan can be in during the Create operation. It will
+    be set to "DEACTIVATED" if the BackupPlan is deactivated on an Update
+
+    Values:
+      STATE_UNSPECIFIED: Default first value for Enums.
+      CLUSTER_PENDING: Waiting for cluster state to be RUNNING.
+      PROVISIONING: The BackupPlan is in the process of being created.
+      READY: The BackupPlan has successfully been created and is ready for
+        Backups.
+      FAILED: BackupPlan creation has failed.
+      DEACTIVATED: The BackupPlan has been deactivated.
+      DELETING: The BackupPlan is in the process of being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CLUSTER_PENDING = 1
+    PROVISIONING = 2
+    READY = 3
+    FAILED = 4
+    DEACTIVATED = 5
+    DELETING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -348,8 +383,10 @@ class BackupPlan(_messages.Message):
   name = _messages.StringField(9)
   protectedPodCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   retentionPolicy = _messages.MessageField('RetentionPolicy', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateReason = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class Binding(_messages.Message):
@@ -477,12 +514,24 @@ class ClusterResourceRestoreScope(_messages.Message):
   PersistentVolume
 
   Fields:
+    allGroupKinds: If True, all valid cluster-scoped resources will be
+      restored. Mutually exclusive to any other field in the message.
+    excludedGroupKinds: A list of cluster-scoped resource group kinds to NOT
+      restore from the backup. If specified, all valid cluster-scoped
+      resources will be restored except for those specified in the list.
+      Mutually exclusive to any other field in the message.
+    noGroupKinds: If True, no cluster-scoped resources will be restored. This
+      has the same restore scope as if the message is not defined. Mutually
+      exclusive to any other field in the message.
     selectedGroupKinds: A list of cluster-scoped resource group kinds to
       restore from the backup. If specified, only the selected resources will
       be restored. Mutually exclusive to any other field in the message.
   """
 
-  selectedGroupKinds = _messages.MessageField('GroupKind', 1, repeated=True)
+  allGroupKinds = _messages.BooleanField(1)
+  excludedGroupKinds = _messages.MessageField('GroupKind', 2, repeated=True)
+  noGroupKinds = _messages.BooleanField(3)
+  selectedGroupKinds = _messages.MessageField('GroupKind', 4, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -1748,7 +1797,7 @@ class ListVolumeRestoresResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1964,6 +2013,35 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ResourceFilter(_messages.Message):
+  r"""ResourceFilter specifies matching criteria to limit the scope of a
+  change to a specific set of kubernetes resources that are selected for
+  restoration from a backup.
+
+  Fields:
+    groupKinds: (Filtering parameter) Any resource subject to transformation
+      must belong to one of the listed "types". If this field is not provided,
+      no type filtering will be performed (all resources of all types matching
+      previous filtering parameters will be candidates for transformation).
+    jsonPath: This is a [JSONPath] (https://github.com/json-
+      path/JsonPath/blob/master/README.md) expression that matches specific
+      fields of candidate resources and it operates as a filtering parameter
+      (resources that are not matched with this expression will not be
+      candidates for transformation).
+    namespaces: (Filtering parameter) Any resource subject to transformation
+      must be contained within one of the listed Kubernetes Namespace in the
+      Backup. If this field is not provided, no namespace filtering will be
+      performed (all resources in all Namespaces, including all cluster-scoped
+      resources, will be candidates for transformation). To mix cluster-scoped
+      and namespaced resources in the same rule, use an empty string ("") as
+      one of the target namespaces.
+  """
+
+  groupKinds = _messages.MessageField('GroupKind', 1, repeated=True)
+  jsonPath = _messages.StringField(2)
+  namespaces = _messages.StringField(3, repeated=True)
+
+
 class Restore(_messages.Message):
   r"""Represents both a request to Restore some portion of a Backup into a
   target GKE cluster and a record of the restore operation itself. Next id: 18
@@ -2112,10 +2190,14 @@ class RestoreConfig(_messages.Message):
     clusterResourceRestoreScope: Identifies the cluster-scoped resources to
       restore from the Backup. Not specifying it means NO cluster resource
       will be restored.
+    excludedNamespaces: A list of selected namespaces excluded from
+      restoration. All namespaces except those in this list will be restored.
     namespacedResourceRestoreMode: Defines the behavior for handling the
       situation where sets of namespaced resources being restored already
       exist in the target cluster. This MUST be set to a value other than
       NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
+    noNamespaces: Do not restore any namespaced resources if set to "True".
+      Specifying this field to "False" is not allowed.
     selectedApplications: A list of selected ProtectedApplications to restore.
       The listed ProtectedApplications and all the resources to which they
       refer will be restored.
@@ -2127,6 +2209,11 @@ class RestoreConfig(_messages.Message):
       Rules are executed in order defined - this order matters, as changes
       made by a rule may impact the filtering logic of subsequent rules. An
       empty list means no substitution will occur.
+    transformationRules: A list of transformation rules to be applied against
+      Kubernetes resources as they are selected for restoration from a Backup.
+      Rules are executed in order defined - this order matters, as changes
+      made by a rule may impact the filtering logic of subsequent rules. An
+      empty list means no transformation will occur.
     volumeDataRestorePolicy: Specifies the mechanism to be used to restore
       volume data. Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED (will be
       treated as NO_VOLUME_DATA_RESTORATION).
@@ -2207,16 +2294,24 @@ class RestoreConfig(_messages.Message):
   allNamespaces = _messages.BooleanField(1)
   clusterResourceConflictPolicy = _messages.EnumField('ClusterResourceConflictPolicyValueValuesEnum', 2)
   clusterResourceRestoreScope = _messages.MessageField('ClusterResourceRestoreScope', 3)
-  namespacedResourceRestoreMode = _messages.EnumField('NamespacedResourceRestoreModeValueValuesEnum', 4)
-  selectedApplications = _messages.MessageField('NamespacedNames', 5)
-  selectedNamespaces = _messages.MessageField('Namespaces', 6)
-  substitutionRules = _messages.MessageField('SubstitutionRule', 7, repeated=True)
-  volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 8)
+  excludedNamespaces = _messages.MessageField('Namespaces', 4)
+  namespacedResourceRestoreMode = _messages.EnumField('NamespacedResourceRestoreModeValueValuesEnum', 5)
+  noNamespaces = _messages.BooleanField(6)
+  selectedApplications = _messages.MessageField('NamespacedNames', 7)
+  selectedNamespaces = _messages.MessageField('Namespaces', 8)
+  substitutionRules = _messages.MessageField('SubstitutionRule', 9, repeated=True)
+  transformationRules = _messages.MessageField('TransformationRule', 10, repeated=True)
+  volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 11)
 
 
 class RestorePlan(_messages.Message):
   r"""The configuration of a potential series of Restore operations to be
   performed against Backups belong to a particular BackupPlan. Next id: 13
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the RestorePlan. This State
+      field reflects the various stages a RestorePlan can be in during the
+      Create operation.
 
   Messages:
     LabelsValue: A set of custom labels supplied by user.
@@ -2245,12 +2340,34 @@ class RestorePlan(_messages.Message):
       `projects/*/locations/*/restorePlans/*`.
     restoreConfig: Required. Configuration of Restores created via this
       RestorePlan.
+    state: Output only. State of the RestorePlan. This State field reflects
+      the various stages a RestorePlan can be in during the Create operation.
+    stateReason: Output only. Human-readable description of why RestorePlan is
+      in the current `state`
     uid: Output only. Server generated global unique identifier of
       [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)
       format.
     updateTime: Output only. The timestamp when this RestorePlan resource was
       last updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the RestorePlan. This State field reflects the
+    various stages a RestorePlan can be in during the Create operation.
+
+    Values:
+      STATE_UNSPECIFIED: Default first value for Enums.
+      CLUSTER_PENDING: Waiting for cluster state to be RUNNING.
+      READY: The RestorePlan has successfully been created and is ready for
+        Restores.
+      FAILED: RestorePlan creation has failed.
+      DELETING: The RestorePlan is in the process of being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CLUSTER_PENDING = 1
+    READY = 2
+    FAILED = 3
+    DELETING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2284,8 +2401,10 @@ class RestorePlan(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   restoreConfig = _messages.MessageField('RestoreConfig', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateReason = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class RetentionPolicy(_messages.Message):
@@ -2485,6 +2604,81 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TransformationRule(_messages.Message):
+  r"""A transformation rule to be applied against Kubernetes resources as they
+  are selected for restoration from a Backup. A rule contains both filtering
+  logic (which resources are subject to transform) and transformation logic.
+
+  Fields:
+    fieldActions: Required. A list of transformation rule actions to take
+      against candidate resources. Actions are executed in order defined -
+      this order matters, as they could potentially interfere with each other
+      and the first operation could affect the outcome of the second
+      operation.
+    resourceFilter: This field is used to specify a set of fields that should
+      be used to determine which resources in backup should be acted upon by
+      the supplied transformation rule actions, and this will ensure that only
+      specific resources are affected by transformation rule actions.
+  """
+
+  fieldActions = _messages.MessageField('TransformationRuleAction', 1, repeated=True)
+  resourceFilter = _messages.MessageField('ResourceFilter', 2)
+
+
+class TransformationRuleAction(_messages.Message):
+  r"""TransformationRuleAction defines a TransformationRule action based on
+  the JSON Patch RFC (https://www.rfc-editor.org/rfc/rfc6902)
+
+  Enums:
+    OpValueValuesEnum: Required. op specifies the operation to perform.
+
+  Fields:
+    fromPath: A string containing a JSON Pointer value that references the
+      location in the target document to move the value from.
+    op: Required. op specifies the operation to perform.
+    path: A string containing a JSON-Pointer value that references a location
+      within the target document where the operation is performed.
+    value: A string that specifies the desired value in string format to use
+      for transformation.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""Required. op specifies the operation to perform.
+
+    Values:
+      OP_UNSPECIFIED: Unspecified operation
+      REMOVE: The "remove" operation removes the value at the target location.
+      MOVE: The "move" operation removes the value at a specified location and
+        adds it to the target location.
+      COPY: The "copy" operation copies the value at a specified location to
+        the target location.
+      ADD: The "add" operation performs one of the following functions,
+        depending upon what the target location references: 1. If the target
+        location specifies an array index, a new value is inserted into the
+        array at the specified index. 2. If the target location specifies an
+        object member that does not already exist, a new member is added to
+        the object. 3. If the target location specifies an object member that
+        does exist, that member's value is replaced.
+      TEST: The "test" operation tests that a value at the target location is
+        equal to a specified value.
+      REPLACE: The "replace" operation replaces the value at the target
+        location with a new value. The operation object MUST contain a "value"
+        member whose content specifies the replacement value.
+    """
+    OP_UNSPECIFIED = 0
+    REMOVE = 1
+    MOVE = 2
+    COPY = 3
+    ADD = 4
+    TEST = 5
+    REPLACE = 6
+
+  fromPath = _messages.StringField(1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  path = _messages.StringField(3)
+  value = _messages.StringField(4)
 
 
 class VolumeBackup(_messages.Message):

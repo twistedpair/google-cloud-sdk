@@ -61,7 +61,6 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
-    controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
       options. This field is only used when enabling CMEK support.
     controlPlaneVersion: Output only. The control plane release version
@@ -71,9 +70,7 @@ class Cluster(_messages.Message):
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
     endpoint: Output only. The IP address of the Kubernetes API server.
-    externalLoadBalancerIpv4AddressPools: Optional. Address pools for cluster
-      data plane external load balancing.
-    fleet: Optional. Fleet configuration.
+    fleet: Required. Fleet configuration.
     labels: Labels associated with this resource.
     maintenancePolicy: Optional. Cluster-wide maintenance policy
       configuration.
@@ -82,7 +79,6 @@ class Cluster(_messages.Message):
     nodeVersion: Output only. The lowest release version among all worker
       nodes. This field can be empty if the cluster does not have any worker
       nodes.
-    systemAddonsConfig: Optional. The configuration of the system add-ons.
     updateTime: Output only. The time when the cluster was last updated.
   """
 
@@ -112,21 +108,18 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlane = _messages.MessageField('ControlPlane', 3)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 4)
-  controlPlaneVersion = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(8)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
-  fleet = _messages.MessageField('Fleet', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 12)
-  name = _messages.StringField(13)
-  networking = _messages.MessageField('ClusterNetworking', 14)
-  nodeVersion = _messages.StringField(15)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 16)
-  updateTime = _messages.StringField(17)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 3)
+  controlPlaneVersion = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  defaultMaxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(7)
+  fleet = _messages.MessageField('Fleet', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
+  name = _messages.StringField(11)
+  networking = _messages.MessageField('ClusterNetworking', 12)
+  nodeVersion = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class ClusterNetworking(_messages.Message):
@@ -163,18 +156,6 @@ class ClusterUser(_messages.Message):
   """
 
   username = _messages.StringField(1)
-
-
-class ControlPlane(_messages.Message):
-  r"""Configuration of the cluster control plane.
-
-  Fields:
-    local: Local control plane configuration.
-    remote: Remote control plane configuration.
-  """
-
-  local = _messages.MessageField('Local', 1)
-  remote = _messages.MessageField('Remote', 2)
 
 
 class ControlPlaneEncryption(_messages.Message):
@@ -650,20 +631,6 @@ class GenerateAccessTokenResponse(_messages.Message):
   expireTime = _messages.StringField(2)
 
 
-class Ingress(_messages.Message):
-  r"""Config for the Ingress add-on which allows customers to create an
-  Ingress object to manage external access to the servers in a cluster. The
-  add-on consists of istiod and istio-ingress.
-
-  Fields:
-    disabled: Optional. Whether Ingress is disabled.
-    ipv4Vip: Optional. Ingress VIP.
-  """
-
-  disabled = _messages.BooleanField(1)
-  ipv4Vip = _messages.StringField(2)
-
-
 class ListClustersResponse(_messages.Message):
   r"""List of clusters in a location.
 
@@ -746,44 +713,6 @@ class ListVpnConnectionsResponse(_messages.Message):
   vpnConnections = _messages.MessageField('VpnConnection', 3, repeated=True)
 
 
-class Local(_messages.Message):
-  r"""Configuration specific to clusters with a control plane hosted locally.
-
-  Enums:
-    SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
-      applications are deployed.
-
-  Fields:
-    machineFilter: Only machines matching this filter will be allowed to host
-      control plane nodes. The filtering language accepts strings like
-      "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
-    nodeCount: The number of nodes to serve as replicas of the Control Plane.
-    nodeLocation: Name of the Google Distributed Cloud Edge zones where this
-      node pool will be created. For example: `us-central1-edge-customer-a`.
-    sharedDeploymentPolicy: Policy configuration about how user applications
-      are deployed.
-  """
-
-  class SharedDeploymentPolicyValueValuesEnum(_messages.Enum):
-    r"""Policy configuration about how user applications are deployed.
-
-    Values:
-      SHARED_DEPLOYMENT_POLICY_UNSPECIFIED: Unspecified.
-      ALLOWED: User applications can be deployed both on control plane and
-        worker nodes.
-      DISALLOWED: User applications can not be deployed on control plane nodes
-        and can only be deployed on worker nodes.
-    """
-    SHARED_DEPLOYMENT_POLICY_UNSPECIFIED = 0
-    ALLOWED = 1
-    DISALLOWED = 2
-
-  machineFilter = _messages.StringField(1)
-  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(3)
-  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 4)
-
-
 class LocalDiskEncryption(_messages.Message):
   r"""Configuration for CMEK support for edge machine local disk encryption.
 
@@ -835,7 +764,7 @@ class LocalDiskEncryption(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1036,6 +965,43 @@ class MaintenanceWindow(_messages.Message):
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 1)
 
 
+class NodeConfig(_messages.Message):
+  r"""Configuration for each node in the NodePool
+
+  Messages:
+    LabelsValue: Optional. The Kubernetes node labels
+
+  Fields:
+    labels: Optional. The Kubernetes node labels
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The Kubernetes node labels
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class NodePool(_messages.Message):
   r"""A set of Kubernetes nodes in a cluster with common configuration and
   specification.
@@ -1052,6 +1018,7 @@ class NodePool(_messages.Message):
       the node pool. The filtering language accepts strings like "name=", and
       is documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: Required. The resource name of the node pool.
+    nodeConfig: Optional. Configuration for each node in the NodePool
     nodeCount: Required. The number of nodes in the pool.
     nodeLocation: Name of the Google Distributed Cloud Edge zone where this
       node pool will be created. For example: `us-central1-edge-customer-a`.
@@ -1091,11 +1058,12 @@ class NodePool(_messages.Message):
   localDiskEncryption = _messages.MessageField('LocalDiskEncryption', 3)
   machineFilter = _messages.StringField(4)
   name = _messages.StringField(5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(7)
-  nodeVersion = _messages.StringField(8)
-  site = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  nodeConfig = _messages.MessageField('NodeConfig', 6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(8)
+  nodeVersion = _messages.StringField(9)
+  site = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class Operation(_messages.Message):
@@ -1262,12 +1230,6 @@ class RecurringTimeWindow(_messages.Message):
   window = _messages.MessageField('TimeWindow', 2)
 
 
-class Remote(_messages.Message):
-  r"""Configuration specific to clusters with a control plane hosted remotely.
-  """
-
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1380,16 +1342,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class SystemAddonsConfig(_messages.Message):
-  r"""Config that customers are allowed to define for GDCE system add-ons.
-
-  Fields:
-    ingress: Optional. Config for Ingress.
-  """
-
-  ingress = _messages.MessageField('Ingress', 1)
 
 
 class TimeWindow(_messages.Message):

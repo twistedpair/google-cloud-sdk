@@ -501,14 +501,13 @@ def AddIncrementalCustomLearnedRoutesArgs(parser):
   )
 
 
-def AddGetNatMappingInfoArgs(parser, include_nat_name_filter):
+def AddGetNatMappingInfoArgs(parser):
   """Adds common arguments for get-nat-mapping-info."""
 
-  if include_nat_name_filter:
-    parser.add_argument(
-        '--nat-name',
-        required=False,
-        help='The NAT name to filter out NAT mapping information')
+  parser.add_argument(
+      '--nat-name',
+      required=False,
+      help='The NAT name to filter out NAT mapping information')
 
 
 def AddEncryptedInterconnectRouter(parser):

@@ -104,6 +104,16 @@ def MakeZonalInstanceGroupArg(plural=False):
       zonal_collection='compute.instanceGroups',
       zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
+
+def MakeZonalInstanceGroupManagerArg(plural=False):
+  return flags.ResourceArgument(
+      name='INSTANCE_GROUP_MANAGER',
+      resource_name='managed instance group',
+      completer=ZonalInstanceGroupManagersCompleter,
+      plural=plural,
+      zonal_collection='compute.instanceGroupManagers',
+      zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
+
 MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     resource_name='instance group',
     completer=compute_completers.InstanceGroupsCompleter,

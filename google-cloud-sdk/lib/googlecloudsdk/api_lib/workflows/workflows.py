@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.api_lib.workflows import cache
 from googlecloudsdk.api_lib.workflows import poller_utils
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -64,7 +65,8 @@ class WorkflowsClient(object):
       Workflow: The workflow if it exists, None otherwise.
     """
     get_req = self.messages.WorkflowsProjectsLocationsWorkflowsGetRequest(
-        name=workflow_ref.RelativeName())
+        name=workflow_ref.RelativeName(),
+    )
     try:
       return self._service.Get(get_req)
     except api_exceptions.HttpNotFoundError:
@@ -83,7 +85,8 @@ class WorkflowsClient(object):
     create_req = self.messages.WorkflowsProjectsLocationsWorkflowsCreateRequest(
         parent=workflow_ref.Parent().RelativeName(),
         workflow=workflow,
-        workflowId=workflow_ref.Name())
+        workflowId=workflow_ref.Name(),
+    )
     return self._service.Create(create_req)
 
   def Patch(self, workflow_ref, workflow, updated_fields):
@@ -103,7 +106,8 @@ class WorkflowsClient(object):
     patch_req = self.messages.WorkflowsProjectsLocationsWorkflowsPatchRequest(
         name=workflow_ref.RelativeName(),
         updateMask=update_mask,
-        workflow=workflow)
+        workflow=workflow,
+    )
     return self._service.Patch(patch_req)
 
   def BuildWorkflowFromArgs(self, args, release_track):
@@ -122,11 +126,30 @@ class WorkflowsClient(object):
     flags.SetSource(args, workflow, updated_fields)
     flags.SetDescription(args, workflow, updated_fields)
     flags.SetServiceAccount(args, workflow, updated_fields)
-    labels = labels_util.ParseCreateArgs(args,
-                                         self.messages.Workflow.LabelsValue)
+    labels = labels_util.ParseCreateArgs(
+        args, self.messages.Workflow.LabelsValue,
+    )
     flags.SetLabels(labels, workflow, updated_fields)
     if release_track == base.ReleaseTrack.GA:
       flags.SetKmsKey(args, workflow, updated_fields)
+
+      env_vars = None
+      if args.IsSpecified('set_env_vars'):
+        env_vars = labels_util.ParseCreateArgs(
+            args, self.messages.Workflow.UserEnvVarsValue, 'set_env_vars',
+        )
+      if args.IsSpecified('env_vars_file'):
+        if len(args.env_vars_file) > flags.USER_ENV_VARS_LIMIT:
+          raise arg_parsers.ArgumentTypeError(
+              'too many environment variables, limit is {max_len}.'.format(
+                  max_len=flags.USER_ENV_VARS_LIMIT,
+              )
+          )
+        env_vars = labels_util.ParseCreateArgs(
+            args, self.messages.Workflow.UserEnvVarsValue, 'env_vars_file'
+        )
+      flags.SetUserEnvVars(env_vars, workflow, updated_fields)
+
       if args.IsSpecified('call_log_level'):
         call_log_level_enum = self.messages.Workflow.CallLogLevelValueValuesEnum
         workflow.callLogLevel = arg_utils.ChoiceToEnum(
@@ -144,12 +167,15 @@ class WorkflowsClient(object):
   def WaitForOperation(self, operation, workflow_ref):
     """Waits until the given long-running operation is complete."""
     operation_ref = resources.REGISTRY.Parse(
-        operation.name, collection='workflows.projects.locations.operations')
+        operation.name, collection='workflows.projects.locations.operations',
+    )
     operations = poller_utils.OperationsClient(self.client, self.messages)
     poller = poller_utils.WorkflowsOperationPoller(
-        workflows=self, operations=operations, workflow_ref=workflow_ref)
+        workflows=self, operations=operations, workflow_ref=workflow_ref,
+    )
     progress_string = 'Waiting for operation [{}] to complete'.format(
-        operation_ref.Name())
+        operation_ref.Name(),
+    )
     return waiter.WaitFor(poller, operation_ref, progress_string)
 
 
@@ -190,8 +216,8 @@ class WorkflowExecutionClient(object):
           ],
       )
     create_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest(
-        parent=workflow_ref.RelativeName(),
-        execution=execution)
+        parent=workflow_ref.RelativeName(), execution=execution,
+    )
     try:
       return self._service.Create(create_req)
     except api_exceptions.HttpError as e:
@@ -211,7 +237,8 @@ class WorkflowExecutionClient(object):
       execution_ref = cache.get_cached_execution_id()
 
     get_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest(
-        name=execution_ref.RelativeName())
+        name=execution_ref.RelativeName(),
+    )
     try:
       return self._service.Get(get_req)
     except api_exceptions.HttpError as e:
@@ -225,7 +252,8 @@ class WorkflowExecutionClient(object):
 
     poller = poller_utils.ExecutionsPoller(workflow_execution=self)
     progress_string = 'Waiting for execution [{}] to complete'.format(
-        execution_ref.Name())
+        execution_ref.Name(),
+    )
     try:
       return waiter.WaitFor(
           poller,
@@ -238,14 +266,18 @@ class WorkflowExecutionClient(object):
     except waiter.TimeoutError:
       raise waiter.TimeoutError(
           'Execution {0} has not finished in 24 hours. {1}'.format(
-              execution_ref, _TIMEOUT_MESSAGE))
+              execution_ref, _TIMEOUT_MESSAGE,
+          )
+      )
     except waiter.AbortWaitError:
       raise waiter.AbortWaitError(
-          'Aborting wait for execution {0}.'.format(execution_ref))
+          'Aborting wait for execution {0}.'.format(execution_ref),
+      )
 
 
 # Same message as the LRO time out error, modified with the word execution.
 _TIMEOUT_MESSAGE = (
     'The execution may still be underway remotely and may still succeed; '
     'use gcloud list and describe commands or '
-    'https://console.developers.google.com/ to check resource state.')
+    'https://console.developers.google.com/ to check resource state.'
+)

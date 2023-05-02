@@ -1275,6 +1275,32 @@ class AiplatformProjectsLocationsEndpointsExplainRequest(_messages.Message):
   googleCloudAiplatformV1beta1ExplainRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplainRequest', 2)
 
 
+class AiplatformProjectsLocationsEndpointsGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsEndpointsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsGetRequest object.
 
@@ -1313,6 +1339,22 @@ class AiplatformProjectsLocationsEndpointsListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsEndpointsMutateDeployedModelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsMutateDeployedModelRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint resource into which to mutate
+      a DeployedModel. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1beta1MutateDeployedModelRequest: A
+      GoogleCloudAiplatformV1beta1MutateDeployedModelRequest resource to be
+      passed as the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1MutateDeployedModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1MutateDeployedModelRequest', 2)
 
 
 class AiplatformProjectsLocationsEndpointsOperationsCancelRequest(_messages.Message):
@@ -1425,6 +1467,40 @@ class AiplatformProjectsLocationsEndpointsRawPredictRequest(_messages.Message):
   googleCloudAiplatformV1beta1RawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1RawPredictRequest', 2)
 
 
+class AiplatformProjectsLocationsEndpointsSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsEndpointsTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsTestIamPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsUndeployModelRequest object.
 
@@ -1439,6 +1515,116 @@ class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message
 
   endpoint = _messages.StringField(1, required=True)
   googleCloudAiplatformV1beta1UndeployModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UndeployModelRequest', 2)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsDe
+  leteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsGe
+  tRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsLi
+  stRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsOperationsWa
+  itRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsFeaturestoresBatchReadFeatureValuesRequest(_messages.Message):
@@ -1976,7 +2162,7 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesPatchRequest(_messages.
       `monitoring_config.import_features_analysis.anomaly_detection_baseline`
       * `monitoring_config.numerical_threshold_config.value` *
       `monitoring_config.categorical_threshold_config.value` *
-      `offline_storage_ttl_days` (available in Preview)
+      `offline_storage_ttl_days`
   """
 
   googleCloudAiplatformV1beta1EntityType = _messages.MessageField('GoogleCloudAiplatformV1beta1EntityType', 1)
@@ -2225,8 +2411,7 @@ class AiplatformProjectsLocationsFeaturestoresPatchRequest(_messages.Message):
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
       Updatable fields: * `labels` * `online_serving_config.fixed_node_count`
-      * `online_serving_config.scaling` * `online_storage_ttl_days` (available
-      in Preview)
+      * `online_serving_config.scaling` * `online_storage_ttl_days`
   """
 
   googleCloudAiplatformV1beta1Featurestore = _messages.MessageField('GoogleCloudAiplatformV1beta1Featurestore', 1)
@@ -3921,6 +4106,69 @@ class AiplatformProjectsLocationsModelDeploymentMonitoringJobsSearchModelDeploym
   modelDeploymentMonitoringJob = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsModelMonitorsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelMonitorsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelMonitorsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelMonitorsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelMonitorsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelMonitorsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelMonitorsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelMonitorsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsModelMonitorsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelMonitorsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsModelsCopyRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsCopyRequest object.
 
@@ -4141,6 +4389,32 @@ class AiplatformProjectsLocationsModelsExportRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsModelsGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsModelsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsGetRequest object.
 
@@ -4205,8 +4479,7 @@ class AiplatformProjectsLocationsModelsListVersionsRequest(_messages.Message):
       desc`.
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
-      ListModelVersionsResponse.next_page_token of the previous
-      ModelService.ListModelversions call.
+      next_page_token of the previous ListModelVersions call.
     readMask: Mask specifying which fields to read.
   """
 
@@ -4309,6 +4582,40 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsModelsSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsModelsTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsTestIamPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest(_messages.Message):
@@ -4450,6 +4757,70 @@ class AiplatformProjectsLocationsNasJobsNasTrialDetailsListRequest(_messages.Mes
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimeTemplatesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimeTemplatesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsNotebookRuntimeTemplatesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -4751,6 +5122,121 @@ class AiplatformProjectsLocationsPipelineJobsOperationsWaitRequest(_messages.Mes
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsPublishersModelsPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPublishersModelsPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1beta1PredictRequest: A
+      GoogleCloudAiplatformV1beta1PredictRequest resource to be passed as the
+      request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1PredictRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictRequest', 2)
+
+
+class AiplatformProjectsLocationsPublishersModelsRawPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPublishersModelsRawPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1beta1RawPredictRequest: A
+      GoogleCloudAiplatformV1beta1RawPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1RawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1RawPredictRequest', 2)
+
+
+class AiplatformProjectsLocationsSchedulesCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Schedule: A
+      GoogleCloudAiplatformV1beta1Schedule resource to be passed as the
+      request body.
+    parent: Required. The resource name of the Location to create the Schedule
+      in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1Schedule = _messages.MessageField('GoogleCloudAiplatformV1beta1Schedule', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsSchedulesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Schedule resource to be deleted. Format:
+      `projects/{project}/locations/{location}/schedules/{schedule}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsSchedulesGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Schedule resource. Format:
+      `projects/{project}/locations/{location}/schedules/{schedule}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsSchedulesListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesListRequest object.
+
+  Fields:
+    filter: Lists the Schedules that match the filter expression. The
+      following fields are supported: * `display_name`: Supports `=`, `!=`
+      comparisons, and `:` wildcard. * `state`: Supports `=` and `!=`
+      comparisons. * `request`: Supports existence of the check. (e.g.
+      `create_pipeline_job_request:*` --> Schedule has
+      create_pipeline_job_request). * `create_time`: Supports `=`, `!=`, `<`,
+      `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. *
+      `start_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons.
+      Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`,
+      `<`, `>`, `<=`, `>=` comparisons and `:*` existence check. Values must
+      be in RFC 3339 format. * `next_run_time`: Supports `=`, `!=`, `<`, `>`,
+      `<=`, and `>=` comparisons. Values must be in RFC 3339 format. Filter
+      expressions can be combined together using logical operators (`NOT`,
+      `AND` & `OR`). The syntax to define filter expression is based on
+      https://google.aip.dev/160. Examples: * `state="ACTIVE" AND
+      display_name:"my_schedule_*"` * `NOT display_name="my_schedule"` *
+      `create_time>"2021-05-18T00:00:00Z"` * `end_time>"2021-05-18T00:00:00Z"
+      OR NOT end_time:*` * `create_pipeline_job_request:*`
+    orderBy: A comma-separated list of fields to order by. The default sort
+      order is in ascending order. Use "desc" after a field name for
+      descending. You can have multiple order_by fields provided. For example,
+      using "create_time desc, end_time" will order results by create time in
+      descending order, and if there are multiple schedules having the same
+      create time, order them by the end time in ascending order. If order_by
+      is not specified, it will order by default with create_time in
+      descending order. Supported fields: * `create_time` * `start_time` *
+      `end_time` * `next_run_time`
+    pageSize: The standard list page size. Default to 100 if not specified.
+    pageToken: The standard list page token. Typically obtained via
+      ListSchedulesResponse.next_page_token of the previous
+      ScheduleService.ListSchedules call.
+    parent: Required. The resource name of the Location to list the Schedules
+      from. Format: `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class AiplatformProjectsLocationsSchedulesOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsSchedulesOperationsCancelRequest object.
 
@@ -4810,6 +5296,36 @@ class AiplatformProjectsLocationsSchedulesOperationsWaitRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsSchedulesPauseRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesPauseRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PauseScheduleRequest: A
+      GoogleCloudAiplatformV1beta1PauseScheduleRequest resource to be passed
+      as the request body.
+    name: Required. The name of the Schedule resource to be paused. Format:
+      `projects/{project}/locations/{location}/schedules/{schedule}`
+  """
+
+  googleCloudAiplatformV1beta1PauseScheduleRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PauseScheduleRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsSchedulesResumeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSchedulesResumeRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1ResumeScheduleRequest: A
+      GoogleCloudAiplatformV1beta1ResumeScheduleRequest resource to be passed
+      as the request body.
+    name: Required. The name of the Schedule resource to be resumed. Format:
+      `projects/{project}/locations/{location}/schedules/{schedule}`
+  """
+
+  googleCloudAiplatformV1beta1ResumeScheduleRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ResumeScheduleRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsSpecialistPoolsCreateRequest(_messages.Message):
@@ -6551,6 +7067,16 @@ class GoogleCloudAiplatformInternalCreateDatasetOperationMetadata(_messages.Mess
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformInternalCreateDatasetVersionOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.CreateDatasetVersion.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformInternalCreateDeploymentResourcePoolOperationMetadata(_messages.Message):
   r"""Runtime operation information for CreateDeploymentResourcePool method.
 
@@ -6840,18 +7366,18 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       DeployedModel, and that need a higher degree of manual configuration.
     disableContainerLogging: For custom-trained Models and AutoML Tabular
       Models, the container of the DeployedModel instances will send `stderr`
-      and `stdout` streams to Stackdriver Logging by default. Please note that
-      the logs incur cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/stackdriver/pricing). User can disable
+      and `stdout` streams to Cloud Logging by default. Please note that the
+      logs incur cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/logging/pricing). User can disable
       container logging by setting this flag to true.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
     enableAccessLogging: If true, online prediction access logs are sent to
-      StackDriver Logging. These logs are like standard server access logs,
+      Cloud Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
-      request. Note that Stackdriver logs may incur a cost, especially if your
-      project receives prediction requests at a high queries per second rate
-      (QPS). Estimate your costs before enabling this option.
+      request. Note that logs may incur a cost, especially if your project
+      receives prediction requests at a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -7013,13 +7539,18 @@ class GoogleCloudAiplatformInternalExamples(_messages.Message):
   provided dataset.
 
   Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-    neighborCount: The number of neighbors to return.
-    presets: Preset config based on the desired query speed-precision trade-
-      off and modality
+    gcsSource: The Cloud Storage locations that contain the instances to be
+      indexed for approximate nearest neighbor search.
+    nearestNeighborSearchConfig: The full configuration for the generated
+      index, the semantics are the same as metadata and should match
+      [NearestNeighborSearchConfig](https://cloud.google.com/vertex-
+      ai/docs/explainable-ai/configuring-explanations-example-based#nearest-
+      neighbor-search-config).
+    neighborCount: The number of neighbors to return when querying for
+      examples.
+    presets: Simplified preset configuration, which automatically sets
+      configuration values based on the desired query speed-precision trade-
+      off and modality.
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformInternalGcsSource', 1)
@@ -7662,7 +8193,7 @@ class GoogleCloudAiplatformInternalFeature(_messages.Message):
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.
-    monitoringStats: Output only. A list of historical Snapshot Analysis stats
+    monitoringStats: Output only. A list of historical SnapshotAnalysis stats
       requested by user, sorted by FeatureStatsAnomaly.start_time descending.
     monitoringStatsAnomalies: Output only. The list of historical stats and
       anomalies with specified objectives.
@@ -7748,7 +8279,7 @@ class GoogleCloudAiplatformInternalFeature(_messages.Message):
 
 
 class GoogleCloudAiplatformInternalFeatureMonitoringStatsAnomaly(_messages.Message):
-  r"""A list of historical Snapshot Analysis or Import Feature Analysis stats
+  r"""A list of historical SnapshotAnalysis or ImportFeaturesAnalysis stats
   requested by user, sorted by FeatureStatsAnomaly.start_time descending.
 
   Enums:
@@ -8515,10 +9046,11 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
-      NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
+      NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
+      NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4: TPU v4.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -8528,13 +9060,34 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
     NVIDIA_A100_80GB = 7
-    TPU_V2 = 8
-    TPU_V3 = 9
-    TPU_V4 = 10
+    NVIDIA_L4 = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
+    TPU_V4_POD = 11
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformInternalMutateDeployedModelOperationMetadata(_messages.Message):
+  r"""Runtime operation information for EndpointService.MutateDeployedModel.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalMutateDeployedModelResponse(_messages.Message):
+  r"""Response message for EndpointService.MutateDeployedModel.
+
+  Fields:
+    deployedModel: The DeployedModel that's being mutated.
+  """
+
+  deployedModel = _messages.MessageField('GoogleCloudAiplatformInternalDeployedModel', 1)
 
 
 class GoogleCloudAiplatformInternalPipeliningAndAuditConfig(_messages.Message):
@@ -8562,19 +9115,29 @@ class GoogleCloudAiplatformInternalPresets(_messages.Message):
   r"""Preset configuration for example-based explanations
 
   Enums:
-    ModalityValueValuesEnum: Preset option controlling parameters for
-      different modalities
-    QueryValueValuesEnum: Preset option controlling parameters for query
-      speed-precision trade-off
+    ModalityValueValuesEnum: The modality of the uploaded model, which
+      automatically configures the distance measurement and feature
+      normalization for the underlying example index and queries. If your
+      model does not precisely fit one of these types, it is okay to choose
+      the closest type.
+    QueryValueValuesEnum: Preset option controlling parameters for speed-
+      precision trade-off when querying for examples. If omitted, defaults to
+      `PRECISE`.
 
   Fields:
-    modality: Preset option controlling parameters for different modalities
-    query: Preset option controlling parameters for query speed-precision
-      trade-off
+    modality: The modality of the uploaded model, which automatically
+      configures the distance measurement and feature normalization for the
+      underlying example index and queries. If your model does not precisely
+      fit one of these types, it is okay to choose the closest type.
+    query: Preset option controlling parameters for speed-precision trade-off
+      when querying for examples. If omitted, defaults to `PRECISE`.
   """
 
   class ModalityValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for different modalities
+    r"""The modality of the uploaded model, which automatically configures the
+    distance measurement and feature normalization for the underlying example
+    index and queries. If your model does not precisely fit one of these
+    types, it is okay to choose the closest type.
 
     Values:
       MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
@@ -8589,12 +9152,11 @@ class GoogleCloudAiplatformInternalPresets(_messages.Message):
     TABULAR = 3
 
   class QueryValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for query speed-precision trade-
-    off
+    r"""Preset option controlling parameters for speed-precision trade-off
+    when querying for examples. If omitted, defaults to `PRECISE`.
 
     Values:
       PRECISE: More precise neighbors as a trade-off against slower response.
-        This is also the default value (field-number 0).
       FAST: Faster response as a trade-off against less precise neighbors.
     """
     PRECISE = 0
@@ -8685,6 +9247,16 @@ class GoogleCloudAiplatformInternalPurgeExecutionsResponse(_messages.Message):
 class GoogleCloudAiplatformInternalRemoveAnnotationSpecFromSavedQueryOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   DatasetService.RemoveAnnotationSpecFromSavedQuery.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalRestoreDatasetVersionOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.RestoreDatasetVersion.
 
   Fields:
     genericMetadata: The common part of the operation metadata.
@@ -9380,6 +9952,16 @@ class GoogleCloudAiplatformUiCreateDatasetOperationMetadata(_messages.Message):
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformUiCreateDatasetVersionOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.CreateDatasetVersion.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformUiCreateDeploymentResourcePoolOperationMetadata(_messages.Message):
   r"""Runtime operation information for CreateDeploymentResourcePool method.
 
@@ -9531,6 +10113,12 @@ class GoogleCloudAiplatformUiCustomJobSpec(_messages.Message):
       containers. If set to `true`, you can access interactive shells at the
       URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
       HyperparameterTuningJob.trials).
+    experiment: Optional. The Experiment associated with this job. Format: `pr
+      ojects/{project}/locations/{location}/metadataStores/{metadataStores}/co
+      ntexts/{experiment-name}`
+    experimentRun: Optional. The Experiment Run associated with this job.
+      Format: `projects/{project}/locations/{location}/metadataStores/{metadat
+      aStores}/contexts/{experiment-name}-{experiment-run-name}`
     network: Optional. The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -9564,12 +10152,14 @@ class GoogleCloudAiplatformUiCustomJobSpec(_messages.Message):
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformUiGcsDestination', 1)
   enableDashboardAccess = _messages.BooleanField(2)
   enableWebAccess = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  reservedIpRanges = _messages.StringField(5, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformUiScheduling', 6)
-  serviceAccount = _messages.StringField(7)
-  tensorboard = _messages.StringField(8)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformUiWorkerPoolSpec', 9, repeated=True)
+  experiment = _messages.StringField(4)
+  experimentRun = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reservedIpRanges = _messages.StringField(7, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformUiScheduling', 8)
+  serviceAccount = _messages.StringField(9)
+  tensorboard = _messages.StringField(10)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformUiWorkerPoolSpec', 11, repeated=True)
 
 
 class GoogleCloudAiplatformUiDataLabelingJobRef(_messages.Message):
@@ -9823,11 +10413,11 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
     enableAccessLogging: Optional. If true, private endpoint's access logs are
-      sent to StackDriver Logging. These logs are like standard server access
-      logs, containing information like timestamp and latency for each
-      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
-      the deployed index receives a high queries per second rate (QPS).
-      Estimate your costs before enabling this option.
+      sent to Cloud Logging. These logs are like standard server access logs,
+      containing information like timestamp and latency for each MatchRequest.
+      Note that logs may incur a cost, especially if the deployed index
+      receives a high queries per second rate (QPS). Estimate your costs
+      before enabling this option.
     id: Required. The user specified ID of the DeployedIndex. The ID can be up
       to 128 characters long and must start with a letter and only contain
       letters, numbers, and underscores. The ID must be unique within the
@@ -9853,7 +10443,7 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
       network that can be used for this DeployedIndex. If set, we will deploy
       the index within the provided ip ranges. Otherwise, the index might be
       deployed to any ip ranges under the provided VPC network. The value
-      sohuld be the name of the address
+      should be the name of the address
       (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
       Example: 'vertex-ai-ip-range'.
     uiState: Output only. The state of the index deployment. Different from
@@ -9944,9 +10534,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       DeployedModel, and that need a higher degree of manual configuration.
     disableContainerLogging: For custom-trained Models and AutoML Tabular
       Models, the container of the DeployedModel instances will send `stderr`
-      and `stdout` streams to Stackdriver Logging by default. Please note that
-      the logs incur cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/stackdriver/pricing). User can disable
+      and `stdout` streams to Cloud Logging by default. Please note that the
+      logs incur cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/logging/pricing). User can disable
       container logging by setting this flag to true.
     disableExplanations: If true, deploy the model without explainable
       feature, regardless the existence of Model.explanation_spec or
@@ -9954,15 +10544,14 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
     enableAccessLogging: If true, online prediction access logs are sent to
-      StackDriver Logging. These logs are like standard server access logs,
+      Cloud Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
-      request. Note that Stackdriver logs may incur a cost, especially if your
-      project receives prediction requests at a high queries per second rate
-      (QPS). Estimate your costs before enabling this option.
+      request. Note that logs may incur a cost, especially if your project
+      receives prediction requests at a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
     enableContainerLogging: If true, the container of the DeployedModel
-      instances will send `stderr` and `stdout` streams to Stackdriver
-      Logging. Only supported for custom-trained Models and AutoML Tabular
-      Models.
+      instances will send `stderr` and `stdout` streams to Cloud Logging. Only
+      supported for custom-trained Models and AutoML Tabular Models.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -10088,13 +10677,18 @@ class GoogleCloudAiplatformUiExamples(_messages.Message):
   provided dataset.
 
   Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-    neighborCount: The number of neighbors to return.
-    presets: Preset config based on the desired query speed-precision trade-
-      off and modality
+    gcsSource: The Cloud Storage locations that contain the instances to be
+      indexed for approximate nearest neighbor search.
+    nearestNeighborSearchConfig: The full configuration for the generated
+      index, the semantics are the same as metadata and should match
+      [NearestNeighborSearchConfig](https://cloud.google.com/vertex-
+      ai/docs/explainable-ai/configuring-explanations-example-based#nearest-
+      neighbor-search-config).
+    neighborCount: The number of neighbors to return when querying for
+      examples.
+    presets: Simplified preset configuration, which automatically sets
+      configuration values based on the desired query speed-precision trade-
+      off and modality.
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformUiGcsSource', 1)
@@ -10769,7 +11363,7 @@ class GoogleCloudAiplatformUiFeature(_messages.Message):
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.
-    monitoringStats: Output only. A list of historical Snapshot Analysis stats
+    monitoringStats: Output only. A list of historical SnapshotAnalysis stats
       requested by user, sorted by FeatureStatsAnomaly.start_time descending.
     monitoringStatsAnomalies: Output only. The list of historical stats and
       anomalies with specified objectives.
@@ -10855,7 +11449,7 @@ class GoogleCloudAiplatformUiFeature(_messages.Message):
 
 
 class GoogleCloudAiplatformUiFeatureMonitoringStatsAnomaly(_messages.Message):
-  r"""A list of historical Snapshot Analysis or Import Feature Analysis stats
+  r"""A list of historical SnapshotAnalysis or ImportFeaturesAnalysis stats
   requested by user, sorted by FeatureStatsAnomaly.start_time descending.
 
   Enums:
@@ -11378,6 +11972,70 @@ class GoogleCloudAiplatformUiIntegratedGradientsAttribution(_messages.Message):
   stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformUiLargeModelReference(_messages.Message):
+  r"""Contains information about the Large Model.
+
+  Fields:
+    name: Required. The unique name of the large Foundation or pre-built
+      model. Like "chat-panda", "text-panda". Or model name with version ID,
+      like "chat-panda-001", "text-panda-005", etc.
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiListPublicModelVersionsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.ListPublicModelVersions.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListPublicModelVersionsRequest.page_token to obtain that page.
+    publicModels: List of PublicModelVersions in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publicModels = _messages.MessageField('GoogleCloudAiplatformUiPublicModel', 2, repeated=True)
+
+
+class GoogleCloudAiplatformUiListPublicModelsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.ListPublicModels.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListPublicModels.page_token to obtain that page.
+    publicModels: List of PublicModels in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publicModels = _messages.MessageField('GoogleCloudAiplatformUiPublicModel', 2, repeated=True)
+
+
+class GoogleCloudAiplatformUiListPublisherModelVersionsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.ListPublisherModelVersions.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListPublisherModelVersionsRequest.page_token to obtain that page.
+    publisherModels: List of PublisherModelVersions in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publisherModels = _messages.MessageField('GoogleCloudAiplatformUiPublisherModel', 2, repeated=True)
+
+
+class GoogleCloudAiplatformUiListPublisherModelsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.ListPublisherModels.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListPublisherModels.page_token to obtain that page.
+    publisherModels: List of PublisherModels in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publisherModels = _messages.MessageField('GoogleCloudAiplatformUiPublisherModel', 2, repeated=True)
+
+
 class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
   r"""Specification of a single machine.
 
@@ -11412,9 +12070,10 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4: TPU v4.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -11423,9 +12082,10 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
-    TPU_V4 = 9
+    NVIDIA_L4 = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
+    TPU_V4_POD = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -11708,6 +12368,165 @@ class GoogleCloudAiplatformUiMigrateResourceResponse(_messages.Message):
   dataset = _messages.StringField(1)
   migratableResource = _messages.MessageField('GoogleCloudAiplatformUiMigratableResource', 2)
   model = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformUiModelContainerSpec(_messages.Message):
+  r"""Specification of a container for serving predictions. Some fields in
+  this message correspond to fields in the [Kubernetes Container v1 core
+  specification](https://kubernetes.io/docs/reference/generated/kubernetes-
+  api/v1.23/#container-v1-core).
+
+  Fields:
+    args: Immutable. Specifies arguments for the command that runs when the
+      container starts. This overrides the container's
+      [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd). Specify
+      this field as an array of executable and arguments, similar to a Docker
+      `CMD`'s "default parameters" form. If you don't specify this field but
+      do specify the command field, then the command from the `command` field
+      runs without any additional arguments. See the [Kubernetes documentation
+      about how the `command` and `args` fields interact with a container's
+      `ENTRYPOINT` and `CMD`](https://kubernetes.io/docs/tasks/inject-data-
+      application/define-command-argument-container/#notes). If you don't
+      specify this field and don't specify the `command` field, then the
+      container's
+      [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
+      and `CMD` determine what runs based on their default behavior. See the
+      Docker documentation about [how `CMD` and `ENTRYPOINT`
+      interact](https://docs.docker.com/engine/reference/builder/#understand-
+      how-cmd-and-entrypoint-interact). In this field, you can reference
+      [environment variables set by Vertex
+      AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `args` field of the Kubernetes Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
+    command: Immutable. Specifies the command that runs when the container
+      starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
+      com/engine/reference/builder/#entrypoint). Specify this field as an
+      array of executable and arguments, similar to a Docker `ENTRYPOINT`'s
+      "exec" form, not its "shell" form. If you do not specify this field,
+      then the container's `ENTRYPOINT` runs, in conjunction with the args
+      field or the container's
+      [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
+      either exists. If this field is not specified and the container does not
+      have an `ENTRYPOINT`, then refer to the Docker documentation about [how
+      `CMD` and `ENTRYPOINT`
+      interact](https://docs.docker.com/engine/reference/builder/#understand-
+      how-cmd-and-entrypoint-interact). If you specify this field, then you
+      can also specify the `args` field to provide additional arguments for
+      this command. However, if you specify this field, then the container's
+      `CMD` is ignored. See the [Kubernetes documentation about how the
+      `command` and `args` fields interact with a container's `ENTRYPOINT` and
+      `CMD`](https://kubernetes.io/docs/tasks/inject-data-application/define-
+      command-argument-container/#notes). In this field, you can reference
+      [environment variables set by Vertex
+      AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `command` field of the Kubernetes Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
+    env: Immutable. List of environment variables to set in the container.
+      After the container starts running, code running in the container can
+      read these environment variables. Additionally, the command and args
+      fields can reference these variables. Later entries in this list can
+      also reference earlier entries. For example, the following example sets
+      the variable `VAR_2` to have the value `foo bar`: ```json [ { "name":
+      "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
+      ] ``` If you switch the order of the variables in the example, then the
+      expansion does not occur. This field corresponds to the `env` field of
+      the Kubernetes Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
+    healthRoute: Immutable. HTTP path on the container to send health checks
+      to. Vertex AI intermittently sends GET requests to this path on the
+      container's IP address and port to check that the container is healthy.
+      Read more about [health checks](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#health). For example,
+      if you set this field to `/bar`, then Vertex AI intermittently sends a
+      GET request to the `/bar` path on the port of your container specified
+      by the first value of this `ModelContainerSpec`'s ports field. If you
+      don't specify this field, it defaults to the following value when you
+      deploy this Model to an Endpoint: /v1/endpoints/ENDPOINT/deployedModels/
+      DEPLOYED_MODEL:predict The placeholders in this value are replaced as
+      follows: * ENDPOINT: The last segment (following `endpoints/`)of the
+      Endpoint.name][] field of the Endpoint where this Model has been
+      deployed. (Vertex AI makes this value available to your container code
+      as the [`AIP_ENDPOINT_ID` environment
+      variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables).) * DEPLOYED_MODEL:
+      DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+      available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+      environment variable](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#aip-variables).)
+    imageUri: Required. Immutable. URI of the Docker image to be used as the
+      custom container for serving predictions. This URI must identify an
+      image in Artifact Registry or Container Registry. Learn more about the
+      [container publishing requirements](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#publishing), including
+      permissions requirements for the Vertex AI Service Agent. The container
+      image is ingested upon ModelService.UploadModel, stored internally, and
+      this original path is afterwards not used. To learn about the
+      requirements for the Docker image itself, see [Custom container
+      requirements](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#). You can use the URI
+      to one of Vertex AI's [pre-built container images for
+      prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
+      built-containers) in this field.
+    ports: Immutable. List of ports to expose from the container. Vertex AI
+      sends any prediction requests that it receives to the first port on this
+      list. Vertex AI also sends [liveness and health
+      checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#liveness) to this port. If you do not specify
+      this field, it defaults to following value: ```json [ { "containerPort":
+      8080 } ] ``` Vertex AI does not use ports other than the first one
+      listed. This field corresponds to the `ports` field of the Kubernetes
+      Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
+    predictRoute: Immutable. HTTP path on the container to send prediction
+      requests to. Vertex AI forwards requests sent using
+      projects.locations.endpoints.predict to this path on the container's IP
+      address and port. Vertex AI then returns the container's response in the
+      API response. For example, if you set this field to `/foo`, then when
+      Vertex AI receives a prediction request, it forwards the request body in
+      a POST request to the `/foo` path on the port of your container
+      specified by the first value of this `ModelContainerSpec`'s ports field.
+      If you don't specify this field, it defaults to the following value when
+      you deploy this Model to an Endpoint:
+      /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL:predict The
+      placeholders in this value are replaced as follows: * ENDPOINT: The last
+      segment (following `endpoints/`)of the Endpoint.name][] field of the
+      Endpoint where this Model has been deployed. (Vertex AI makes this value
+      available to your container code as the [`AIP_ENDPOINT_ID` environment
+      variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables).) * DEPLOYED_MODEL:
+      DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+      available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+      environment variable](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#aip-variables).)
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  command = _messages.StringField(2, repeated=True)
+  env = _messages.MessageField('GoogleCloudAiplatformUiEnvVar', 3, repeated=True)
+  healthRoute = _messages.StringField(4)
+  imageUri = _messages.StringField(5)
+  ports = _messages.MessageField('GoogleCloudAiplatformUiPort', 6, repeated=True)
+  predictRoute = _messages.StringField(7)
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
@@ -12155,23 +12974,68 @@ class GoogleCloudAiplatformUiNumericStatsHistogramBucket(_messages.Message):
   min = _messages.FloatField(3)
 
 
+class GoogleCloudAiplatformUiPort(_messages.Message):
+  r"""Represents a network port in a container.
+
+  Fields:
+    containerPort: The number of the port to expose on the pod's IP address.
+      Must be a valid port number, between 1 and 65535 inclusive.
+  """
+
+  containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformUiPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.Predict.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    instances: Required. The instances that are the input to the prediction
+      call. A DeployedModel may have an upper limit on the number of instances
+      it supports per request, and when it is exceeded the prediction call
+      errors in case of AutoML Models, or, in case of customer created Models,
+      the behaviour is as documented by that Model. The schema of any single
+      instance may be specified via Endpoint's DeployedModels' Model's
+      PredictSchemata's instance_schema_uri.
+    parameters: The parameters that govern the prediction. The schema of the
+      parameters may be specified via Endpoint's DeployedModels' Model's
+      PredictSchemata's parameters_schema_uri.
+  """
+
+  endpoint = _messages.StringField(1)
+  instances = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  parameters = _messages.MessageField('extra_types.JsonValue', 3)
+
+
 class GoogleCloudAiplatformUiPresets(_messages.Message):
   r"""Preset configuration for example-based explanations
 
   Enums:
-    ModalityValueValuesEnum: Preset option controlling parameters for
-      different modalities
-    QueryValueValuesEnum: Preset option controlling parameters for query
-      speed-precision trade-off
+    ModalityValueValuesEnum: The modality of the uploaded model, which
+      automatically configures the distance measurement and feature
+      normalization for the underlying example index and queries. If your
+      model does not precisely fit one of these types, it is okay to choose
+      the closest type.
+    QueryValueValuesEnum: Preset option controlling parameters for speed-
+      precision trade-off when querying for examples. If omitted, defaults to
+      `PRECISE`.
 
   Fields:
-    modality: Preset option controlling parameters for different modalities
-    query: Preset option controlling parameters for query speed-precision
-      trade-off
+    modality: The modality of the uploaded model, which automatically
+      configures the distance measurement and feature normalization for the
+      underlying example index and queries. If your model does not precisely
+      fit one of these types, it is okay to choose the closest type.
+    query: Preset option controlling parameters for speed-precision trade-off
+      when querying for examples. If omitted, defaults to `PRECISE`.
   """
 
   class ModalityValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for different modalities
+    r"""The modality of the uploaded model, which automatically configures the
+    distance measurement and feature normalization for the underlying example
+    index and queries. If your model does not precisely fit one of these
+    types, it is okay to choose the closest type.
 
     Values:
       MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
@@ -12186,12 +13050,11 @@ class GoogleCloudAiplatformUiPresets(_messages.Message):
     TABULAR = 3
 
   class QueryValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for query speed-precision trade-
-    off
+    r"""Preset option controlling parameters for speed-precision trade-off
+    when querying for examples. If omitted, defaults to `PRECISE`.
 
     Values:
       PRECISE: More precise neighbors as a trade-off against slower response.
-        This is also the default value (field-number 0).
       FAST: Faster response as a trade-off against less precise neighbors.
     """
     PRECISE = 0
@@ -12219,6 +13082,978 @@ class GoogleCloudAiplatformUiPrivateEndpoints(_messages.Message):
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
   serviceAttachment = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformUiPublicModel(_messages.Message):
+  r"""A Model Garden Model.
+
+  Enums:
+    CategoriesValueListEntryValuesEnum:
+    InputTypesValueListEntryValuesEnum:
+    LaunchStageValueValuesEnum: Optional. Indicates the launch stage of the
+      model.
+    OpenSourceCategoryValueValuesEnum: Required. Indicates the open source
+      category of the public model.
+    OutputTypesValueListEntryValuesEnum:
+    SupportedTasksValueListEntryValuesEnum:
+
+  Messages:
+    LabelsValue: Optional. For Model Garden admin to manage the inventory.
+
+  Fields:
+    architectures: Optional. Additional information about the model's
+      Architectures.
+    categories: Required. The model shows in which categories.
+    containerSpec: Optional. The specification of the container that is to be
+      used when deploying this Model.
+    createTime: Output only. Timestamp when this PublicModel was created.
+    defaultAction: Optional. If not set, the default action is to view the
+      detail page.
+    displayName: Required. The display name of the PublicModel. E.g., "Text
+      Summarization". The display name can be up to 128 characters long and
+      can consist of any UTF-8 characters.
+    documentations: Optional. Documentations of the PublicModel.
+    frameworks: Optional. Additional information about the model's Frameworks.
+    graphics: Optional. Graphics of the PublicModel.
+    inputTypes: Required. Describes the data types for inputs to the
+      PublicModel. E.g., "text", "image".
+    labels: Optional. For Model Garden admin to manage the inventory.
+    languages: Optional. Additional information about the model's languages.
+    launchStage: Optional. Indicates the launch stage of the model.
+    license: Optional. The license information for the model.
+    modelStats: Optional. Model Stats that help users identify popular models.
+    name: Output only. The resource name of the PublicModel.
+    openSourceCategory: Required. Indicates the open source category of the
+      public model.
+    outputTypes: Required. Describes the data types for outputs from the
+      PublicModel. E.g., "text", "image".
+    overview: Required. A brief, one-line description of the PublicModel.
+      E.g., "Shorten and simplify articles into paragraph-length synopses".
+    owners: Optional. The individuals or teams who own the model.
+    parent: Optional. The parent that this model was customized from. E.g.,
+      Vision API, Natural Language API, LaMDA, T5, etc. Foundation models
+      don't have parents.
+    skillLevels: Optional. Additional information about the model's skill
+      levels.
+    supportedActions: Optional. Supported call-to-action options.
+    supportedTasks: Required.
+    tryItOut: Optional. The available public endpoint that allows users to
+      try-it-out. For UI, the rendering of the try-it-out could be determined
+      by the model input type.
+    updateTime: Output only. Timestamp when this PublicModel was most recently
+      updated.
+    versionExternalName: Output only. Immutable. The external name of the
+      PublicModel version. e.g. chat-bison-001.
+    versionId: Output only. Immutable. The version ID of the PublicModel. A
+      new version is committed when a new model version is uploaded under an
+      existing model id. It is an auto-incrementing decimal number in string
+      representation.
+  """
+
+  class CategoriesValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoriesValueListEntryValuesEnum enum type.
+
+    Values:
+      CATEGORY_UNSPECIFIED: The model category is unspecified.
+      FOUNDATION: Used to indicate the PublicModel is a foundation model.
+      PRE_BUILT: Used to indicate the PublicModel is a pre-built model.
+      TRAINABLE: Used to indicate the PublicModel is a trainable model.
+      PROMPT: Used to represent a Prompt.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    FOUNDATION = 1
+    PRE_BUILT = 2
+    TRAINABLE = 3
+    PROMPT = 4
+
+  class InputTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""InputTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: The model type is unspecified.
+      LANGUAGE: Used to indicate the PublicModel supports language type.
+      VISION: Used to indicate the PublicModel supports vision type.
+      VIDEO: Used to indicate the PublicModel supports video type.
+      TABULAR: Used to indicate the PublicModel supports tabular type.
+      DOCS: Used to indicate the PublicModel supports docs type.
+      DIALOGUE: Used to indicate the PublicModel supports dialogue type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LANGUAGE = 1
+    VISION = 2
+    VIDEO = 3
+    TABULAR = 4
+    DOCS = 5
+    DIALOGUE = 6
+
+  class LaunchStageValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates the launch stage of the model.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: The model launch stage is unspecified.
+      EXPERIMENTAL: Used to indicate the PublicModel is at Experimental launch
+        stage.
+      PRIVATE_PREVIEW: Used to indicate the PublicModel is at Private Preview
+        launch stage.
+      PUBLIC_PREVIEW: Used to indicate the PublicModel is at Public Preview
+        launch stage.
+      GA: Used to indicate the PublicModel is at GA launch stage.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    EXPERIMENTAL = 1
+    PRIVATE_PREVIEW = 2
+    PUBLIC_PREVIEW = 3
+    GA = 4
+
+  class OpenSourceCategoryValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the open source category of the public model.
+
+    Values:
+      OPEN_SOURCE_CATEGORY_UNSPECIFIED: The open source category is
+        unspecified, which should not be used.
+      PROPRIETARY: Used to indicate the PublicModel is not open sourced.
+      GOOGLE_OWNED_OSS_WITH_GOOGLE_CHECKPOINT: Used to indicate the
+        PublicModel is a Google-owned open source model w/ Google checkpoint.
+      THIRD_PARTY_OWNED_OSS_WITH_GOOGLE_CHECKPOINT: Used to indicate the
+        PublicModel is a 3p-owned open source model w/ Google checkpoint.
+      GOOGLE_OWNED_OSS: Used to indicate the PublicModel is a Google-owned
+        pure open source model.
+      THIRD_PARTY_OWNED_OSS: Used to indicate the PublicModel is a 3p-owned
+        pure open source model.
+    """
+    OPEN_SOURCE_CATEGORY_UNSPECIFIED = 0
+    PROPRIETARY = 1
+    GOOGLE_OWNED_OSS_WITH_GOOGLE_CHECKPOINT = 2
+    THIRD_PARTY_OWNED_OSS_WITH_GOOGLE_CHECKPOINT = 3
+    GOOGLE_OWNED_OSS = 4
+    THIRD_PARTY_OWNED_OSS = 5
+
+  class OutputTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""OutputTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: The model type is unspecified.
+      LANGUAGE: Used to indicate the PublicModel supports language type.
+      VISION: Used to indicate the PublicModel supports vision type.
+      VIDEO: Used to indicate the PublicModel supports video type.
+      TABULAR: Used to indicate the PublicModel supports tabular type.
+      DOCS: Used to indicate the PublicModel supports docs type.
+      DIALOGUE: Used to indicate the PublicModel supports dialogue type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LANGUAGE = 1
+    VISION = 2
+    VIDEO = 3
+    TABULAR = 4
+    DOCS = 5
+    DIALOGUE = 6
+
+  class SupportedTasksValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedTasksValueListEntryValuesEnum enum type.
+
+    Values:
+      TASK_UNSPECIFIED: The model task is unspecified.
+      CLASSIFICATION: Used to indicate the PublicModel supports classification
+        task.
+      DETECTION: Used to indicate the PublicModel supports detection task.
+      EXTRACTION: Used to indicate the PublicModel supports extraction task.
+      GENERATION: Used to indicate the PublicModel supports generation task.
+      RECOGNITION: Used to indicate the PublicModel supports recognition task.
+      SEGMENTATION: Used to indicate the PublicModel supports segmentation
+        task.
+      TRANSLATION: Used to indicate the PublicModel supports translation task.
+      EMBEDDING: Used to indicate the PublicModel supports embedding task.
+      FORECASTING: Used to indicate the PublicModel supports forecasting task.
+    """
+    TASK_UNSPECIFIED = 0
+    CLASSIFICATION = 1
+    DETECTION = 2
+    EXTRACTION = 3
+    GENERATION = 4
+    RECOGNITION = 5
+    SEGMENTATION = 6
+    TRANSLATION = 7
+    EMBEDDING = 8
+    FORECASTING = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. For Model Garden admin to manage the inventory.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  architectures = _messages.StringField(1, repeated=True)
+  categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 2, repeated=True)
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformUiModelContainerSpec', 3)
+  createTime = _messages.StringField(4)
+  defaultAction = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToAction', 5)
+  displayName = _messages.StringField(6)
+  documentations = _messages.MessageField('GoogleCloudAiplatformUiPublicModelDocumentation', 7, repeated=True)
+  frameworks = _messages.StringField(8, repeated=True)
+  graphics = _messages.MessageField('GoogleCloudAiplatformUiPublicModelGraphic', 9, repeated=True)
+  inputTypes = _messages.EnumField('InputTypesValueListEntryValuesEnum', 10, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 11)
+  languages = _messages.StringField(12, repeated=True)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 13)
+  license = _messages.MessageField('GoogleCloudAiplatformUiPublicModelLicense', 14)
+  modelStats = _messages.MessageField('GoogleCloudAiplatformUiPublicModelModelStats', 15)
+  name = _messages.StringField(16)
+  openSourceCategory = _messages.EnumField('OpenSourceCategoryValueValuesEnum', 17)
+  outputTypes = _messages.EnumField('OutputTypesValueListEntryValuesEnum', 18, repeated=True)
+  overview = _messages.StringField(19)
+  owners = _messages.MessageField('GoogleCloudAiplatformUiPublicModelOwner', 20, repeated=True)
+  parent = _messages.MessageField('GoogleCloudAiplatformUiPublicModelParent', 21)
+  skillLevels = _messages.StringField(22, repeated=True)
+  supportedActions = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToAction', 23, repeated=True)
+  supportedTasks = _messages.EnumField('SupportedTasksValueListEntryValuesEnum', 24, repeated=True)
+  tryItOut = _messages.MessageField('GoogleCloudAiplatformUiPublicModelTryItOut', 25)
+  updateTime = _messages.StringField(26)
+  versionExternalName = _messages.StringField(27)
+  versionId = _messages.StringField(28)
+
+
+class GoogleCloudAiplatformUiPublicModelCallToAction(_messages.Message):
+  r"""Actions could take on this Public Model.
+
+  Fields:
+    createApplication: Create application using the PublicModel.
+    deploy: Deploy the PublicModel to Vertex Endpoint.
+    openFineTuningPipeline: Open fine-tuning pipeline of the PublicModel.
+    openGenerationAiStudio: Open in Generation AI Studio.
+    openGenie: Open Genie / Playground.
+    openNotebook: Open notebook of the PublicModel.
+    openPromptTuningPipeline: Open prompt-tuning pipeline of the PublicModel.
+    overview: Required. A brief, one-line description of the action. E.g.,
+      "Open the fine-tuning pipeline for this model to make additional
+      customization".
+    title: Required. The title of the action. E.g., Deploy, Open Genie, Open
+      Notebook, Train with my own dataset, etc..
+    viewRestApi: To view Rest API docs.
+  """
+
+  createApplication = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences', 1)
+  deploy = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionDeploy', 2)
+  openFineTuningPipeline = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences', 3)
+  openGenerationAiStudio = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences', 4)
+  openGenie = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences', 5)
+  openNotebook = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences', 6)
+  openPromptTuningPipeline = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences', 7)
+  overview = _messages.StringField(8)
+  title = _messages.StringField(9)
+  viewRestApi = _messages.MessageField('GoogleCloudAiplatformUiPublicModelCallToActionViewRestApi', 10)
+
+
+class GoogleCloudAiplatformUiPublicModelCallToActionDeploy(_messages.Message):
+  r"""Model metadata that is needed for UploadModel or
+  DeployModel/CreateEndpoint requests.
+
+  Fields:
+    artifactUri: Optional. The path to the directory containing the Model
+      artifact and any of its supporting files.
+    automaticResources: A description of resources that to large degree are
+      decided by Vertex AI, and require only a modest additional
+      configuration.
+    containerSpec: Optional. The specification of the container that is to be
+      used when deploying this Model in Vertex AI. Not present for Large
+      Models.
+    dedicatedResources: A description of resources that are dedicated to the
+      DeployedModel, and that need a higher degree of manual configuration.
+    largeModelReference: Optional. Large model reference. When this is set,
+      model_artifact_spec is not needed.
+    modelDisplayName: Optional. Default model display name.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
+  """
+
+  artifactUri = _messages.StringField(1)
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformUiAutomaticResources', 2)
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformUiModelContainerSpec', 3)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformUiDedicatedResources', 4)
+  largeModelReference = _messages.MessageField('GoogleCloudAiplatformUiLargeModelReference', 5)
+  modelDisplayName = _messages.StringField(6)
+  sharedResources = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformUiPublicModelCallToActionRegionalResourceReferences(_messages.Message):
+  r"""The regional resource name or the URI. Key is region, e.g., us-central1,
+  europe-west2, global, etc..
+
+  Messages:
+    ReferencesValue: Required.
+
+  Fields:
+    references: Required.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ReferencesValue(_messages.Message):
+    r"""Required.
+
+    Messages:
+      AdditionalProperty: An additional property for a ReferencesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ReferencesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ReferencesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformUiPublicModelResourceReference
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformUiPublicModelResourceReference', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  references = _messages.MessageField('ReferencesValue', 1)
+
+
+class GoogleCloudAiplatformUiPublicModelCallToActionViewRestApi(_messages.Message):
+  r"""Rest API docs.
+
+  Fields:
+    documentations: Required.
+  """
+
+  documentations = _messages.MessageField('GoogleCloudAiplatformUiPublicModelDocumentation', 1, repeated=True)
+
+
+class GoogleCloudAiplatformUiPublicModelDocumentation(_messages.Message):
+  r"""A named piece of documentation.
+
+  Fields:
+    content: Required. Content of this piece of document (in Markdown format).
+    title: Required. E.g., OVERVIEW, USE CASES, DOCUMENTATION, SDK & SAMPLES,
+      JAVA, NODE.JS, etc..
+  """
+
+  content = _messages.StringField(1)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublicModelGraphic(_messages.Message):
+  r"""A named graphic.
+
+  Fields:
+    encodedImage: The image, encoded as a string.
+    graphicResolution: Optional. The resolution of the original image.
+    reference: E.g., a Cloud Storage object or public URI.
+    title: Optional. The title of the graphic.
+  """
+
+  encodedImage = _messages.StringField(1)
+  graphicResolution = _messages.MessageField('GoogleCloudAiplatformUiPublicModelGraphicResolution', 2)
+  reference = _messages.MessageField('GoogleCloudAiplatformUiPublicModelResourceReference', 3)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformUiPublicModelGraphicResolution(_messages.Message):
+  r"""Represents the resolution of an image.
+
+  Fields:
+    height: Required. Number of pixels in the vertical dimension.
+    width: Required. Number of pixels in the horizontal dimension.
+  """
+
+  height = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  width = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformUiPublicModelLicense(_messages.Message):
+  r"""The information about the license of a model.
+
+  Fields:
+    customText: Required. The custom text about the license.
+    uri: Required. License URI.
+  """
+
+  customText = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublicModelModelStats(_messages.Message):
+  r"""Model Stats that help users identify popular models.
+
+  Fields:
+    deploymentsCount: Optional. Number of deployments.
+    downloadsCount: Optional. Number of downloads.
+    starsCount: Optional. Number of stars.
+    upvotesCount: Optional. Number of upvotes.
+  """
+
+  deploymentsCount = _messages.IntegerField(1)
+  downloadsCount = _messages.IntegerField(2)
+  starsCount = _messages.IntegerField(3)
+  upvotesCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformUiPublicModelOwner(_messages.Message):
+  r"""The information about owners of a model.
+
+  Fields:
+    contact: Optional. The contact information for the model owner.
+    name: Required. The name of the model owner.
+  """
+
+  contact = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublicModelParent(_messages.Message):
+  r"""The information about the parent of a model.
+
+  Fields:
+    displayName: Required. The display name of the parent. E.g., LaMDA, T5,
+      Vision API, Natural Language API.
+    reference: Optional. The GCP resource name or the URI reference.
+  """
+
+  displayName = _messages.StringField(1)
+  reference = _messages.MessageField('GoogleCloudAiplatformUiPublicModelResourceReference', 2)
+
+
+class GoogleCloudAiplatformUiPublicModelResourceReference(_messages.Message):
+  r"""Reference to a resource.
+
+  Fields:
+    resourceName: The resource name of the GCP resource.
+    uri: The URI of the resource.
+  """
+
+  resourceName = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublicModelTryItOut(_messages.Message):
+  r"""Module that connects with public endpoints that allow users to try out
+  the model.
+
+  Fields:
+    instruction: Optional. The instructions on how to use the try-it-out.
+    predictRequest: Required. The public endpoint which has the model deployed
+      for try-it-out and preset parameters.
+    referenceSampleInput: E.g., a Cloud Storage object or public URI.
+    textSampleInput: Text or encoded image sample input.
+    title: Optional. The title of the try-it-out.
+  """
+
+  instruction = _messages.StringField(1)
+  predictRequest = _messages.MessageField('GoogleCloudAiplatformUiPredictRequest', 2)
+  referenceSampleInput = _messages.MessageField('GoogleCloudAiplatformUiPublicModelResourceReference', 3)
+  textSampleInput = _messages.StringField(4)
+  title = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformUiPublisherModel(_messages.Message):
+  r"""A Model Garden Publisher Model.
+
+  Enums:
+    CategoriesValueListEntryValuesEnum:
+    InputTypesValueListEntryValuesEnum:
+    LaunchStageValueValuesEnum: Optional. Indicates the launch stage of the
+      model.
+    OpenSourceCategoryValueValuesEnum: Required. Indicates the open source
+      category of the publisher model.
+    OutputTypesValueListEntryValuesEnum:
+    SupportedTasksValueListEntryValuesEnum:
+
+  Messages:
+    LabelsValue: Optional. For Model Garden admin to manage the inventory.
+
+  Fields:
+    architectures: Optional. Additional information about the model's
+      Architectures.
+    categories: Required. The model shows in which categories.
+    createTime: Output only. Timestamp when this PublisherModel was created.
+    defaultAction: Optional. If not set, the default action is to view the
+      detail page.
+    displayName: Required. The display name of the PublisherModel. E.g., "Text
+      Summarization". The display name can be up to 128 characters long and
+      can consist of any UTF-8 characters.
+    documentations: Optional. Documentations of the PublisherModel.
+    frameworks: Optional. Additional information about the model's Frameworks.
+    graphics: Optional. Graphics of the PublisherModel.
+    inputTypes: Required. Describes the data types for inputs to the
+      PublisherModel. E.g., "text", "image".
+    labels: Optional. For Model Garden admin to manage the inventory.
+    languages: Optional. Additional information about the model's languages.
+    launchStage: Optional. Indicates the launch stage of the model.
+    license: Optional. The license information for the model.
+    modelStats: Optional. Model Stats that help users identify popular models.
+    name: Output only. The resource name of the PublisherModel.
+    openSourceCategory: Required. Indicates the open source category of the
+      publisher model.
+    outputTypes: Required. Describes the data types for outputs from the
+      PublisherModel. E.g., "text", "image".
+    overview: Required. A brief, one-line description of the PublisherModel.
+      E.g., "Shorten and simplify articles into paragraph-length synopses".
+    owners: Optional. The individuals or teams who own the model.
+    parent: Optional. The parent that this model was customized from. E.g.,
+      Vision API, Natural Language API, LaMDA, T5, etc. Foundation models
+      don't have parents.
+    skillLevels: Optional. Additional information about the model's skill
+      levels.
+    supportedActions: Optional. Supported call-to-action options.
+    supportedTasks: Required.
+    tryItOut: Optional. The available user project publisher model that allows
+      users to try-it-out. For UI, the rendering of the try-it-out could be
+      determined by the model input type.
+    updateTime: Output only. Timestamp when this PublisherModel was most
+      recently updated.
+    versionExternalName: Output only. Immutable. The external name of the
+      PublisherModel version. e.g. chat-bison-001.
+    versionId: Output only. Immutable. The version ID of the PublisherModel. A
+      new version is committed when a new model version is uploaded under an
+      existing model id. It is an auto-incrementing decimal number in string
+      representation.
+  """
+
+  class CategoriesValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoriesValueListEntryValuesEnum enum type.
+
+    Values:
+      CATEGORY_UNSPECIFIED: The model category is unspecified.
+      FOUNDATION: Used to indicate the PublisherModel is a foundation model.
+      PRE_BUILT: Used to indicate the PublisherModel is a pre-built model.
+      TRAINABLE: Used to indicate the PublisherModel is a trainable model.
+      PROMPT: Used to represent a Prompt.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    FOUNDATION = 1
+    PRE_BUILT = 2
+    TRAINABLE = 3
+    PROMPT = 4
+
+  class InputTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""InputTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: The model type is unspecified.
+      LANGUAGE: Used to indicate the PublisherModel supports language type.
+      VISION: Used to indicate the PublisherModel supports vision type.
+      VIDEO: Used to indicate the PublisherModel supports video type.
+      TABULAR: Used to indicate the PublisherModel supports tabular type.
+      DOCS: Used to indicate the PublisherModel supports docs type.
+      DIALOGUE: Used to indicate the PublisherModel supports dialogue type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LANGUAGE = 1
+    VISION = 2
+    VIDEO = 3
+    TABULAR = 4
+    DOCS = 5
+    DIALOGUE = 6
+
+  class LaunchStageValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicates the launch stage of the model.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: The model launch stage is unspecified.
+      EXPERIMENTAL: Used to indicate the PublisherModel is at Experimental
+        launch stage.
+      PRIVATE_PREVIEW: Used to indicate the PublisherModel is at Private
+        Preview launch stage.
+      PUBLIC_PREVIEW: Used to indicate the PublisherModel is at Public Preview
+        launch stage.
+      GA: Used to indicate the PublisherModel is at GA launch stage.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    EXPERIMENTAL = 1
+    PRIVATE_PREVIEW = 2
+    PUBLIC_PREVIEW = 3
+    GA = 4
+
+  class OpenSourceCategoryValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the open source category of the publisher model.
+
+    Values:
+      OPEN_SOURCE_CATEGORY_UNSPECIFIED: The open source category is
+        unspecified, which should not be used.
+      PROPRIETARY: Used to indicate the PublisherModel is not open sourced.
+      GOOGLE_OWNED_OSS_WITH_GOOGLE_CHECKPOINT: Used to indicate the
+        PublisherModel is a Google-owned open source model w/ Google
+        checkpoint.
+      THIRD_PARTY_OWNED_OSS_WITH_GOOGLE_CHECKPOINT: Used to indicate the
+        PublisherModel is a 3p-owned open source model w/ Google checkpoint.
+      GOOGLE_OWNED_OSS: Used to indicate the PublisherModel is a Google-owned
+        pure open source model.
+      THIRD_PARTY_OWNED_OSS: Used to indicate the PublisherModel is a 3p-owned
+        pure open source model.
+    """
+    OPEN_SOURCE_CATEGORY_UNSPECIFIED = 0
+    PROPRIETARY = 1
+    GOOGLE_OWNED_OSS_WITH_GOOGLE_CHECKPOINT = 2
+    THIRD_PARTY_OWNED_OSS_WITH_GOOGLE_CHECKPOINT = 3
+    GOOGLE_OWNED_OSS = 4
+    THIRD_PARTY_OWNED_OSS = 5
+
+  class OutputTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""OutputTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: The model type is unspecified.
+      LANGUAGE: Used to indicate the PublisherModel supports language type.
+      VISION: Used to indicate the PublisherModel supports vision type.
+      VIDEO: Used to indicate the PublisherModel supports video type.
+      TABULAR: Used to indicate the PublisherModel supports tabular type.
+      DOCS: Used to indicate the PublisherModel supports docs type.
+      DIALOGUE: Used to indicate the PublisherModel supports dialogue type.
+    """
+    TYPE_UNSPECIFIED = 0
+    LANGUAGE = 1
+    VISION = 2
+    VIDEO = 3
+    TABULAR = 4
+    DOCS = 5
+    DIALOGUE = 6
+
+  class SupportedTasksValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedTasksValueListEntryValuesEnum enum type.
+
+    Values:
+      TASK_UNSPECIFIED: The model task is unspecified.
+      CLASSIFICATION: Used to indicate the PublisherModel supports
+        classification task.
+      DETECTION: Used to indicate the PublisherModel supports detection task.
+      EXTRACTION: Used to indicate the PublisherModel supports extraction
+        task.
+      GENERATION: Used to indicate the PublisherModel supports generation
+        task.
+      RECOGNITION: Used to indicate the PublisherModel supports recognition
+        task.
+      SEGMENTATION: Used to indicate the PublisherModel supports segmentation
+        task.
+      TRANSLATION: Used to indicate the PublisherModel supports translation
+        task.
+      EMBEDDING: Used to indicate the PublisherModel supports embedding task.
+      FORECASTING: Used to indicate the PublisherModel supports forecasting
+        task.
+    """
+    TASK_UNSPECIFIED = 0
+    CLASSIFICATION = 1
+    DETECTION = 2
+    EXTRACTION = 3
+    GENERATION = 4
+    RECOGNITION = 5
+    SEGMENTATION = 6
+    TRANSLATION = 7
+    EMBEDDING = 8
+    FORECASTING = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. For Model Garden admin to manage the inventory.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  architectures = _messages.StringField(1, repeated=True)
+  categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  defaultAction = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 4)
+  displayName = _messages.StringField(5)
+  documentations = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelDocumentation', 6, repeated=True)
+  frameworks = _messages.StringField(7, repeated=True)
+  graphics = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelGraphic', 8, repeated=True)
+  inputTypes = _messages.EnumField('InputTypesValueListEntryValuesEnum', 9, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 10)
+  languages = _messages.StringField(11, repeated=True)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 12)
+  license = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelLicense', 13)
+  modelStats = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelModelStats', 14)
+  name = _messages.StringField(15)
+  openSourceCategory = _messages.EnumField('OpenSourceCategoryValueValuesEnum', 16)
+  outputTypes = _messages.EnumField('OutputTypesValueListEntryValuesEnum', 17, repeated=True)
+  overview = _messages.StringField(18)
+  owners = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelOwner', 19, repeated=True)
+  parent = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelParent', 20)
+  skillLevels = _messages.StringField(21, repeated=True)
+  supportedActions = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToAction', 22, repeated=True)
+  supportedTasks = _messages.EnumField('SupportedTasksValueListEntryValuesEnum', 23, repeated=True)
+  tryItOut = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelTryItOut', 24)
+  updateTime = _messages.StringField(25)
+  versionExternalName = _messages.StringField(26)
+  versionId = _messages.StringField(27)
+
+
+class GoogleCloudAiplatformUiPublisherModelCallToAction(_messages.Message):
+  r"""Actions could take on this Publisher Model.
+
+  Fields:
+    createApplication: Create application using the PublisherModel.
+    deploy: Deploy the PublisherModel to Vertex Endpoint.
+    openFineTuningPipeline: Open fine-tuning pipeline of the PublisherModel.
+    openGenerationAiStudio: Open in Generation AI Studio.
+    openGenie: Open Genie / Playground.
+    openNotebook: Open notebook of the PublisherModel.
+    openPromptTuningPipeline: Open prompt-tuning pipeline of the
+      PublisherModel.
+    overview: Required. A brief, one-line description of the action. E.g.,
+      "Open the fine-tuning pipeline for this model to make additional
+      customization".
+    title: Required. The title of the action. E.g., Deploy, Open Genie, Open
+      Notebook, Train with my own dataset, etc..
+    viewRestApi: To view Rest API docs.
+  """
+
+  createApplication = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 1)
+  deploy = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionDeploy', 2)
+  openFineTuningPipeline = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 3)
+  openGenerationAiStudio = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 4)
+  openGenie = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 5)
+  openNotebook = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 6)
+  openPromptTuningPipeline = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences', 7)
+  overview = _messages.StringField(8)
+  title = _messages.StringField(9)
+  viewRestApi = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi', 10)
+
+
+class GoogleCloudAiplatformUiPublisherModelCallToActionDeploy(_messages.Message):
+  r"""Model metadata that is needed for UploadModel or
+  DeployModel/CreateEndpoint requests.
+
+  Fields:
+    artifactUri: Optional. The path to the directory containing the Model
+      artifact and any of its supporting files.
+    automaticResources: A description of resources that to large degree are
+      decided by Vertex AI, and require only a modest additional
+      configuration.
+    containerSpec: Optional. The specification of the container that is to be
+      used when deploying this Model in Vertex AI. Not present for Large
+      Models.
+    dedicatedResources: A description of resources that are dedicated to the
+      DeployedModel, and that need a higher degree of manual configuration.
+    largeModelReference: Optional. Large model reference. When this is set,
+      model_artifact_spec is not needed.
+    modelDisplayName: Optional. Default model display name.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
+  """
+
+  artifactUri = _messages.StringField(1)
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformUiAutomaticResources', 2)
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformUiModelContainerSpec', 3)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformUiDedicatedResources', 4)
+  largeModelReference = _messages.MessageField('GoogleCloudAiplatformUiLargeModelReference', 5)
+  modelDisplayName = _messages.StringField(6)
+  sharedResources = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformUiPublisherModelCallToActionRegionalResourceReferences(_messages.Message):
+  r"""The regional resource name or the URI. Key is region, e.g., us-central1,
+  europe-west2, global, etc..
+
+  Messages:
+    ReferencesValue: Required.
+
+  Fields:
+    references: Required.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ReferencesValue(_messages.Message):
+    r"""Required.
+
+    Messages:
+      AdditionalProperty: An additional property for a ReferencesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ReferencesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ReferencesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformUiPublisherModelResourceReference
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelResourceReference', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  references = _messages.MessageField('ReferencesValue', 1)
+
+
+class GoogleCloudAiplatformUiPublisherModelCallToActionViewRestApi(_messages.Message):
+  r"""Rest API docs.
+
+  Fields:
+    documentations: Required.
+  """
+
+  documentations = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelDocumentation', 1, repeated=True)
+
+
+class GoogleCloudAiplatformUiPublisherModelDocumentation(_messages.Message):
+  r"""A named piece of documentation.
+
+  Fields:
+    content: Required. Content of this piece of document (in Markdown format).
+    title: Required. E.g., OVERVIEW, USE CASES, DOCUMENTATION, SDK & SAMPLES,
+      JAVA, NODE.JS, etc..
+  """
+
+  content = _messages.StringField(1)
+  title = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublisherModelGraphic(_messages.Message):
+  r"""A named graphic.
+
+  Fields:
+    encodedImage: The image, encoded as a string.
+    graphicResolution: Optional. The resolution of the original image.
+    reference: E.g., a Cloud Storage object or public URI.
+    title: Optional. The title of the graphic.
+  """
+
+  encodedImage = _messages.StringField(1)
+  graphicResolution = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelGraphicResolution', 2)
+  reference = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelResourceReference', 3)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformUiPublisherModelGraphicResolution(_messages.Message):
+  r"""Represents the resolution of an image.
+
+  Fields:
+    height: Required. Number of pixels in the vertical dimension.
+    width: Required. Number of pixels in the horizontal dimension.
+  """
+
+  height = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  width = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformUiPublisherModelLicense(_messages.Message):
+  r"""The information about the license of a model.
+
+  Fields:
+    customText: Required. The custom text about the license.
+    uri: Required. License URI.
+  """
+
+  customText = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublisherModelModelStats(_messages.Message):
+  r"""Model Stats that help users identify popular models.
+
+  Fields:
+    deploymentsCount: Optional. Number of deployments.
+    downloadsCount: Optional. Number of downloads.
+    starsCount: Optional. Number of stars.
+    upvotesCount: Optional. Number of upvotes.
+  """
+
+  deploymentsCount = _messages.IntegerField(1)
+  downloadsCount = _messages.IntegerField(2)
+  starsCount = _messages.IntegerField(3)
+  upvotesCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformUiPublisherModelOwner(_messages.Message):
+  r"""The information about owners of a model.
+
+  Fields:
+    contact: Optional. The contact information for the model owner.
+    name: Required. The name of the model owner.
+  """
+
+  contact = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublisherModelParent(_messages.Message):
+  r"""The information about the parent of a model.
+
+  Fields:
+    displayName: Required. The display name of the parent. E.g., LaMDA, T5,
+      Vision API, Natural Language API.
+    reference: Optional. The GCP resource name or the URI reference.
+  """
+
+  displayName = _messages.StringField(1)
+  reference = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelResourceReference', 2)
+
+
+class GoogleCloudAiplatformUiPublisherModelResourceReference(_messages.Message):
+  r"""Reference to a resource.
+
+  Fields:
+    resourceName: The resource name of the GCP resource.
+    uri: The URI of the resource.
+  """
+
+  resourceName = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiPublisherModelTryItOut(_messages.Message):
+  r"""Module that connects with user project publisher model that allow users
+  to try out the model.
+
+  Fields:
+    instruction: Optional. The instructions on how to use the try-it-out.
+    predictRequest: Required. The public endpoint which has the publisher
+      model deployed for try-it-out and preset parameters.
+    referenceSampleInput: E.g., a Cloud Storage object or public URI.
+    textSampleInput: Text or encoded image sample input.
+    title: Optional. The title of the try-it-out.
+  """
+
+  instruction = _messages.StringField(1)
+  predictRequest = _messages.MessageField('GoogleCloudAiplatformUiPredictRequest', 2)
+  referenceSampleInput = _messages.MessageField('GoogleCloudAiplatformUiPublisherModelResourceReference', 3)
+  textSampleInput = _messages.StringField(4)
+  title = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformUiPurgeArtifactsMetadata(_messages.Message):
@@ -12329,6 +14164,16 @@ class GoogleCloudAiplatformUiPythonPackageSpec(_messages.Message):
 class GoogleCloudAiplatformUiRemoveAnnotationSpecFromSavedQueryOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   DatasetService.RemoveAnnotationSpecFromSavedQuery.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformUiRestoreDatasetVersionOperationMetadata(_messages.Message):
+  r"""Runtime operation information for DatasetService.RestoreDatasetVersion.
 
   Fields:
     genericMetadata: The common part of the operation metadata.
@@ -12863,8 +14708,9 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecasting(_messa
 
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
-  r"""TODO(b/272337970) Extract redundant protos like Transformation into a
-  separate file.
+  r"""A
+  GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlForecastingInputs
+  object.
 
   Fields:
     additionalExperiments: Additional experiment flags for the time series
@@ -13162,6 +15008,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
       (i.e. assuming that for each image just up to one annotation may be
       applicable). If true, a multi-label Model will be trained (i.e. assuming
       that for each image multiple annotations may be applicable).
+    tunableParameter: Trainer type for Vision TrainRequest.
     uptrainBaseModelId: The ID of `base` model for upTraining. If it is
       specified, the new model will be upTrained based on the `base` model for
       upTraining. Otherwise, the new model will be trained from scratch. The
@@ -13194,6 +15041,18 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
         mobile or edge device afterwards. Expected to have a higher latency,
         but should also have a higher prediction quality than other mobile
         models.
+      EFFICIENTNET: EfficientNet model for Model Garden training with
+        customizable hyperparameters. Best tailored to be used within Google
+        Cloud, and cannot be exported externally.
+      RESNET: ResNet model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      VIT: ViT model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      COCA: CoCa model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
@@ -13201,13 +15060,18 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificatio
     MOBILE_TF_LOW_LATENCY_1 = 3
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
+    EFFICIENTNET = 6
+    RESNET = 7
+    VIT = 8
+    COCA = 9
 
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
   disableEarlyStopping = _messages.BooleanField(3)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
   multiLabel = _messages.BooleanField(5)
-  uptrainBaseModelId = _messages.StringField(6)
+  tunableParameter = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter', 6)
+  uptrainBaseModelId = _messages.StringField(7)
 
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -13284,6 +15148,7 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    tunableParameter: Trainer type for Vision TrainRequest.
     uptrainBaseModelId: The ID of `base` model for upTraining. If it is
       specified, the new model will be upTrained based on the `base` model for
       upTraining. Otherwise, the new model will be trained from scratch. The
@@ -13325,6 +15190,12 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         and which cannot be exported. Expected to best support predictions in
         streaming with lower latency and lower prediction quality than other
         cloud models.
+      SPINENET: SpineNet for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      YOLO: YOLO for Model Garden training with customizable hyperparameters.
+        Best tailored to be used within Google Cloud, and cannot be exported
+        externally.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
@@ -13334,11 +15205,14 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetecti
     MOBILE_TF_VERSATILE_1 = 5
     MOBILE_TF_HIGH_ACCURACY_1 = 6
     CLOUD_STREAMING_1 = 7
+    SPINENET = 8
+    YOLO = 9
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
-  uptrainBaseModelId = _messages.StringField(4)
+  tunableParameter = _messages.MessageField('GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter', 4)
+  uptrainBaseModelId = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):
@@ -13967,6 +15841,101 @@ class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutoMlVideoObjectTrackin
     MOBILE_JETSON_LOW_LATENCY_1 = 6
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter(_messages.Message):
+  r"""A wrapper class which contains the tunable parameters in an AutoML Image
+  training job.
+
+  Enums:
+    TrainerTypeValueValuesEnum:
+
+  Messages:
+    DatasetConfigValue: Customizable dataset settings, used in the
+      `model_garden_trainer`.
+    TrainerConfigValue: Customizable trainer settings, used in the
+      `model_garden_trainer`.
+
+  Fields:
+    checkpointName: Optional. An unique name of pretrained model checkpoint
+      provided in model garden, it will be mapped to a GCS location
+      internally.
+    datasetConfig: Customizable dataset settings, used in the
+      `model_garden_trainer`.
+    studySpec: Optioinal. StudySpec of hyperparameter tuning job. Required for
+      `model_garden_trainer`.
+    trainerConfig: Customizable trainer settings, used in the
+      `model_garden_trainer`.
+    trainerType: A TrainerTypeValueValuesEnum attribute.
+  """
+
+  class TrainerTypeValueValuesEnum(_messages.Enum):
+    r"""TrainerTypeValueValuesEnum enum type.
+
+    Values:
+      TRAINER_TYPE_UNSPECIFIED: Default value.
+      AUTOML_TRAINER: <no description>
+      MODEL_GARDEN_TRAINER: <no description>
+    """
+    TRAINER_TYPE_UNSPECIFIED = 0
+    AUTOML_TRAINER = 1
+    MODEL_GARDEN_TRAINER = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DatasetConfigValue(_messages.Message):
+    r"""Customizable dataset settings, used in the `model_garden_trainer`.
+
+    Messages:
+      AdditionalProperty: An additional property for a DatasetConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DatasetConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DatasetConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TrainerConfigValue(_messages.Message):
+    r"""Customizable trainer settings, used in the `model_garden_trainer`.
+
+    Messages:
+      AdditionalProperty: An additional property for a TrainerConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TrainerConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TrainerConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  checkpointName = _messages.StringField(1)
+  datasetConfig = _messages.MessageField('DatasetConfigValue', 2)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformUiStudySpec', 3)
+  trainerConfig = _messages.MessageField('TrainerConfigValue', 4)
+  trainerType = _messages.EnumField('TrainerTypeValueValuesEnum', 5)
 
 
 class GoogleCloudAiplatformUiSchemaTrainingjobDefinitionCustomJobMetadata(_messages.Message):
@@ -14754,6 +16723,19 @@ class GoogleCloudAiplatformUiSchemaVisualInspectionMaskSavedQueryMetadata(_messa
   object.
   """
 
+
+
+class GoogleCloudAiplatformUiSearchPublicModelsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.SearchPublicModels.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      SearchPublicModelsRequest.page_token to obtain that page.
+    publicModels: List of PublicModels in the queried page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publicModels = _messages.MessageField('GoogleCloudAiplatformUiPublicModel', 2, repeated=True)
 
 
 class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
@@ -16084,6 +18066,12 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       containers. If set to `true`, you can access interactive shells at the
       URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
       HyperparameterTuningJob.trials).
+    experiment: Optional. The Experiment associated with this job. Format: `pr
+      ojects/{project}/locations/{location}/metadataStores/{metadataStores}/co
+      ntexts/{experiment-name}`
+    experimentRun: Optional. The Experiment Run associated with this job.
+      Format: `projects/{project}/locations/{location}/metadataStores/{metadat
+      aStores}/contexts/{experiment-name}-{experiment-run-name}`
     network: Optional. The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -16117,12 +18105,14 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
   enableDashboardAccess = _messages.BooleanField(2)
   enableWebAccess = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  reservedIpRanges = _messages.StringField(5, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 6)
-  serviceAccount = _messages.StringField(7)
-  tensorboard = _messages.StringField(8)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 9, repeated=True)
+  experiment = _messages.StringField(4)
+  experimentRun = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reservedIpRanges = _messages.StringField(7, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 8)
+  serviceAccount = _messages.StringField(9)
+  tensorboard = _messages.StringField(10)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 11, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -16337,11 +18327,11 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
     enableAccessLogging: Optional. If true, private endpoint's access logs are
-      sent to StackDriver Logging. These logs are like standard server access
-      logs, containing information like timestamp and latency for each
-      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
-      the deployed index receives a high queries per second rate (QPS).
-      Estimate your costs before enabling this option.
+      sent to Cloud Logging. These logs are like standard server access logs,
+      containing information like timestamp and latency for each MatchRequest.
+      Note that logs may incur a cost, especially if the deployed index
+      receives a high queries per second rate (QPS). Estimate your costs
+      before enabling this option.
     id: Required. The user specified ID of the DeployedIndex. The ID can be up
       to 128 characters long and must start with a letter and only contain
       letters, numbers, and underscores. The ID must be unique within the
@@ -16367,7 +18357,7 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
       network that can be used for this DeployedIndex. If set, we will deploy
       the index within the provided ip ranges. Otherwise, the index might be
       deployed to any ip ranges under the provided VPC network. The value
-      sohuld be the name of the address
+      should be the name of the address
       (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
       Example: 'vertex-ai-ip-range'.
   """
@@ -16427,18 +18417,18 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       DeployedModel, and that need a higher degree of manual configuration.
     disableContainerLogging: For custom-trained Models and AutoML Tabular
       Models, the container of the DeployedModel instances will send `stderr`
-      and `stdout` streams to Stackdriver Logging by default. Please note that
-      the logs incur cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/stackdriver/pricing). User can disable
+      and `stdout` streams to Cloud Logging by default. Please note that the
+      logs incur cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/logging/pricing). User can disable
       container logging by setting this flag to true.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
     enableAccessLogging: If true, online prediction access logs are sent to
-      StackDriver Logging. These logs are like standard server access logs,
+      Cloud Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
-      request. Note that Stackdriver logs may incur a cost, especially if your
-      project receives prediction requests at a high queries per second rate
-      (QPS). Estimate your costs before enabling this option.
+      request. Note that logs may incur a cost, especially if your project
+      receives prediction requests at a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -17173,7 +19163,7 @@ class GoogleCloudAiplatformV1Feature(_messages.Message):
 
 
 class GoogleCloudAiplatformV1FeatureMonitoringStatsAnomaly(_messages.Message):
-  r"""A list of historical Snapshot Analysis or Import Feature Analysis stats
+  r"""A list of historical SnapshotAnalysis or ImportFeaturesAnalysis stats
   requested by user, sorted by FeatureStatsAnomaly.start_time descending.
 
   Enums:
@@ -17459,9 +19449,10 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4: TPU v4.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -17470,9 +19461,10 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
-    TPU_V4 = 9
+    NVIDIA_L4 = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
+    TPU_V4_POD = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -17751,6 +19743,26 @@ class GoogleCloudAiplatformV1MutateDeployedIndexResponse(_messages.Message):
   """
 
   deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndex', 1)
+
+
+class GoogleCloudAiplatformV1MutateDeployedModelOperationMetadata(_messages.Message):
+  r"""Runtime operation information for EndpointService.MutateDeployedModel.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1MutateDeployedModelResponse(_messages.Message):
+  r"""Response message for EndpointService.MutateDeployedModel.
+
+  Fields:
+    deployedModel: The DeployedModel that's being mutated.
+  """
+
+  deployedModel = _messages.MessageField('GoogleCloudAiplatformV1DeployedModel', 1)
 
 
 class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata(_messages.Message):
@@ -19045,6 +21057,34 @@ class GoogleCloudAiplatformV1SchemaTextExtractionAnnotation(_messages.Message):
   textSegment = _messages.MessageField('GoogleCloudAiplatformV1SchemaTextSegment', 3)
 
 
+class GoogleCloudAiplatformV1SchemaTextPromptDatasetMetadata(_messages.Message):
+  r"""The metadata of Datasets that contain Text Prompt data.
+
+  Fields:
+    gcsUri: The Google Cloud Storage URI that stores the prompt data.
+    maxOutputTokens: Value of the maximum number of tokens generated set when
+      the dataset was saved.
+    promptType: Type of the prompt dataset.
+    temperature: Temperature value used for sampling set when the dataset was
+      saved. This value is used to tune the degree of randomness.
+    text: The content of the prompt dataset.
+    topK: Top K value set when the dataset was saved. This value determines
+      how many candidates with highest probability from the vocab would be
+      selected for each decoding step.
+    topP: Top P value set when the dataset was saved. Given topK tokens for
+      decoding, top candidates will be selected until the sum of their
+      probabilities is topP.
+  """
+
+  gcsUri = _messages.StringField(1)
+  maxOutputTokens = _messages.IntegerField(2)
+  promptType = _messages.StringField(3)
+  temperature = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  text = _messages.StringField(5)
+  topK = _messages.IntegerField(6)
+  topP = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1SchemaTextSegment(_messages.Message):
   r"""The text segment inside of DataItem.
 
@@ -19180,8 +21220,9 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecasting(_messa
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
-  r"""TODO(b/272337970) Extract redundant protos like Transformation into a
-  separate file.
+  r"""A
+  GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs
+  object.
 
   Fields:
     additionalExperiments: Additional experiment flags for the time series
@@ -19479,6 +21520,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
       (i.e. assuming that for each image just up to one annotation may be
       applicable). If true, a multi-label Model will be trained (i.e. assuming
       that for each image multiple annotations may be applicable).
+    tunableParameter: Trainer type for Vision TrainRequest.
     uptrainBaseModelId: The ID of `base` model for upTraining. If it is
       specified, the new model will be upTrained based on the `base` model for
       upTraining. Otherwise, the new model will be trained from scratch. The
@@ -19511,6 +21553,18 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
         mobile or edge device afterwards. Expected to have a higher latency,
         but should also have a higher prediction quality than other mobile
         models.
+      EFFICIENTNET: EfficientNet model for Model Garden training with
+        customizable hyperparameters. Best tailored to be used within Google
+        Cloud, and cannot be exported externally.
+      RESNET: ResNet model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      VIT: ViT model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      COCA: CoCa model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
@@ -19518,13 +21572,18 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificatio
     MOBILE_TF_LOW_LATENCY_1 = 3
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
+    EFFICIENTNET = 6
+    RESNET = 7
+    VIT = 8
+    COCA = 9
 
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
   disableEarlyStopping = _messages.BooleanField(3)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
   multiLabel = _messages.BooleanField(5)
-  uptrainBaseModelId = _messages.StringField(6)
+  tunableParameter = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter', 6)
+  uptrainBaseModelId = _messages.StringField(7)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -19601,6 +21660,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    tunableParameter: Trainer type for Vision TrainRequest.
     uptrainBaseModelId: The ID of `base` model for upTraining. If it is
       specified, the new model will be upTrained based on the `base` model for
       upTraining. Otherwise, the new model will be trained from scratch. The
@@ -19642,6 +21702,12 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
         and which cannot be exported. Expected to best support predictions in
         streaming with lower latency and lower prediction quality than other
         cloud models.
+      SPINENET: SpineNet for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      YOLO: YOLO for Model Garden training with customizable hyperparameters.
+        Best tailored to be used within Google Cloud, and cannot be exported
+        externally.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
@@ -19651,11 +21717,14 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetecti
     MOBILE_TF_VERSATILE_1 = 5
     MOBILE_TF_HIGH_ACCURACY_1 = 6
     CLOUD_STREAMING_1 = 7
+    SPINENET = 8
+    YOLO = 9
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
-  uptrainBaseModelId = _messages.StringField(4)
+  tunableParameter = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter', 4)
+  uptrainBaseModelId = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):
@@ -20284,6 +22353,101 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackin
     MOBILE_JETSON_LOW_LATENCY_1 = 6
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter(_messages.Message):
+  r"""A wrapper class which contains the tunable parameters in an AutoML Image
+  training job.
+
+  Enums:
+    TrainerTypeValueValuesEnum:
+
+  Messages:
+    DatasetConfigValue: Customizable dataset settings, used in the
+      `model_garden_trainer`.
+    TrainerConfigValue: Customizable trainer settings, used in the
+      `model_garden_trainer`.
+
+  Fields:
+    checkpointName: Optional. An unique name of pretrained model checkpoint
+      provided in model garden, it will be mapped to a GCS location
+      internally.
+    datasetConfig: Customizable dataset settings, used in the
+      `model_garden_trainer`.
+    studySpec: Optioinal. StudySpec of hyperparameter tuning job. Required for
+      `model_garden_trainer`.
+    trainerConfig: Customizable trainer settings, used in the
+      `model_garden_trainer`.
+    trainerType: A TrainerTypeValueValuesEnum attribute.
+  """
+
+  class TrainerTypeValueValuesEnum(_messages.Enum):
+    r"""TrainerTypeValueValuesEnum enum type.
+
+    Values:
+      TRAINER_TYPE_UNSPECIFIED: Default value.
+      AUTOML_TRAINER: <no description>
+      MODEL_GARDEN_TRAINER: <no description>
+    """
+    TRAINER_TYPE_UNSPECIFIED = 0
+    AUTOML_TRAINER = 1
+    MODEL_GARDEN_TRAINER = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DatasetConfigValue(_messages.Message):
+    r"""Customizable dataset settings, used in the `model_garden_trainer`.
+
+    Messages:
+      AdditionalProperty: An additional property for a DatasetConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DatasetConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DatasetConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TrainerConfigValue(_messages.Message):
+    r"""Customizable trainer settings, used in the `model_garden_trainer`.
+
+    Messages:
+      AdditionalProperty: An additional property for a TrainerConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TrainerConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TrainerConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  checkpointName = _messages.StringField(1)
+  datasetConfig = _messages.MessageField('DatasetConfigValue', 2)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpec', 3)
+  trainerConfig = _messages.MessageField('TrainerConfigValue', 4)
+  trainerType = _messages.EnumField('TrainerTypeValueValuesEnum', 5)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionCustomJobMetadata(_messages.Message):
@@ -22219,19 +24383,21 @@ class GoogleCloudAiplatformV1alpha1Examples(_messages.Message):
   provided dataset.
 
   Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-    neighborCount: The number of neighbors to return.
-    presets: Preset config based on the desired query speed-precision trade-
-      off and modality
+    nearestNeighborSearchConfig: The full configuration for the generated
+      index, the semantics are the same as metadata and should match
+      [NearestNeighborSearchConfig](https://cloud.google.com/vertex-
+      ai/docs/explainable-ai/configuring-explanations-example-based#nearest-
+      neighbor-search-config).
+    neighborCount: The number of neighbors to return when querying for
+      examples.
+    presets: Simplified preset configuration, which automatically sets
+      configuration values based on the desired query speed-precision trade-
+      off and modality.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsSource', 1)
-  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
-  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  presets = _messages.MessageField('GoogleCloudAiplatformV1alpha1Presets', 4)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 1)
+  neighborCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  presets = _messages.MessageField('GoogleCloudAiplatformV1alpha1Presets', 3)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
@@ -22555,18 +24721,6 @@ class GoogleCloudAiplatformV1alpha1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
-class GoogleCloudAiplatformV1alpha1GcsSource(_messages.Message):
-  r"""The Google Cloud Storage location for the input content.
-
-  Fields:
-    uris: Required. Google Cloud Storage URI(-s) to the input file(s). May
-      contain wildcards. For more information on wildcards, see
-      https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-
-
 class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
   r"""Generic Metadata shared by all operations.
 
@@ -22651,9 +24805,10 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4: TPU v4.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -22662,9 +24817,10 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
-    TPU_V2 = 7
-    TPU_V3 = 8
-    TPU_V4 = 9
+    NVIDIA_L4 = 7
+    TPU_V2 = 8
+    TPU_V3 = 9
+    TPU_V4_POD = 10
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -23035,19 +25191,29 @@ class GoogleCloudAiplatformV1alpha1Presets(_messages.Message):
   r"""Preset configuration for example-based explanations
 
   Enums:
-    ModalityValueValuesEnum: Preset option controlling parameters for
-      different modalities
-    QueryValueValuesEnum: Preset option controlling parameters for query
-      speed-precision trade-off
+    ModalityValueValuesEnum: The modality of the uploaded model, which
+      automatically configures the distance measurement and feature
+      normalization for the underlying example index and queries. If your
+      model does not precisely fit one of these types, it is okay to choose
+      the closest type.
+    QueryValueValuesEnum: Preset option controlling parameters for speed-
+      precision trade-off when querying for examples. If omitted, defaults to
+      `PRECISE`.
 
   Fields:
-    modality: Preset option controlling parameters for different modalities
-    query: Preset option controlling parameters for query speed-precision
-      trade-off
+    modality: The modality of the uploaded model, which automatically
+      configures the distance measurement and feature normalization for the
+      underlying example index and queries. If your model does not precisely
+      fit one of these types, it is okay to choose the closest type.
+    query: Preset option controlling parameters for speed-precision trade-off
+      when querying for examples. If omitted, defaults to `PRECISE`.
   """
 
   class ModalityValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for different modalities
+    r"""The modality of the uploaded model, which automatically configures the
+    distance measurement and feature normalization for the underlying example
+    index and queries. If your model does not precisely fit one of these
+    types, it is okay to choose the closest type.
 
     Values:
       MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
@@ -23062,12 +25228,11 @@ class GoogleCloudAiplatformV1alpha1Presets(_messages.Message):
     TABULAR = 3
 
   class QueryValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for query speed-precision trade-
-    off
+    r"""Preset option controlling parameters for speed-precision trade-off
+    when querying for examples. If omitted, defaults to `PRECISE`.
 
     Values:
       PRECISE: More precise neighbors as a trade-off against slower response.
-        This is also the default value (field-number 0).
       FAST: Faster response as a trade-off against less precise neighbors.
     """
     PRECISE = 0
@@ -24597,9 +26762,9 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       doesn't support AUTOMATIC_RESOURCES, this config must be provided.
     disableContainerLogging: For custom-trained Models and AutoML Tabular
       Models, the container of the DeployedModel instances will send `stderr`
-      and `stdout` streams to Stackdriver Logging by default. Please note that
-      the logs incur cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/stackdriver/pricing). User can disable
+      and `stdout` streams to Cloud Logging by default. Please note that the
+      logs incur cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/logging/pricing). User can disable
       container logging by setting this flag to true.
     displayName: Required. The user-defined name of this BatchPredictionJob.
     encryptionSpec: Customer-managed encryption key options for a
@@ -25502,6 +27667,24 @@ class GoogleCloudAiplatformV1beta1CreateMetadataStoreOperationMetadata(_messages
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreatePipelineJobRequest(_messages.Message):
+  r"""Request message for PipelineService.CreatePipelineJob.
+
+  Fields:
+    parent: Required. The resource name of the Location to create the
+      PipelineJob in. Format: `projects/{project}/locations/{location}`
+    pipelineJob: Required. The PipelineJob to create.
+    pipelineJobId: The ID to use for the PipelineJob, which will become the
+      final component of the PipelineJob name. If not provided, an ID will be
+      automatically generated. This value should be less than 128 characters,
+      and valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1)
+  pipelineJob = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJob', 2)
+  pipelineJobId = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   SpecialistPoolService.CreateSpecialistPool.
@@ -25786,6 +27969,12 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       containers. If set to `true`, you can access interactive shells at the
       URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
       HyperparameterTuningJob.trials).
+    experiment: Optional. The Experiment associated with this job. Format: `pr
+      ojects/{project}/locations/{location}/metadataStores/{metadataStores}/co
+      ntexts/{experiment-name}`
+    experimentRun: Optional. The Experiment Run associated with this job.
+      Format: `projects/{project}/locations/{location}/metadataStores/{metadat
+      aStores}/contexts/{experiment-name}-{experiment-run-name}`
     network: Optional. The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -25819,12 +28008,14 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
   enableDashboardAccess = _messages.BooleanField(2)
   enableWebAccess = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  reservedIpRanges = _messages.StringField(5, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 6)
-  serviceAccount = _messages.StringField(7)
-  tensorboard = _messages.StringField(8)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 9, repeated=True)
+  experiment = _messages.StringField(4)
+  experimentRun = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reservedIpRanges = _messages.StringField(7, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 8)
+  serviceAccount = _messages.StringField(9)
+  tensorboard = _messages.StringField(10)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 11, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
@@ -26560,11 +28751,11 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
     enableAccessLogging: Optional. If true, private endpoint's access logs are
-      sent to StackDriver Logging. These logs are like standard server access
-      logs, containing information like timestamp and latency for each
-      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
-      the deployed index receives a high queries per second rate (QPS).
-      Estimate your costs before enabling this option.
+      sent to Cloud Logging. These logs are like standard server access logs,
+      containing information like timestamp and latency for each MatchRequest.
+      Note that logs may incur a cost, especially if the deployed index
+      receives a high queries per second rate (QPS). Estimate your costs
+      before enabling this option.
     id: Required. The user specified ID of the DeployedIndex. The ID can be up
       to 128 characters long and must start with a letter and only contain
       letters, numbers, and underscores. The ID must be unique within the
@@ -26590,7 +28781,7 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
       network that can be used for this DeployedIndex. If set, we will deploy
       the index within the provided ip ranges. Otherwise, the index might be
       deployed to any ip ranges under the provided VPC network. The value
-      sohuld be the name of the address
+      should be the name of the address
       (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
       Example: 'vertex-ai-ip-range'.
   """
@@ -26667,15 +28858,14 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
     enableAccessLogging: If true, online prediction access logs are sent to
-      StackDriver Logging. These logs are like standard server access logs,
+      Cloud Logging. These logs are like standard server access logs,
       containing information like timestamp and latency for each prediction
-      request. Note that Stackdriver logs may incur a cost, especially if your
-      project receives prediction requests at a high queries per second rate
-      (QPS). Estimate your costs before enabling this option.
+      request. Note that logs may incur a cost, especially if your project
+      receives prediction requests at a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
     enableContainerLogging: If true, the container of the DeployedModel
-      instances will send `stderr` and `stdout` streams to Stackdriver
-      Logging. Only supported for custom-trained Models and AutoML Tabular
-      Models.
+      instances will send `stderr` and `stdout` streams to Cloud Logging. Only
+      supported for custom-trained Models and AutoML Tabular Models.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -26851,9 +29041,9 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
       https://goo.gl/xmQnxf for more information and examples of labels.
     modelDeploymentMonitoringJob: Output only. Resource name of the Model
       Monitoring job associated with this Endpoint if monitoring is enabled by
-      CreateModelDeploymentMonitoringJob. Format: `projects/{project}/location
-      s/{location}/modelDeploymentMonitoringJobs/{model_deployment_monitoring_
-      job}`
+      JobService.CreateModelDeploymentMonitoringJob. Format: `projects/{projec
+      t}/locations/{location}/modelDeploymentMonitoringJobs/{model_deployment_
+      monitoring_job}`
     name: Output only. The resource name of the Endpoint.
     network: Optional. The full name of the Google Compute Engine
       [network](https://cloud.google.com//compute/docs/networks-and-
@@ -27139,8 +29329,7 @@ class GoogleCloudAiplatformV1beta1EvaluatedAnnotation(_messages.Message):
     errorAnalysisAnnotations: Annotations of model error analysis results.
     evaluatedDataItemViewId: Output only. ID of the EvaluatedDataItemView
       under the same ancestor ModelEvaluation. The EvaluatedDataItemView
-      consists of all ground truths and predictions on data_item_payload. Can
-      be passed in GetEvaluatedDataItemView's[] id.
+      consists of all ground truths and predictions on data_item_payload.
     explanations: Explanations of predictions. Each element of the
       explanations indicates the explanation for one explanation Method. The
       attributions list in the EvaluatedAnnotationExplanation.explanation
@@ -27298,13 +29487,18 @@ class GoogleCloudAiplatformV1beta1Examples(_messages.Message):
   provided dataset.
 
   Fields:
-    gcsSource: The Cloud Storage location for the input instances.
-    nearestNeighborSearchConfig: The configuration for the generated index,
-      the semantics are the same as metadata and should match
-      NearestNeighborSearchConfig.
-    neighborCount: The number of neighbors to return.
-    presets: Preset config based on the desired query speed-precision trade-
-      off and modality
+    gcsSource: The Cloud Storage locations that contain the instances to be
+      indexed for approximate nearest neighbor search.
+    nearestNeighborSearchConfig: The full configuration for the generated
+      index, the semantics are the same as metadata and should match
+      [NearestNeighborSearchConfig](https://cloud.google.com/vertex-
+      ai/docs/explainable-ai/configuring-explanations-example-based#nearest-
+      neighbor-search-config).
+    neighborCount: The number of neighbors to return when querying for
+      examples.
+    presets: Simplified preset configuration, which automatically sets
+      configuration values based on the desired query speed-precision trade-
+      off and modality.
   """
 
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
@@ -28118,8 +30312,8 @@ class GoogleCloudAiplatformV1beta1ExplanationSpecOverride(_messages.Message):
     examplesOverride: The example-based explanations parameter overrides.
     metadata: The metadata to be overridden. If not specified, no metadata is
       overridden.
-    parameters: The parameters to be overridden. Note that the method cannot
-      be changed. If not specified, no parameter is overridden.
+    parameters: The parameters to be overridden. Note that the attribution
+      method cannot be changed. If not specified, no parameter is overridden.
   """
 
   examplesOverride = _messages.MessageField('GoogleCloudAiplatformV1beta1ExamplesOverride', 1)
@@ -28132,10 +30326,9 @@ class GoogleCloudAiplatformV1beta1ExportDataConfig(_messages.Message):
   the export and how to export.
 
   Fields:
-    annotationsFilter: A filter on Annotations of the Dataset. Only
-      Annotations on to-be-exported DataItems(specified by data_items_filter)
-      that match this filter will be exported. The filter syntax is the same
-      as in ListAnnotations.
+    annotationsFilter: An expression for filtering what part of the Dataset is
+      to be exported. Only Annotations that match this filter will be
+      exported. The filter syntax is the same as in ListAnnotations.
     fractionSplit: Split based on fractions defining the size of each set.
     gcsDestination: The Google Cloud Storage location where the output is to
       be written to. In the given directory a new directory will be created
@@ -28361,10 +30554,10 @@ class GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataRequest(_messag
       default page_size is 1000. Values must be between 1 and 10000. Values
       above 10000 are coerced to 10000.
     pageToken: A page token, received from a previous
-      TensorboardService.ExportTensorboardTimeSeries call. Provide this to
-      retrieve the subsequent page. When paginating, all other parameters
-      provided to TensorboardService.ExportTensorboardTimeSeries must match
-      the call that provided the page token.
+      ExportTensorboardTimeSeriesData call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      ExportTensorboardTimeSeriesData must match the call that provided the
+      page token.
   """
 
   filter = _messages.StringField(1)
@@ -28377,9 +30570,8 @@ class GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse(_messa
   r"""Response message for TensorboardService.ExportTensorboardTimeSeriesData.
 
   Fields:
-    nextPageToken: A token, which can be sent as
-      ExportTensorboardTimeSeriesRequest.page_token to retrieve the next page.
-      If this field is omitted, there are no subsequent pages.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
     timeSeriesDataPoints: The returned time series data points.
   """
 
@@ -28433,7 +30625,7 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.
-    monitoringStats: Output only. A list of historical Snapshot Analysis stats
+    monitoringStats: Output only. A list of historical SnapshotAnalysis stats
       requested by user, sorted by FeatureStatsAnomaly.start_time descending.
     monitoringStatsAnomalies: Output only. The list of historical stats and
       anomalies with specified objectives.
@@ -28519,7 +30711,7 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1FeatureMonitoringStatsAnomaly(_messages.Message):
-  r"""A list of historical Snapshot Analysis or Import Feature Analysis stats
+  r"""A list of historical SnapshotAnalysis or ImportFeaturesAnalysis stats
   requested by user, sorted by FeatureStatsAnomaly.start_time descending.
 
   Enums:
@@ -29054,7 +31246,7 @@ class GoogleCloudAiplatformV1beta1FindNeighborsRequest(_messages.Message):
   r"""The request message for MatchService.FindNeighbors.
 
   Fields:
-    deployedIndexId: The ID of the DeploydIndex that will serve the request.
+    deployedIndexId: The ID of the DeployedIndex that will serve the request.
       This request is sent to a specific IndexEndpoint, as per the
       IndexEndpoint.network. That IndexEndpoint also has
       IndexEndpoint.deployed_indexes, and each such index has a
@@ -29825,6 +32017,11 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
     privateServiceConnectConfig: Optional. Configuration for private service
       connect. network and private_service_connect_config are mutually
       exclusive.
+    publicEndpointDomainName: Output only. If public_endpoint_enabled is true,
+      this field will be populated with the domain name to use for this index
+      endpoint.
+    publicEndpointEnabled: Optional. If true, the deployed index will be
+      accessible through public endpoint.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
       DeployedIndexes are updated, e.g. due to updates of the original Indexes
@@ -29869,7 +32066,9 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
   name = _messages.StringField(8)
   network = _messages.StringField(9)
   privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig', 10)
-  updateTime = _messages.StringField(11)
+  publicEndpointDomainName = _messages.StringField(11)
+  publicEndpointEnabled = _messages.BooleanField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
@@ -30439,6 +32638,19 @@ class GoogleCloudAiplatformV1beta1ListSavedQueriesResponse(_messages.Message):
   savedQueries = _messages.MessageField('GoogleCloudAiplatformV1beta1SavedQuery', 2, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1ListSchedulesResponse(_messages.Message):
+  r"""Response message for ScheduleService.ListSchedules
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListSchedulesRequest.page_token to obtain that page.
+    schedules: List of Schedules in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schedules = _messages.MessageField('GoogleCloudAiplatformV1beta1Schedule', 2, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1ListSpecialistPoolsResponse(_messages.Message):
   r"""Response message for SpecialistPoolService.ListSpecialistPools.
 
@@ -30593,10 +32805,11 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
-      NVIDIA_A100_80GB: Nvidia A2 Ultra GPU.
+      NVIDIA_A100_80GB: Nvidia A100 80GB GPU.
+      NVIDIA_L4: Nvidia L4 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
-      TPU_V4: TPU v4.
+      TPU_V4_POD: TPU v4.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -30606,9 +32819,10 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
     NVIDIA_A100_80GB = 7
-    TPU_V2 = 8
-    TPU_V3 = 9
-    TPU_V4 = 10
+    NVIDIA_L4 = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
+    TPU_V4_POD = 11
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -31942,10 +34156,13 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
       google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry. This
       can be further sinked to Pub/Sub or any other services supported by
       Cloud Logging.
+    notificationChannels: Resource names of the NotificationChannels to send
+      alert. Must be of the format `projects//notificationChannels/`
   """
 
   emailAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig', 1)
   enableLogging = _messages.BooleanField(2)
+  notificationChannels = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(_messages.Message):
@@ -32345,12 +34562,14 @@ class GoogleCloudAiplatformV1beta1ModelSourceInfo(_messages.Message):
       CUSTOM: The Model is uploaded by user or custom training pipeline.
       BQML: The Model is registered and sync'ed from BigQuery ML.
       MODEL_GARDEN: The Model is saved or tuned from Model Garden.
+      GENIE: The Model is saved or tuned from Genie.
     """
     MODEL_SOURCE_TYPE_UNSPECIFIED = 0
     AUTOML = 1
     CUSTOM = 2
     BQML = 3
     MODEL_GARDEN = 4
+    GENIE = 5
 
   copy = _messages.BooleanField(1)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 2)
@@ -32378,6 +34597,44 @@ class GoogleCloudAiplatformV1beta1MutateDeployedIndexResponse(_messages.Message)
   """
 
   deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 1)
+
+
+class GoogleCloudAiplatformV1beta1MutateDeployedModelOperationMetadata(_messages.Message):
+  r"""Runtime operation information for EndpointService.MutateDeployedModel.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1MutateDeployedModelRequest(_messages.Message):
+  r"""Request message for EndpointService.MutateDeployedModel.
+
+  Fields:
+    deployedModel: Required. The DeployedModel to be mutated within the
+      Endpoint. Only the following fields can be mutated: *
+      `min_replica_count` in either DedicatedResources or AutomaticResources *
+      `max_replica_count` in either DedicatedResources or AutomaticResources *
+      autoscaling_metric_specs * `disable_container_logging` (v1 only) *
+      `enable_container_logging` (v1beta1 only)
+    updateMask: Required. The update mask applies to the resource. See
+      google.protobuf.FieldMask.
+  """
+
+  deployedModel = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1MutateDeployedModelResponse(_messages.Message):
+  r"""Response message for EndpointService.MutateDeployedModel.
+
+  Fields:
+    deployedModel: The DeployedModel that's being mutated.
+  """
+
+  deployedModel = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 1)
 
 
 class GoogleCloudAiplatformV1beta1NasJob(_messages.Message):
@@ -32827,6 +35084,10 @@ class GoogleCloudAiplatformV1beta1PauseModelDeploymentMonitoringJobRequest(_mess
   r"""Request message for JobService.PauseModelDeploymentMonitoringJob."""
 
 
+class GoogleCloudAiplatformV1beta1PauseScheduleRequest(_messages.Message):
+  r"""Request message for ScheduleService.PauseSchedule."""
+
+
 class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
   r"""An instance of a machine learning PipelineJob.
 
@@ -33214,7 +35475,7 @@ class GoogleCloudAiplatformV1beta1PipelineTaskDetail(_messages.Message):
     state: Output only. State of the task.
     taskId: Output only. The system generated ID of the task.
     taskName: Output only. The user specified name of the task that is defined
-      in PipelineJob.spec.
+      in pipeline_spec.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -33573,19 +35834,29 @@ class GoogleCloudAiplatformV1beta1Presets(_messages.Message):
   r"""Preset configuration for example-based explanations
 
   Enums:
-    ModalityValueValuesEnum: Preset option controlling parameters for
-      different modalities
-    QueryValueValuesEnum: Preset option controlling parameters for query
-      speed-precision trade-off
+    ModalityValueValuesEnum: The modality of the uploaded model, which
+      automatically configures the distance measurement and feature
+      normalization for the underlying example index and queries. If your
+      model does not precisely fit one of these types, it is okay to choose
+      the closest type.
+    QueryValueValuesEnum: Preset option controlling parameters for speed-
+      precision trade-off when querying for examples. If omitted, defaults to
+      `PRECISE`.
 
   Fields:
-    modality: Preset option controlling parameters for different modalities
-    query: Preset option controlling parameters for query speed-precision
-      trade-off
+    modality: The modality of the uploaded model, which automatically
+      configures the distance measurement and feature normalization for the
+      underlying example index and queries. If your model does not precisely
+      fit one of these types, it is okay to choose the closest type.
+    query: Preset option controlling parameters for speed-precision trade-off
+      when querying for examples. If omitted, defaults to `PRECISE`.
   """
 
   class ModalityValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for different modalities
+    r"""The modality of the uploaded model, which automatically configures the
+    distance measurement and feature normalization for the underlying example
+    index and queries. If your model does not precisely fit one of these
+    types, it is okay to choose the closest type.
 
     Values:
       MODALITY_UNSPECIFIED: Should not be set. Added as a recommended best
@@ -33600,12 +35871,11 @@ class GoogleCloudAiplatformV1beta1Presets(_messages.Message):
     TABULAR = 3
 
   class QueryValueValuesEnum(_messages.Enum):
-    r"""Preset option controlling parameters for query speed-precision trade-
-    off
+    r"""Preset option controlling parameters for speed-precision trade-off
+    when querying for examples. If omitted, defaults to `PRECISE`.
 
     Values:
       PRECISE: More precise neighbors as a trade-off against slower response.
-        This is also the default value (field-number 0).
       FAST: Faster response as a trade-off against less precise neighbors.
     """
     PRECISE = 0
@@ -33919,7 +36189,7 @@ class GoogleCloudAiplatformV1beta1ReadFeatureValuesResponseHeader(_messages.Mess
       ReadFeatureValuesRequest. Value format: `projects/{project}/locations/{l
       ocation}/featurestores/{featurestore}/entityTypes/{entityType}`.
     featureDescriptors: List of Feature metadata corresponding to each piece
-      of ReadFeatureValuesResponse.data.
+      of ReadFeatureValuesResponse.EntityView.data.
   """
 
   entityType = _messages.StringField(1)
@@ -33930,7 +36200,7 @@ class GoogleCloudAiplatformV1beta1ReadIndexDatapointsRequest(_messages.Message):
   r"""The request message for MatchService.ReadIndexDatapoints.
 
   Fields:
-    deployedIndexId: The ID of the DeploydIndex that will serve the request.
+    deployedIndexId: The ID of the DeployedIndex that will serve the request.
     ids: IDs of the datapoints to be searched for.
   """
 
@@ -34076,6 +36346,19 @@ class GoogleCloudAiplatformV1beta1ResumeModelDeploymentMonitoringJobRequest(_mes
   r"""Request message for JobService.ResumeModelDeploymentMonitoringJob."""
 
 
+class GoogleCloudAiplatformV1beta1ResumeScheduleRequest(_messages.Message):
+  r"""Request message for ScheduleService.ResumeSchedule.
+
+  Fields:
+    catchUp: Optional. Whether to backfill missed runs when the schedule is
+      resumed from PAUSED state. If set to true, all missed runs will be
+      scheduled. New runs will be scheduled after the backfill is complete.
+      This will also update Schedule.catch_up field. Default to false.
+  """
+
+  catchUp = _messages.BooleanField(1)
+
+
 class GoogleCloudAiplatformV1beta1SampleConfig(_messages.Message):
   r"""Active learning data sampling config. For every active learning labeling
   iteration, it will select a batch of data based on the sampling strategy.
@@ -34193,6 +36476,119 @@ class GoogleCloudAiplatformV1beta1Scalar(_messages.Message):
   """
 
   value = _messages.FloatField(1)
+
+
+class GoogleCloudAiplatformV1beta1Schedule(_messages.Message):
+  r"""An instance of a Schedule periodically schedules runs to make API calls
+  based on user specified time specification and API request type.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of this Schedule.
+
+  Fields:
+    allowQueueing: Optional. Whether new scheduled runs can be queued when
+      max_concurrent_runs limit is reached. If set to true, new runs will be
+      queued instead of skipped. Default to false.
+    catchUp: Output only. Whether to backfill missed runs when the schedule is
+      resumed from PAUSED state. If set to true, all missed runs will be
+      scheduled. New runs will be scheduled after the backfill is complete.
+      Default to false.
+    createPipelineJobRequest: Request for PipelineService.CreatePipelineJob.
+      CreatePipelineJobRequest.parent field is required (format:
+      projects/{project}/locations/{location}).
+    createTime: Output only. Timestamp when this Schedule was created.
+    cron: Cron schedule (https://en.wikipedia.org/wiki/Cron) to launch
+      scheduled runs. To explicitly set a timezone to the cron tab, apply a
+      prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
+      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
+      * * *", or "TZ=America/New_York 1 * * * *".
+    displayName: Required. User provided name of the Schedule. The name can be
+      up to 128 characters long and can consist of any UTF-8 characters.
+    endTime: Optional. Timestamp after which no new runs can be scheduled. If
+      specified, The schedule will be completed when either end_time is
+      reached or when scheduled_run_count >= max_run_count. If not specified,
+      new runs will keep getting scheduled until this Schedule is paused or
+      deleted. Already scheduled runs will be allowed to complete. Unset if
+      not specified.
+    lastPauseTime: Output only. Timestamp when this Schedule was last paused.
+      Unset if never paused.
+    lastResumeTime: Output only. Timestamp when this Schedule was last
+      resumed. Unset if never resumed from pause.
+    lastScheduledRunResponse: Output only. Response of the last scheduled run.
+      This is the response for starting the scheduled requests and not the
+      execution of the operations/jobs created by the requests (if
+      applicable). Unset if no run has been scheduled yet.
+    maxConcurrentRunCount: Required. Maximum number of runs that can be
+      started concurrently for this Schedule. This is the limit for starting
+      the scheduled requests and not the execution of the operations/jobs
+      created by the requests (if applicable).
+    maxRunCount: Optional. Maximum run count of the schedule. If specified,
+      The schedule will be completed when either started_run_count >=
+      max_run_count or when end_time is reached. If not specified, new runs
+      will keep getting scheduled until this Schedule is paused or deleted.
+      Already scheduled runs will be allowed to complete. Unset if not
+      specified.
+    name: Output only. The resource name of the Schedule.
+    nextRunTime: Output only. Timestamp when this Schedule should schedule the
+      next run. Having a next_run_time in the past means the runs are being
+      started behind schedule.
+    startTime: Optional. Timestamp after which the first run can be scheduled.
+      Default to Schedule create time if not specified.
+    startedRunCount: Output only. The number of runs started by this schedule.
+    state: Output only. The state of this Schedule.
+    updateTime: Output only. Timestamp when this Schedule was updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this Schedule.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      ACTIVE: The Schedule is active. Runs are being scheduled on the user-
+        specified timespec.
+      PAUSED: The schedule is paused. No new runs will be created until the
+        schedule is resumed. Already started runs will be allowed to complete.
+      COMPLETED: The Schedule is completed. No new runs will be scheduled.
+        Already started runs will be allowed to complete. Schedules in
+        completed state cannot be paused or resumed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PAUSED = 2
+    COMPLETED = 3
+
+  allowQueueing = _messages.BooleanField(1)
+  catchUp = _messages.BooleanField(2)
+  createPipelineJobRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1CreatePipelineJobRequest', 3)
+  createTime = _messages.StringField(4)
+  cron = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  endTime = _messages.StringField(7)
+  lastPauseTime = _messages.StringField(8)
+  lastResumeTime = _messages.StringField(9)
+  lastScheduledRunResponse = _messages.MessageField('GoogleCloudAiplatformV1beta1ScheduleRunResponse', 10)
+  maxConcurrentRunCount = _messages.IntegerField(11)
+  maxRunCount = _messages.IntegerField(12)
+  name = _messages.StringField(13)
+  nextRunTime = _messages.StringField(14)
+  startTime = _messages.StringField(15)
+  startedRunCount = _messages.IntegerField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
+
+
+class GoogleCloudAiplatformV1beta1ScheduleRunResponse(_messages.Message):
+  r"""Status of a scheduled run.
+
+  Fields:
+    runResponse: The response of the scheduled run.
+    scheduledRunTime: The scheduled run time based on the user-specified
+      schedule.
+  """
+
+  runResponse = _messages.StringField(1)
+  scheduledRunTime = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1Scheduling(_messages.Message):
@@ -35384,8 +37780,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasting(_
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
-  r"""TODO(b/272337970) Extract redundant protos like Transformation into a
-  separate file.
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasti
+  ngInputs object.
 
   Fields:
     additionalExperiments: Additional experiment flags for the time series
@@ -35683,6 +38079,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       (i.e. assuming that for each image just up to one annotation may be
       applicable). If true, a multi-label Model will be trained (i.e. assuming
       that for each image multiple annotations may be applicable).
+    tunableParameter: Trainer type for Vision TrainRequest.
     uptrainBaseModelId: The ID of `base` model for upTraining. If it is
       specified, the new model will be upTrained based on the `base` model for
       upTraining. Otherwise, the new model will be trained from scratch. The
@@ -35715,6 +38112,18 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
         mobile or edge device afterwards. Expected to have a higher latency,
         but should also have a higher prediction quality than other mobile
         models.
+      EFFICIENTNET: EfficientNet model for Model Garden training with
+        customizable hyperparameters. Best tailored to be used within Google
+        Cloud, and cannot be exported externally.
+      RESNET: ResNet model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      VIT: ViT model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      COCA: CoCa model for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
@@ -35722,13 +38131,18 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
     MOBILE_TF_LOW_LATENCY_1 = 3
     MOBILE_TF_VERSATILE_1 = 4
     MOBILE_TF_HIGH_ACCURACY_1 = 5
+    EFFICIENTNET = 6
+    RESNET = 7
+    VIT = 8
+    COCA = 9
 
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
   disableEarlyStopping = _messages.BooleanField(3)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
   multiLabel = _messages.BooleanField(5)
-  uptrainBaseModelId = _messages.StringField(6)
+  tunableParameter = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter', 6)
+  uptrainBaseModelId = _messages.StringField(7)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -35805,6 +38219,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
       enabled, which means that AutoML Image Object Detection might stop
       training before the entire training budget has been used.
     modelType: A ModelTypeValueValuesEnum attribute.
+    tunableParameter: Trainer type for Vision TrainRequest.
     uptrainBaseModelId: The ID of `base` model for upTraining. If it is
       specified, the new model will be upTrained based on the `base` model for
       upTraining. Otherwise, the new model will be trained from scratch. The
@@ -35846,6 +38261,12 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
         and which cannot be exported. Expected to best support predictions in
         streaming with lower latency and lower prediction quality than other
         cloud models.
+      SPINENET: SpineNet for Model Garden training with customizable
+        hyperparameters. Best tailored to be used within Google Cloud, and
+        cannot be exported externally.
+      YOLO: YOLO for Model Garden training with customizable hyperparameters.
+        Best tailored to be used within Google Cloud, and cannot be exported
+        externally.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD_HIGH_ACCURACY_1 = 1
@@ -35855,11 +38276,14 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDe
     MOBILE_TF_VERSATILE_1 = 5
     MOBILE_TF_HIGH_ACCURACY_1 = 6
     CLOUD_STREAMING_1 = 7
+    SPINENET = 8
+    YOLO = 9
 
   budgetMilliNodeHours = _messages.IntegerField(1)
   disableEarlyStopping = _messages.BooleanField(2)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
-  uptrainBaseModelId = _messages.StringField(4)
+  tunableParameter = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter', 4)
+  uptrainBaseModelId = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):
@@ -36488,6 +38912,101 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoObjectTr
     MOBILE_JETSON_LOW_LATENCY_1 = 6
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutomlImageTrainingTunableParameter(_messages.Message):
+  r"""A wrapper class which contains the tunable parameters in an AutoML Image
+  training job.
+
+  Enums:
+    TrainerTypeValueValuesEnum:
+
+  Messages:
+    DatasetConfigValue: Customizable dataset settings, used in the
+      `model_garden_trainer`.
+    TrainerConfigValue: Customizable trainer settings, used in the
+      `model_garden_trainer`.
+
+  Fields:
+    checkpointName: Optional. An unique name of pretrained model checkpoint
+      provided in model garden, it will be mapped to a GCS location
+      internally.
+    datasetConfig: Customizable dataset settings, used in the
+      `model_garden_trainer`.
+    studySpec: Optioinal. StudySpec of hyperparameter tuning job. Required for
+      `model_garden_trainer`.
+    trainerConfig: Customizable trainer settings, used in the
+      `model_garden_trainer`.
+    trainerType: A TrainerTypeValueValuesEnum attribute.
+  """
+
+  class TrainerTypeValueValuesEnum(_messages.Enum):
+    r"""TrainerTypeValueValuesEnum enum type.
+
+    Values:
+      TRAINER_TYPE_UNSPECIFIED: Default value.
+      AUTOML_TRAINER: <no description>
+      MODEL_GARDEN_TRAINER: <no description>
+    """
+    TRAINER_TYPE_UNSPECIFIED = 0
+    AUTOML_TRAINER = 1
+    MODEL_GARDEN_TRAINER = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DatasetConfigValue(_messages.Message):
+    r"""Customizable dataset settings, used in the `model_garden_trainer`.
+
+    Messages:
+      AdditionalProperty: An additional property for a DatasetConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DatasetConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DatasetConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TrainerConfigValue(_messages.Message):
+    r"""Customizable trainer settings, used in the `model_garden_trainer`.
+
+    Messages:
+      AdditionalProperty: An additional property for a TrainerConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TrainerConfigValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TrainerConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  checkpointName = _messages.StringField(1)
+  datasetConfig = _messages.MessageField('DatasetConfigValue', 2)
+  studySpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpec', 3)
+  trainerConfig = _messages.MessageField('TrainerConfigValue', 4)
+  trainerType = _messages.EnumField('TrainerTypeValueValuesEnum', 5)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionCustomJobMetadata(_messages.Message):
@@ -38153,6 +40672,11 @@ class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
       secured by this key.
     etag: Used to perform a consistent read-modify-write updates. If not set,
       a blind "overwrite" update happens.
+    isDefault: Used to indicate if the TensorBoard instance is the default
+      one. Each project & region can have at most one default TensorBoard
+      instance. Creation of a default TensorBoard instance and updating an
+      existing TensorBoard instance to be default will mark all other
+      TensorBoard instances (if any) as non default.
     labels: The labels with user-defined metadata to organize your
       Tensorboards. Label keys and values can be no longer than 64 characters
       (Unicode codepoints), can only contain lowercase letters, numeric
@@ -38204,10 +40728,11 @@ class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
   displayName = _messages.StringField(4)
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
   etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  runCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(10)
+  isDefault = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  runCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1TensorboardBlob(_messages.Message):
@@ -38243,15 +40768,15 @@ class GoogleCloudAiplatformV1beta1TensorboardExperiment(_messages.Message):
 
   Messages:
     LabelsValue: The labels with user-defined metadata to organize your
-      Datasets. Label keys and values can be no longer than 64 characters
+      Datasets. Label keys and values cannot be longer than 64 characters
       (Unicode codepoints), can only contain lowercase letters, numeric
       characters, underscores and dashes. International characters are
       allowed. No more than 64 user labels can be associated with one Dataset
       (System labels are excluded). See https://goo.gl/xmQnxf for more
       information and examples of labels. System reserved label keys are
-      prefixed with "aiplatform.googleapis.com/" and are immutable. Following
-      system labels exist for each Dataset: *
-      "aiplatform.googleapis.com/dataset_metadata_schema": - output only, its
+      prefixed with `aiplatform.googleapis.com/` and are immutable. The
+      following system labels exist for each Dataset: *
+      `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
       value is the metadata_schema's title.
 
   Fields:
@@ -38262,15 +40787,15 @@ class GoogleCloudAiplatformV1beta1TensorboardExperiment(_messages.Message):
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     labels: The labels with user-defined metadata to organize your Datasets.
-      Label keys and values can be no longer than 64 characters (Unicode
+      Label keys and values cannot be longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. No more
       than 64 user labels can be associated with one Dataset (System labels
       are excluded). See https://goo.gl/xmQnxf for more information and
       examples of labels. System reserved label keys are prefixed with
-      "aiplatform.googleapis.com/" and are immutable. Following system labels
-      exist for each Dataset: *
-      "aiplatform.googleapis.com/dataset_metadata_schema": - output only, its
+      `aiplatform.googleapis.com/` and are immutable. The following system
+      labels exist for each Dataset: *
+      `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
       value is the metadata_schema's title.
     name: Output only. Name of the TensorboardExperiment. Format: `projects/{p
       roject}/locations/{location}/tensorboards/{tensorboard}/experiments/{exp
@@ -38284,14 +40809,14 @@ class GoogleCloudAiplatformV1beta1TensorboardExperiment(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""The labels with user-defined metadata to organize your Datasets. Label
-    keys and values can be no longer than 64 characters (Unicode codepoints),
+    keys and values cannot be longer than 64 characters (Unicode codepoints),
     can only contain lowercase letters, numeric characters, underscores and
     dashes. International characters are allowed. No more than 64 user labels
     can be associated with one Dataset (System labels are excluded). See
     https://goo.gl/xmQnxf for more information and examples of labels. System
-    reserved label keys are prefixed with "aiplatform.googleapis.com/" and are
-    immutable. Following system labels exist for each Dataset: *
-    "aiplatform.googleapis.com/dataset_metadata_schema": - output only, its
+    reserved label keys are prefixed with `aiplatform.googleapis.com/` and are
+    immutable. The following system labels exist for each Dataset: *
+    `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
     value is the metadata_schema's title.
 
     Messages:
@@ -39395,7 +41920,7 @@ class GoogleCloudLocationListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

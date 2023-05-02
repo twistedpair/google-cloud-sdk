@@ -39,6 +39,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_dnsBindPermission = self.ProjectsLocationsGlobalDnsBindPermissionService(self)
     self.projects_locations_global_networkPeerings_peeringRoutes = self.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(self)
     self.projects_locations_global_networkPeerings = self.ProjectsLocationsGlobalNetworkPeeringsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
@@ -59,6 +60,70 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalDnsBindPermissionService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_dnsBindPermission resource."""
+
+    _NAME = 'projects_locations_global_dnsBindPermission'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsGlobalDnsBindPermissionService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Grant(self, request, global_params=None):
+      r"""Grants the bind permission to the customer provided principal(user / service account) to bind their DNS zone with the intranet VPC associated with the project.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Grant')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Grant.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/dnsBindPermission:grant',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.global.dnsBindPermission.grant',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:grant',
+        request_field='grantDnsBindPermissionRequest',
+        request_type_name='VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Revoke(self, request, global_params=None):
+      r"""Revokes the bind permission from the customer provided principal(user / service account) on the intranet VPC associated with the consumer project.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Revoke')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Revoke.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/dnsBindPermission:revoke',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.global.dnsBindPermission.revoke',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:revoke',
+        request_field='revokeDnsBindPermissionRequest',
+        request_type_name='VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(base_api.BaseApiService):
     """Service class for the projects_locations_global_networkPeerings_peeringRoutes resource."""
@@ -251,6 +316,33 @@ class VmwareengineV1(base_api.BaseApiClient):
       super(VmwareengineV1.ProjectsLocationsGlobalService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetDnsBindPermission(self, request, global_params=None):
+      r"""Gets all the principals having bind permission on the intranet VPC associated with the consumer project granted by the Grant API.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsBindPermission) The response message.
+      """
+      config = self.GetMethodConfig('GetDnsBindPermission')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDnsBindPermission.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/dnsBindPermission',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.global.getDnsBindPermission',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest',
+        response_type_name='DnsBindPermission',
+        supports_download=False,
+    )
 
   class ProjectsLocationsNetworkPoliciesExternalAccessRulesService(base_api.BaseApiService):
     """Service class for the projects_locations_networkPolicies_externalAccessRules resource."""

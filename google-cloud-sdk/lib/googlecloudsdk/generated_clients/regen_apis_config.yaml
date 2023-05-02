@@ -1471,3 +1471,13 @@ apis:
     v1alpha:
       discovery_doc: messagestreams_v1alpha.json
       default: true
+canonical_surfaces:
+  accessapproval: access-approval
+  aiplatform: ai-platform
+  anthospolicycontrollerstatus_pa: container fleet policycontroller
+  baremetalsolution: bmt
+  binaryauthorization: container binauthz
+  clouddeploy: deploy
+  cloudfunctions: functions
+  datapipelines: datapipelines
+  # TODO(b/279468611)

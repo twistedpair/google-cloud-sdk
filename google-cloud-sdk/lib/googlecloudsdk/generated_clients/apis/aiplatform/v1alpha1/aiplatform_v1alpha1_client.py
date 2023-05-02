@@ -84,6 +84,8 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_pipelineJobs_operations = self.ProjectsLocationsPipelineJobsOperationsService(self)
     self.projects_locations_pipelineJobs = self.ProjectsLocationsPipelineJobsService(self)
+    self.projects_locations_publishers_models = self.ProjectsLocationsPublishersModelsService(self)
+    self.projects_locations_publishers = self.ProjectsLocationsPublishersService(self)
     self.projects_locations_specialistPools_operations = self.ProjectsLocationsSpecialistPoolsOperationsService(self)
     self.projects_locations_specialistPools = self.ProjectsLocationsSpecialistPoolsService(self)
     self.projects_locations_studies_operations = self.ProjectsLocationsStudiesOperationsService(self)
@@ -6033,6 +6035,80 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         response_type_name='GoogleCloudAiplatformV1alpha1ListPipelineJobsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsPublishersModelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_publishers_models resource."""
+
+    _NAME = 'projects_locations_publishers_models'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsPublishersModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Predict(self, request, global_params=None):
+      r"""Perform an online prediction.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1PredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('Predict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Predict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:predict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.predict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1alpha1/{+endpoint}:predict',
+        request_field='googleCloudAiplatformV1alpha1PredictRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1PredictResponse',
+        supports_download=False,
+    )
+
+    def RawPredict(self, request, global_params=None):
+      r"""Perform an online prediction with an arbitrary HTTP payload. The response includes the following HTTP headers: * `X-Vertex-AI-Endpoint-Id`: ID of the Endpoint that served this prediction. * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's DeployedModel that served this prediction.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('RawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:rawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.rawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1alpha1/{+endpoint}:rawPredict',
+        request_field='googleCloudAiplatformV1alpha1RawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsRawPredictRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPublishersService(base_api.BaseApiService):
+    """Service class for the projects_locations_publishers resource."""
+
+    _NAME = 'projects_locations_publishers'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsPublishersService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsSpecialistPoolsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_specialistPools_operations resource."""

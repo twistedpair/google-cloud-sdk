@@ -244,6 +244,32 @@ class Credentials(_messages.Message):
   username = _messages.StringField(2)
 
 
+class DnsBindPermission(_messages.Message):
+  r"""DnsBindPermission resource that contains the accounts having the
+  consumer DNS bind permission on the corresponding intranet VPC of the
+  consumer project.
+
+  Fields:
+    etag: Checksum that may be sent on grant and revoke requests to ensure
+      that the user-provided value is up to date before the server processes a
+      request. The server computes checksums based on the value of other
+      fields in the request.
+    name: Required. Output only. The name of the resource which stores the
+      users/service accounts having the permission to bind to the
+      corresponding intranet VPC of the consumer project. DnsBindPermission is
+      a global resource. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global/dnsBindPermission`
+    principals: Output only. Users/Service accounts which have access for
+      binding on the intranet VPC project corresponding to the consumer
+      project.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  principals = _messages.MessageField('Principal', 3, repeated=True)
+
+
 class DnsForwarding(_messages.Message):
   r"""DNS forwarding config. This config defines a list of domain to name
   server mappings, and is attached to the private cloud for custom domain
@@ -492,6 +518,37 @@ class ForwardingRule(_messages.Message):
   nameServers = _messages.StringField(2, repeated=True)
 
 
+class GrantDnsBindPermissionRequest(_messages.Message):
+  r"""Request message for VmwareEngine.GrantDnsBindPermission
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    principal: Required. The consumer provided user/service account which
+      needs to be granted permission to bind with the intranet VPC
+      corresponding to the consumer project.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  principal = _messages.MessageField('Principal', 2)
+  requestId = _messages.StringField(3)
+
+
 class Hcx(_messages.Message):
   r"""Details about a HCX Cloud Manager appliance.
 
@@ -566,18 +623,6 @@ class HcxActivationKey(_messages.Message):
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   uid = _messages.StringField(5)
-
-
-class IpAddressRange(_messages.Message):
-  r"""Represents an IP address range.
-
-  Fields:
-    firstAddress: The first IP address of the range.
-    lastAddress: The last IP address of the range.
-  """
-
-  firstAddress = _messages.StringField(1)
-  lastAddress = _messages.StringField(2)
 
 
 class IpRange(_messages.Message):
@@ -872,7 +917,7 @@ class ListVmwareEngineNetworksResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1433,14 +1478,14 @@ class Node(_messages.Message):
       ACTIVE: Node is operational and can be used by the user.
       CREATING: Node is being provisioned.
       FAILED: Node is in a failed state.
-      SERVICING: Node is undergoing maintenance, e.g.: during private cloud
+      UPGRADING: Node is undergoing maintenance, e.g.: during private cloud
         upgrade.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     FAILED = 3
-    SERVICING = 4
+    UPGRADING = 4
 
   customCoreCount = _messages.IntegerField(1)
   fqdn = _messages.StringField(2)
@@ -1839,6 +1884,20 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Principal(_messages.Message):
+  r"""Users/Service accounts which have access for DNS binding on the intranet
+  VPC corresponding to the consumer project.
+
+  Fields:
+    serviceAccount: The service account which needs to be granted the
+      permission.
+    user: The user who needs to be granted permission.
+  """
+
+  serviceAccount = _messages.StringField(1)
+  user = _messages.StringField(2)
+
+
 class PrivateCloud(_messages.Message):
   r"""Represents a private cloud resource. Private clouds are zonal resources.
 
@@ -2113,6 +2172,37 @@ class ResetVcenterCredentialsRequest(_messages.Message):
   requestId = _messages.StringField(1)
 
 
+class RevokeDnsBindPermissionRequest(_messages.Message):
+  r"""Request message for VmwareEngine.RevokeDnsBindPermission
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    principal: Required. The consumer provided user/service account which
+      needs to be granted permission to bind with the intranet VPC
+      corresponding to the consumer project.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  principal = _messages.MessageField('Principal', 2)
+  requestId = _messages.StringField(3)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -2252,21 +2342,6 @@ class Subnet(_messages.Message):
     StateValueValuesEnum: Output only. The state of the resource.
 
   Fields:
-    createTime: Output only. Creation time of this resource.
-    description: User-provided description for this subnet.
-    dhcpAddressRanges: DHCP address ranges. Only a single element is supported
-      in the list. Both the first and the last address must be included in the
-      subnet range. It cannot include the first or the last address of the
-      subnet or the `gateway_ip`.
-    etag: Checksum that may be sent on update and delete requests to ensure
-      that the user-provided value is up to date before the server processes a
-      request. The server computes checksums based on the value of other
-      fields in the request.
-    gatewayId: The canonical identifier of the logical router that this subnet
-      is attached to. The value of this field needs to be filled from
-      `ListLogicalRoutersResponse.logical_router.router_id`. If the value of
-      this field is set to the empty string, the subnet is not attached to any
-      router.
     gatewayIp: The IP address of the gateway of this subnet. Must fall within
       the IP prefix defined above.
     ipCidrRange: The IP address range of the subnet in CIDR format
@@ -2276,16 +2351,9 @@ class Subnet(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/subnets/my-subnet`
-    standardConfig: Output only. Whether the NSX-T configuration in the
-      backend follows the standard configuration supported by Google Cloud. If
-      false, the subnet cannot be modified through Google Cloud, only through
-      NSX-T directly. Note: This field defaults to `false` until NSX-T
-      segments are not supported.
     state: Output only. The state of the resource.
     type: Output only. The type of the subnet. For example "management" or
       "userDefined".
-    uid: Output only. System-generated unique identifier for the resource.
-    updateTime: Output only. Last update time of this resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2310,19 +2378,11 @@ class Subnet(_messages.Message):
     RECONCILING = 5
     FAILED = 6
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  dhcpAddressRanges = _messages.MessageField('IpAddressRange', 3, repeated=True)
-  etag = _messages.StringField(4)
-  gatewayId = _messages.StringField(5)
-  gatewayIp = _messages.StringField(6)
-  ipCidrRange = _messages.StringField(7)
-  name = _messages.StringField(8)
-  standardConfig = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  type = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  gatewayIp = _messages.StringField(1)
+  ipCidrRange = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  type = _messages.StringField(5)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -2468,6 +2528,59 @@ class VmwareengineProjectsLocationsGetRequest(_messages.Message):
 
   Fields:
     name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest
+  object.
+
+  Fields:
+    grantDnsBindPermissionRequest: A GrantDnsBindPermissionRequest resource to
+      be passed as the request body.
+    name: Required. The name of the resource which stores the users/service
+      accounts having the permission to bind to the corresponding intranet VPC
+      of the consumer project. DnsBindPermission is a global resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
+  """
+
+  grantDnsBindPermissionRequest = _messages.MessageField('GrantDnsBindPermissionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest
+  object.
+
+  Fields:
+    name: Required. The name of the resource which stores the users/service
+      accounts having the permission to bind to the corresponding intranet VPC
+      of the consumer project. DnsBindPermission is a global resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
+    revokeDnsBindPermissionRequest: A RevokeDnsBindPermissionRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  revokeDnsBindPermissionRequest = _messages.MessageField('RevokeDnsBindPermissionRequest', 2)
+
+
+class VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest object.
+
+  Fields:
+    name: Required. The name of the resource which stores the users/service
+      accounts having the permission to bind to the corresponding intranet VPC
+      of the consumer project. DnsBindPermission is a global resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
   """
 
   name = _messages.StringField(1, required=True)

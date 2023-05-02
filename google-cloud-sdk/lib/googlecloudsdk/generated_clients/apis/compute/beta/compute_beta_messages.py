@@ -3897,6 +3897,10 @@ class BackendService(_messages.Message):
       see: [Session Affinity](https://cloud.google.com/load-
       balancing/docs/backend-service#session_affinity).
 
+  Messages:
+    MetadatasValue: Deployment metadata associated with the resource to be set
+      by a GKE hub controller and read by the backend RCTH
+
   Fields:
     affinityCookieTtlSec: Lifetime of cookies in seconds. This setting is
       applicable to external and internal HTTP(S) load balancers and Traffic
@@ -4019,6 +4023,8 @@ class BackendService(_messages.Message):
       configuration of the UrlMap that references this backend service. This
       field is only allowed when the loadBalancingScheme of the backend
       service is INTERNAL_SELF_MANAGED.
+    metadatas: Deployment metadata associated with the resource to be set by a
+      GKE hub controller and read by the backend RCTH
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -4259,6 +4265,31 @@ class BackendService(_messages.Message):
     HTTP_COOKIE = 6
     NONE = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadatasValue(_messages.Message):
+    r"""Deployment metadata associated with the resource to be set by a GKE
+    hub controller and read by the backend RCTH
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadatasValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadatasValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadatasValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
@@ -4284,20 +4315,21 @@ class BackendService(_messages.Message):
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
   logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
   maxStreamDuration = _messages.MessageField('Duration', 25)
-  name = _messages.StringField(26)
-  network = _messages.StringField(27)
-  outlierDetection = _messages.MessageField('OutlierDetection', 28)
-  port = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(30)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 31)
-  region = _messages.StringField(32)
-  securityPolicy = _messages.StringField(33)
-  securitySettings = _messages.MessageField('SecuritySettings', 34)
-  selfLink = _messages.StringField(35)
-  serviceBindings = _messages.StringField(36, repeated=True)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 37)
-  subsetting = _messages.MessageField('Subsetting', 38)
-  timeoutSec = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  metadatas = _messages.MessageField('MetadatasValue', 26)
+  name = _messages.StringField(27)
+  network = _messages.StringField(28)
+  outlierDetection = _messages.MessageField('OutlierDetection', 29)
+  port = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(31)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 32)
+  region = _messages.StringField(33)
+  securityPolicy = _messages.StringField(34)
+  securitySettings = _messages.MessageField('SecuritySettings', 35)
+  selfLink = _messages.StringField(36)
+  serviceBindings = _messages.StringField(37, repeated=True)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 38)
+  subsetting = _messages.MessageField('Subsetting', 39)
+  timeoutSec = _messages.IntegerField(40, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5810,10 +5842,14 @@ class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
   extended in the future.
 
   Fields:
+    hostname: Specifies the hostname of the instance. More details in:
+      https://cloud.google.com/compute/docs/instances/custom-hostname-
+      vm#naming_convention
     name: This field is only temporary. It will be removed. Do not use it.
   """
 
-  name = _messages.StringField(1)
+  hostname = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class BundledLocalSsds(_messages.Message):
@@ -5980,7 +6016,7 @@ class Commitment(_messages.Message):
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
-    splitSourceCommitment: Source commitment to be splitted into a new
+    splitSourceCommitment: Source commitment to be split into a new
       commitment.
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
@@ -15053,6 +15089,85 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
+class ComputeInterconnectRemoteLocationsGetRequest(_messages.Message):
+  r"""A ComputeInterconnectRemoteLocationsGetRequest object.
+
+  Fields:
+    interconnectRemoteLocation: Name of the interconnect remote location to
+      return.
+    project: Project ID for this request.
+  """
+
+  interconnectRemoteLocation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeInterconnectRemoteLocationsListRequest(_messages.Message):
+  r"""A ComputeInterconnectRemoteLocationsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:` operator can be used with string fields to
+      match substrings. For non-string fields it is equivalent to the `=`
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. For example, to find all objects with `owner` label use: ```
+      labels.owner:* ``` You can also filter nested fields. For example, you
+      could specify `scheduling.automaticRestart = false` to include instances
+      only if they are not scheduled for automatic restarts. You can use
+      filtering on nested fields to filter based on resource labels. To filter
+      on multiple expressions, provide each separate expression within
+      parentheses. For example: ``` (scheduling.automaticRestart = true)
+      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
+      `AND` expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
+      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
+      true) ``` If you want to use a regular expression, use the `eq` (equal)
+      or `ne` (not equal) operator against a single un-parenthesized
+      expression with or without quotes or against multiple parenthesized
+      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
+      'single quoted literal'` `fieldname eq "double quoted literal"`
+      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
+      interpreted as a regular expression using Google RE2 library syntax. The
+      literal value must match the entire field. For example, to filter for
+      instances that do not end with name "instance", you would use `name ne
+      .*instance`.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
 class ComputeInterconnectsDeleteRequest(_messages.Message):
   r"""A ComputeInterconnectsDeleteRequest object.
 
@@ -19991,6 +20106,35 @@ class ComputeRegionBackendServicesSetIamPolicyRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
   resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionBackendServicesSetSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeRegionBackendServicesSetSecurityPolicyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the security
+      policy should be set. The name should conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 5)
 
 
 class ComputeRegionBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -34423,6 +34567,11 @@ class FirewallPolicyRule(_messages.Message):
       identifier and can be updated.
     ruleTupleCount: [Output Only] Calculation of the complexity of a single
       firewall policy rule.
+    securityProfileGroup: A fully-qualified URL of a SecurityProfile resource
+      instance. Example: https://networksecurity.googleapis.com/v1/projects/{p
+      roject}/locations/{location}/securityProfileGroups/my-security-profile-
+      group Must be specified if action = 'apply_security_profile_group' and
+      cannot be specified for other actions.
     targetResources: A list of network resource URLs to which this rule
       applies. This field allows you to control which network's VMs get this
       rule. If this field is left blank, all VMs within the organization will
@@ -34438,6 +34587,9 @@ class FirewallPolicyRule(_messages.Message):
       of target label tags allowed is 256.
     targetServiceAccounts: A list of service accounts indicating the sets of
       instances that are applied with this rule.
+    tlsInspect: Boolean flag indicating if the traffic should be TLS
+      decrypted. Can be set only if action = 'apply_security_profile_group'
+      and cannot be set for other actions.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -34460,9 +34612,11 @@ class FirewallPolicyRule(_messages.Message):
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   ruleName = _messages.StringField(9)
   ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(11, repeated=True)
-  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 12, repeated=True)
-  targetServiceAccounts = _messages.StringField(13, repeated=True)
+  securityProfileGroup = _messages.StringField(11)
+  targetResources = _messages.StringField(12, repeated=True)
+  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 13, repeated=True)
+  targetServiceAccounts = _messages.StringField(14, repeated=True)
+  tlsInspect = _messages.BooleanField(15)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -43586,6 +43740,9 @@ class Interconnect(_messages.Message):
       ping tests.
     provisionedLinkCount: [Output Only] Number of links actually provisioned
       in this interconnect.
+    remoteLocation: Indicates that this is a Cross-Cloud Interconnect. This
+      field specifies the location outside of Google's network that the
+      interconnect is connected to.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     satisfiesPzs: [Output Only] Reserved for future use.
@@ -43716,10 +43873,11 @@ class Interconnect(_messages.Message):
   operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
   peerIpAddress = _messages.StringField(20)
   provisionedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  requestedLinkCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(23)
-  selfLink = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
+  remoteLocation = _messages.StringField(22)
+  requestedLinkCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(24)
+  selfLink = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -43823,6 +43981,8 @@ class InterconnectAttachment(_messages.Message):
     cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
     cloudRouterIpv6InterfaceId: This field is not available.
+    configurationConstraints: [Output Only] Constraints for this attachment,
+      if any. The attachment does not work if these constraints are not met.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -43922,6 +44082,12 @@ class InterconnectAttachment(_messages.Message):
     region: [Output Only] URL of the region where the regional interconnect
       attachment resides. You must specify this field as part of the HTTP
       request URL. It is not settable as a field in the request body.
+    remoteService: [Output Only] If the attachment is on a Cross-Cloud
+      Interconnect connection, this field contains the interconnect's remote
+      location service provider. Example values: "Amazon Web Services"
+      "Microsoft Azure". The field is set only for attachments on Cross-Cloud
+      Interconnect connections. Its value is copied from the
+      InterconnectRemoteLocation remoteService field.
     router: URL of the Cloud Router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
@@ -43949,6 +44115,14 @@ class InterconnectAttachment(_messages.Message):
       deleted externally and is no longer functional. This could be because
       the associated Interconnect was removed, or because the other side of a
       Partner attachment was deleted.
+    subnetLength: Length of the IPv4 subnet mask. Allowed values: - 29
+      (default) - 30 The default value is 29, except for Cross-Cloud
+      Interconnect connections that use an InterconnectRemoteLocation with a
+      constraints.subnetLengthRange.min equal to 30. For example, connections
+      that use an Azure remote location fall into this category. In these
+      cases, the default value is 30, and requesting 29 returns an error.
+      Where both 29 and 30 are allowed, 29 is preferred, because it gives
+      Google Cloud Support more debugging visibility.
     type: The type of interconnect attachment this is, which can take one of
       the following values: - DEDICATED: an attachment to a Dedicated
       Interconnect. - PARTNER: an attachment to a Partner Interconnect,
@@ -44165,36 +44339,39 @@ class InterconnectAttachment(_messages.Message):
   cloudRouterIpAddress = _messages.StringField(5)
   cloudRouterIpv6Address = _messages.StringField(6)
   cloudRouterIpv6InterfaceId = _messages.StringField(7)
-  creationTimestamp = _messages.StringField(8)
-  customerRouterIpAddress = _messages.StringField(9)
-  customerRouterIpv6Address = _messages.StringField(10)
-  customerRouterIpv6InterfaceId = _messages.StringField(11)
-  dataplaneVersion = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  description = _messages.StringField(13)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 14)
-  encryption = _messages.EnumField('EncryptionValueValuesEnum', 15)
-  googleReferenceId = _messages.StringField(16)
-  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(18)
-  ipsecInternalAddresses = _messages.StringField(19, repeated=True)
-  kind = _messages.StringField(20, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(21)
-  labels = _messages.MessageField('LabelsValue', 22)
-  mtu = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  name = _messages.StringField(24)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 25)
-  pairingKey = _messages.StringField(26)
-  partnerAsn = _messages.IntegerField(27)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 28)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 29)
-  region = _messages.StringField(30)
-  router = _messages.StringField(31)
-  satisfiesPzs = _messages.BooleanField(32)
-  selfLink = _messages.StringField(33)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 34)
-  state = _messages.EnumField('StateValueValuesEnum', 35)
-  type = _messages.EnumField('TypeValueValuesEnum', 36)
-  vlanTag8021q = _messages.IntegerField(37, variant=_messages.Variant.INT32)
+  configurationConstraints = _messages.MessageField('InterconnectAttachmentConfigurationConstraints', 8)
+  creationTimestamp = _messages.StringField(9)
+  customerRouterIpAddress = _messages.StringField(10)
+  customerRouterIpv6Address = _messages.StringField(11)
+  customerRouterIpv6InterfaceId = _messages.StringField(12)
+  dataplaneVersion = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  description = _messages.StringField(14)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 15)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 16)
+  googleReferenceId = _messages.StringField(17)
+  id = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(19)
+  ipsecInternalAddresses = _messages.StringField(20, repeated=True)
+  kind = _messages.StringField(21, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(22)
+  labels = _messages.MessageField('LabelsValue', 23)
+  mtu = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  name = _messages.StringField(25)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 26)
+  pairingKey = _messages.StringField(27)
+  partnerAsn = _messages.IntegerField(28)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 29)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 30)
+  region = _messages.StringField(31)
+  remoteService = _messages.StringField(32)
+  router = _messages.StringField(33)
+  satisfiesPzs = _messages.BooleanField(34)
+  selfLink = _messages.StringField(35)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 36)
+  state = _messages.EnumField('StateValueValuesEnum', 37)
+  subnetLength = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 39)
+  vlanTag8021q = _messages.IntegerField(40, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -44383,6 +44560,75 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
   selfLink = _messages.StringField(5)
   unreachables = _messages.StringField(6, repeated=True)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class InterconnectAttachmentConfigurationConstraints(_messages.Message):
+  r"""A InterconnectAttachmentConfigurationConstraints object.
+
+  Enums:
+    BgpMd5ValueValuesEnum: [Output Only] Whether the attachment's BGP session
+      requires/allows/disallows BGP MD5 authentication. This can take one of
+      the following values: MD5_OPTIONAL, MD5_REQUIRED, MD5_UNSUPPORTED. For
+      example, a Cross-Cloud Interconnect connection to a remote cloud
+      provider that requires BGP MD5 authentication has the
+      interconnectRemoteLocation attachment_configuration_constraints.bgp_md5
+      field set to MD5_REQUIRED, and that property is propagated to the
+      attachment. Similarly, if BGP MD5 is MD5_UNSUPPORTED, an error is
+      returned if MD5 is requested.
+
+  Fields:
+    bgpMd5: [Output Only] Whether the attachment's BGP session
+      requires/allows/disallows BGP MD5 authentication. This can take one of
+      the following values: MD5_OPTIONAL, MD5_REQUIRED, MD5_UNSUPPORTED. For
+      example, a Cross-Cloud Interconnect connection to a remote cloud
+      provider that requires BGP MD5 authentication has the
+      interconnectRemoteLocation attachment_configuration_constraints.bgp_md5
+      field set to MD5_REQUIRED, and that property is propagated to the
+      attachment. Similarly, if BGP MD5 is MD5_UNSUPPORTED, an error is
+      returned if MD5 is requested.
+    bgpPeerAsnRanges: [Output Only] List of ASN ranges that the remote
+      location is known to support. Formatted as an array of inclusive ranges
+      {min: min-value, max: max-value}. For example, [{min: 123, max: 123},
+      {min: 64512, max: 65534}] allows the peer ASN to be 123 or anything in
+      the range 64512-65534. This field is only advisory. Although the API
+      accepts other ranges, these are the ranges that we recommend.
+  """
+
+  class BgpMd5ValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Whether the attachment's BGP session
+    requires/allows/disallows BGP MD5 authentication. This can take one of the
+    following values: MD5_OPTIONAL, MD5_REQUIRED, MD5_UNSUPPORTED. For
+    example, a Cross-Cloud Interconnect connection to a remote cloud provider
+    that requires BGP MD5 authentication has the interconnectRemoteLocation
+    attachment_configuration_constraints.bgp_md5 field set to MD5_REQUIRED,
+    and that property is propagated to the attachment. Similarly, if BGP MD5
+    is MD5_UNSUPPORTED, an error is returned if MD5 is requested.
+
+    Values:
+      MD5_OPTIONAL: MD5_OPTIONAL: BGP MD5 authentication is supported and can
+        optionally be configured.
+      MD5_REQUIRED: MD5_REQUIRED: BGP MD5 authentication must be configured.
+      MD5_UNSUPPORTED: MD5_UNSUPPORTED: BGP MD5 authentication must not be
+        configured
+    """
+    MD5_OPTIONAL = 0
+    MD5_REQUIRED = 1
+    MD5_UNSUPPORTED = 2
+
+  bgpMd5 = _messages.EnumField('BgpMd5ValueValuesEnum', 1)
+  bgpPeerAsnRanges = _messages.MessageField('InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange', 2, repeated=True)
+
+
+class InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange(_messages.Message):
+  r"""A InterconnectAttachmentConfigurationConstraintsBgpPeerASNRange object.
+
+  Fields:
+    max: A integer attribute.
+    min: A integer attribute.
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
 
 
 class InterconnectAttachmentList(_messages.Message):
@@ -45554,6 +45800,418 @@ class InterconnectOutageNotification(_messages.Message):
   source = _messages.EnumField('SourceValueValuesEnum', 6)
   startTime = _messages.IntegerField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
+class InterconnectRemoteLocation(_messages.Message):
+  r"""Represents a Cross-Cloud Interconnect Remote Location resource. You can
+  use this resource to find remote location details about an Interconnect
+  attachment (VLAN).
+
+  Enums:
+    ContinentValueValuesEnum: [Output Only] Continent for this location, which
+      can take one of the following values: - AFRICA - ASIA_PAC - EUROPE -
+      NORTH_AMERICA - SOUTH_AMERICA
+    LacpValueValuesEnum: [Output Only] Link Aggregation Control Protocol
+      (LACP) constraints, which can take one of the following values:
+      LACP_SUPPORTED, LACP_UNSUPPORTED
+    StatusValueValuesEnum: [Output Only] The status of this
+      InterconnectRemoteLocation, which can take one of the following values:
+      - CLOSED: The InterconnectRemoteLocation is closed and is unavailable
+      for provisioning new Cross-Cloud Interconnects. - AVAILABLE: The
+      InterconnectRemoteLocation is available for provisioning new Cross-Cloud
+      Interconnects.
+
+  Fields:
+    address: [Output Only] The postal address of the Point of Presence, each
+      line in the address is separated by a newline character.
+    attachmentConfigurationConstraints: [Output Only] Subset of fields from
+      InterconnectAttachment's |configurationConstraints| field that apply to
+      all attachments for this remote location.
+    city: [Output Only] Metropolitan area designator that indicates which city
+      an interconnect is located. For example: "Chicago, IL", "Amsterdam,
+      Netherlands".
+    constraints: [Output Only] Constraints on the parameters for creating
+      Cross-Cloud Interconnect and associated InterconnectAttachments.
+    continent: [Output Only] Continent for this location, which can take one
+      of the following values: - AFRICA - ASIA_PAC - EUROPE - NORTH_AMERICA -
+      SOUTH_AMERICA
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: [Output Only] An optional description of the resource.
+    facilityProvider: [Output Only] The name of the provider for this facility
+      (e.g., EQUINIX).
+    facilityProviderFacilityId: [Output Only] A provider-assigned Identifier
+      for this facility (e.g., Ashburn-DC1).
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always
+      compute#interconnectRemoteLocation for interconnect remote locations.
+    lacp: [Output Only] Link Aggregation Control Protocol (LACP) constraints,
+      which can take one of the following values: LACP_SUPPORTED,
+      LACP_UNSUPPORTED
+    maxLagSize100Gbps: [Output Only] The maximum number of 100 Gbps ports
+      supported in a link aggregation group (LAG). When linkType is 100 Gbps,
+      requestedLinkCount cannot exceed max_lag_size_100_gbps.
+    maxLagSize10Gbps: [Output Only] The maximum number of 10 Gbps ports
+      supported in a link aggregation group (LAG). When linkType is 10 Gbps,
+      requestedLinkCount cannot exceed max_lag_size_10_gbps.
+    name: [Output Only] Name of the resource.
+    peeringdbFacilityId: [Output Only] The peeringdb identifier for this
+      facility (corresponding with a netfac type in peeringdb).
+    permittedConnections: [Output Only] Permitted connections.
+    remoteService: [Output Only] Indicates the service provider present at the
+      remote location. Example values: "Amazon Web Services", "Microsoft
+      Azure".
+    selfLink: [Output Only] Server-defined URL for the resource.
+    status: [Output Only] The status of this InterconnectRemoteLocation, which
+      can take one of the following values: - CLOSED: The
+      InterconnectRemoteLocation is closed and is unavailable for provisioning
+      new Cross-Cloud Interconnects. - AVAILABLE: The
+      InterconnectRemoteLocation is available for provisioning new Cross-Cloud
+      Interconnects.
+  """
+
+  class ContinentValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Continent for this location, which can take one of the
+    following values: - AFRICA - ASIA_PAC - EUROPE - NORTH_AMERICA -
+    SOUTH_AMERICA
+
+    Values:
+      AFRICA: <no description>
+      ASIA_PAC: <no description>
+      EUROPE: <no description>
+      NORTH_AMERICA: <no description>
+      SOUTH_AMERICA: <no description>
+    """
+    AFRICA = 0
+    ASIA_PAC = 1
+    EUROPE = 2
+    NORTH_AMERICA = 3
+    SOUTH_AMERICA = 4
+
+  class LacpValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Link Aggregation Control Protocol (LACP) constraints,
+    which can take one of the following values: LACP_SUPPORTED,
+    LACP_UNSUPPORTED
+
+    Values:
+      LACP_SUPPORTED: LACP_SUPPORTED: LACP is supported, and enabled by
+        default on the Cross-Cloud Interconnect.
+      LACP_UNSUPPORTED: LACP_UNSUPPORTED: LACP is not supported and is not be
+        enabled on this port. GetDiagnostics shows bundleAggregationType as
+        "static". GCP does not support LAGs without LACP, so
+        requestedLinkCount must be 1.
+    """
+    LACP_SUPPORTED = 0
+    LACP_UNSUPPORTED = 1
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of this InterconnectRemoteLocation, which can
+    take one of the following values: - CLOSED: The InterconnectRemoteLocation
+    is closed and is unavailable for provisioning new Cross-Cloud
+    Interconnects. - AVAILABLE: The InterconnectRemoteLocation is available
+    for provisioning new Cross-Cloud Interconnects.
+
+    Values:
+      AVAILABLE: The InterconnectRemoteLocation is available for provisioning
+        new Cross-Cloud Interconnects.
+      CLOSED: The InterconnectRemoteLocation is closed for provisioning new
+        Cross-Cloud Interconnects.
+    """
+    AVAILABLE = 0
+    CLOSED = 1
+
+  address = _messages.StringField(1)
+  attachmentConfigurationConstraints = _messages.MessageField('InterconnectAttachmentConfigurationConstraints', 2)
+  city = _messages.StringField(3)
+  constraints = _messages.MessageField('InterconnectRemoteLocationConstraints', 4)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 5)
+  creationTimestamp = _messages.StringField(6)
+  description = _messages.StringField(7)
+  facilityProvider = _messages.StringField(8)
+  facilityProviderFacilityId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#interconnectRemoteLocation')
+  lacp = _messages.EnumField('LacpValueValuesEnum', 12)
+  maxLagSize100Gbps = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  maxLagSize10Gbps = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  name = _messages.StringField(15)
+  peeringdbFacilityId = _messages.StringField(16)
+  permittedConnections = _messages.MessageField('InterconnectRemoteLocationPermittedConnections', 17, repeated=True)
+  remoteService = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+
+
+class InterconnectRemoteLocationConstraints(_messages.Message):
+  r"""A InterconnectRemoteLocationConstraints object.
+
+  Enums:
+    PortPairRemoteLocationValueValuesEnum: [Output Only] Port pair remote
+      location constraints, which can take one of the following values:
+      PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION,
+      PORT_PAIR_MATCHING_REMOTE_LOCATION. GCP's API refers only to individual
+      ports, but the UI uses this field when ordering a pair of ports, to
+      prevent users from accidentally ordering something that is incompatible
+      with their cloud provider. Specifically, when ordering a redundant pair
+      of Cross-Cloud Interconnect ports, and one of them uses a remote
+      location with portPairMatchingRemoteLocation set to matching, the UI
+      requires that both ports use the same remote location.
+    PortPairVlanValueValuesEnum: [Output Only] Port pair VLAN constraints,
+      which can take one of the following values:
+      PORT_PAIR_UNCONSTRAINED_VLAN, PORT_PAIR_MATCHING_VLAN
+
+  Fields:
+    portPairRemoteLocation: [Output Only] Port pair remote location
+      constraints, which can take one of the following values:
+      PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION,
+      PORT_PAIR_MATCHING_REMOTE_LOCATION. GCP's API refers only to individual
+      ports, but the UI uses this field when ordering a pair of ports, to
+      prevent users from accidentally ordering something that is incompatible
+      with their cloud provider. Specifically, when ordering a redundant pair
+      of Cross-Cloud Interconnect ports, and one of them uses a remote
+      location with portPairMatchingRemoteLocation set to matching, the UI
+      requires that both ports use the same remote location.
+    portPairVlan: [Output Only] Port pair VLAN constraints, which can take one
+      of the following values: PORT_PAIR_UNCONSTRAINED_VLAN,
+      PORT_PAIR_MATCHING_VLAN
+    subnetLengthRange: [Output Only] [min-length, max-length] The minimum and
+      maximum value (inclusive) for the IPv4 subnet length. For example, an
+      interconnectRemoteLocation for Azure has {min: 30, max: 30} because
+      Azure requires /30 subnets. This range specifies the values supported by
+      both cloud providers. Interconnect currently supports /29 and /30 IPv4
+      subnet lengths. If a remote cloud has no constraint on IPv4 subnet
+      length, the range would thus be {min: 29, max: 30}.
+  """
+
+  class PortPairRemoteLocationValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Port pair remote location constraints, which can take
+    one of the following values: PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION,
+    PORT_PAIR_MATCHING_REMOTE_LOCATION. GCP's API refers only to individual
+    ports, but the UI uses this field when ordering a pair of ports, to
+    prevent users from accidentally ordering something that is incompatible
+    with their cloud provider. Specifically, when ordering a redundant pair of
+    Cross-Cloud Interconnect ports, and one of them uses a remote location
+    with portPairMatchingRemoteLocation set to matching, the UI requires that
+    both ports use the same remote location.
+
+    Values:
+      PORT_PAIR_MATCHING_REMOTE_LOCATION: If
+        PORT_PAIR_MATCHING_REMOTE_LOCATION, the remote cloud provider
+        allocates ports in pairs, and the user should choose the same remote
+        location for both ports.
+      PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION: If
+        PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION, a user may opt to provision a
+        redundant pair of Cross-Cloud Interconnects using two different remote
+        locations in the same city.
+    """
+    PORT_PAIR_MATCHING_REMOTE_LOCATION = 0
+    PORT_PAIR_UNCONSTRAINED_REMOTE_LOCATION = 1
+
+  class PortPairVlanValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Port pair VLAN constraints, which can take one of the
+    following values: PORT_PAIR_UNCONSTRAINED_VLAN, PORT_PAIR_MATCHING_VLAN
+
+    Values:
+      PORT_PAIR_MATCHING_VLAN: If PORT_PAIR_MATCHING_VLAN, the Interconnect
+        for this attachment is part of a pair of ports that should have
+        matching VLAN allocations. This occurs with Cross-Cloud Interconnect
+        to Azure remote locations. While GCP's API does not explicitly group
+        pairs of ports, the UI uses this field to ensure matching VLAN ids
+        when configuring a redundant VLAN pair.
+      PORT_PAIR_UNCONSTRAINED_VLAN: PORT_PAIR_UNCONSTRAINED_VLAN means there
+        is no constraint.
+    """
+    PORT_PAIR_MATCHING_VLAN = 0
+    PORT_PAIR_UNCONSTRAINED_VLAN = 1
+
+  portPairRemoteLocation = _messages.EnumField('PortPairRemoteLocationValueValuesEnum', 1)
+  portPairVlan = _messages.EnumField('PortPairVlanValueValuesEnum', 2)
+  subnetLengthRange = _messages.MessageField('InterconnectRemoteLocationConstraintsSubnetLengthRange', 3)
+
+
+class InterconnectRemoteLocationConstraintsSubnetLengthRange(_messages.Message):
+  r"""A InterconnectRemoteLocationConstraintsSubnetLengthRange object.
+
+  Fields:
+    max: A integer attribute.
+    min: A integer attribute.
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class InterconnectRemoteLocationList(_messages.Message):
+  r"""Response to the list request, and contains a list of interconnect remote
+  locations.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InterconnectRemoteLocation resources.
+    kind: [Output Only] Type of resource. Always
+      compute#interconnectRemoteLocationList for lists of interconnect remote
+      locations.
+    nextPageToken: [Output Only] This token lets you get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      MISSING_TYPE_DEPENDENCY = 10
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 11
+      NEXT_HOP_CANNOT_IP_FORWARD = 12
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 13
+      NEXT_HOP_INSTANCE_NOT_FOUND = 14
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 15
+      NEXT_HOP_NOT_RUNNING = 16
+      NOT_CRITICAL_ERROR = 17
+      NO_RESULTS_ON_PAGE = 18
+      PARTIAL_SUCCESS = 19
+      REQUIRED_TOS_AGREEMENT = 20
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 21
+      RESOURCE_NOT_DELETED = 22
+      SCHEMA_VALIDATION_IGNORED = 23
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 24
+      UNDECLARED_PROPERTIES = 25
+      UNREACHABLE = 26
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('InterconnectRemoteLocation', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#interconnectRemoteLocationList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class InterconnectRemoteLocationPermittedConnections(_messages.Message):
+  r"""A InterconnectRemoteLocationPermittedConnections object.
+
+  Fields:
+    interconnectLocation: [Output Only] URL of an Interconnect location that
+      is permitted to connect to this Interconnect remote location.
+  """
+
+  interconnectLocation = _messages.StringField(1)
 
 
 class InterconnectsGetDiagnosticsResponse(_messages.Message):
@@ -47473,9 +48131,9 @@ class NetworkAttachment(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    fingerprint: [Output Only] Fingerprint of this resource. A hash of the
-      contents stored in this object. This field is used in optimistic
-      locking. An up-to-date fingerprint must be provided in order to patch.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. An up-to-date
+      fingerprint must be provided in order to patch.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
     kind: [Output Only] Type of the resource.
@@ -47487,7 +48145,10 @@ class NetworkAttachment(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     network: [Output Only] The URL of the network which the Network Attachment
-      belongs to.
+      belongs to. Practically it is inferred by fetching the network of the
+      first subnetwork associated. Because it is required that all the
+      subnetworks must be from the same network, it is assured that the
+      Network Attachment belongs to the same network as all the subnetworks.
     producerAcceptLists: Projects that are allowed to connect to this network
       attachment. The project can be specified using its id or number.
     producerRejectLists: Projects that are not allowed to connect to this

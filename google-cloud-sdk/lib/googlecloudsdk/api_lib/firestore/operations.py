@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,27 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.firestore import api_utils
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
-OPERATIONS_API_VERSION = 'v1'
 DEFAULT_PAGE_SIZE = 100
 
 
-def GetClient():
-  """Returns the Cloud Firestore client for operations."""
-  return apis.GetClientInstance('firestore', OPERATIONS_API_VERSION)
-
-
-def GetService():
+def _GetOperationService():
   """Returns the service for interacting with the Operations service."""
-  return GetClient().projects_databases_operations
-
-
-def GetMessages():
-  """Import and return the appropriate operations messages module."""
-  return apis.GetMessagesModule('firestore', OPERATIONS_API_VERSION)
+  return api_utils.GetClient().projects_databases_operations
 
 
 def ListOperations(project, database, limit=None, operation_filter=None):
@@ -56,37 +45,48 @@ def ListOperations(project, database, limit=None, operation_filter=None):
   Returns:
     a generator of Operations.
   """
-  list_request = GetMessages().FirestoreProjectsDatabasesOperationsListRequest(
-      filter=operation_filter,
-      name='projects/{0}/databases/{1}'.format(project, database))
+  list_request = (
+      api_utils.GetMessages().FirestoreProjectsDatabasesOperationsListRequest(
+          filter=operation_filter,
+          name='projects/{0}/databases/{1}'.format(project, database),
+      )
+  )
   batch_size = min(limit, DEFAULT_PAGE_SIZE) if limit else DEFAULT_PAGE_SIZE
   return list_pager.YieldFromList(
-      GetService(),
+      _GetOperationService(),
       list_request,
       limit=limit,
       batch_size=batch_size,
       field='operations',
-      batch_size_attribute='pageSize')
+      batch_size_attribute='pageSize',
+  )
 
 
 def GetOperation(name):
   """Returns the google.longrunning.Operation with the given name."""
-  return GetService().Get(
-      GetMessages().FirestoreProjectsDatabasesOperationsGetRequest(name=name))
+  return _GetOperationService().Get(
+      api_utils.GetMessages().FirestoreProjectsDatabasesOperationsGetRequest(
+          name=name
+      )
+  )
 
 
 def CancelOperation(name):
   """Cancels the Operation with the given name."""
-  return GetService().Cancel(
-      GetMessages().FirestoreProjectsDatabasesOperationsCancelRequest(
-          name=name))
+  return _GetOperationService().Cancel(
+      api_utils.GetMessages().FirestoreProjectsDatabasesOperationsCancelRequest(
+          name=name
+      )
+  )
 
 
 def DeleteOperation(name):
   """Deletes the Operation with the given name."""
-  return GetService().Delete(
-      GetMessages().FirestoreProjectsDatabasesOperationsDeleteRequest(
-          name=name))
+  return _GetOperationService().Delete(
+      api_utils.GetMessages().FirestoreProjectsDatabasesOperationsDeleteRequest(
+          name=name
+      )
+  )
 
 
 def WaitForOperation(operation):
@@ -94,10 +94,10 @@ def WaitForOperation(operation):
   operation_ref = resources.REGISTRY.Parse(
       operation.name,
       collection='firestore.projects.databases.operations',
-      api_version=OPERATIONS_API_VERSION)
-  poller = waiter.CloudOperationPollerNoResources(GetService(),
-                                                  lambda x: x.RelativeName())
+      api_version=api_utils.FIRESTORE_API_VERSION)
+  poller = waiter.CloudOperationPollerNoResources(
+      _GetOperationService(), lambda x: x.RelativeName()
+  )
   return waiter.WaitFor(
       poller, operation_ref,
       'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))
-

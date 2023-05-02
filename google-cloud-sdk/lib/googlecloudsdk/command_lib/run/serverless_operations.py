@@ -79,7 +79,7 @@ class UnknownAPIError(exceptions.Error):
 
 
 @contextlib.contextmanager
-def Connect(conn_context):
+def Connect(conn_context, already_activated_service=False):
   """Provide a ServerlessOperations instance to use.
 
   If we're using the GKE Serverless Add-on, connect to the relevant cluster.
@@ -88,6 +88,10 @@ def Connect(conn_context):
   Arguments:
     conn_context: a context manager that yields a ConnectionInfo and manages a
       dynamic context that makes connecting to serverless possible.
+    already_activated_service: bool that should be true if we already checked
+    if the run.googleapis.com service was enabled. If this is true,
+    we skip prompting the user to enable the service because they should have
+    already been prompted if the API wasn't activated.
 
   Yields:
     A ServerlessOperations instance.
@@ -100,19 +104,22 @@ def Connect(conn_context):
   # values from the connection context.
   # pylint: disable=protected-access
   op_client = apis.GetClientInstance(
-      conn_context.api_name, conn_context.api_version
+      conn_context.api_name,
+      conn_context.api_version,
+      skip_activation_prompt=already_activated_service
   )
   # pylint: enable=protected-access
 
   with conn_context as conn_info:
+    response_func = (
+        apis.CheckResponseForApiEnablement(already_activated_service)
+        if conn_context.supports_one_platform else None)
     # pylint: disable=protected-access
     client = apis_internal._GetClientInstance(
         conn_info.api_name,
         conn_info.api_version,
         # Only check response if not connecting to GKE
-        check_response_func=apis.CheckResponseForApiEnablement()
-        if conn_context.supports_one_platform
-        else None,
+        check_response_func=response_func,
         http_client=conn_context.HttpClient(),
     )
     # pylint: enable=protected-access
@@ -1042,10 +1049,16 @@ class ServerlessOperations(object):
     )
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
-  def _BuildFromSource(self, tracker, build_messages, build_config):
+  def _BuildFromSource(
+      self, tracker, build_messages, build_config, skip_activation_prompt=False
+  ):
     """Build an image from source if a user specifies a source when deploying."""
     build, build_op = submit_util.Build(
-        build_messages, True, build_config, hide_logs=True
+        build_messages,
+        True,
+        build_config,
+        hide_logs=True,
+        skip_activation_prompt=skip_activation_prompt,
     )
     build_op_ref = resources.REGISTRY.ParseRelativeName(
         build_op.name, 'cloudbuild.operations'
@@ -1074,6 +1087,7 @@ class ServerlessOperations(object):
       build_pack=None,
       build_source=None,
       repo_to_create=None,
+      already_activated_services=False,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -1100,6 +1114,8 @@ class ServerlessOperations(object):
       repo_to_create: Optional
         googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
         repository to be created.
+      already_activated_services: bool. If true, skip activation prompts for
+        services
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -1117,14 +1133,21 @@ class ServerlessOperations(object):
       )
 
     if repo_to_create:
-      self._CreateRepository(tracker, repo_to_create)
+      self._CreateRepository(
+          tracker,
+          repo_to_create,
+          skip_activation_prompt=already_activated_services,
+      )
 
     if build_source is not None:
       build_messages, build_config = self._UploadSource(
           tracker, build_image, build_source, build_pack
       )
       build_op_ref, build_log_url = self._BuildFromSource(
-          tracker, build_messages, build_config
+          tracker,
+          build_messages,
+          build_config,
+          skip_activation_prompt=already_activated_services,
       )
       response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':
@@ -1515,7 +1538,9 @@ class ServerlessOperations(object):
       )
 
     if repo_to_create:
-      self._CreateRepository(tracker, repo_to_create)
+      self._CreateRepository(
+          tracker, repo_to_create, skip_activation_prompt=False
+      )
 
     if build_source is not None:
       build_messages, build_config = self._UploadSource(
@@ -1884,11 +1909,11 @@ class ServerlessOperations(object):
     )
     return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))
 
-  def _CreateRepository(self, tracker, repo_to_create):
+  def _CreateRepository(self, tracker, repo_to_create, skip_activation_prompt):
     """Create an artifact repository."""
     tracker.StartStage(stages.CREATE_REPO)
     tracker.UpdateHeaderMessage('Creating Container Repository.')
-    artifact_registry.CreateRepository(repo_to_create)
+    artifact_registry.CreateRepository(repo_to_create, skip_activation_prompt)
     tracker.CompleteStage(stages.CREATE_REPO)
 
   def _UploadSource(self, tracker, build_image, build_source, build_pack):

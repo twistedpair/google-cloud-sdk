@@ -38,17 +38,17 @@ _REGIONAL_IAM_REGEX = re.compile(
 _DEFAULT_API_VERSION = 'v1alpha1'
 _GLOBAL_REGION = 'global'
 
-_CONVERGE = 'converge'
-_ALLOWED_VENDORS = [_CONVERGE]
+_PFORG = 'pforg'
+_ALLOWED_PRODUCTS = [_PFORG]
 
 
-def _ValidateVendor(vendor):
-  """Validates vendor property. Returns custom error message if invalid."""
-  if vendor in _ALLOWED_VENDORS:
+def _ValidateProduct(product):
+  """Validates product property. Returns custom error message if invalid."""
+  if product in _ALLOWED_PRODUCTS:
     pass
   else:
-    raise DetailedArgumentError('Allowed vendors are %s' %
-                                json.dumps(_ALLOWED_VENDORS))
+    raise DetailedArgumentError('Allowed products are %s' %
+                                json.dumps(_ALLOWED_PRODUCTS))
 
 
 def _ParseError(error):
@@ -193,11 +193,11 @@ class MpsClient(object):
         batch_size=page_size,
         field='locations')
 
-  def AggregateListInstances(self, project_resource, vendor, limit=None):
+  def AggregateListInstances(self, project_resource, product, limit=None):
     """Make a series of List Instance requests."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_resource = 'convergeInstances'
         return self.AggregateYieldFromList(
             self.converge_instances_service,
@@ -209,24 +209,24 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def GetInstance(self, vendor, resource):
+  def GetInstance(self, product, resource):
     """Make a Get Instance request. Return details of specified instance."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     resource = resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeInstancesGetRequest(
             name=resource)
         return self.converge_instances_service.Get(converge_request)
     except exceptions.Error as e:
       return e
 
-  def ListInstances(self, vendor, location_resource):
+  def ListInstances(self, product, location_resource):
     """Make a List Instances request. Return list of instances."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     location = location_resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeInstancesListRequest(
             parent=location)
         return self.converge_instances_service.List(
@@ -234,11 +234,11 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def AggregateListVolumes(self, project_resource, vendor, limit=None):
+  def AggregateListVolumes(self, project_resource, product, limit=None):
     """Make a series of List Volume requests."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_resource = 'convergeVolumes'
         return self.AggregateYieldFromList(
             self.converge_volumes_service,
@@ -250,24 +250,24 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def GetVolume(self, vendor, resource):
+  def GetVolume(self, product, resource):
     """Make a Get Volume request. Return details of specified volume."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     resource = resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeVolumesGetRequest(
             name=resource)
         return self.converge_volumes_service.Get(converge_request)
     except exceptions.Error as e:
       return e
 
-  def ListVolumes(self, vendor, location_resource):
+  def ListVolumes(self, product, location_resource):
     """Make a List Volumes request. Return list of volumes."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     location = location_resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeVolumesListRequest(
             parent=location)
         return self.converge_volumes_service.List(
@@ -275,11 +275,11 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def AggregateListImages(self, project_resource, vendor, limit=None):
+  def AggregateListImages(self, project_resource, product, limit=None):
     """Make a series of List Image requests."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_resource = 'convergeImages'
         return self.AggregateYieldFromList(
             self.converge_images_service,
@@ -291,24 +291,24 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def GetImage(self, vendor, resource):
+  def GetImage(self, product, resource):
     """Make a Get Image request. Return details of specified image."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     resource = resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeImagesGetRequest(
             name=resource)
         return self.converge_images_service.Get(converge_request)
     except exceptions.Error as e:
       return e
 
-  def ListImages(self, vendor, location_resource):
+  def ListImages(self, product, location_resource):
     """Make a List Images request. Return list of images."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     location = location_resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeImagesListRequest(
             parent=location)
         return self.converge_images_service.List(
@@ -316,11 +316,11 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def AggregateListNetworks(self, project_resource, vendor, limit=None):
+  def AggregateListNetworks(self, project_resource, product, limit=None):
     """Make a series of List Networks requests."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_resource = 'convergeNetworks'
         return self.AggregateYieldFromList(
             self.converge_networks_service,
@@ -332,24 +332,24 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def GetNetwork(self, vendor, resource):
+  def GetNetwork(self, product, resource):
     """Make a Get Network request. Return details of specified network."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     resource = resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeNetworksGetRequest(
             name=resource)
         return self.converge_networks_service.Get(converge_request)
     except exceptions.Error as e:
       return e
 
-  def ListNetworks(self, vendor, location_resource):
+  def ListNetworks(self, product, location_resource):
     """Make a List Networks request. Return list of networks."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     location = location_resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeNetworksListRequest(
             parent=location)
         return self.converge_networks_service.List(
@@ -357,11 +357,11 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def AggregateListSSHKeys(self, project_resource, vendor, limit=None):
+  def AggregateListSSHKeys(self, project_resource, product, limit=None):
     """Make a series of List SSH keys requests."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_resource = 'convergeSshKeys'
         return self.AggregateYieldFromList(
             self.converge_sshkeys_service,
@@ -373,24 +373,24 @@ class MpsClient(object):
     except exceptions.Error as e:
       return e
 
-  def GetSSHKey(self, vendor, resource):
+  def GetSSHKey(self, product, resource):
     """Make a Get SSH Key request. Return details of specified SSH key."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     try:
       resource = resource.RelativeName()
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeSshKeysGetRequest(
             name=resource)
         return self.converge_sshkeys_service.Get(converge_request)
     except exceptions.Error as e:
       return e
 
-  def ListSSHKeys(self, vendor, location_resource):
+  def ListSSHKeys(self, product, location_resource):
     """Make a List SSH Keys request. Return list of SSH keys."""
-    _ValidateVendor(vendor)
+    _ValidateProduct(product)
     location = location_resource.RelativeName()
     try:
-      if vendor == _CONVERGE:
+      if product == _PFORG:
         converge_request = self.messages.MarketplacesolutionsProjectsLocationsConvergeSshKeysListRequest(
             parent=location)
         return self.converge_sshkeys_service.List(

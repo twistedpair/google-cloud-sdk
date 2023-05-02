@@ -193,7 +193,7 @@ def PromptToEnableApi(project, service_token, exception,
     raise exception
 
 
-def CheckResponseForApiEnablement():
+def CheckResponseForApiEnablement(skip_activation_prompt=False):
   """Returns a callback for checking API errors."""
   state = {'already_prompted_to_enable': False}
 
@@ -220,7 +220,7 @@ def CheckResponseForApiEnablement():
     response_as_error = apitools_exceptions.HttpError.FromResponse(response)
     enablement_info = GetApiEnablementInfo(response_as_error)
     if enablement_info:
-      if state['already_prompted_to_enable']:
+      if state['already_prompted_to_enable'] or skip_activation_prompt:
         raise apitools_exceptions.RequestError('Retry')
       state['already_prompted_to_enable'] = True
       PromptToEnableApi(*enablement_info)
@@ -242,10 +242,13 @@ def GetClientClass(api_name, api_version):
   return apis_internal._GetClientClass(api_name, api_version)
 
 
-def GetClientInstance(api_name,
-                      api_version,
-                      no_http=False,
-                      http_timeout_sec=None):
+def GetClientInstance(
+    api_name,
+    api_version,
+    no_http=False,
+    http_timeout_sec=None,
+    skip_activation_prompt=False,
+):
   """Returns an instance of the API client specified in the args.
 
   Args:
@@ -253,6 +256,7 @@ def GetClientInstance(api_name,
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
     http_timeout_sec: int, seconds for http timeout, default if None.
+    skip_activation_prompt: bool, if true, do not prompt for service activation.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -263,8 +267,9 @@ def GetClientInstance(api_name,
       api_version,
       no_http,
       None,
-      CheckResponseForApiEnablement(),
-      http_timeout_sec=http_timeout_sec)
+      CheckResponseForApiEnablement(skip_activation_prompt),
+      http_timeout_sec=http_timeout_sec,
+  )
 
 
 def GetGapicClientClass(api_name,

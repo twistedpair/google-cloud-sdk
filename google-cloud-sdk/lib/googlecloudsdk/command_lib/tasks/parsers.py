@@ -728,7 +728,7 @@ def _ParseUriOverride(messages,
   return messages.UriOverride(
       scheme=scheme,
       host=host,
-      port=int(port),
+      port=port,
       pathOverride=messages.PathOverride(path=path),
       queryOverride=messages.QueryOverride(queryParams=query),
       uriOverrideEnforceMode=uri_override_enforce_mode)

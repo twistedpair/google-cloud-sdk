@@ -165,7 +165,6 @@ def AddControlPlaneKMSKey(parser):
 def AddSystemAddonsConfig(parser):
   parser.add_argument(
       '--system-addons-config',
-      hidden=True,
       type=arg_parsers.YAMLFileContents(),
       help="""
       If specified as a YAML/JSON file, customized configuration in this file
@@ -188,7 +187,6 @@ def AddSystemAddonsConfig(parser):
 def AddExternalLbIpv4AddressPools(parser):
   parser.add_argument(
       '--external-lb-ipv4-address-pools',
-      hidden=True,
       type=arg_parsers.ArgList(),
       metavar='EXTERNAL_LB_IPV4_ADDRESS',
       help="""
@@ -208,7 +206,6 @@ def AddExternalLbIpv4AddressPools(parser):
 def AddControlPlaneNodeLocation(parser):
   parser.add_argument(
       '--control-plane-node-location',
-      hidden=True,
       help="""
       Google Edge Cloud zone where the local control plane nodes
       will be created.
@@ -219,7 +216,6 @@ def AddControlPlaneNodeLocation(parser):
 def AddControlPlaneNodeCount(parser):
   parser.add_argument(
       '--control-plane-node-count',
-      hidden=True,
       help="""
       The number of local control plane nodes in a cluster. Use one to create
       a single-node control plane or use three to create a high availability
@@ -232,7 +228,6 @@ def AddControlPlaneNodeCount(parser):
 def AddControlPlaneMachineFilter(parser):
   parser.add_argument(
       '--control-plane-machine-filter',
-      hidden=True,
       help="""
       Only machines matching this filter will be allowed to host
       local control plane nodes.
@@ -245,7 +240,6 @@ def AddControlPlaneMachineFilter(parser):
 def AddControlPlaneSharedDeploymentPolicy(parser):
   parser.add_argument(
       '--control-plane-shared-deployment-policy',
-      hidden=True,
       help="""
       Policy configuration about how user application is deployed for
       local control plane cluster. It supports two values, ALLOWED and
@@ -261,7 +255,6 @@ def AddControlPlaneSharedDeploymentPolicy(parser):
 def AddLROMaximumTimeout(parser):
   parser.add_argument(
       '--lro-timeout',
-      hidden=True,
       help="""
       Overwrite the default LRO maximum timeout.
       """

@@ -90,10 +90,7 @@ def finalize_download(
     (bool) True if file was decompressed, renamed, and/or converted to a
       symlink; False if file did not exist.
   """
-  make_symlink = (
-      convert_symlinks
-      and symlink_util.is_symlink_from_cloud_resource(source_resource)
-  )
+  make_symlink = convert_symlinks and source_resource.is_symlink
   if make_symlink:
     # The decompressed/renamed content is a symlink placeholder, so store it as
     # as a temporary placeholder alongside the original temporary_file_path.

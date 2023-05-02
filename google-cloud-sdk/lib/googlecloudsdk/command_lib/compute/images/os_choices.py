@@ -34,6 +34,7 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
     'rhel-9',
     'rhel-9-byol',
     'rocky-8',
+    'rocky-9',
     'sles-12',
     'sles-12-byol',
     'sles-sap-12',

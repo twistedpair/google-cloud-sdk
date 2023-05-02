@@ -263,6 +263,7 @@ class _UserRequestArgs:
       predefined_acl_string=None,
       predefined_default_object_acl_string=None,
       preserve_posix=None,
+      preserve_symlinks=None,
       resource_args=None,
   ):
     """Sets properties."""
@@ -277,6 +278,7 @@ class _UserRequestArgs:
         predefined_default_object_acl_string
     )
     self.preserve_posix = preserve_posix
+    self.preserve_symlinks = preserve_symlinks
     self.resource_args = resource_args
 
   def __eq__(self, other):
@@ -293,6 +295,8 @@ class _UserRequestArgs:
         and self.predefined_acl_string == other.predefined_acl_string
         and self.predefined_default_object_acl_string
         == other.predefined_default_object_acl_string
+        and self.preserve_posix == other.preserve_posix
+        and self.preserve_symlinks == other.preserve_symlinks
         and self.resource_args == other.resource_args
     )
 
@@ -434,6 +438,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           args, 'predefined_default_object_acl', None
       ),
       preserve_posix=getattr(args, 'preserve_posix', None),
+      preserve_symlinks=getattr(args, 'preserve_symlinks', None),
       resource_args=resource_args,
   )
 

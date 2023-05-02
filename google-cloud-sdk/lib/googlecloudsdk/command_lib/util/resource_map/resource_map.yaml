@@ -1630,9 +1630,11 @@ compute:
   regionSecurityPolicies:
     supported_apis:
     - alpha
+    - beta
   regionSecurityPolicyRules:
     supported_apis:
     - alpha
+    - beta
   regionSslCertificates:
     supported_apis:
     - alpha

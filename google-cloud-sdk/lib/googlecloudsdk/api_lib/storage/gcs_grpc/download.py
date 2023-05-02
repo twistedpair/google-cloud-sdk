@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_download
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util
@@ -33,7 +34,8 @@ class GrpcDownload(gcs_download.GcsDownload):
                start_byte,
                end_byte,
                digesters,
-               progress_callback):
+               progress_callback,
+               download_strategy):
     """Initializes a GrpcDownload instance.
 
     Args:
@@ -46,12 +48,15 @@ class GrpcDownload(gcs_download.GcsDownload):
       end_byte (int): See super class.
       digesters (dict): See cloud_api.CloudApi.download_object.
       progress_callback (function): See cloud_api.CloudApi.download_object.
+      download_strategy (cloud_api.DownloadStrategy): Download strategy used to
+        perform the download.
     """
     super(__class__, self).__init__(download_stream, start_byte, end_byte)
     self._gapic_client = gapic_client
     self._cloud_resource = cloud_resource
     self._digesters = digesters
     self._progress_callback = progress_callback
+    self._download_strategy = download_strategy
 
   def should_retry(self, exc_type, exc_value, exc_traceback):
     """See super class."""
@@ -67,6 +72,7 @@ class GrpcDownload(gcs_download.GcsDownload):
         progress_callback=self._progress_callback,
         start_byte=self._start_byte,
         end_byte=self._end_byte,
+        download_strategy=self._download_strategy,
     )
 
   @retry_util.grpc_default_retryer
@@ -84,3 +90,10 @@ class GrpcDownload(gcs_download.GcsDownload):
       Encoding string for object if requested. Otherwise, None.
     """
     return self.launch()
+
+  def run(self):
+    """See super class."""
+    if self._download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
+      return self.simple_download()
+    else:
+      return super(__class__, self).run(retriable_in_flight=True)

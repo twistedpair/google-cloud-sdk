@@ -3063,12 +3063,18 @@ class GdceClusterConfig(_messages.Message):
   r"""The target GDCE cluster config.
 
   Fields:
+    gdcEdgeIdentityProvider: Optional. The name of the identity provider
+      associated with the GDCE cluster.
     gdcEdgeMembershipTarget: Optional. A target GDCE cluster to deploy to. It
       must be in the same project and region as the Dataproc cluster'. Format:
       'projects/{project}/locations/{location}/clusters/{cluster_id}'
+    gdcEdgeWorkloadIdentityPool: Optional. The workload identity pool
+      associated with the fleet.
   """
 
-  gdcEdgeMembershipTarget = _messages.StringField(1)
+  gdcEdgeIdentityProvider = _messages.StringField(1)
+  gdcEdgeMembershipTarget = _messages.StringField(2)
+  gdcEdgeWorkloadIdentityPool = _messages.StringField(3)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -4467,20 +4473,20 @@ class LoggingConfig(_messages.Message):
 
   Messages:
     DriverLogLevelsValue: The per-package log levels for the driver. This may
-      include "root" package name to configure rootLogger. Examples:
-      'com.google = FATAL', 'root = INFO', 'org.apache = DEBUG'
+      include "root" package name to configure rootLogger. Examples: -
+      'com.google = FATAL' - 'root = INFO' - 'org.apache = DEBUG'
 
   Fields:
     driverLogLevels: The per-package log levels for the driver. This may
-      include "root" package name to configure rootLogger. Examples:
-      'com.google = FATAL', 'root = INFO', 'org.apache = DEBUG'
+      include "root" package name to configure rootLogger. Examples: -
+      'com.google = FATAL' - 'root = INFO' - 'org.apache = DEBUG'
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DriverLogLevelsValue(_messages.Message):
     r"""The per-package log levels for the driver. This may include "root"
-    package name to configure rootLogger. Examples: 'com.google = FATAL',
-    'root = INFO', 'org.apache = DEBUG'
+    package name to configure rootLogger. Examples: - 'com.google = FATAL' -
+    'root = INFO' - 'org.apache = DEBUG'
 
     Messages:
       AdditionalProperty: An additional property for a DriverLogLevelsValue
@@ -4626,19 +4632,20 @@ class MetastoreConfig(_messages.Message):
 
 
 class Metric(_messages.Message):
-  r"""A Dataproc OSS metric.
+  r"""A Dataproc custom metric.
 
   Enums:
-    MetricSourceValueValuesEnum: Required. Default metrics are collected
-      unless metricOverrides are specified for the metric source (see
-      Available OSS metrics (https://cloud.google.com/dataproc/docs/guides/mon
-      itoring#available_oss_metrics) for more information).
+    MetricSourceValueValuesEnum: Required. A standard set of metrics is
+      collected unless metricOverrides are specified for the metric source
+      (see Custom metrics
+      (https://cloud.google.com/dataproc/docs/guides/dataproc-
+      metrics#custom_metrics) for more information).
 
   Fields:
-    metricOverrides: Optional. Specify one or more available OSS metrics (http
-      s://cloud.google.com/dataproc/docs/guides/monitoring#available_oss_metri
-      cs) to collect for the metric course (for the SPARK metric source, any
-      Spark metric
+    metricOverrides: Optional. Specify one or more Custom metrics
+      (https://cloud.google.com/dataproc/docs/guides/dataproc-
+      metrics#custom_metrics) to collect for the metric course (for the SPARK
+      metric source (any Spark metric
       (https://spark.apache.org/docs/latest/monitoring.html#metrics) can be
       specified).Provide metrics in the following format: METRIC_SOURCE:
       INSTANCE:GROUP:METRIC Use camelcase as appropriate.Examples:
@@ -4646,30 +4653,30 @@ class Metric(_messages.Message):
       spark:driver:DAGScheduler:job.allJobs
       sparkHistoryServer:JVM:Memory:NonHeapMemoryUsage.committed
       hiveserver2:JVM:Memory:NonHeapMemoryUsage.used Notes: Only the specified
-      overridden metrics will be collected for the metric source. For example,
-      if one or more spark:executive metrics are listed as metric overrides,
-      other SPARK metrics will not be collected. The collection of the default
-      metrics for other OSS metric sources is unaffected. For example, if both
+      overridden metrics are collected for the metric source. For example, if
+      one or more spark:executive metrics are listed as metric overrides,
+      other SPARK metrics are not collected. The collection of the metrics for
+      other enabled custom metric sources is unaffected. For example, if both
       SPARK andd YARN metric sources are enabled, and overrides are provided
-      for Spark metrics only, all default YARN metrics will be collected.
-    metricSource: Required. Default metrics are collected unless
-      metricOverrides are specified for the metric source (see Available OSS
-      metrics (https://cloud.google.com/dataproc/docs/guides/monitoring#availa
-      ble_oss_metrics) for more information).
+      for Spark metrics only, all YARN metrics are collected.
+    metricSource: Required. A standard set of metrics is collected unless
+      metricOverrides are specified for the metric source (see Custom metrics
+      (https://cloud.google.com/dataproc/docs/guides/dataproc-
+      metrics#custom_metrics) for more information).
   """
 
   class MetricSourceValueValuesEnum(_messages.Enum):
-    r"""Required. Default metrics are collected unless metricOverrides are
-    specified for the metric source (see Available OSS metrics (https://cloud.
-    google.com/dataproc/docs/guides/monitoring#available_oss_metrics) for more
-    information).
+    r"""Required. A standard set of metrics is collected unless
+    metricOverrides are specified for the metric source (see Custom metrics
+    (https://cloud.google.com/dataproc/docs/guides/dataproc-
+    metrics#custom_metrics) for more information).
 
     Values:
       METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source.
-      MONITORING_AGENT_DEFAULTS: Default monitoring agent metrics. If this
-        source is enabled, Dataproc enables the monitoring agent in Compute
-        Engine, and collects default monitoring agent metrics, which are
-        published with an agent.googleapis.com prefix.
+      MONITORING_AGENT_DEFAULTS: Monitoring agent metrics. If this source is
+        enabled, Dataproc enables the monitoring agent in Compute Engine, and
+        collects monitoring agent metrics, which are published with an
+        agent.googleapis.com prefix.
       HDFS: HDFS metric source.
       SPARK: Spark metric source.
       YARN: YARN metric source.
@@ -5756,6 +5763,7 @@ class Session(_messages.Message):
     name: Required. The resource name of the session.
     runtimeConfig: Optional. Runtime configuration for the session execution.
     runtimeInfo: Output only. Runtime information about session execution.
+    sessionTemplateConfig: Optional. Session template config for the session.
     spark: Optional. Spark engine config.
     state: Output only. A state of the session.
     stateHistory: Output only. Historical state information for the session.
@@ -5822,13 +5830,14 @@ class Session(_messages.Message):
   name = _messages.StringField(6)
   runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
   runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
-  spark = _messages.MessageField('SparkConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateHistory = _messages.MessageField('SessionStateHistory', 11, repeated=True)
-  stateMessage = _messages.StringField(12)
-  stateTime = _messages.StringField(13)
-  user = _messages.StringField(14)
-  uuid = _messages.StringField(15)
+  sessionTemplateConfig = _messages.MessageField('SessionTemplateConfig', 9)
+  spark = _messages.MessageField('SparkConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateHistory = _messages.MessageField('SessionStateHistory', 12, repeated=True)
+  stateMessage = _messages.StringField(13)
+  stateTime = _messages.StringField(14)
+  user = _messages.StringField(15)
+  uuid = _messages.StringField(16)
 
 
 class SessionOperationMetadata(_messages.Message):
@@ -6005,6 +6014,21 @@ class SessionTemplate(_messages.Message):
   runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
   spark = _messages.MessageField('SparkConfig', 8)
   updateTime = _messages.StringField(9)
+
+
+class SessionTemplateConfig(_messages.Message):
+  r"""Session Template config associated with the session.
+
+  Fields:
+    templateUri: Optional. The session template used by the session.Only
+      resource names including projectid and location (region) are valid.
+      Example: https://www.googleapis.com/compute/v1/projects/[project_id]/loc
+      ations/[dataproc_region]/sessionTemplates/[template_id] projects/[projec
+      t_id]/locations/[dataproc_region]/sessionTemplates/[template_id]Note
+      that the template must be in the same project and Dataproc region.
+  """
+
+  templateUri = _messages.StringField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):

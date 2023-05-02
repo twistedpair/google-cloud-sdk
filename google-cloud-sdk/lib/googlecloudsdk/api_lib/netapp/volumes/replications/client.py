@@ -208,20 +208,18 @@ class ReplicationsClient(object):
     return self.WaitForOperation(operation_ref)
 
   def ResumeReplication(
-      self, replication_ref, replication_config, async_
+      self, replication_ref, async_
   ):
     """Resume a Cloud NetApp Volume Replication.
 
     Args:
       replication_ref: the reference to the Replication.
-      replication_config: Replication config, the updated replication.
       async_: bool, if False, wait for the operation to complete.
 
     Returns:
       an Operation or Volume message.
     """
-    resume_op = self._adapter.ResumeReplication(replication_ref,
-                                                replication_config)
+    resume_op = self._adapter.ResumeReplication(replication_ref)
     if async_:
       return resume_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
@@ -229,22 +227,20 @@ class ReplicationsClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
-  def ReverseReplicationDirection(
-      self, replication_ref, replication_config, async_
+  def ReverseReplication(
+      self, replication_ref, async_
   ):
     """Reverse the direction of a Cloud NetApp Volume Replication.
 
     Args:
       replication_ref: the reference to the Replication.
-      replication_config: Replication config, the updated replication.
       async_: bool, if False, wait for the operation to complete.
 
     Returns:
-      an Operation or Volume message.
+      an Operation if async_ is set to true, or a Replication message if the
+      ReverseReplicationDirectionRequest is successful.
     """
-    reverse_op = self._adapter.ReverseReplicationDirection(
-        replication_ref, replication_config
-    )
+    reverse_op = self._adapter.ReverseReplication(replication_ref)
     if async_:
       return reverse_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
@@ -309,28 +305,25 @@ class BetaReplicationsAdapter(object):
     return replication_config
 
   def ResumeReplication(self,
-                        replication_ref,
-                        replication_config):
+                        replication_ref):
     """Send a resume request for the Cloud NetApp Volume Replication."""
     resume_request = (
         self.messages.NetappProjectsLocationsVolumesReplicationsResumeRequest(
             name=replication_ref.RelativeName(),
-            replication=replication_config,
         )
     )
     return self.client.projects_locations_volumes_replications.Resume(
         resume_request
     )
 
-  def ReverseReplication(self, replication_ref, replication_config):
+  def ReverseReplication(self, replication_ref):
     """Send a reverse request for the Cloud NetApp Volume Replication."""
     reverse_request = (
-        self.messages.NetappProjectsLocationsVolumesReplicationsReverseRequest(
+        self.messages.NetappProjectsLocationsVolumesReplicationsReverseDirectionRequest(
             name=replication_ref.RelativeName(),
-            replication=replication_config,
         )
     )
-    return self.client.projects_locations_volumes_replications.Reverse(
+    return self.client.projects_locations_volumes_replications.ReverseDirection(
         reverse_request
     )
 

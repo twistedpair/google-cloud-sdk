@@ -33,6 +33,32 @@ def GetMessages():
   return apis.GetMessagesModule('containeranalysis', 'v1')
 
 
+def GetClientV1beta1():
+  return apis.GetClientInstance('containeranalysis', 'v1beta1')
+
+
+def GetMessagesV1beta1():
+  return apis.GetMessagesModule('containeranalysis', 'v1beta1')
+
+
+def ListOccurrencesV1beta1(project, res_filter, page_size=None):
+  """List occurrences for resources in a project."""
+  client = GetClientV1beta1()
+  messages = GetMessagesV1beta1()
+  project_ref = resources.REGISTRY.Parse(
+      project, collection='cloudresourcemanager.projects'
+  )
+  return list_pager.YieldFromList(
+      client.projects_occurrences,
+      request=messages.ContaineranalysisProjectsOccurrencesListRequest(
+          parent=project_ref.RelativeName(), filter=res_filter
+      ),
+      field='occurrences',
+      batch_size=page_size,
+      batch_size_attribute='pageSize',
+  )
+
+
 def ListOccurrences(project, res_filter):
   """List occurrences for resources in a project."""
   client = GetClient()

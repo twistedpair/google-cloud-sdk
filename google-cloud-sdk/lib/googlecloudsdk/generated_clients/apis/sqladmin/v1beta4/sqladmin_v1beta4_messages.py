@@ -470,6 +470,14 @@ class ConnectSettings(_messages.Message):
         version is 31.
       MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
         version is 32.
+      MYSQL_8_0_33: The database major version is MySQL 8.0 and the minor
+        version is 33.
+      MYSQL_8_0_34: The database major version is MySQL 8.0 and the minor
+        version is 34.
+      MYSQL_8_0_35: The database major version is MySQL 8.0 and the minor
+        version is 35.
+      MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
+        version is 36.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -502,10 +510,14 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_30 = 22
     MYSQL_8_0_31 = 23
     MYSQL_8_0_32 = 24
-    SQLSERVER_2019_STANDARD = 25
-    SQLSERVER_2019_ENTERPRISE = 26
-    SQLSERVER_2019_EXPRESS = 27
-    SQLSERVER_2019_WEB = 28
+    MYSQL_8_0_33 = 25
+    MYSQL_8_0_34 = 26
+    MYSQL_8_0_35 = 27
+    MYSQL_8_0_36 = 28
+    SQLSERVER_2019_STANDARD = 29
+    SQLSERVER_2019_ENTERPRISE = 30
+    SQLSERVER_2019_EXPRESS = 31
+    SQLSERVER_2019_WEB = 32
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -513,6 +525,16 @@ class ConnectSettings(_messages.Message):
   kind = _messages.StringField(4)
   region = _messages.StringField(5)
   serverCaCert = _messages.MessageField('SslCert', 6)
+
+
+class DataCacheConfig(_messages.Message):
+  r"""Data cache configurations.
+
+  Fields:
+    dataCacheEnabled: Whether data cache is enabled for the instance.
+  """
+
+  dataCacheEnabled = _messages.BooleanField(1)
 
 
 class Database(_messages.Message):
@@ -576,6 +598,7 @@ class DatabaseInstance(_messages.Message):
     InstalledVersionValueValuesEnum: Stores the current database version
       including minor version such as `MYSQL_8_0_18`.
     InstanceTypeValueValuesEnum: The instance type.
+    SqlNetworkArchitectureValueValuesEnum:
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
     SuspensionReasonValueListEntryValuesEnum:
 
@@ -583,8 +606,8 @@ class DatabaseInstance(_messages.Message):
     FailoverReplicaValue: The name and status of the failover replica.
 
   Fields:
-    availableMaintenanceVersions: List all maintenance versions applicable on
-      the instance
+    availableMaintenanceVersions: Output only. List all maintenance versions
+      applicable on the instance
     backendType: The backend type. `SECOND_GEN`: Cloud SQL database instance.
       `EXTERNAL`: A database server that is not managed by Google. This
       property is read-only; use the `tier` property in the `settings` object
@@ -660,6 +683,7 @@ class DatabaseInstance(_messages.Message):
     serviceAccountEmailAddress: The service account email address assigned to
       the instance. \This property is read-only.
     settings: The user settings.
+    sqlNetworkArchitecture: A SqlNetworkArchitectureValueValuesEnum attribute.
     state: The current serving state of the Cloud SQL instance.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
@@ -723,6 +747,14 @@ class DatabaseInstance(_messages.Message):
         version is 31.
       MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
         version is 32.
+      MYSQL_8_0_33: The database major version is MySQL 8.0 and the minor
+        version is 33.
+      MYSQL_8_0_34: The database major version is MySQL 8.0 and the minor
+        version is 34.
+      MYSQL_8_0_35: The database major version is MySQL 8.0 and the minor
+        version is 35.
+      MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
+        version is 36.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -755,10 +787,14 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_30 = 22
     MYSQL_8_0_31 = 23
     MYSQL_8_0_32 = 24
-    SQLSERVER_2019_STANDARD = 25
-    SQLSERVER_2019_ENTERPRISE = 26
-    SQLSERVER_2019_EXPRESS = 27
-    SQLSERVER_2019_WEB = 28
+    MYSQL_8_0_33 = 25
+    MYSQL_8_0_34 = 26
+    MYSQL_8_0_35 = 27
+    MYSQL_8_0_36 = 28
+    SQLSERVER_2019_STANDARD = 29
+    SQLSERVER_2019_ENTERPRISE = 30
+    SQLSERVER_2019_EXPRESS = 31
+    SQLSERVER_2019_WEB = 32
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -800,6 +836,14 @@ class DatabaseInstance(_messages.Message):
         version is 31.
       MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
         version is 32.
+      MYSQL_8_0_33: The database major version is MySQL 8.0 and the minor
+        version is 33.
+      MYSQL_8_0_34: The database major version is MySQL 8.0 and the minor
+        version is 34.
+      MYSQL_8_0_35: The database major version is MySQL 8.0 and the minor
+        version is 35.
+      MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
+        version is 36.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -832,10 +876,14 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_30 = 22
     MYSQL_8_0_31 = 23
     MYSQL_8_0_32 = 24
-    SQLSERVER_2019_STANDARD = 25
-    SQLSERVER_2019_ENTERPRISE = 26
-    SQLSERVER_2019_EXPRESS = 27
-    SQLSERVER_2019_WEB = 28
+    MYSQL_8_0_33 = 25
+    MYSQL_8_0_34 = 26
+    MYSQL_8_0_35 = 27
+    MYSQL_8_0_36 = 28
+    SQLSERVER_2019_STANDARD = 29
+    SQLSERVER_2019_ENTERPRISE = 30
+    SQLSERVER_2019_EXPRESS = 31
+    SQLSERVER_2019_WEB = 32
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -853,6 +901,18 @@ class DatabaseInstance(_messages.Message):
     CLOUD_SQL_INSTANCE = 1
     ON_PREMISES_INSTANCE = 2
     READ_REPLICA_INSTANCE = 3
+
+  class SqlNetworkArchitectureValueValuesEnum(_messages.Enum):
+    r"""SqlNetworkArchitectureValueValuesEnum enum type.
+
+    Values:
+      SQL_NETWORK_ARCHITECTURE_UNSPECIFIED: <no description>
+      NEW_NETWORK_ARCHITECTURE: Instance is a Tenancy Unit (TU) instance.
+      OLD_NETWORK_ARCHITECTURE: Instance is an Umbrella instance.
+    """
+    SQL_NETWORK_ARCHITECTURE_UNSPECIFIED = 0
+    NEW_NETWORK_ARCHITECTURE = 1
+    OLD_NETWORK_ARCHITECTURE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current serving state of the Cloud SQL instance.
@@ -951,8 +1011,9 @@ class DatabaseInstance(_messages.Message):
   serverCaCert = _messages.MessageField('SslCert', 35)
   serviceAccountEmailAddress = _messages.StringField(36)
   settings = _messages.MessageField('Settings', 37)
-  state = _messages.EnumField('StateValueValuesEnum', 38)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 39, repeated=True)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 38)
+  state = _messages.EnumField('StateValueValuesEnum', 39)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 40, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1330,6 +1391,14 @@ class Flag(_messages.Message):
         version is 31.
       MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
         version is 32.
+      MYSQL_8_0_33: The database major version is MySQL 8.0 and the minor
+        version is 33.
+      MYSQL_8_0_34: The database major version is MySQL 8.0 and the minor
+        version is 34.
+      MYSQL_8_0_35: The database major version is MySQL 8.0 and the minor
+        version is 35.
+      MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
+        version is 36.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1362,10 +1431,14 @@ class Flag(_messages.Message):
     MYSQL_8_0_30 = 22
     MYSQL_8_0_31 = 23
     MYSQL_8_0_32 = 24
-    SQLSERVER_2019_STANDARD = 25
-    SQLSERVER_2019_ENTERPRISE = 26
-    SQLSERVER_2019_EXPRESS = 27
-    SQLSERVER_2019_WEB = 28
+    MYSQL_8_0_33 = 25
+    MYSQL_8_0_34 = 26
+    MYSQL_8_0_35 = 27
+    MYSQL_8_0_36 = 28
+    SQLSERVER_2019_STANDARD = 29
+    SQLSERVER_2019_ENTERPRISE = 30
+    SQLSERVER_2019_EXPRESS = 31
+    SQLSERVER_2019_WEB = 32
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -2461,6 +2534,7 @@ class Settings(_messages.Message):
       instances. Indicates whether database flags for crash-safe replication
       are enabled. This property was only applicable to First Generation
       instances.
+    dataCacheConfig: Configuration for data cache.
     dataDiskSizeGb: The size of data disk, in GB. The data disk size minimum
       is 10GB.
     dataDiskType: The type of data disk: `PD_SSD` (default) or `PD_HDD`. Not
@@ -2669,31 +2743,32 @@ class Settings(_messages.Message):
   collation = _messages.StringField(7)
   connectorEnforcement = _messages.EnumField('ConnectorEnforcementValueValuesEnum', 8)
   crashSafeReplicationEnabled = _messages.BooleanField(9)
-  dataDiskSizeGb = _messages.IntegerField(10)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 11)
-  databaseFlags = _messages.MessageField('DatabaseFlags', 12, repeated=True)
-  databaseReplicationEnabled = _messages.BooleanField(13)
-  deletionProtectionEnabled = _messages.BooleanField(14)
-  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 15, repeated=True)
-  insightsConfig = _messages.MessageField('InsightsConfig', 16)
-  instanceVersion = _messages.StringField(17)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 18)
-  kind = _messages.StringField(19)
-  locationPreference = _messages.MessageField('LocationPreference', 20)
-  maintenanceVersion = _messages.StringField(21)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 22)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 23)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 24)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(25)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 26)
-  settingsVersion = _messages.IntegerField(27)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 28)
-  storageAutoResize = _messages.BooleanField(29)
-  storageAutoResizeLimit = _messages.IntegerField(30)
-  tier = _messages.StringField(31)
-  timeZone = _messages.StringField(32)
-  userLabels = _messages.MessageField('UserLabelsValue', 33)
-  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 34)
+  dataCacheConfig = _messages.MessageField('DataCacheConfig', 10)
+  dataDiskSizeGb = _messages.IntegerField(11)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 12)
+  databaseFlags = _messages.MessageField('DatabaseFlags', 13, repeated=True)
+  databaseReplicationEnabled = _messages.BooleanField(14)
+  deletionProtectionEnabled = _messages.BooleanField(15)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 16, repeated=True)
+  insightsConfig = _messages.MessageField('InsightsConfig', 17)
+  instanceVersion = _messages.StringField(18)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 19)
+  kind = _messages.StringField(20)
+  locationPreference = _messages.MessageField('LocationPreference', 21)
+  maintenanceVersion = _messages.StringField(22)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 23)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 24)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 25)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(26)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 27)
+  settingsVersion = _messages.IntegerField(28)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 29)
+  storageAutoResize = _messages.BooleanField(30)
+  storageAutoResizeLimit = _messages.IntegerField(31)
+  tier = _messages.StringField(32)
+  timeZone = _messages.StringField(33)
+  userLabels = _messages.MessageField('UserLabelsValue', 34)
+  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 35)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3079,12 +3154,14 @@ class SqlInstancesGetDiskShrinkConfigResponse(_messages.Message):
 
   Fields:
     kind: This is always `sql#getDiskShrinkConfig`.
+    message: Additional message to customers.
     minimalTargetSizeGb: The minimum size to which a disk can be shrunk in
       GigaBytes.
   """
 
   kind = _messages.StringField(1)
-  minimalTargetSizeGb = _messages.IntegerField(2)
+  message = _messages.StringField(2)
+  minimalTargetSizeGb = _messages.IntegerField(3)
 
 
 class SqlInstancesGetRequest(_messages.Message):

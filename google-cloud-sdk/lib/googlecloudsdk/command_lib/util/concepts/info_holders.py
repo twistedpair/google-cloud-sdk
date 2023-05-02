@@ -236,9 +236,9 @@ class ResourceInfo(ConceptInfo):
           # This may be an error, but existence of fallthroughs should not be
           # enforced here.
           continue
-        hint = '\nTo set the `{}` attribute:{}.'.format(
-            attr_name,
-            ';'.join(hints))
+        hint = '\n\nTo set the `{}` attribute:{}.'.format(
+            attr_name, ';'.join(hints)
+        )
         description.append(hint)
     return ' '.join(description)
 
@@ -275,8 +275,9 @@ class ResourceInfo(ConceptInfo):
     hints = [
         '\n* {}'.format(hint) for hint in self.GetHints(attribute.name)]
     if hints:
-      hint = '\nTo set the `{}` attribute:{}.'.format(attribute.name,
-                                                      ';'.join(hints))
+      hint = '\n\nTo set the `{}` attribute:{}.'.format(
+          attribute.name, ';'.join(hints)
+      )
       help_text += hint
     return help_text.format(resource=expansion_name)
 

@@ -45,13 +45,20 @@ class Destination(_messages.Message):
       is supported. Format:
       `projects/{project}/locations/{location}/functions/{function}`
     cloudRun: Cloud Run fully-managed resource that receives the data. The
-      resource should be in the same project as the stream.
-    serviceDirectory: A service registered with Service directory.
+      resource should be in the same region as the stream.
+    networkConfig: Optional. Network config is used to configure how Message
+      Streams resolves and connect to a destination.
+    uri: The URI of the target service. The value must be a RFC2396 URI
+      string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
+      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
+      The host can be either a static IP address or a internal DNS hostname of
+      the service resolvable via Cloud DNS.
   """
 
   cloudFunction = _messages.StringField(1)
   cloudRun = _messages.MessageField('CloudRun', 2)
-  serviceDirectory = _messages.MessageField('ServiceDirectory', 3)
+  networkConfig = _messages.MessageField('NetworkConfig', 3)
+  uri = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -90,7 +97,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListStreamsResponse(_messages.Message):
-  r"""Message for response to listing Streams
+  r"""Message for response to listing streams
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -105,7 +112,7 @@ class ListStreamsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -295,6 +302,8 @@ class MessagestreamsProjectsLocationsStreamsDeleteRequest(_messages.Message):
   r"""A MessagestreamsProjectsLocationsStreamsDeleteRequest object.
 
   Fields:
+    etag: Optional. If provided, the stream will only be deleted if the etag
+      matches the current etag on the resource.
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -309,8 +318,9 @@ class MessagestreamsProjectsLocationsStreamsDeleteRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class MessagestreamsProjectsLocationsStreamsGetRequest(_messages.Message):
@@ -346,7 +356,9 @@ class MessagestreamsProjectsLocationsStreamsPatchRequest(_messages.Message):
   r"""A MessagestreamsProjectsLocationsStreamsPatchRequest object.
 
   Fields:
-    name: name of resource
+    name: The resource name of the stream. Must be unique within the location
+      of the project and must be in
+      `projects/{project}/locations/{location}/streams/{stream}` format.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -370,6 +382,23 @@ class MessagestreamsProjectsLocationsStreamsPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   stream = _messages.MessageField('Stream', 3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Represents a network config to be used for destination resolution and
+  connectivity.
+
+  Fields:
+    domainSuffix: Optional. The domain suffix of the private DNS zone in
+      target VPC. The DNS zone should reside in the same project and VPC of
+      the `network_attachment` field. Example: `my_project.internal`.
+    networkAttachment: Required. Name of the NetworkAttachment that allows
+      access to the consumer VPC. Format: `projects/{PROJECT_ID}/regions/{REGI
+      ON}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
+  """
+
+  domainSuffix = _messages.StringField(1)
+  networkAttachment = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -507,34 +536,15 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class Pubsub(_messages.Message):
-  r"""Represents a Pub/Sub transport.
+class Source(_messages.Message):
+  r"""Represents the source where we stream data from.
 
   Fields:
-    subscription: Required. The name of the Pub/Sub subscription to stream
-      from. Format: `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
-    topic: Optional. The name of the Pub/Sub topic to stream from. Format:
-      `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`.
+    pubsubSubscription: The name of the Pub/Sub subscription to stream from.
+      Format: `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
   """
 
-  subscription = _messages.StringField(1)
-  topic = _messages.StringField(2)
-
-
-class ServiceDirectory(_messages.Message):
-  r"""Represents a Service Directory service destination
-
-  Fields:
-    path: Optional. The relative path on the Service Directory service that
-      events should be sent to. Service Directory may not be aware of the
-      implementation of individual services, please ensure that your actual
-      destination service supports relative paths before enabling this.
-    service: Required. The Service Directory service name. Format: `projects/{
-      project}/locations/{location}/namespaces/{namespace}/services/{service}`
-  """
-
-  path = _messages.StringField(1)
-  service = _messages.StringField(2)
+  pubsubSubscription = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -655,27 +665,61 @@ class Stream(_messages.Message):
   r"""The representation of the stream resource.
 
   Messages:
+    AnnotationsValue: User-defined annotations. See
+      https://google.aip.dev/128#annotations
     LabelsValue: Labels as key value pairs
 
   Fields:
+    annotations: User-defined annotations. See
+      https://google.aip.dev/128#annotations
     createTime: Output only. [Output only] Create time stamp
     destination: Required. Destination specifies where the stream sends data
       to. Streams are created in the same region as the destination.
+    displayName: Display name of resource.
+    etag: Output only. This checksum is computed by the server based on the
+      value of other fields, and might be sent only on create requests to
+      ensure that the client has an up-to-date value before proceeding.
     labels: Labels as key value pairs
-    name: name of resource
-    networkAttachment: Required. Network attachment that enables streams to be
-      estalished on the consumer VPC.
-    serviceAccount: Optional. The IAM service account email associated with
+    name: The resource name of the stream. Must be unique within the location
+      of the project and must be in
+      `projects/{project}/locations/{location}/streams/{stream}` format.
+    serviceAccount: Required. The IAM service account email associated with
       the stream. The service account represents the identity of the stream.
       The principal who calls this API must have `iam.serviceAccounts.actAs`
       permission in the service account. See
       https://cloud.google.com/iam/docs/understanding-service-
       accounts?hl=en#sa_common for more information.
-    transport: Required. MessageStreams streams messages from a transport
-      intermediary. This field contains a reference to that transport
-      intermediary. This information can be used for debugging purposes.
+    source: Required. Source specifies where the stream reads data from.
+    uid: Output only. Server-assigned unique identifier for the stream. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""User-defined annotations. See https://google.aip.dev/128#annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -701,25 +745,17 @@ class Stream(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  destination = _messages.MessageField('Destination', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  networkAttachment = _messages.StringField(5)
-  serviceAccount = _messages.StringField(6)
-  transport = _messages.MessageField('Transport', 7)
-  updateTime = _messages.StringField(8)
-
-
-class Transport(_messages.Message):
-  r"""Represents the transport intermediaries where we stream data from.
-
-  Fields:
-    pubsub: The Pub/Sub topic and subscription used by Eventarc as delivery
-      intermediary.
-  """
-
-  pubsub = _messages.MessageField('Pubsub', 1)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  destination = _messages.MessageField('Destination', 3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  source = _messages.MessageField('Source', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -20,8 +20,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.core import log
 
 
 def get_full_bucket_name(bucket_name):
@@ -35,7 +38,8 @@ def download_object(gapic_client,
                     digesters,
                     progress_callback,
                     start_byte,
-                    end_byte):
+                    end_byte,
+                    download_strategy):
   """Downloads the object using gRPC."""
   # Initialize request arguments.
   bucket_name = get_full_bucket_name(cloud_resource.storage_url.bucket_name)
@@ -50,10 +54,20 @@ def download_object(gapic_client,
 
   # Handle the response.
   processed_bytes = start_byte
+  # For example, can happen if piping to a command that only reads one line.
+  destination_pipe_is_broken = False
   for response in stream:
     data = response.checksummed_data.content
     if data:
-      download_stream.write(data)
+      try:
+        download_stream.write(data)
+      except BrokenPipeError:
+        if download_strategy is cloud_api.DownloadStrategy.ONE_SHOT:
+          log.info('Writing to download stream raised broken pipe error.')
+          destination_pipe_is_broken = True
+          break
+        raise
+
       if digesters:
         for hash_object in digesters.values():
           hash_object.update(data)
@@ -62,32 +76,56 @@ def download_object(gapic_client,
       if progress_callback:
         progress_callback(processed_bytes)
 
+  target_size = (
+      end_byte - start_byte + 1 if end_byte is not None else cloud_resource.size
+  )
+  total_downloaded_data = processed_bytes - start_byte
+  if target_size != total_downloaded_data and not destination_pipe_is_broken:
+    # The input stream terminated before the entire content was read,
+    # possibly due to a network condition.
+    message = (
+        'Download not completed. Target size={}, downloaded data={}.'
+        ' The input stream terminated before the entire content was read,'
+        ' possibly due to a network condition.'.format(
+            target_size, total_downloaded_data))
+    log.debug(message)
+    raise cloud_errors.RetryableApiError(message)
+
 
 def _get_write_object_spec(client, object_resource, size):
   destination_object = client.types.Object(
       name=object_resource.storage_url.object_name,
       bucket='projects/_/buckets/{}'.format(
-          object_resource.storage_url.bucket_name),
-      size=size)
+          object_resource.storage_url.bucket_name
+      ),
+      size=size,
+  )
   return client.types.WriteObjectSpec(
-      resource=destination_object, object_size=size)
+      resource=destination_object, object_size=size
+  )
 
 
 def _simple_upload_write_object_request_generator(
-    client, stream, destination_resource, resource_args):
+    client, stream, destination_resource, resource_args
+):
   """Yields the WriteObjectRequest for each chunk of the source stream."""
   first_request_done = False
   while True:
     data = stream.read(
-        client.types.ServiceConstants.Values.MAX_WRITE_CHUNK_BYTES)
+        client.types.ServiceConstants.Values.MAX_WRITE_CHUNK_BYTES
+    )
     if data:
       if not first_request_done:
         write_object_spec = _get_write_object_spec(
-            client, destination_resource, resource_args.size)
+            client, destination_resource, resource_args.size
+        )
         object_checksums = client.types.ObjectChecksums(
             md5_hash=(
                 hash_util.get_bytes_from_base64_string(resource_args.md5_hash)
-                if resource_args.md5_hash is not None else None))
+                if resource_args.md5_hash is not None
+                else None
+            )
+        )
         write_offset = 0
         first_request_done = True
       else:

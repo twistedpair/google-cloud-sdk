@@ -41,6 +41,10 @@ ALL_DATA_SENT_WAIT_TIME_SEC = 10
 RECONNECT_INITIAL_SLEEP_MS = 1500
 
 
+class SendAckNotification(exceptions.Error):
+  pass
+
+
 class ConnectionCreationError(exceptions.Error):
   pass
 
@@ -105,6 +109,8 @@ class IapTunnelWebSocket(object):
     # Indicates that after getting a local input EOF, we have send all previous
     # local data over the websocket.
     self._sent_all = threading.Event()
+    # Used to prevent multiple Ack requests from filling the _unsent_data queue.
+    self._cant_send_ack = threading.Event()
 
     self._total_bytes_confirmed = 0
     self._total_bytes_received = 0
@@ -304,8 +310,13 @@ class IapTunnelWebSocket(object):
                    exc_info=True)
         else:
           raise
+      finally:
+        self._cant_send_ack.clear()
 
   def _MaybeSendAck(self):
+    """Decide if an ACK should be sent back to the server."""
+    if self._cant_send_ack.is_set():
+      return
     # Using these extra variables because the line is too long otherwise
     total_bytes = self._total_bytes_received
     bytes_recv_and_ackd = self._total_bytes_received_and_acked
@@ -314,7 +325,10 @@ class IapTunnelWebSocket(object):
     # at least 2x the window size before we send ack messages,
     # to avoid wasting cpu cycles on both ends
     if total_bytes - bytes_recv_and_ackd > 2 * window_size:
-      self._SendAck()
+      self._cant_send_ack.set()
+      # Place into queue instead of calling _SendAck() to ensure only the
+      # sending thread will send the data.
+      self._unsent_data.put(SendAckNotification)
 
   def _SendDataAndReconnectWebSocket(self):
     """Main function for send_and_reconnect_thread."""
@@ -351,6 +365,7 @@ class IapTunnelWebSocket(object):
           if not self._data_to_resend.empty():
             data = self._data_to_resend.get()
           else:
+            # TODO(b/279928850): Possibly remove timeout.
             data = self._unsent_data.get(timeout=
                                          MAX_WEBSOCKET_SEND_WAIT_TIME_SEC)
         except queue.Empty:
@@ -367,6 +382,10 @@ class IapTunnelWebSocket(object):
           if data is EOFError:
             self._input_eof = True
           break
+
+        if data is SendAckNotification:
+          self._SendAck()
+          continue
 
         # We need to append to _unconfirmed_data before calling Send(), because
         # otherwise we could receive the ack for the sent data before we do the
@@ -499,6 +518,7 @@ class IapTunnelWebSocket(object):
 
     data, bytes_left = utils.ExtractSubprotocolData(binary_data)
     self._total_bytes_received += len(data)
+    self._MaybeSendAck()
     try:
       self._data_handler_callback(data)
     except:  # pylint: disable=bare-except

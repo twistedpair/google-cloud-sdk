@@ -73,7 +73,7 @@ class Cluster(_messages.Message):
     endpoint: Output only. The IP address of the Kubernetes API server.
     externalLoadBalancerIpv4AddressPools: Optional. Address pools for cluster
       data plane external load balancing.
-    fleet: Optional. Fleet configuration.
+    fleet: Required. Fleet configuration.
     labels: Labels associated with this resource.
     maintenancePolicy: Optional. Cluster-wide maintenance policy
       configuration.
@@ -835,7 +835,7 @@ class LocalDiskEncryption(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1036,6 +1036,43 @@ class MaintenanceWindow(_messages.Message):
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 1)
 
 
+class NodeConfig(_messages.Message):
+  r"""Configuration for each node in the NodePool
+
+  Messages:
+    LabelsValue: Optional. The Kubernetes node labels
+
+  Fields:
+    labels: Optional. The Kubernetes node labels
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The Kubernetes node labels
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class NodePool(_messages.Message):
   r"""A set of Kubernetes nodes in a cluster with common configuration and
   specification.
@@ -1052,6 +1089,7 @@ class NodePool(_messages.Message):
       the node pool. The filtering language accepts strings like "name=", and
       is documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: Required. The resource name of the node pool.
+    nodeConfig: Optional. Configuration for each node in the NodePool
     nodeCount: Required. The number of nodes in the pool.
     nodeLocation: Name of the Google Distributed Cloud Edge zone where this
       node pool will be created. For example: `us-central1-edge-customer-a`.
@@ -1091,11 +1129,12 @@ class NodePool(_messages.Message):
   localDiskEncryption = _messages.MessageField('LocalDiskEncryption', 3)
   machineFilter = _messages.StringField(4)
   name = _messages.StringField(5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(7)
-  nodeVersion = _messages.StringField(8)
-  site = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  nodeConfig = _messages.MessageField('NodeConfig', 6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(8)
+  nodeVersion = _messages.StringField(9)
+  site = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class Operation(_messages.Message):

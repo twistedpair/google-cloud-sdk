@@ -18808,6 +18808,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetNatIpInfo(self, request, global_params=None):
+      r"""Retrieves runtime NAT IP information.
+
+      Args:
+        request: (ComputeRoutersGetNatIpInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NatIpInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetNatIpInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNatIpInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.getNatIpInfo',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['natName'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getNatIpInfo',
+        request_field='',
+        request_type_name='ComputeRoutersGetNatIpInfoRequest',
+        response_type_name='NatIpInfoResponse',
+        supports_download=False,
+    )
+
     def GetNatMappingInfo(self, request, global_params=None):
       r"""Retrieves runtime Nat mapping information of VM endpoints.
 

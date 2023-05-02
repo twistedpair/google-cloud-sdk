@@ -40,6 +40,7 @@ from googlecloudsdk.command_lib.run.integrations import typekits_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
+import six
 
 # Max wait time before timing out
 _POLLING_TIMEOUT_MS = 180000
@@ -49,6 +50,8 @@ _RETRY_TIMEOUT_MS = 1000
 _SERVICE_TYPE = 'service'
 
 _DEFAULT_APP_NAME = 'default'
+
+ALL_REGIONS = '-'
 
 
 @contextlib.contextmanager
@@ -671,24 +674,62 @@ class RunAppsOperations(object):
     """
     return types_utils.GetTypeMetadata(type_name)
 
-  def ListIntegrations(self, integration_type_filter, service_name_filter):
-    """Returns the list of integrations.
+  def ListIntegrations(
+      self, integration_type_filter: str, service_name_filter: str,
+      region: str = None):
+    """Returns the list of integrations from the default applications.
+
+    If a '-' is provided for the region, then list applications will be called.
+    This is for the global integrations list call.  Any other time
+    the default region (either from --region or from gcloud config) will be
+    used to fetch the default application.  If the global call is not needed,
+    then fetching from a single region will reduce latency and remove the need
+    of filtering out non default applications.
 
     Args:
-      integration_type_filter: str, if populated integration type to filter by.
-      service_name_filter: str, if populated service name to filter by.
+      integration_type_filter: if populated integration type to filter by.
+      service_name_filter: if populated service name to filter by.
+      region: GCP region. If not provided, then the region will be pulled
+        from the flag or from the config.  Only '-', which is the global region
+        has any effect here.
 
     Returns:
       List of Dicts containing name, type, and services.
-
     """
-    app = api_utils.GetApplication(self._client,
-                                   self.GetAppRef(_DEFAULT_APP_NAME))
-    if not app:
+    # Instant ccfe does not work well for global APIs, so for local development
+    # with instant ccfe we will default back to fetching the region via
+    # config.
+    endpoint = properties.VALUES.api_endpoint_overrides.runapps.Get()
+    if region == ALL_REGIONS and not _IsLocalHost(endpoint):
+      apps = api_utils.ListApplications(self._client, self.ListAppsRequest())
+    else:
+      apps = api_utils.GetApplication(self._client,
+                                      self.GetAppRef(_DEFAULT_APP_NAME))
+    if not apps:
       return []
 
-    app_dict = encoding.MessageToDict(app)
-    app_resources = app_dict.get('config', {}).get('resources')
+    apps_dict = encoding.MessageToDict(apps)
+    if 'applications' not in apps_dict:
+      # Single default application, structure it similar to the response of
+      # the ListApplications calls for code reuse below.
+      apps_dict = {'applications': [apps_dict]}
+    else:
+      # Note we cannot filter via the ListApplications API since filtering
+      # is limited with wildcards. Since the name of the application has the
+      # form projects/<proj-name>/locations/<location>/applications/default'
+      # we can't simply use the following filter: 'filter=name="default"'
+      apps_dict = _FilterForDefaultApps(apps_dict)
+
+    output = []
+    for app in apps_dict['applications']:
+      output.extend(self._ParseResources(app, integration_type_filter,
+                                         service_name_filter))
+    return output
+
+  def _ParseResources(self, app, integration_type_filter: str,
+                      service_name_filter: str):
+    """Helper function for ListIntegrations to parse relevant fields."""
+    app_resources = app.get('config', {}).get('resources')
     if not app_resources:
       return []
 
@@ -727,13 +768,19 @@ class RunAppsOperations(object):
         if dep:
           status = dep.status.state
 
+      # region is parsed from the name, which has the following form:
+      # projects/<proj-name>/locations/<location>/applications/default'
+      region = app['name'].split('/')[3]
+
       output.append(
           integration_list_printer.Row(
               integration_name=name,
+              region=region,
               integration_type=integration_type,
               services=','.join(services),
-              latest_deployment_status=str(status),
+              latest_deployment_status=six.text_type(status),
           ))
+
     return output
 
   def _GetDefaultAppDict(self):
@@ -768,6 +815,17 @@ class RunAppsOperations(object):
             'locationsId': location
         },
         collection='runapps.projects.locations.applications')
+    return app_ref
+
+  def ListAppsRequest(self) -> resources:
+    """Creates request object for calling ListApplications for all regions."""
+    project = properties.VALUES.core.project.Get(required=True)
+    app_ref = resources.REGISTRY.Parse(
+        ALL_REGIONS,
+        params={
+            'projectsId': project,
+        },
+        collection='runapps.projects.locations')
     return app_ref
 
   def GetServiceRef(self, name):
@@ -877,7 +935,12 @@ class RunAppsOperations(object):
 
   def VerifyLocation(self):
     app_ref = self.GetAppRef(_DEFAULT_APP_NAME)
-    response = api_utils.ListLocations(self._client, app_ref.projectsId)
+
+    # Fail open in case of global endpoint outage.
+    try:
+      response = api_utils.ListLocations(self._client, app_ref.projectsId)
+    except api_exceptions.HttpError:
+      return
 
     if not any(l.locationId == self._region for l in response.locations):
       raise exceptions.UnsupportedIntegrationsLocationError(
@@ -885,3 +948,15 @@ class RunAppsOperations(object):
               ', '.join([l.locationId for l in response.locations])
           )
       )
+
+
+def _FilterForDefaultApps(apps_dict):
+  """Returns a dict with only default applications."""
+  apps = apps_dict['applications']
+  default_apps = [app for app in apps if app['name'].endswith('default')]
+  apps_dict['applications'] = default_apps
+  return apps_dict
+
+
+def _IsLocalHost(endpoint: str) -> bool:
+  return endpoint == 'http://localhost:8088/'

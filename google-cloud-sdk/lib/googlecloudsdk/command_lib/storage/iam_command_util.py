@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import multiprocessing
-
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.storage import errors
@@ -29,6 +27,7 @@ from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.tasks import set_iam_policy_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_executor
+from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks import task_util
 
@@ -74,7 +73,7 @@ def execute_set_iam_task_iterator(iterator, continue_on_error):
         next(plurality_checkable_task_iterator).execute().messages,
         task.Topic.SET_IAM_POLICY)
 
-  task_status_queue = multiprocessing.Queue()
+  task_status_queue = task_graph_executor.multiprocessing_context.Queue()
   exit_code = task_executor.execute_tasks(
       plurality_checkable_task_iterator,
       parallelizable=True,

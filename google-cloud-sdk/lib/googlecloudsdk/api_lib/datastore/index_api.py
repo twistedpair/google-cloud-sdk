@@ -22,7 +22,8 @@ import re
 
 
 from googlecloudsdk.api_lib.datastore import util
-from googlecloudsdk.api_lib.firestore import admin_api as firestore_admin_api
+from googlecloudsdk.api_lib.firestore import api_utils as firestore_utils
+from googlecloudsdk.api_lib.firestore import indexes as firestore_indexes
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 
@@ -56,23 +57,23 @@ CREATING = (
 )
 
 DATASTORE_API_SCOPE = (
-    firestore_admin_api.GetMessages().GoogleFirestoreAdminV1Index.ApiScopeValueValuesEnum.DATASTORE_MODE_API
+    firestore_utils.GetMessages().GoogleFirestoreAdminV1Index.ApiScopeValueValuesEnum.DATASTORE_MODE_API
 )
 
 COLLECTION_GROUP = (
-    firestore_admin_api.GetMessages().GoogleFirestoreAdminV1Index.QueryScopeValueValuesEnum.COLLECTION_GROUP
+    firestore_utils.GetMessages().GoogleFirestoreAdminV1Index.QueryScopeValueValuesEnum.COLLECTION_GROUP
 )
 
 COLLECTION_RECURSIVE = (
-    firestore_admin_api.GetMessages().GoogleFirestoreAdminV1Index.QueryScopeValueValuesEnum.COLLECTION_RECURSIVE
+    firestore_utils.GetMessages().GoogleFirestoreAdminV1Index.QueryScopeValueValuesEnum.COLLECTION_RECURSIVE
 )
 
 FIRESTORE_ASCENDING = (
-    firestore_admin_api.GetMessages().GoogleFirestoreAdminV1IndexField.OrderValueValuesEnum.ASCENDING
+    firestore_utils.GetMessages().GoogleFirestoreAdminV1IndexField.OrderValueValuesEnum.ASCENDING
 )
 
 FIRESTORE_DESCENDING = (
-    firestore_admin_api.GetMessages().GoogleFirestoreAdminV1IndexField.OrderValueValuesEnum.DESCENDING
+    firestore_utils.GetMessages().GoogleFirestoreAdminV1IndexField.OrderValueValuesEnum.DESCENDING
 )
 
 
@@ -180,7 +181,7 @@ def BuildIndexProto(ancestor, kind, project_id, properties):
 
 def BuildIndexFirestoreProto(is_ancestor, properties):
   """Builds and returns a GoogleFirestoreAdminV1Index."""
-  messages = firestore_admin_api.GetMessages()
+  messages = firestore_utils.GetMessages()
   proto = messages.GoogleFirestoreAdminV1Index()
 
   proto.queryScope = COLLECTION_RECURSIVE if is_ancestor else COLLECTION_GROUP
@@ -245,7 +246,7 @@ def ListDatastoreIndexesViaFirestoreApi(project_id, database_id):
   Returns:
     List[index]: A list of datastore_index.Index that contains index definition.
   """
-  response = firestore_admin_api.ListIndexes(project_id, database_id)
+  response = firestore_indexes.ListIndexes(project_id, database_id)
   return {
       FirestoreApiMessageToIndexDefinition(index)
       for index in response.indexes
@@ -281,7 +282,7 @@ def CreateIndexesViaFirestoreApi(project_id, database_id, indexes_to_create):
       '.', autotick=False, detail_message_callback=lambda: detail_message
   ) as pt:
     for i, index in enumerate(indexes_to_create):
-      firestore_admin_api.CreateIndex(
+      firestore_indexes.CreateIndex(
           project_id,
           database_id,
           index.kind,

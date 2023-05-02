@@ -607,8 +607,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
               arg_type=self._ArgTypeName(arg))
     else:
       modal = ''
-    self._out('\n{details}{modal}\n'.format(
-        details=self.GetArgDetails(arg, depth=depth), modal=modal))
+    details = self.GetArgDetails(arg, depth=depth).replace('\n\n', '\n+\n')
+    self._out('\n{details}{modal}\n'.format(details=details, modal=modal))
 
   def _PrintArgGroup(self, arg, depth=0, single=False):
     """Prints an arg group definition list at depth."""
@@ -621,7 +621,6 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         heading.append(arg.help)
       if len(args) == 1 or args[0].is_required:
         if arg.is_required:
-          # TODO (b/77314072): Put this before (NOTE) section in resource args.
           heading.append('This must be specified.')
       elif arg.is_mutex:
         if arg.is_required:
@@ -632,8 +631,11 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         heading.append('At least one of these must be specified:')
 
     if not arg.is_hidden and heading:
-      self._out('\n{0} {1}\n\n'.format(':' * (depth + _SECOND_LINE_OFFSET),
-                                       '\n+\n'.join(heading)))
+      self._out(
+          '\n{0} {1}\n\n'.format(
+              ':' * (depth + _SECOND_LINE_OFFSET), '\n+\n'.join(heading)
+          ).replace('\n\n', '\n+\n'),
+      )
       heading = None
       depth += 1
 

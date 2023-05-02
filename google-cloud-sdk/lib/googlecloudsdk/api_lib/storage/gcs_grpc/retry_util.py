@@ -22,6 +22,7 @@ import functools
 import sys
 
 from google.auth import exceptions as auth_exceptions
+from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import retry_util
 
 import requests
@@ -41,6 +42,7 @@ def is_retriable(exc_type=None, exc_value=None, exc_traceback=None, state=None):
 
   return isinstance(exc_value, (
       auth_exceptions.TransportError,
+      errors.RetryableApiError,
       exceptions.BadGateway,
       exceptions.GatewayTimeout,
       exceptions.InternalServerError,
@@ -48,7 +50,8 @@ def is_retriable(exc_type=None, exc_value=None, exc_traceback=None, state=None):
       exceptions.ServiceUnavailable,
       requests.exceptions.ConnectionError,
       requests.exceptions.ChunkedEncodingError,
-      requests.exceptions.Timeout))
+      requests.exceptions.Timeout,
+      ConnectionError))
 
 
 def grpc_default_retryer(func):

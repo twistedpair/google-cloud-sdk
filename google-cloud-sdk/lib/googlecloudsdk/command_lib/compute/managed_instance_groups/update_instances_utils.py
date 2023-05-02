@@ -117,24 +117,19 @@ def ParseReplacementMethod(method_type_str, messages):
 
 def ParseVersion(
     args,
-    project,
     flag_name,
     version_map,
     resources,
     messages,
-    region_instance_template_enabled,
 ):
   """Retrieves version from input map.
 
   Args:
     args: Namespace, argparse.Namespace()
-    project: name of the project
     flag_name: name of the flag associated with the parsed string.
     version_map: map containing version data provided by the user.
     resources: provides reference for instance template resource.
     messages: module containing message classes.
-    region_instance_template_enabled: Bool, True if region instance template
-      support enabled.
 
   Returns:
     InstanceGroupManagerVersion message object.
@@ -144,20 +139,13 @@ def ParseVersion(
     raise exceptions.InvalidArgumentException(flag_name,
                                               'template has to be specified.')
 
-  if region_instance_template_enabled:
-    template_ref = (
-        instance_groups_managed_flags.INSTANCE_TEMPLATE_ARG.ResolveAsResource(
-            args,
-            resources,
-            default_scope=flags.compute_scope.ScopeEnum.GLOBAL,
-        )
-    )
-  else:
-    template_ref = resources.Parse(
-        version_map[TEMPLATE_NAME],
-        params={'project': project},
-        collection='compute.instanceTemplates',
-    )
+  template_ref = (
+      instance_groups_managed_flags.INSTANCE_TEMPLATE_ARG.ResolveAsResource(
+          args,
+          resources,
+          default_scope=flags.compute_scope.ScopeEnum.GLOBAL,
+      )
+  )
 
   if TARGET_SIZE_NAME in version_map:
     target_size = ParseFixedOrPercent(flag_name, TARGET_SIZE_NAME,

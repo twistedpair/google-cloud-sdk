@@ -49,9 +49,12 @@ def GetStorageMessages():
   return apis.GetMessagesModule(STORAGE_API_NAME, STORAGE_API_VERSION)
 
 
-def GetClient():
-  return apis.GetClientInstance(ARTIFACTREGISTRY_API_NAME,
-                                ARTIFACTREGISTRY_API_VERSION)
+def GetClient(skip_activation_prompt=False):
+  return apis.GetClientInstance(
+      ARTIFACTREGISTRY_API_NAME,
+      ARTIFACTREGISTRY_API_VERSION,
+      skip_activation_prompt=skip_activation_prompt,
+  )
 
 
 def GetMessages():
@@ -224,9 +227,9 @@ def ListFiles(client, messages, repo, arg_filters, page_size=None):
           field="files"))
 
 
-def GetRepository(repo):
+def GetRepository(repo, skip_activation_prompt=False):
   """Gets the repository given its name."""
-  client = GetClient()
+  client = GetClient(skip_activation_prompt)
   messages = GetMessages()
   get_repo_req = messages.ArtifactregistryProjectsLocationsRepositoriesGetRequest(
       name=repo)
@@ -245,18 +248,21 @@ def GetIamPolicy(repo_res):
   return get_iam_policy_res
 
 
-def CreateRepository(project, location, repository):
+def CreateRepository(
+    project, location, repository, skip_activation_prompt=False
+):
   """Creates the repository given its parent.
 
   Args:
     project: str: The project to create the repository in.
     location: str: The region to create the repository in.
     repository: messages.Repository to create.
+    skip_activation_prompt: bool: If true, do not prompt for service activation
 
   Returns:
     The resulting operation from the create request.
   """
-  client = GetClient()
+  client = GetClient(skip_activation_prompt)
   messages = GetMessages()
   request = messages.ArtifactregistryProjectsLocationsRepositoriesCreateRequest(
       parent="projects/{}/locations/{}".format(project, location),

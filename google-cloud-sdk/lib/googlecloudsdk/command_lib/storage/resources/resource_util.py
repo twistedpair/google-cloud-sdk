@@ -31,6 +31,9 @@ LONGEST_METADATA_KEY_LENGTH = 26
 METADATA_LINE_INDENT_LENGTH = 2
 METADATA_LINE_INDENT_STRING = ' ' * METADATA_LINE_INDENT_LENGTH
 
+# For transporting symlink info through an object's custom metadata.
+SYMLINK_METADATA_KEY = 'goog-reserved-file-is-symlink'
+
 
 class UnsupportedObjectType(enum.Enum):
   GLACIER = 'GLACIER'

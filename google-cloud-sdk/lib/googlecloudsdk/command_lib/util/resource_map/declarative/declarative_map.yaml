@@ -2091,6 +2091,7 @@ compute:
   regionSecurityPolicyRules:
     supported_apis:
     - alpha
+    - beta
   regionSslCertificates:
     supported_apis:
     - alpha

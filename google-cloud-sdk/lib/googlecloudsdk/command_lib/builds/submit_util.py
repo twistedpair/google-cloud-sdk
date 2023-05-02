@@ -630,16 +630,21 @@ def DetermineBuildRegion(build_config, desired_region=None):
   return wp_region
 
 
-def Build(messages,
-          async_,
-          build_config,
-          hide_logs=False,
-          build_region=cloudbuild_util.DEFAULT_REGION,
-          support_gcl=False,
-          suppress_logs=False):
+def Build(
+    messages,
+    async_,
+    build_config,
+    hide_logs=False,
+    build_region=cloudbuild_util.DEFAULT_REGION,
+    support_gcl=False,
+    suppress_logs=False,
+    skip_activation_prompt=False,
+):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
-  client = cloudbuild_util.GetClientInstance()
+  client = cloudbuild_util.GetClientInstance(
+      skip_activation_prompt=skip_activation_prompt
+  )
 
   parent_resource = resources.REGISTRY.Create(
       collection='cloudbuild.projects.locations',

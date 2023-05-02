@@ -388,6 +388,17 @@ class BmsClient(object):
         name=resource.RelativeName())
     return self.volumes_service.Get(request)
 
+  def RenameVolume(self, volume_resource, new_name):
+    """Rename an existing volume resource."""
+    rename_volume_request = self.messages.RenameVolumeRequest(
+        newVolumeId=new_name)
+    request = (
+        self.messages.BaremetalsolutionProjectsLocationsVolumesRenameRequest(
+            name=volume_resource.RelativeName(),
+            renameVolumeRequest=rename_volume_request)
+    )
+    return self.volumes_service.Rename(request)
+
   def AggregateListVolumes(self, project_resource, limit=None):
     return self.AggregateYieldFromList(
         self.volumes_service,
@@ -451,6 +462,17 @@ class BmsClient(object):
         updateMask=','.join(updated_fields))
 
     return self.networks_service.Patch(request)
+
+  def RenameNetwork(self, network_resource, new_name):
+    """Rename an existing network resource."""
+    rename_network_request = self.messages.RenameNetworkRequest(
+        newNetworkId=new_name)
+    request = (
+        self.messages.BaremetalsolutionProjectsLocationsNetworksRenameRequest(
+            name=network_resource.RelativeName(),
+            renameNetworkRequest=rename_network_request)
+    )
+    return self.networks_service.Rename(request)
 
   def IsClientNetwork(self, network):
     return network.type == self.messages.Network.TypeValueValuesEnum.CLIENT
@@ -605,6 +627,17 @@ class BmsClient(object):
         nfsShare=nfs_share_msg,
         parent=nfs_share_resource.Parent().RelativeName())
     return self.nfs_shares_service.Create(request)
+
+  def RenameNfsShare(self, nfs_share_resource, new_name):
+    """Rename an existing nfs share resource."""
+    rename_nfs_share_request = self.messages.RenameNfsShareRequest(
+        newNfsshareId=new_name)
+    request = (
+        self.messages.BaremetalsolutionProjectsLocationsNfsSharesRenameRequest(
+            name=nfs_share_resource.RelativeName(),
+            renameNfsShareRequest=rename_nfs_share_request)
+    )
+    return self.nfs_shares_service.Rename(request)
 
   def ListSshKeys(self,
                   project_resource,

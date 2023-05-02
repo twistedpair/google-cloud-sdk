@@ -39,8 +39,6 @@ _DATAPATH_PROVIDER = {
 
 _DPV2_OBS_MODE = {
     'DISABLED': 'Disables Advanced Datapath Observability.',
-    'INTERNAL_CLUSTER_SERVICE': ('Makes Advanced Datapath Observability '
-                                 'available from within the cluster network.'),
     'INTERNAL_VPC_LB': ('Makes Advanced Datapath Observability available from '
                         'the VPC network.'),
     'EXTERNAL_LB': ('Makes Advanced Datapath Observability available to '
@@ -260,6 +258,11 @@ def AddReleaseChannelFlag(parser, is_update=False, hidden=False):
   short_text = """\
 Release channel a cluster is subscribed to.
 
+If left unspecified and a version is specified, the cluster is enrolled in the
+most mature release channel where the version is available (first checking
+STABLE, then REGULAR, and finally RAPID). Otherwise, if no release channel and
+no version is specified, the cluster is enrolled in the REGULAR channel with
+its default version.
 """
   if is_update:
     short_text = """\
@@ -267,9 +270,10 @@ Subscribe or unsubscribe this cluster to a release channel.
 
 """
   help_text = short_text + """\
-When a cluster is subscribed to a release channel, Google maintains
-both the master version and the node version. Node auto-upgrade
-defaults to true and cannot be disabled.
+When a cluster is subscribed to a release channel, Google maintains both the
+master version and the node version. Node auto-upgrade is enabled by default
+for release channel clusters and can be controlled via [upgrade-scope
+exclusions](https://cloud.google.com/kubernetes-engine/docs/concepts/maintenance-windows-and-exclusions#scope_of_maintenance_to_exclude).
 """
 
   choices = {
@@ -936,6 +940,21 @@ def AddLocationFlags(parser):
 def AddAsyncFlag(parser):
   """Adds the --async flags to the given parser."""
   base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddEnableK8sBetaAPIs(parser):
+  """Adds the --enable-kubernetes-unstable-apis flag to parser."""
+  help_text = """\
+Enable Kubernetes beta API features on this cluster.
+Beta APIs are not expected to be production ready and
+should be avoided in production-grade environments."""
+  parser.add_argument(
+      '--enable-kubernetes-unstable-apis',
+      type=arg_parsers.ArgList(min_length=1),
+      default=None,
+      metavar='API',
+      help=help_text
+  )
 
 
 def AddEnableKubernetesAlphaFlag(parser):
@@ -3172,6 +3191,15 @@ def WarnForNodeVersionAutoUpgrade(args):
     log.status.Print('Note: ' + util.WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED)
 
 
+def WarnForEnablingBetaAPIs(args):
+  flag_name = 'enable_kubernetes_unstable_apis'
+  if args.IsSpecified(flag_name):
+    log.status.Print(
+        'Note: '
+        + util.WARN_BETA_APIS_ENABLED
+    )
+
+
 def AddMachineTypeFlag(parser):
   """Adds --machine-type flag to the parser.
 
@@ -4408,7 +4436,6 @@ def AddDataplaneV2ObservabilityModeFlag(parser, hidden=True):
 Select Advanced Datapath Observability mode for the cluster. Defaults to `disabled`.
 
 $ {command} --dataplane-v2-observability-mode=DISABLED
-$ {command} --dataplane-v2-observability-mode=INTERNAL_CLUSTER_SERVICE
 $ {command} --dataplane-v2-observability-mode=INTERNAL_VPC_LB
 $ {command} --dataplane-v2-observability-mode=EXTERNAL_LB
 """

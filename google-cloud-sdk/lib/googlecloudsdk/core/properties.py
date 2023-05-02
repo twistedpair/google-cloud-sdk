@@ -2926,10 +2926,10 @@ class _SectionMps(_Section):
 
   def __init__(self):
     super(_SectionMps, self).__init__('mps')
-    self.vendor = self._Add(
-        'vendor',
+    self.product = self._Add(
+        'product',
         default=None,
-        help_text='Id for Marketplace Solutions Vendor. '
+        help_text='Id for Marketplace Solutions Product. '
         )
 
 

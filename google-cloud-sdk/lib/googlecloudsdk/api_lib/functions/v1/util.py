@@ -137,6 +137,7 @@ _PATH_RE_ERROR = (
 
 
 def GetHttpErrorMessage(error):
+  # type: (apitools_exceptions.HttpError) -> str
   """Returns a human readable string representation from the http response.
 
   Args:

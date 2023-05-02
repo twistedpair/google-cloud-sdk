@@ -229,7 +229,7 @@ Invalid provider '{provider}' for argument --datapath-provider. Valid providers 
 """
 
 DPV2_OBS_ERROR_MSG = """\
-Invalid '{mode}' for argument --dataplane-v2-observability-mode. Valid modes are DISABLED, INTERNAL_CLUSTER_SERVICE, INTERNAL_VPC_LB, EXTERNAL_LB.
+Invalid '{mode}' for argument --dataplane-v2-observability-mode. Valid modes are DISABLED, INTERNAL_VPC_LB, EXTERNAL_LB.
 """
 
 SANDBOX_TYPE_NOT_PROVIDED = """\
@@ -668,6 +668,7 @@ class CreateClusterOptions(object):
       enable_nested_virtualization=None,
       network_performance_config=None,
       enble_insecure_kubelet_readonly_port=None,
+      enable_k8s_beta_apis=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -853,8 +854,10 @@ class CreateClusterOptions(object):
     self.enable_multi_networking = enable_multi_networking
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
-    # pylint: disable=line-too-long
-    self.enble_insecure_kubelet_readonly_port = enble_insecure_kubelet_readonly_port
+    self.enble_insecure_kubelet_readonly_port = (
+        enble_insecure_kubelet_readonly_port
+    )
+    self.enable_k8s_beta_apis = enable_k8s_beta_apis
 
 
 class UpdateClusterOptions(object):
@@ -981,6 +984,7 @@ class UpdateClusterOptions(object):
       enable_security_posture=None,
       network_performance_config=None,
       enble_insecure_kubelet_readonly_port=None,
+      enable_k8s_beta_apis=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1101,8 +1105,10 @@ class UpdateClusterOptions(object):
     self.clear_fleet_project = clear_fleet_project
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
-    # pylint: disable=line-too-long
-    self.enble_insecure_kubelet_readonly_port = enble_insecure_kubelet_readonly_port
+    self.enble_insecure_kubelet_readonly_port = (
+        enble_insecure_kubelet_readonly_port
+    )
+    self.enable_k8s_beta_apis = enable_k8s_beta_apis
 
 
 class SetMasterAuthOptions(object):
@@ -2026,6 +2032,11 @@ class APIAdapter(object):
             networkPerformanceConfig=perf)
       else:
         cluster.networkConfig.networkPerformanceConfig = perf
+
+    if options.enable_k8s_beta_apis:
+      cluster.enableK8sBetaApis = self.messages.K8sBetaAPIConfig()
+      cluster.enableK8sBetaApis.enabledApis = options.enable_k8s_beta_apis
+
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -3173,6 +3184,11 @@ class APIAdapter(object):
     if options.fleet_project:
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(project=options.fleet_project))
+
+    if options.enable_k8s_beta_apis is not None:
+      config_obj = self.messages.K8sBetaAPIConfig()
+      config_obj.enabledApis = options.enable_k8s_beta_apis
+      update = self.messages.ClusterUpdate(desiredK8sBetaApis=config_obj)
 
     if options.clear_fleet_project:
       update = self.messages.ClusterUpdate(
@@ -5287,7 +5303,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages).GetEnumForChoice(options.ipv6_access_type)
-
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(

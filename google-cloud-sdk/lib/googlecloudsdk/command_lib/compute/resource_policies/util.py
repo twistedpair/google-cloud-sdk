@@ -141,7 +141,8 @@ def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
       snapshotSchedulePolicy=snapshot_policy)
 
 
-def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages):
+def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages,
+                                            enable_retention_policy_update=False):
   """Creates a Disk Snapshot Schedule Resource Policy message from args used in ResourcePolicy.Patch.
   """
   hourly_cycle, daily_cycle, weekly_cycle = _ParseCycleFrequencyArgs(
@@ -161,6 +162,15 @@ def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages):
   if args.IsSpecified('description'):
     description = args.description
 
+  retention_policy = None
+  if (enable_retention_policy_update and
+      (args.max_retention_days or args.on_source_disk_delete)):
+    retention_policy = (
+        messages.ResourcePolicySnapshotSchedulePolicyRetentionPolicy(
+            maxRetentionDays=args.max_retention_days,
+            onSourceDiskDelete=flags.GetOnSourceDiskDeleteFlagMapper(
+                messages).GetEnumForChoice(args.on_source_disk_delete)))
+
   if hourly_cycle or daily_cycle or weekly_cycle:
     snapshot_schedule = messages.ResourcePolicySnapshotSchedulePolicySchedule(
         hourlySchedule=hourly_cycle,
@@ -168,9 +178,10 @@ def MakeDiskSnapshotSchedulePolicyForUpdate(policy_ref, args, messages):
         weeklySchedule=weekly_cycle)
 
   snapshot_policy = None
-  if snapshot_schedule or snapshot_properties:
+  if snapshot_schedule or snapshot_properties or retention_policy:
     snapshot_policy = messages.ResourcePolicySnapshotSchedulePolicy(
-        schedule=snapshot_schedule, snapshotProperties=snapshot_properties)
+        schedule=snapshot_schedule, snapshotProperties=snapshot_properties,
+        retentionPolicy=retention_policy)
 
   return messages.ResourcePolicy(
       name=policy_ref.Name(),

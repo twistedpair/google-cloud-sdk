@@ -124,19 +124,13 @@ class ContainerResource(k8s_object.KubernetesObject):
   @property
   def container(self):
     """The container in the revisionTemplate."""
-    if hasattr(self.spec, 'container'):
-      if self.spec.container and (hasattr(self.spec, 'containers') and
-                                  self.spec.containers):
-        raise ValueError(
-            'Revision can have only one of `container` or `containers` set')
-      elif self.spec.container:
-        return self.spec.container
-    if hasattr(self.spec, 'containers') and self.spec.containers:
-      if self.spec.containers[0] is None or len(self.spec.containers) != 1:
-        raise ValueError('List of containers must contain exactly one element')
+    if len(self.spec.containers) == 1:
       return self.spec.containers[0]
     else:
-      raise ValueError('Either `container` or `containers` must be set')
+      for container in self.spec.containers:
+        if container.ports:
+          return container
+    raise ValueError('missing ingress container')
 
   @property
   def resource_limits(self):

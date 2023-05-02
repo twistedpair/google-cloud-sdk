@@ -5,6 +5,117 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 429.0.0 (2023-05-02)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Added rocky-9 option to `--os` flag for:
+  * `gcloud compute images import` in GA,
+  * `gcloud compute instances import` in GA
+  * `gcloud compute machine-images import` in GA
+
+
+### Google Cloud CLI
+
+* Updated bundled-python cryptography package to 39.0.1 and PyOpenSSL to 23.0.0.
+
+### AlloyDB
+
+* Added `--update-mode` flag to `gcloud alloydb instances update`
+in alpha and beta tracks.
+
+### BigQuery
+
+* Added `bq info` command to print debug information.
+* Froze the request library to version '2.27.1' until python2 is removed.
+* Removed excess line of logging to stderr that was printed on most commands.
+* Improved error messaging for unsupported regions.
+* Added support for an `encoding` when creating a JSON backed external table.
+* Updated bundled `urllib3`.
+
+### Certificate Authority Service
+
+* Added `--ignore_dependent_resources` flag to `gcloud privateca roots disable` to allow a root CA to be disabled even if it is the last CA in its CA Pool while its CA Pool is being depended on by another cloud resource.
+* Added `--ignore_dependent_resources` flag to `gcloud privateca subordinates disable` to allow a subordinate CA to be disabled even if it is the last CA in its CA Pool while its CA Pool is being depended on by another cloud resource.
+* Added `--ignore_dependent_resources` flag to `gcloud privateca roots delete` to allow a root CA to be deleted even if its CA Pool is being depended on by another cloud resource.
+* Added `--ignore_dependent_resources` flag to `gcloud privateca subordinates delete` to allow a subordinate CA to be deleted even if its CA Pool is being depended on by another cloud resource.
+* Added `--ignore_dependent_resources` flag to `gcloud privateca pools delete` to allow a CA Pool to be deleted even if it is being depended on by another cloud resource.
+
+### Cloud Bigtable
+
+* Rebuilding cbt cli with go version 1.20.3 which fixed CVE-2022-41723.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.17.4
+  * Added support for eventarc triggers(2nd gen)
+  * Fix ListDocuments to have page token
+
+### Cloud Identity-Aware Proxy
+
+* Fixed a low throughput issue that appeared in some download cases for `gcloud compute start-iap-tunnel`.
+
+### Cloud Monitoring
+
+* Promoted `gcloud monitoring snoozes` commands to beta and GA.
+
+### Cloud Pub/Sub
+
+* Added `--event-time` flag to `gcloud pubsub lite-topics publish` to allow users to specify an event time when publishing a message.
+
+### Cloud Run
+
+* Updated `gcloud beta run integrations list` to display integrations across all
+  regions by default when `--region` flag is not specified.
+
+### Cloud SQL
+
+* Promoted `--threads-per-core` flag for `gcloud sql instances create` and
+  `gcloud sql instances patch` to GA.
+
+### Cloud Workstations
+
+* Added the `beta workstations list-usable` command which lists a user's
+usable workstations under a given configuration.
+* Added `gcloud beta workstations get-iam-policy`.
+* Added `gcloud beta workstations set-iam-policy`.
+* Added `gcloud beta workstations configs get-iam-policy`.
+* Added `gcloud beta workstations configs set-iam-policy`.
+
+### Compute Engine
+
+* Added "REGION" column in the output of `gcloud compute ssl-certificates list`.
+* Promoted `--gateway-ip-version` flag of `gcloud compute vpn-gateways create` to beta. Flag defines the IP version of VPN Gateway.
+* Allowed `--interfaces` flag to accept IPv6 addresses of `gcloud beta compute external-vpn-gateways create`.
+* Promoted support of regional instance template for `gcloud compute instance-groups managed create` to beta and GA.
+* Promoted support of regional instance template for `gcloud compute instance-groups managed set-instance-template` to beta and GA.
+* Promoted support of regional instance template for `gcloud compute instance-groups managed rolling-action start-update` to beta and GA.
+* Promoted `--nat-name` flag of `gcloud compute routers get-nat-mapping-info` to GA.
+
+### Distributed Cloud Edge
+
+* Added `--lro-timeout` for `gcloud edge-cloud container clusters create` which allows specifying a custom duration for the `gcloud` CLI to wait on LROs.
+
+### Identity and Access Management
+
+* Fixed issue with `gcloud auth login --login-config=$LOGIN_CONFIG --no-browser` not working on Linux machines due to terminal input limit.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.30 to v1.0.0-beta.31. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.31> for more details.
+
+### Kubernetes Engine
+
+* Added `--enable-unstable-kubernetes-apis` flag to `gcloud containers cluster create` and `gcloud containers cluster update` to facilitate enabling beta apis in kube-apiserver.
+
+### Network Connectivity
+
+*   Made network field accept both resource identifier and path.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 428.0.0 (2023-04-25)
 
 ### Breaking Changes

@@ -46,10 +46,6 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, cluster_ref, args):
   # set password if provided
   if args.password:
     user_resource.password = args.password
-  # set authentication method if provided
-  user_resource.authMethod = _ParseAuthenticationMethod(
-      alloydb_messages, args.type
-  )
   # set user type if provided
   user_resource.userType = _ParseUserType(alloydb_messages, args.type)
   # set database roles if provided
@@ -125,17 +121,9 @@ def ConstructUserAndMaskFromArgs(alloydb_messages, user_ref, args):
   return user_resource, None
 
 
-def _ParseAuthenticationMethod(alloydb_messages, authentication_method):
-  if authentication_method:
-    return alloydb_messages.User.AuthMethodValueValuesEnum.lookup_by_name(
-        authentication_method.upper()
-    )
-  return None
-
-
-def _ParseUserType(alloydb_messages, authentication_method):
-  if authentication_method == 'BUILT_IN':
+def _ParseUserType(alloydb_messages, user_type):
+  if user_type == 'BUILT_IN':
     return alloydb_messages.User.UserTypeValueValuesEnum.ALLOYDB_BUILT_IN
-  elif authentication_method == 'IAM_BASED':
+  elif user_type == 'IAM_BASED':
     return alloydb_messages.User.UserTypeValueValuesEnum.ALLOYDB_IAM_USER
   return None

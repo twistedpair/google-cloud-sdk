@@ -497,7 +497,21 @@ class ConversionWorkspacesClient(object):
       Described entities for the conversion worksapce.
     """
     describe_req = self._GetDescribeEntitiesRequest(name, args)
-    return self._service.DescribeDatabaseEntities(describe_req).databaseEntities
+    entities = self._service.DescribeDatabaseEntities(
+        describe_req
+    ).databaseEntities
+
+    entity_result = []
+    for entity in entities:
+      entity_result.append({
+          'parentEntity': entity.parentEntity,
+          'shortName': entity.shortName,
+          'tree': entity.tree,
+          'entityType': six.text_type(entity.entityType).replace(
+              'DATABASE_ENTITY_TYPE_', ''
+          ),
+      })
+    return entity_result
 
   def DescribeDDLs(self, name, args=None):
     """Describe DDLs in a conversion worksapce.

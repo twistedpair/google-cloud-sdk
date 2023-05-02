@@ -23,8 +23,9 @@ from googlecloudsdk.calliope import arg_parsers
 
 def AddNoAsyncFlag(parser):
   """Adds a --no-async flag to the given parser."""
-  help_text = ('Waits for the operation in progress to complete before '
-               'returning.')
+  help_text = (
+      'Waits for the operation in progress to complete before returning.'
+  )
   parser.add_argument('--no-async', action='store_true', help=help_text)
 
 
@@ -38,36 +39,41 @@ def AddDisplayNameFlag(parser):
 
 
 def AddDatabaseEngineFlag(parser):
-  """Adds the --source-database-engine and --destination-database-engine flags to the given parser.
-  """
+  """Adds the --source-database-engine and --destination-database-engine flags to the given parser."""
   help_text = """\
     Database engine type.
     """
-  choices = ['MYSQL', 'POSTGRESQL', 'SQLSERVER', 'ORACLE', 'SPANNER']
+  # TODO(b/276653183): Add mysql and spanner choices once mysql to spanner is
+  # supported.
+  source_choices = ['ORACLE']
+  destination_choices = ['POSTGRESQL']
 
   parser.add_argument(
       '--source-database-engine',
       help=help_text,
-      choices=choices,
-      required=True)
+      choices=source_choices,
+      required=True,
+  )
 
   parser.add_argument(
       '--destination-database-engine',
       help=help_text,
-      choices=choices,
-      required=True)
+      choices=destination_choices,
+      required=True,
+  )
 
 
 def AddDatabaseVersionFlag(parser):
-  """Adds the --source-database-version and --destination-database-version flags to the given parser.
-  """
+  """Adds the --source-database-version and --destination-database-version flags to the given parser."""
   help_text = """
     Version number for the database engine.
     """
   parser.add_argument(
-      '--source-database-version', help=help_text, required=True)
+      '--source-database-version', help=help_text, required=True
+  )
   parser.add_argument(
-      '--destination-database-version', help=help_text, required=True)
+      '--destination-database-version', help=help_text, required=True
+  )
 
 
 def AddGlobalSettingsFlag(parser):
@@ -82,7 +88,8 @@ def AddGlobalSettingsFlag(parser):
       '--global-settings',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddCommitNameFlag(parser):
@@ -97,7 +104,7 @@ def AddCommitNameFlag(parser):
 
 def AddAutoCommitFlag(parser):
   """Adds a --auto-commit flag to the given parser."""
-  help_text = ('Auto commits the conversion workspace.')
+  help_text = 'Auto commits the conversion workspace.'
   parser.add_argument('--auto-commit', action='store_true', help=help_text)
 
 
@@ -106,10 +113,13 @@ def AddImportFileFormatFlag(parser):
   help_text = """\
     File format type to import rules from.
     """
-  choices = ['ORA2PG', 'HARBOUR_BRIGE']
+  # TODO(b/276653183): Add harbour bridge choice once mysql to spanner is
+  # supported.
+  choices = ['ORA2PG']
 
   parser.add_argument(
-      '--file-format', help=help_text, choices=choices, required=True)
+      '--file-format', help=help_text, choices=choices, required=True
+  )
 
 
 def AddConfigFilesFlag(parser):

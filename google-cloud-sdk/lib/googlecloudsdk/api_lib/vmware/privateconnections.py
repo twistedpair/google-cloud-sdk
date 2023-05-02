@@ -101,7 +101,7 @@ class PrivateConnectionsClient(util.VmwareClientBase):
         batch_size_attribute='pageSize')
 
   def GetServiceNetwork(self, type_enum, service_network=None):
-    if type_enum == self.messages.PrivateConnection.TypeValueValuesEnum.THIRD_PARTY_SERVICE:
+    if service_network:
       return service_network
     if type_enum == self.messages.PrivateConnection.TypeValueValuesEnum.PRIVATE_SERVICE_ACCESS:
       return 'servicenetworking'

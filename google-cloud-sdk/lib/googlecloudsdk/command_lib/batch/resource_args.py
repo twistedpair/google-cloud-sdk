@@ -25,6 +25,8 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
+INVALIDJOBID = '!@#$%^'
+
 
 def LocationAttributeConfig():
   fts = [deps.PropertyFallthrough(properties.VALUES.batch.location)]
@@ -67,6 +69,31 @@ def GetJobResourceSpec():
       jobsId=JobAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetSubmitJobResourceSpec():
+  return concepts.ResourceSpec(
+      'batch.projects.locations.jobs',
+      resource_name='job',
+      jobsId=concepts.ResourceParameterAttributeConfig(
+          name='job',
+          help_text='The job ID for the {resource}.',
+          # Adding invalid job_id to keep job resource in the right format,
+          # this invalid value will be removed if no job_id is specified from
+          # the input and the underlaying client would generate a valid one.
+          fallthroughs=[
+              deps.ValueFallthrough(
+                  INVALIDJOBID,
+                  hint=(
+                      'job ID is optional and will be generated if not'
+                      ' specified'
+                  ),
+              )
+          ],
+      ),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetTaskResourceSpec():
@@ -129,7 +156,26 @@ def AddJobResourceArgs(parser):
       presentation_specs.ResourcePresentationSpec(
           'JOB',
           GetJobResourceSpec(),
-          ('The Batch job resource. If not specified,'
+          ('The Batch job resource. If --location not specified,'
+           'the current batch/location is used.'),
+          required=True,
+      ),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def AddSubmitJobResourceArgs(parser):
+  """Add the job resource argument as positional.
+
+  Args:
+    parser: the parser for the command.
+  """
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'JOB',
+          GetSubmitJobResourceSpec(),
+          ('The Batch job resource. If --location not specified,'
            'the current batch/location is used.'),
           required=True,
       ),

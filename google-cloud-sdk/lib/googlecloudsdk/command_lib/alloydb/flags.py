@@ -34,6 +34,7 @@ from __future__ import unicode_literals
 
 import re
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
@@ -41,21 +42,31 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
-def AddAvailabilityType(parser):
+def AddAvailabilityType(parser, release_track):
   """Adds an '--availability-type' flag to the parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    release_track: Release track of the API.
   """
+  choices_arg = {
+      'REGIONAL': 'Provides high availability and is recommended for '
+                  'production instances; instance automatically fails over '
+                  'to another zone within your selected region.',
+      }
+  if release_track == base.ReleaseTrack.ALPHA:
+    choices_arg['ZONAL'] = (
+        'Provides zonal availability instances and is not '
+        'recommended for production instances; instance '
+        'does not automatically fail over to another zone.'
+    )
+
   parser.add_argument(
       '--availability-type',
       required=False,
-      choices={
-          'REGIONAL': 'Provides high availability and is recommended for '
-                      'production instances; instance automatically fails over '
-                      'to another zone within your selected region.',
-      },
-      help='Specifies level of availability.')
+      choices=choices_arg,
+      help='Specifies level of availability.',
+  )
 
 
 def AddBackup(parser, positional=True):
@@ -793,3 +804,23 @@ def AddView(parser, alloydb_messages):
   """
   GetInstanceViewFlagMapper(alloydb_messages).choice_arg.AddToParser(
       parser)
+
+
+def AddUpdateMode(parser):
+  """Adds an '--update-mode' flag to the parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--update-mode',
+      required=False,
+      choices={
+          'FORCE_APPLY': (
+              'Performs a forced update when applicable. '
+              'This will be fast but may incur a downtime.'
+          ),
+      },
+      help='Specify the mode for updating the instance. If unspecified, '
+      'the update would follow a least disruptive approach',
+  )

@@ -529,6 +529,128 @@ class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   restoreClusterRequest = _messages.MessageField('RestoreClusterRequest', 2)
 
 
+class AlloydbProjectsLocationsClustersUsersCreateRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    user: A User resource to be passed as the request body.
+    userId: Required. ID of the requesting object.
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  user = _messages.MessageField('User', 3)
+  userId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class AlloydbProjectsLocationsClustersUsersDeleteRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the User.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class AlloydbProjectsLocationsClustersUsersGetRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersGetRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the User.name field.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlloydbProjectsLocationsClustersUsersListRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListUsersRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersUsersPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. Allow missing fields in the update mask.
+    name: Output only. Name of the resource in the form of
+      projects/{project}/locations/{location}/cluster/{cluster}/users/{user}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the User resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    user: A User resource to be passed as the request body.
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+  user = _messages.MessageField('User', 5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsGetRequest object.
 
@@ -870,6 +992,39 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Enums:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
+
+  Fields:
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: Excluisive action returned by the CLH.
+  """
+
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""Excluisive action returned by the CLH.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel.
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
+  deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
 class Cluster(_messages.Message):
   r"""A cluster is a collection of regional AlloyDB resources. It can include
   a primary instance and one or more read pool instances. All cluster
@@ -948,7 +1103,8 @@ class Cluster(_messages.Message):
       maintenance.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
-    sslConfig: SSL configuration for this AlloyDB Cluster.
+    sslConfig: Deprecated. SSL configuration for this AlloyDB Cluster. This
+      field was never populated or used.
     state: Output only. The current serving state of the cluster.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1189,7 +1345,7 @@ class GoogleCloudLocationListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1640,6 +1796,21 @@ class ListSupportedDatabaseFlagsResponse(_messages.Message):
   supportedDatabaseFlags = _messages.MessageField('SupportedDatabaseFlag', 2, repeated=True)
 
 
+class ListUsersResponse(_messages.Message):
+  r"""Message for response to listing Users
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+    users: The list of User
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  users = _messages.MessageField('User', 3, repeated=True)
+
+
 class MachineConfig(_messages.Message):
   r"""MachineConfig describes the configuration of a machine.
 
@@ -1959,7 +2130,7 @@ class SecondaryConfig(_messages.Message):
 
 
 class SslConfig(_messages.Message):
-  r"""SSL configuration for an AlloyDB Cluster.
+  r"""SSL configuration for an AlloyDB Instance.
 
   Enums:
     CaSourceValueValuesEnum: Optional. Certificate Authority (CA) source. Only
@@ -1993,7 +2164,7 @@ class SslConfig(_messages.Message):
 
     Values:
       SSL_MODE_UNSPECIFIED: SSL mode not specified. Defaults to
-        SSL_MODE_ALLOW.
+        ENCRYPTED_ONLY.
       SSL_MODE_ALLOW: SSL connections are optional. CA verification not
         enforced.
       SSL_MODE_REQUIRE: SSL connections are required. CA verification not
@@ -2002,11 +2173,17 @@ class SslConfig(_messages.Message):
       SSL_MODE_VERIFY_CA: SSL connections are required. CA verification
         enforced. Clients must have certificates signed by a Cluster CA, e.g.
         via GenerateClientCertificate.
+      ALLOW_UNENCRYPTED_AND_ENCRYPTED: SSL connections are optional. CA
+        verification not enforced.
+      ENCRYPTED_ONLY: SSL connections are required. CA verification not
+        enforced.
     """
     SSL_MODE_UNSPECIFIED = 0
     SSL_MODE_ALLOW = 1
     SSL_MODE_REQUIRE = 2
     SSL_MODE_VERIFY_CA = 3
+    ALLOW_UNENCRYPTED_AND_ENCRYPTED = 4
+    ENCRYPTED_ONLY = 5
 
   caSource = _messages.EnumField('CaSourceValueValuesEnum', 1)
   sslMode = _messages.EnumField('SslModeValueValuesEnum', 2)
@@ -2214,6 +2391,41 @@ class TimeBasedRetention(_messages.Message):
   """
 
   retentionPeriod = _messages.StringField(1)
+
+
+class User(_messages.Message):
+  r"""Message describing User object.
+
+  Enums:
+    UserTypeValueValuesEnum: Optional. Type of this user.
+
+  Fields:
+    databaseRoles: Optional. List of database roles this user has. The
+      database role strings are subject to the PostgreSQL naming conventions.
+    name: Output only. Name of the resource in the form of
+      projects/{project}/locations/{location}/cluster/{cluster}/users/{user}.
+    password: Input only. Password for the user.
+    userType: Optional. Type of this user.
+  """
+
+  class UserTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of this user.
+
+    Values:
+      USER_TYPE_UNSPECIFIED: Unspecified user type.
+      ALLOYDB_BUILT_IN: The default user type that authenticates via password-
+        based authentication.
+      ALLOYDB_IAM_USER: Database user that can authenticate via IAM-Based
+        authentication.
+    """
+    USER_TYPE_UNSPECIFIED = 0
+    ALLOYDB_BUILT_IN = 1
+    ALLOYDB_IAM_USER = 2
+
+  databaseRoles = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  password = _messages.StringField(3)
+  userType = _messages.EnumField('UserTypeValueValuesEnum', 4)
 
 
 class UserPassword(_messages.Message):

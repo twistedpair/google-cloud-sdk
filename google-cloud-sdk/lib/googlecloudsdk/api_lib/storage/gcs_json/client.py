@@ -170,6 +170,7 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
             log.info('Writing to download stream raised broken pipe error.')
             destination_pipe_is_broken = True
             break
+          raise
 
         for hash_object in self._digesters.values():
           hash_object.update(data)

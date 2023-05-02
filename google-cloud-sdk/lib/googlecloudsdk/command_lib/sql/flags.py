@@ -1333,12 +1333,11 @@ def AddThreadsPerCore(parser):
   parser.add_argument(
       '--threads-per-core',
       type=int,
-      hidden=True,
       required=False,
-      help=(
-          'Set a non-default number of threads per core. '
-          'Only available for SQL Server instances.'
-          ))
+      help="""\
+        The number of threads per core. The value of this flag can be 1 or 2.
+        To disable SMT, set this flag to 1. Only available in Cloud SQL for SQL Server instances.
+      """)
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 

@@ -189,6 +189,7 @@ def parse_csv_line_to_resource(line):
   """
   if not line:
     return None
+  # Capping splits at 8 prevents commas in URL from being caught.
   (
       url_string,
       size_string,
@@ -199,7 +200,7 @@ def parse_csv_line_to_resource(line):
       mode_base_eight_string,
       crc32c_string,
       md5_string,
-  ) = line.rstrip().split(',')
+  ) = line.rstrip().rsplit(',', 8)
 
   url_object = storage_url.storage_url_from_string(url_string)
   if isinstance(url_object, storage_url.FileUrl):

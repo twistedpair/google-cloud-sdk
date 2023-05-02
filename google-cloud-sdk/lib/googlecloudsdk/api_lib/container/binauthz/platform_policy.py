@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.container.binauthz import apis
 
 
@@ -39,8 +39,11 @@ class Client(object):
     Returns:
       The policy resource.
     """
-    get_req = self.messages.BinaryauthorizationProjectsPlatformsPoliciesGetRequest(
-        name=policy_ref,)
+    get_req = (
+        self.messages.BinaryauthorizationProjectsPlatformsPoliciesGetRequest(
+            name=policy_ref,
+        )
+    )
     return self.client.projects_platforms_policies.Get(get_req)
 
   def Update(self, policy_ref, policy):
@@ -111,6 +114,31 @@ class Client(object):
     Returns:
       The resource name of the deleted policy.
     """
-    request = self.messages.BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest(
-        name=policy_ref)
+    request = (
+        self.messages.BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest(
+            name=policy_ref
+        )
+    )
     return self.client.projects_platforms_policies.Delete(request)
+
+  def Evaluate(self, policy_ref, resource):
+    """Evaluate a policy against a Pod.
+
+    Args:
+      policy_ref: the resource name of the policy.
+      resource: the Pod in JSON or YAML form.
+
+    Returns:
+      The result of the evaluation in EvaluateGkePolicyResponse form.
+    """
+    request = encoding.DictToMessage(
+        {
+            'evaluateGkePolicyRequest': {
+                'resource': resource,
+            },
+            'name': policy_ref,
+        },
+        self.messages.BinaryauthorizationProjectsPlatformsGkePoliciesEvaluateRequest,
+    )
+
+    return self.client.projects_platforms_gke_policies.Evaluate(request)

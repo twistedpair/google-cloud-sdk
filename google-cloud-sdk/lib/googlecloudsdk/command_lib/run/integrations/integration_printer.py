@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import cloudsql_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import firebasehosting_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import redis_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
@@ -36,6 +37,7 @@ _INTEGRATION_FORMATTER_MAPS = frozendict({
     'custom-domains': domain_routing_formatter.DomainRoutingFormatter(),
     'redis': redis_formatter.RedisFormatter(),
     'cloudsql': cloudsql_formatter.CloudSQLFormatter(),
+    'firebase-hosting': firebasehosting_formatter.FirebaseHostingFormatter(),
 })
 
 

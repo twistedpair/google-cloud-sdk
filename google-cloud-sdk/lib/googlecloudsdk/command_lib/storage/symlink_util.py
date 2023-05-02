@@ -20,47 +20,20 @@ from __future__ import unicode_literals
 
 import os
 
-from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
-from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.resources import resource_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
-# For transporting symlink info through an object's custom metadata.
-_SYMLINK_METADATA_KEY = 'goog-reserved-file-is-symlink'
-
-
-def is_symlink_from_cloud_resource(resource):
-  """Returns whether the given cloud resource represents a symlink."""
-  if (
-      not resource.custom_fields
-      or _SYMLINK_METADATA_KEY not in resource.custom_fields
-  ):
-    return False
-  return resource.custom_fields[_SYMLINK_METADATA_KEY].lower() == 'true'
-
-
-def is_symlink(resource):
-  """Returns whether the given resource represents a symlink."""
-  if isinstance(resource, resource_reference.ObjectResource):
-    return is_symlink_from_cloud_resource(resource)
-  if isinstance(resource, resource_reference.FileObjectResource):
-    return resource.is_symlink
-  raise errors.Error(
-      'Can only retrieve symlink attributes from file or cloud'
-      ' object, not: {}'.format(resource.TYPE_STRING)
-  )
-
-
 def update_custom_metadata_dict_with_symlink_attributes(
-    metadata_dict, is_symlink_value
+    metadata_dict, is_symlink
 ):
   """Updates custom metadata_dict with symlink data."""
-  if is_symlink_value:
-    metadata_dict[_SYMLINK_METADATA_KEY] = 'true'
-  elif _SYMLINK_METADATA_KEY in metadata_dict:
-    del metadata_dict[_SYMLINK_METADATA_KEY]
+  if is_symlink:
+    metadata_dict[resource_util.SYMLINK_METADATA_KEY] = 'true'
+  elif resource_util.SYMLINK_METADATA_KEY in metadata_dict:
+    del metadata_dict[resource_util.SYMLINK_METADATA_KEY]
 
 
 def _create_symlink_directory_if_needed():
@@ -115,4 +88,5 @@ def create_symlink_from_temporary_placeholder(placeholder_path, symlink_path):
   os.symlink(symlink_target, symlink_path)
 
 
-# TODO(b/269647934): Add get_preserve_symlink_user_request utility method.
+def get_preserve_symlink_from_user_request(user_request_args):
+  return user_request_args.preserve_symlinks if user_request_args else None

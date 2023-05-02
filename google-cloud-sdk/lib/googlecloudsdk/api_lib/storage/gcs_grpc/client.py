@@ -65,11 +65,9 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
         start_byte=start_byte,
         end_byte=end_byte,
         digesters=digesters,
-        progress_callback=progress_callback)
-    if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
-      downloader.simple_download()
-    else:
-      downloader.run(retriable_in_flight=True)
+        progress_callback=progress_callback,
+        download_strategy=download_strategy)
+    downloader.run()
     # TODO(b/261180916) Return server encoding.
     return None
 

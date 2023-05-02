@@ -352,6 +352,18 @@ class ObjectResource(CloudResource):
   def generation(self):
     return self.storage_url.generation
 
+  @property
+  def is_symlink(self):
+    """Returns whether this object is a symlink."""
+    if (
+        not self.custom_fields
+        or resource_util.SYMLINK_METADATA_KEY not in self.custom_fields
+    ):
+      return False
+    return (
+        self.custom_fields[resource_util.SYMLINK_METADATA_KEY].lower() == 'true'
+    )
+
   def __eq__(self, other):
     return (
         super(ObjectResource, self).__eq__(other) and self.acl == other.acl and
@@ -422,7 +434,7 @@ class FileObjectResource(Resource):
     TYPE_STRING (str): String representing the resource's content type.
     size (int|None): Size of local file in bytes or None if pipe or stream.
     storage_url (StorageUrl): A StorageUrl object representing the resource.
-    md5_hash (bytes): Base64-encoded digest of md5 hash.
+    md5_hash (bytes): Base64-encoded digest of MD5 hash.
     is_symlink (bool|None): Whether this file is known to be a symlink.
   """
   TYPE_STRING = 'file_object'
@@ -449,6 +461,29 @@ class FileObjectResource(Resource):
     if self._is_symlink is None:
       self._is_symlink = os.path.islink(self.storage_url.object_name)
     return self._is_symlink
+
+
+class FileSymlinkPlaceholderResource(FileObjectResource):
+  """A file to a symlink that should be preserved as a placeholder.
+
+  Attributes:
+    Refer to super class.
+  """
+
+  def __init__(self, storage_url_object, md5_hash=None):
+    """Initializes resource. Args are a subset of attributes."""
+    super(FileSymlinkPlaceholderResource, self).__init__(
+        storage_url_object, md5_hash, True
+    )
+
+  @property
+  def size(self):
+    """Returns the length of the symlink target to be used as a placeholder."""
+    return len(os.readlink(self.storage_url.object_name))
+
+  @property
+  def is_symlink(self):
+    return True
 
 
 class FileDirectoryResource(Resource):

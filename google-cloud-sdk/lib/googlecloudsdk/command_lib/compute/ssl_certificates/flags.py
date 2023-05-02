@@ -29,6 +29,7 @@ DEFAULT_LIST_FORMAT = """\
       type,
       creationTimestamp,
       expireTime,
+      region.basename(),
       managed.status:label=MANAGED_STATUS,
       managed.domainStatus:format="yaml"
     )"""

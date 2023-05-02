@@ -19,8 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
-from apitools.base.py.exceptions import HttpForbiddenError
-from apitools.base.py.exceptions import HttpNotFoundError
+from apitools.base.py.exceptions import HttpError
 from googlecloudsdk.api_lib.functions.v1 import util
 from googlecloudsdk.api_lib.logging import common as logging_common
 from googlecloudsdk.api_lib.logging import util as logging_util
@@ -70,12 +69,17 @@ def _Run(args):
               name='projects/%s/locations/%s/functions/%s' %
               (properties.VALUES.core.project.GetOrFail(), region,
                args.name)))
-    except (HttpForbiddenError, HttpNotFoundError):
-      # The function doesn't exist in the given region.
-      log.warning(
-          'There is no function named `%s` in region `%s`. Perhaps you '
-          'meant to specify `--region` or update the `functions/region` '
-          'configuration property?' % (args.name, region))
+    except HttpError as error:
+      if error.status_code in (
+          six.moves.http_client.NOT_FOUND,
+          six.moves.http_client.FORBIDDEN,
+      ):
+        # The function doesn't exist in the given region.
+        log.warning(
+            'There is no function named `%s` in region `%s`. Perhaps you '
+            'meant to specify `--region` or update the `functions/region` '
+            'configuration property?' % (args.name, region)
+        )
 
   for entry in entries:
     message = entry.textPayload

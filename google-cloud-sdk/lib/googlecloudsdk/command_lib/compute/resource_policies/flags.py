@@ -159,12 +159,8 @@ def GetOnSourceDiskDeleteFlagMapper(messages):
 
 def AddSnapshotScheduleArgs(parser, messages):
   """Adds flags specific to snapshot schedule resource policies."""
-  parser.add_argument(
-      '--max-retention-days',
-      required=True,
-      type=arg_parsers.BoundedInt(lower_bound=1),
-      help='Maximum number of days snapshot can be retained.')
-  GetOnSourceDiskDeleteFlagMapper(messages).choice_arg.AddToParser(parser)
+  AddSnapshotMaxRetentionDaysArgs(parser)
+  AddOnSourceDiskDeleteArgs(parser, messages)
   snapshot_properties_group = parser.add_group('Snapshot properties')
   AddSnapshotLabelArgs(snapshot_properties_group)
   snapshot_properties_group.add_argument(
@@ -173,6 +169,20 @@ def AddSnapshotScheduleArgs(parser, messages):
       help='Create an application consistent snapshot by informing the OS to '
            'prepare for the snapshot process.')
   compute_flags.AddStorageLocationFlag(snapshot_properties_group, 'snapshot')
+
+
+def AddSnapshotMaxRetentionDaysArgs(parser, required=True):
+  """Adds max retention days flag for snapshot schedule resource policies."""
+  parser.add_argument(
+      '--max-retention-days',
+      required=required,
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      help='Maximum number of days snapshot can be retained.')
+
+
+def AddOnSourceDiskDeleteArgs(parser, messages):
+  """Adds onSourceDiskDelete flag for snapshot schedule resource policies."""
+  GetOnSourceDiskDeleteFlagMapper(messages).choice_arg.AddToParser(parser)
 
 
 def AddSnapshotLabelArgs(parser):

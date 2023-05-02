@@ -54,9 +54,9 @@ class AuthenticationException(Error):
             message=message, login_command=login_command))
     if not for_adc:
       switch_account_msg = textwrap.dedent("""\
-      If you have already logged in with a different account:
+      If you have already logged in with a different account, run:
 
-          $ gcloud config set account ACCOUNT
+        $ gcloud config set account ACCOUNT
 
       to select an already authenticated account to use.""")
       message = '\n\n'.join([message, switch_account_msg])

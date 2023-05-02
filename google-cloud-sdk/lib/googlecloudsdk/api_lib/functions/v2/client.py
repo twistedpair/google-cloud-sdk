@@ -73,15 +73,17 @@ class FunctionsClient(object):
     return self.client.projects_locations_runtimes.List(request)
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def GetFunction(self, name):
-    # type: (str) -> cloudfunctions_v2_messages.Function | None
+  def GetFunction(self, name, raise_if_not_found=False):
+    # type: (str, bool) -> cloudfunctions_v2_messages.Function | None
     """Gets the function with the given name or None if not found.
 
     Args:
-      name: str, GCFv2 function resource relative name.
+      name: GCFv2 function resource relative name.
+      raise_if_not_found: If set, raises NOT_FOUND http errors instead of
+        returning None.
 
     Returns:
-      cloudfunctions_v2_messages.Function, the fetched GCFv2 function.
+      cloudfunctions_v2_messages.Function, the fetched GCFv2 function or None.
     """
     try:
       return self.client.projects_locations_functions.Get(
@@ -90,10 +92,12 @@ class FunctionsClient(object):
           )
       )
     except apitools_exceptions.HttpError as error:
-      if error.status_code == six.moves.http_client.NOT_FOUND:
-        return None
+      if raise_if_not_found or (
+          error.status_code != six.moves.http_client.NOT_FOUND
+      ):
+        raise
 
-      raise
+      return None
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
   def AbortFunctionUpgrade(self, name):

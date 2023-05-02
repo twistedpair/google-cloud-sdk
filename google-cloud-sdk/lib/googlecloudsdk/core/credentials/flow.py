@@ -492,7 +492,7 @@ def ImportReadline(client_config):
   if (
       client_config is not None
       and '3pi' in client_config
-      and sys.platform.startswith('dar')
+      and (sys.platform.startswith('dar') or sys.platform.startswith('linux'))
   ):
     # Importing readline alters the built-in input() method
     # to use the GNU readline interface.

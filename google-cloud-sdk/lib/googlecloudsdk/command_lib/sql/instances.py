@@ -451,6 +451,10 @@ class _BaseInstances(object):
     if args.time_zone is not None:
       settings.timeZone = args.time_zone
 
+    if args.threads_per_core is not None:
+      settings.advancedMachineFeatures = sql_messages.AdvancedMachineFeatures()
+      settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
@@ -463,11 +467,7 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      if args.threads_per_core is not None:
-        settings.advancedMachineFeatures = (
-            sql_messages.AdvancedMachineFeatures()
-        )
-        settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
+      pass
 
     return settings
 
@@ -584,6 +584,10 @@ class _BaseInstances(object):
         retention_interval=args.audit_retention_interval,
         upload_interval=args.audit_upload_interval)
 
+    if args.threads_per_core is not None:
+      settings.advancedMachineFeatures = sql_messages.AdvancedMachineFeatures()
+      settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -601,11 +605,7 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      if args.threads_per_core is not None:
-        settings.advancedMachineFeatures = (
-            sql_messages.AdvancedMachineFeatures()
-        )
-        settings.advancedMachineFeatures.threadsPerCore = args.threads_per_core
+      pass
 
     return settings
 

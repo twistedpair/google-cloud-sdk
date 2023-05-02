@@ -29,8 +29,8 @@ import six
 MODULES = [
     'crcmod',
     'grpcio',
-    'cryptography==36.0.2',
-    'pyopenssl==22.0.0',
+    'cryptography==39.0.1',
+    'pyopenssl==23.0.0',
     'google_crc32c',
     'certifi',
 ]

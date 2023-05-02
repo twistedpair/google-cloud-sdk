@@ -86,13 +86,20 @@ def GetClientClass(release_track=base.ReleaseTrack.GA):
                              RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
+def GetClientInstance(
+    release_track=base.ReleaseTrack.GA,
+    use_http=True,
+    skip_activation_prompt=False,
+):
   """Returns an instance of the Cloud Build client.
 
   Args:
     release_track: The desired value of the enum
       googlecloudsdk.calliope.base.ReleaseTrack.
     use_http: bool, True to create an http object for this client.
+    skip_activation_prompt: bool, True to skip prompting for service activation.
+      Should be used only if service activation was checked earlier in the
+      command.
 
   Returns:
     base_api.BaseApiClient, An instance of the Cloud Build client.
@@ -100,7 +107,9 @@ def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
   return apis.GetClientInstance(
       _API_NAME,
       RELEASE_TRACK_TO_API_VERSION[release_track],
-      no_http=(not use_http))
+      no_http=(not use_http),
+      skip_activation_prompt=skip_activation_prompt,
+  )
 
 
 def EncodeSubstitutions(substitutions, messages):

@@ -40,6 +40,10 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
   Subclasses should add the function resource arg and --gen2 flag.
   """
 
+  def __init__(self, *args, **kwargs):
+    super(FunctionResourceCommand, self).__init__(*args, **kwargs)
+    self._v2_function = None
+
   @abc.abstractmethod
   def _RunV1(self, args):
     # type: (parser_extensions.Namespace) -> Any
@@ -71,13 +75,11 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
       return self._RunV1(args)
 
     client = client_v2.FunctionsClient(self.ReleaseTrack())
-    function = client.GetFunction(args.CONCEPTS.name.Parse().RelativeName())
+    self._v2_function = client.GetFunction(
+        args.CONCEPTS.name.Parse().RelativeName()
+    )
 
-    if (
-        function
-        and function.environment
-        == client.messages.Function.EnvironmentValueValuesEnum.GEN_2
-    ):
+    if self._v2_function and str(self._v2_function.environment) == 'GEN_2':
       return self._RunV2(args)
 
     return self._RunV1(args)

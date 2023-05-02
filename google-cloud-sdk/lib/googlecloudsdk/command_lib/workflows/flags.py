@@ -25,17 +25,21 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 _KEY_NAME_PATTERN = (
     r'^projects/[^/]+/locations/[^/]+/keyRings/[a-zA-Z0-9_-]+'
-    '/cryptoKeys/[a-zA-Z0-9_-]+$')
+    '/cryptoKeys/[a-zA-Z0-9_-]+$'
+)
 _KEY_NAME_ERROR = (
     'KMS key name should match projects/{project}/locations/{location}'
     '/keyRings/{keyring}/cryptoKeys/{cryptokey} and only contain characters '
-    'from the valid character set for a KMS key.')
+    'from the valid character set for a KMS key.'
+)
+USER_ENV_VARS_LIMIT = 20
 
 
 def LocationAttributeConfig():
@@ -45,20 +49,25 @@ def LocationAttributeConfig():
       fallthroughs=[
           deps.PropertyFallthrough(properties.FromString('workflows/location'))
       ],
-      help_text='Cloud location for the {resource}. '
-      ' Alternatively, set the property [workflows/location].')
+      help_text=(
+          'Cloud location for the {resource}. '
+          ' Alternatively, set the property [workflows/location].'
+      ),
+  )
 
 
 def WorkflowAttributeConfig():
   """Builds an AttributeConfig for the workflow resource."""
   return concepts.ResourceParameterAttributeConfig(
-      name='workflow', help_text='Workflow for the {resource}.')
+      name='workflow', help_text='Workflow for the {resource}.'
+  )
 
 
 def ExecutionAttributeConfig():
   """Builds an AttributeConfig for the execution resource."""
   return concepts.ResourceParameterAttributeConfig(
-      name='execution', help_text='Execution for the {resource}.')
+      name='execution', help_text='Execution for the {resource}.'
+  )
 
 
 def GetWorkflowResourceSpec():
@@ -68,7 +77,8 @@ def GetWorkflowResourceSpec():
       resource_name='workflow',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      workflowsId=WorkflowAttributeConfig())
+      workflowsId=WorkflowAttributeConfig(),
+  )
 
 
 def GetExecutionResourceSpec():
@@ -79,7 +89,8 @@ def GetExecutionResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       workflowsId=WorkflowAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      executionsId=ExecutionAttributeConfig())
+      executionsId=ExecutionAttributeConfig(),
+  )
 
 
 def AddWorkflowResourceArg(parser, verb):
@@ -93,7 +104,8 @@ def AddWorkflowResourceArg(parser, verb):
       'workflow',
       GetWorkflowResourceSpec(),
       'Name of the workflow {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddExecutionResourceArg(parser, verb):
@@ -107,40 +119,51 @@ def AddExecutionResourceArg(parser, verb):
       'execution',
       GetExecutionResourceSpec(),
       'Name of the execution {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddSourceArg(parser):
   """Adds argument for specifying source for the workflow."""
   parser.add_argument(
       '--source',
-      help='Location of a workflow source code to deploy. Required on first '
-      'deployment. Location needs to be defined as a path to a local file '
-      'with the source code.')
+      help=(
+          'Location of a workflow source code to deploy. Required on first '
+          'deployment. Location needs to be defined as a path to a local file '
+          'with the source code.'
+      ),
+  )
 
 
 def AddDescriptionArg(parser):
   """Adds argument for specifying description of the workflow."""
   parser.add_argument(
-      '--description', help='The description of the workflow to deploy.')
+      '--description', help='The description of the workflow to deploy.'
+  )
 
 
 def AddServiceAccountArg(parser):
   """Adds argument for specifying service account used by the workflow."""
   parser.add_argument(
       '--service-account',
-      help='The service account that should be used as '
-      'the workflow identity. "projects/PROJECT_ID/serviceAccounts/" prefix '
-      'may be skipped from the full resource name, in that case '
-      '"projects/-/serviceAccounts/" is prepended to the service account ID.')
+      help=(
+          'The service account that should be used as the workflow identity.'
+          ' "projects/PROJECT_ID/serviceAccounts/" prefix may be skipped from'
+          ' the full resource name, in that case "projects/-/serviceAccounts/"'
+          ' is prepended to the service account ID.'
+      ),
+  )
 
 
 def AddDataArg(parser):
   """Adds argument for specifying the data that will be passed to the workflow."""
   parser.add_argument(
       '--data',
-      help='JSON string with data that will be passed to the workflow '
-      'as an argument.')
+      help=(
+          'JSON string with data that will be passed to the workflow '
+          'as an argument.'
+      ),
+  )
 
 
 def AddLoggingArg(parser):
@@ -209,8 +232,7 @@ def AddKmsKeyFlags(parser):
   kmskey_group = parser.add_group(mutex=True, hidden=True)
   kmskey_group.add_argument(
       '--kms-key',
-      type=arg_parsers.RegexpValidator(_KEY_NAME_PATTERN,
-                                       _KEY_NAME_ERROR),
+      type=arg_parsers.RegexpValidator(_KEY_NAME_PATTERN, _KEY_NAME_ERROR),
       help="""\
         Sets the user managed KMS crypto key used to encrypt the new Workflow
         Revision and the Executions associated with it.
@@ -220,14 +242,45 @@ def AddKmsKeyFlags(parser):
         where ${PROJECT} is the project, ${LOCATION} is the location of the key
         ring, and ${KEYRING} is the key ring that contains the ${CRYPTOKEY}
         crypto key.
-      """)
+      """,
+  )
   kmskey_group.add_argument(
       '--clear-kms-key',
       action='store_true',
       help="""\
         Creates the new Workflow Revision and its associated Executions without
         the KMS key specified on the previous revision.
-      """)
+      """,
+  )
+
+
+def AddUserEnvVarsFlags(parser):
+  """Adds flags for configuring user-defined environment variables."""
+  userenvvars_group = parser.add_group(mutex=True, hidden=True)
+  userenvvars_group.add_argument(
+      '--set-env-vars',
+      type=arg_parsers.ArgDict(
+          key_type=str, value_type=str, max_length=USER_ENV_VARS_LIMIT,
+      ),
+      action=arg_parsers.UpdateAction,
+      metavar='KEY=VALUE',
+      help="""\
+        Sets customer-defined environment variables used in the new workflow
+        revision.
+
+        This flag takes a comma-separated list of key value pairs.
+        Example:
+        gcloud workflows deploy ${workflow_name} --set-env-vars foo=bar,hey=hi...
+      """,
+  )
+
+  map_util.AddMapSetFileFlag(
+      userenvvars_group,
+      'env-vars',
+      'environment variables',
+      key_type=str,
+      value_type=str,
+  )
 
 
 def ParseExecution(args):
@@ -261,8 +314,9 @@ def SetSource(args, workflow, updated_fields):
     try:
       workflow.sourceContents = files.ReadFileContents(args.source)
     except files.MissingFileError:
-      raise exceptions.BadArgumentException('--source',
-                                            'specified file does not exist.')
+      raise exceptions.BadArgumentException(
+          '--source', 'specified file does not exist.'
+      )
     updated_fields.append('sourceContents')
 
 
@@ -316,6 +370,22 @@ def SetLabels(labels, workflow, updated_fields):
     updated_fields.append('labels')
 
 
+def SetUserEnvVars(env_vars, workflow, updated_fields):
+  """Sets user-defined environment variables.
+
+  Also updates updated_fields accordingly.
+
+  Args:
+    env_vars: Parsed environment variables to be set on the workflow.
+    workflow: The workflow in which to set the User Envrionment Variables.
+    updated_fields: A list to which the userEnvVars field will be added if
+      needed.
+  """
+  if env_vars is not None:
+    workflow.userEnvVars = env_vars
+    updated_fields.append('userEnvVars')
+
+
 def SetKmsKey(args, workflow, updated_fields):
   """Sets KMS key for the workflow based on the arguments.
 
@@ -327,5 +397,5 @@ def SetKmsKey(args, workflow, updated_fields):
     updated_fields: A list to which the KMS key field will be added if needed.
   """
   if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-    workflow.cryptoKeyName = (None if args.clear_kms_key else args.kms_key)
+    workflow.cryptoKeyName = None if args.clear_kms_key else args.kms_key
     updated_fields.append('cryptoKeyName')

@@ -90,8 +90,9 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
   Returns:
     Fully-constructed request to update an AlloyDB instance.
   """
-  instance_resource, mask = ConstructInstanceAndMaskFromArgs(
+  instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgs(
       alloydb_messages, instance_ref, args)
+  mask = ','.join(paths) if paths else None
 
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(
@@ -100,8 +101,9 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
           updateMask=mask))
 
 
-def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
-  """Validates command line arguments and creates the instance and field mask.
+def ConstructInstanceAndUpdatePathsFromArgs(
+    alloydb_messages, instance_ref, args):
+  """Validates command line arguments and creates the instance and update paths.
 
   Args:
     alloydb_messages: Messages module for the API client.
@@ -109,7 +111,7 @@ def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
     args: Command line input arguments.
 
   Returns:
-    An AlloyDB instance and mask for update.
+    An AlloyDB instance and paths for update.
   """
   availability_type_path = 'availabilityType'
   database_flags_path = 'databaseFlags'
@@ -174,8 +176,7 @@ def ConstructInstanceAndMaskFromArgs(alloydb_messages, instance_ref, args):
       args.insights_config_record_client_address,
   )
 
-  mask = ','.join(paths) if paths else None
-  return instance_resource, mask
+  return instance_resource, paths
 
 
 def _QueryInsightsConfig(
@@ -239,3 +240,49 @@ def _ParseInstanceType(alloydb_messages, instance_type):
     return alloydb_messages.Instance.InstanceTypeValueValuesEnum.lookup_by_name(
         instance_type.upper())
   return None
+
+
+def _ParseUpdateMode(alloydb_messages, update_mode):
+  if update_mode:
+    return alloydb_messages.UpdatePolicy.ModeValueValuesEnum.lookup_by_name(
+        update_mode.upper())
+  return None
+
+
+def ConstructPatchRequestFromArgsAlphaBeta(
+    alloydb_messages, instance_ref, args):
+  """Constructs the request to update an AlloyDB instance.
+  """
+  instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsAlphaBeta(
+      alloydb_messages, instance_ref, args)
+  mask = ','.join(paths) if paths else None
+
+  return (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(
+          instance=instance_resource,
+          name=instance_ref.RelativeName(),
+          updateMask=mask))
+
+
+def ConstructInstanceAndUpdatePathsFromArgsAlphaBeta(
+    alloydb_messages, instance_ref, args):
+  """Validates command line arguments and creates the instance and update paths for alpha and beta tracks.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    instance_ref: parent resource path of the resource being updated
+    args: Command line input arguments.
+
+  Returns:
+    An AlloyDB instance and paths for update.
+  """
+  instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgs(
+      alloydb_messages, instance_ref, args)
+
+  if args.update_mode:
+    instance_resource.updatePolicy = alloydb_messages.UpdatePolicy(
+        mode=_ParseUpdateMode(alloydb_messages, args.update_mode))
+    update_mode_path = 'updatePolicy.mode'
+    paths.append(update_mode_path)
+
+  return instance_resource, paths

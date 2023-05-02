@@ -386,8 +386,11 @@ def AddDestAddressGroups(parser):
       type=arg_parsers.ArgList(),
       metavar='DEST_ADDRESS_GROUPS',
       required=False,
-      help=('Dest address groups to match for this rule. '
-            'Can only be specified if DIRECTION is egress.'))
+      help=(
+          'Destination address groups to match for this rule. '
+          'Can only be specified if DIRECTION is egress.'
+      ),
+  )
 
 
 def AddSrcFqdns(parser):
@@ -411,9 +414,10 @@ def AddDestFqdns(parser):
       metavar='DEST_FQDNS',
       required=False,
       help=(
-          'Dest FQDNs to match for this rule. '
+          'Destination FQDNs to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'
-      ))
+      ),
+  )
 
 
 def AddSrcRegionCodes(parser):
@@ -437,9 +441,10 @@ def AddDestRegionCodes(parser):
       metavar='DEST_REGION_CODES',
       required=False,
       help=(
-          'Dest Region Code to match for this rule. '
+          'Destination Region Code to match for this rule. '
           'Can only be specified if DIRECTION is `egress`.'
-      ))
+      ),
+  )
 
 
 def AddSrcThreatIntelligence(parser):

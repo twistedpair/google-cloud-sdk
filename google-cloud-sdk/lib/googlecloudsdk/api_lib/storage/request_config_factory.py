@@ -439,6 +439,8 @@ class _RequestConfig(object):
       resources.
     preserve_posix (bool|None): Whether to apply source POSIX metadata to
       destination.
+    preserve_symlinks (bool|None): Whether symlinks should be preserved rather
+      than followed.
     resource_args (_BucketConfig|_ObjectConfig|None): Holds settings for a cloud
       resource.
   """
@@ -448,6 +450,7 @@ class _RequestConfig(object):
       predefined_acl_string=None,
       predefined_default_object_acl_string=None,
       preserve_posix=None,
+      preserve_symlinks=None,
       resource_args=None,
   ):
     self.predefined_acl_string = predefined_acl_string
@@ -455,6 +458,7 @@ class _RequestConfig(object):
         predefined_default_object_acl_string
     )
     self.preserve_posix = preserve_posix
+    self.preserve_symlinks = preserve_symlinks
     self.resource_args = resource_args
 
   def __eq__(self, other):
@@ -465,6 +469,7 @@ class _RequestConfig(object):
         and self.predefined_default_object_acl_string
         == other.predefined_default_object_acl_string
         and self.preserve_posix == other.preserve_posix
+        and self.preserve_symlinks == other.preserve_symlinks
         and self.resource_args == other.resource_args
     )
 
@@ -736,6 +741,9 @@ def get_request_config(
       user_request_args, 'predefined_default_object_acl_string', None)
   request_config.preserve_posix = getattr(
       user_request_args, 'preserve_posix', None
+  )
+  request_config.preserve_symlinks = (
+      user_request_args.preserve_symlinks if user_request_args else None
   )
 
   return request_config

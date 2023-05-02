@@ -24,11 +24,15 @@ import re
 from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import retry
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_client
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
 
 
 API_NAME = 'runapps'
@@ -73,6 +77,25 @@ def GetApplication(client, app_ref):
     return client.projects_locations_applications.Get(request)
   except apitools_exceptions.HttpNotFoundError:
     return None
+  except apitools_exceptions.HttpForbiddenError as e:
+    _HandleLocationError(app_ref.locationsId, e)
+
+
+def ListApplications(
+    client: runapps_v1alpha1_client.RunappsV1alpha1,
+    app_ref: resources) -> runapps_v1alpha1_messages.ListApplicationsResponse:
+  """Calls ListApplications API of Runapps of the specified reference."""
+  request = (client.MESSAGES_MODULE
+             .RunappsProjectsLocationsApplicationsListRequest(
+                 parent=app_ref.RelativeName()))
+
+  response = client.projects_locations_applications.List(request)
+  if response.unreachable:
+    log.warning('The following regions did not respond: {}. '
+                'List results may be incomplete'.format(', '.join(
+                    sorted(response.unreachable))))
+
+  return response
 
 
 def ApplicationToDict(application):
@@ -314,3 +337,22 @@ def ListLocations(client, proj_id):
       name='projects/{0}'.format(proj_id)
   )
   return client.projects_locations.List(request)
+
+
+def _HandleLocationError(region, error):
+  """Get the metadata message for the deployment operation.
+
+  Args:
+    region: string, target region of the request.
+    error: The original HttpError.
+
+  Raises:
+    UnsupportedIntegrationsLocationError if it's location error. Otherwise
+    raise the original error.
+  """
+  parsed_err = api_lib_exceptions.HttpException(error)
+  if _LOCATION_ERROR_REGEX.match(parsed_err.payload.status_message):
+    raise exceptions.UnsupportedIntegrationsLocationError(
+        'Location {} is not found or access is unauthorized.'.format(region)
+    )
+  raise error

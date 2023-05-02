@@ -1,0 +1,19 @@
+project:
+  name: project
+  collection: networkconnectivity.projects
+  attributes:
+  - &project
+    parameter_name: project
+    attribute_name: project
+    help: The project ID.
+    property: core/project
+
+network:
+  name: network
+  collection: compute.networks
+  attributes:
+  - *project
+  - &network
+    parameter_name: network
+    attribute_name: network
+    help: The name of the Google Compute Engine network.

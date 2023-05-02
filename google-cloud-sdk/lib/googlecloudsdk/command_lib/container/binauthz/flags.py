@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.kms import flags as kms_flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -207,5 +208,16 @@ def AddPlatformPolicyResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'policy_resource_name',
       _GetPlatformPolicyResourceSpec(),
-      'The policy {}.'.format(verb),
-      required=True).AddToParser(parser)
+      'The resource name of the policy {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddPodFileContentArg(parser):
+  """Adds a resource argument for a Pod from a JSON or YAML file."""
+  parser.add_argument(
+      '--resource',
+      required=True,
+      type=arg_parsers.YAMLFileContents(),
+      help='The JSON or YAML file containing the Pod to evaluate.',
+  )

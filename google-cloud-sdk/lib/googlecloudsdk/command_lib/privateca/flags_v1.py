@@ -271,6 +271,20 @@ def AddSkipGracePeriodFlag(parser):
       required=False).AddToParser(parser)
 
 
+def AddIgnoreDependentResourcesFlag(parser):
+  base.Argument(
+      '--ignore-dependent-resources',
+      help='This field skips the integrity check that would normally prevent '
+      'breaking a CA Pool if it is used by another cloud resource '
+      'and allows the CA Pool to be in a state where it is not able to issue '
+      'certificates. Doing so may result in unintended and unrecoverable '
+      'effects on any dependent resource(s) since '
+      'the CA Pool would not be able to issue certificates.',
+      action='store_true',
+      default=False,
+      required=False).AddToParser(parser)
+
+
 def AddNameConstraintParameterFlags(parser):
   """Adds flags for inline name constraint x509 parameters.
 

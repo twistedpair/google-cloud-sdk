@@ -470,6 +470,20 @@ class AlloydbProjectsLocationsClustersInstancesGetRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
+class AlloydbProjectsLocationsClustersInstancesInjectFaultRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersInstancesInjectFaultRequest object.
+
+  Fields:
+    injectFaultRequest: A InjectFaultRequest resource to be passed as the
+      request body.
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Instance.name field.
+  """
+
+  injectFaultRequest = _messages.MessageField('InjectFaultRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AlloydbProjectsLocationsClustersInstancesListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesListRequest object.
 
@@ -1109,6 +1123,39 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Enums:
+    ExclusiveActionValueValuesEnum: Excluisive action returned by the CLH.
+
+  Fields:
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: Excluisive action returned by the CLH.
+  """
+
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""Excluisive action returned by the CLH.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: Unknown repair action.
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation. DEPRECATED. Instead use DELETE_RESOURCE
+        OperationSignal in SideChannel.
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
+  deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
 class Cluster(_messages.Message):
   r"""A cluster is a collection of regional AlloyDB resources. It can include
   a primary instance and one or more read pool instances. All cluster
@@ -1192,7 +1239,8 @@ class Cluster(_messages.Message):
       maintenance.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
-    sslConfig: SSL configuration for this AlloyDB Cluster.
+    sslConfig: Deprecated. SSL configuration for this AlloyDB Cluster. This
+      field was never populated or used.
     state: Output only. The current serving state of the cluster.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -1580,7 +1628,7 @@ class GoogleCloudLocationListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1680,6 +1728,46 @@ class GoogleTypeTimeOfDay(_messages.Message):
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class InjectFaultRequest(_messages.Message):
+  r"""Message for triggering fault injection on an instance
+
+  Enums:
+    FaultTypeValueValuesEnum: Required. The type of fault to be injected in an
+      instance.
+
+  Fields:
+    faultType: Required. The type of fault to be injected in an instance.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the fault injection.
+  """
+
+  class FaultTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of fault to be injected in an instance.
+
+    Values:
+      FAULT_TYPE_UNSPECIFIED: The fault type is unknown.
+      STOP_VM: Stop the VM
+    """
+    FAULT_TYPE_UNSPECIFIED = 0
+    STOP_VM = 1
+
+  faultType = _messages.EnumField('FaultTypeValueValuesEnum', 1)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
   It's the main unit of computing resources in AlloyDB.
@@ -1771,6 +1859,9 @@ class Instance(_messages.Message):
       assigned when the resource is created, and it is retained until it is
       deleted.
     updatePolicy: Update policy that will be applied during instance update.
+      This field is not persisted when you update the instance. To use a non-
+      default update policy, you must specify explicitly specify the value in
+      each update request.
     updateTime: Output only. Update time stamp
     writableNode: Output only. This is set for the read-write VM of the
       PRIMARY instance only.
@@ -2422,7 +2513,7 @@ class SecondaryConfig(_messages.Message):
 
 
 class SslConfig(_messages.Message):
-  r"""SSL configuration for an AlloyDB Cluster.
+  r"""SSL configuration for an AlloyDB Instance.
 
   Enums:
     CaSourceValueValuesEnum: Optional. Certificate Authority (CA) source. Only
@@ -2456,7 +2547,7 @@ class SslConfig(_messages.Message):
 
     Values:
       SSL_MODE_UNSPECIFIED: SSL mode not specified. Defaults to
-        SSL_MODE_ALLOW.
+        ENCRYPTED_ONLY.
       SSL_MODE_ALLOW: SSL connections are optional. CA verification not
         enforced.
       SSL_MODE_REQUIRE: SSL connections are required. CA verification not
@@ -2465,11 +2556,17 @@ class SslConfig(_messages.Message):
       SSL_MODE_VERIFY_CA: SSL connections are required. CA verification
         enforced. Clients must have certificates signed by a Cluster CA, e.g.
         via GenerateClientCertificate.
+      ALLOW_UNENCRYPTED_AND_ENCRYPTED: SSL connections are optional. CA
+        verification not enforced.
+      ENCRYPTED_ONLY: SSL connections are required. CA verification not
+        enforced.
     """
     SSL_MODE_UNSPECIFIED = 0
     SSL_MODE_ALLOW = 1
     SSL_MODE_REQUIRE = 2
     SSL_MODE_VERIFY_CA = 3
+    ALLOW_UNENCRYPTED_AND_ENCRYPTED = 4
+    ENCRYPTED_ONLY = 5
 
   caSource = _messages.EnumField('CaSourceValueValuesEnum', 1)
   sslMode = _messages.EnumField('SslModeValueValuesEnum', 2)
@@ -2694,13 +2791,12 @@ class UpdatePolicy(_messages.Message):
 
     Values:
       MODE_UNSPECIFIED: Mode is unknown.
-      LOW_DOWNTIME: Least disruptive way to apply the update. This is the
-        default mode.
+      DEFAULT: Least disruptive way to apply the update.
       FORCE_APPLY: Performs a forced update when applicable. This will be fast
         but may incur a downtime.
     """
     MODE_UNSPECIFIED = 0
-    LOW_DOWNTIME = 1
+    DEFAULT = 1
     FORCE_APPLY = 2
 
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
@@ -2710,11 +2806,9 @@ class User(_messages.Message):
   r"""Message describing User object.
 
   Enums:
-    AuthMethodValueValuesEnum: Optional. Authentication method for the user.
     UserTypeValueValuesEnum: Optional. Type of this user.
 
   Fields:
-    authMethod: Optional. Authentication method for the user.
     databaseRoles: Optional. List of database roles this user has. The
       database role strings are subject to the PostgreSQL naming conventions.
     name: Output only. Name of the resource in the form of
@@ -2722,18 +2816,6 @@ class User(_messages.Message):
     password: Input only. Password for the user.
     userType: Optional. Type of this user.
   """
-
-  class AuthMethodValueValuesEnum(_messages.Enum):
-    r"""Optional. Authentication method for the user.
-
-    Values:
-      AUTHENTICATION_METHOD_UNSPECIFIED: Unspecified authentication method
-      BUILT_IN: The default, credentials-based authentication method.
-      IAM_BASED: IAM-Based authentication method.
-    """
-    AUTHENTICATION_METHOD_UNSPECIFIED = 0
-    BUILT_IN = 1
-    IAM_BASED = 2
 
   class UserTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Type of this user.
@@ -2749,11 +2831,10 @@ class User(_messages.Message):
     ALLOYDB_BUILT_IN = 1
     ALLOYDB_IAM_USER = 2
 
-  authMethod = _messages.EnumField('AuthMethodValueValuesEnum', 1)
-  databaseRoles = _messages.StringField(2, repeated=True)
-  name = _messages.StringField(3)
-  password = _messages.StringField(4)
-  userType = _messages.EnumField('UserTypeValueValuesEnum', 5)
+  databaseRoles = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  password = _messages.StringField(3)
+  userType = _messages.EnumField('UserTypeValueValuesEnum', 4)
 
 
 class UserPassword(_messages.Message):

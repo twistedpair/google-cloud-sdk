@@ -51,11 +51,13 @@ class AcceleratorConfig(_messages.Message):
       V2: TPU v2.
       V3: TPU v3.
       V4: TPU v4.
+      V5LITE_POD: TPU v5lite pod.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
     V3 = 2
     V4 = 3
+    V5LITE_POD = 4
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -444,7 +446,7 @@ class ListRuntimeVersionsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
+  r"""A resource that represents a Google Cloud location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example

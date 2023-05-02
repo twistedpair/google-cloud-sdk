@@ -365,6 +365,33 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def InjectFault(self, request, global_params=None):
+      r"""Injects fault in an instance. Imperative only.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersInstancesInjectFaultRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InjectFault')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InjectFault.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:injectFault',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.instances.injectFault',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:injectFault',
+        request_field='injectFaultRequest',
+        request_type_name='AlloydbProjectsLocationsClustersInstancesInjectFaultRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Instances in a given project and location.
 

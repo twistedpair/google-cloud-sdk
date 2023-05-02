@@ -63,7 +63,7 @@ def RepoRegion(args, cluster_location=None):
       '"gcloud config set run/region REGION".')
 
 
-def ShouldCreateRepository(repo):
+def ShouldCreateRepository(repo, skip_activation_prompt=False):
   """Checks for the existence of the provided repository.
 
   If the provided repository does not exist, the user will be prompted
@@ -72,12 +72,14 @@ def ShouldCreateRepository(repo):
   Args:
     repo: googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining
       the repository.
+    skip_activation_prompt: bool determining if the client should prompt if the
+      API isn't activated.
 
   Returns:
     A boolean indicating whether a repository needs to be created.
   """
   try:
-    requests.GetRepository(repo.GetRepositoryName())
+    requests.GetRepository(repo.GetRepositoryName(), skip_activation_prompt)
     return False
   except base_exceptions.HttpForbiddenError:
     log.error('Permission denied while accessing Artifact Registry. Artifact '
@@ -97,12 +99,13 @@ def ShouldCreateRepository(repo):
   return True
 
 
-def CreateRepository(repo):
+def CreateRepository(repo, skip_activation_prompt=False):
   """Creates an Artifact Registry repostiory and waits for the operation.
 
   Args:
     repo: googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining
       the repository to be created.
+    skip_activation_prompt: True if
   """
   messages = requests.GetMessages()
   repository_message = messages.Repository(
@@ -111,8 +114,9 @@ def CreateRepository(repo):
       format=messages.Repository.FormatValueValuesEnum.DOCKER,
   )
 
-  op = requests.CreateRepository(repo.project, repo.location,
-                                 repository_message)
+  op = requests.CreateRepository(
+      repo.project, repo.location, repository_message, skip_activation_prompt
+  )
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='artifactregistry.projects.locations.operations')
 

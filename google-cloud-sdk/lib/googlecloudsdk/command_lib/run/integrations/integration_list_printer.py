@@ -55,17 +55,19 @@ class Row(object):
   """
 
   def __init__(self, integration_name, integration_type,
-               services, latest_deployment_status):
+               services, latest_deployment_status, region: str):
     self.integration_name = integration_name
     self.integration_type = integration_type
     self.services = services
     self.latest_deployment_status = latest_deployment_status
+    self.region = region
 
   def __eq__(self, other):
     return (self.integration_name == other.integration_name and
             self.integration_type == other.integration_type and
             self.services == other.services and
-            self.latest_deployment_status == other.latest_deployment_status
+            self.latest_deployment_status == other.latest_deployment_status and
+            self.region == other.region
            )
 
 
@@ -85,12 +87,13 @@ class IntegrationListPrinter(cp.CustomPrinterBase):
     """
     rows = record[RECORD_KEY]
     rows = [(_GetSymbolFromDeploymentStatus(row.latest_deployment_status),
-             row.integration_name, row.integration_type, row.services)
+             row.integration_name, row.integration_type, row.services,
+             row.region)
             for row in rows
            ]
 
     # the empty column is for the latest deployment status.
-    cols = [('', 'INTEGRATION', 'TYPE', 'SERVICE')]
+    cols = [('', 'INTEGRATION', 'TYPE', 'SERVICE', 'REGION')]
     return cp.Table(cols + rows)
 
 

@@ -43,7 +43,8 @@ DEFAULT_LIST_FORMAT = """\
           nextHopIp,
           nextHopVpnTunnel,
           nextHopPeering,
-          nextHopNetwork).scope()
+          nextHopNetwork,
+          nextHopHub).scope()
         :label=NEXT_HOP,
       priority
     )"""

@@ -57,6 +57,12 @@ class Workstations:
     self.threading_event = threading.Event()
     self.tcp_tunnel_open = False
 
+  def ListUsableWorkstations(self, args):
+    list_usable_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsListUsableRequest(
+        parent=args.CONCEPTS.config.Parse().RelativeName()
+    )
+    return self._service.ListUsable(list_usable_req).workstations
+
   def Start(self, args):
     """Start a workstation."""
     workstation_name = args.CONCEPTS.workstation.Parse().RelativeName()
